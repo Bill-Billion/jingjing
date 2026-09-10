@@ -1,0 +1,78 @@
+# =============================================================================
+# 晶晶日上 Nginx HTTPS 反代配置模板（证书签发完成后启用）
+# 占位符 __DOMAIN__ 由 01_certbot_webroot.sh 自动替换为真实域名，例如 api.example.com
+# 拓扑：公网 80/443 → Nginx → 127.0.0.1:3000(Node/PM2)；/uploads 走本机静态目录
+# 现状基线见 deploy/nginx_setup.sh（HTTP only）；本模板是其 HTTPS 升级版，不改变业务转发语义
+# =============================================================================
+
+# ---------- 80：仅保留 ACME 续期校验目录，其余 301 跳 443 ----------
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __DOMAIN__;
+
+    # certbot webroot 续期/签发校验目录（必须在跳转之前放行）
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        default_type "text/plain";
+        try_files $uri =404;
+    }
+
+    # 其余全部永久跳转 HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# ---------- 443：正式业务入口 ----------
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name __DOMAIN__;
+
+    # Let's Encrypt（certbot webroot 签发）路径；商用证书替换为对应 crt/key 即可
+    ssl_certificate     /etc/letsencrypt/live/__DOMAIN__/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/__DOMAIN__/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    # 安全响应头
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    server_tokens off;
+
+    client_max_body_size 50m;
+
+    # 上传素材静态目录（与 app.js 的 /uploads 对齐；Nginx 直接出，不占 Node）
+    location /uploads/ {
+        alias /opt/jjsr/uploads/;
+        expires 7d;
+        add_header X-Content-Type-Options nosniff;
+        access_log off;
+    }
+
+    # 业务统一反代到本机 Node（含 /api/pay/alipay/notify 支付宝异步回调）
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;   # 告知后端外层已是 HTTPS
+        proxy_connect_timeout 30s;
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+    }
+
+    # gzip（含 JSON，优化接口体积）
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript application/xml;
+    gzip_min_length 1024;
+}

@@ -1,0 +1,382 @@
+openapi: 3.0.3
+info:
+  title: 晶晶日上后端 API（主链路契约）
+  version: 13.0.0-eng
+  description: >-
+    本文件只固化"登录→逛艺人→下单→支付→AI 生产→交付→对账"主链路的请求/响应契约，
+    供前端/APP/测试/联调对齐。金额一律为整数「分」；时间为 ISO8601。
+    普通用户鉴权 Authorization: Bearer <JWT>；后台用 X-Admin-Token。
+servers:
+  - url: https://api.jingjingshangri.com
+    description: 生产（Nginx 同源 /api）
+  - url: http://localhost:3000
+    description: 本地开发
+tags:
+  - name: auth
+  - name: humans
+  - name: videos
+  - name: payment
+  - name: ai
+  - name: admin
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/sms:
+    post:
+      tags: [auth]
+      summary: 发送手机登录验证码（火山 SMS，未配置走开发兜底）
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SmsSendReq' }
+      responses:
+        '200': { description: '已发送（频控/锁定信息见 message）', content: { application/json: { schema: { $ref: '#/components/schemas/Ok' } } } }
+        '429': { description: '发送过频/锁定' }
+  /api/auth/phone:
+    post:
+      tags: [auth]
+      summary: 手机号+验证码登录/注册，返回 JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PhoneLoginReq' }
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LoginResp' }
+        '401': { description: '验证码错误/锁定' }
+  /api/humans:
+    get:
+      tags: [humans]
+      summary: 艺人广场（分页/筛选/同城）
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { in: query, name: page, schema: { type: integer, default: 1 } }
+        - { in: query, name: pageSize, schema: { type: integer, default: 20 } }
+        - { in: query, name: province, schema: { type: string } }
+        - { in: query, name: keyword, schema: { type: string } }
+      responses:
+        '200':
+          description: 艺人列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list: { type: array, items: { $ref: '#/components/schemas/Human' } }
+                  total: { type: integer }
+  /api/humans/{id}:
+    get:
+      tags: [humans]
+      summary: 艺人详情（含在售模板/价格/资质）
+      security: [{ bearerAuth: [] }]
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: 详情, content: { application/json: { schema: { $ref: '#/components/schemas/Human' } } } }
+        '404': { description: '不存在' }
+  /api/videos/quote:
+    post:
+      tags: [videos]
+      summary: 报价试算（金额拆分：平台费/AI成本/税/到手）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount]
+              properties:
+                amount: { type: number, description: 元（如 99）, example: 99 }
+                identityType: { type: string, enum: [personal, enterprise], default: personal }
+      responses:
+        '200':
+          description: 拆分结果（元）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/QuoteResp' }
+  /api/videos/order:
+    post:
+      tags: [videos]
+      summary: 创建祝福视频订单（担保交易，状态 pending）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrderReq' }
+      responses:
+        '200':
+          description: 已创建
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderNo: { type: string }
+                  status: { type: string, enum: [pending] }
+                  amount: { type: integer, description: 分 }
+        '400': { description: '参数/未确认不退货协议/超定价上限' }
+  /api/videos/order/{orderNo}:
+    get:
+      tags: [videos]
+      summary: 订单详情与状态机
+      parameters: [{ in: path, name: orderNo, required: true, schema: { type: string } }]
+      responses:
+        '200':
+          description: 订单
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VideoOrder' }
+  /api/payment/pay:
+    post:
+      tags: [payment]
+      summary: 发起支付（返回支付参数；未接持牌渠道时非生产为 Mock）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderNo, orderType, amount, channel]
+              properties:
+                orderNo: { type: string }
+                orderType: { type: string, enum: [video, endorsement, customization, sample] }
+                amount: { type: integer, description: 分 }
+                channel: { type: string, enum: [wechat, alipay, mock] }
+      responses:
+        '200':
+          description: 支付参数
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  txNo: { type: string }
+                  channelTxNo: { type: string }
+                  payParams: { type: object, additionalProperties: true }
+  /api/payment/wx/notify:
+    post:
+      tags: [payment]
+      summary: 微信支付异步回调（原始报文验签，幂等）
+      security: []
+      requestBody: { content: { application/octet-stream: { schema: { type: string, format: binary } } } }
+      responses:
+        '200': { description: '验签通过并推进订单（重复回调返回 duplicated）' }
+        '401': { description: '验签失败' }
+  /api/payment/status/{txNo}:
+    get:
+      tags: [payment]
+      summary: 查询支付流水状态
+      parameters: [{ in: path, name: txNo, required: true, schema: { type: string } }]
+      responses:
+        '200':
+          description: 流水（含 refunded_amount 与 success/partially_refunded/refunded）
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaymentTxn' }
+  /api/ai/video:
+    post:
+      tags: [ai]
+      summary: 创建 Seedance 异步视频任务（后台轮询/回调推进）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type: { type: string, enum: [t2v, i2v] }
+                prompt: { type: string }
+                imageUrl: { type: string, nullable: true }
+                duration: { type: integer, default: 5 }
+                ratio: { type: string, default: '9:16' }
+                resolution: { type: string, default: 480p }
+      responses:
+        '200': { description: 本地任务, content: { application/json: { schema: { $ref: '#/components/schemas/AiTask' } } } }
+  /api/ai/task/{id}:
+    get:
+      tags: [ai]
+      summary: 轮询任务状态与成片（deliverable_status 标识是否可交付）
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: 任务, content: { application/json: { schema: { $ref: '#/components/schemas/AiTask' } } } }
+  /api/ai/visual/webhook:
+    post:
+      tags: [ai]
+      summary: 方舟供应商异步回调（HMAC 验签 + 幂等，与轮询 CAS 互斥）
+      security: []
+      parameters:
+        - { in: header, name: X-Ark-Signature, required: true, schema: { type: string }, description: 'HMAC-SHA256(rawBody)，密钥 ARK_WEBHOOK_SECRET（缺省 ARK_API_KEY）' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id: { type: string, description: 上游任务ID }
+                status: { type: string, enum: [succeeded, failed, cancelled, queued, running] }
+                content: { type: object, properties: { video_url: { type: string } } }
+      responses:
+        '200': { description: '已推进或幂等忽略（duplicated=true）' }
+        '401': { description: '验签失败' }
+  /api/admin/reconciliation:
+    get:
+      tags: [admin]
+      summary: 资金四账即时核对（不落表）
+      security: [{ adminAuth: [] }]
+      responses:
+        '200':
+          description: 对账结果
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Reconciliation' }
+  /api/admin/reconciliation/run:
+    post:
+      tags: [admin]
+      summary: 手动执行对账并落 reconciliation_runs（财务/超管）
+      security: [{ adminAuth: [] }]
+      responses:
+        '200': { description: 对账结果, content: { application/json: { schema: { $ref: '#/components/schemas/Reconciliation' } } } }
+  /api/admin/ai/deliverable/{id}/approve:
+    post:
+      tags: [admin]
+      summary: 审核通过 AI 交付物（pending_review→approved）
+      security: [{ adminAuth: [] }]
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer } }]
+      responses:
+        '200': { description: '已通过' }
+        '409': { description: '不在待审核状态' }
+  /api/admin/ai/deliverable/{id}/reject:
+    post:
+      tags: [admin]
+      summary: 驳回 AI 交付物（pending_review→rejected）
+      security: [{ adminAuth: [] }]
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { reason: { type: string } } } } } }
+      responses:
+        '200': { description: '已驳回' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+    adminAuth: { type: apiKey, in: header, name: X-Admin-Token }
+  schemas:
+    Ok:
+      type: object
+      properties:
+        code: { type: integer, example: 0 }
+        message: { type: string }
+    SmsSendReq:
+      type: object
+      required: [phone]
+      properties:
+        phone: { type: string, example: '13800000000' }
+        purpose: { type: string, default: login }
+    PhoneLoginReq:
+      type: object
+      required: [phone, code]
+      properties:
+        phone: { type: string }
+        code: { type: string }
+    LoginResp:
+      type: object
+      properties:
+        token: { type: string }
+        refreshToken: { type: string }
+        user: { type: object, additionalProperties: true }
+    Human:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        avatar: { type: string }
+        price: { type: integer, description: 分 }
+        tags: { type: string }
+        quality_grade: { type: string, enum: [S, A, B, C] }
+        verified_level: { type: string }
+    QuoteResp:
+      type: object
+      properties:
+        amount: { type: number }
+        platformFee: { type: number }
+        aiCost: { type: number }
+        taxAmount: { type: number }
+        netAmount: { type: number }
+        identityType: { type: string }
+    CreateOrderReq:
+      type: object
+      required: [talentId, agreeNoReturn]
+      properties:
+        talentId: { type: integer }
+        tplId: { type: integer, nullable: true }
+        recipient: { type: string }
+        message: { type: string }
+        email: { type: string }
+        identityType: { type: string, enum: [personal, enterprise] }
+        amount: { type: number, nullable: true, description: 不传则取模板价（元） }
+        agreeNoReturn: { type: boolean, description: 定制数字商品不退货必须显式 true }
+    VideoOrder:
+      type: object
+      properties:
+        order_no: { type: string }
+        amount: { type: integer }
+        platform_fee: { type: integer }
+        ai_cost: { type: integer }
+        tax_amount: { type: integer }
+        net_amount: { type: integer }
+        status:
+          type: string
+          enum: [pending, paid, delivering, delivered, completed, dispute, refunded, cancelled]
+        settle_status: { type: string }
+        video_url: { type: string, nullable: true }
+    PaymentTxn:
+      type: object
+      properties:
+        tx_no: { type: string }
+        order_no: { type: string }
+        channel: { type: string }
+        amount: { type: integer }
+        refunded_amount: { type: integer }
+        status: { type: string, enum: [pending, success, partially_refunded, refunded] }
+    AiTask:
+      type: object
+      properties:
+        id: { type: integer }
+        task_type: { type: string }
+        upstream_id: { type: string, nullable: true }
+        status: { type: string, enum: [pending, running, succeeded, failed] }
+        result_url: { type: string, nullable: true }
+        version_no: { type: integer }
+        parent_task_id: { type: integer, nullable: true }
+        deliverable_status: { type: string, enum: [pending_review, approved, rejected] }
+        review_reason: { type: string, nullable: true }
+    Reconciliation:
+      type: object
+      properties:
+        balanced: { type: boolean }
+        summary:
+          type: object
+          properties:
+            orderBook: { type: integer, description: 订单应收（分） }
+            payBook: { type: integer, description: 支付实收（分） }
+            refundBook: { type: integer, description: 已退（分） }
+            settleBook: { type: integer, description: 应结艺人/MCN（分） }
+            platformBook: { type: integer }
+            feeTaxBook: { type: integer }
+            diffCount: { type: integer }
+        diffs:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [fee_split_mismatch, paid_without_payment, payment_order_mismatch, refund_exceed_received, conservation_break, payment_without_order, negative_wallet]
+              orderNo: { type: string }
+              detail: { type: object, additionalProperties: true }

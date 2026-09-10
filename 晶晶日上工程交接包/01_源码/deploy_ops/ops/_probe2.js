@@ -1,0 +1,11 @@
+const fs=require('fs');
+const s='C:/Users/user/Doubao/chats/2026-08-24/new-chat-3/work/server/server/';
+const app=fs.readFileSync(s+'app.js','utf8').split('\n');
+console.log('=== app.js listen/export ===');
+app.forEach((l,i)=>{if(/listen|module\.exports/.test(l))console.log((i+1)+': '+l.trim());});
+console.log('\n=== auth middleware payload ===');
+const au=fs.readFileSync(s+'middleware/auth.js','utf8').split('\n');
+au.forEach((l,i)=>{if(/jwt\.verify|req\.userId|req\.role|payload|\.sign/.test(l))console.log((i+1)+': '+l.trim());});
+const db=require(s+'db.js');
+console.log('\n=== users columns ===');
+console.log(db.prepare("PRAGMA table_info(users)").all().map(c=>c.name+(c.notnull?'!':'')).join(', '));

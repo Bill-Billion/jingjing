@@ -1,0 +1,11 @@
+const fs = require('fs');
+const dir = String.raw`C:\Users\user\Doubao\chats\2026-08-24\new-chat-3\项目档案`;
+const p27 = `${dir}\\27_百分冲刺验收标准_体检评分_追分路线图.md`;
+const s = fs.readFileSync(p27, 'utf8');
+const i86 = s.indexOf('第86轮');
+const i6 = s.indexOf('## 6. B 类');
+console.log('27 第86轮 index=', i86, ' ##6 index=', i6, ' 顺序正确(86在6前)=', i86 > 0 && i86 < i6);
+console.log('27 第86轮出现次数=', (s.match(/第86轮/g) || []).length);
+const p15 = `${dir}\\15_V12.3功能闭环施工记录与阶段交付.md`;
+const t = fs.readFileSync(p15, 'utf8');
+console.log('15 第86轮出现次数=', (t.match(/第86轮/g) || []).length, ' 文件末尾80字:\n', t.slice(-260));

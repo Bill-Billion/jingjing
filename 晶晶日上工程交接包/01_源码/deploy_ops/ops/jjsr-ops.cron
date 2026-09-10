@@ -1,0 +1,7 @@
+# 晶晶日上(jjsr) 运维定时任务 —— 由部署运维手册统一维护，勿手改 crontab
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# 每日 03:30（服务器时区 Asia/Shanghai）在线备份 SQLite，保留近 7 天
+30 3 * * * root cd /opt/jjsr && /usr/bin/node ops/backup_sqlite.js 7 >> /opt/jjsr/backups/cron.log 2>&1
+# 每 15 分钟跑一次健康检查（脚本自身把单行摘要追加到 ops/health.log 并自动裁剪）
+*/15 * * * * root /bin/bash /opt/jjsr/ops/healthcheck.sh > /dev/null 2>&1

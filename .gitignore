@@ -1,0 +1,64 @@
+# 晶晶日上 · 仓库根 .gitignore
+# 目的：本目录含生产服务器明文口令与签名密钥库，首次 add 前必须生效，否则凭据随 commit 公开。
+# 用法：git init 之后、git add . 之前放好本文件，并用 `git status --ignored` 复核一遍。
+
+# ============ 1. 凭据与密钥（P0 绝不能入库）============
+*.jks
+*.keystore
+*.p12
+*.p8
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+secrets/
+**/conn.json
+**/jjsr.env
+**/*credentials*
+
+# 含明文生产 root 口令的一次性运维脚本（4 个，均位于 deploy_ops 根目录）
+晶晶日上工程交接包/01_源码/deploy_ops/_deploy_upload.py
+晶晶日上工程交接包/01_源码/deploy_ops/_ssh.py
+晶晶日上工程交接包/01_源码/deploy_ops/_sftp.py
+晶晶日上工程交接包/01_源码/deploy_ops/_r.py
+
+# ============ 2. 依赖与构建产物 ============
+node_modules/
+build/
+.dart_tool/
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+*.apk
+*.aab
+*.obb
+Pods/
+.gradio/
+.gradle/
+ephemeral/
+*.flpriv
+
+# ============ 3. 开发期临时产物（本项目量极大，直接排除）============
+# 前端根目录 100+ 个 _an*.txt / _ana*.txt / _shots*.txt / _patch_*.cjs / _fix_*.cjs / _*.bat
+晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/_*.txt
+晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/_*.cjs
+晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/_*.bat
+# deploy_ops 逐轮迭代日志写入脚本（r41–r85）
+晶晶日上工程交接包/01_源码/deploy_ops/log_r*.cjs
+
+# ============ 4. 本地数据库与备份 ============
+*.db
+*.sqlite
+*.db-journal
+*.db-wal
+晶晶日上工程交接包/01_源码/backend_server/_backup_*/
+
+# ============ 5. 大体积二进制（按需用 git-lfs 或外链，不直接入仓）============
+*.zip
+
+# ============ 6. 本机与工具目录 ============
+.DS_Store
+.workbuddy/
+.idea/
+*.iml

@@ -1,0 +1,46 @@
+name: jingjingshangri_app
+description: "晶晶日上 - 数字人IP经纪·定制圆梦平台 V12（追光·电影感暖金视觉）"
+publish_to: 'none'
+version: 12.3.1+22
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  dio: ^5.7.0
+  provider: ^6.1.2
+  shared_preferences: ^2.3.2
+  cached_network_image: ^3.4.1
+  video_player: 2.9.2 # 精确固定：避免传递依赖升到与 Kotlin2.4 冲突的 video_player_android 2.12.x（pigeon 重复声明）
+  intl: ^0.19.0
+  url_launcher: ^6.3.1
+  image_picker: ^1.1.2
+  # fluwx: ^4.5.8  # 微信SDK，需配置AppKey后启用
+  tobias: ^5.3.4  # 支付宝原生 APP 支付 SDK（沙箱/正式同一套，由后端网关切换）
+  webview_flutter: ^4.10.0
+  pull_to_refresh: ^2.0.0
+  fluttertoast: ^8.2.8
+  share_plus: ^10.0.0
+  screenshot: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Golden end-to-end journeys (login->order / dream-project / create-human).
+  # Runs headless via `flutter test integration_test`; platform-only steps
+  # (image_picker, face verify, real payment) are reserved for on-device runs.
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+dependency_overrides:
+  # 2.12.1 的 pigeon 生成代码在 Kotlin 2.4(K2) 下重复声明 MessagesPigeonMethodCodec 编译失败，钉到前一版（同平台接口 6.9.0）
+  video_player_android: 2.12.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/

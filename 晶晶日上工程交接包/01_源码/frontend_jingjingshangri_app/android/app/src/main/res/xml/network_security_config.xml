@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 仅对后端公网 IP 与安卓模拟器本机地址放行明文 HTTP（应急回退/本地联调）；其余默认禁明文，正式 HTTPS 域名 www.jingjingrishang.com 走系统信任链（Let's Encrypt） -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">8.222.213.43</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
