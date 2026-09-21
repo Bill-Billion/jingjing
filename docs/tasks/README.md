@@ -14,7 +14,7 @@
 |CORE-S0-001|0|Core|OpenAPI 3.1首批契约与共享约定|IN_REVIEW|chengcongcong222|CORE-S0-000|
 |CORE-S0-002|0|Core|MySQL 8、异步访问层和迁移runner|IN_REVIEW|chengcongcong222|CORE-S0-000|
 |CORE-S0-003|0|Core|SQLite导入与旧事实分类|PLANNED|待本人认领|CORE-S0-002|
-|CORE-S0-004|0|Core|模块边界、MySQL jobs/lease/outbox与独立Worker|IN_PROGRESS|chengcongcong222|CORE-S0-002|
+|CORE-S0-004|0|Core|模块边界、MySQL jobs/lease/outbox与独立Worker|IN_REVIEW|chengcongcong222|CORE-S0-002|
 |CORE-S0-005|0|Core|Provider/OSS/Readiness、日志与health基础|PLANNED|待本人认领|CORE-S0-001, CORE-S0-002|
 |CORE-S0-006|0|Core|后端CI与隔离测试入口|PLANNED|待本人认领|CORE-S0-002|
 |UX-S0-001|0|Experience|Flutter工具链与现有页面/五入口映射|PLANNED|待本人认领|CORE-S0-000|

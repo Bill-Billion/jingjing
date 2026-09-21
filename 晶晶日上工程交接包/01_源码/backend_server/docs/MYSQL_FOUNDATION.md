@@ -56,7 +56,7 @@ npm test
 
 ## 迁移与恢复
 
-新的`migrations/mysql-runtime`与旧SQLite migrations/和旧MySQL整库DDL分开，当前只有generation marker和元数据表，不创建业务表，不导入真实旧数据。标记用于识别R0.6异步存储代际，不能把旧DDL准备脚本误认为新运行时结构已齐。
+新的`migrations/mysql-runtime`与旧SQLite migrations/和旧MySQL整库DDL分开，CORE-S0-002版本仅有generation marker和元数据表；CORE-S0-004追加0003–0005的jobs/outbox/重试审计，不导入真实旧数据。标记用于识别R0.6异步存储代际，不能把旧DDL准备脚本误认为新运行时结构已齐。
 
 每个四位编号SQL文件只包含一条语句；驱动关闭multipleStatements。文件名唯一、按序执行；SHA-256基于规范化LF内容。已经尝试过的文件不得改名/改内容或删除；新增变化只能追加新版本。
 

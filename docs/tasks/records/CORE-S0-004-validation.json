@@ -1,0 +1,68 @@
+{
+  "task": "CORE-S0-004",
+  "date": "2026-09-21",
+  "baseline": "JX-R06-EXECUTION-BASELINE-20260921",
+  "base_commit": "d9509507544743898644c1d6232d143bf03c86af",
+  "source_hash_policy": "SHA256 UTF-8 normalized LF; exact tested files, documentation can follow",
+  "source_hashes": {
+    "晶晶日上工程交接包/01_源码/backend_server/app.js": "1ae4cc8a94b135f234fdf11df53861985bc63aee366d6cd4d00426bd991abb15",
+    "晶晶日上工程交接包/01_源码/backend_server/jobs/scheduler.js": "40bd0d4084edce9aabea3135cb40c56d861fdde067c66d0521a7c6c6d88c7a4a",
+    "晶晶日上工程交接包/01_源码/backend_server/package.json": "5c4740e560478c674f364213a52a153e1e769ae531990a5851430a0add501f89",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/test-mysql.js": "cc016e096c3c1bc829763a0bd70d24732e7f26bc1559da7382d45d4b19a9ad3a",
+    "晶晶日上工程交接包/01_源码/backend_server/test/mysql.integration.test.cjs": "6485d60d9cbef46b8dc49fa4156c23c97b9e0cfa74e3242845f80a2a2b5a0a66",
+    "晶晶日上工程交接包/01_源码/backend_server/test/worker.test.cjs": "331065fae839b7eb892407286ec2062d5cdb16925f39c40d43028ef8b7dbf15d",
+    "晶晶日上工程交接包/01_源码/backend_server/test/worker.integration.test.cjs": "5e3c47dfdc39115d293bf4662c574599703960e233ff10c0e2ad39f453dc7dee",
+    "晶晶日上工程交接包/01_源码/backend_server/test/fixtures/worker-process.cjs": "4cca730ca3bd42e43de0f4d5a65fd79eb31633b1b7f2ae68ec6126fd2f1b225b",
+    "晶晶日上工程交接包/01_源码/backend_server/src/worker/handlers.js": "02e94a5809111c52d743d4224bac1d7fcdd7db46900accb53d34e00b41845fd5",
+    "晶晶日上工程交接包/01_源码/backend_server/src/worker/main.js": "1210564cf3caa6e522b5c12382a5bfb4a4a5c2a4b6d12ad6d3aac64f3a566bee",
+    "晶晶日上工程交接包/01_源码/backend_server/src/worker/runner.js": "456f0b17f5e8c25a2528a0f823d37b243c0976a49e8493df217879f7e9afe821",
+    "晶晶日上工程交接包/01_源码/backend_server/src/infrastructure/jobs/repository.js": "8a01cbf7b9dc6d77007a4cb1e9f1b93bebd57297800f5b7d4bce12e1cde61f22",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0001_schema_metadata.sql": "0a57f6e282eb047915d167884c9422c52f00da294b97d39d3e4ccaadd27e958c",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0002_storage_generation.sql": "a3f47c3956ddc3cfac4eb486c7244f842d773c87aa5b9a4e9e05bebd64f5c195",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0003_platform_jobs.sql": "55e00a1b037c9663cee1800e15c81bb41639467a9b057e738580a57a0fbcebc1",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0004_platform_outbox.sql": "72419ddeaba245e7a4e50d582a2d4f2cfc5dd1da56be7332f99e74c4251261f2",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0005_platform_job_retries.sql": "1950d9b68bb94b075111fcf1be8672e219b3d85e6c0fb8b2b7fddf79fc3487d8"
+  },
+  "commands": [
+    {
+      "command": "node scripts/test-mysql.js worker",
+      "exit_code": 0,
+      "tests": 21,
+      "pass": 21,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node scripts/test-mysql.js",
+      "exit_code": 0,
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node scripts/run-tests.cjs",
+      "exit_code": 0,
+      "tests": 58,
+      "pass": 57,
+      "fail": 0,
+      "skipped": 1
+    }
+  ],
+  "result": "PASS",
+  "environment": "Node 22.19.0; isolated MySQL 8.4.11 at 127.0.0.1:33316; generated jx_test_* only; external TCP blocked",
+  "limitations": [
+    "No production/provider calls; fixture providers are synthetic test-only",
+    "Legacy SQLite snapshot absent: equivalence test skipped",
+    "No load/failover/commit acknowledgement loss or production TLS evidence",
+    "Domain adapters not enabled; CLI returns WORKER_NOT_READY",
+    "API startup scheduler/recovery assertion is static, not full API E2E"
+  ],
+  "initial_failure": "Rollback fixture omitted metadata column names; fixed fixture and reran. No change to runtime semantics was required.",
+  "cleanup": {
+    "mysql_stopped": true,
+    "port_33316_listening": false,
+    "temporary_J_alias_removed": true,
+    "test_databases_dropped": true
+  }
+}

@@ -92,13 +92,11 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message || '服务器内部错误' });
 });
 
-// 启动定时任务
-require('./jobs/scheduler');
+// R0.6: API does not own periodic jobs. Start the independent MySQL Worker explicitly.
 
 app.listen(config.port, '0.0.0.0', () => {
   const logger = require('./utils/logger');
-  // 恢复进程重启前未完成的方舟视觉异步任务（Seedance 视频），继续轮询转存，不丢任务
-  try { require('./services/volcVisual').resumeUnfinished(); } catch (e) { logger.error('visual_resume_fail', { error: e.message }); }
+  // Legacy visual recovery is disabled until its domain adapter supports durable jobs.
   logger.info('server_started', { port: config.port, env: config.env, version: pkg.version });
   console.log(`晶晶日上 API ${pkg.version} 已启动 [${config.env}] http://localhost:${config.port}`);
 });
