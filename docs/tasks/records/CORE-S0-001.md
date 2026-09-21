@@ -4,6 +4,7 @@
 - Handshake：repo=Bill-Billion/jingjing，起点/当时origin/integration=ac34c4836c005bd7b4f8b903d21782fe380bc432，dirty=false，baseline=JX-R06-EXECUTION-BASELINE-20260921，contract=NOT_CREATED→0.1.0-rc.1。
 - REQ：006/007/010/023/033/034/042/043/044/045/046/047/059/060。对应WORK-01；细分关联以board为准。
 - 状态：IN_REVIEW。Core自验通过；Experience review=PENDING，未集成。不以Schema通过代替任务全部验收。
+- 发布：候选提交0a08158已推送；[PR #1](https://github.com/Bill-Billion/jingjing/pull/1)目标integration，未合并，未代队友提交review。本记录的发布信息另附普通提交。
 
 ## 交付
 
@@ -16,8 +17,8 @@
 - Windows / Python3.10.11；隔离venv，固定开发依赖（[入口](../../../contracts/README.md)及lock）。
 - `python -m openapi_spec_validator contracts/openapi.yaml`：PASS。
 - `python scripts/validate_contract.py`：PASS；17正常示例、23异常样例、320项结构/协议检查；执行期间网络禁止。对精确契约字节的SHA-256见[机器证据](CORE-S0-001-validation.json)。
-- `python scripts/collaboration_check.py`：需求/任务/原件一致性；最终发布前检查。
-- `git diff --check`、变更路径核对：最终发布前检查。
+- `python scripts/collaboration_check.py`：PASS，94份原件、60项登记/59项范围及30任务一致，当前文档链接通过。
+- `git diff --cached --check`、变更路径核对：PASS，既有工程交接包业务代码无变更；Git暂存契约SHA-256与被测文件一致。
 
 测试在工作树候选上执行；起始记录提交757367a，具体被测内容以契约SHA-256和随本记录提交的文件为准，不伪称已在未来commit运行。实际发布commit用git log查询。
 

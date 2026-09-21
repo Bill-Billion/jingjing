@@ -8,6 +8,7 @@
 - 发布后同步分支：origin/integration。实际HEAD用 `git rev-parse origin/integration` 查询，不把业务源码起点误写为当前协作文档HEAD。
 - 已验证：OpenAPI3.1.1标准、17个正常示例、23个异常样例及声明协议约束；详见任务证据。未完成：新端点实现、MySQL/worker/Provider/CI及F项修复；未做应用测试或真实产品验收。
 - 协作依赖：Experience自行认领并消费首批契约；共享边界须真实交叉review，不能替队友填已通过。
+- 发布：候选0a08158已推送，[PR #1](https://github.com/Bill-Billion/jingjing/pull/1)目标integration，等待交叉review；integration仍ac34c48，main未变。PR中的当前任务记录比integration旧认领记录更新。
 - 下一项可独立推进：CORE-S0-002本地MySQL8/异步迁移基础，需另建任务分支认领；契约评审不会阻断隔离数据库准备。无需等待全项目重审。
 
 下一次Handshake先fetch/status，确认该任务是否已在另一会话启动。更新本文件只记录实际发生的工作。
