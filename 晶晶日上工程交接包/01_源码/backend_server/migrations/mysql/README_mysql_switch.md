@@ -1,5 +1,7 @@
 # SQLite → MySQL 8.0 切换手册（开关式、可回滚，需负责人决策后执行）
 
+> R0.6说明：下文为历史方案，不能再按其同步适配或生产SQLite回退建议施工。当前异步基础、隔离测试及DDL恢复规则见[MySQL基础说明](../../docs/MYSQL_FOUNDATION.md)。本目录旧DDL不是新的可自动执行迁移，也未用于本轮建库。
+
 > 现状：生产仍为单文件 SQLite（WAL，`/opt/jjsr/jingjingshangri.db`），运行良好。
 > 本目录与 `scripts/db_export|import` 仅为**切换准备**，本次整改**不安装 MySQL、不切库、不删任何数据**。
 > 铁律：金额一律 `BIGINT` 整数「分」，禁止 DECIMAL/浮点金额；字符集 `utf8mb4`；引擎 `InnoDB`。

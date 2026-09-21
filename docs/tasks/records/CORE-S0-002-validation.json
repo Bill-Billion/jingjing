@@ -1,0 +1,59 @@
+{
+  "task": "CORE-S0-002",
+  "date": "2026-09-21",
+  "result": "PASS_WITH_EXPLICIT_LEGACY_SAMPLE_SKIP",
+  "node": "22.19.0",
+  "mysql": "8.4.11",
+  "mysql2": "3.24.4",
+  "worktree_parent_commit": "72f2db1809d40ffc5a10512f6867775d869b045a",
+  "tested_files_sha256_normalized_lf": {
+    "晶晶日上工程交接包/01_源码/backend_server/src/infrastructure/database/config.js": "8f5957ea8e40195e3c7b668ef5945d3fe64442812675ace5c3c300ba3d29a1b7",
+    "晶晶日上工程交接包/01_源码/backend_server/src/infrastructure/database/index.js": "e7c18db96d400bc992fc28626934ed4d28a955c18cf4f9d0601f6e36e8c4ce07",
+    "晶晶日上工程交接包/01_源码/backend_server/src/infrastructure/database/migrator.js": "97e0b7140cf5bf7885ffd7591097fe9567cb0fa9b30d28ae0bcafea9f82d2cc2",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0001_schema_metadata.sql": "0a57f6e282eb047915d167884c9422c52f00da294b97d39d3e4ccaadd27e958c",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0002_storage_generation.sql": "a3f47c3956ddc3cfac4eb486c7244f842d773c87aa5b9a4e9e05bebd64f5c195",
+    "晶晶日上工程交接包/01_源码/backend_server/db.js": "daf663b736f185470d9b0980e83e3c94e31e9e0955db7b437c6bfdbe21392469",
+    "晶晶日上工程交接包/01_源码/backend_server/package.json": "5a1cb2b29cddabf4c8aae00a1c18ef2fedf0938da294a5518758dff1cf539c3b",
+    "晶晶日上工程交接包/01_源码/backend_server/package-lock.json": "849f49a3cd662013d6f643e83de6ec18ba7fcdaf5d3163bfb9db9adb1f08c471",
+    "晶晶日上工程交接包/01_源码/backend_server/test/mysql-config.test.cjs": "8330b79bde27e8c5c34a1e068f3a2414e848ffee9b5221ab4b6e83e1be078597",
+    "晶晶日上工程交接包/01_源码/backend_server/test/mysql.integration.test.cjs": "af049bced30bc0d4661a752c3af01bddec49ca6159f92c780a836d478a6a14ab",
+    "晶晶日上工程交接包/01_源码/backend_server/test/migrations.test.cjs": "651eb057ec5fc740b35106bc7a83a8496f9303346f9fb2c0c2c24a5bc791ffc7",
+    "scripts/local-mysql.cjs": "a7f9b2af8a9de21fa4297b69064e8ef232162705d6aeb3d5a886dc55471580fc",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/mysql-check.js": "ea4159e423bc4e4b7c81a9dd7a673504e0430c99fe63a911da615ae9edb12084",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/mysql-migrate.js": "e96e1f79f7fb4bd18f53c0e3d115cb2cc442c7572f98910098035c8279c774d8",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/run-tests.cjs": "f215540d34b7df3abd67ea51ffeeacc9c88fa9f9c7311dcf86e8fc886fe29ac3",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/test-mysql.js": "6d02112f0866a615bd541e0ceb41def0672eb5d70c4d35f1f20d0b85f7e000eb",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/test-network-guard.cjs": "1577ec38c66f2e27b82fdfa5b5d624541dfc621ef0018f5c32e55efa38b4891c"
+  },
+  "runs": {
+    "regression": {
+      "command": "node scripts/run-tests.cjs",
+      "exit_code": 0,
+      "tests": 37,
+      "pass": 36,
+      "fail": 0,
+      "skipped": 1
+    },
+    "mysql": {
+      "command": "node scripts/test-mysql.js",
+      "exit_code": 0,
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "cli": "CORE-S0-002-evidence/cli.json",
+  "limitations": [
+    "Legacy SQLite snapshot equivalence skipped: no historical database supplied",
+    "Full Express route migration and SQLite data import are not implemented",
+    "Production TLS trust, managed MySQL, backup/restore and load tests not run",
+    "COMMIT acknowledgement loss branch not fault-injected; migration connection loss was tested"
+  ],
+  "earlier_trials": [
+    "Original npm test directory command failed on Windows/Node22; corrected to an explicit test file runner",
+    "Node global auto-discovery trial also ran legacy sandbox script with generated credentials and a read-only sandbox query attempt; not counted as real Provider acceptance. Final runner excludes scripts and blocks external TCP.",
+    "Legacy equivalence formerly read a default development database that tests could create. Now an explicit JX_LEGACY_SQLITE_SNAPSHOT is required and absence is a real test skip."
+  ],
+  "local_environment": "Loopback 33316 only, no Windows service. Unicode MySQL path handled by temporary J: alias to the same repository; passwords and data remain untracked under .local."
+}
