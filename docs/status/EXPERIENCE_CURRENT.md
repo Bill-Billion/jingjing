@@ -1,11 +1,15 @@
-# Experience CURRENT
+# App和网页：当前进度与起步工作
 
-- 基线：JX-R06-EXECUTION-BASELINE-20260921；Stage0。
-- 执行者：待队友本人填写；本侧没有替队友认领任务。
-- 建议首项：UX-S0-001（Flutter工具链与页面映射）；建议分支ux/s0-001-toolchain，从origin/integration建独立worktree。
-- 可独立推进：Flutter版本与analyze/test/debug build基线、旧页面→五入口、Web工程准备与UI参考板。
-- 依赖：Core正在排入CORE-S0-001；OpenAPI主契约尚未建立。需要新接口先CCR，不自行改backend或服务端枚举。
-- 分配到本流的旧问题：F06 Demo回退、F10 release签名、F14前端旧执行记录；目前都未修复。
-- 第一次进入须记录：实际账号/branch/HEAD/dirty、origin/integration提交、Task/REQ、contract版本与工具链检查结果。
+这一部分由队友及其Codex负责。仓库目前没有记录队友已接手任务；这里只说明建议安排，不替队友认领，也不据此断言队友没有在本机工作。
 
-[同步操作](../collaboration/TEAM_ONBOARDING.md)；[任务表](../tasks/README.md)。未启用状态和测试stub必须与真实业务能力分开。
+现在可以开始：
+
+1. 在自己的电脑运行已有App，检查能否打包，记录具体报错。
+2. 盘点已有页面，安排到“首页／入戏／培育／成角／我的”，复用已经能用的导航。
+3. 搭建运营人员和合作方共用的网页工程，让它先能运行和打包。
+
+随后统一页面样式、完善登录与身份切换，再接上服务器提供的数据。服务器的第一批数据格式已上传，见 [待检查的约定](https://github.com/Bill-Billion/jingjing/pull/1)；已经不再是“尚未开始编写”，但仍没定稿。缺什么数据，要结合具体页面告诉服务器一方，不能双方各猜一套。
+
+还要修复App请求失败却显示演示成功、正式安装包错误使用调试签名，以及旧说明与实际导航不符的问题。这些工作仍在后续安排中，尚无完成记录。
+
+实际接手时登记本人账号和正在做的事情，保留自己已有代码。向用户汇报用直白中文：什么能用了、什么报错、下一步做什么、需要对方提供什么。操作说明见 [双方分工](../collaboration/TEAM_ONBOARDING.md) 和 [上传代码的方法](../collaboration/GIT_WORKFLOW.md)。

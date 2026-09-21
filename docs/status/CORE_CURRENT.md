@@ -1,12 +1,15 @@
-# Core CURRENT
+# 服务器和数据库：当前进度
 
-- 基线：JX-R06-EXECUTION-BASELINE-20260921；日期2026-09-21；Stage0。
-- 执行者：chengcongcong222；当前分支 core/r06-collaboration-bootstrap；起点 eba5daedf71016b5c05661498a89fba57a4b21ed。
-- 已完成Task：CORE-S0-000，R0.6入库与协作初始化，REQ-043/044/045；结果和证据见 [任务记录](../tasks/records/CORE-S0-000.md)。初始化提交c52de880863c398da8c636708a433af03426c0f7已发布到origin/integration并核对。
-- 下一项已认领：CORE-S0-001；计划分支 core/s0-001-openapi-baseline。尚未编写API主契约，contract_version=NOT_CREATED。
-- 已核对：本地/远端main起点一致，GitHub登录chengcongcong222具有write；没有覆盖队友分支或未提交代码。
-- 发布后同步分支：origin/integration。实际HEAD用 `git rev-parse origin/integration` 查询，不把业务源码起点误写为当前协作文档HEAD。
-- 未完成：MySQL/worker/Provider/CI及F项修复都在任务表；本次未做应用测试或真实产品验收。
-- 协作依赖：Experience自行认领并消费首批契约；共享边界须真实交叉review，不能替队友填已通过。
+本侧执行账号是chengcongcong222。当前仍在打好开发基础，完整产品没有完成。
 
-下一次Handshake先fetch/status，确认该任务是否已在另一会话启动。更新本文件只记录实际发生的工作。
+已整理并共享项目材料。另有三项已写完并做过本机测试、等待队友检查：
+
+- [App、网页和服务器交换数据的约定](https://github.com/Bill-Billion/jingjing/pull/1)。
+- [MySQL数据库的读写、结构更新和失败处理](https://github.com/Bill-Billion/jingjing/pull/2)。旧业务和数据还没全部迁过来。
+- [耗时任务中断后继续、避免多个后台程序重复处理](https://github.com/Bill-Billion/jingjing/pull/3)。真实制作、付款和退款还没接入。
+
+接下来先让仓库在每次上传代码时自动检查错误，再处理外部服务是否可用、私有文件保存和故障提示。旧数据搬迁工具可先准备，真实对账仍需要脱敏旧数据库。
+
+本次响应用户要求，把分工和进度改成直白中文，并把写法要求固定到项目指令。没有新增业务功能，也没有代队友检查或合并上面三份代码。
+
+[完整计划与进度](MAINLINE_PROGRESS.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md) · [全部工作](../tasks/README.md)。技术状态和分支在任务状态文件中保留；开工时重新核对真实版本，不能把本文的时间当最新代码版本。
