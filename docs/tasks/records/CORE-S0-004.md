@@ -34,3 +34,5 @@ WORK-09/14；关联 REQ-001/002/003/008/011/012/013/015/021/029/032/033/037/038/
 [运行说明](../../../晶晶日上工程交接包/01_源码/backend_server/docs/PERSISTENT_WORKER.md)；[当前计划与下一步](../../status/MAINLINE_PROGRESS.md)。下一项优先 CORE-S0-006，把已通过的隔离测试固化到 CI；随后 CORE-S0-005 Provider/Readiness。CORE-S0-003 导入工具可先做，真实旧数据验收仍需显式脱敏快照。
 
 本轮本机收尾：便携MySQL已正常关闭，33316无监听，校验同一目录身份后撤销J盘临时别名；未注册系统服务。二进制/数据/随机口令保留在忽略的.local，可用于后续复验。
+
+发布记录：实现提交 `f798f7925a63b0f43f50cb25f1a07c9698503917` 已推送，[PR #3](https://github.com/Bill-Billion/jingjing/pull/3) OPEN，base=`core/s0-002-mysql-foundation`。本段发布元数据在后续文档提交中记录；测试绑定文件hash不受影响。

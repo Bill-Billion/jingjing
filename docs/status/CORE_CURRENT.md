@@ -10,3 +10,5 @@
 - 详细说明：[主线当前计划、累计完成与下一步](MAINLINE_PROGRESS.md)。各次任务记录保留历史证据，汇总页每轮更新。
 
 本轮本机收尾：便携MySQL已正常关闭，33316无监听，校验同一目录身份后撤销J盘临时别名；未注册系统服务。二进制/数据/随机口令保留在忽略的.local，可用于后续复验。
+
+发布记录：实现提交 `f798f7925a63b0f43f50cb25f1a07c9698503917` 已推送，[PR #3](https://github.com/Bill-Billion/jingjing/pull/3) OPEN，base=`core/s0-002-mysql-foundation`。本段发布元数据在后续文档提交中记录；测试绑定文件hash不受影响。

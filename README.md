@@ -4,6 +4,7 @@
 
 **新成员及 Codex 从 [统一入口](docs/START_HERE.md) 开始。协作开发使用 `integration`，任务分支使用 `core/*` 或 `ux/*`，`main` 保留关键检查点版本。**
 
+- [主线计划／已完成／下一步](docs/status/MAINLINE_PROGRESS.md)
 - [当前任务与认领](docs/tasks/README.md) · [Core状态](docs/status/CORE_CURRENT.md) · [Experience状态](docs/status/EXPERIENCE_CURRENT.md)
 - [队友同步步骤](docs/collaboration/TEAM_ONBOARDING.md) · [Git协作](docs/collaboration/GIT_WORKFLOW.md) · [根指令](AGENTS.md)
 - [60项需求](docs/requirements/README.md) · [目标架构](docs/architecture/TARGET_DESIGN.md) · [外部条件](docs/operations/EXTERNAL_READINESS.md)
