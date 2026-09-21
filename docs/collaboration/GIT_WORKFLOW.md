@@ -1,16 +1,42 @@
-# Git协作与认领
+# 双方怎样上传代码，避免互相覆盖
 
-远端：`https://github.com/Bill-Billion/jingjing.git`。`main <- integration <- core/<task> / ux/<task>`。不同Codex使用不同worktree。
+各自在自己的工作副本里修改，测过后上传；需要双方检查的重要改动，检查通过才放进共同开发版本。不要让两个人同时改同一份本地文件，也不要用强制覆盖来“解决”冲突。
 
-每次先 `git status --short`、`git branch --show-current`、`git rev-parse HEAD`，再 `git fetch origin`，读取origin/integration及当前任务分支。脏工作区先保留，不用reset --hard/clean/强推处理。
+1. 开工先检查自己有没有尚未保存到Git的修改，再查看对方最近上传了什么。保留已有修改，不删除、不清空。
+2. 找到自己要做的工作，在任务记录里写上实际负责人。一项工作只有一个负责人；发现别人正在做就先协调，不覆盖他的名字。
+3. 从共同版本创建自己的任务分支。如果工作依赖另一份尚未合入的代码，可以从那份代码开始，但必须明确依赖，不能借此绕过检查。
+4. 做完后写清“解决什么问题、改了什么、怎么测的、还有什么不能用”，上传到仓库，并发起代码合并申请。GitHub把这份申请称为Pull Request，常简写PR。
+5. 数据库、双方交换数据的格式、权限、付款退款、授权、结算、外部服务接口、撤回删除和正式发布配置，须由另一方实际检查。普通文档、页面样式或内部实现，自己检查通过后可以加入共同版本，不必层层审批。
+6. 合并前再检查共同版本有没有新改动。有冲突就保留双方有效内容，重新验证受影响部分，不能整份覆盖对方进度。
+7. 合并后更新工作进度。代码已经写完、自己测过、对方检查过、进入共同版本、正式能用，是不同状态，要分别说清。
 
-1. 从origin/integration创建自己任务分支/worktree；同一分支不在两处同时工作。
-2. 查board.json及远端双方任务分支有无认领；更新自己任务owner/status/branch和本流CURRENT，commit/push。认领提交先集成到integration以减少重复开工；有冲突暂停该任务并协调归属，可做无关任务。不要整份覆盖对方的board。
-3. Task可持续commit/push自己分支；完成自验后提交PR到integration，带Task/REQ、改动、验证、兼容恢复和共享边界。共享边界由另一流留下真实review后集成；不能由同一Codex假扮另一reviewer。
-4. 普通内部实现自验后可进入integration。合入前fetch，确认最新基线，解决冲突、复验受影响部分；使用保留历史的普通merge/快进，不强推公共分支。
-5. 更新board的实现状态、证据和CURRENT。合并结果以实际提交/PR为准，不在提交前写“已推送/已合入”。文档初始化可通过实际git log与remote引用核对。
-6. CP通过后由维护者把integration送入main；Codex不直接push main，不因Stage结束自动部署。
+共同开发版本叫 `integration`；`main`只在关键检查通过后由维护者更新。不能直接覆盖main，也不能把合并代码当成正式部署授权。准备发布时仍要检查备份、真实服务和安装包等条件。
 
-建议维护者为main配置禁止直推/评审检查，为integration配置相应检查；**本次未更改GitHub分支保护，文档规范不等于服务端已强制**。也未安装hooks或改用户全局Git/Codex设置。
+## 给执行代码操作的Codex
 
-状态：READY/PLANNED → CLAIMED → IN_PROGRESS → IN_REVIEW（共享边界）→ DONE；BLOCKED需写具体依赖。任务Done只证明所列验收，不代表相关REQ全部完成或Provider生产可用。
+先读取AGENTS.md。查看已有修改、当前分支、提交版本和其他工作目录，再获取远端更新：
+
+```powershell
+git status --short
+git branch --show-current
+git rev-parse HEAD
+git worktree list
+git fetch origin
+git branch -a
+```
+
+从现有仓库执行以下示例，可为队友的第一项App检查创建独立工作目录。先确认分支和目标目录不存在；如果已经有合适目录，就复用，不删除重建。
+
+```powershell
+git worktree add -b ux/s0-001-toolchain ../jingjing-ux origin/integration
+```
+
+完全没有仓库时，先用有访问权限的账号获取仓库：
+
+```powershell
+git clone --branch integration https://github.com/Bill-Billion/jingjing.git jingjing
+```
+
+本侧分支名用core/开头，队友用ux/开头。实际负责人、分支、状态保存在docs/tasks/board.json；修改后运行 `python scripts/collaboration_check.py --render` 更新给人看的任务表。先上传认领记录，核对共同版本和双方任务分支，避免重复接手；认领可单独同步，不能为同步认领把未评审的业务代码一并合入。
+
+不要执行强制清空、强制推送，也不把登录令牌写进文件或聊天。尚未配置由GitHub服务器强制执行的分支保护；本文是协作约定，不能宣称已经由平台自动拦截所有违规操作。

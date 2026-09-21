@@ -17,25 +17,51 @@ def read_json(path):
 
 
 def render_tasks(board):
+    explanations = read_json('docs/tasks/plain_language.json')
+    names = {key: value['name'] for key, value in explanations.items()}
+    stages = ['先打好开发基础', '修旧问题，做好账号身份和历史承诺',
+              '做好作者、数字人、作品和使用许可', '把选本、下单、制作和验收连起来',
+              '做好商单、MCN合作、项目和发行', '算清钱，做好通知、留言和报表', '检查正式发布所需条件']
+    states = {'READY': '可开始，尚未接手', 'PLANNED': '已列入计划，尚未接手',
+              'CLAIMED': '已接手，尚未记录开工', 'IN_PROGRESS': '正在做',
+              'IN_REVIEW': '已提交，等另一方检查', 'DONE': '已完成所列检查并加入共同版本',
+              'BLOCKED': '遇到阻碍，见具体任务记录'}
     lines = [
-        '# Stage 0–6任务与认领', '',
-        '机器台账：[board.json](board.json)。修改JSON后运行 '
-        '`python scripts/collaboration_check.py --render`，再运行不带参数的校验。', '',
-        '30项是执行任务组，后续可拆成更小任务；详细交付、验收、REQ、依赖和共享边界均在JSON。'
-        '旧14个WORK用于可追溯映射，旧人时仅预算参考，不用旧周数或每阶段外部批准限制推进。', '',
-        '**依赖是整项验收依赖。** Experience可以在对应契约合入integration后先开发隔离stub；'
-        '不必等Core整个任务实现结束。双方按契约切片并行，禁止production fallback。', '',
-        '认领只代表任务归属；完成还需测试/证据/状态更新和集成。共享边界必须真实跨流review。'
-        '其他59项业务需求不因文档初始化完成而标为验收通过。', '',
-        '|Task|Stage|流|内容|状态|Owner|依赖|', '|---|---|---|---|---|---|---|'
+        '# 全部工作安排：谁做什么，怎样算做完', '',
+        '**本侧负责服务器和数据库；队友负责App和网页。** '
+        '下面共30组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
+        '现在本侧先做“每次上传代码后自动检查有没有弄坏已有功能”；'
+        '队友可先运行现有App、整理五个主入口，并搭建运营和合作方网页。'
+        '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
+        '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
+        '表中的“需先完成”指整项工作最后验收前需要的其他成果。'
+        '队友可先整理页面；双方约好数据格式后，可以用明确标注的测试数据做页面，'
+        '不必等服务器全部功能结束。测试数据不能冒充真实付款、实名或制作结果。', '',
+        '“本侧／队友”是分工，“尚未接手”是仓库中的实际登记状态。'
+        '一项基础工作完成，不代表整个相关业务正式可用，也不代表原有问题都已修复。', ''
     ]
+    for stage, title in enumerate(stages):
+        lines.extend(['## ' + title, '', '|具体工作|谁负责／是否接手|做到哪了|怎样算做完|需先完成什么|',
+                      '|---|---|---|---|---|'])
+        for t in board['tasks']:
+            if t['stage'] != stage:
+                continue
+            who = '本侧：服务器和数据' if t['stream'] == 'Core' else '队友：App和网页'
+            who += '；已接手' if t['owner'] else '；尚未接手'
+            dependencies = '；'.join(names[d] for d in t['dependencies']) or '可独立开始'
+            lines.append('|{}|{}|{}|{}|{}|'.format(names[t['id']], who,
+                states[t['status']], explanations[t['id']]['done_when'], dependencies))
+        lines.append('')
+    lines.extend(['## 需要查文件或交给Codex操作时再看这里', '',
+                  '工作名称与技术记录的对应关系如下。编号只用于查找；'
+                  '它们不另增工作，也不改变需求范围。', '',
+                  '|工作名称|查找编号|已登记账号|', '|---|---|---|'])
     for t in board['tasks']:
-        lines.append('|{}|{}|{}|{}|{}|{}|{}|'.format(
-            t['id'], t['stage'], t['stream'], t['title'], t['status'],
-            t['owner'] or '待本人认领', ', '.join(t['dependencies']) or '—'))
-    lines.extend(['', '首次Core认领与验证见 [CORE-S0-000记录](records/CORE-S0-000.md)；'
-                  '[Core CURRENT](../status/CORE_CURRENT.md) / '
-                  '[Experience CURRENT](../status/EXPERIENCE_CURRENT.md)。', ''])
+        lines.append('|{}|{}|{}|'.format(names[t['id']], t['id'], t['owner'] or '尚未登记'))
+    lines.extend(['', '详细状态、需求对应、分支和测试证据仍在 [任务记录文件](board.json)。'
+                  '直白中文名称和完成标准在 [文字说明文件](plain_language.json)。'
+                  '修改后运行 `python scripts/collaboration_check.py --render` 更新本页，'
+                  '再运行不带参数的检查。自动更新也必须遵守 [沟通写法](../collaboration/WRITING_RULES.md)。', ''])
     return '\n'.join(lines)
 
 
@@ -79,8 +105,18 @@ def validate():
             check(within_repo(e['path']).is_file(), r['id'] + ' missing evidence ' + e['path'])
 
     board = read_json('docs/tasks/board.json')
+    explanations = read_json('docs/tasks/plain_language.json')
     check(board['baseline_id'] == baseline['baseline_id'] == manifest['baseline_id'], 'Baseline IDs differ')
     tasks = {t['id']: t for t in board['tasks']}
+    check(set(explanations) == set(tasks), 'Every task must have a plain-language explanation')
+    for tid, explanation in explanations.items():
+        for field in ('name', 'done_when'):
+            value = explanation.get(field, '')
+            check(isinstance(value, str) and bool(value.strip()), tid + ' missing ' + field)
+            if isinstance(value, str):
+                check('|' not in value and '\n' not in value, tid + ' breaks task table')
+                check(not re.search(r'\b(?:Handshake|CCR|Readiness|IN_REVIEW|NOT_IMPLEMENTED|SKU|Grant|Binding|CP[1-4]|CORE-S\d-\d+|UX-S\d-\d+)\b', value),
+                      tid + ' uses unexplained shorthand in reader-facing ' + field)
     check(len(tasks) == len(board['tasks']), 'Duplicate task ID')
     check({t['stage'] for t in tasks.values()} == set(range(7)), 'Stages 0–6 missing')
     check({w for t in tasks.values() for w in t['work_refs']} == {f'WORK-{i:02}' for i in range(1, 15)}, 'WORK coverage incomplete')
