@@ -15,3 +15,5 @@
 [完整计划](MAINLINE_PROGRESS.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md) · [全部工作](../tasks/README.md)。
 
 本机测试数据库已关闭，临时J盘映射已撤销；GitHub清理成功。[实际测试记录](https://github.com/Bill-Billion/jingjing/actions/runs/35585925064)。
+
+正在推进：旧付款、实名和查询归属的第一批修复。分支core/s1-001-legacy-truthfulness，开工afb6c15，共同版本736a9ec，开工时无未提交修改。CORE-S1-001整组仍在进行，本轮不把所有历史问题标成已解决。
