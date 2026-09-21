@@ -1,0 +1,1618 @@
+openapi: 3.1.1
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: 晶选片场 R0.6 Platform Foundation API
+  version: 0.1.0-rc.1
+  description: Core-owned review candidate; all routes below are NOT_IMPLEMENTED in the existing backend. Test fixtures
+    are synthetic. This is the first platform slice, not all Stage0–6 endpoints. No production server is advertised.
+servers:
+- url: http://127.0.0.1:3000
+  description: Local only; future implementation, not a running server
+security:
+- bearerAuth: []
+tags:
+- name: session
+- name: party
+- name: identity
+- name: capabilities
+- name: providers
+- name: governance
+- name: operations
+x-baseline-id: JX-R06-EXECUTION-BASELINE-20260921
+x-review-status: PENDING_EXPERIENCE_REVIEW
+paths:
+  /api/v1/auth/sms-challenges:
+    post:
+      operationId: createSmsChallenge
+      summary: 请求登录短信
+      description: No production dev-code fallback. Provider unavailable ->503, rate limit ->429. A retry with the
+        same key must not resend SMS. New challenge creation invalidates only by explicitly documented server policy.
+      tags:
+      - session
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmsChallengeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsChallengeRequest'
+  /api/v1/auth/sessions:
+    post:
+      operationId: createSession
+      summary: 验证码登录
+      description: Bind challenge to normalized phone, expiry, one-time consumption and attempts. Invalid phone/challenge/code
+        yields generic401 to resist enumeration. Commit challenge consumption + session + idempotency result atomically.
+        Exact successful retry may return the original protected token result until session/result expiry; never
+        mint a second session. No refresh or token storage policy implied.
+      tags:
+      - session
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
+  /api/v1/me:
+    get:
+      operationId: getCurrentAccount
+      summary: 当前登录账户
+      description: Bearer identity only; acting_party=null. Phone login is not real-name verification. A suspended
+        account may read its own status but has only server-allowed actions.
+      tags:
+      - session
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/me/parties:
+    get:
+      operationId: listMyParties
+      summary: 可访问主体与成员关系
+      description: Only caller memberships. Invitations may be displayed but do not confer action authority. Select
+        party client-side and send X-Acting-Party per request; do not mutate a global selected party in the bearer
+        token.
+      tags:
+      - party
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartyPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/parties/{party_id}:
+    get:
+      operationId: getParty
+      summary: 主体详情
+      description: Require active membership or explicit audited delegation. Route/header mismatch ->403; inaccessible
+        private object ->404. Capabilities do not imply verified identity.
+      tags:
+      - party
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/party_id'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+    patch:
+      operationId: updatePartyDisplayName
+      summary: 更新主体展示名称
+      description: Only party.profile.update may change display_name. This is not legal-name/identity change or
+        party transfer. Every successful new mutation increments object_version exactly once. Same idempotent request
+        replays original result without a new increment. Do not use a read-time allowed_actions list instead of
+        server authorization.
+      tags:
+      - party
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/party_id'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartyPatch'
+  /api/v1/identity-verifications/current:
+    get:
+      operationId: getMyIdentityVerification
+      summary: 本人核验状态
+      description: Account-scoped; no X-Acting-Party, no arbitrary account_id. This slice reads status only. Submission/liveness
+        interfaces remain later contracts; missing Provider/legacy auto-approved is never VERIFIED.
+      tags:
+      - identity
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityVerificationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/capabilities:
+    get:
+      operationId: listBusinessCapabilities
+      summary: 当前主体可用业务能力
+      description: Server calculates action availability from account, membership, grants, rules, product toggles
+        and relevant Provider evidence. No raw operational Provider detail. Offline real payout or signed-document
+        paths remain separate from automatic Adapter readiness.
+      tags:
+      - capabilities
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapabilityListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/admin/provider-readiness:
+    get:
+      operationId: listProviderReadiness
+      summary: 运营端Provider就绪台账
+      description: Require platform.providers.read beyond active party membership. No shared X-Admin-Token shortcut.
+        Output redacted state/evidence references, never keys, provider URLs with tokens or identity data.
+      tags:
+      - providers
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderReadinessPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/rule-versions/{rule_version_id}:
+    get:
+      operationId: getRuleVersion
+      summary: 规则版本元数据
+      description: Only versions authorized by linked business object/party or explicit governance permission. Draft
+        access is limited to governance reviewers. Retired versions remain addressable for entitled historical orders;
+        current defaults do not rewrite them.
+      tags:
+      - governance
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/rule_version_id'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleVersionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/contract-snapshots/{snapshot_id}:
+    get:
+      operationId: getContractSnapshot
+      summary: 不可变合同快照元数据
+      description: 'Object-and-purpose permission checked on every read. No arbitrary private URL; content_asset_id
+        requires a future separately authorized download. Signature method is not proof: check evidence and effective
+        contract conditions in downstream license actions. No write/update/delete endpoint.'
+      tags:
+      - governance
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/snapshot_id'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractSnapshotResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /health:
+    get:
+      operationId: getLiveness
+      summary: 进程存活
+      description: No credentials or dependency details. Process alive is not business readiness.
+      tags:
+      - operations
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      security: []
+  /ready:
+    get:
+      operationId: getReadiness
+      summary: 必要运行依赖就绪
+      description: 200 only when required process dependencies are ready. 503 NOT_READY uses the same ReadyResponse;
+        no detailed topology. Unapproved optional Provider does not disable process readiness.
+      tags:
+      - operations
+      x-implementation-status: NOT_IMPLEMENTED
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+        '503':
+          description: 'NOT_READY: required process dependency unavailable.'
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+      security: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Server-validated account identity, issuer/audience/expiry/revocation. Account token alone does
+        not authorize acting_party or platform administration.
+  parameters:
+    RequestId:
+      in: header
+      name: X-Request-Id
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+        pattern: ^[A-Za-z0-9._:-]+$
+      description: Optional correlation hint; server validates or replaces. Response header must equal meta.request_id.
+        Do not use for idempotency.
+    ActingParty:
+      in: header
+      name: X-Acting-Party
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Requested subject, not authority. Resolve bearer account and active membership/delegation on
+        every call. Path party_id must equal this header. Never silently select a different party.
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 128
+        pattern: ^[A-Za-z0-9._:-]+$
+      description: idempotency_key. Scope=(account or pre-auth subject, acting_party, method, canonical path, key).
+        Persist normalized request fingerprint and committed result atomically. Same payload replays original result;
+        changed payload/in-flight conflict gives 409. Re-authorize before replay; never include secrets in fingerprint
+        logs.
+    IfMatch:
+      in: header
+      name: If-Match
+      required: true
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+      description: Strong ETag containing object_version, e.g. "7". Missing ->428; stale new write ->412. Same successful
+        idempotent request can replay with its original If-Match; check authorized replay before current object-version
+        mismatch.
+    Cursor:
+      in: query
+      name: cursor
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 512
+      description: Opaque, subject/filter-scoped cursor; do not decode on client. Invalid/expired cursor returns
+        400.
+    Limit:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    party_id:
+      in: path
+      name: party_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+    rule_version_id:
+      in: path
+      name: rule_version_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+    snapshot_id:
+      in: path
+      name: snapshot_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+  headers:
+    RequestId:
+      required: true
+      description: Matches meta.request_id
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    ETag:
+      required: true
+      description: Strong quoted object_version
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+    NoStore:
+      required: true
+      description: Authenticated, token and private metadata responses are not cacheable.
+      schema:
+        type: string
+        const: no-store
+  responses:
+    BadRequest:
+      description: VALIDATION_ERROR / INVALID_CURSOR / PARTY_CONTEXT_REQUIRED
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: UNAUTHENTICATED / SESSION_EXPIRED / INVALID_CHALLENGE
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: FORBIDDEN / PARTY_CONTEXT_MISMATCH
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: NOT_FOUND (also concealed inaccessible private objects)
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: IDEMPOTENCY_KEY_REUSED / IDEMPOTENCY_IN_PROGRESS
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    PreconditionFailed:
+      description: OBJECT_VERSION_CONFLICT
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unprocessable:
+      description: BUSINESS_RULE_VIOLATION
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    PreconditionRequired:
+      description: OBJECT_VERSION_REQUIRED
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    RateLimited:
+      description: RATE_LIMITED
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        Retry-After:
+          description: Optional bounded wait hint in seconds; does not authorize blind retry of a mutation.
+          schema:
+            type: integer
+            minimum: 0
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unavailable:
+      description: CAPABILITY_NOT_READY / DEPENDENCY_UNAVAILABLE
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        Retry-After:
+          description: Optional bounded wait hint in seconds; does not authorize blind retry of a mutation.
+          schema:
+            type: integer
+            minimum: 0
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    Id:
+      type: string
+      minLength: 1
+      maxLength: 64
+      pattern: ^[A-Za-z0-9][A-Za-z0-9_-]*$
+      description: Opaque ID; clients must not assume sequential numeric storage IDs.
+    ObjectVersion:
+      type: integer
+      minimum: 1
+      maximum: 9007199254740991
+    Money:
+      type: object
+      additionalProperties: false
+      required:
+      - amount_minor
+      - currency
+      properties:
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        currency:
+          type: string
+          pattern: ^[A-Z]{3}$
+      description: Non-negative integer minor units and ISO 4217 code. Currency exponent comes from currency metadata,
+        never assume every currency has 2 decimals. Adjustments use a separate direction, not negative transaction
+        prices. No approved product price is supplied.
+    Actor:
+      type: object
+      additionalProperties: false
+      required:
+      - account_id
+      properties:
+        account_id:
+          $ref: '#/components/schemas/Id'
+    Meta:
+      type: object
+      additionalProperties: false
+      required:
+      - request_id
+      - actor
+      - acting_party
+      properties:
+        request_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        actor:
+          anyOf:
+          - $ref: '#/components/schemas/Actor'
+          - type: 'null'
+        acting_party: &id003
+          anyOf:
+          - $ref: '#/components/schemas/Id'
+          - type: 'null'
+      description: Server-derived actor; null before authentication. acting_party is null for account-scoped/public
+        calls. Never trust a client actor field.
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - field
+      - reason
+      properties:
+        field:
+          type: string
+          maxLength: 128
+        reason:
+          type: string
+          maxLength: 256
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - retryable
+      - details
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z][A-Z0-9_]*$
+        message:
+          type: string
+          minLength: 1
+          maxLength: 500
+        retryable:
+          type: boolean
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - error
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        error:
+          $ref: '#/components/schemas/Error'
+    Account:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - display_name
+      - current_status
+      - object_version
+      - allowed_actions
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        current_status:
+          type: string
+          enum:
+          - ACTIVE
+          - SUSPENDED
+          - DELETION_PENDING
+        object_version:
+          $ref: '#/components/schemas/ObjectVersion'
+        allowed_actions: &id001
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          uniqueItems: true
+          description: Server-authorized action identifiers for this actor, party, object and current state. Never
+            a client authorization source.
+    CapabilityGrant:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - current_status
+      - allowed_actions
+      properties:
+        code:
+          type: string
+          enum:
+          - AUTHOR
+          - SCRIPT_SUPPLIER
+          - PRODUCER
+          - MCN
+          - BRAND_CLIENT
+        current_status:
+          type: string
+          enum:
+          - PENDING_REVIEW
+          - ACTIVE
+          - SUSPENDED
+          - REJECTED
+        allowed_actions: *id001
+    Party:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - kind
+      - display_name
+      - current_status
+      - object_version
+      - capabilities
+      - allowed_actions
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+          - PERSON
+          - ORGANIZATION
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        current_status:
+          type: string
+          enum:
+          - PENDING_REVIEW
+          - ACTIVE
+          - SUSPENDED
+          - CLOSED
+        object_version:
+          $ref: '#/components/schemas/ObjectVersion'
+        capabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityGrant'
+        allowed_actions: *id001
+      description: Party is a signing/business subject, not an account or avatar. One organization may hold multiple
+        capabilities; a person may be an author.
+    Membership:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - account_id
+      - party_id
+      - current_status
+      - roles
+      - object_version
+      - allowed_actions
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        account_id:
+          $ref: '#/components/schemas/Id'
+        party_id:
+          $ref: '#/components/schemas/Id'
+        current_status:
+          type: string
+          enum:
+          - INVITED
+          - ACTIVE
+          - SUSPENDED
+          - REVOKED
+        roles:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+          uniqueItems: true
+        object_version:
+          $ref: '#/components/schemas/ObjectVersion'
+        allowed_actions: *id001
+      description: Invitation is not consent or an active membership. Client role strings never grant platform administration.
+    PartyAccess:
+      type: object
+      additionalProperties: false
+      required:
+      - party
+      - membership
+      properties:
+        party:
+          $ref: '#/components/schemas/Party'
+        membership:
+          $ref: '#/components/schemas/Membership'
+    PartyPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartyAccess'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          maxLength: 512
+    SmsChallengeRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - phone
+      - purpose
+      properties:
+        phone:
+          type: string
+          pattern: ^1[3-9][0-9]{9}$
+        purpose:
+          type: string
+          enum:
+          - LOGIN
+      description: First slice retains mainland mobile scope of legacy route; never accepts a client-supplied verification
+        result.
+    SmsChallenge:
+      type: object
+      additionalProperties: false
+      required:
+      - challenge_id
+      - current_status
+      - expires_at
+      - resend_after
+      properties:
+        challenge_id:
+          $ref: '#/components/schemas/Id'
+        current_status:
+          type: string
+          enum:
+          - SENT
+        expires_at: &id002
+          type: string
+          format: date-time
+        resend_after: *id002
+      description: SENT only after the SMS provider accepts dispatch; not proof of delivery or identity. No verification
+        code in response. Missing provider returns 503.
+    SessionRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - challenge_id
+      - phone
+      - code
+      properties:
+        challenge_id:
+          $ref: '#/components/schemas/Id'
+        phone:
+          type: string
+          pattern: ^1[3-9][0-9]{9}$
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+          writeOnly: true
+    Session:
+      type: object
+      additionalProperties: false
+      required:
+      - access_token
+      - token_type
+      - expires_at
+      - account
+      properties:
+        access_token:
+          type: string
+          minLength: 1
+          description: Secret bearer token. Never log or include real values in fixtures.
+        token_type:
+          type: string
+          enum:
+          - Bearer
+        expires_at: *id002
+        account:
+          $ref: '#/components/schemas/Account'
+    PartyPatch:
+      type: object
+      additionalProperties: false
+      required:
+      - display_name
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+    IdentityVerification:
+      type: object
+      additionalProperties: false
+      required:
+      - current_status
+      - verification_id
+      - verified_at
+      - allowed_actions
+      properties:
+        current_status:
+          type: string
+          enum:
+          - NOT_SUBMITTED
+          - PENDING
+          - VERIFIED
+          - REJECTED
+          - EXPIRED
+          - REVOKED
+          - REVIEW_REQUIRED
+        verification_id: *id003
+        verified_at: &id004
+          anyOf:
+          - *id002
+          - type: 'null'
+        allowed_actions: *id001
+      description: Only VERIFIED with recorded evidence enables a verified-identity claim. Legacy unverified_auto
+        maps to REVIEW_REQUIRED, never VERIFIED. No raw identity number, name, face or provider credentials.
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: VERIFIED
+        then:
+          properties:
+            verification_id:
+              $ref: '#/components/schemas/Id'
+            verified_at: *id002
+    BusinessCapability:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - availability
+      - reason_code
+      - display_message
+      - allowed_actions
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+        availability:
+          type: string
+          enum:
+          - AVAILABLE
+          - NOT_ENABLED
+          - TEMPORARILY_UNAVAILABLE
+        reason_code:
+          type:
+          - string
+          - 'null'
+          maxLength: 100
+        display_message:
+          type: string
+          maxLength: 300
+        allowed_actions: *id001
+      description: Client-facing effective availability includes product, permissions, rules and required environment
+        verification, not merely Provider configuration. Unknown action is disabled.
+      allOf:
+      - if:
+          properties:
+            availability:
+              enum:
+              - NOT_ENABLED
+              - TEMPORARILY_UNAVAILABLE
+        then:
+          properties:
+            allowed_actions:
+              maxItems: 0
+            reason_code:
+              type: string
+              minLength: 1
+              maxLength: 100
+    CapabilityList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessCapability'
+    ProviderReadinessState:
+      type: string
+      enum:
+      - NOT_IMPLEMENTED
+      - IMPLEMENTED
+      - CONFIGURED
+      - SANDBOX_VERIFIED
+      - PRODUCTION_VERIFIED
+      - WAITING_PROVIDER_APPROVAL
+      - DISABLED_BY_PRODUCT
+    VerificationEvidence:
+      type: object
+      additionalProperties: false
+      required:
+      - verified_state
+      - environment
+      - verified_at
+      - evidence_ref
+      properties:
+        verified_state:
+          type: string
+          enum:
+          - SANDBOX_VERIFIED
+          - PRODUCTION_VERIFIED
+        environment:
+          type: string
+          enum:
+          - LOCAL
+          - SANDBOX
+          - PRODUCTION
+        verified_at: *id002
+        evidence_ref:
+          $ref: '#/components/schemas/Id'
+      description: Opaque reference accessible only through separately authorized audit evidence access; never a
+        raw private URL.
+      allOf:
+      - if:
+          properties:
+            verified_state:
+              const: PRODUCTION_VERIFIED
+        then:
+          properties:
+            environment:
+              const: PRODUCTION
+      - if:
+          properties:
+            verified_state:
+              const: SANDBOX_VERIFIED
+        then:
+          properties:
+            environment:
+              const: SANDBOX
+    ProviderReadiness:
+      type: object
+      additionalProperties: false
+      required:
+      - provider_kind
+      - provider_code
+      - capability_code
+      - environment
+      - current_status
+      - object_version
+      - reason_code
+      - verification_history
+      - allowed_actions
+      properties:
+        provider_kind:
+          type: string
+          enum:
+          - IdentityProvider
+          - PaymentProvider
+          - ObjectStorageProvider
+          - ModerationProvider
+          - DigitalHumanProvider
+          - ESignProvider
+        provider_code:
+          type: string
+          minLength: 1
+          maxLength: 100
+        capability_code:
+          type: string
+          minLength: 1
+          maxLength: 100
+        environment:
+          type: string
+          enum:
+          - LOCAL
+          - SANDBOX
+          - PRODUCTION
+        current_status:
+          $ref: '#/components/schemas/ProviderReadinessState'
+        object_version:
+          $ref: '#/components/schemas/ObjectVersion'
+        reason_code:
+          type:
+          - string
+          - 'null'
+          maxLength: 100
+        verification_history:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerificationEvidence'
+        allowed_actions: *id001
+      description: Waiting/disabled preserves verification history but does not grant current enablement. Separate
+        rows per provider/product capability/environment. A sandbox check is never evidence of production verification.
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: PRODUCTION_VERIFIED
+        then:
+          properties:
+            environment:
+              const: PRODUCTION
+            verification_history:
+              contains:
+                type: object
+                required:
+                - verified_state
+                - environment
+                properties:
+                  verified_state:
+                    const: PRODUCTION_VERIFIED
+                  environment:
+                    const: PRODUCTION
+    ProviderReadinessPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProviderReadiness'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          maxLength: 512
+    RuleVersion:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - rule_key
+      - version
+      - current_status
+      - object_version
+      - effective_at
+      - content_asset_id
+      - content_sha256
+      - allowed_actions
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        rule_key:
+          type: string
+          minLength: 1
+          maxLength: 100
+        version:
+          type: string
+          minLength: 1
+          maxLength: 64
+        current_status:
+          type: string
+          enum:
+          - DRAFT
+          - IN_REVIEW
+          - APPROVED
+          - EFFECTIVE
+          - RETIRED
+        object_version:
+          $ref: '#/components/schemas/ObjectVersion'
+        effective_at: *id004
+        content_asset_id:
+          $ref: '#/components/schemas/Id'
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        allowed_actions: *id001
+      description: Immutable approved content addressed by private asset/hash; drafts stay unavailable to transactions.
+        Historical versions remain readable to entitled orders/parties even after retirement. Actual rule documents
+        and unknown product specifications are not invented by this contract.
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: EFFECTIVE
+        then:
+          properties:
+            effective_at: *id002
+    ContractSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - contract_version_id
+      - rule_version_ids
+      - party_ids
+      - created_at
+      - object_version
+      - current_status
+      - content_asset_id
+      - content_sha256
+      - signing_method
+      - signing_evidence_refs
+      - allowed_actions
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        contract_version_id:
+          $ref: '#/components/schemas/Id'
+        rule_version_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Id'
+          minItems: 1
+          uniqueItems: true
+        party_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Id'
+          minItems: 1
+          uniqueItems: true
+        created_at: *id002
+        object_version:
+          type: integer
+          const: 1
+        current_status:
+          type: string
+          enum:
+          - SEALED
+        content_asset_id:
+          $ref: '#/components/schemas/Id'
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        signing_method:
+          type: string
+          enum:
+          - PLATFORM_ESIGN
+          - EXTERNAL_ESIGN
+          - OFFLINE_SIGNED
+          - NOT_SIGNED
+        signing_evidence_refs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Id'
+          uniqueItems: true
+        allowed_actions: *id001
+      description: Read-only immutable contract snapshot metadata, not proof of signature/payment or a full order
+        schema. SEALED means content captured. Signing facts are frozen at capture; new evidence requires a new
+        snapshot/version, never overwriting old promises. NOT_SIGNED cannot activate a license. Full monetary/specification/refund/rights
+        snapshots will be expanded with commerce/licensing contracts.
+      allOf:
+      - if:
+          properties:
+            signing_method:
+              const: NOT_SIGNED
+        then:
+          properties:
+            signing_evidence_refs:
+              maxItems: 0
+        else:
+          properties:
+            signing_evidence_refs:
+              minItems: 1
+    Health:
+      type: object
+      additionalProperties: false
+      required:
+      - current_status
+      properties:
+        current_status:
+          type: string
+          enum:
+          - UP
+    Ready:
+      type: object
+      additionalProperties: false
+      required:
+      - current_status
+      properties:
+        current_status:
+          type: string
+          enum:
+          - READY
+          - NOT_READY
+      description: Process-required dependencies only. Optional/unapproved business providers disable their own
+        capability, not the whole API; no secret dependency details in public output.
+    AccountResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Account'
+    PartyResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Party'
+    PartyPageResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/PartyPage'
+    SmsChallengeResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/SmsChallenge'
+    SessionResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Session'
+    IdentityVerificationResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/IdentityVerification'
+    CapabilityListResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/CapabilityList'
+    ProviderReadinessPageResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ProviderReadinessPage'
+    RuleVersionResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/RuleVersion'
+    ContractSnapshotResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ContractSnapshot'
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Health'
+    ReadyResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Ready'
