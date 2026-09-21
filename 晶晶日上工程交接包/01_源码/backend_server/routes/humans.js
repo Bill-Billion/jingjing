@@ -8,7 +8,7 @@ const multer = require('multer');
 const storage = require('../services/storage');
 const router = express.Router();
 
-// 照片上传：内存接收后统一走 StorageProvider（默认本地 uploads/avatars，开 OSS 后自动上云）
+// 照片上传：内存接收；私密存储与权限未接入前明确拒绝，不退回公开目录
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
@@ -135,13 +135,18 @@ router.post('/', auth, upload.single('photo'), async (req, res) => {
   const { name, tags, style, specialty, province, city, district, price, scopeVideo, scopeEndorsement, scopeFilm } = req.body;
   if (!name) return res.status(400).json({ message: '请填写数字人名称' });
 
-  // 头像：上传文件经存储适配层（默认本地，OSS 开关开启后上云），或取 body 中的 avatar URL
+  // 头像：文件保存失败必须在创建记录之前返回；旧URL入口另在业务权限任务处理
   let avatar = req.body.avatar || null;
   if (req.file) {
     const ext = (req.file.originalname.match(/\.(\w+)$/) || [, 'jpg'])[1].toLowerCase();
     const key = `avatars/human_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const saved = await storage.put({ key, body: req.file.buffer, contentType: req.file.mimetype });
-    avatar = saved.url;
+    try {
+      const saved = await storage.put({ key, body: req.file.buffer, contentType: req.file.mimetype });
+      avatar = saved.url;
+    } catch {
+      require('../utils/logger').warn('legacy_private_upload_blocked', { error_code:'PRIVATE_STORAGE_UNAVAILABLE' });
+      return res.status(503).json({ code:'PRIVATE_STORAGE_UNAVAILABLE', message:'照片存储尚不可用，本次未创建数字人，请稍后重试。' });
+    }
   }
 
   const priceFen = price ? Math.round(Number(price) * 100) : config.videoPricing.minPrice;

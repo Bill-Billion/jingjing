@@ -115,3 +115,21 @@ test('OSS failures never produce a successful or public result; revocation is ch
  const misconfigured=privateFixture({env:{...ossEnv,NODE_ENV:'production'}}).api;
  assert.equal(misconfigured.inspect().configured,false);
 });
+
+test('legacy photo upload returns a clear failure and never creates a record when private storage is unavailable',async(t)=>{
+ const fs=require('node:fs'),path=require('node:path'),Module=require('node:module');
+ const filename=path.resolve(__dirname,'../routes/humans.js'),realRequire=Module.createRequire(filename);
+ const config=realRequire('../config'),oldEnv=config.env,oldOss=config.upload.oss.enabled;config.env='test';config.upload.oss.enabled=false;
+ t.after(()=>{config.env=oldEnv;config.upload.oss.enabled=oldOss;});
+ let writes=0;const auth=(req,res,next)=>{req.userId=1;next();};auth.optionalAuth=auth;
+ const loaded=new Module(filename);loaded.filename=filename;
+ loaded.require=(id)=>id==='../db'?{prepare:()=>{writes++;throw Error('must not create a record');}}:id==='../middleware/auth'?auth:realRequire(id);
+ loaded._compile(fs.readFileSync(filename,'utf8'),filename);
+ const app=express();app.use(loaded.exports);const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const boundary='jx-test-boundary';const body=Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="name"\r\n\r\nTest\r\n--${boundary}\r\nContent-Disposition: form-data; name="photo"; filename="test.jpg"\r\nContent-Type: image/jpeg\r\n\r\nsynthetic-file\r\n--${boundary}--\r\n`);
+ const result=await new Promise((resolve,reject)=>{
+  const req=http.request({hostname:'127.0.0.1',port:server.address().port,path:'/',method:'POST',headers:{'Content-Type':`multipart/form-data; boundary=${boundary}`,'Content-Length':body.length}},res=>{let text='';res.on('data',x=>text+=x);res.on('end',()=>resolve({status:res.statusCode,body:JSON.parse(text)}));});
+  req.on('error',reject);req.end(body);
+ });
+ assert.equal(result.status,503);assert.equal(result.body.code,'PRIVATE_STORAGE_UNAVAILABLE');assert.equal(writes,0);assert.equal(server.listening,true);
+});
