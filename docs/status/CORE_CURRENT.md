@@ -13,3 +13,5 @@
 [完整计划](MAINLINE_PROGRESS.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md) · [全部工作](../tasks/README.md)。
 
 本轮已上传[自动检查的代码合并申请](https://github.com/Bill-Billion/jingjing/pull/5)，等待所需基础代码先进入共同版本；本次尚未合并，不代表正式业务已启用。
+
+正在推进外部服务的状态、安全失败与私密文件保存。任务CORE-S0-005，开工分支core/s0-005-provider-readiness，起点5837176，共同版本736a9ec，开工时无未提交修改。先参考尚待检查的首批数据约定，不将它标成定稿；不调用真实收费服务。
