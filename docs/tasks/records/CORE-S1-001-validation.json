@@ -1,0 +1,120 @@
+{
+  "task": "CORE-S1-001",
+  "increment": "F01/F02/F04 first fixes and directly related bypasses; task remains IN_PROGRESS",
+  "date": "2026-09-21",
+  "base_commit": "afb6c15182c2e856083c35980874c1224531049a",
+  "claim_commit": "344ae59",
+  "local_result": "PASS",
+  "github_result": "PENDING",
+  "before_fix": {
+    "tests": 3,
+    "pass": 0,
+    "fail": 3,
+    "reason": "Old HTTP handlers return 200 where safe behavior requires 503/404"
+  },
+  "source_hashes": {
+    "晶晶日上工程交接包/01_源码/backend_server/package.json": "0788e183ebfa5b148cb30e6e1bfd28f09931c3549793b97402a712ec75c20e8f",
+    "晶晶日上工程交接包/01_源码/backend_server/routes/faceverify.js": "9c193d0f30be01bf89455e692f1cb9c8ceb32cc81e347722086b0f4d6415edc7",
+    "晶晶日上工程交接包/01_源码/backend_server/routes/identity.js": "ca380a182f1a37f874c235c483d6a95fcd25e81dff88d8f950e8c22fa904e6eb",
+    "晶晶日上工程交接包/01_源码/backend_server/routes/pay.js": "01eea51c94b01aef6d8586ec662f181d3b7a70cdb020c198c5a6baede9128af2",
+    "晶晶日上工程交接包/01_源码/backend_server/routes/payment.js": "68f05e03d3590c795c1d84406234cd3fa315a99753a96da5aa820f98d2cb07e9",
+    "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js": "bcf94e88a4f4dd84463ca90d0d5de3cd3c473bed96c8260676312e015d382d26",
+    "晶晶日上工程交接包/01_源码/backend_server/routes/settlement.js": "f63a5d2f258e3558a2db937a85a4682b4132230f5a3e23f5a7e4aa9dd85abbe0",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/aliyun_compliance_selftest.js": "7980be2fa84356d629c09e3d33c4363110ab41e0496ca803616688d9b81e9d65",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/pay_sandbox_joint_test.js": "3d4651bcb5eb8f2ae618dd08db62a03f6b70e6ffd00483acee091cde8914248e",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/run-ci.cjs": "9a5b01f11b7e0ea44fafe55c655acebf740053254c042fb95794a83801cc4509",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/test-legacy-safety.cjs": "672697f6f55fe2b40f7794ca8790669f44d7b3d5783a1287819e4557fee1d7cc",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/verify_pay_skeleton.js": "b0d15c7f43168d48f2066a2aa602c8e1733c44f0469d004f3086c90940fd70f8",
+    "晶晶日上工程交接包/01_源码/backend_server/scripts/volc_compliance_selftest.js": "f0db98e44095468c8660621e9f22b0e7bf9182d883baf38114123546fd2c89f7",
+    "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js": "893a4f82194cfd031e2a52ee7b40174ff818c929184fedc6d43156735fc69388",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/legacy-safety.js": "4a916dd741fee67d2bbe00d14f777debdaca7a4abd818c4309a51c4800f3535b",
+    "晶晶日上工程交接包/01_源码/backend_server/test/finance.test.cjs": "ee97e60d912150b8664f1448e71853794821d8ba0ca953fa750d5353ee39fde4",
+    "晶晶日上工程交接包/01_源码/backend_server/test/fixtures/legacy-http.cjs": "65741219a26a42dc5bf5d028233006d101b56eb63944645a3408a47e0c49980b",
+    "晶晶日上工程交接包/01_源码/backend_server/test/legacy-truthfulness.test.cjs": "7073124299afd17057f3f1156142e8fb53f9100ac2ee3bdfdbcb3a1010a16740"
+  },
+  "hash_encoding": "SHA256 with CRLF normalized to LF",
+  "local_summary": {
+    "node": "v22.19.0",
+    "platform": "win32",
+    "commit": null,
+    "commands": [
+      {
+        "name": "mysql",
+        "exit_code": 0,
+        "counts": {
+          "tests": 16,
+          "pass": 16,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "ok": true
+      },
+      {
+        "name": "worker",
+        "exit_code": 0,
+        "counts": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "ok": true
+      },
+      {
+        "name": "providers",
+        "exit_code": 0,
+        "counts": {
+          "tests": 21,
+          "pass": 21,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "ok": true
+      },
+      {
+        "name": "legacy-safety",
+        "exit_code": 0,
+        "counts": {
+          "tests": 17,
+          "pass": 17,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "ok": true
+      },
+      {
+        "name": "regression",
+        "exit_code": 0,
+        "counts": {
+          "tests": 89,
+          "pass": 88,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 1,
+          "todo": 0
+        },
+        "ok": true
+      }
+    ],
+    "result": "PASS"
+  },
+  "limitations": [
+    "No real payment, identity or refund provider verification",
+    "No production database or deployment",
+    "Synthetic legacy SQLite tests do not prove old business migration to MySQL",
+    "No sanitized historical database comparison",
+    "Remaining F03/F08/F11/F12/F13 and teammate work are not complete"
+  ],
+  "cleanup": {
+    "local_mysql_stopped": true,
+    "temporary_J_alias_removed": true
+  }
+}

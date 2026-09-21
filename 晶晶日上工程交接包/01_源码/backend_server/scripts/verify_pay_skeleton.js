@@ -1,3 +1,6 @@
+// R0.6: this historical script expects removed demo/autoapproval behavior.
+throw new Error('LEGACY_SELFTEST_RETIRED: 请运行 npm run test:legacy-safety；旧脚本不可作为当前验收。');
+
 // scripts/verify_pay_skeleton.js
 // 支付宝 APP 支付骨架本地自验证（不依赖真实密钥/外网；用临时 SQLite + 内置 HTTP + 本地生成 RSA2 密钥对）
 // 覆盖验收点：

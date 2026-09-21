@@ -1,3 +1,6 @@
+// R0.6: this historical script expects removed demo/autoapproval behavior.
+throw new Error('LEGACY_SELFTEST_RETIRED: 请运行 npm run test:legacy-safety；旧脚本不可作为当前验收。');
+
 // scripts/volc_compliance_selftest.js
 // 火山引擎合规三件套（V12.6）本地自测：默认 provider=volc。
 //  A. 缺合规凭证（安全降级）：volcClient/人脸/二要素 ready=false 且不崩、不误判、不伪造；文本本地词库、图片/视频转人工；

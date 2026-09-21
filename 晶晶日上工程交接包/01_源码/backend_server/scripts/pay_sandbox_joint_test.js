@@ -1,3 +1,6 @@
+// R0.6: this historical script expects removed demo/autoapproval behavior.
+throw new Error('LEGACY_SELFTEST_RETIRED: 请运行 npm run test:legacy-safety；旧脚本不可作为当前验收。');
+
 // scripts/pay_sandbox_joint_test.js
 // 支付宝 APP 支付「沙箱联调」可复跑脚本（V12.4 骨架配套，离线闭环，绝不发生真实支付、绝不使用真实密钥）
 // ----------------------------------------------------------------------------

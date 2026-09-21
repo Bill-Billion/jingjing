@@ -1,4 +1,4 @@
-// 资金对账与退款状态机测试：临时库构造数据，覆盖 成功/全退/部分退/重复回调/渠道失败 账平
+// 仅用明确注入的测试替身检查退款核算；默认业务服务始终拒绝未启用通道，不代表真实退款验收。
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -12,7 +12,10 @@ process.env.JWT_SECRET = 'test_secret_at_least_32_chars_long_xx';
 
 const db = require('../db');
 const config = require('../config');
-const paymentService = require('../services/paymentService');
+const defaultPaymentService = require('../services/paymentService');
+const paymentService = defaultPaymentService.createPaymentService({database:db,providerFor:()=>({
+  refund:async()=>({channelRefundNo:'TEST_ONLY_REFUND',status:'success'}),
+})});
 const recon = require('../services/reconciliation');
 const { calculateFees } = require('../utils/settlement');
 
@@ -88,13 +91,13 @@ test('重复回调/重复请求幂等：同 idemKey 不重复出款', async () =
   assert.strictEqual(pay.refunded_amount, 3000); // 未翻倍
 });
 
-test('渠道不可用（生产无持牌渠道）：退款单 rejected、支付单不动、绝不假退', async () => {
+test('默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退', async () => {
   const savedEnv = config.env;
   config.env = 'production'; // 生产环境 getProvider(mock) 直接抛错
   const o = mkPaidVideo(10000);
-  await assert.rejects(() => paymentService.refund(o.orderNo, 10000, 'x'), /持牌|Mock|支付/);
+  await assert.rejects(() => defaultPaymentService.refund(o.orderNo, 10000, 'x'), {code:'PAYMENT_NOT_READY'});
   const rf = db.prepare('SELECT * FROM refunds WHERE order_no=?').get(o.orderNo);
-  assert.strictEqual(rf.status, 'rejected');
+  assert.strictEqual(rf, undefined);
   const pay = db.prepare('SELECT status,refunded_amount FROM payment_transactions WHERE order_no=?').get(o.orderNo);
   assert.strictEqual(pay.status, 'success'); // 未被标记退款
   assert.strictEqual(pay.refunded_amount, 0);
@@ -131,4 +134,4 @@ test('对账能抓出坏账：费用结构错配 + 已支付状态却无支付�
   assert.strictEqual(r.balanced, false);
 });
 
-test.after(() => { try { for (const e of ['', '-wal', '-shm']) fs.unlinkSync(TMP + e); } catch (e) {} });
+test.after(() => { db.close(); try { for (const e of ['', '-wal', '-shm']) fs.unlinkSync(TMP + e); } catch (e) {} });

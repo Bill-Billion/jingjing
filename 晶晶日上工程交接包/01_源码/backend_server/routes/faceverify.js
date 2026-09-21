@@ -9,9 +9,10 @@ const faceVerify = require('../services/providers/faceVerify');
 const cryptoUtil = require('../utils/crypto');
 
 const router = express.Router();
+const {rejectLegacyIdentity} = require('../src/modules/legacy-safety');
 
 // 初始化一次核身，返回 certifyId
-router.post('/init', auth, validate({
+router.post('/init', auth, rejectLegacyIdentity, validate({
   humanId: [v.required, v.integer],
 }), async (req, res) => {
   const { humanId, facePictureUrl, facePictureBase64, metaInfo, mobile } = req.body;
@@ -57,7 +58,7 @@ router.post('/init', auth, validate({
 });
 
 // 查询核身结果（前端轮询；签署时服务端仍会独立复验）
-router.get('/result/:certifyId', auth, async (req, res) => {
+router.get('/result/:certifyId', auth, rejectLegacyIdentity, async (req, res) => {
   if (!faceVerify.ready()) return res.status(503).json({ message: '人脸核身服务尚未配置', ready: false });
   const r = await faceVerify.describeVerify(req.params.certifyId);
   // passed: true 通过 / false 未通过 / null 仍在处理中

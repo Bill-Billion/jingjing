@@ -2,9 +2,9 @@
 // ----------------------------------------------------------------------------
 // 与既有 routes/payment.js（旧支付占位 + 分账 provider 链路）【相互独立、不改其逻辑】。
 // 三条接口：
-//   POST /api/pay/alipay/create   需登录；校验业务单归属 + 服务端金额（绝不信前端）+ 幂等；生成 APP 订单串或返回演示标识
+//   POST /api/pay/alipay/create   需登录；校验业务单归属 + 服务端金额（绝不信前端）+ 幂等；旧写入口目前禁用，待接入新的真实验证流程
 //   POST /api/pay/alipay/notify   公开；必须 RSA2 验签 + app_id/金额校验 + 幂等，通过后才把业务单置为已支付并写 payments
-//   GET  /api/pay/status/:orderNo 需登录；查询某业务订单的支付状态（配置齐全且 pending 时顺带主动查单一次）
+//   GET  /api/pay/status/:orderNo 需登录；查询某业务订单的支付状态（只读，不调用供应商或改变付款状态）
 // 金额铁律：amount 只来自服务端业务订单行 / config，单位分；前端传入任何金额字段都只用于「比对并拒绝篡改」，绝不参与下单。
 const express = require('express');
 const crypto = require('crypto');
@@ -16,6 +16,8 @@ const logger = require('../utils/logger');
 const { genOrderNo } = require('../utils/settlement');
 
 const router = express.Router();
+const {rejectLegacyPayment,rejectLegacyCallback,assessLegacyPayment} = require('../src/modules/legacy-safety');
+// Write routes remain disabled until the new verified payment flow replaces this legacy implementation.
 
 // 业务类型 → 业务订单表 / 归属用户字段 / 金额字段 / 可支付状态
 // dream = 定制剧圆梦席位（claims 表）；sample 为两阶段（意向金/制作款），金额取 config.sample
@@ -140,7 +142,7 @@ function applyPaid(pay, tradeNo, rawBody) {
 }
 
 // ============ 1) 创建支付宝 APP 支付（需登录） ============
-router.post('/alipay/create', auth, async (req, res) => {
+router.post('/alipay/create', auth, rejectLegacyPayment, async (req, res) => {
   try {
     const body = req.body || {};
     const { orderNo, bizType, stage } = body;
@@ -169,15 +171,8 @@ router.post('/alipay/create', auth, async (req, res) => {
       });
     }
 
-    // 未配置支付宝（缺密钥/开关关）：优雅降级为演示标识，不报错、不阻断，前端继续走现有演示支付占位
-    if (!alipay.isConfigured()) {
-      const st = alipay.status();
-      return res.json({
-        configured: false, demo: true, payMode: 'demo', status: 'unconfigured',
-        message: '支付宝支付未配置，当前为演示环境（前端继续走演示支付占位）',
-        missing: st.missing, amountFen, amountYuan: fenToYuan(amountFen), orderNo, bizType, stage: stageKey,
-      });
-    }
+    // No demo-success response; this route stays blocked until migration.
+    if (!alipay.isConfigured()) return rejectLegacyPayment(req, res);
 
     // 复用 pending 支付单，否则新建
     let pay = (exist && exist.status === 'pending') ? exist : null;
@@ -222,7 +217,7 @@ router.post('/alipay/create', auth, async (req, res) => {
     });
   } catch (err) {
     if (err && err.code === 'ALIPAY_NOT_CONFIGURED') {
-      return res.json({ configured: false, demo: true, payMode: 'demo', status: 'unconfigured', message: '支付宝支付未配置，当前为演示环境' });
+      return rejectLegacyPayment(req, res);
     }
     logger.error('alipay_create_fail', { error: err.message });
     return res.status(500).json({ message: '创建支付失败：' + err.message });
@@ -231,7 +226,7 @@ router.post('/alipay/create', auth, async (req, res) => {
 
 // ============ 2) 支付宝异步通知（公开，但必须 RSA2 验签 + 幂等） ============
 // 支付宝以 application/x-www-form-urlencoded POST，app.js 全局 urlencoded 已解析为 req.body
-router.post('/alipay/notify', (req, res) => {
+router.post('/alipay/notify', rejectLegacyCallback, (req, res) => {
   const ack = (ok) => res.type('text/plain').send(ok ? 'success' : 'fail');
   try {
     const body = req.body || {};
@@ -284,31 +279,15 @@ router.post('/alipay/notify', (req, res) => {
 router.get('/status/:orderNo', auth, async (req, res) => {
   try {
     const orderNo = req.params.orderNo;
-    const rows = db.prepare('SELECT * FROM payments WHERE order_no=? ORDER BY id DESC').all(orderNo);
-    if (!rows.length) return res.status(404).json({ message: '支付单不存在' });
-    // 归属校验：任一业务单属于当前用户（或管理员）即可
-    const owned = rows.some((p) => p.buyer_id === req.userId) || req.role === 'admin';
-    if (!owned) return res.status(403).json({ message: '无权查看该支付单' });
-
-    // 若配置齐全且仍 pending，主动查单一次并对账（网络失败不影响返回本地状态）
-    if (alipay.isConfigured()) {
-      for (const p of rows) {
-        if (p.status !== 'pending') continue;
-        try {
-          const q = await alipay.queryTrade({ outTradeNo: p.pay_no });
-          if (q && alipay.isSuccessTradeStatus(q.trade_status) && yuanEqual(q.total_amount, fenToYuan(p.amount_fen))) {
-            applyPaid(p, q.trade_no, JSON.stringify({ source: 'trade.query', q }));
-          }
-        } catch (e) { /* 主动查单失败忽略，以下次回调/轮询为准 */ }
-      }
-    }
-    const fresh = db.prepare('SELECT * FROM payments WHERE order_no=? ORDER BY id DESC').all(orderNo);
+    // Filter every returned row, including colliding order numbers; never query the provider on a read.
+    const fresh = db.prepare('SELECT * FROM payments WHERE order_no=? AND buyer_id=? ORDER BY id DESC').all(orderNo, req.userId);
+    if (!fresh.length) return res.status(404).json({ message: '支付单不存在' });
     return res.json({
       orderNo,
       payments: fresh.map((p) => ({
         payNo: p.pay_no, bizType: p.biz_type, stage: p.stage,
         amountFen: p.amount_fen, amountYuan: fenToYuan(p.amount_fen),
-        status: p.status, paid: p.status === 'paid',
+        ...assessLegacyPayment(p.status),
         hasTradeNo: Boolean(p.trade_no), paidAt: p.paid_at, createdAt: p.created_at,
       })),
     });
@@ -319,6 +298,6 @@ router.get('/status/:orderNo', auth, async (req, res) => {
 });
 
 // 导出内部纯函数供本地自验证脚本使用（不影响路由行为）
-router._testing = { resolveServerOrder, markBusinessPaid, applyPaid, clientClaimedAmount, fenToYuan, yuanEqual, BIZ };
+router._testing = { resolveServerOrder, clientClaimedAmount, fenToYuan, yuanEqual, BIZ };
 
 module.exports = router;
