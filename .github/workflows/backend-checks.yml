@@ -1,0 +1,59 @@
+name: 服务器自动检查
+
+on:
+  push:
+    branches: [integration, main, 'core/**', 'ux/**']
+  pull_request:
+    branches: [integration, main, 'core/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: 数据库、后台任务和服务器功能
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: 获取本次代码
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: 准备 Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.19.0'
+          cache: npm
+          cache-dependency-path: 晶晶日上工程交接包/01_源码/backend_server/package-lock.json
+      - name: 检查原始资料和任务记录
+        run: python3 scripts/collaboration_check.py
+      - name: 按锁定版本安装服务器依赖
+        working-directory: 晶晶日上工程交接包/01_源码/backend_server
+        run: npm ci --no-audit --no-fund
+      - name: 启动一次性测试数据库
+        run: node scripts/ci-mysql.cjs start
+      - name: 运行检查并保存结果
+        working-directory: 晶晶日上工程交接包/01_源码/backend_server
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: npm run test:ci
+      - name: 关闭并移除本次测试数据库
+        if: always()
+        run: node scripts/ci-mysql.cjs stop
+      - name: 保存测试记录（不含数据库或口令）
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: backend-checks-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .local/ci-evidence/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
