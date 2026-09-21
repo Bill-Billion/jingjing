@@ -1,0 +1,165 @@
+TAP version 13
+# {"ts":"2026-09-20T06:56:45.656Z","level":"info","msg":"migration_applied","version":"1","name":"initial_schema_v12_4"}
+# {"ts":"2026-09-20T06:56:45.660Z","level":"info","msg":"migration_applied","version":"2","name":"legacy_v5_add_columns"}
+# {"ts":"2026-09-20T06:56:45.663Z","level":"info","msg":"migration_applied","version":"3","name":"legacy_v6_add_columns"}
+# {"ts":"2026-09-20T06:56:45.664Z","level":"info","msg":"migration_applied","version":"4","name":"legacy_v121_add_columns"}
+# {"ts":"2026-09-20T06:56:45.670Z","level":"info","msg":"migration_applied","version":"5","name":"engineering_recon_deliverable_refund"}
+# {"ts":"2026-09-20T06:56:45.671Z","level":"info","msg":"db_migrations_applied","count":5}
+# {"ts":"2026-09-20T06:56:45.699Z","level":"info","msg":"ai_deliverable_version","localId":2,"versionNo":1,"source":"webhook","deliverable":"approved"}
+# {"ts":"2026-09-20T06:56:45.700Z","level":"info","msg":"ai_deliverable_version","localId":3,"versionNo":1,"source":"poll","deliverable":"approved"}
+# {"ts":"2026-09-20T06:56:45.701Z","level":"info","msg":"ai_deliverable_version","localId":4,"versionNo":1,"source":"poll","deliverable":"approved"}
+# {"ts":"2026-09-20T06:56:45.701Z","level":"info","msg":"ai_regenerate","parentId":4,"newId":5,"reason":"客户要求重做"}
+# {"ts":"2026-09-20T06:56:45.702Z","level":"info","msg":"ai_deliverable_version","localId":5,"versionNo":2,"source":"poll","deliverable":"approved"}
+# {"ts":"2026-09-20T06:56:45.709Z","level":"info","msg":"ai_deliverable_version","localId":6,"versionNo":1,"source":"webhook","deliverable":"pending_review"}
+# {"ts":"2026-09-20T06:56:45.709Z","level":"info","msg":"ai_deliverable_review","localId":6,"decision":"approve","reviewerId":7}
+# {"ts":"2026-09-20T06:56:45.709Z","level":"info","msg":"ai_deliverable_version","localId":7,"versionNo":1,"source":"webhook","deliverable":"rejected"}
+# Subtest: webhook 验签：错误签名拒绝、缺密钥拒绝
+ok 1 - webhook 验签：错误签名拒绝、缺密钥拒绝
+  ---
+  duration_ms: 1.742
+  type: 'test'
+  ...
+# Subtest: 合法 webhook 成功推进并幂等：重复回调不重复出版本
+ok 2 - 合法 webhook 成功推进并幂等：重复回调不重复出版本
+  ---
+  duration_ms: 1.4464
+  type: 'test'
+  ...
+# Subtest: 轮询与回调 CAS 互斥：先 finalize 者推进，另一方不重复
+ok 3 - 轮询与回调 CAS 互斥：先 finalize 者推进，另一方不重复
+  ---
+  duration_ms: 0.8014
+  type: 'test'
+  ...
+# Subtest: 重做生成新版本行：parent 关联、版本号递增、不覆盖旧文件
+ok 4 - 重做生成新版本行：parent 关联、版本号递增、不覆盖旧文件
+  ---
+  duration_ms: 1.5292
+  type: 'test'
+  ...
+# Subtest: 审核开关开启：干净内容 pending_review→人工 approve；命中敏感词直接 rejected
+ok 5 - 审核开关开启：干净内容 pending_review→人工 approve；命中敏感词直接 rejected
+  ---
+  duration_ms: 8.0112
+  type: 'test'
+  ...
+# {"ts":"2026-09-20T06:56:45.674Z","level":"info","msg":"migration_applied","version":"1","name":"initial_schema_v12_4"}
+# {"ts":"2026-09-20T06:56:45.678Z","level":"info","msg":"migration_applied","version":"2","name":"legacy_v5_add_columns"}
+# {"ts":"2026-09-20T06:56:45.681Z","level":"info","msg":"migration_applied","version":"3","name":"legacy_v6_add_columns"}
+# {"ts":"2026-09-20T06:56:45.682Z","level":"info","msg":"migration_applied","version":"4","name":"legacy_v121_add_columns"}
+# {"ts":"2026-09-20T06:56:45.688Z","level":"info","msg":"migration_applied","version":"5","name":"engineering_recon_deliverable_refund"}
+# {"ts":"2026-09-20T06:56:45.688Z","level":"info","msg":"db_migrations_applied","count":5}
+# {"ts":"2026-09-20T06:56:45.731Z","level":"info","msg":"refund_success","orderNo":"T1789887405730_3","refundNo":"RF178988740573100001","amount":10000,"kind":"full","newRefunded":10000,"payStatus":"refunded"}
+# {"ts":"2026-09-20T06:56:45.732Z","level":"info","msg":"refund_success","orderNo":"T1789887405732_5","refundNo":"RF178988740573200002","amount":4000,"kind":"partial","newRefunded":4000,"payStatus":"partially_refunded"}
+# {"ts":"2026-09-20T06:56:45.733Z","level":"info","msg":"refund_success","orderNo":"T1789887405732_5","refundNo":"RF178988740573300003","amount":6000,"kind":"full","newRefunded":10000,"payStatus":"refunded"}
+# {"ts":"2026-09-20T06:56:45.734Z","level":"info","msg":"refund_success","orderNo":"T1789887405734_7","refundNo":"RF178988740573400004","amount":3000,"kind":"partial","newRefunded":3000,"payStatus":"partially_refunded"}
+# {"ts":"2026-09-20T06:56:45.737Z","level":"error","msg":"alert:payment_refund_failed","severity":"error","throttled":false,"orderNo":"T1789887405735_9","amount":10000,"error":"生产环境未配置持牌支付机构（微信电商收付通/支付宝直付通），禁止使用 Mock 支付通道"}
+# {"ts":"2026-09-20T06:56:45.739Z","level":"info","msg":"reconciliation_done","id":1,"scope":"manual","orderBook":50000,"payBook":50000,"refundBook":23000,"settleBook":42200,"platformBook":0,"feeTaxBook":7800,"diffCount":0,"balanced":true}
+# Subtest: 成功（无退款）：四账守恒、reconcile 无该单差异
+ok 6 - 成功（无退款）：四账守恒、reconcile 无该单差异
+  ---
+  duration_ms: 2.0697
+  type: 'test'
+  ...
+# Subtest: 全额退款：kind=full、支付单 refunded、账仍平
+ok 7 - 全额退款：kind=full、支付单 refunded、账仍平
+  ---
+  duration_ms: 1.3873
+  type: 'test'
+  ...
+# Subtest: 部分退两次到全退：partial→refunded，超额被拒，账平
+ok 8 - 部分退两次到全退：partial→refunded，超额被拒，账平
+  ---
+  duration_ms: 2.1102
+  type: 'test'
+  ...
+# Subtest: 重复回调/重复请求幂等：同 idemKey 不重复出款
+ok 9 - 重复回调/重复请求幂等：同 idemKey 不重复出款
+  ---
+  duration_ms: 0.9235
+  type: 'test'
+  ...
+# Subtest: 渠道不可用（生产无持牌渠道）：退款单 rejected、支付单不动、绝不假退
+ok 10 - 渠道不可用（生产无持牌渠道）：退款单 rejected、支付单不动、绝不假退
+  ---
+  duration_ms: 2.8522
+  type: 'test'
+  ...
+# Subtest: runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+ok 11 - runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+  ---
+  duration_ms: 1.2029
+  type: 'test'
+  ...
+# Subtest: 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+ok 12 - 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+  ---
+  duration_ms: 1.3728
+  type: 'test'
+  ...
+# Subtest: 场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在
+ok 13 - 场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在
+  ---
+  duration_ms: 49.3684
+  type: 'test'
+  ...
+# Subtest: 场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据
+ok 14 - 场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据
+  ---
+  duration_ms: 140.9335
+  type: 'test'
+  ...
+# Subtest: 场景3 重复执行幂等：第二次全部跳过、结构与版本不重复
+ok 15 - 场景3 重复执行幂等：第二次全部跳过、结构与版本不重复
+  ---
+  duration_ms: 23.7258
+  type: 'test'
+  ...
+# Subtest: 等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致）
+ok 16 - 等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致）
+  ---
+  duration_ms: 0.3753
+  type: 'test'
+  ...
+# {"ts":"2026-09-20T06:56:45.745Z","level":"warn","msg":"alert:unit_test_event","severity":"warn","throttled":false,"x":1}
+# Subtest: providerStatus 返回六类通道就绪度且不含任何密钥字段
+ok 17 - providerStatus 返回六类通道就绪度且不含任何密钥字段
+  ---
+  duration_ms: 1.1939
+  type: 'test'
+  ...
+# Subtest: alert 未配置 webhook 时只落日志、不外发、不抛错
+ok 18 - alert 未配置 webhook 时只落日志、不外发、不抛错
+  ---
+  duration_ms: 1.4969
+  type: 'test'
+  ...
+# Subtest: Apple IAP 缺共享密钥/缺票据时拒绝，绝不伪造成功
+ok 19 - Apple IAP 缺共享密钥/缺票据时拒绝，绝不伪造成功
+  ---
+  duration_ms: 0.5804
+  type: 'test'
+  ...
+# {"ts":"2026-09-20T06:56:45.651Z","level":"warn","msg":"oss_driver_unavailable","reason":"缺少 ali-oss 依赖，切换时执行 npm i ali-oss；本次降级本地存储"}
+# {"ts":"2026-09-20T06:56:45.652Z","level":"warn","msg":"storage_fallback_local"}
+# Subtest: localDriver：put→publicUrl→getBuffer→remove 行为与历史一致
+ok 20 - localDriver：put→publicUrl→getBuffer→remove 行为与历史一致
+  ---
+  duration_ms: 9.9761
+  type: 'test'
+  ...
+# Subtest: OSS 开关打开但缺凭证/依赖：优雅降级本地，不抛错、不硬编码密钥
+ok 21 - OSS 开关打开但缺凭证/依赖：优雅降级本地，不抛错、不硬编码密钥
+  ---
+  duration_ms: 5.1935
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 319.7075

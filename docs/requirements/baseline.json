@@ -1,0 +1,3955 @@
+{
+  "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
+  "scope_count": 59,
+  "registered_count": 60,
+  "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+  "implementation_evidence_date": "2026-09-20历史核验；本次未重跑应用测试",
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "title": "定制六步的关键数值：首款比例、样片时长、免费修改轮次、向导规则",
+      "proposed_baseline": "配置报价、首款、样片确认、尾款、最终验收分离；service_tier及规格版本化，价格/期限随报价保存完整快照。未知规格不发布，基础开发不等待六条正文。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "新默认不重算旧单；未确认样片不请求尾款；缺批准规格不得实收。",
+      "external_conditions": [
+        "EXT-R02-01",
+        "EXT-10"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-09"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "已有99意向金、剧本定稿、4901制作款的旧七步流；新样片确认后尾款、报价快照未闭合，付款接口可直接置paid。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 11,
+          "locator": "\"id\": \"REQ-001\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A2:L2",
+          "quote": "首款50%（可选30/50/70，后台可配）；标准档样片30-60秒、高端档60-120秒，样片加水印预览、不交付成片；样片阶段免费改2轮，第3轮起按成本收费，每轮反馈期48小时、逾期人工提醒（不自动确认）；向导可回改、不可跳步，改档次/陪演/主题等影响成本项时实时重算并二次确认"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 81,
+          "locator": "A1"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 51,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 83,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 263,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 283,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-001",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-002",
+      "title": "分阶段退款规则（首款后、制作中、样片后、尾款后、交付后分别怎么退）",
+      "proposed_baseline": "许可、改稿、制作按订单明细分别判断取消与退款；建议未履约制作全退，已履约扣项须有事前约定及证据。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "制作取消不自动注销有效许可；通道未知显示处理中，重复退款不双退。",
+      "external_conditions": [
+        "EXT-R02-05",
+        "EXT-05"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-09",
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧视频退款状态及mock财务用例存在；制作分阶段、许可瑕疵分项退款未实现，真实退款Provider仍占位。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 59,
+          "locator": "\"id\": \"REQ-002\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A3:L3",
+          "quote": "采用③分阶段：①付首款未开工=全额退（扣支付通道费）；②已开工未出样片=按进度扣已发生成本后退余款；③样片交付不满意=先走2轮免费修改，改后仍不接受则退首款、最多扣约30%刚性成本；④样片确认并付尾款后=不支持无因退款，质量问题走争议仲裁；⑤成品交付后=仅质量不符可争议。规则写入下单页与电子合同"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 80,
+          "locator": "A2"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js",
+          "line": 39,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js",
+          "line": 46,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js",
+          "line": 66,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-002",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-003",
+      "title": "P0 制作供给模式，以及“制作侧在哪交付”（新稿状态机有制作方却无操作面）",
+      "proposed_baseline": "平台代录与制作方自助接单、人员分配、暂停、版本交付同时建设；每单明示真实履约方。",
+      "decision_status": "方向明确；规则和完整清单待审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "制作成员仅能交付分配任务；不能代客户确认、改付款或代权利人签署。",
+      "external_conditions": [
+        "EXT-04",
+        "EXT-10"
+      ],
+      "work_packages": [
+        "WORK-09"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "管理员交付剧本/成片已有路由；多机构制作接单、分配、受控素材及B工作台缺失。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 107,
+          "locator": "\"id\": \"REQ-003\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A4:L4",
+          "quote": "采用②：P0 制作走平台自营或签约班底，配一个极简“制作交付后台”（接单/传样片/传成片/回传进度），不开放外部入驻；样片与成片 P0 以 AI 生成+人工监制为主（火山模型）以降本；外部制作/导演入驻放 P1，高端一对一放 P2"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 77,
+          "locator": "A3"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 241,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 301,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-003",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-004",
+      "title": "一笔定制费如何分账（新稿账本只有平台/主理人/MCN，缺制作方与陪演）",
+      "proposed_baseline": "报价明细分别记录许可、改稿、数字人使用、制作及平台费用；每项关联卖方、收款安排和应付依据。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "组合单合计守恒；已含许可不重收；一个制作方与一个作者各有独立应付。",
+      "external_conditions": [
+        "EXT-04",
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧佣金及定制金额存在；新许可/制作/陪演分卖方报价明细及版本需建设。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 155,
+          "locator": "\"id\": \"REQ-004\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A5:L5",
+          "quote": "采用②：用户实付 = 制作成本(平台/制作方)+陪演费(陪演主理人/MCN)+付费剧本框架费+平台服务费(抽佣)+第三方通道费；制作方 P0 按“平台采购成本”内部结算、不进 C 端钱包；陪演费按 SKU 定价、验收后入陪演方可结算余额；抽佣默认20%、区间15-30%可配（最终值在 C1 拍）"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 90,
+          "locator": "A4"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/config.js",
+          "line": 59,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 51,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-004",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "应付及对账照常建设；自动出款未验收时由真实财务线下付款并附凭证，单独记录付款方式，不伪装Provider成功。"
+    },
+    {
+      "id": "REQ-005",
+      "title": "资金合规路径，防范“二清”（无证清分资金）",
+      "proposed_baseline": "按自营销售与外部许可撮合分别建立合同资金图及支付适配；未开通不得显示担保或可提现。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "普通APP支付成功不能直接产生多主体出款成功；缺产品权限阻止正式收费。",
+      "external_conditions": [
+        "EXT-04",
+        "EXT-05",
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "新支付宝APP下单/通知/查单有实现，旧直付通/微信分账占位；无本轮真实通道证据。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 203,
+          "locator": "\"id\": \"REQ-005\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A6:L6",
+          "quote": "采用②或③：不自建资金池、不无证清分；接入持牌支付机构（支付宝/微信）担保交易+分账或银行存管受托支付，钱进监管/担保户、验收后由持牌方按平台指令分账，平台只下指令、不动资金；提现走持牌方代发；P0 由财务/法务敲定合作机构"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 123,
+          "locator": "A5"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/pay.js",
+          "line": 143,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/pay.js",
+          "line": 234,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/pay.js",
+          "line": 284,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js",
+          "line": 66,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-005",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "应付及对账照常建设；自动出款未验收时由真实财务线下付款并附凭证，单独记录付款方式，不伪装Provider成功。"
+    },
+    {
+      "id": "REQ-006",
+      "title": "人脸/声音确权的触发节奏（避免 P0 一注册就被重确权压垮转化）",
+      "proposed_baseline": "采集脸声前完成对应同意与必要核验；长期素材授权和每项目用途确认分离。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "拒绝声音同意不上传声音；只同意私人用途不能进入商单生成。",
+      "external_conditions": [
+        "EXT-03",
+        "EXT-08"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-05"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "已有脸声材料、同意及人脸复验；多用途采集前同意与完整动作校验尚不等于现有单一路由。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 251,
+          "locator": "\"id\": \"REQ-006\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A7:L7",
+          "quote": "采用②分级：创建数字人/自娱仅需手机号实名+敏感信息采集告知+AI标识（轻，不强制电子签/存证）；一旦触发商用动作（发布商单/被选陪演/角色竞拍/申请发行/使用他人形象）即强制“单独同意+电子授权书+上链存证”达到 EVIDENCED 才放行（商用闸门，由授权状态机驱动）"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 127,
+          "locator": "A6"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 78,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 94,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-006",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-007",
+      "title": "三类数字人分别能做哪些动作（类型×动作开放矩阵）",
+      "proposed_baseline": "三类数字人都建类型×动作权限矩阵；本人、第三方、虚拟角色按权利条件开放，第三方无授权禁止使用。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "有存证但用途不含广告仍被拒；权利齐备的陪演不因旧P1被排除。",
+      "external_conditions": [
+        "EXT-02",
+        "EXT-07",
+        "EXT-08"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-05",
+        "WORK-10",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧human+scope协议可复用；纯虚拟/本人/他人分级权限及全流程执行需要扩展。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S4-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 299,
+          "locator": "\"id\": \"REQ-007\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A8:L8",
+          "quote": "采用“开放矩阵”页：纯虚拟可自娱/商单（过审），陪演与发行需更严内容审核且不得指向真人；本人1:1未确权仅可自娱、其余动作引导先确权，已存证后全开放；他人/明星无授权全禁、授权+存证后在授权范围内开放、高价值与发行加公证；一张真人脸可建多个数字人但共用一次真人确权、每个数字人单独做业务授权"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 131,
+          "locator": "A7"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 23,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 46,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 12,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-007",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-008",
+      "title": "iOS 内购(IAP)与第三方支付的分界（新稿通篇支付却遗漏，必须捡回）",
+      "proposed_baseline": "按SKU、商店地区、交付及收费节点核验IAP/第三方路径；IAP与支付宝各自收据、退款及收入对账。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "服务端验证交易归属与重复通知；渠道未核准不可由客户端切换绕过。",
+      "external_conditions": [
+        "EXT-06",
+        "EXT-R02-04"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-12",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "服务端旧票据验证存在且缺密钥拒绝用例运行通过；未核验客户端完整StoreKit购买、各SKU政策及沙箱。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "UX-S1-001",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 347,
+          "locator": "\"id\": \"REQ-008\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A9:L9",
+          "quote": "采用③：纯线上数字内容（AI定制视频/数字人服务/角色/陪演/数字交付商单）iOS 走 IAP；现实线下服务、对公企业项目、钱包提现不走 IAP（走第三方/线下）；不在 iOS 内收竞拍保证金；产出《iOS 商品与付款方式清单》，IAP 定价含30%成本，不靠改名规避审核"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 85,
+          "locator": "A8"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/payment.js",
+          "line": 71,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/providers/appleIap.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-008",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-009",
+      "title": "底部导航结构与“对内自娱/对外发行”两线隔离",
+      "proposed_baseline": "五入口正式接受：首页/入戏/培育/成角/我的；旧创作与消息入口映射保留；业务未就绪显示未启用或按发布配置隐藏。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "开关开启也不能绕过权限/合同/支付/Provider证据；未启用不返回演示下单成功。",
+      "external_conditions": [
+        "EXT-06"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-10",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧首页/圆梦/创作/消息/我的，已懒挂载+IndexedStack+TickerMode；新版入口和业务工作台未落地。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S4-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 395,
+          "locator": "\"id\": \"REQ-009\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A10:L10",
+          "quote": "采用①5Tab：首页/入戏/培育/成角/我的；成角独立成 Tab，对内/对外两线物理隔离，切换时有明确提示与不同审核标识"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 139,
+          "locator": "A9"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/widgets/main_scaffold.dart",
+          "line": 30,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/widgets/main_scaffold.dart",
+          "line": 85,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-009",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-010",
+      "title": "单独同意 + 电子授权书 + 授权状态机如何落地",
+      "proposed_baseline": "身份核验、单独同意、项目授权、证据、时效和供应商资产状态独立保存，计算动作可用性。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "已存证但撤回/过期不可生成；签署回调重复不产生第二份有效协议。",
+      "external_conditions": [
+        "EXT-08"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-05"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "授权签署/列表/撤回已有，签署生产缺人脸能力拒绝；项目授权链、电子签与独立存证不足。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 443,
+          "locator": "\"id\": \"REQ-010\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A11:L11",
+          "quote": "采用②：接 1 家持牌电子签（e签宝/法大大/上上签/腾讯电子签选一）；独立弹窗逐项告知用途/范围/期限/撤回方式，必须本人操作、不可代签，授权书版本全程留痕；用授权9态状态机驱动商用闸门"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 144,
+          "locator": "B1 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 74,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 92,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-010",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "未选电子签供应商时支持真实外部/线下签署PDF和验证材料归档；不冒充平台电子签完成。"
+    },
+    {
+      "id": "REQ-011",
+      "title": "AI 生成内容的显式+隐式标识",
+      "proposed_baseline": "展示、转码、导出保留AI显式及适用隐式标识；本产品不提供去标版，不能把此选择说成法律无例外。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MOCK_ONLY",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "转码后文件仍可检验标识；只在播放器叠字而文件无标识不通过。",
+      "external_conditions": [
+        "EXT-03",
+        "EXT-09"
+      ],
+      "work_packages": [
+        "WORK-08",
+        "WORK-09",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "嵌入水印函数只构造元数据/日志即回success，未处理文件；不能证明隐式标识或C2PA完成。显式展示不代表导出合格。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 491,
+          "locator": "\"id\": \"REQ-011\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A12:L12",
+          "quote": "采用②：数字人展示区常驻“AI生成”角标且不可关闭；成片起始3秒+全程角落显式标识，文件元数据写入隐式标识；不提供去标识导出"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 145,
+          "locator": "B2 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/utils/watermark.js",
+          "line": 12,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/utils/watermark.js",
+          "line": 38,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/utils/watermark.js",
+          "line": 44,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/utils/watermark.js",
+          "line": 54,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-011",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-012",
+      "title": "授权到期提醒、撤回与删除的处理口径",
+      "proposed_baseline": "到期/撤回停止新增使用，在制暂停复核，交付及发行分别处置；删除请求与供应商完成证明分开。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "撤回后待执行任务不再取料；外部删除失败进入重试和人工处理。",
+      "external_conditions": [
+        "EXT-02",
+        "EXT-08",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-05",
+        "WORK-08",
+        "WORK-09",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "可撤回协议并查scope到期；供应商删除、任务暂停、交付/发行处置未形成联动。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 539,
+          "locator": "\"id\": \"REQ-012\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A13:L13",
+          "quote": "采用③：到期前30/7/1天三次提醒；撤回不溯及撤回前已成立交易、但停止接新单；在制订单按 A2 退款规则处理；已交付成品可要求删除其数字人、停止再生成，不强制追回对方已持作品但停止商业再用；已发行作品授权期内合法保留、期满下架，涉侵权依法处理；撤回后删除人脸声纹原始素材、注销数字人，仅保留操作日志（不留生物数据）。具体措辞由法务定稿"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 92,
+          "locator": "B3 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 92,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 112,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-012",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-013",
+      "title": "应用侧算法备案/生成式AI服务登记 + 安全评估",
+      "proposed_baseline": "按实际产品、数据流、公开展示及模型形成逐项适用性与办理台账；不继承上游已备案即本应用通过。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "NOT_VERIFIED",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "申请、受理、通过分列；缺批准材料不能显示已完成。",
+      "external_conditions": [
+        "EXT-09"
+      ],
+      "work_packages": [
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "备案资质是外部事实；仓库文档不能证明真实申请/批准状态。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 587,
+          "locator": "\"id\": \"REQ-013\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A14:L14",
+          "quote": "采用②：规划期即以运营主体（晶晶日上北京数字科技有限公司）启动算法/生成式AI服务简化登记与安全评估；向火山索取模型名、算法备案号、生成式AI备案号与数据条款；APP 显著位置公示所用模型与编号"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 147,
+          "locator": "B4 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "README.md",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-013",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-014",
+      "title": "确权服务商选型与成本由谁承担",
+      "proposed_baseline": "保留电子签适配及外部权利证据管理：类型、机构、编号、日期、文件与验证状态；线下事项仅备注/附件。删除独立登记/公证代办商品、收费和流程。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "本地哈希不标第三方存证；外部签署有可信证据；无登记代办商城、计费或专用发证工单。",
+      "external_conditions": [
+        "EXT-08",
+        "EXT-R02-06"
+      ],
+      "work_packages": [
+        "WORK-03",
+        "WORK-05"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有协议记录、投稿哈希，第三方存证txid明确TODO；登记公证代办闭环缺失。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-003",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 635,
+          "locator": "\"id\": \"REQ-014\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A15:L15",
+          "quote": "采用③：P0 先接 1 家电子签 + 1 家司法链/版权链存证；基础档（电子签+一次存证，单件个位数元）由平台承担或计入获客/制作成本；DCI/著作权登记/公证作为增值服务由用户自费，官费与服务费分列、明示是否加价；不自建 CA、不自发证"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 148,
+          "locator": "B5 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 40,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-014",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "未选电子签供应商时支持真实外部/线下签署PDF和验证材料归档；不冒充平台电子签完成。"
+    },
+    {
+      "id": "REQ-015",
+      "title": "公司资质与证照办理时序",
+      "proposed_baseline": "公司、域名、包名、签名、备案、商店材料逐项留档；等保及许可按适用性核验，名称以真实材料为准。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "NOT_VERIFIED",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "包身份不因品牌修改被重建；无证照不把材料准备标成审批通过。",
+      "external_conditions": [
+        "EXT-01",
+        "EXT-09",
+        "EXT-R02-08"
+      ],
+      "work_packages": [
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "Android签名配置存在且缺正式资料回退debug；未构建、未核验真实证照/备案/签名文件。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 683,
+          "locator": "\"id\": \"REQ-015\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A16:L16",
+          "quote": "按序推进：北京主体→经营范围增项（版权代理/知识产权服务等）→域名ICP备案（经营性涉ICP许可证）→等保三级（人脸声纹+证据系统）→持牌支付签约→电子签/存证/公证合作→（仅自建节点才需）区块链信息服务备案；软著/APP备案/应用商店上架并行；产出资质甘特图与责任人"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 79,
+          "locator": "B6 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/android/app/build.gradle.kts",
+          "line": 10,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/android/app/build.gradle.kts",
+          "line": 50,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-015",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-016",
+      "title": "MCN直接合作、项目/订单级佣金、归属和历史关系管理",
+      "proposed_baseline": "MCN直接合作、项目/订单级单笔佣金、归属及历史关系管理；仅直接一级经纪/推广关系。多层团队、下级发展下级及多级返佣不在当前范围。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "仅对该笔订单已约定的直接合作方计佣；重复退款冲正幂等，换绑不改旧单；无层级传播或二级返佣。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-10",
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧邀请奖励/MCN基础存在；不等于经批准的多层分销模型，条件项不启用。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S4-001",
+        "UX-S4-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 731,
+          "locator": "\"id\": \"REQ-016\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A17:L17",
+          "quote": "采用②：最多二级（直接+一级带量），严禁三级及以上团队计酬、严禁按人头/拉新计酬，只按实际交易分成，分成比例上限后台可配"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 150,
+          "locator": "B7 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/share.js",
+          "line": 40,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/share.js",
+          "line": 65,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/mcn.js",
+          "line": 9,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-016",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-017",
+      "title": "商单/广告合规与禁入品类",
+      "proposed_baseline": "商单按实际品类检查需求方、广告素材、用途、内容及标识；禁入清单版本化，人工审核可复查。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "缺必需证明不发布；对已发布违规商单可暂停并通知相关方。",
+      "external_conditions": [
+        "EXT-R02-05",
+        "EXT-03"
+      ],
+      "work_packages": [
+        "WORK-10"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有品牌代言禁类目检查、订单及审核接入；自助需求市场和逐品类材料审核不足。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S1-002",
+        "CORE-S4-001",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 779,
+          "locator": "\"id\": \"REQ-017\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A18:L18",
+          "quote": "采用②：广告代言类需求方需企业资质+广告素材合规审核+全程留痕；建立禁入品类清单（医疗/药品/金融理财/保健品/教育培训等）；数字人代言需真实使用或合法授权并存证"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 151,
+          "locator": "B8 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/endorsement.js",
+          "line": 33,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/endorsement.js",
+          "line": 50,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-017",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-018",
+      "title": "平台抽佣比例与 MCN 分成方式",
+      "proposed_baseline": "商单、许可、制作采购与发行分配采用不同规则；20%及15%均只是历史测算。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "对许可费计佣不误扣整个制作总额；改费率不重算已成交应付。",
+      "external_conditions": [
+        "EXT-R02-03",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-10",
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧业务费率计算存在；新许可佣金及发行分配不能套旧代言15%，需要订单版本。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S1-002",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S4-001",
+        "UX-S4-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 827,
+          "locator": "\"id\": \"REQ-018\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A19:L19",
+          "quote": "服务抽佣默认20%（按品类15-30%后台可配）；MCN 一级带量分成从平台服务费中让渡3-8个点、不从主理人收入中扣；用户/MCN 在规则内自主定价"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 82,
+          "locator": "C1 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/config.js",
+          "line": 59,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/utils/settlement.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-018",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-019",
+      "title": "结算周期、提现规则与个人个税代扣",
+      "proposed_baseline": "提供个人/机构应结算、冻结、申请、出款结果与凭证；税费按主体服务性质确定，不设资金池。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "只有可信通道或复核付款凭证推进已付；拒付/退票/争议可重试且不重复。",
+      "external_conditions": [
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "绑定收款与提现申请、管理审批已有；真实出款产品及通道未验收。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 875,
+          "locator": "\"id\": \"REQ-019\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A20:L20",
+          "quote": "验收后 T+1 入“可结算余额”，设最低提现额，建议 T+3 到账；个人按劳务报酬/经营所得代扣个税（优先接灵活用工/持牌委托代征）；MCN 对公开票；确权增值费开票、官费与服务费分开列示"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 84,
+          "locator": "C2 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/settlement.js",
+          "line": 62,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/settlement.js",
+          "line": 78,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/admin.js",
+          "line": 57,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-019",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "应付及对账照常建设；自动出款未验收时由真实财务线下付款并附凭证，单独记录付款方式，不伪装Provider成功。"
+    },
+    {
+      "id": "REQ-020",
+      "title": "热度/新兴/地区三大榜单算法与防刷",
+      "proposed_baseline": "实现热度/新兴/地区榜的确定性规则、基础事件去重、可解释快照；不建复杂防刷算法平台，无真实数据则显示不足。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "同一事件不重复计分；可追溯规则版本；未启用及演示内容不混入真实榜单。",
+      "external_conditions": [
+        "EXT-09"
+      ],
+      "work_packages": [
+        "WORK-10",
+        "WORK-13"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "艺人筛选/热度及地域基础已有；热度、新兴、地区三榜规则版本、异常过滤与快照缺失。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S4-001",
+        "UX-S4-001",
+        "CORE-S5-002",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 923,
+          "locator": "\"id\": \"REQ-020\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A21:L21",
+          "quote": "采用②：热度榜=作品/商单/互动加权，新兴榜=增速+新人加权，地区榜=地域维度；每日定时快照、权重后台可配；做防刷（去机器人/异常流量过滤），规则对外公示"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 157,
+          "locator": "C3 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/humans.js",
+          "line": 41,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/humans.js",
+          "line": 182,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-020",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-021",
+      "title": "标准档与高端档的服务差异边界",
+      "proposed_baseline": "商品用service_tier与版本规格表达，可有轻量/标准/旗舰草稿。时长、画幅、清晰度、角色数、样片、修改轮次配置化；价格及交付期限属于报价版本。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "未知价格/条件保持空；候选120秒不自动发布；已成交规格不随后台配置更新。",
+      "external_conditions": [
+        "EXT-R02-01",
+        "EXT-10"
+      ],
+      "work_packages": [
+        "WORK-04",
+        "WORK-07",
+        "WORK-09"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有旧预设价格和固定定制档；不是REQ-060三档菜单的正式实现。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 971,
+          "locator": "\"id\": \"REQ-021\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A22:L22",
+          "quote": "采用双档：标准档=模板化AI流水线、固定模板/时长/含2轮修改/亲民价；高端档=一对一、人工监制、可选名导、更多修改轮次、更长时长、高价格带；产出《档位差异对比表》并在下单页强提示"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 158,
+          "locator": "C4 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/config.js",
+          "line": 81,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 51,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-021",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-022",
+      "title": "剧本框架(SCRIPT)来源与版权归属",
+      "proposed_baseline": "作品、版本、许可SKU、许可凭证及项目绑定保留；C端主要从选本进入定制/项目，也支持同一套交易的单独采购；不建独立版权交易所产品线。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "作品可多SKU；单购后可绑定对应项目，项目改稿不覆盖原始作品；不另建版权交易所账户/结算。",
+      "external_conditions": [
+        "EXT-07",
+        "EXT-R02-02"
+      ],
+      "work_packages": [
+        "WORK-03",
+        "WORK-04",
+        "WORK-05"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧sample_library及scripts投稿可复用；作品版本、许可商品和已购实例未建；新库选本查询缺video_url实测失败。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-003",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1019,
+          "locator": "\"id\": \"REQ-022\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A23:L23",
+          "quote": "采用②：平台自采/签约编剧模板为主，P0 即建题库模板、AI 仅辅助润色；模板可复用（非独家），定制后该项目剧本归该项目做版本管理；模板分免费/付费；版权来源留档；标注 AI 辅助程度"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 91,
+          "locator": "C5 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 29,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 81,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 347,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 616,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-022",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-023",
+      "title": "机构入驻、数字人独家管理与身份切换",
+      "proposed_baseline": "保留账号/主体/成员/数字人分离；主要MCN/经纪关系需本人或获准代表确认，范围/期间可查，单笔佣金与旧关系快照保留。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "未经本人或有效委托不能添加艺人；解绑撤未来权限不改历史应付，不创建下级网络。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-10"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "机构及艺人关系已有；添加艺人未要求本人接受，身份互斥覆盖；须补邀请、范围及关系历史。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S4-001",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1067,
+          "locator": "\"id\": \"REQ-023\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A24:L24",
+          "quote": "采用②：MCN 需企业资质认证+对旗下艺人的授权链；一个数字人同一时间只挂一家 MCN（独家管理），可换绑、设30天冷静期，换绑不溯及进行中/历史订单；同一自然人可在“个人/机构成员”身份间切换，但须标明当前操作身份"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 94,
+          "locator": "C6 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/mcn.js",
+          "line": 9,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/mcn.js",
+          "line": 45,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/mcn.js",
+          "line": 66,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-023",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-024",
+      "title": "入戏 / 商单 / 成角三类业务的边界与归类",
+      "proposed_baseline": "私人定制、商业委托、发行项目在报价前分类；用途升级新授权、新报价或关联项目，不覆盖原单。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "后台修改类型不能直接解锁公开用途；已有付款及授权仍能查原版本。",
+      "external_conditions": [
+        "EXT-04",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-10",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "定制、代言、项目分路由；私人/公开用途升级没有统一权利和合同检查。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S4-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1115,
+          "locator": "\"id\": \"REQ-024\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A25:L25",
+          "quote": "明确定义：入戏=用户给自己数字人买剧/角色（C端消费）；商单=外部需求方付费请数字人交付一个成果（数字人是供给侧接单）；成角=多角色凑齐做可发行作品。需求方 P1 先由平台审核代发、企业可自助发布；发布时选类型，后台可改归类并留痕"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 161,
+          "locator": "C7 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 411,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/endorsement.js",
+          "line": 50,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-024",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-025",
+      "title": "成角（对外发行）线是否进入 P0",
+      "proposed_baseline": "成角项目、申请、材料、会签、发行渠道档案和结果管理完整纳入；实际上线须渠道证据。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "完整走补正、驳回、重提与外部发行结果，不以申请按钮交付。",
+      "external_conditions": [
+        "EXT-09",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有成片发起项目和立项线索；没有渠道提交/补正/会签/真实发行结果完整流。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S1-002",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1163,
+          "locator": "\"id\": \"REQ-025\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A26:L26",
+          "quote": "采用②：P0 仅预留“申请发行/成角”入口与双轨审核字段，正式能力 P2 上线"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 165,
+          "locator": "D1 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 411,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 177,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-025",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-026",
+      "title": "出品立项条件与流拍（凑不齐角色）处理",
+      "proposed_baseline": "成角支持公开报名、定向邀请、项目方筛选、固定价角色服务/项目报价及权利人最终确认；立项需阵容、授权、资金与制作条件齐备。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "报名不是入组；角色名额并发不超售；最终确认前授权不足不开工；不出现竞价入口。",
+      "external_conditions": [
+        "EXT-R02-05",
+        "EXT-10"
+      ],
+      "work_packages": [
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "固定价席位、里程碑审核、快速成团基础已有；齐套授权和合同资金前置需扩展。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S1-002",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1211,
+          "locator": "\"id\": \"REQ-026\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A27:L27",
+          "quote": "采用②：核心角色全部认购确认+授权齐套+制作方案确定=立项成功；到截止未齐=流拍，原路退款（扣通道费），可延期一次"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 88,
+          "locator": "D2 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 104,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 193,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 219,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-026",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-027",
+      "title": "角色竞拍规则：保证金/出价步长/防狙击/角色权益",
+      "proposed_baseline": "NOT_IN_CURRENT_BASELINE / 未来变更请求：保留竞拍历史来源，不建设通用竞拍、保证金竞价、步长/延时/赢家锁定引擎，不计当前工时。报名邀请/筛选/固定价或报价/最终确认由REQ-026和GAP-003交付。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "当前范围核查：无竞拍交易入口/引擎和条件预算；旧业务历史记录保留。未来要求竞拍须新变更请求。",
+      "external_conditions": [],
+      "work_packages": [],
+      "original_meeting_result": "",
+      "implementation_observation": "主源路由/表中为固定价认领，无竞价轮次/延时/赢家锁定；竞拍完整规则待确认。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "EXCLUDED",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1259,
+          "locator": "\"id\": \"REQ-027\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A28:L28",
+          "quote": "采用②：不收保证金以降门槛，改“中标后限时支付锁角、超时作废角色重上架+记违约”；固定出价步长（如10元/档，可配），最后30秒出价自动延时30秒防狙击；一口价即时成交；流拍可重上架；角色权益=该剧该角色出演服务+署名、不可转让（防二级炒作）"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 80,
+          "locator": "D3 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 51,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 104,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-027",
+      "execution_status": "EXCLUDED"
+    },
+    {
+      "id": "REQ-028",
+      "title": "自娱内容转对外发行的“转线闸门”",
+      "proposed_baseline": "私人转公开非商业或商业发行均检查实际用途许可；脸声、原著、剧本、音乐、成片逐层核验。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "独家私人许可不放行发行；允许非独家商用的许可不被一律拦截。",
+      "external_conditions": [
+        "EXT-07",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-05",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "film/endorsement旧scope存在，缺原著/剧本许可链与私转公开逐层判断。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1307,
+          "locator": "\"id\": \"REQ-028\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A29:L29",
+          "quote": "采用②：必须补本人1:1确权或他人授权+发行级授权范围+通过严格双轨审核；美化形象需还原/补真实素材；驳回则退回自娱收藏态，不因已交付自娱价值而退款或走争议"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 168,
+          "locator": "D4 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 12,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 411,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-028",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-029",
+      "title": "发行前多方确认顺序",
+      "proposed_baseline": "按项目合同配置必要确认人、职责和前后置；每次确认绑定内容版本，新版使受影响确认失效。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "V1全部同意后上传V2不得沿用全部同意；无关权利人不可越权否决他人合同。",
+      "external_conditions": [
+        "EXT-08",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-09",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有管理员节点审核及客户验收；无多方按版本会签及新版失效规则。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "UX-S1-002",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1355,
+          "locator": "\"id\": \"REQ-029\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A30:L30",
+          "quote": "采用②：按“权利人→制作/导演→平台审核”顺序，任一方打回即回改，全部确认才过审上架"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 89,
+          "locator": "D5 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/projects.js",
+          "line": 193,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 323,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-029",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-030",
+      "title": "发行收入可分配口径与结算周期（旧Q8遗留）",
+      "proposed_baseline": "发行台账按真实渠道账单、明确扣项和合同计算；结算确认锁定，后续差异追加调整，现实付款留凭证。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "重复导入不重复收入；未到账与实际到账分别显示；调整不覆盖原账。",
+      "external_conditions": [
+        "EXT-R02-05",
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "现有钱包/支付对账不是发行渠道收入账单、合同分配和锁定调整台账。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1403,
+          "locator": "\"id\": \"REQ-030\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A31:L31",
+          "quote": "采用②：可分配收入=实际到账-退款冲正-税费-渠道费-合同明确扣项（不用“净利润”模糊口径），合同写“可分配收入的X%”；建议月结、出结算单、确认锁定，补发/扣回进下期；发行渠道 P2 先人工录入"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 170,
+          "locator": "D6 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/settlement.js",
+          "line": 13,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/reconciliation.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-030",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "应付及对账照常建设；自动出款未验收时由真实财务线下付款并附凭证，单独记录付款方式，不伪装Provider成功。"
+    },
+    {
+      "id": "REQ-031",
+      "title": "企业/品牌委托方入口何时开放",
+      "proposed_baseline": "企业作为主体加入统一账号体系，可自助发起商单/项目及签署委托；代办保留委托人。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "员工退出公司后失去操作权；企业客户只见自己的项目与账单。",
+      "external_conditions": [
+        "EXT-01",
+        "EXT-04"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-10",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "企业身份和MCN申请存在；通用企业成员、自助委托及多角色主体工作台缺失。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S4-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1451,
+          "locator": "\"id\": \"REQ-031\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A32:L32",
+          "quote": "采用②：P2 开放企业入口（企业资质+合同+对公付款），P0/P1 由平台商务人工代建"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 171,
+          "locator": "D7 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/identity.js",
+          "line": 15,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/mcn.js",
+          "line": 9,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-031",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-032",
+      "title": "数字人身份标识强制国标与监管新规跟踪",
+      "proposed_baseline": "建立法规、标准与试点跟踪记录，区分草案/发布/生效/适用；不把数字艺人卡当全国统一必办证。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "NOT_VERIFIED",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "无正式依据不自动新增准入门槛；每次判断有来源与复核日期。",
+      "external_conditions": [
+        "EXT-09"
+      ],
+      "work_packages": [
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "无本轮有效政策/资质证据，旧文字不当作现行准入规则。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1499,
+          "locator": "\"id\": \"REQ-032\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务决策工作底稿_20260915.xlsx",
+          "sheet": "决策总表",
+          "range": "A33:L33",
+          "quote": "采用②：预留统一数字人身份标识字段；专人跟踪北京经开区数字艺人卡/沙盒审批、工信部数字人身份标识强制国标、网信办《数字虚拟人信息服务管理办法》正式稿，落地后对齐"
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/V3/业务架构融合与待处理问题清单_20260915.md",
+          "line": 172,
+          "locator": "D8 "
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "README.md",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-032",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-033",
+      "title": "产品名与主体",
+      "proposed_baseline": "工作名晶选片场、历史工程晶晶日上分别登记；正式公司、签名和包名待实证，不全局替换。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "新展示名不改变已签合同主体或应用升级身份。",
+      "external_conditions": [
+        "EXT-01"
+      ],
+      "work_packages": [
+        "WORK-01",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "README提晶选片场，工程仍旧名与版本；正式品牌、主体和商标未核验。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-001",
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-002",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1547,
+          "locator": "\"id\": \"REQ-033\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 654,
+          "locator": "\"id\": \"REQ-033\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "README.md",
+          "line": 9,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/pubspec.yaml",
+          "line": 4,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-033",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-034",
+      "title": "交易身份与责任",
+      "proposed_baseline": "设计支持自营定制与外部许可交易并存，逐订单明示合同相对方、收款、开票、交付、售后和平台责任。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "同一结算分组不能混入不支持的卖方资金路径；未核定路径不实收。",
+      "external_conditions": [
+        "EXT-04",
+        "EXT-R02-03",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-01",
+        "WORK-07",
+        "WORK-12"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧自营订单和作者投稿并存；外部许可撮合的合同相对方、分卖方收款路径未实现。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-001",
+        "CORE-S0-003",
+        "UX-S0-001",
+        "UX-S0-002",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1595,
+          "locator": "\"id\": \"REQ-034\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 674,
+          "locator": "\"id\": \"REQ-034\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 10,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/pay.js",
+          "line": 143,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-034",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-035",
+      "title": "私人作品的使用边界",
+      "proposed_baseline": "私人留存、公开非商业分享、广告和商业发行分别授权；作品收藏与广场展示分开。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "私人文件无匿名永久链接；申请分享触发范围核验，不因非商业自动通过。",
+      "external_conditions": [
+        "EXT-07",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-05",
+        "WORK-08",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有作品/剧场展示，但本地uploads公开且所谓signedUrl直接返回公开地址；私有收藏边界未满足。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-005",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1643,
+          "locator": "\"id\": \"REQ-035\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 694,
+          "locator": "\"id\": \"REQ-035\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/app.js",
+          "line": 44,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/storage/index.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-035",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-036",
+      "title": "成果权利分层",
+      "proposed_baseline": "脸声、原著、剧本、音乐、项目改稿及成片各有权利来源和使用范围，付款不代表整体买断。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "任一素材许可缺失阻止相应用途；可从成片追溯输入材料与授权版本。",
+      "external_conditions": [
+        "EXT-07",
+        "EXT-R02-02"
+      ],
+      "work_packages": [
+        "WORK-05",
+        "WORK-11"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有人像scope与剧本投稿记录；跨素材权利链、改编/音乐/成片用途关联缺失。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-003",
+        "UX-S1-002",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S4-002",
+        "UX-S4-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1691,
+          "locator": "\"id\": \"REQ-036\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 714,
+          "locator": "\"id\": \"REQ-036\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/compliance.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 29,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-036",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-037",
+      "title": "年龄与授权人",
+      "proposed_baseline": "建议本轮不开放未成年人独立真人建模/签约付费；识别和客服处置需建设，监护商业流程单列待范围。",
+      "decision_status": "研究暂定；未见逐项正式确认",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "识别为受限年龄不能绕过前端直接调用；旧未成年档案不得删除或默认为成年。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "旧minor_profiles存在；新商业年龄限制须对照旧数据迁移，未做前后端全路径验证。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-001",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1739,
+          "locator": "\"id\": \"REQ-037\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 734,
+          "locator": "\"id\": \"REQ-037\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 124,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-037",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-038",
+      "title": "标准交付与验收",
+      "proposed_baseline": "按版本化规格验收角色/台词/时长/画幅/清晰度/声音/标识；剧本、样片、粗剪、成片的反馈和确认各绑定具体版本，最终验收独立。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "新版使受影响确认失效；纠错不扣创意轮次；未获正式规格不得作为收费承诺。",
+      "external_conditions": [
+        "EXT-R02-01",
+        "EXT-10"
+      ],
+      "work_packages": [
+        "WORK-09"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "交付及验收接口存在；新规格、样片独立确认、纠错和最终质量验收未完整落地。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1787,
+          "locator": "\"id\": \"REQ-038\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 754,
+          "locator": "\"id\": \"REQ-038\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 301,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 323,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-038",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-039",
+      "title": "长期数字人验收",
+      "proposed_baseline": "长期数字人采用Provider Adapter、平台资产ID和上游长期资产映射；创建/授权/删除与Readiness独立。普通图生视频不视为长期数字人建成。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "未配置/待上游审批不能创建成功；正式复用以真实产品权限和同资产多次效果验收，失败留真实状态。",
+      "external_conditions": [
+        "EXT-02",
+        "EXT-R02-07"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-08",
+        "WORK-09"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "数字人档案、语音复刻和生成适配存在；未证明长期供应商资产、同人多次效果或专属训练。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1835,
+          "locator": "\"id\": \"REQ-039\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 774,
+          "locator": "\"id\": \"REQ-039\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/humans.js",
+          "line": 134,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/ai.js",
+          "line": 99,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/ai.js",
+          "line": 128,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/volcVisual.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-039",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-040",
+      "title": "定价与制作产能",
+      "proposed_baseline": "成本记录及在制容量保留；用真实试制检验规格、价格和产能，不硬编码未知三档数字，不建立复杂制作工具。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "未批准价格/产能不发布；重试与人工/渠道成本记录；研发基础不等待样片六条。",
+      "external_conditions": [
+        "EXT-10",
+        "EXT-R02-01"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-09",
+        "WORK-13"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有预设AI成本和costGuard；真实全成本、在制容量及批准规格不足。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S5-002",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1883,
+          "locator": "\"id\": \"REQ-040\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 794,
+          "locator": "\"id\": \"REQ-040\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/config.js",
+          "line": 73,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/ai.js",
+          "line": 37,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-040",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-041",
+      "title": "数据保留与删除",
+      "proposed_baseline": "原料、长期资产、全本、成片、合同与账证分级保留；删除与合法留档分开，下架不抹合同历史。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "过期成员不能取新文件；删除失败留待办；新保存期不缩短已承诺旧单。",
+      "external_conditions": [
+        "EXT-03",
+        "EXT-R02-07"
+      ],
+      "work_packages": [
+        "WORK-08",
+        "WORK-13"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有文件存取及账号删除路径；按资料分级留存、供应商删除证明和证据保留未统一。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-005",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S5-002",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1931,
+          "locator": "\"id\": \"REQ-041\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 814,
+          "locator": "\"id\": \"REQ-041\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/storage/index.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/auth.js",
+          "line": 122,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-041",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-042",
+      "title": "规则版本与历史订单",
+      "proposed_baseline": "规则版本、合同及订单/许可快照为Wave A强制基础设施：价格、币种、付款计划、修改轮次、交付规格、退款、合同版本、授权范围、佣金、适用主体、规则版本齐套。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "修改默认只影响新报价/交易；旧单快照完整且不可后台重算；缺历史证据标待核对，不用新条款补造。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-01",
+        "WORK-02",
+        "WORK-05",
+        "WORK-07",
+        "WORK-12",
+        "WORK-13",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "有交付版本与订单存量字段，缺统一价格/条款/主体/佣金快照；实际迁移文件名见自动解析。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-001",
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-002",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "CORE-S1-003",
+        "UX-S1-001",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "CORE-S5-002",
+        "UX-S5-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 1979,
+          "locator": "\"id\": \"REQ-042\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 834,
+          "locator": "\"id\": \"REQ-042\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/005_engineering_recon_deliverable.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 51,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-042",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-043",
+      "title": "异常与暂停处理",
+      "proposed_baseline": "正式运行MySQL 8；SQLite仅本地/测试。统一Provider Adapter+Readiness及幂等/任务租约；14项事实/安全问题进入Wave A，后续波次验收真实完整能力。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "MySQL并发回调/退款不重复；正式缺配置失败；Demo隔离；SQLite通过不能代替MySQL事务验收。",
+      "external_conditions": [
+        "EXT-05",
+        "EXT-02",
+        "EXT-03"
+      ],
+      "work_packages": [
+        "WORK-07",
+        "WORK-09",
+        "WORK-12",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "已有幂等/退款/生成任务护栏；实名自动通过、支付查询归属缺失、auto写回退仍须修复。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-000",
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "UX-S1-001",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2027,
+          "locator": "\"id\": \"REQ-043\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 854,
+          "locator": "\"id\": \"REQ-043\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/identity.js",
+          "line": 60,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/payment.js",
+          "line": 64,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/services/api_service.dart",
+          "line": 146,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-043",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-044",
+      "title": "需求变更与发布权限",
+      "proposed_baseline": "永久REQ编号、来源、三状态轴和变更记录同源维护；设计批准、实现验收与商业启用独立。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "未执行测试不得写通过；审批记录有范围/人员/日期/版本；旧Excel结论仍空。",
+      "external_conditions": [
+        "EXT-01"
+      ],
+      "work_packages": [
+        "WORK-01",
+        "WORK-13",
+        "WORK-14"
+      ],
+      "original_meeting_result": "",
+      "implementation_observation": "历史审查及CURRENT存在，但仍有过时AnimatedSwitcher断言；本轮基线未合并repo，暂不称治理已完成。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-000",
+        "CORE-S0-001",
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-002",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-001",
+        "CORE-S5-002",
+        "UX-S5-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2075,
+          "locator": "\"id\": \"REQ-044\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/R01/需求记录_机器可读.json",
+          "line": 874,
+          "locator": "\"id\": \"REQ-044\""
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "docs/project-review-2026-09-10.md",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-044",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-045",
+      "title": "本轮完整交付范围与验收",
+      "proposed_baseline": "WORK01–14保留，按Wave A–F实施同一完整范围；MySQL 8进入基础，竞拍与多层分销退出，单笔直接佣金计入WORK10/12。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "NOT_VERIFIED",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "59项当前关联需求及REQ027明确排除均可追溯；无旧COND待触发预算或旧分期删能力。",
+      "external_conditions": [
+        "EXT-R02-01"
+      ],
+      "work_packages": [
+        "WORK-01",
+        "WORK-14"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "完整14 WORK是本轮设计清单；repo仍列旧P0/P1/P2，不能代表全部能力已实施。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-000",
+        "CORE-S0-001",
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-002",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2123,
+          "locator": "\"id\": \"REQ-045\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "README.md",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-045",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-046",
+      "title": "个人作者和机构版权方入驻",
+      "proposed_baseline": "个人作者和机构版权方均可申请供给能力；账号操作者、签约主体及收款主体分开核验。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "个人无需填公司营业执照；机构成员无权限不能替作者更换收款主体。",
+      "external_conditions": [
+        "EXT-R02-02",
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-03"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "个人编剧申请表/接口已存在；完整个人作者与机构版权方双路径、签约与收款主体未闭合。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2150,
+          "locator": "\"id\": \"REQ-046\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 10,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 605,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-046",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-047",
+      "title": "同一供给主体可承担多种业务",
+      "proposed_baseline": "同一主体的MCN、制作、版权供给能力可叠加，审核与员工权限按能力分别管理。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "一家机构同时卖许可和交付制作；禁用一种能力不错误删除其他已批准能力。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-02"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "当前身份类型与MCN表分散，无通用主体-成员-多能力授权结构。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2177,
+          "locator": "\"id\": \"REQ-047\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/mcn.js",
+          "line": 22,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 434,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-047",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-048",
+      "title": "剧本商品与公开试读",
+      "proposed_baseline": "作品/版本/试读/许可SKU独立，前台嵌入选本→定制/项目，报价保存规格版本；单独采购复用相同订单及许可。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "公开接口不含全本；双审和规格未齐不发布；单购无另设账户/清算/独立交易所。",
+      "external_conditions": [
+        "EXT-R02-02"
+      ],
+      "work_packages": [
+        "WORK-04"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "已有题材/梗概/文件链接；没有独立版本、许可SKU及授权试读市场。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S2-001",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2204,
+          "locator": "\"id\": \"REQ-048\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 29,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 81,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 616,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-048",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-049",
+      "title": "逐作品权利链核验",
+      "proposed_baseline": "逐作品核查作者、真实权利人、代理、共同作者、原著改编和既售许可；缺项补正。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "只有实名/原创承诺/时间戳不能使缺原著许可的作品上架。",
+      "external_conditions": [
+        "EXT-R02-02",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-03",
+        "WORK-05"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "旧投稿只填备案号/哈希，无共同作者、代理、原著改编、既售负担的权利链数据和检查。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-003",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2231,
+          "locator": "\"id\": \"REQ-049\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 29,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 616,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-049",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-050",
+      "title": "权属与内容独立审核、证据归档",
+      "proposed_baseline": "权利与内容两条审核独立绑定作品版本；证据记录机构、校验结果、日期及适用范围。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "权利通过而内容不通过仍不可售；新版内容不继承旧版无条件通过。",
+      "external_conditions": [
+        "EXT-R02-06",
+        "EXT-03"
+      ],
+      "work_packages": [
+        "WORK-03",
+        "WORK-04"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "通用内容审核和投稿pending存在；作品双审/版本绑定及可验证外部存证未实现。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S2-001",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2258,
+          "locator": "\"id\": \"REQ-050\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 40,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 46,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/review.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-050",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-051",
+      "title": "许可商品的权利范围",
+      "proposed_baseline": "许可维度保留独家性、用途、地域、语言、期限、额度、改稿和AI处理；独家不自动发行。复杂改编、相似性、历史合同解释及代理争议人工核验。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "结构化规则能判明确冲突；未知法律关系返回REVIEW_REQUIRED，人工结论限定版本及范围。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-04",
+        "WORK-05"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "无剧本许可范围实体；人像scope不可替代独家/用途/地域/期限/项目额度。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S1-003",
+        "CORE-S2-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2285,
+          "locator": "\"id\": \"REQ-051\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 616,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 81,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-051",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-052",
+      "title": "独家权利的预留与冲突防范",
+      "proposed_baseline": "MySQL事务对已明确关联的权利来源/作品、权利类型、用途、地区、语言、起止时间、项目额度及已有许可判断重叠，预留和生效串行校验。复杂权利争议REVIEW_REQUIRED，不建设法律推理引擎。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "两个冲突范围并发最多一个生效；未知关系不放行；人工通过仍需重检实时锁；迟到付款不夺新许可。",
+      "external_conditions": [
+        "EXT-R02-02",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-06",
+        "WORK-14"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "未发现剧本独家预留、生效、同源范围交集与迟到付款补救的数据/路由。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-002",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S0-006",
+        "UX-S0-001",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "UX-S1-001",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S6-001",
+        "UX-S6-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2312,
+          "locator": "\"id\": \"REQ-052\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 616,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-052",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-053",
+      "title": "报价与剧本授权订单",
+      "proposed_baseline": "单独许可与定制/项目组合采购复用订单、许可和结算，不另开交易所；卖方/通道分组，包含关系及规格/报价快照可查。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "已购许可用于对应项目不重收；报价过期需重新确认；不新增独立版权交易产品线。",
+      "external_conditions": [
+        "EXT-04",
+        "EXT-06",
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-07"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "旧制作下单不等于许可单购与组合交易；无许可明细/已购抵扣/分卖方组。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S3-001",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2339,
+          "locator": "\"id\": \"REQ-053\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/samples.js",
+          "line": 51,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 81,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-053",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-054",
+      "title": "许可生效、凭证与项目绑定",
+      "proposed_baseline": "合同、约定付款、权利有效与独家条件满足才签发许可；许可绑定接受方、项目额度及允许制作者。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "付款但合同缺失不发正式许可；样片开工也校验；第二项目超额度拒绝。",
+      "external_conditions": [
+        "EXT-08",
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-05",
+        "WORK-06",
+        "WORK-07"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "缺已购许可和项目绑定实体，合同/付款/范围满足后签发许可无实现。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-003",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2366,
+          "locator": "\"id\": \"REQ-054\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/migrations/001_initial.js",
+          "line": 616,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-054",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "未选电子签供应商时支持真实外部/线下签署PDF和验证材料归档；不冒充平台电子签完成。"
+    },
+    {
+      "id": "REQ-055",
+      "title": "完整剧本受控阅读和导出",
+      "proposed_baseline": "高额购前阅稿并入受控全本阅读：NDA/评估授权、指定人员、限时、水印、日志、到期失效；不是独立商品、商城或结算系统。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "匿名/跨用户/过期/撤回拒绝；评估权限不赋予生成或发行；正式导出仍需合同允许。",
+      "external_conditions": [
+        "EXT-03",
+        "EXT-R02-07"
+      ],
+      "work_packages": [
+        "WORK-08"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "browse不返回fileUrl，但角色检查TODO；不存在完整NDA评估、按许可受控阅读/导出及撤销访问。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-005",
+        "CORE-S1-001",
+        "CORE-S2-002",
+        "UX-S2-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2393,
+          "locator": "\"id\": \"REQ-055\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 81,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/storage/index.js",
+          "line": 25,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-055",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-056",
+      "title": "AI制作所需剧本处理许可",
+      "proposed_baseline": "生成处理与通用训练许可分开；限定供应商、用途、项目、地域及保留条款，每次交接留痕。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "拒绝训练仍可按允许范围生成；未经批准模型不能接收完整本。",
+      "external_conditions": [
+        "EXT-R02-07",
+        "EXT-02"
+      ],
+      "work_packages": [
+        "WORK-05",
+        "WORK-08",
+        "WORK-09"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "AI路由存在，但未按剧本许可区分生成与通用训练、供应商白名单及交接凭证。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "CORE-S0-005",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S2-002",
+        "UX-S2-001",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2420,
+          "locator": "\"id\": \"REQ-056\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/ai.js",
+          "line": 99,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/ai.js",
+          "line": 128,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 29,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-056",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-057",
+      "title": "版权方佣金、结算和收款",
+      "proposed_baseline": "许可佣金按合同基数、优惠承担、渠道费、税费和退款分别记账；15%只保留为测算例。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "MISSING",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "1000元×测试15%=150元佣金/850元扣其他费用前应付；真实付款另有凭证。",
+      "external_conditions": [
+        "EXT-R02-03",
+        "EXT-R02-04"
+      ],
+      "work_packages": [
+        "WORK-12"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "旧代言15%不等于版权佣金；无许可卖方应付和退款冲正闭环。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2447,
+          "locator": "\"id\": \"REQ-057\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/config.js",
+          "line": 59,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js",
+          "line": 66,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-057",
+      "execution_status": "PLANNED_NOT_ACCEPTED",
+      "r06_execution_note": "应付及对账照常建设；自动出款未验收时由真实财务线下付款并附凭证，单独记录付款方式，不伪装Provider成功。"
+    },
+    {
+      "id": "REQ-058",
+      "title": "许可退款、侵权争议和合同补救",
+      "proposed_baseline": "制作取消、许可权利瑕疵、下架与独家冲突分别立案；通知/举证/答复/决定/恢复及账务调整闭环。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "下架后旧客户仍能查历史凭证；不能一键抹除许可或用不可退封死权利瑕疵补救。",
+      "external_conditions": [
+        "EXT-R02-05"
+      ],
+      "work_packages": [
+        "WORK-03",
+        "WORK-12"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "旧视频争议/售后可复用，许可瑕疵、独家冲突、举证恢复和账务处理需新增。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2474,
+          "locator": "\"id\": \"REQ-058\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/videos.js",
+          "line": 204,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/videos.js",
+          "line": 389,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/services/paymentService.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-058",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-059",
+      "title": "供给侧完整自助工作台与统计",
+      "proposed_baseline": "A/B统一Web工作台，个人/机构自助投稿、许可定价、订单/制作交付与结算；仅业务通知和对象内评论；Provider按能力呈现未启用。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "PARTIAL",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "个人作者销售许可与项目衔接闭环；无代办收费、独立评估商品或通用IM；A端不冒名签署/确认。",
+      "external_conditions": [
+        "EXT-R02-02",
+        "EXT-R02-03"
+      ],
+      "work_packages": [
+        "WORK-02",
+        "WORK-03",
+        "WORK-04",
+        "WORK-09",
+        "WORK-12",
+        "WORK-13"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "有作者API和MCN App页，未发现独立完整A/B Web工程；作者定价交易、制作协作与结算自助待建。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-004",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-002",
+        "UX-S1-002",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001",
+        "CORE-S5-001",
+        "CORE-S5-002",
+        "UX-S5-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2501,
+          "locator": "\"id\": \"REQ-059\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 9,
+          "locator": "## 第一段"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 10,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/scripts.js",
+          "line": 29,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/routes/admin.js",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/pages/mcn/mcn_page.dart",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "STATIC_SOURCE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-059",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    },
+    {
+      "id": "REQ-060",
+      "title": "三档样片及2分钟旗舰片原文核对",
+      "proposed_baseline": "六条全文仍缺，但商品架构已定：service_tier、规格版本、报价版本、订单/许可快照。可建轻量/标准/旗舰草稿；2分钟旗舰仅候选，生产默认为空，待文字及成本证据发布。",
+      "decision_status": "R0.3所列方向/范围已明确；其余规则及金额仍待对应依据，修订稿待最终审阅",
+      "implementation_status": "NOT_VERIFIED",
+      "commercial_enablement": "未核验；不允许据本报告宣称已启用",
+      "acceptance": "基础开发能在合成测试规格下验证；未知正式数字不硬编码，候选120秒未批准不可发布，补原文记新变更。",
+      "external_conditions": [
+        "EXT-R02-01"
+      ],
+      "work_packages": [
+        "WORK-01",
+        "WORK-04",
+        "WORK-07",
+        "WORK-09"
+      ],
+      "original_meeting_result": null,
+      "implementation_observation": "原图中的约2分钟是样片示例，不是最新2分钟旗舰片六条全文；仓库无该新增原文，继续缺资料。",
+      "repository_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+      "scope": "IN_SCOPE",
+      "decision_note": "R0.6继承R0.3范围；原decision_status保留历史措辞，不表示重新等待整个方案批准。细则/数值/外部条件仍按证据单独确认。",
+      "task_refs": [
+        "CORE-S0-001",
+        "CORE-S0-003",
+        "CORE-S0-004",
+        "UX-S0-001",
+        "UX-S0-002",
+        "UX-S0-003",
+        "UX-S0-004",
+        "CORE-S1-001",
+        "CORE-S1-003",
+        "CORE-S2-001",
+        "UX-S2-001",
+        "CORE-S3-001",
+        "CORE-S3-002",
+        "UX-S3-001"
+      ],
+      "source_evidence": [
+        {
+          "path": "docs/sources/bootstrap-r02/data/requirements_intake.json",
+          "line": 2528,
+          "locator": "\"id\": \"REQ-060\""
+        },
+        {
+          "path": "docs/sources/bootstrap-r02/sources/DELTA/01_最新版权与完整范围_用户原文.md",
+          "line": 59,
+          "locator": "样片那 6 条"
+        }
+      ],
+      "code_evidence": [
+        {
+          "path": "最新会议.docx",
+          "line": 1,
+          "commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+          "kind": "SOURCE_DOCUMENT_NOT_CODE"
+        }
+      ],
+      "history_ref": "docs/baselines/r03/intake_reports/02_REQUIREMENTS_RECONCILED.json#REQ-060",
+      "execution_status": "PLANNED_NOT_ACCEPTED"
+    }
+  ]
+}

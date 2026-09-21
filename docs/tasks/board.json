@@ -1,0 +1,1466 @@
+{
+  "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
+  "updated_on": "2026-09-21",
+  "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
+  "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
+  "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
+  "tasks": [
+    {
+      "id": "CORE-S0-000",
+      "title": "R0.6基线入库与协作初始化",
+      "stage": 0,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/r06-collaboration-bootstrap",
+      "work_refs": [
+        "WORK-01"
+      ],
+      "req_refs": [
+        "REQ-043",
+        "REQ-044",
+        "REQ-045"
+      ],
+      "dependencies": [],
+      "deliverables": [
+        "docs/START_HERE.md",
+        "docs/tasks/board.json",
+        "AGENTS.md",
+        "docs/status/CORE_CURRENT.md"
+      ],
+      "acceptance": "原件校验、60项需求与59项范围覆盖、依赖无环、现有业务源码不变；发布到协作分支并核对远端",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PENDING",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S0-001",
+      "title": "OpenAPI 3.1首批契约与共享约定",
+      "stage": 0,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "CLAIMED",
+      "branch": "core/s0-001-openapi-baseline",
+      "work_refs": [
+        "WORK-01"
+      ],
+      "req_refs": [
+        "REQ-033",
+        "REQ-034",
+        "REQ-042",
+        "REQ-044",
+        "REQ-045",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-000"
+      ],
+      "deliverables": [
+        "contracts/openapi.yaml",
+        "contracts/CHANGELOG.md"
+      ],
+      "acceptance": "身份/主体、Readiness、规则快照与错误模型首批可消费；金额/幂等/对象版本明确；契约校验与Experience交叉review有证据",
+      "shared_boundaries": [
+        "OpenAPI"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": [
+        "等待基线发布；尚未开始编写契约；共享边界需Experience交叉review"
+      ]
+    },
+    {
+      "id": "CORE-S0-002",
+      "title": "MySQL 8、异步访问层和迁移runner",
+      "stage": 0,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-037",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052"
+      ],
+      "dependencies": [
+        "CORE-S0-000"
+      ],
+      "deliverables": [
+        "backend异步repository/service",
+        "版本化migration及runner",
+        "隔离数据库验证记录"
+      ],
+      "acceptance": "隔离MySQL 8运行；新库迁移/重跑/事务回滚可复验；生产缺MySQL配置失败，禁止SQLite回退",
+      "shared_boundaries": [
+        "schema/migration"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S0-003",
+      "title": "SQLite导入与旧事实分类",
+      "stage": 0,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-14",
+        "WORK-07"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-009",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-021",
+        "REQ-024",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-037",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052",
+        "REQ-053",
+        "REQ-054",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-002"
+      ],
+      "deliverables": [
+        "SQLite到MySQL导入工具",
+        "字段映射和异常清单"
+      ],
+      "acceptance": "脱敏副本导入前后数量/金额/关键关联对账；旧假付与未核验实名不升级真实事实；失败可恢复",
+      "shared_boundaries": [
+        "schema/migration",
+        "payments/refunds"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S0-004",
+      "title": "模块边界、MySQL jobs/lease/outbox与独立Worker",
+      "stage": 0,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-09",
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-008",
+        "REQ-011",
+        "REQ-012",
+        "REQ-013",
+        "REQ-015",
+        "REQ-021",
+        "REQ-029",
+        "REQ-032",
+        "REQ-033",
+        "REQ-037",
+        "REQ-038",
+        "REQ-039",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052",
+        "REQ-056",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-002"
+      ],
+      "deliverables": [
+        "模块化单体边界",
+        "jobs/outbox迁移",
+        "独立worker入口"
+      ],
+      "acceptance": "API进程不启动重复scheduler；多Worker单次领取、过期接管、重试、幂等和重启恢复可验证",
+      "shared_boundaries": [
+        "schema/migration"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S0-005",
+      "title": "Provider/OSS/Readiness、日志与health基础",
+      "stage": 0,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-08",
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-012",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-035",
+        "REQ-037",
+        "REQ-039",
+        "REQ-041",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052",
+        "REQ-055",
+        "REQ-056"
+      ],
+      "dependencies": [
+        "CORE-S0-001",
+        "CORE-S0-002"
+      ],
+      "deliverables": [
+        "Provider接口",
+        "私有存储Adapter",
+        "结构化日志和health/ready"
+      ],
+      "acceptance": "Adapter失败可观察；私密资产无公开降级；request_id贯通；health与依赖ready分离；状态附环境与证据",
+      "shared_boundaries": [
+        "provider interfaces",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S0-006",
+      "title": "后端CI与隔离测试入口",
+      "stage": 0,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-037",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052"
+      ],
+      "dependencies": [
+        "CORE-S0-002"
+      ],
+      "deliverables": [
+        "backend CI",
+        "测试数据库配置模板",
+        "复验说明"
+      ],
+      "acceptance": "在隔离MySQL执行有断言的迁移和服务端测试；无生产连接/收费请求；失败使CI失败",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S0-001",
+      "title": "Flutter工具链与现有页面/五入口映射",
+      "stage": 0,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-01",
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-037",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-000"
+      ],
+      "deliverables": [
+        "Flutter版本记录",
+        "旧页面到五入口映射",
+        "构建证据"
+      ],
+      "acceptance": "记录Flutter/Dart版本；pub get/analyze/test/debug build结果和遗留失败；IndexedStack现状复用",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S0-002",
+      "title": "Flutter设计系统与UI参考板",
+      "stage": 0,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-01"
+      ],
+      "req_refs": [
+        "REQ-033",
+        "REQ-034",
+        "REQ-042",
+        "REQ-044",
+        "REQ-045",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-S0-001"
+      ],
+      "deliverables": [
+        "Flutter Design System",
+        "UI reference board"
+      ],
+      "acceptance": "颜色/排版/组件和Loading/Empty/Error/Permission可复用；参考来源、页面边界有记录",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S0-003",
+      "title": "单一A/B Web正式工程与设计系统",
+      "stage": 0,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-01",
+        "WORK-02"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-010",
+        "REQ-016",
+        "REQ-023",
+        "REQ-031",
+        "REQ-033",
+        "REQ-034",
+        "REQ-037",
+        "REQ-039",
+        "REQ-042",
+        "REQ-044",
+        "REQ-045",
+        "REQ-046",
+        "REQ-047",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-000"
+      ],
+      "deliverables": [
+        "新建web工作台",
+        "Web Design System",
+        "本地构建记录"
+      ],
+      "acceptance": "Vue3/TypeScript/Vite/Router/Pinia/Element Plus单一工作台构建通过；A/B入口按权限设计",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S0-004",
+      "title": "契约客户端、登录shell与双端CI",
+      "stage": 0,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-01",
+        "WORK-02",
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-008",
+        "REQ-010",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-016",
+        "REQ-023",
+        "REQ-031",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-037",
+        "REQ-039",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-046",
+        "REQ-047",
+        "REQ-052",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-001",
+        "UX-S0-002",
+        "UX-S0-003"
+      ],
+      "deliverables": [
+        "Flutter/Web SDK wrapper",
+        "login/app shell",
+        "client CI"
+      ],
+      "acceptance": "两端可消费首批契约并构建；测试stub明确隔离；服务端缺能力展示未启用；CI失败不吞掉",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S1-001",
+      "title": "Core真实性问题F01–05/07–09/11–13及事实记录F14",
+      "stage": 1,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-02",
+        "WORK-07",
+        "WORK-08",
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-006",
+        "REQ-007",
+        "REQ-008",
+        "REQ-009",
+        "REQ-010",
+        "REQ-011",
+        "REQ-012",
+        "REQ-013",
+        "REQ-015",
+        "REQ-016",
+        "REQ-021",
+        "REQ-023",
+        "REQ-024",
+        "REQ-031",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-035",
+        "REQ-037",
+        "REQ-039",
+        "REQ-040",
+        "REQ-041",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-046",
+        "REQ-047",
+        "REQ-052",
+        "REQ-053",
+        "REQ-054",
+        "REQ-055",
+        "REQ-056",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S0-002",
+        "CORE-S0-004",
+        "CORE-S0-005"
+      ],
+      "deliverables": [
+        "F项修复与回归证据",
+        "历史数据处置说明"
+      ],
+      "acceptance": "每个F项有对应断言/证据；先拒绝假成功不等于真实Provider接通；F14旧前端文档由Experience维护",
+      "shared_boundaries": [
+        "auth/permission",
+        "payments/refunds",
+        "rights/licenses",
+        "provider interfaces"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S1-002",
+      "title": "Account/Party/Membership/Capability、权限和审计",
+      "stage": 1,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-02",
+        "WORK-13"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-010",
+        "REQ-016",
+        "REQ-020",
+        "REQ-023",
+        "REQ-031",
+        "REQ-037",
+        "REQ-039",
+        "REQ-040",
+        "REQ-041",
+        "REQ-042",
+        "REQ-044",
+        "REQ-046",
+        "REQ-047",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "CORE-S0-001",
+        "CORE-S0-002"
+      ],
+      "deliverables": [
+        "主体模型和权限service",
+        "审计事件"
+      ],
+      "acceptance": "跨主体越权拒绝；MCN邀请本人接受；多能力机构和个人作者成立；权限操作可审计",
+      "shared_boundaries": [
+        "schema/migration",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S1-003",
+      "title": "规则/合同/订单快照与Readiness业务门禁",
+      "stage": 1,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-05",
+        "WORK-07"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-006",
+        "REQ-007",
+        "REQ-008",
+        "REQ-009",
+        "REQ-010",
+        "REQ-012",
+        "REQ-014",
+        "REQ-021",
+        "REQ-022",
+        "REQ-024",
+        "REQ-028",
+        "REQ-034",
+        "REQ-035",
+        "REQ-036",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-049",
+        "REQ-051",
+        "REQ-053",
+        "REQ-054",
+        "REQ-056",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S1-002",
+        "CORE-S0-005"
+      ],
+      "deliverables": [
+        "RuleVersion/ContractSnapshot基础",
+        "能力门禁"
+      ],
+      "acceptance": "改默认不改历史订单；业务门禁以服务端事实判断；等待/禁用保留过去的验证记录",
+      "shared_boundaries": [
+        "schema/migration",
+        "provider interfaces",
+        "rights/licenses"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S1-001",
+      "title": "修复F06 Demo回退、F10 release签名及F14前端事实文档",
+      "stage": 1,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-037",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052"
+      ],
+      "dependencies": [
+        "UX-S0-001"
+      ],
+      "deliverables": [
+        "客户端真实性修复",
+        "签名构建失败/成功条件证据"
+      ],
+      "acceptance": "正式环境失败不返回本地成功；无正式签名release失败；旧导航报告与IndexedStack源码一致",
+      "shared_boundaries": [
+        "production release config"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S1-002",
+      "title": "登录主体切换、五入口、A/B shell与通用状态",
+      "stage": 1,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-02",
+        "WORK-10",
+        "WORK-11"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-009",
+        "REQ-010",
+        "REQ-012",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "REQ-020",
+        "REQ-023",
+        "REQ-024",
+        "REQ-025",
+        "REQ-026",
+        "REQ-028",
+        "REQ-029",
+        "REQ-031",
+        "REQ-035",
+        "REQ-036",
+        "REQ-037",
+        "REQ-039",
+        "REQ-042",
+        "REQ-046",
+        "REQ-047",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "UX-S0-004",
+        "CORE-S1-002",
+        "CORE-S1-003"
+      ],
+      "deliverables": [
+        "三端基础页面",
+        "通用Loading/Empty/Error/Permission",
+        "端到端基础验收"
+      ],
+      "acceptance": "首页/入戏/培育/成角/我的完整映射；未启用有原因和可执行动作；无越权展示或模拟业务成功",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S2-001",
+      "title": "数字人/脸声同意、作者供给、Work/Version、证据双审",
+      "stage": 2,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-02",
+        "WORK-03",
+        "WORK-04"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-010",
+        "REQ-014",
+        "REQ-016",
+        "REQ-021",
+        "REQ-022",
+        "REQ-023",
+        "REQ-031",
+        "REQ-037",
+        "REQ-039",
+        "REQ-042",
+        "REQ-046",
+        "REQ-047",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-058",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S1-002",
+        "CORE-S1-003"
+      ],
+      "deliverables": [
+        "avatar/rights/works模块",
+        "供给审核API"
+      ],
+      "acceptance": "权属和内容独立审核；原作与改稿分开；登记公证仅归档真实外部材料",
+      "shared_boundaries": [
+        "rights/licenses",
+        "schema/migration",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S2-002",
+      "title": "许可SKU/Grant/Binding、结构化独家、合同与受控阅读",
+      "stage": 2,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-05",
+        "WORK-06",
+        "WORK-08"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-010",
+        "REQ-011",
+        "REQ-012",
+        "REQ-014",
+        "REQ-022",
+        "REQ-028",
+        "REQ-035",
+        "REQ-036",
+        "REQ-039",
+        "REQ-041",
+        "REQ-042",
+        "REQ-049",
+        "REQ-051",
+        "REQ-052",
+        "REQ-054",
+        "REQ-055",
+        "REQ-056"
+      ],
+      "dependencies": [
+        "CORE-S2-001"
+      ],
+      "deliverables": [
+        "licensing模块",
+        "私有阅读与AI使用门禁"
+      ],
+      "acceptance": "供给到许可项目绑定闭环；并发不超卖；未知条款人工复核；阅稿不是独立付费商品",
+      "shared_boundaries": [
+        "rights/licenses",
+        "schema/migration",
+        "revoke/delete"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S2-001",
+      "title": "授权中心、入驻投稿、作品许可、受控阅读及A/B供给台",
+      "stage": 2,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-02",
+        "WORK-03",
+        "WORK-04",
+        "WORK-05",
+        "WORK-06",
+        "WORK-08"
+      ],
+      "req_refs": [
+        "REQ-006",
+        "REQ-007",
+        "REQ-010",
+        "REQ-011",
+        "REQ-012",
+        "REQ-014",
+        "REQ-016",
+        "REQ-021",
+        "REQ-022",
+        "REQ-023",
+        "REQ-028",
+        "REQ-031",
+        "REQ-035",
+        "REQ-036",
+        "REQ-037",
+        "REQ-039",
+        "REQ-041",
+        "REQ-042",
+        "REQ-046",
+        "REQ-047",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052",
+        "REQ-054",
+        "REQ-055",
+        "REQ-056",
+        "REQ-058",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-S1-002",
+        "CORE-S2-001",
+        "CORE-S2-002"
+      ],
+      "deliverables": [
+        "C授权与选本",
+        "A审核",
+        "B作者工作台"
+      ],
+      "acceptance": "供给方提交/补正/审核/上架/许可/绑定全过程可操作；阅读范围与用途明确",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S3-001",
+      "title": "Quote/Order/Payment/Alipay/IAP/Refund与旧单兼容",
+      "stage": 3,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-07",
+        "WORK-12"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-009",
+        "REQ-016",
+        "REQ-018",
+        "REQ-019",
+        "REQ-021",
+        "REQ-024",
+        "REQ-030",
+        "REQ-034",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-053",
+        "REQ-054",
+        "REQ-057",
+        "REQ-058",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S2-002",
+        "CORE-S1-001"
+      ],
+      "deliverables": [
+        "commerce模块",
+        "支付退款Adapter",
+        "旧单兼容映射"
+      ],
+      "acceptance": "通道可信事实驱动支付；回调/查单/退款幂等与归属可证；未知规格不发布；真实通道另验",
+      "shared_boundaries": [
+        "payments/refunds",
+        "schema/migration",
+        "provider interfaces"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S3-002",
+      "title": "ProductionTask、数字人Adapter、版本反馈和验收",
+      "stage": 3,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-09"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-011",
+        "REQ-012",
+        "REQ-021",
+        "REQ-029",
+        "REQ-038",
+        "REQ-039",
+        "REQ-040",
+        "REQ-043",
+        "REQ-056",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "CORE-S3-001",
+        "CORE-S0-004"
+      ],
+      "deliverables": [
+        "production模块",
+        "DigitalHuman Adapter",
+        "验收/交付API"
+      ],
+      "acceptance": "样片/粗剪/成片及反馈版本留痕；尾款条件和最终验收独立；AI任务可恢复",
+      "shared_boundaries": [
+        "provider interfaces",
+        "rights/licenses"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S3-001",
+      "title": "定制向导、报价收银、反馈验收及制作/售后台",
+      "stage": 3,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-07",
+        "WORK-09",
+        "WORK-12"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-009",
+        "REQ-011",
+        "REQ-012",
+        "REQ-016",
+        "REQ-018",
+        "REQ-019",
+        "REQ-021",
+        "REQ-024",
+        "REQ-029",
+        "REQ-030",
+        "REQ-034",
+        "REQ-038",
+        "REQ-039",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-053",
+        "REQ-054",
+        "REQ-056",
+        "REQ-057",
+        "REQ-058",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-S2-001",
+        "CORE-S3-001",
+        "CORE-S3-002"
+      ],
+      "deliverables": [
+        "C定制订单",
+        "B制作台",
+        "A订单制作售后",
+        "CP2演示证据"
+      ],
+      "acceptance": "选人选本到验收第一条内部完整闭环；测试证据不冒充真实支付/真实供应商",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S4-001",
+      "title": "商单、直接MCN合作、单笔佣金、三榜事实",
+      "stage": 4,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-10"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "REQ-020",
+        "REQ-023",
+        "REQ-024",
+        "REQ-031"
+      ],
+      "dependencies": [
+        "CORE-S3-001",
+        "CORE-S1-002"
+      ],
+      "deliverables": [
+        "gigs模块",
+        "MCN关系与佣金",
+        "排行事实"
+      ],
+      "acceptance": "无多层分销；关系有效期和佣金快照可追溯；榜单基于可核验事件",
+      "shared_boundaries": [
+        "schema/migration",
+        "auth/permission",
+        "settlement"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S4-002",
+      "title": "项目、角色报名邀约筛选、多方确认及发行台账",
+      "stage": 4,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-11"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-012",
+        "REQ-024",
+        "REQ-025",
+        "REQ-026",
+        "REQ-028",
+        "REQ-029",
+        "REQ-031",
+        "REQ-035",
+        "REQ-036"
+      ],
+      "dependencies": [
+        "CORE-S3-002",
+        "CORE-S2-002"
+      ],
+      "deliverables": [
+        "projects/release模块"
+      ],
+      "acceptance": "无通用竞拍；许可用途和多方确认满足再送审；内部通过不标外部已发行",
+      "shared_boundaries": [
+        "rights/licenses",
+        "schema/migration"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S4-001",
+      "title": "培育/商单/MCN/三榜/成角/项目及发行页面",
+      "stage": 4,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-10",
+        "WORK-11"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-012",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "REQ-020",
+        "REQ-023",
+        "REQ-024",
+        "REQ-025",
+        "REQ-026",
+        "REQ-028",
+        "REQ-029",
+        "REQ-031",
+        "REQ-035",
+        "REQ-036"
+      ],
+      "dependencies": [
+        "UX-S3-001",
+        "CORE-S4-001",
+        "CORE-S4-002"
+      ],
+      "deliverables": [
+        "Flutter业务页面",
+        "A/B项目协作和发行台"
+      ],
+      "acceptance": "商单与项目分别闭环；固定价/报价与最终确认清晰；外部发行状态附证据",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S5-001",
+      "title": "应付/出款/发行收入/结算/调整/对账与争议",
+      "stage": 5,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-12"
+      ],
+      "req_refs": [
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-016",
+        "REQ-018",
+        "REQ-019",
+        "REQ-030",
+        "REQ-034",
+        "REQ-042",
+        "REQ-043",
+        "REQ-057",
+        "REQ-058",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "CORE-S4-001",
+        "CORE-S4-002"
+      ],
+      "deliverables": [
+        "settlement模块",
+        "对账与调整",
+        "线下付款证据流程"
+      ],
+      "acceptance": "三类钱独立可追溯；可真实线下付款附凭证，自动出款未验收不得报成功；冲正不改历史",
+      "shared_boundaries": [
+        "settlement",
+        "payments/refunds",
+        "schema/migration"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S5-002",
+      "title": "业务通知、订单/项目评论、报表与运营审计",
+      "stage": 5,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-13"
+      ],
+      "req_refs": [
+        "REQ-020",
+        "REQ-040",
+        "REQ-041",
+        "REQ-042",
+        "REQ-044",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "CORE-S5-001"
+      ],
+      "deliverables": [
+        "governance通知评论",
+        "经营报表API"
+      ],
+      "acceptance": "只建业务通知与对象内评论；无通用IM；权限/审计/经营指标可复核",
+      "shared_boundaries": [
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S5-001",
+      "title": "A财务/B结算/C本人收入、异议确认与报表",
+      "stage": 5,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-12",
+        "WORK-13"
+      ],
+      "req_refs": [
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-016",
+        "REQ-018",
+        "REQ-019",
+        "REQ-020",
+        "REQ-030",
+        "REQ-034",
+        "REQ-040",
+        "REQ-041",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-057",
+        "REQ-058",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "UX-S4-001",
+        "CORE-S5-001",
+        "CORE-S5-002"
+      ],
+      "deliverables": [
+        "财务运营页面",
+        "通知和对象评论",
+        "CP3对账证据"
+      ],
+      "acceptance": "客户交易款、供给应付和发行收入分别展示；凭证/异议/调整可追溯",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "CORE-S6-001",
+      "title": "迁移演练/备份恢复/真实Provider/安全负载与runbook",
+      "stage": 6,
+      "stream": "Core",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-037",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052"
+      ],
+      "dependencies": [
+        "CORE-S5-001",
+        "CORE-S5-002",
+        "CORE-S0-003",
+        "CORE-S0-006"
+      ],
+      "deliverables": [
+        "Production Candidate服务端证据",
+        "迁移恢复报告",
+        "运维runbook"
+      ],
+      "acceptance": "隔离演练可恢复且对账；真实验收另经授权；生产候选附限制与回滚方案，不自动部署",
+      "shared_boundaries": [
+        "schema/migration",
+        "production release config",
+        "provider interfaces",
+        "revoke/delete"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    },
+    {
+      "id": "UX-S6-001",
+      "title": "Android/iOS/Web发布构建、真机适配与商店材料",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": null,
+      "status": "PLANNED",
+      "branch": null,
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-008",
+        "REQ-011",
+        "REQ-013",
+        "REQ-015",
+        "REQ-032",
+        "REQ-033",
+        "REQ-037",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-052"
+      ],
+      "dependencies": [
+        "UX-S5-001",
+        "UX-S1-001"
+      ],
+      "deliverables": [
+        "客户端Production Candidate",
+        "真机记录",
+        "发布材料"
+      ],
+      "acceptance": "签名/证书与包可验证；真机和响应式证据；iOS依赖实际macOS/Xcode；候选不等于已上架",
+      "shared_boundaries": [
+        "production release config"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": []
+    }
+  ]
+}

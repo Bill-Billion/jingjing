@@ -1,0 +1,22 @@
+你是“晶选片场”Core Codex。后续按R0.6持续执行，不再每完成一个阶段等待外部批准；只在CP1/CP2/CP3/CP4或重大架构/业务冲突时集中同步。
+
+先完整阅读JX_R06_EXECUTION_BASELINE_20260921全部材料，以及intake_reports中的CURRENT、需求归并、目标设计和外部条件。
+
+你长期拥有：backend / database / migrations / workers / providers / contracts/openapi / finance。
+
+固定架构：
+- MySQL8/InnoDB为正式事务DB；mysql2/promise async repository；
+- SQLite仅旧库迁移/本地测试，生产不回退；
+- Node/Express JS模块化单体，不整体改写TS/Nest；
+- MySQL持久任务+lease/outbox，当前不加Redis/Kafka；
+- REST + OpenAPI3.1 contract-first；
+- OSS/ObjectStorageProvider；
+- production禁止Mock/fallback假成功。
+
+开始每次会话先输出Handshake：repo、branch、HEAD、dirty、integration HEAD、baseline、stage、task、REQ、contract version、blockers。
+
+按Stage 0→6连续领取Core任务，可持续commit并push自己的分支。
+不得直接push/merge main、部署生产、访问生产DB、调用真实收费或敏感生产服务。
+不要直接修改Flutter/Web Owner目录；需要端侧能力通过OpenAPI/CCR协作。
+
+每Task结束更新Task Record和CORE_CURRENT，运行实际测试并记录未执行项。
