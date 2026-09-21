@@ -2,6 +2,8 @@
 
 Owner chengcongcong222；Stage0；IN_REVIEW。独立分支core/s0-002-mysql-foundation从integration@ac34c48开始，不依赖未评审的API候选。实现及自验完成，尚未获得跨流评审，不能标DONE或合入integration。
 
+发布：实现提交65db595已推送，[PR #2](https://github.com/Bill-Billion/jingjing/pull/2)已创建，目标integration。main/integration保持原提交；未代队友review。
+
 执行计划：
 
 1. 本机便携MySQL8.4，仅127.0.0.1，独立端口与.local数据目录；不注册服务、不使用生产.env。

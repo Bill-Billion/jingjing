@@ -8,6 +8,7 @@
 - 环境收尾：本机实例正常关闭，临时J盘别名已撤销，二进制/数据/随机口令只在.local；无系统服务、无生产库连接或部署。
 - 当前限制：旧Express路由尚未异步迁移；生产使用旧db.js会明确拒绝启动。本分支不是完整生产切换包；托管库/TLS、旧数据、备份恢复、负载、Worker和真实Provider未验。
 - 共享边界：CCR-002/schema-migration待Experience交叉review，不标DONE，不合入integration。
+- 发布：实现提交65db595已推送，[PR #2](https://github.com/Bill-Billion/jingjing/pull/2)目标integration，OPEN且未合并；本记录的发布信息另附普通提交。
 - 契约：0.1.0-rc.1候选在独立[PR #1](https://github.com/Bill-Billion/jingjing/pull/1)，同样IN_REVIEW；本分支不包含未合并主契约。两流评审不能由本侧代签。
 - 下一步：依据基础分支安排CORE-S0-003旧库导入或CORE-S0-004持久Worker；依赖与评审状态按board检查，正式合入前保持schema单一Owner。无旧样本只阻断对应旧数据实证。
 - 原CORE-S0-000已完成；main/integration本轮未变。合并两个Core PR时保留双方任务状态与证据，不整份覆盖board/CURRENT。
