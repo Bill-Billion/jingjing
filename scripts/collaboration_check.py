@@ -30,7 +30,7 @@ def render_tasks(board):
         '# 全部工作安排：谁做什么，怎样算做完', '',
         '**本侧负责服务器和数据库；队友负责App和网页。** '
         '下面共30组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
-        '现在本侧先做“每次上传代码后自动检查有没有弄坏已有功能”；'
+        '上传代码后的自动检查已在本次开发分支跑通；本侧下一步检查支付、实名和文件存储等外部服务的接入状态；'
         '队友可先运行现有App、整理五个主入口，并搭建运营和合作方网页。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
@@ -50,7 +50,7 @@ def render_tasks(board):
             who += '；已接手' if t['owner'] else '；尚未接手'
             dependencies = '；'.join(names[d] for d in t['dependencies']) or '可独立开始'
             lines.append('|{}|{}|{}|{}|{}|'.format(names[t['id']], who,
-                states[t['status']], explanations[t['id']]['done_when'], dependencies))
+                ('已写好并测过，等所需代码先合入' if t['status'] == 'IN_REVIEW' and t['review_status'] == 'NOT_REQUIRED' else states[t['status']]), explanations[t['id']]['done_when'], dependencies))
         lines.append('')
     lines.extend(['## 需要查文件或交给Codex操作时再看这里', '',
                   '工作名称与技术记录的对应关系如下。编号只用于查找；'

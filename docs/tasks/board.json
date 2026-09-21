@@ -303,7 +303,7 @@
       "stage": 0,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "branch": "core/s0-006-backend-checks",
       "work_refs": [
         "WORK-14"
@@ -323,7 +323,8 @@
         "REQ-052"
       ],
       "dependencies": [
-        "CORE-S0-002"
+        "CORE-S0-002",
+        "CORE-S0-004"
       ],
       "deliverables": [
         "backend CI",
@@ -333,10 +334,16 @@
       "acceptance": "在隔离MySQL执行有断言的迁移和服务端测试；无生产连接/收费请求；失败使CI失败",
       "shared_boundaries": [],
       "review_status": "NOT_REQUIRED",
-      "test_status": "NOT_RUN",
-      "evidence": [],
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S0-006.md",
+        "docs/tasks/records/CORE-S0-006-validation.json"
+      ],
       "blockers": [
-        "基于尚待检查的数据库和后台任务代码开展；这些基础代码须先通过检查，才能一起进入共同版本。"
+        "检查已在本分支实际跑通；依赖的数据库和后台任务须先经另一方检查并进入共同版本，之后再合入本次自动检查。自动检查本身不额外增加审批。"
+      ],
+      "external_evidence_refs": [
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35581686390"
       ]
     },
     {
