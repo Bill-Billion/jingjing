@@ -11,3 +11,5 @@
 当前分支core/s0-006-backend-checks；任务查找编号CORE-S0-006。本次没有部署或调用真实供应商，本机测试数据库已关闭。
 
 [完整计划](MAINLINE_PROGRESS.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md) · [全部工作](../tasks/README.md)。
+
+本轮已上传[自动检查的代码合并申请](https://github.com/Bill-Billion/jingjing/pull/5)，等待所需基础代码先进入共同版本；本次尚未合并，不代表正式业务已启用。

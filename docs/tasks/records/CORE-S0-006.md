@@ -30,3 +30,5 @@
 [双方查看结果的方法](../../collaboration/AUTOMATIC_CHECKS.md)；[整体计划和累计进度](../../status/MAINLINE_PROGRESS.md)。
 
 技术查找记录：CORE-S0-006，owner=chengcongcong222；分支core/s0-006-backend-checks，基于34e2ffe7d95daeed4c6fde63528f4cafba787941；开工共同版本736a9ec，工作目录干净；认领先以dd55267上传。原依赖数据库基础，本次因实际检查后台任务而明确补入该依赖；没有新增业务范围。关联需求仍按board中的WORK-14原范围。状态IN_REVIEW表示等待依赖合入，review_status仍NOT_REQUIRED，不新增一层人工批准。
+
+本轮已上传[自动检查的代码合并申请](https://github.com/Bill-Billion/jingjing/pull/5)，等待所需基础代码先进入共同版本；本次尚未合并，不代表正式业务已启用。
