@@ -1,7 +1,7 @@
 // services/providers/index.js - 上游供应商适配层统一入口与就绪度注册表
 // 统一约定：
 //  1) 所有密钥/凭证只从 .env 经 config 读取，绝不硬编码、不进前端/日志；
-//  2) 缺凭证时显式"未就绪/降级"，绝不假装已接通（支付在生产直接禁用，存储/机审/短信走本地或人工兜底）；
+//  2) 此处仅是旧模块入口；新服务统一检查见 src/modules/providers。旧路由尚未全部迁移；
 //  3) 各 Provider 接口形状见同目录 README。业务侧优先从这里取，便于替换供应商。
 const config = require('../../config');
 
@@ -24,40 +24,16 @@ function getPaymentProvider(channel) {
 
 // 凭证/通道就绪度（只返回布尔与名称，绝不回传密钥），供 /health 与后台诊断
 function providerStatus() {
-  const smsStat = sms.channelStatus ? sms.channelStatus() : { ready: false };
+  // Configuration is not proof that a provider works. Legacy routes still require migration.
+  const state = { current_status:'NOT_IMPLEMENTED', verified:false };
   return {
-    storage: {
-      driver: config.upload.oss.enabled ? 'oss-or-local-fallback' : 'local',
-      ossWanted: !!config.upload.oss.enabled,
-      ossReady: config.upload.oss.enabled && storage.ossConfigured(),
-    },
-    moderation: {
-      wanted: !!config.contentModeration.enabled,
-      provider: moderation.providerName ? moderation.providerName() : (config.compliance && config.compliance.provider),
-      cloudReady: moderation.cloudConfigured(),
-      effective: moderation.cloudConfigured() ? (config.contentModeration.provider || moderation.providerName()) : 'local+human',
-    },
-    // V12.6 合规三件套就绪度（只回布尔/名称，不回密钥）：默认 volc，可切 aliyun
-    compliance: {
-      provider: config.compliance && config.compliance.provider,
-      idVerifyReady: idVerify.ready(),
-      faceVerifyReady: faceVerify.ready(),
-      moderationCloudReady: moderation.cloudConfigured(),
-    },
-    sms: { wanted: !!config.sms.enabled, ready: !!smsStat.ready },
-    ai: {
-      arkReady: !!config.volc.arkApiKey,
-      t2vModel: !!config.volc.t2vModel,
-      t2iModel: !!config.volc.t2iModel,
-      speechReady: !!(config.sms ? true : true) && !!(config.volc.speechKey),
-    },
-    payment: {
-      wechatEcommerce: !!config.wxPay.ecommerce.enabled,
-      alipayDirect: !!config.alipay.directPay.enabled,
-      // 生产环境若两者都未开，paymentService 会直接拒绝 Mock（防二清/伪造回调）
-      mockAllowed: config.env !== 'production',
-    },
-    alert: { webhookConfigured: !!config.alert.webhookUrl },
+    storage:{...state, driver:'legacy-disabled-for-private-assets', ossWanted:!!config.upload.oss.enabled, configured:storage.ossConfigured(), ossReady:false},
+    moderation:{...state, configured:moderation.cloudConfigured(), cloudReady:false},
+    compliance:{...state, idVerifyConfigured:idVerify.ready(), faceVerifyConfigured:faceVerify.ready(), idVerifyReady:false, faceVerifyReady:false, moderationCloudReady:false},
+    sms:{...state, configured:!!sms.channelStatus?.().ready, ready:false},
+    ai:{...state, configured:!!config.volc.arkApiKey, arkReady:false, speechReady:false},
+    payment:{...state, wechatEcommerceConfigured:!!config.wxPay.ecommerce.enabled, alipayDirectConfigured:!!config.alipay.directPay.enabled},
+    alert:{webhookConfigured:!!config.alert.webhookUrl},
   };
 }
 

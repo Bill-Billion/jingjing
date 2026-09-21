@@ -7,6 +7,9 @@ require('./db');
 const pkg = require('./package.json');
 
 const app = express();
+app.use(require('./src/infrastructure/observability').requestContext());
+// Legacy SQLite routes are not the migrated MySQL application. Never report them ready.
+app.use(require('./src/http/operations').createOperationsRouter());
 
 // 安全中间件
 app.disable('x-powered-by');
@@ -41,7 +44,7 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // 静态文件（生产环境用OSS，本地仅开发）
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+if (['development','test'].includes(config.env)) app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   maxAge: '7d',
   setHeaders: (res) => { res.setHeader('X-Content-Type-Options', 'nosniff'); },
 }));

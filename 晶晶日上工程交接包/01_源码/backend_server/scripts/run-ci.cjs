@@ -18,6 +18,7 @@ function main() {
   const suites = [
     { name: 'mysql', args: ['scripts/test-mysql.js'], allowedSkips: 0 },
     { name: 'worker', args: ['scripts/test-mysql.js', 'worker'], allowedSkips: 0 },
+    { name: 'providers', args: ['scripts/test-mysql.js', 'providers'], allowedSkips: 0 },
     { name: 'regression', args: ['scripts/run-tests.cjs'], allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
   ];
   for (const suite of suites) {

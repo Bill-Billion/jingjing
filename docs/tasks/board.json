@@ -252,7 +252,7 @@
       "stage": 0,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "branch": "core/s0-005-provider-readiness",
       "work_refs": [
         "WORK-08",
@@ -291,13 +291,17 @@
       "shared_boundaries": [
         "provider interfaces",
         "auth/permission",
-        "schema/migration"
+        "schema/migration",
+        "revoke/delete"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S0-005.md",
+        "docs/tasks/records/CORE-S0-005-validation.json"
+      ],
       "blockers": [
-        "真实外部服务未授权调用；本轮先完成接入边界、状态与安全失败处理。依赖的数据格式和数据库仍待另一方检查。"
+        "基础实现通过本机隔离测试；待另一方检查及前置代码合入。真实外部服务未验证，运营权限和旧业务接线在后续任务完成。"
       ]
     },
     {
