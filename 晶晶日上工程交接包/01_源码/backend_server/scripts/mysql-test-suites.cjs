@@ -5,4 +5,5 @@ module.exports=Object.freeze({
  worker:['test/worker.integration.test.cjs','test/worker.test.cjs'],
  providers:['test/provider-foundation.test.cjs','test/provider-readiness.integration.test.cjs','test/storage.test.cjs'],
  party:['test/party.integration.test.cjs'],
+ 'account-api':['test/account-api.integration.test.cjs','test/auth-security.test.cjs'],
 });
