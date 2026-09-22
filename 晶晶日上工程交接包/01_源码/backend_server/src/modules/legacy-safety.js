@@ -21,4 +21,10 @@ function assessLegacyIdentity(identity) {
 function assessLegacyPayment(status) {
   return {status:'unverified',recordedStatus:status,paid:false,paymentVerified:false,verificationStatus:'legacy_unverified'};
 }
-module.exports={paymentUnavailable,rejectLegacyPayment,rejectLegacyCallback,rejectLegacyIdentity,assessLegacyIdentity,assessLegacyPayment};
+function legacySettlementUnavailable() {
+  return Object.assign(new Error('历史付款、交付及合作授权尚未核实，本次未验收或结算。'), {code:'LEGACY_SETTLEMENT_NOT_READY',status:503});
+}
+function rejectLegacySettlement(req,res) {
+  return res.status(503).json({code:'LEGACY_SETTLEMENT_NOT_READY',status:'not_enabled',settled:false,message:legacySettlementUnavailable().message});
+}
+module.exports={legacySettlementUnavailable,rejectLegacySettlement,paymentUnavailable,rejectLegacyPayment,rejectLegacyCallback,rejectLegacyIdentity,assessLegacyIdentity,assessLegacyPayment};

@@ -26,3 +26,11 @@
 5. 生成任务审核通过不是交付证明；历史订单状态不批量改写。页面不得把以上拒绝、空证据或历史标记改成演示成功。
 
 [第二批成果与测试](../tasks/records/CORE-S1-001-20260922.md)。整组仍在做，尚未替另一方批准数据库结构、权限和交付行为变化。
+
+## 第三批：MCN身份、访问和结算影响
+
+机构申请只保存pending材料，不写个人身份、不附带免费期承诺。旧添加/移除艺人、名单/收益/导出/排名暂返回503 MCN_CONSENT_NOT_READY；机构概况仅本人可读，历史状态以recordedStatus保留，verified=false，talents=[]且cooperationStatus=not_enabled。空列表不代表没有历史关系。
+
+批量出款返回503 MCN_PAYOUT_NOT_READY、submitted=false，无假编号或到账承诺；粉丝画像返回503 MCN_ANALYTICS_NOT_READY，无编造统计。祝福视频与代言视频旧验收返回503 LEGACY_SETTLEMENT_NOT_READY、settled=false；内部旧结算调用也失败，避免历史未核验关系继续分佣。未登录均由原登录校验拒绝。
+
+历史身份、关系、订单和钱包没有批量改动，旧代码保留在Git历史。本轮不建新表，完整邀请本人确认和权限模型在下一项MySQL工作中实现。不得只删除拦截恢复旧授权；新成员身份也不能自动授予作品许可、读取全部历史收入或代收款权。[第三批结果](../tasks/records/CORE-S1-001-20260922-MCN.md)。待另一方实际检查身份、数据访问及结算变化，尚未批准合入。

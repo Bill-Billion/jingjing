@@ -49,3 +49,11 @@ FIELD_ENC_KEY必须是正好32个UTF-8字节，不设默认、不截断。生产
 GET /scripts/browse登录后返回503 SCRIPT_READING_NOT_READY，不返回他人剧本。POST /samples/:id/deliver、/videos/deliver/:orderNo、/endorsement/deliver/:orderNo登录后返回503 WATERMARK_NOT_IMPLEMENTED、status=not_enabled、delivered=false；未登录仍401。这是统一暂停入口，不读订单，所以不会泄露是否存在该订单。保留原交付函数供后续迁移参考，目前不可达。
 
 embedBlindWatermark始终success=false、watermarkId=null；verifyBlindWatermark始终verified=false且明确未启用，不能把它理解为“已验证该文件没有水印”。环境配置无法开启占位逻辑。AI生成任务的成功或审核通过仅表示相应生成记录，不能作为真实标识处理或订单交付证据；历史交付状态没有批量改写。后续需完成真实文件处理、权限、证据和验收，才能恢复交付。
+
+## 第三批：MCN合作和历史结算
+
+机构申请只保存pending材料，不写个人身份、不附带免费期承诺。旧添加/移除艺人、名单/收益/导出/排名暂返回503 MCN_CONSENT_NOT_READY；机构概况仅本人可读，历史状态以recordedStatus保留，verified=false，talents=[]且cooperationStatus=not_enabled。空列表不代表没有历史关系。
+
+批量出款返回503 MCN_PAYOUT_NOT_READY、submitted=false，无假编号或到账承诺；粉丝画像返回503 MCN_ANALYTICS_NOT_READY，无编造统计。祝福视频与代言视频旧验收返回503 LEGACY_SETTLEMENT_NOT_READY、settled=false；内部旧结算调用也失败，避免历史未核验关系继续分佣。未登录均由原登录校验拒绝。
+
+历史身份、关系、订单和钱包没有批量改动，旧代码保留在Git历史。本轮不建新表，完整邀请本人确认和权限模型在下一项MySQL工作中实现。不得只删除拦截恢复旧授权；新成员身份也不能自动授予作品许可、读取全部历史收入或代收款权。待另一方实际检查身份、数据访问及结算变化，尚未批准合入。

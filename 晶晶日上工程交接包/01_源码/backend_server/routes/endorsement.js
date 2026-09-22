@@ -1,3 +1,4 @@
+const { legacySettlementUnavailable, rejectLegacySettlement } = require('../src/modules/legacy-safety');
 const { rejectUnmarkedDelivery } = require('../utils/watermark');
 // routes/endorsement.js - 品牌代言（V2：金额分+越权修复+内容审核）
 const express = require('express');
@@ -131,7 +132,7 @@ router.post('/deliver/:orderNo', auth, rejectUnmarkedDelivery, async (req, res) 
 });
 
 // 验收
-router.post('/verify/:orderNo', auth, (req, res) => {
+router.post('/verify/:orderNo', auth, rejectLegacySettlement, (req, res) => {
   const order = db.prepare('SELECT * FROM endorsement_orders WHERE order_no = ? AND user_id = ?').get(req.params.orderNo, req.userId);
   if (!order) return res.status(404).json({ message: '订单不存在' });
   if (order.status !== 'delivered') return res.status(400).json({ message: '订单状态异常' });
@@ -192,6 +193,7 @@ router.post('/tasks/:id/apply', auth, (req, res) => {
 });
 
 function settleEndorsement(order) {
+  throw legacySettlementUnavailable(); // Also blocks legacy scheduler/internal callers.
   withLock(`settle:${order.order_no}`, () => {
     if (order.settle_status === 'settled') return;
     const human = db.prepare('SELECT id, user_id FROM humans WHERE id = ?').get(order.talent_id);

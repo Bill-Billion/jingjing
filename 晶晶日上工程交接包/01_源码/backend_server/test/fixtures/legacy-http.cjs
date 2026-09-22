@@ -27,8 +27,10 @@ async function fixture(t) {
  app.use('/settlement',load('routes/settlement.js'));
  app.use('/face',load('routes/faceverify.js'));
  app.use('/scripts',load('routes/scripts.js'));
+ app.use('/mcn',load('routes/mcn.js'));
  const deliveryDeps={'../utils/idempotent':{withLock:bump},'../utils/consent':{recordConsent:bump},'../utils/deposit':{checkDepositSufficient:bump,collectDepositFromIncome:bump},'./review':{submitReview:bump},'../middleware/rateLimit':{createOrder:(req,res,next)=>next()}};
- app.use('/videos',load('routes/videos.js',deliveryDeps));
+ const videos=load('routes/videos.js',deliveryDeps);
+ app.use('/videos',videos);
  app.use('/endorsement',load('routes/endorsement.js',deliveryDeps));
  app.use((err,req,res,next)=>res.status(500).json({error:'fixture-handler-error'}));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
@@ -40,6 +42,6 @@ async function fixture(t) {
    const req=http.request({hostname:'127.0.0.1',port:server.address().port,method,path:url,headers},res=>{let raw='';res.on('data',x=>raw+=x);res.on('end',()=>{let data;try{data=JSON.parse(raw);}catch{data=raw;}resolve({status:res.statusCode,body:data});});});req.setTimeout(2000,()=>req.destroy(Error('Local test request timed out')));req.on('error',reject);req.end(bytes);
   });
  }
- return {db,request,payment,alipay,idVerify,upstream:()=>upstream};
+ return {db,request,payment,alipay,idVerify,videos,upstream:()=>upstream};
 }
 module.exports={fixture};

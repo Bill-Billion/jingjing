@@ -1,3 +1,4 @@
+const { legacySettlementUnavailable, rejectLegacySettlement } = require('../src/modules/legacy-safety');
 const { rejectUnmarkedDelivery } = require('../utils/watermark');
 // routes/videos.js - 视频模板与订单（V2：担保交易+越权修复+金额分）
 const express = require('express');
@@ -190,7 +191,7 @@ router.post('/deliver/:orderNo', auth, rejectUnmarkedDelivery, async (req, res) 
 });
 
 // 客户验收确认
-router.post('/verify/:orderNo', auth, (req, res) => {
+router.post('/verify/:orderNo', auth, rejectLegacySettlement, (req, res) => {
   const order = db.prepare('SELECT * FROM video_orders WHERE order_no = ? AND user_id = ?').get(req.params.orderNo, req.userId);
   if (!order) return res.status(404).json({ message: '订单不存在' });
   if (order.status !== 'delivered') return res.status(400).json({ message: '订单状态异常' });
@@ -261,6 +262,7 @@ router.get('/order/:orderNo', auth, (req, res) => {
 
 // ============ 结算（内部函数） ============
 function settleOrder(order) {
+  throw legacySettlementUnavailable(); // Also blocks legacy scheduler/internal callers.
   withLock(`settle:${order.order_no}`, () => {
     if (order.settle_status === 'settled') return; // 幂等
 
