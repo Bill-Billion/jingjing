@@ -1,6 +1,6 @@
 # 个人、机构与本人接受邀请：服务器基础已实现
 
-本侧已写好第一批MySQL代码并通过本机隔离测试，待上传后由GitHub复验。现在实现的是服务器内部流程，尚未接到登录、App和网页，也没有启用真实商业合作。整项账号权限工作仍在进行。
+本侧已写好第一批MySQL代码，通过本机和GitHub隔离测试，已上传[第8份合并申请](https://github.com/Bill-Billion/jingjing/pull/8)。现在实现的是服务器内部流程，尚未接到登录、App和网页，也没有启用真实商业合作。整项账号权限工作仍在进行。
 
 ## 这次实际做成什么
 
@@ -46,3 +46,7 @@
 新增MySQL迁移0008–0014；内部实现为src/modules/party/repository.js。没有修改旧SQLite结构、旧业务登录或主OpenAPI。数据库和权限变化需另一方实际检查后才进入共同版本。[需要检查的影响](../../collaboration/CCR-008-party-membership.md) · [完整计划](../../status/MAINLINE_PROGRESS.md)。
 
 本机测试数据库已关闭，33316端口不再监听，临时J盘映射核对后已撤销。
+
+代码7c907e2已通过[GitHub复验](https://github.com/Bill-Billion/jingjing/actions/runs/35680697354)，数量与本机一致。[远端汇总](CORE-S1-002-evidence/github-summary.json)及原始日志已归档，13个代码/配置文件校验值一致，远端测试数据库清理成功。当前未合入，也未部署。
+
+开工认领提交b496d15的第一次远端材料检查因任务展示表未重新生成而失败，当次未执行应用测试；现已重新生成并随7c907e2通过检查，未将该次失败计为通过。
