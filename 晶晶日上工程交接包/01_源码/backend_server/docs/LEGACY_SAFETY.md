@@ -26,7 +26,7 @@
 
 旧退款算法保留用于隔离核算测试。`createPaymentService`可由可信代码显式注入测试用供应商；应用使用的默认实例没有供应商，任何环境都拒绝。没有HTTP参数、环境开关或自动回退可选中测试替身。当前只有测试文件显式注入替身，不能称为真实退款已经验证。
 
-个人证件本轮未保存，所以没有借机修复旧加密工具的所有问题；加密配置和旧密文迁移仍在后续任务。新运营权限、MCN邀请确认、完整财务、已签合同与证据都仍须按各任务建设。
+个人证件未启用时仍不保存；第二批已修加密配置和失败处理，旧密文实际迁移仍待后续任务。新运营权限、MCN邀请确认、完整财务、已签合同与证据都仍须按各任务建设。
 
 ## 验证方法
 
@@ -37,3 +37,15 @@
 四个历史自测脚本仍期待自动批准或演示付款，本轮已让它们在加载服务前明确退出：aliyun_compliance_selftest、volc_compliance_selftest、verify_pay_skeleton、pay_sandbox_joint_test。不要据旧脚本要求恢复不安全行为；它们的源文件保留，当前验收以新测试为准。
 
 本轮没有修改客户端。App/网页需把503显示为“未启用/未受理”，把unverified显示为“历史记录待核验”，不得自动切换演示成功。接口输入输出的共同影响须由队友检查，见本轮共同修改说明。
+
+## 第二批：样片、加密、剧本摘要与交付
+
+2026-09-22新增SQLite迁移006，只补sample_library.video_url与scripts.digest_kind两列，允许历史空值，不重写旧迁移或历史摘要。样片库查询无视频链接时返回video_url=null。正式业务仍以MySQL8为目标。
+
+FIELD_ENC_KEY必须是正好32个UTF-8字节，不设默认、不截断。生产应用启动缺配置即失败，开发环境显式填写的错误配置也在启动时拒绝；开发未使用敏感字段可无配置，但加解密操作始终要求有效密钥。密钥按进程固定，更换需重启与明确迁移方案。兼容原iv:tag:ciphertext的有效AES-256-GCM格式；格式错返回FIELD_CIPHERTEXT_INVALID，认证失败返回FIELD_DECRYPTION_FAILED，不吞为空值。错误不含原密钥或密文。历史长密钥曾被截断，须人工核对其实际字节后再制定换钥，不默认替用户截断或重加密。
+
+剧本上传和自己的投稿列表不再返回可被误认为第三方证据的evidenceHash（改为null）。新上传返回submissionDigest、digestScope=submission_metadata、evidenceStatus=not_verified和trustedTimestamp=false。摘要只覆盖固定JSON字段title/synopsis/fileUrl，不覆盖文件字节，不是版权证明或可信时间戳。存入旧evidence_hash字段同时记digest_kind=submission_metadata_v1；历史值原样保留。自己的列表用recordedDigest显示原记录，新记录另有submissionDigest；历史digestScope=legacy_unclassified、submissionDigest=null，即便有旧交易号也不能据此报已验证。
+
+GET /scripts/browse登录后返回503 SCRIPT_READING_NOT_READY，不返回他人剧本。POST /samples/:id/deliver、/videos/deliver/:orderNo、/endorsement/deliver/:orderNo登录后返回503 WATERMARK_NOT_IMPLEMENTED、status=not_enabled、delivered=false；未登录仍401。这是统一暂停入口，不读订单，所以不会泄露是否存在该订单。保留原交付函数供后续迁移参考，目前不可达。
+
+embedBlindWatermark始终success=false、watermarkId=null；verifyBlindWatermark始终verified=false且明确未启用，不能把它理解为“已验证该文件没有水印”。环境配置无法开启占位逻辑。AI生成任务的成功或审核通过仅表示相应生成记录，不能作为真实标识处理或订单交付证据；历史交付状态没有批量改写。后续需完成真实文件处理、权限、证据和验收，才能恢复交付。

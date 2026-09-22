@@ -1,3 +1,4 @@
+const { rejectUnmarkedDelivery } = require('../utils/watermark');
 // routes/videos.js - 视频模板与订单（V2：担保交易+越权修复+金额分）
 const express = require('express');
 const db = require('../db');
@@ -169,7 +170,7 @@ router.post('/accept/:orderNo', auth, (req, res) => {
 });
 
 // 艺人交付视频（越权修复 + 内容审核）
-router.post('/deliver/:orderNo', auth, async (req, res) => {
+router.post('/deliver/:orderNo', auth, rejectUnmarkedDelivery, async (req, res) => {
   const { videoUrl } = req.body;
   if (!videoUrl) return res.status(400).json({ message: '请提供视频地址' });
   const order = db.prepare('SELECT * FROM video_orders WHERE order_no = ?').get(req.params.orderNo);

@@ -17,3 +17,5 @@
 服务器本轮新增服务状态和私密文件保护基础，已通过本机和GitHub测试但未进入共同版本，真实服务仍未验证。旧上传在权限未明确前会失败，页面应展示实际原因；不能补一个演示成功掩盖问题。需要检查的共同影响见[本轮说明](../collaboration/CCR-005-provider-readiness.md)。
 
 本轮服务器已修旧付款按钮、个人实名自动批准和付款查询归属。旧支付/实名相关入口会明确返回未启用，历史记录显示待核验；个人证件未保存时明确submitted=false。请检查页面不要捕获这些失败后显示演示成功。本侧没有修改Flutter或网页，未声称你方已经配合完成。[具体返回和影响](../collaboration/CCR-007-legacy-truthfulness.md)。
+
+2026-09-22页面配合新增：剧本上传成功只表示资料保存，submissionDigest是提交信息摘要，evidenceHash返回null，不能显示“已存证”；历史摘要只作原记录。浏览他人剧本暂返回SCRIPT_READING_NOT_READY；样片、祝福视频、代言视频交付暂返回WATERMARK_NOT_IMPLEMENTED及delivered=false。都应显示未启用，不补演示结果；自己的投稿列表仍可用。详见[第二批结果](../tasks/records/CORE-S1-001-20260922.md)。

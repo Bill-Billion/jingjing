@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const config = require('./config');
+if (config.env === 'production' || process.env.FIELD_ENC_KEY !== undefined) {
+  require('./utils/crypto').assertFieldEncryptionConfigured();
+}
 require('./db');
 const pkg = require('./package.json');
 

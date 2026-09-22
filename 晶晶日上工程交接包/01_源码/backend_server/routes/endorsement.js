@@ -1,3 +1,4 @@
+const { rejectUnmarkedDelivery } = require('../utils/watermark');
 // routes/endorsement.js - 品牌代言（V2：金额分+越权修复+内容审核）
 const express = require('express');
 const db = require('../db');
@@ -113,7 +114,7 @@ router.post('/accept/:orderNo', auth, (req, res) => {
 });
 
 // 交付（越权修复+内容审核）
-router.post('/deliver/:orderNo', auth, async (req, res) => {
+router.post('/deliver/:orderNo', auth, rejectUnmarkedDelivery, async (req, res) => {
   const { videoUrl, materialUrls } = req.body;
   const order = db.prepare('SELECT * FROM endorsement_orders WHERE order_no = ?').get(req.params.orderNo);
   if (!order) return res.status(404).json({ message: '订单不存在' });

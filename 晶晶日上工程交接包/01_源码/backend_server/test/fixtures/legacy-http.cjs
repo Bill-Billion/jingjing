@@ -26,6 +26,10 @@ async function fixture(t) {
  app.use('/pay',load('routes/pay.js'));
  app.use('/settlement',load('routes/settlement.js'));
  app.use('/face',load('routes/faceverify.js'));
+ app.use('/scripts',load('routes/scripts.js'));
+ const deliveryDeps={'../utils/idempotent':{withLock:bump},'../utils/consent':{recordConsent:bump},'../utils/deposit':{checkDepositSufficient:bump,collectDepositFromIncome:bump},'./review':{submitReview:bump},'../middleware/rateLimit':{createOrder:(req,res,next)=>next()}};
+ app.use('/videos',load('routes/videos.js',deliveryDeps));
+ app.use('/endorsement',load('routes/endorsement.js',deliveryDeps));
  app.use((err,req,res,next)=>res.status(500).json({error:'fixture-handler-error'}));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  t.after(async()=>{await new Promise(resolve=>server.close(resolve));db.close();});

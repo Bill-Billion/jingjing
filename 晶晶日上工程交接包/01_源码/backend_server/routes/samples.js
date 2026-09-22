@@ -1,3 +1,4 @@
+const { rejectUnmarkedDelivery } = require('../utils/watermark');
 // routes/samples.js - V12 定制剧（普通档5000元：99元意向金担保 + 4901元制作款担保 + 7步流程 + 高端定制）
 // 状态机：draft → intent_escrow → genre_selected → scripting → script_finalized →
 //         producing（制作款担保）→ delivered → settled（验收后担保清分）
@@ -281,7 +282,7 @@ router.post('/:id/pay-production', auth, (req, res) => {
 });
 
 // ========== 第6步：团队交付成片（管理员/制作团队） ==========
-router.post('/:id/deliver', auth, (req, res) => {
+router.post('/:id/deliver', auth, rejectUnmarkedDelivery, (req, res) => {
   if (req.role !== 'admin') return res.status(403).json({ message: '无权限' });
   const { sampleUrl, proposalUrl, previewUrl } = req.body;
   const order = db.prepare('SELECT * FROM sample_orders WHERE id = ?').get(req.params.id);
