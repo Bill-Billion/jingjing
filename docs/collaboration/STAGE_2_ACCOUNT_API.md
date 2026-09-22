@@ -22,6 +22,10 @@
 
 队友任务未代为认领，也未声称页面已实现。接口候选0.2.0-rc.1待共同检查；新增路径和完整结构见[主接口文件](../../contracts/openapi.yaml)。此前实名状态、平台能力总览、运营服务列表、规则版本、合同快照5项仍未接入，不能按旧候选路径假定已能调用。
 
+## 获取本阶段代码
+
+当前集中交付分支为core/stage-2-account-api，尚待审阅合入integration。已有本地仓库可先执行`git fetch origin core/stage-2-account-api`，保留自己的未提交修改。需要独立检查时，在自己选择的空目录创建该远端分支的worktree；不要覆盖正在开发的页面目录。合并后按integration继续开发。审阅入口和验证版本见[服务器当前进度](../status/CORE_CURRENT.md)。
+
 ## 启动与复验
 
 需要Node22.19.0、MySQL8；依赖继续使用原package-lock，无新增npm库。先在backend_server目录执行npm ci，按[数据库说明](../../晶晶日上工程交接包/01_源码/backend_server/docs/MYSQL_FOUNDATION.md)启动隔离MySQL。本机辅助工具默认只监听127.0.0.1:33316，首次获取代码还需安装MySQL，不能使用生产配置做测试。
