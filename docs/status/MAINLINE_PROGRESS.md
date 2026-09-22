@@ -14,13 +14,13 @@
 |耗时任务中断后继续|重启、多程序工作、失败恢复已测，[第3份申请](https://github.com/Bill-Billion/jingjing/pull/3)|队友检查，真实制作和资金业务未接入|
 |上传代码后自动检查|已在本机和GitHub跑通，[第5份申请](https://github.com/Bill-Billion/jingjing/pull/5)|等前置基础代码进入共同版本|
 |外部服务未开通时明确失败、私密文件不公开|此前已写好并通过本机和GitHub隔离测试，[本轮成果](../tasks/records/CORE-S0-005.md)|另一方检查；真实服务验证和旧业务接入未完成|
-|修旧业务中的假成功和隐私问题|两批修复已写好，最新本机检查通过，[本轮成果](../tasks/records/CORE-S1-001-20260922.md)|GitHub复验、另一方检查；MCN等问题仍在做，真实服务未启用|
+|修旧业务中的假成功和隐私问题|两批修复已写好，最新本机与GitHub检查通过，[本轮成果](../tasks/records/CORE-S1-001-20260922.md)|另一方检查；MCN等问题仍在做，真实服务未启用|
 
 ## 本轮新增
 
 在上轮付款、实名与流水归属修复基础上，本轮补齐样片查询缺字段，严格检查敏感资料加密密钥，解密失败不再返回空值。剧本上传明确只有提交信息摘要、没有第三方存证；受控阅稿未完成前不能浏览他人剧本。水印占位函数不再报成功，三类旧订单交付暂停，避免没有处理文件就标成交付。
 
-本机测试通过：数据库16项、后台任务21项、外部服务基础21项、旧问题专项25项；服务器全套检查97项通过、1项缺脱敏旧库跳过。各组有重叠。GitHub复验待本轮上传后核对。[第二批详细结果](../tasks/records/CORE-S1-001-20260922.md)。
+本机与GitHub测试结果一致：数据库16项、后台任务21项、外部服务基础21项、旧问题专项25项；服务器全套检查97项通过、1项缺脱敏旧库跳过。各组有重叠。[GitHub复验已通过](https://github.com/Bill-Billion/jingjing/actions/runs/35678475419)，代码3a58f03已上传。[第二批详细结果](../tasks/records/CORE-S1-001-20260922.md)。
 
 真实支付、实名、水印、外部存证和完整阅读授权仍未启用，旧业务未全部迁到MySQL。这次完成的是缺陷修复与明确拒绝，不代表完整交易、制作已经能用。
 
@@ -49,4 +49,6 @@
 
 此前外部服务基础已上传[第6份合并申请](https://github.com/Bill-Billion/jingjing/pull/6)，[GitHub复验通过](https://github.com/Bill-Billion/jingjing/actions/runs/35585925064)，尚未合入。本机与远端测试数据库均已清理关闭，没有部署。
 
-本轮首批旧问题修复已上传[第7份合并申请](https://github.com/Bill-Billion/jingjing/pull/7)，[GitHub复验通过](https://github.com/Bill-Billion/jingjing/actions/runs/35588334790)。整组继续进行，本次未合入、未部署，测试环境已清理。
+此前第一批旧问题修复已上传[第7份合并申请](https://github.com/Bill-Billion/jingjing/pull/7)，[GitHub复验通过](https://github.com/Bill-Billion/jingjing/actions/runs/35588334790)。整组继续进行，本次未合入、未部署，测试环境已清理。
+
+2026-09-22第二批代码3a58f03已上传同一份申请，本机和GitHub测试环境均已清理，另一方未检查、未合入。[本轮记录](../tasks/records/CORE-S1-001-20260922.md)。
