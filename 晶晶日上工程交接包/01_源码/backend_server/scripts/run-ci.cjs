@@ -19,6 +19,7 @@ function main() {
     { name: 'mysql', args: ['scripts/test-mysql.js'], allowedSkips: 0 },
     { name: 'worker', args: ['scripts/test-mysql.js', 'worker'], allowedSkips: 0 },
     { name: 'providers', args: ['scripts/test-mysql.js', 'providers'], allowedSkips: 0 },
+    { name: 'party', args: ['scripts/test-mysql.js', 'party'], allowedSkips: 0 },
     { name: 'legacy-safety', args: ['scripts/test-legacy-safety.cjs'], allowedSkips: 0 },
     { name: 'regression', args: ['scripts/run-tests.cjs'], allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
   ];

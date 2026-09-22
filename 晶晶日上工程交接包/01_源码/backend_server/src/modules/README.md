@@ -19,3 +19,5 @@
 Domain handler 在 `src/worker/handlers.js` 静态登记。外部操作必须携带稳定幂等键；恢复时先查持久 provider_task_id，编号尚未保存则按幂等键查询。不支持查询或幂等的供应商转人工核查，不能自动再扣款/再生成。业务状态与 `SUCCEEDED` 之间需领域事实校验；队列成功本身不能证明付款/实名/授权成立。
 
 同步 SQLite routes/services 暂留旧目录，仅用于隔离本地回归。它们没有被包装成 MySQL service，也没有转为正式 Worker handler。迁移按后续任务推进，身份/权利/支付/结算等共享边界各自评审。
+
+账号/机构首批已新增party/repository.js：事务内检查成员权限、本人接受邀请与审计，真实MySQL已测。尚未接HTTP和可信登录，不能据此启用旧MCN业务；详见[实现边界](../../docs/PARTY_MEMBERSHIP.md)。

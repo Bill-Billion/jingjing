@@ -38,3 +38,5 @@ npm run test:ci
 缺少配置时命令非零退出；结果判定也会拒绝空输出、失败、意外跳过和不完整的测试汇总。本次实际记录见 [自动检查任务记录](../tasks/records/CORE-S0-006.md)。
 
 实现参考：[GitHub的Node测试说明](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs)、[工作流配置说明](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)。这些说明只用于实现依据，验收以本仓库实际运行结果为准。
+
+账号/机构专项已加入同一个自动检查入口，使用真实MySQL检验本人接受邀请、越权、重复请求、并发和事务回滚；内部流程通过不代表短信、公开HTTP或App联调已经完成。单独运行用npm run test:party，仍必须提供隔离配置。

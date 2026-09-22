@@ -21,3 +21,5 @@
 2026-09-22页面配合新增：剧本上传成功只表示资料保存，submissionDigest是提交信息摘要，evidenceHash返回null，不能显示“已存证”；历史摘要只作原记录。浏览他人剧本暂返回SCRIPT_READING_NOT_READY；样片、祝福视频、代言视频交付暂返回WATERMARK_NOT_IMPLEMENTED及delivered=false。都应显示未启用，不补演示结果；自己的投稿列表仍可用。详见[第二批结果](../tasks/records/CORE-S1-001-20260922.md)。
 
 第三批页面配合：机构申请只表示待审，不覆盖个人身份；合作、艺人收入和提现显示未启用。机构信息中的空艺人列表需结合cooperationStatus显示“合作授权待核验”，不能显示为历史被删除。旧视频验收结算也未启用。[具体影响](../collaboration/CCR-007-legacy-truthfulness.md)。本侧尚未修改App或网页。
+
+最新账号/机构进度：MySQL内部已能处理个人与机构分离、邀请本人接受和多能力待审，尚未挂载HTTP/登录。可以准备身份切换、邀请接受/拒绝、待审/无权限页面；不要调用旧MCN添加接口冒充新流程。公开接口和真实联调需本侧继续接入。[本轮影响](../collaboration/CCR-008-party-membership.md)。

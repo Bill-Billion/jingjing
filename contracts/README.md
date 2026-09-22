@@ -1,5 +1,7 @@
-# API契约入口
+# 页面与服务器的数据约定
 
-状态：NOT_CREATED。Core已认领CORE-S0-001，计划建立 `contracts/openapi.yaml`（OpenAPI3.1）及CHANGELOG；本次未创建或冻结API主文件。已有历史OpenAPI或路由只作盘点输入。
+第一批候选格式已在[第1份合并申请](https://github.com/Bill-Billion/jingjing/pull/1)写好并检查，尚未由另一方确认或合入。本分支还没有contracts/openapi.yaml；不能把它误写成整个项目尚未编写，也不能视为已经定稿。
 
-Core唯一维护主契约/服务端枚举；Experience先提 [CCR](../docs/collaboration/CCR_TEMPLATE.md)，交叉review后双方使用合入integration的契约。每次Handshake记录契约版本和提交。SDK wrapper由Experience维护，测试stub不能进production fallback。
+本轮账号/机构实现参考候选版本0.1.0-rc.1、提交d2c387f中的账号、主体、成员、能力和权限语义。候选主文件由Core维护，后续公开接口需要在该主文件统一补充，避免双方各建一份。
+
+当前新增的是MySQL内部流程，尚未提供给App/网页调用。[实现边界](../晶晶日上工程交接包/01_源码/backend_server/docs/PARTY_MEMBERSHIP.md) · [需共同检查的内容](../docs/collaboration/CCR-008-party-membership.md)。

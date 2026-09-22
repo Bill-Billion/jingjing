@@ -1,0 +1,9 @@
+CREATE TABLE identity_accounts (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ subject_ref VARCHAR(128) CHARACTER SET ascii COLLATE ascii_bin NOT NULL UNIQUE,
+ display_name VARCHAR(80) NOT NULL,
+ current_status ENUM('ACTIVE','SUSPENDED','DELETION_PENDING') NOT NULL DEFAULT 'ACTIVE',
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ CONSTRAINT identity_account_version CHECK(object_version > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin
