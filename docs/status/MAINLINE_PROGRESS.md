@@ -55,3 +55,5 @@
 2026-09-22第二批代码3a58f03已上传同一份申请，本机和GitHub测试环境均已清理，另一方未检查、未合入。[本轮记录](../tasks/records/CORE-S1-001-20260922.md)。
 
 发布核对：代码3d1298655ac552548744a8e2d96dbb907426489e已推送[第9份统一申请](https://github.com/Bill-Billion/jingjing/pull/9)。[GitHub代码复验](https://github.com/Bill-Billion/jingjing/actions/runs/35682389253)与合并申请检查35682392424均通过；无需数据库的独立检查和完整数据库检查都通过，全套129通过/1缺脱敏旧库跳过，分组与本机一致。原第1、2、3、5、6、7、8份申请已转草稿并指向第9份。另一方尚未评审；共同版本仍736a9ec，没有合入或部署。本机测试数据库已关闭、33316端口不再监听，临时J盘映射已核对后撤销。
+
+第一阶段发布核对：交付提交a72131c1eeabbcb3377e53edb9ec1fd7d038bf72已上传，[GitHub复验35684124857](https://github.com/Bill-Billion/jingjing/actions/runs/35684124857)两组检查通过，完整测试129通过、1缺脱敏旧库跳过，与本机一致。[第10份阶段合并申请](https://github.com/Bill-Billion/jingjing/pull/10)目标integration；旧申请未重开。当前状态为“我方交付与自验完成，等待另一方审阅”，尚未合入或部署。此次发布包括原本只在本地的阶段规则和双方分工，队友可读取，不等于已确认阅读。共同版本仍736a9ec。

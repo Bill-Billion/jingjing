@@ -1,5 +1,7 @@
 # 第一阶段交付：把已有基础整理成共同起点
 
+当前交付入口：[第10份阶段申请](https://github.com/Bill-Billion/jingjing/pull/10)。交付版本a72131c的本机和GitHub检查已通过，另一方尚未审阅或合入。
+
 本侧负责人：chengcongcong222。阶段分支：core/stage-1-foundation-handoff，起点4399cff；共同版本起点736a9ec。第一阶段只收口已有基础，不加入下一阶段的公开账号接口。阶段状态与远端验证见[当前进度](../status/CORE_CURRENT.md)。另一方尚未审阅，不能把交付说成已合入或上线。
 
 ## 队友拿到的是什么

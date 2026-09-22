@@ -27,3 +27,5 @@
 第三批页面配合：机构申请只表示待审，不覆盖个人身份；合作、艺人收入和提现显示未启用。机构信息中的空艺人列表需结合cooperationStatus显示“合作授权待核验”，不能显示为历史被删除。旧视频验收结算也未启用。[具体影响](../collaboration/CCR-007-legacy-truthfulness.md)。本侧尚未修改App或网页。
 
 最新账号/机构进度：MySQL内部已能处理个人与机构分离、邀请本人接受和多能力待审，尚未挂载HTTP/登录。可以准备身份切换、邀请接受/拒绝、待审/无权限页面；不要调用旧MCN添加接口冒充新流程。公开接口和真实联调需本侧继续接入。[本轮影响](../collaboration/CCR-008-party-membership.md)。
+
+第一阶段发布核对：交付提交a72131c1eeabbcb3377e53edb9ec1fd7d038bf72已上传，[GitHub复验35684124857](https://github.com/Bill-Billion/jingjing/actions/runs/35684124857)两组检查通过，完整测试129通过、1缺脱敏旧库跳过，与本机一致。[第10份阶段合并申请](https://github.com/Bill-Billion/jingjing/pull/10)目标integration；旧申请未重开。当前状态为“我方交付与自验完成，等待另一方审阅”，尚未合入或部署。此次发布包括原本只在本地的阶段规则和双方分工，队友可读取，不等于已确认阅读。共同版本仍736a9ec。
