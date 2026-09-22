@@ -13,3 +13,5 @@
 当前分支core/s1-001-legacy-truthfulness，查找编号CORE-S1-001；整组状态仍为正在做。[14个问题逐项进度](LEGACY_ISSUES.md) · [完整计划](MAINLINE_PROGRESS.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md)。
 
 本机及GitHub测试数据库已关闭清理，临时J盘映射已撤销。没有部署或真实供应商调用。[实际远端测试](https://github.com/Bill-Billion/jingjing/actions/runs/35588334790)。
+
+2026-09-22继续开工：基于8b883af，工作目录干净，共同版本仍为736a9ec。沿用本人已认领分支和第7份合并申请，推进样片缺字段、加密、水印及剧本摘要/阅稿问题；新增旧库补列涉及双方共用结构，待另一方检查后再合入。
