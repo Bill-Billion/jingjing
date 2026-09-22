@@ -1,0 +1,119 @@
+TAP version 13
+# Subtest: MySQL party identity, consent, authority and transactional audit
+    # Subtest: upgrading from the seven prior migrations preserves data and applies only new tables
+    ok 1 - upgrading from the seven prior migrations preserves data and applies only new tables
+      ---
+      duration_ms: 356.7772
+      type: 'test'
+      ...
+    # Subtest: default authentication is denied and caller actor/roles cannot be injected
+    ok 2 - default authentication is denied and caller actor/roles cannot be injected
+      ---
+      duration_ms: 23.4854
+      type: 'test'
+      ...
+    # Subtest: same verified subject registers one account and one personal party under concurrency
+    ok 3 - same verified subject registers one account and one personal party under concurrency
+      ---
+      duration_ms: 17.247
+      type: 'test'
+      ...
+    # Subtest: organization creation is idempotent without overwriting the personal party
+    ok 4 - organization creation is idempotent without overwriting the personal party
+      ---
+      duration_ms: 28.0463
+      type: 'test'
+      ...
+    # Subtest: individual authors and organizations can request multiple capabilities without activating business
+    ok 5 - individual authors and organizations can request multiple capabilities without activating business
+      ---
+      duration_ms: 46.2322
+      type: 'test'
+      ...
+    # Subtest: pending invitation grants no membership and only its intended account can respond
+    ok 6 - pending invitation grants no membership and only its intended account can respond
+      ---
+      duration_ms: 41.3344
+      type: 'test'
+      ...
+    # Subtest: cross-party identifiers and outsider mutation are rejected
+    ok 7 - cross-party identifiers and outsider mutation are rejected
+      ---
+      duration_ms: 30.7674
+      type: 'test'
+      ...
+    # Subtest: concurrent same-key acceptance produces one membership and one audit event
+    ok 8 - concurrent same-key acceptance produces one membership and one audit event
+      ---
+      duration_ms: 29.2039
+      type: 'test'
+      ...
+    # Subtest: concurrent invitations to the same person produce only one pending invitation
+    ok 9 - concurrent invitations to the same person produce only one pending invitation
+      ---
+      duration_ms: 17.4532
+      type: 'test'
+      ...
+    # Subtest: accept and revoke races yield one transition and never create membership after revocation
+    ok 10 - accept and revoke races yield one transition and never create membership after revocation
+      ---
+      duration_ms: 20.4914
+      type: 'test'
+      ...
+    # Subtest: declined, revoked, stale and expired invitations cannot activate membership
+    ok 11 - declined, revoked, stale and expired invitations cannot activate membership
+      ---
+      duration_ms: 76.8701
+      type: 'test'
+      ...
+    # Subtest: suspended accounts and parties cannot mutate or replay successful operations
+    ok 12 - suspended accounts and parties cannot mutate or replay successful operations
+      ---
+      duration_ms: 26.0847
+      type: 'test'
+      ...
+    # Subtest: pending acceptance rechecks the inviter and idempotent replay rechecks the owner
+    ok 13 - pending acceptance rechecks the inviter and idempotent replay rechecks the owner
+      ---
+      duration_ms: 29.5538
+      type: 'test'
+      ...
+    # Subtest: removal preserves identity/history, affects only one organization, and forbids replay after revocation
+    ok 14 - removal preserves identity/history, affects only one organization, and forbids replay after revocation
+      ---
+      duration_ms: 54.4873
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back invitation, membership and replay result together
+    ok 15 - audit failure rolls back invitation, membership and replay result together
+      ---
+      duration_ms: 26.4623
+      type: 'test'
+      ...
+    # Subtest: input rejects missing versions, unknown fields and invalid or past expiry
+    ok 16 - input rejects missing versions, unknown fields and invalid or past expiry
+      ---
+      duration_ms: 26.5008
+      type: 'test'
+      ...
+    # Subtest: accepted identity and audit survive reconnect without provider calls or a process cache
+    ok 17 - accepted identity and audit survive reconnect without provider calls or a process cache
+      ---
+      duration_ms: 28.129
+      type: 'test'
+      ...
+    1..17
+ok 1 - MySQL party identity, consent, authority and transactional audit
+  ---
+  duration_ms: 994.8341
+  type: 'test'
+  ...
+1..1
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1148.3016

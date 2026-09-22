@@ -1,0 +1,138 @@
+TAP version 13
+# Subtest: all six provider interfaces fail closed without implementations
+ok 1 - all six provider interfaces fail closed without implementations
+  ---
+  duration_ms: 2.405358
+  type: 'test'
+  ...
+# Subtest: configuration alone, wrong environment, stale proof and disabled status never call a provider
+ok 2 - configuration alone, wrong environment, stale proof and disabled status never call a provider
+  ---
+  duration_ms: 1.068811
+  type: 'test'
+  ...
+# Subtest: timeout reports unknown outcome, aborts and never automatically repeats payment
+ok 3 - timeout reports unknown outcome, aborts and never automatically repeats payment
+  ---
+  duration_ms: 9.968106
+  type: 'test'
+  ...
+# Subtest: provider error bodies and logger metadata do not leak credentials or private URLs
+ok 4 - provider error bodies and logger metadata do not leak credentials or private URLs
+  ---
+  duration_ms: 0.525728
+  type: 'test'
+  ...
+# Subtest: private files require permission and verified configuration, never local fallback
+ok 5 - private files require permission and verified configuration, never local fallback
+  ---
+  duration_ms: 1.333222
+  type: 'test'
+  ...
+# Subtest: private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+ok 6 - private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+  ---
+  duration_ms: 1.313453
+  type: 'test'
+  ...
+# Subtest: changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+ok 7 - changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+  ---
+  duration_ms: 87.465899
+  type: 'test'
+  ...
+# Subtest: health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+ok 8 - health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+  ---
+  duration_ms: 50.509409
+  type: 'test'
+  ...
+# Subtest: OSS failures never produce a successful or public result; revocation is checked before each read
+ok 9 - OSS failures never produce a successful or public result; revocation is checked before each read
+  ---
+  duration_ms: 1.235188
+  type: 'test'
+  ...
+# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-09-21T10:22:39.219Z","level":"warn","event":"legacy_private_upload_blocked"}
+# Subtest: legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+ok 10 - legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+  ---
+  duration_ms: 23.235543
+  type: 'test'
+  ...
+# Subtest: real isolated MySQL persists provider status, evidence and concurrent edits
+    # Subtest: database readiness requires applied migrations, not just a connection
+    ok 1 - database readiness requires applied migrations, not just a connection
+      ---
+      duration_ms: 89.595329
+      type: 'test'
+      ...
+    # Subtest: recording is denied by default and requires genuine server-side evidence checking
+    ok 2 - recording is denied by default and requires genuine server-side evidence checking
+      ---
+      duration_ms: 8.670807
+      type: 'test'
+      ...
+    # Subtest: configuration is saved but does not authorize real calls
+    ok 3 - configuration is saved but does not authorize real calls
+      ---
+      duration_ms: 9.980644
+      type: 'test'
+      ...
+    # Subtest: verified evidence survives closing and reopening the database connection
+    ok 4 - verified evidence survives closing and reopening the database connection
+      ---
+      duration_ms: 14.781656
+      type: 'test'
+      ...
+    # Subtest: disabling and awaiting approval keep history but block new calls
+    ok 5 - disabling and awaiting approval keep history but block new calls
+      ---
+      duration_ms: 14.04058
+      type: 'test'
+      ...
+    # Subtest: two concurrent updates cannot overwrite each other silently
+    ok 6 - two concurrent updates cannot overwrite each other silently
+      ---
+      duration_ms: 7.399396
+      type: 'test'
+      ...
+    # Subtest: history write failure rolls back both status and version
+    ok 7 - history write failure rolls back both status and version
+      ---
+      duration_ms: 3.926649
+      type: 'test'
+      ...
+    # Subtest: re-enabling requires fresh evidence and preserves earlier verification
+    ok 8 - re-enabling requires fresh evidence and preserves earlier verification
+      ---
+      duration_ms: 4.892858
+      type: 'test'
+      ...
+    # Subtest: capabilities have separate status even for the same provider
+    ok 9 - capabilities have separate status even for the same provider
+      ---
+      duration_ms: 2.585425
+      type: 'test'
+      ...
+    1..9
+ok 11 - real isolated MySQL persists provider status, evidence and concurrent edits
+  ---
+  duration_ms: 199.932973
+  type: 'test'
+  ...
+# Subtest: legacy storage permits only explicit public local test files
+ok 12 - legacy storage permits only explicit public local test files
+  ---
+  duration_ms: 16.122671
+  type: 'test'
+  ...
+1..12
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 349.164565

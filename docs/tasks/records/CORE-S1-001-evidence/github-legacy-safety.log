@@ -1,0 +1,123 @@
+TAP version 13
+# {"time":"2026-09-21T10:22:39.393Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-21T10:22:39.395Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-21T10:22:39.397Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-21T10:22:39.397Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-21T10:22:39.403Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-21T10:22:39.403Z","level":"info","event":"db_migrations_applied"}
+# {"time":"2026-09-21T10:22:39.412Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-21T10:22:39.413Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-21T10:22:39.413Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-21T10:22:39.415Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-21T10:22:39.416Z","level":"info","event":"reconciliation_done"}
+# Subtest: 成功（无退款）：四账守恒、reconcile 无该单差异
+ok 1 - 成功（无退款）：四账守恒、reconcile 无该单差异
+  ---
+  duration_ms: 1.817259
+  type: 'test'
+  ...
+# Subtest: 全额退款：kind=full、支付单 refunded、账仍平
+ok 2 - 全额退款：kind=full、支付单 refunded、账仍平
+  ---
+  duration_ms: 1.138925
+  type: 'test'
+  ...
+# Subtest: 部分退两次到全退：partial→refunded，超额被拒，账平
+ok 3 - 部分退两次到全退：partial→refunded，超额被拒，账平
+  ---
+  duration_ms: 1.899309
+  type: 'test'
+  ...
+# Subtest: 重复回调/重复请求幂等：同 idemKey 不重复出款
+ok 4 - 重复回调/重复请求幂等：同 idemKey 不重复出款
+  ---
+  duration_ms: 0.796228
+  type: 'test'
+  ...
+# Subtest: 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+ok 5 - 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+  ---
+  duration_ms: 0.516684
+  type: 'test'
+  ...
+# Subtest: runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+ok 6 - runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+  ---
+  duration_ms: 1.009924
+  type: 'test'
+  ...
+# Subtest: 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+ok 7 - 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+  ---
+  duration_ms: 1.057945
+  type: 'test'
+  ...
+# Subtest: sample payment buttons cannot mark either installment paid
+ok 8 - sample payment buttons cannot mark either installment paid
+  ---
+  duration_ms: 62.710499
+  type: 'test'
+  ...
+# Subtest: unavailable identity verification cannot autoapprove or collect identity documents
+ok 9 - unavailable identity verification cannot autoapprove or collect identity documents
+  ---
+  duration_ms: 22.096969
+  type: 'test'
+  ...
+# Subtest: old transaction status is visible only to the owner of its matching business order
+ok 10 - old transaction status is visible only to the owner of its matching business order
+  ---
+  duration_ms: 18.301063
+  type: 'test'
+  ...
+# Subtest: transaction ownership covers every old order type, collisions, unknown types and orphan records
+ok 11 - transaction ownership covers every old order type, collisions, unknown types and orphan records
+  ---
+  duration_ms: 31.542762
+  type: 'test'
+  ...
+# Subtest: Alipay status returns only owned rows and never queries or advances a payment during a read
+ok 12 - Alipay status returns only owned rows and never queries or advances a payment during a read
+  ---
+  duration_ms: 18.460188
+  type: 'test'
+  ...
+# Subtest: legacy writes, callbacks and Apple receipts are disabled even with configured test providers
+ok 13 - legacy writes, callbacks and Apple receipts are disabled even with configured test providers
+  ---
+  duration_ms: 20.612182
+  type: 'test'
+  ...
+# Subtest: old approved identities stay unchanged but are not exposed as verified or accepted by dependent actions
+ok 14 - old approved identities stay unchanged but are not exposed as verified or accepted by dependent actions
+  ---
+  duration_ms: 21.978453
+  type: 'test'
+  ...
+# Subtest: company submissions remain pending and rejected history is not promoted to verified
+ok 15 - company submissions remain pending and rejected history is not promoted to verified
+  ---
+  duration_ms: 14.552027
+  type: 'test'
+  ...
+# Subtest: default finance service cannot create, confirm or refund money in any environment
+ok 16 - default finance service cannot create, confirm or refund money in any environment
+  ---
+  duration_ms: 14.285132
+  type: 'test'
+  ...
+# Subtest: obsolete scripts that expected demo success are stopped before loading services
+ok 17 - obsolete scripts that expected demo success are stopped before loading services
+  ---
+  duration_ms: 75.887182
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 424.384018

@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-09-21",
+  "updated_on": "2026-09-22",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -53,6 +53,7 @@
         "REQ-033",
         "REQ-034",
         "REQ-042",
+        "REQ-043",
         "REQ-044",
         "REQ-045",
         "REQ-060"
@@ -70,7 +71,10 @@
       ],
       "review_status": "PENDING",
       "test_status": "PASS",
-      "evidence": [],
+      "evidence": [
+        "docs/tasks/records/CORE-S0-000.md",
+        "docs/tasks/records/CORE-S0-000-validation.json"
+      ],
       "blockers": [
         "实现与测试记录在对应提交审阅页面；需另一方检查后才能放进共同开发版本。"
       ],
@@ -117,7 +121,10 @@
       ],
       "review_status": "PENDING",
       "test_status": "PASS",
-      "evidence": [],
+      "evidence": [
+        "docs/tasks/records/CORE-S0-002.md",
+        "docs/tasks/records/CORE-S0-002-validation.json"
+      ],
       "blockers": [
         "实现与测试记录在对应提交审阅页面；需另一方检查后才能放进共同开发版本。"
       ],
@@ -232,7 +239,10 @@
       ],
       "review_status": "PENDING",
       "test_status": "PASS",
-      "evidence": [],
+      "evidence": [
+        "docs/tasks/records/CORE-S0-004.md",
+        "docs/tasks/records/CORE-S0-004-validation.json"
+      ],
       "blockers": [
         "实现与测试记录在对应提交审阅页面；需另一方检查后才能放进共同开发版本。"
       ],
@@ -245,9 +255,9 @@
       "title": "Provider/OSS/Readiness、日志与health基础",
       "stage": 0,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/s0-005-provider-readiness",
       "work_refs": [
         "WORK-08",
         "WORK-14"
@@ -284,21 +294,32 @@
       "acceptance": "Adapter失败可观察；私密资产无公开降级；request_id贯通；health与依赖ready分离；状态附环境与证据",
       "shared_boundaries": [
         "provider interfaces",
-        "auth/permission"
+        "auth/permission",
+        "schema/migration",
+        "revoke/delete"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S0-005.md",
+        "docs/tasks/records/CORE-S0-005-validation.json"
+      ],
+      "blockers": [
+        "基础实现通过本机和GitHub隔离测试；待另一方检查及前置代码合入。真实外部服务未验证，运营权限和旧业务接线在后续任务完成。"
+      ],
+      "external_evidence_refs": [
+        "https://github.com/Bill-Billion/jingjing/pull/6",
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35585925064"
+      ]
     },
     {
       "id": "CORE-S0-006",
       "title": "后端CI与隔离测试入口",
       "stage": 0,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/s0-006-backend-checks",
       "work_refs": [
         "WORK-14"
       ],
@@ -317,7 +338,8 @@
         "REQ-052"
       ],
       "dependencies": [
-        "CORE-S0-002"
+        "CORE-S0-002",
+        "CORE-S0-004"
       ],
       "deliverables": [
         "backend CI",
@@ -327,9 +349,19 @@
       "acceptance": "在隔离MySQL执行有断言的迁移和服务端测试；无生产连接/收费请求；失败使CI失败",
       "shared_boundaries": [],
       "review_status": "NOT_REQUIRED",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S0-006.md",
+        "docs/tasks/records/CORE-S0-006-validation.json"
+      ],
+      "blockers": [
+        "检查已在本分支实际跑通；依赖的数据库和后台任务须先经另一方检查并进入共同版本，之后再合入本次自动检查。自动检查本身不额外增加审批。"
+      ],
+      "external_evidence_refs": [
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35581686390",
+        "https://github.com/Bill-Billion/jingjing/pull/5",
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35582565678"
+      ]
     },
     {
       "id": "UX-S0-001",
@@ -514,9 +546,9 @@
       "title": "Core真实性问题F01–05/07–09/11–13及事实记录F14",
       "stage": 1,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/s1-001-legacy-truthfulness",
       "work_refs": [
         "WORK-02",
         "WORK-07",
@@ -578,21 +610,39 @@
         "auth/permission",
         "payments/refunds",
         "rights/licenses",
-        "provider interfaces"
+        "provider interfaces",
+        "schema/migration"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S1-001.md",
+        "docs/tasks/records/CORE-S1-001-validation.json",
+        "docs/tasks/records/CORE-S1-001-20260922.md",
+        "docs/tasks/records/CORE-S1-001-20260922-validation.json",
+        "docs/tasks/records/CORE-S1-001-20260922-MCN.md",
+        "docs/tasks/records/CORE-S1-001-20260922-MCN-validation.json"
+      ],
+      "blockers": [
+        "三批修复通过本机及GitHub检查，待另一方实际检查；完整邀请、合作范围、真实服务和旧资料核验未完成。"
+      ],
+      "validation_scope": "前三批明确修复范围已测；第三批包含F12及旧关系的读取、分佣、假出款/统计。未完成完整邀请、真实服务或历史核验。",
+      "external_evidence_refs": [
+        "https://github.com/Bill-Billion/jingjing/pull/7",
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35588334790",
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35678475419",
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35679239400"
+      ],
+      "current_increment": "第三批MCN修复37224a1已上传，本机与GitHub通过；下一步MySQL个人/机构权限和本人接受邀请，整组仍进行中。"
     },
     {
       "id": "CORE-S1-002",
       "title": "Account/Party/Membership/Capability、权限和审计",
       "stage": 1,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/s1-002-party-membership",
       "work_refs": [
         "WORK-02",
         "WORK-13"
@@ -629,9 +679,23 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S1-002.md",
+        "docs/tasks/records/CORE-S1-002-validation.json",
+        "docs/tasks/records/REVIEW-20260922.md",
+        "docs/tasks/records/REVIEW-20260922-validation.json"
+      ],
+      "blockers": [
+        "数据库/权限及候选接口待另一方检查；公开登录与HTTP未接入，业务能力待审核，历史身份不自动导入。"
+      ],
+      "current_increment": "复审修复已上传第9份统一申请；规则和模块测试减少依赖，崩溃恢复测试不再猜测过期；本机/GitHub129通过、1缺旧库跳过；公开HTTP仍未完成",
+      "validation_scope": "仅MySQL内部账号/主体/能力申请/成员邀请、权限与审计首批通过；可信登录、公开HTTP、分页、页面联调及完整管理仍未实现。",
+      "external_evidence_refs": [
+        "https://github.com/Bill-Billion/jingjing/pull/8",
+        "https://github.com/Bill-Billion/jingjing/actions/runs/35680697354"
+      ],
+      "review_branch": "core/review-collaboration-decoupling"
     },
     {
       "id": "CORE-S1-003",
@@ -1478,5 +1542,43 @@
       "evidence": [],
       "blockers": []
     }
-  ]
+  ],
+  "delivery_policy": {
+    "mode": "STAGED_LOCAL_FIRST",
+    "effective_on": "2026-09-22",
+    "guide": "docs/collaboration/STAGED_DELIVERY.md",
+    "remote_sync": "PUBLISHED_STAGE_1",
+    "open_pull_requests": [
+      10
+    ],
+    "previous_merged_pull_requests": [
+      4
+    ],
+    "previous_closed_unmerged_pull_requests": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
+    "current_stage": {
+      "name": "已有基础收口",
+      "branch": "core/stage-1-foundation-handoff",
+      "owner": "chengcongcong222",
+      "status": "DELIVERED_AWAITING_REVIEW",
+      "review_status": "PENDING",
+      "guide": "docs/collaboration/STAGE_1_HANDOFF.md",
+      "evidence": [
+        "docs/tasks/records/STAGE-1-20260922.md",
+        "docs/tasks/records/STAGE-1-evidence/local-summary.json",
+        "docs/tasks/records/STAGE-1-evidence/github-summary.json"
+      ],
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/10",
+      "validated_commit": "a72131c1eeabbcb3377e53edb9ec1fd7d038bf72"
+    }
+  }
 }

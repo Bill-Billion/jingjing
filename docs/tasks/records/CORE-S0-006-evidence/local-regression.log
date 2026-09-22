@@ -1,0 +1,402 @@
+TAP version 13
+# {"ts":"2026-09-21T09:10:16.603Z","level":"info","msg":"migration_applied","version":"1","name":"initial_schema_v12_4"}
+# {"ts":"2026-09-21T09:10:16.617Z","level":"info","msg":"migration_applied","version":"2","name":"legacy_v5_add_columns"}
+# {"ts":"2026-09-21T09:10:16.633Z","level":"info","msg":"migration_applied","version":"3","name":"legacy_v6_add_columns"}
+# {"ts":"2026-09-21T09:10:16.646Z","level":"info","msg":"migration_applied","version":"4","name":"legacy_v121_add_columns"}
+# {"ts":"2026-09-21T09:10:16.671Z","level":"info","msg":"migration_applied","version":"5","name":"engineering_recon_deliverable_refund"}
+# {"ts":"2026-09-21T09:10:16.671Z","level":"info","msg":"db_migrations_applied","count":5}
+# {"ts":"2026-09-21T09:10:16.703Z","level":"info","msg":"ai_deliverable_version","localId":2,"versionNo":1,"source":"webhook","deliverable":"approved"}
+# {"ts":"2026-09-21T09:10:16.706Z","level":"info","msg":"ai_deliverable_version","localId":3,"versionNo":1,"source":"poll","deliverable":"approved"}
+# {"ts":"2026-09-21T09:10:16.707Z","level":"info","msg":"ai_deliverable_version","localId":4,"versionNo":1,"source":"poll","deliverable":"approved"}
+# {"ts":"2026-09-21T09:10:16.707Z","level":"info","msg":"ai_regenerate","parentId":4,"newId":5,"reason":"客户要求重做"}
+# {"ts":"2026-09-21T09:10:16.708Z","level":"info","msg":"ai_deliverable_version","localId":5,"versionNo":2,"source":"poll","deliverable":"approved"}
+# {"ts":"2026-09-21T09:10:16.716Z","level":"info","msg":"ai_deliverable_version","localId":6,"versionNo":1,"source":"webhook","deliverable":"pending_review"}
+# {"ts":"2026-09-21T09:10:16.717Z","level":"info","msg":"ai_deliverable_review","localId":6,"decision":"approve","reviewerId":7}
+# {"ts":"2026-09-21T09:10:16.718Z","level":"info","msg":"ai_deliverable_version","localId":7,"versionNo":1,"source":"webhook","deliverable":"rejected"}
+# Subtest: webhook 验签：错误签名拒绝、缺密钥拒绝
+ok 1 - webhook 验签：错误签名拒绝、缺密钥拒绝
+  ---
+  duration_ms: 1.9233
+  type: 'test'
+  ...
+# Subtest: 合法 webhook 成功推进并幂等：重复回调不重复出版本
+ok 2 - 合法 webhook 成功推进并幂等：重复回调不重复出版本
+  ---
+  duration_ms: 2.7464
+  type: 'test'
+  ...
+# Subtest: 轮询与回调 CAS 互斥：先 finalize 者推进，另一方不重复
+ok 3 - 轮询与回调 CAS 互斥：先 finalize 者推进，另一方不重复
+  ---
+  duration_ms: 1.4433
+  type: 'test'
+  ...
+# Subtest: 重做生成新版本行：parent 关联、版本号递增、不覆盖旧文件
+ok 4 - 重做生成新版本行：parent 关联、版本号递增、不覆盖旧文件
+  ---
+  duration_ms: 2.0135
+  type: 'test'
+  ...
+# Subtest: 审核开关开启：干净内容 pending_review→人工 approve；命中敏感词直接 rejected
+ok 5 - 审核开关开启：干净内容 pending_review→人工 approve；命中敏感词直接 rejected
+  ---
+  duration_ms: 10.0513
+  type: 'test'
+  ...
+# Subtest: CI rejects failure, empty output, missing totals and nonzero process exits
+ok 6 - CI rejects failure, empty output, missing totals and nonzero process exits
+  ---
+  duration_ms: 1.8514
+  type: 'test'
+  ...
+# Subtest: CI only permits the named missing legacy snapshot skip, never skipped MySQL suites
+ok 7 - CI only permits the named missing legacy snapshot skip, never skipped MySQL suites
+  ---
+  duration_ms: 0.6106
+  type: 'test'
+  ...
+# {"ts":"2026-09-21T09:10:16.603Z","level":"info","msg":"migration_applied","version":"1","name":"initial_schema_v12_4"}
+# {"ts":"2026-09-21T09:10:16.618Z","level":"info","msg":"migration_applied","version":"2","name":"legacy_v5_add_columns"}
+# {"ts":"2026-09-21T09:10:16.634Z","level":"info","msg":"migration_applied","version":"3","name":"legacy_v6_add_columns"}
+# {"ts":"2026-09-21T09:10:16.647Z","level":"info","msg":"migration_applied","version":"4","name":"legacy_v121_add_columns"}
+# {"ts":"2026-09-21T09:10:16.672Z","level":"info","msg":"migration_applied","version":"5","name":"engineering_recon_deliverable_refund"}
+# {"ts":"2026-09-21T09:10:16.672Z","level":"info","msg":"db_migrations_applied","count":5}
+# {"ts":"2026-09-21T09:10:16.748Z","level":"info","msg":"refund_success","orderNo":"T1789981816748_3","refundNo":"RF178998181674800001","amount":10000,"kind":"full","newRefunded":10000,"payStatus":"refunded"}
+# {"ts":"2026-09-21T09:10:16.750Z","level":"info","msg":"refund_success","orderNo":"T1789981816749_5","refundNo":"RF178998181675000002","amount":4000,"kind":"partial","newRefunded":4000,"payStatus":"partially_refunded"}
+# {"ts":"2026-09-21T09:10:16.751Z","level":"info","msg":"refund_success","orderNo":"T1789981816749_5","refundNo":"RF178998181675000003","amount":6000,"kind":"full","newRefunded":10000,"payStatus":"refunded"}
+# {"ts":"2026-09-21T09:10:16.753Z","level":"info","msg":"refund_success","orderNo":"T1789981816752_7","refundNo":"RF178998181675200004","amount":3000,"kind":"partial","newRefunded":3000,"payStatus":"partially_refunded"}
+# {"ts":"2026-09-21T09:10:16.755Z","level":"error","msg":"alert:payment_refund_failed","severity":"error","throttled":false,"orderNo":"T1789981816753_9","amount":10000,"error":"生产环境未配置持牌支付机构（微信电商收付通/支付宝直付通），禁止使用 Mock 支付通道"}
+# {"ts":"2026-09-21T09:10:16.757Z","level":"info","msg":"reconciliation_done","id":1,"scope":"manual","orderBook":50000,"payBook":50000,"refundBook":23000,"settleBook":42200,"platformBook":0,"feeTaxBook":7800,"diffCount":0,"balanced":true}
+# Subtest: 成功（无退款）：四账守恒、reconcile 无该单差异
+ok 8 - 成功（无退款）：四账守恒、reconcile 无该单差异
+  ---
+  duration_ms: 2.5166
+  type: 'test'
+  ...
+# Subtest: 全额退款：kind=full、支付单 refunded、账仍平
+ok 9 - 全额退款：kind=full、支付单 refunded、账仍平
+  ---
+  duration_ms: 1.6302
+  type: 'test'
+  ...
+# Subtest: 部分退两次到全退：partial→refunded，超额被拒，账平
+ok 10 - 部分退两次到全退：partial→refunded，超额被拒，账平
+  ---
+  duration_ms: 2.6584
+  type: 'test'
+  ...
+# Subtest: 重复回调/重复请求幂等：同 idemKey 不重复出款
+ok 11 - 重复回调/重复请求幂等：同 idemKey 不重复出款
+  ---
+  duration_ms: 1.0665
+  type: 'test'
+  ...
+# Subtest: 渠道不可用（生产无持牌渠道）：退款单 rejected、支付单不动、绝不假退
+ok 12 - 渠道不可用（生产无持牌渠道）：退款单 rejected、支付单不动、绝不假退
+  ---
+  duration_ms: 2.6516
+  type: 'test'
+  ...
+# Subtest: runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+ok 13 - runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+  ---
+  duration_ms: 1.2691
+  type: 'test'
+  ...
+# Subtest: 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+ok 14 - 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+  ---
+  duration_ms: 1.0643
+  type: 'test'
+  ...
+# Subtest: 场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在
+ok 15 - 场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在
+  ---
+  duration_ms: 185.5534
+  type: 'test'
+  ...
+# Subtest: 场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据
+ok 16 - 场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据
+  ---
+  duration_ms: 177.2152
+  type: 'test'
+  ...
+# Subtest: 场景3 重复执行幂等：第二次全部跳过、结构与版本不重复
+ok 17 - 场景3 重复执行幂等：第二次全部跳过、结构与版本不重复
+  ---
+  duration_ms: 24.1751
+  type: 'test'
+  ...
+# Subtest: 等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致）
+ok 18 - 等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致） # SKIP 未提供显式脱敏旧库样本，未执行结构等价比较
+  ---
+  duration_ms: 0.3471
+  type: 'test'
+  ...
+# Subtest: MySQL config is explicit, bounded and never defaults to a database
+ok 19 - MySQL config is explicit, bounded and never defaults to a database
+  ---
+  duration_ms: 3.6421
+  type: 'test'
+  ...
+# Subtest: Production cannot disable TLS, use root or load missing trust material
+ok 20 - Production cannot disable TLS, use root or load missing trust material
+  ---
+  duration_ms: 0.5867
+  type: 'test'
+  ...
+# Subtest: Legacy SQLite is permitted only in local/test; mysql and typo never fall back
+ok 21 - Legacy SQLite is permitted only in local/test; mysql and typo never fall back
+  ---
+  duration_ms: 1.3099
+  type: 'test'
+  ...
+# Subtest: Legacy entry rejects before SQLite is imported or a database is opened
+ok 22 - Legacy entry rejects before SQLite is imported or a database is opened
+  ---
+  duration_ms: 56.5848
+  type: 'test'
+  ...
+# Subtest: test command network guard blocks external TCP before a provider request
+ok 23 - test command network guard blocks external TCP before a provider request
+  ---
+  duration_ms: 1.2023
+  type: 'test'
+  ...
+# Subtest: Real isolated MySQL8 foundation
+    # Subtest: status on a fresh database is read-only
+    ok 1 - status on a fresh database is read-only
+      ---
+      duration_ms: 10.6776
+      type: 'test'
+      ...
+    # Subtest: new schema applies once, repeated migration is a no-op
+    ok 2 - new schema applies once, repeated migration is a no-op
+      ---
+      duration_ms: 178.6494
+      type: 'test'
+      ...
+    # Subtest: parameters, UTC, utf8mb4 and BIGINT are preserved
+    ok 3 - parameters, UTC, utf8mb4 and BIGINT are preserved
+      ---
+      duration_ms: 18.7973
+      type: 'test'
+      ...
+    # Subtest: business transaction commits, rolls back and refuses implicit-commit SQL
+    ok 4 - business transaction commits, rolls back and refuses implicit-commit SQL
+      ---
+      duration_ms: 9.6167
+      type: 'test'
+      ...
+    # Subtest: concurrent business updates keep both increments
+    ok 5 - concurrent business updates keep both increments
+      ---
+      duration_ms: 5.8618
+      type: 'test'
+      ...
+    # Subtest: a second migration session cannot acquire the same database lock
+    ok 6 - a second migration session cannot acquire the same database lock
+      ---
+      duration_ms: 9.5949
+      type: 'test'
+      ...
+    # Subtest: historical checksum/name drift and inserted older migration are rejected
+    ok 7 - historical checksum/name drift and inserted older migration are rejected
+      ---
+      duration_ms: 25.1597
+      type: 'test'
+      ...
+    # Subtest: DDL failure keeps earlier commits, blocks silent replay and supports inspected retry
+    ok 8 - DDL failure keeps earlier commits, blocks silent replay and supports inspected retry
+      ---
+      duration_ms: 131.3045
+      type: 'test'
+      ...
+    # Subtest: connection loss preserves APPLYING and refuses unsafe automatic retry
+    ok 9 - connection loss preserves APPLYING and refuses unsafe automatic retry
+      ---
+      duration_ms: 79.687
+      type: 'test'
+      ...
+    # Subtest: wrong credentials fail without connecting to SQLite
+    ok 10 - wrong credentials fail without connecting to SQLite
+      ---
+      duration_ms: 6.4434
+      type: 'test'
+      ...
+    1..10
+ok 24 - Real isolated MySQL8 foundation
+  ---
+  duration_ms: 575.908
+  type: 'test'
+  ...
+# Real MySQL 8.4.11 on loopback:33316; generated jx_test_* databases only
+# {"ts":"2026-09-21T09:10:16.706Z","level":"warn","msg":"alert:unit_test_event","severity":"warn","throttled":false,"x":1}
+# Subtest: providerStatus 返回六类通道就绪度且不含任何密钥字段
+ok 25 - providerStatus 返回六类通道就绪度且不含任何密钥字段
+  ---
+  duration_ms: 1.7925
+  type: 'test'
+  ...
+# Subtest: alert 未配置 webhook 时只落日志、不外发、不抛错
+ok 26 - alert 未配置 webhook 时只落日志、不外发、不抛错
+  ---
+  duration_ms: 2.1097
+  type: 'test'
+  ...
+# Subtest: Apple IAP 缺共享密钥/缺票据时拒绝，绝不伪造成功
+ok 27 - Apple IAP 缺共享密钥/缺票据时拒绝，绝不伪造成功
+  ---
+  duration_ms: 1.066
+  type: 'test'
+  ...
+# {"ts":"2026-09-21T09:10:16.395Z","level":"warn","msg":"oss_driver_unavailable","reason":"缺少 ali-oss 依赖，切换时执行 npm i ali-oss；本次降级本地存储"}
+# {"ts":"2026-09-21T09:10:16.396Z","level":"warn","msg":"storage_fallback_local"}
+# Subtest: localDriver：put→publicUrl→getBuffer→remove 行为与历史一致
+ok 28 - localDriver：put→publicUrl→getBuffer→remove 行为与历史一致
+  ---
+  duration_ms: 10.1907
+  type: 'test'
+  ...
+# Subtest: OSS 开关打开但缺凭证/依赖：优雅降级本地，不抛错、不硬编码密钥
+ok 29 - OSS 开关打开但缺凭证/依赖：优雅降级本地，不抛错、不硬编码密钥
+  ---
+  duration_ms: 4.2389
+  type: 'test'
+  ...
+# Subtest: Real MySQL durable jobs, outbox and independent worker
+    # Subtest: same business intent is idempotent; conflicting intent is rejected, case remains distinct
+    ok 1 - same business intent is idempotent; conflicting intent is rejected, case remains distinct
+      ---
+      duration_ms: 198.2454
+      type: 'test'
+      ...
+    # Subtest: business transaction and outbox both roll back; publish requires explicit transaction
+    ok 2 - business transaction and outbox both roll back; publish requires explicit transaction
+      ---
+      duration_ms: 148.7741
+      type: 'test'
+      ...
+    # Subtest: parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+    ok 3 - parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+      ---
+      duration_ms: 167.8503
+      type: 'test'
+      ...
+    # Subtest: conflicting outbox intent is visibly blocked and does not replace the original job
+    ok 4 - conflicting outbox intent is visibly blocked and does not replace the original job
+      ---
+      duration_ms: 115.3045
+      type: 'test'
+      ...
+    # Subtest: failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+    ok 5 - failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+      ---
+      duration_ms: 163.9873
+      type: 'test'
+      ...
+    # Subtest: concurrent workers claim one job once while its lease is valid
+    ok 6 - concurrent workers claim one job once while its lease is valid
+      ---
+      duration_ms: 143.032
+      type: 'test'
+      ...
+    # Subtest: expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+    ok 7 - expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+      ---
+      duration_ms: 141.6247
+      type: 'test'
+      ...
+    # Subtest: retry is delayed, capped and manually resumed without erasing attempt history
+    ok 8 - retry is delayed, capped and manually resumed without erasing attempt history
+      ---
+      duration_ms: 130.428
+      type: 'test'
+      ...
+    # Subtest: crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+    ok 9 - crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+      ---
+      duration_ms: 116.7174
+      type: 'test'
+      ...
+    # Subtest: worker renews a long-running handler lease; other worker cannot take it over
+    ok 10 - worker renews a long-running handler lease; other worker cannot take it over
+      ---
+      duration_ms: 1451.9631
+      type: 'test'
+      ...
+    # Subtest: missing handlers and ambiguous handler errors block without fake success or immediate replay
+    ok 11 - missing handlers and ambiguous handler errors block without fake success or immediate replay
+      ---
+      duration_ms: 538.9261
+      type: 'test'
+      ...
+    # Subtest: active worker aborts after lease takeover and cannot overwrite its successor result
+    ok 12 - active worker aborts after lease takeover and cannot overwrite its successor result
+      ---
+      duration_ms: 348.1032
+      type: 'test'
+      ...
+    # Subtest: provider retry without a recovery adapter becomes blocked instead of executing again
+    ok 13 - provider retry without a recovery adapter becomes blocked instead of executing again
+      ---
+      duration_ms: 150.0609
+      type: 'test'
+      ...
+    # Subtest: unknown provider submission is reconciled by stable key, never blindly resubmitted
+    ok 14 - unknown provider submission is reconciled by stable key, never blindly resubmitted
+      ---
+      duration_ms: 119.5972
+      type: 'test'
+      ...
+    # Subtest: separate process crash preserves provider task ID and a new process recovers it
+    ok 15 - separate process crash preserves provider task ID and a new process recovers it
+      ---
+      duration_ms: 828.3045
+      type: 'test'
+      ...
+    # Subtest: graceful stop signals a handler, leaves durable recovery and does not claim the next task
+    ok 16 - graceful stop signals a handler, leaves durable recovery and does not claim the next task
+      ---
+      duration_ms: 127.0814
+      type: 'test'
+      ...
+    1..16
+ok 30 - Real MySQL durable jobs, outbox and independent worker
+  ---
+  duration_ms: 5461.891
+  type: 'test'
+  ...
+# Subtest: worker CLI fails visibly while domain adapters are not enabled
+ok 31 - worker CLI fails visibly while domain adapters are not enabled
+  ---
+  duration_ms: 182.8752
+  type: 'test'
+  ...
+# Subtest: worker intent requires explicit retry budget and bounded references
+ok 32 - worker intent requires explicit retry budget and bounded references
+  ---
+  duration_ms: 0.5605
+  type: 'test'
+  ...
+# Subtest: stopping during claim never starts the newly acquired handler
+ok 33 - stopping during claim never starts the newly acquired handler
+  ---
+  duration_ms: 4.8589
+  type: 'test'
+  ...
+# Subtest: API and historical scheduler do not bootstrap timers or visual recovery
+ok 34 - API and historical scheduler do not bootstrap timers or visual recovery
+  ---
+  duration_ms: 1.0521
+  type: 'test'
+  ...
+1..34
+# tests 60
+# suites 0
+# pass 59
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 5738.254

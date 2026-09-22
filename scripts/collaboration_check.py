@@ -1,4 +1,4 @@
-"""Read-only R0.6 governance validation. --render refreshes the task table only.
+"""Read-only R0.6 governance validation. --render refreshes task/requirement tables.
 
 Python 3.10+, standard library; no application imports, DB, network or providers.
 """
@@ -30,7 +30,7 @@ def render_tasks(board):
         '# 全部工作安排：谁做什么，怎样算做完', '',
         '**本侧负责服务器和数据库；队友负责App和网页。** '
         '下面共30组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
-        '现在本侧先做“每次上传代码后自动检查有没有弄坏已有功能”；'
+        '前三批旧问题修复保留；本轮已写好MySQL个人/机构与本人接受邀请的内部流程并自验，下一步接可信登录和公开接口，再完善合同留存；'
         '队友可先运行现有App、整理五个主入口，并搭建运营和合作方网页。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
@@ -50,7 +50,7 @@ def render_tasks(board):
             who += '；已接手' if t['owner'] else '；尚未接手'
             dependencies = '；'.join(names[d] for d in t['dependencies']) or '可独立开始'
             lines.append('|{}|{}|{}|{}|{}|'.format(names[t['id']], who,
-                states[t['status']], explanations[t['id']]['done_when'], dependencies))
+                ('已写好并测过，等所需代码先合入' if t['status'] == 'IN_REVIEW' and t['review_status'] == 'NOT_REQUIRED' else states[t['status']]), explanations[t['id']]['done_when'], dependencies))
         lines.append('')
     lines.extend(['## 需要查文件或交给Codex操作时再看这里', '',
                   '工作名称与技术记录的对应关系如下。编号只用于查找；'
@@ -63,6 +63,11 @@ def render_tasks(board):
                   '修改后运行 `python scripts/collaboration_check.py --render` 更新本页，'
                   '再运行不带参数的检查。自动更新也必须遵守 [沟通写法](../collaboration/WRITING_RULES.md)。', ''])
     return '\n'.join(lines)
+
+
+def render_requirement_rows(baseline):
+    return '\n'.join('|'+r['id']+'|'+r['title']+'|'+r['scope']+'|'+', '.join(r['task_refs'])+'|'
+                     for r in baseline['requirements'])+'\n'
 
 
 def validate():
@@ -167,6 +172,9 @@ def validate():
     for tid in tasks:
         visit(tid)
     check((ROOT / 'docs/tasks/README.md').read_text(encoding='utf-8') == render_tasks(board), 'Task README stale; run --render')
+    requirement_md = (ROOT / 'docs/requirements/README.md').read_text(encoding='utf-8')
+    check(requirement_md.split('|REQ-001|', 1)[-1] == render_requirement_rows(baseline).split('|REQ-001|', 1)[-1],
+          'Requirement README stale; run --render')
     # Archives preserve received links exactly. Only current Markdown navigation is checked.
     active = [ROOT / 'README.md', ROOT / 'AGENTS.md', ROOT / 'docs/START_HERE.md',
               ROOT / 'docs/sources/README.md', ROOT / 'contracts/README.md']
@@ -194,4 +202,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.render:
         (ROOT / 'docs/tasks/README.md').write_text(render_tasks(read_json('docs/tasks/board.json')), encoding='utf-8')
+        requirement_path = ROOT / 'docs/requirements/README.md'
+        requirement_intro = requirement_path.read_text(encoding='utf-8').split('|REQ-001|', 1)[0]
+        requirement_path.write_text(requirement_intro + render_requirement_rows(read_json('docs/requirements/baseline.json')), encoding='utf-8')
     raise SystemExit(validate())

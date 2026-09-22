@@ -1,3 +1,6 @@
+// R0.6: this historical script expects removed demo/autoapproval behavior.
+throw new Error('LEGACY_SELFTEST_RETIRED: 请运行 npm run test:legacy-safety；旧脚本不可作为当前验收。');
+
 // scripts/aliyun_compliance_selftest.js
 // 阿里云实人认证/人脸核身/内容机审 接入自测：
 //  A. 缺 AK（降级）：provider ready=false、文本走本地词库、图片/视频转人工、实名维持现状、非生产演示签署、核身503

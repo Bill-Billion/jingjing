@@ -1,0 +1,20 @@
+CREATE TABLE party_invitations (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ party_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ inviter_account_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ invitee_account_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ current_status ENUM('INVITED','ACCEPTED','DECLINED','REVOKED','EXPIRED') NOT NULL DEFAULT 'INVITED',
+ expires_at DATETIME(6) NOT NULL,
+ responded_at DATETIME(6) NULL,
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ FOREIGN KEY(party_id) REFERENCES parties(id),
+ FOREIGN KEY(inviter_account_id) REFERENCES identity_accounts(id),
+ FOREIGN KEY(invitee_account_id) REFERENCES identity_accounts(id),
+ pending_invitee CHAR(36) CHARACTER SET ascii COLLATE ascii_bin GENERATED ALWAYS AS (CASE WHEN current_status='INVITED' THEN invitee_account_id ELSE NULL END) STORED,
+ UNIQUE KEY one_pending_invitation(party_id,pending_invitee),
+ INDEX party_invitee_status(party_id,invitee_account_id,current_status),
+ INDEX recipient_invitations(invitee_account_id,created_at),
+ CONSTRAINT invitation_distinct_accounts CHECK(inviter_account_id<>invitee_account_id),
+ CONSTRAINT invitation_version CHECK(object_version > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

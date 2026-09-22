@@ -1,5 +1,5 @@
 // jobs/scheduler.js - 定时任务（V2）
-// 生产环境应迁移至 BullMQ + Redis 或独立 cron 服务，避免多实例重复执行
+// Historical SQLite routines only. R0.6 scheduling uses MySQL jobs/leases in the independent Worker.
 const db = require('../db');
 const config = require('../config');
 const logger = require('../utils/logger');
@@ -104,24 +104,6 @@ async function dailyReconciliation() {
   } catch (e) { logger.error('daily_reconciliation_error', { error: e.message }); }
 }
 
-// 启动调度
-function start() {
-  // 每小时执行
-  setInterval(autoVerify, HOUR);
-  setInterval(autoRefundUndelivered, HOUR);
-  setInterval(customizationExpiry, HOUR);
-  setInterval(cancelExpiredOrders, 30 * 60000);
-  setInterval(cleanIdempotent, DAY);
-  setInterval(dailyReconciliation, DAY);
-
-  // 启动后1分钟执行首次
-  setTimeout(() => {
-    autoVerify(); autoRefundUndelivered(); customizationExpiry(); cancelExpiredOrders();
-  }, 60000);
-
-  logger.info('scheduler_started');
-}
-
-start();
-
+// Deliberately no timer registration or import-time execution.
+// These legacy business rules must be migrated/reviewed before becoming Worker handlers.
 module.exports = { autoVerify, customizationExpiry, cancelExpiredOrders, dailyReconciliation };

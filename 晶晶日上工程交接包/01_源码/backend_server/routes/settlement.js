@@ -8,6 +8,7 @@ const { validate, v } = require('../middleware/validate');
 const limits = require('../middleware/rateLimit');
 const { maskBankCard } = require('../utils/crypto');
 const router = express.Router();
+const {rejectLegacyIdentity,assessLegacyIdentity} = require('../src/modules/legacy-safety');
 
 // 钱包信息
 router.get('/wallet', auth, (req, res) => {
@@ -22,9 +23,10 @@ router.get('/wallet', auth, (req, res) => {
     totalWithdrawn: w.total_withdrawn / 100,
     bankCard: w.bank_card ? maskBankCard(w.bank_card) : '',
     alipayAccount: w.alipay_account || '',
-    idVerified: !!w.id_verified,
+    idVerified: false, // Old boolean has no verification provenance.
     identityType: identity ? identity.identity_type : 'personal',
-    identityStatus: identity ? identity.status : 'none',
+    identityStatus: assessLegacyIdentity(identity).status,
+    identityVerificationStatus: assessLegacyIdentity(identity).verificationStatus,
   });
 });
 
@@ -59,7 +61,7 @@ router.get('/withdrawals', auth, (req, res) => {
 });
 
 // 绑定提现账户（需实名认证）
-router.post('/bind-account', auth, validate({
+router.post('/bind-account', auth, rejectLegacyIdentity, validate({
   bankCard: [v.string],
   alipayAccount: [v.string],
 }), (req, res) => {
@@ -75,7 +77,7 @@ router.post('/bind-account', auth, validate({
 });
 
 // 申请提现（风控）
-router.post('/withdraw', auth, limits.withdraw, validate({
+router.post('/withdraw', auth, rejectLegacyIdentity, limits.withdraw, validate({
   amount: [v.required, v.number, v.positive],
   channel: [v.required, v.enum('bank', 'alipay')],
 }), (req, res) => {

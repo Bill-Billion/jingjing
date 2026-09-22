@@ -1,0 +1,108 @@
+TAP version 13
+# Subtest: MySQL config is explicit, bounded and never defaults to a database
+ok 1 - MySQL config is explicit, bounded and never defaults to a database
+  ---
+  duration_ms: 1.6175
+  type: 'test'
+  ...
+# Subtest: Production cannot disable TLS, use root or load missing trust material
+ok 2 - Production cannot disable TLS, use root or load missing trust material
+  ---
+  duration_ms: 0.3345
+  type: 'test'
+  ...
+# Subtest: Legacy SQLite is permitted only in local/test; mysql and typo never fall back
+ok 3 - Legacy SQLite is permitted only in local/test; mysql and typo never fall back
+  ---
+  duration_ms: 0.855
+  type: 'test'
+  ...
+# Subtest: Legacy entry rejects before SQLite is imported or a database is opened
+ok 4 - Legacy entry rejects before SQLite is imported or a database is opened
+  ---
+  duration_ms: 47.8213
+  type: 'test'
+  ...
+# Subtest: test command network guard blocks external TCP before a provider request
+ok 5 - test command network guard blocks external TCP before a provider request
+  ---
+  duration_ms: 0.6723
+  type: 'test'
+  ...
+# Subtest: Real isolated MySQL8 foundation
+    # Subtest: status on a fresh database is read-only
+    ok 1 - status on a fresh database is read-only
+      ---
+      duration_ms: 14.1982
+      type: 'test'
+      ...
+    # Subtest: new schema applies once, repeated migration is a no-op
+    ok 2 - new schema applies once, repeated migration is a no-op
+      ---
+      duration_ms: 170.0255
+      type: 'test'
+      ...
+    # Subtest: parameters, UTC, utf8mb4 and BIGINT are preserved
+    ok 3 - parameters, UTC, utf8mb4 and BIGINT are preserved
+      ---
+      duration_ms: 15.4349
+      type: 'test'
+      ...
+    # Subtest: business transaction commits, rolls back and refuses implicit-commit SQL
+    ok 4 - business transaction commits, rolls back and refuses implicit-commit SQL
+      ---
+      duration_ms: 7.9672
+      type: 'test'
+      ...
+    # Subtest: concurrent business updates keep both increments
+    ok 5 - concurrent business updates keep both increments
+      ---
+      duration_ms: 6.242
+      type: 'test'
+      ...
+    # Subtest: a second migration session cannot acquire the same database lock
+    ok 6 - a second migration session cannot acquire the same database lock
+      ---
+      duration_ms: 12.7158
+      type: 'test'
+      ...
+    # Subtest: historical checksum/name drift and inserted older migration are rejected
+    ok 7 - historical checksum/name drift and inserted older migration are rejected
+      ---
+      duration_ms: 25.8637
+      type: 'test'
+      ...
+    # Subtest: DDL failure keeps earlier commits, blocks silent replay and supports inspected retry
+    ok 8 - DDL failure keeps earlier commits, blocks silent replay and supports inspected retry
+      ---
+      duration_ms: 83.2983
+      type: 'test'
+      ...
+    # Subtest: connection loss preserves APPLYING and refuses unsafe automatic retry
+    ok 9 - connection loss preserves APPLYING and refuses unsafe automatic retry
+      ---
+      duration_ms: 87.1408
+      type: 'test'
+      ...
+    # Subtest: wrong credentials fail without connecting to SQLite
+    ok 10 - wrong credentials fail without connecting to SQLite
+      ---
+      duration_ms: 8.5066
+      type: 'test'
+      ...
+    1..10
+ok 6 - Real isolated MySQL8 foundation
+  ---
+  duration_ms: 547.0949
+  type: 'test'
+  ...
+# Real MySQL 8.4.11 on loopback:33316; generated jx_test_* databases only
+1..6
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 713.1624

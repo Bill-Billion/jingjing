@@ -1,0 +1,376 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "name": "SmsChallengeRequest",
+      "schema": "SmsChallengeRequest",
+      "value": {
+        "phone": "13800000000",
+        "purpose": "LOGIN"
+      }
+    },
+    {
+      "name": "SessionRequest",
+      "schema": "SessionRequest",
+      "value": {
+        "challenge_id": "challenge_test",
+        "phone": "13800000000",
+        "code": "000000"
+      }
+    },
+    {
+      "name": "PartyPatch",
+      "schema": "PartyPatch",
+      "value": {
+        "display_name": "Synthetic author"
+      }
+    },
+    {
+      "name": "Synthetic money only - not a product price",
+      "schema": "Money",
+      "value": {
+        "amount_minor": 100,
+        "currency": "CNY"
+      }
+    },
+    {
+      "name": "SmsChallengeResponse",
+      "schema": "SmsChallengeResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": null,
+          "acting_party": null
+        },
+        "data": {
+          "challenge_id": "challenge_test",
+          "current_status": "SENT",
+          "expires_at": "2026-09-21T00:05:00Z",
+          "resend_after": "2026-09-21T00:01:00Z"
+        }
+      }
+    },
+    {
+      "name": "SessionResponse",
+      "schema": "SessionResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "access_token": "SYNTHETIC-NOT-A-REAL-TOKEN",
+          "token_type": "Bearer",
+          "expires_at": "2026-09-21T01:00:00Z",
+          "account": {
+            "id": "acc_test",
+            "display_name": "Test account",
+            "current_status": "ACTIVE",
+            "object_version": 1,
+            "allowed_actions": [
+              "account.read"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "AccountResponse",
+      "schema": "AccountResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "acc_test",
+          "display_name": "Test account",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "allowed_actions": [
+            "account.read"
+          ]
+        }
+      }
+    },
+    {
+      "name": "PartyPageResponse",
+      "schema": "PartyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "party": {
+                "id": "party_test",
+                "kind": "PERSON",
+                "display_name": "Test author",
+                "current_status": "ACTIVE",
+                "object_version": 7,
+                "capabilities": [
+                  {
+                    "code": "AUTHOR",
+                    "current_status": "ACTIVE",
+                    "allowed_actions": [
+                      "works.submit"
+                    ]
+                  }
+                ],
+                "allowed_actions": [
+                  "party.read",
+                  "party.profile.update"
+                ]
+              },
+              "membership": {
+                "id": "member_test",
+                "account_id": "acc_test",
+                "party_id": "party_test",
+                "current_status": "ACTIVE",
+                "roles": [
+                  "owner"
+                ],
+                "object_version": 1,
+                "allowed_actions": [
+                  "party.read"
+                ]
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "PartyResponse",
+      "schema": "PartyResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": "party_test"
+        },
+        "data": {
+          "id": "party_test",
+          "kind": "PERSON",
+          "display_name": "Test author",
+          "current_status": "ACTIVE",
+          "object_version": 7,
+          "capabilities": [
+            {
+              "code": "AUTHOR",
+              "current_status": "ACTIVE",
+              "allowed_actions": [
+                "works.submit"
+              ]
+            }
+          ],
+          "allowed_actions": [
+            "party.read",
+            "party.profile.update"
+          ]
+        }
+      }
+    },
+    {
+      "name": "IdentityVerificationResponse",
+      "schema": "IdentityVerificationResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "current_status": "REVIEW_REQUIRED",
+          "verification_id": null,
+          "verified_at": null,
+          "allowed_actions": [
+            "identity.submit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "CapabilityListResponse",
+      "schema": "CapabilityListResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": "party_test"
+        },
+        "data": {
+          "items": [
+            {
+              "code": "digital_human.generate",
+              "availability": "NOT_ENABLED",
+              "reason_code": "PROVIDER_APPROVAL_PENDING",
+              "display_message": "能力尚未启用",
+              "allowed_actions": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ProviderReadinessPageResponse",
+      "schema": "ProviderReadinessPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": "party_test"
+        },
+        "data": {
+          "items": [
+            {
+              "provider_kind": "IdentityProvider",
+              "provider_code": "test_identity",
+              "capability_code": "identity.verify",
+              "environment": "PRODUCTION",
+              "current_status": "WAITING_PROVIDER_APPROVAL",
+              "object_version": 2,
+              "reason_code": "PROVIDER_APPROVAL_PENDING",
+              "verification_history": [
+                {
+                  "verified_state": "SANDBOX_VERIFIED",
+                  "environment": "SANDBOX",
+                  "verified_at": "2026-09-21T00:00:00Z",
+                  "evidence_ref": "evidence_synthetic"
+                }
+              ],
+              "allowed_actions": []
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "RuleVersionResponse",
+      "schema": "RuleVersionResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": "party_test"
+        },
+        "data": {
+          "id": "rule_test",
+          "rule_key": "synthetic-contract-terms",
+          "version": "test-only",
+          "current_status": "EFFECTIVE",
+          "object_version": 1,
+          "effective_at": "2026-09-21T00:00:00Z",
+          "content_asset_id": "asset_test",
+          "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "allowed_actions": [
+            "rule.read"
+          ]
+        }
+      }
+    },
+    {
+      "name": "ContractSnapshotResponse",
+      "schema": "ContractSnapshotResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": "party_test"
+        },
+        "data": {
+          "id": "snapshot_test",
+          "contract_version_id": "contract_version_test",
+          "rule_version_ids": [
+            "rule_test"
+          ],
+          "party_ids": [
+            "party_test"
+          ],
+          "created_at": "2026-09-21T00:00:00Z",
+          "object_version": 1,
+          "current_status": "SEALED",
+          "content_asset_id": "asset_contract_test",
+          "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "signing_method": "NOT_SIGNED",
+          "signing_evidence_refs": [],
+          "allowed_actions": [
+            "snapshot.read"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HealthResponse",
+      "schema": "HealthResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": null,
+          "acting_party": null
+        },
+        "data": {
+          "current_status": "UP"
+        }
+      }
+    },
+    {
+      "name": "ReadyResponse",
+      "schema": "ReadyResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": null,
+          "acting_party": null
+        },
+        "data": {
+          "current_status": "NOT_READY"
+        }
+      }
+    },
+    {
+      "name": "ErrorResponse",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": "party_test"
+        },
+        "error": {
+          "code": "OBJECT_VERSION_CONFLICT",
+          "message": "对象已变更，请刷新后重试。",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ]
+}

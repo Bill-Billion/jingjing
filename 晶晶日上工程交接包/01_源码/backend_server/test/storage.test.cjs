@@ -1,34 +1,23 @@
-const test = require('node:test');
-const assert = require('node:assert');
-const config = require('../config');
-const storage = require('../services/storage');
-
-test('localDriver：put→publicUrl→getBuffer→remove 行为与历史一致', async () => {
-  config.upload.oss.enabled = false;
-  const drv = storage.getStorage();
-  assert.strictEqual(drv.driver, 'local');
-  const key = `ai/_test_${Date.now()}.bin`;
-  const body = Buffer.from('hello-storage');
-  const r = await drv.put({ key, body, contentType: 'application/octet-stream' });
-  assert.strictEqual(r.url, `/uploads/${key}`);
-  const got = await drv.getBuffer(key);
-  assert.deepStrictEqual(got, body);
-  assert.strictEqual(await drv.signedUrl(key), `/uploads/${key}`);
-  await drv.remove(key);
-  await assert.rejects(() => drv.getBuffer(key));
-});
-
-test('OSS 开关打开但缺凭证/依赖：优雅降级本地，不抛错、不硬编码密钥', async () => {
-  delete process.env.OSS_ACCESS_KEY_ID;
-  delete process.env.OSS_ACCESS_KEY_SECRET;
-  delete process.env.OSS_BUCKET;
-  delete process.env.OSS_REGION;
-  config.upload.oss.enabled = true;
-  const drv = storage.getStorage();
-  assert.strictEqual(drv.driver, 'local', '缺凭证必须降级 local');
-  const key = `ai/_test_fallback_${Date.now()}.txt`;
-  const r = await storage.put({ key, body: Buffer.from('x') });
-  assert.strictEqual(r.url, `/uploads/${key}`);
-  await storage.getStorage().remove(key);
-  config.upload.oss.enabled = false;
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs/promises');const path=require('node:path');const os=require('node:os');
+const config=require('../config');const storage=require('../services/storage');
+test('legacy storage permits only explicit public local test files',async(t)=>{
+  const old={env:config.env,dir:config.upload.dir,enabled:config.upload.oss.enabled};
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'jx-public-test-'));config.env='test';config.upload.dir=root;config.upload.oss.enabled=false;
+  t.after(async()=>{config.env=old.env;config.upload.dir=old.dir;config.upload.oss.enabled=old.enabled;await fs.rm(root,{recursive:true,force:true});});
+  const drv=storage.getStorage(),key='test/public.txt';
+  await assert.rejects(drv.put({key,body:Buffer.from('private by default')}),{code:'PRIVATE_STORAGE_NOT_ENABLED'});
+  assert.deepEqual(await fs.readdir(root),[]);
+  const result=await drv.put({key,body:Buffer.from('public test'),isPrivate:false});assert.equal(result.url,'/uploads/'+key);
+  assert.equal((await drv.getBuffer(key)).toString(),'public test');
+  await assert.rejects(drv.put({key,body:Buffer.from('overwrite'),isPrivate:false}),{code:'EEXIST'});
+  await assert.rejects(drv.signedUrl(key),{code:'LOCAL_PRIVATE_URL_UNAVAILABLE'});
+  for(const invalid of ['../outside','/absolute','a/../b','a//b','C:/bad','a\\b'])await assert.rejects(drv.put({key:invalid,body:Buffer.from('x'),isPrivate:false}),{code:'INVALID_STORAGE_KEY'});
+  await fs.mkdir(path.join(root,'target'));await fs.symlink(path.join(root,'target'),path.join(root,'alias'),'junction');
+  await assert.rejects(drv.put({key:'alias/secret',body:Buffer.from('x'),isPrivate:false}),{code:'STORAGE_SYMLINK_FORBIDDEN'});
+  assert.deepEqual(await fs.readdir(path.join(root,'target')),[]);
+  config.upload.oss.enabled=true;assert.throws(()=>storage.getStorage(),{code:'LEGACY_OSS_REQUIRES_MIGRATION'});
+  config.env='production';assert.throws(()=>storage.getStorage(),{code:'LEGACY_STORAGE_DISABLED'});
+  await assert.rejects(drv.put({key:'direct/bypass',body:Buffer.from('x'),isPrivate:false}),{code:'LEGACY_STORAGE_DISABLED'});
+  config.env='test';config.upload.oss.enabled=false;await drv.remove(key);await assert.rejects(drv.getBuffer(key),{code:'ENOENT'});
 });

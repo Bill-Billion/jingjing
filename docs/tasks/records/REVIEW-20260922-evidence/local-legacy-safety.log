@@ -1,0 +1,208 @@
+TAP version 13
+# {"time":"2026-09-22T03:12:37.874Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T03:12:37.878Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T03:12:37.881Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T03:12:37.882Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T03:12:37.889Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T03:12:37.891Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T03:12:37.891Z","level":"info","event":"db_migrations_applied"}
+# {"time":"2026-09-22T03:12:37.904Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T03:12:37.905Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T03:12:37.906Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T03:12:37.908Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T03:12:37.910Z","level":"info","event":"reconciliation_done"}
+# Subtest: 成功（无退款）：四账守恒、reconcile 无该单差异
+ok 1 - 成功（无退款）：四账守恒、reconcile 无该单差异
+  ---
+  duration_ms: 2.3474
+  type: 'test'
+  ...
+# Subtest: 全额退款：kind=full、支付单 refunded、账仍平
+ok 2 - 全额退款：kind=full、支付单 refunded、账仍平
+  ---
+  duration_ms: 1.5967
+  type: 'test'
+  ...
+# Subtest: 部分退两次到全退：partial→refunded，超额被拒，账平
+ok 3 - 部分退两次到全退：partial→refunded，超额被拒，账平
+  ---
+  duration_ms: 2.6943
+  type: 'test'
+  ...
+# Subtest: 重复回调/重复请求幂等：同 idemKey 不重复出款
+ok 4 - 重复回调/重复请求幂等：同 idemKey 不重复出款
+  ---
+  duration_ms: 0.9699
+  type: 'test'
+  ...
+# Subtest: 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+ok 5 - 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+  ---
+  duration_ms: 0.8589
+  type: 'test'
+  ...
+# Subtest: runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+ok 6 - runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+  ---
+  duration_ms: 1.3332
+  type: 'test'
+  ...
+# Subtest: 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+ok 7 - 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+  ---
+  duration_ms: 1.9525
+  type: 'test'
+  ...
+# Subtest: field encryption requires exactly 32 UTF8 bytes without default or truncation
+ok 8 - field encryption requires exactly 32 UTF8 bytes without default or truncation
+  ---
+  duration_ms: 1.1075
+  type: 'test'
+  ...
+# Subtest: field encryption reads legacy AES-GCM format, uses fresh IVs, and round trips Unicode
+ok 9 - field encryption reads legacy AES-GCM format, uses fresh IVs, and round trips Unicode
+  ---
+  duration_ms: 1.188
+  type: 'test'
+  ...
+# Subtest: wrong key or damaged ciphertext is an explicit sanitized error, never an empty identity
+ok 10 - wrong key or damaged ciphertext is an explicit sanitized error, never an empty identity
+  ---
+  duration_ms: 1.4629
+  type: 'test'
+  ...
+# Subtest: sample library query works with nullable video links and keeps old data
+ok 11 - sample library query works with nullable video links and keeps old data
+  ---
+  duration_ms: 84.2186
+  type: 'test'
+  ...
+# Subtest: script submission records only metadata digest and never claims external evidence
+ok 12 - script submission records only metadata digest and never claims external evidence
+  ---
+  duration_ms: 45.8174
+  type: 'test'
+  ...
+# Subtest: watermark placeholders cannot fabricate success with any configured provider
+ok 13 - watermark placeholders cannot fabricate success with any configured provider
+  ---
+  duration_ms: 0.8748
+  type: 'test'
+  ...
+# Subtest: all three delivery routes reject before changing orders or contacting providers
+ok 14 - all three delivery routes reject before changing orders or contacting providers
+  ---
+  duration_ms: 38.1929
+  type: 'test'
+  ...
+# Subtest: application startup rejects missing production and malformed supplied keys before database access
+ok 15 - application startup rejects missing production and malformed supplied keys before database access
+  ---
+  duration_ms: 1003.7829
+  type: 'test'
+  ...
+# Subtest: agency cannot bind an artist or overwrite their identity even by claiming consent
+ok 16 - agency cannot bind an artist or overwrite their identity even by claiming consent
+  ---
+  duration_ms: 99.486
+  type: 'test'
+  ...
+# Subtest: removing unrelated or historical members cannot overwrite any identity or delete history
+ok 17 - removing unrelated or historical members cannot overwrite any identity or delete history
+  ---
+  duration_ms: 35.3298
+  type: 'test'
+  ...
+# Subtest: agency application only records pending materials and preserves personal identity
+ok 18 - agency application only records pending materials and preserves personal identity
+  ---
+  duration_ms: 24.7918
+  type: 'test'
+  ...
+# Subtest: historical relationships grant no access to artist income, lists or exports
+ok 19 - historical relationships grant no access to artist income, lists or exports
+  ---
+  duration_ms: 39.2237
+  type: 'test'
+  ...
+# Subtest: batch payout and fan analytics cannot fabricate submission or statistics
+ok 20 - batch payout and fan analytics cannot fabricate submission or statistics
+  ---
+  duration_ms: 31.0288
+  type: 'test'
+  ...
+# Subtest: old delivered flags cannot settle money or pay MCN commission through HTTP or internal caller
+ok 21 - old delivered flags cannot settle money or pay MCN commission through HTTP or internal caller
+  ---
+  duration_ms: 29.4573
+  type: 'test'
+  ...
+# Subtest: sample payment buttons cannot mark either installment paid
+ok 22 - sample payment buttons cannot mark either installment paid
+  ---
+  duration_ms: 111.1533
+  type: 'test'
+  ...
+# Subtest: unavailable identity verification cannot autoapprove or collect identity documents
+ok 23 - unavailable identity verification cannot autoapprove or collect identity documents
+  ---
+  duration_ms: 26.8014
+  type: 'test'
+  ...
+# Subtest: old transaction status is visible only to the owner of its matching business order
+ok 24 - old transaction status is visible only to the owner of its matching business order
+  ---
+  duration_ms: 28.9282
+  type: 'test'
+  ...
+# Subtest: transaction ownership covers every old order type, collisions, unknown types and orphan records
+ok 25 - transaction ownership covers every old order type, collisions, unknown types and orphan records
+  ---
+  duration_ms: 46.2058
+  type: 'test'
+  ...
+# Subtest: Alipay status returns only owned rows and never queries or advances a payment during a read
+ok 26 - Alipay status returns only owned rows and never queries or advances a payment during a read
+  ---
+  duration_ms: 34.0769
+  type: 'test'
+  ...
+# Subtest: legacy writes, callbacks and Apple receipts are disabled even with configured test providers
+ok 27 - legacy writes, callbacks and Apple receipts are disabled even with configured test providers
+  ---
+  duration_ms: 32.7899
+  type: 'test'
+  ...
+# Subtest: old approved identities stay unchanged but are not exposed as verified or accepted by dependent actions
+ok 28 - old approved identities stay unchanged but are not exposed as verified or accepted by dependent actions
+  ---
+  duration_ms: 31.1004
+  type: 'test'
+  ...
+# Subtest: company submissions remain pending and rejected history is not promoted to verified
+ok 29 - company submissions remain pending and rejected history is not promoted to verified
+  ---
+  duration_ms: 20.1692
+  type: 'test'
+  ...
+# Subtest: default finance service cannot create, confirm or refund money in any environment
+ok 30 - default finance service cannot create, confirm or refund money in any environment
+  ---
+  duration_ms: 20.2252
+  type: 'test'
+  ...
+# Subtest: obsolete scripts that expected demo success are stopped before loading services
+ok 31 - obsolete scripts that expected demo success are stopped before loading services
+  ---
+  duration_ms: 218.0973
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1495.2622

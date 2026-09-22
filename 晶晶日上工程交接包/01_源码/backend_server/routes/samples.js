@@ -1,3 +1,4 @@
+const { rejectUnmarkedDelivery } = require('../utils/watermark');
 // routes/samples.js - V12 定制剧（普通档5000元：99元意向金担保 + 4901元制作款担保 + 7步流程 + 高端定制）
 // 状态机：draft → intent_escrow → genre_selected → scripting → script_finalized →
 //         producing（制作款担保）→ delivered → settled（验收后担保清分）
@@ -8,6 +9,7 @@ const auth = require('../middleware/auth');
 const { genOrderNo } = require('../utils/settlement');
 const { validate, v } = require('../middleware/validate');
 const router = express.Router();
+const { rejectLegacyPayment } = require('../src/modules/legacy-safety');
 
 // 统一安全 JSON 解析：旧库/脏数据（如手工录入的中文纯文本“主角：组长陆衍（可定…”、空值、半截字符串）
 // 一律回退到 fallback，绝不抛异常导致接口 500。期望数组时，脏文本按常见分隔符切分以保留原始信息。
@@ -85,16 +87,7 @@ router.post('/:id/pay-intent', auth, (req, res) => {
   if (!order) return;
   if (order.status !== 'draft') return res.status(400).json({ message: '订单状态异常，请刷新后重试' });
 
-  // TODO: 接入微信/支付宝支付，支付成功回调后更新
-  db.prepare(`UPDATE sample_orders SET status='intent_escrow', step=1, intent_paid=1, updated_at=CURRENT_TIMESTAMP WHERE id=?`)
-    .run(order.id);
-
-  res.json({
-    message: '意向金支付成功，请选择喜欢的剧集类型',
-    step: 1,
-    nextStep: '选择类型',
-    genres: config.sample.genres,
-  });
+  return rejectLegacyPayment(req, res);
 });
 
 // ========== 第2步：选择类型 ==========
@@ -285,20 +278,11 @@ router.post('/:id/pay-production', auth, (req, res) => {
   if (!order) return;
   if (order.status !== 'script_finalized') return res.status(400).json({ message: '请先确认剧本定稿' });
 
-  // TODO: 接入微信/支付宝支付
-  db.prepare(`UPDATE sample_orders
-    SET production_paid=1, status='producing', step=5, updated_at=CURRENT_TIMESTAMP
-    WHERE id=?`).run(order.id);
-
-  res.json({
-    message: '制作款支付成功，AI宣发片制作中（预计3-5个工作日）',
-    step: 5,
-    productionDays: config.sample.productionDays,
-  });
+  return rejectLegacyPayment(req, res);
 });
 
 // ========== 第6步：团队交付成片（管理员/制作团队） ==========
-router.post('/:id/deliver', auth, (req, res) => {
+router.post('/:id/deliver', auth, rejectUnmarkedDelivery, (req, res) => {
   if (req.role !== 'admin') return res.status(403).json({ message: '无权限' });
   const { sampleUrl, proposalUrl, previewUrl } = req.body;
   const order = db.prepare('SELECT * FROM sample_orders WHERE id = ?').get(req.params.id);

@@ -6,9 +6,10 @@ const paymentService = require('../services/paymentService');
 const logger = require('../utils/logger');
 const appleIap = require('../services/providers/appleIap');
 const router = express.Router();
+const {rejectLegacyPayment,rejectLegacyCallback,assessLegacyPayment} = require('../src/modules/legacy-safety');
 
 // 发起支付
-router.post('/pay', auth, async (req, res) => {
+router.post('/pay', auth, rejectLegacyPayment, async (req, res) => {
   const { orderNo, orderType, channel = 'wechat' } = req.body;
   if (!orderNo || !orderType) return res.status(400).json({ message: '参数不完整' });
 
@@ -39,7 +40,7 @@ router.post('/pay', auth, async (req, res) => {
 });
 
 // 微信支付回调
-router.post('/wx/notify', express.raw({ type: '*/*' }), async (req, res) => {
+router.post('/wx/notify', rejectLegacyCallback, express.raw({ type: '*/*' }), async (req, res) => {
   try {
     await paymentService.handleCallback('wechat', req.headers, req.body.toString());
     res.json({ code: 'SUCCESS', message: '成功' });
@@ -50,7 +51,7 @@ router.post('/wx/notify', express.raw({ type: '*/*' }), async (req, res) => {
 });
 
 // 支付宝回调
-router.post('/alipay/notify', express.urlencoded({ extended: false }), async (req, res) => {
+router.post('/alipay/notify', rejectLegacyCallback, express.urlencoded({ extended: false }), async (req, res) => {
   try {
     await paymentService.handleCallback('alipay', req.headers, JSON.stringify(req.body));
     res.send('success');
@@ -62,13 +63,20 @@ router.post('/alipay/notify', express.urlencoded({ extended: false }), async (re
 
 // 查询支付状态
 router.get('/status/:txNo', auth, (req, res) => {
-  const txn = db.prepare('SELECT tx_no, order_no, order_type, amount, status, created_at FROM payment_transactions WHERE tx_no = ?').get(req.params.txNo);
+  // Match both the business type and its owning user. No generic admin-role bypass.
+  const txn = db.prepare(`SELECT t.tx_no,t.order_no,t.order_type,t.amount,t.status,t.created_at
+    FROM payment_transactions t WHERE t.tx_no=? AND (
+      (t.order_type='video' AND EXISTS(SELECT 1 FROM video_orders o WHERE o.order_no=t.order_no AND o.user_id=?)) OR
+      (t.order_type='endorsement' AND EXISTS(SELECT 1 FROM endorsement_orders o WHERE o.order_no=t.order_no AND o.user_id=?)) OR
+      (t.order_type IN ('customization','recruiting') AND EXISTS(SELECT 1 FROM claims o WHERE o.order_no=t.order_no AND o.user_id=?)) OR
+      (t.order_type='sample' AND EXISTS(SELECT 1 FROM sample_orders o WHERE o.order_no=t.order_no AND o.user_id=?))
+    )`).get(req.params.txNo,req.userId,req.userId,req.userId,req.userId);
   if (!txn) return res.status(404).json({ message: '流水不存在' });
-  res.json({ ...txn, amount: txn.amount / 100 });
+  res.json({ ...txn, ...assessLegacyPayment(txn.status), amount: txn.amount / 100 });
 });
 
 // iOS 应用内购买：客户端 StoreKit 支付后把收据交服务端校验（幂等，按 Apple transactionId 去重）
-router.post('/apple/verify', auth, async (req, res) => {
+router.post('/apple/verify', auth, rejectLegacyPayment, async (req, res) => {
   const { orderNo, orderType, receiptData, productId } = req.body || {};
   if (!orderNo || !orderType || !receiptData) return res.status(400).json({ message: '参数不完整' });
   const tableMap = {

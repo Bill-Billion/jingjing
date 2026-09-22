@@ -37,26 +37,24 @@ router.post('/upload', auth, validate({
     .get(req.userId);
   if (!writer) return res.status(403).json({ message: '请先完成剧本方入驻审核' });
 
-  // 生成时间戳存证哈希（SHA-256）
-  const evidenceHash = crypto
-    .createHash('sha256')
-    .update(title + synopsis + (fileUrl || '') + Date.now())
+  // A digest of submitted metadata is neither a file digest nor third-party evidence.
+  const submissionDigest = crypto.createHash('sha256')
+    .update(JSON.stringify({ title, synopsis, fileUrl: fileUrl || '' }))
     .digest('hex');
-
-  // TODO: 对接区块链存证服务或公证处电子存证，获取evidence_txid
   const evidenceTxid = null;
 
   const r = db.prepare(`INSERT INTO scripts
-    (scriptwriter_id, title, category, genre, word_count, synopsis, file_url, filing_number, evidence_hash, evidence_txid, status)
-    VALUES (?,?,?,?,?,?,?,?,?,?, 'pending')`).run(
+    (scriptwriter_id, title, category, genre, word_count, synopsis, file_url, filing_number, evidence_hash, evidence_txid, digest_kind, status)
+    VALUES (?,?,?,?,?,?,?,?,?,?, 'submission_metadata_v1', 'pending')`).run(
     writer.id, title, category, genre || '', wordCount || 0, synopsis,
-    fileUrl || '', filingNumber || '', evidenceHash, evidenceTxid
+    fileUrl || '', filingNumber || '', submissionDigest, evidenceTxid
   );
 
   res.json({
-    message: '剧本上传成功，已生成时间戳存证',
+    message: '材料已保存；仅生成提交信息摘要，尚无第三方存证',
     scriptId: r.lastInsertRowid,
-    evidenceHash,
+    submissionDigest, digestScope: 'submission_metadata',
+    evidenceHash: null, evidenceStatus: 'not_verified', trustedTimestamp: false,
   });
 });
 
@@ -71,7 +69,10 @@ router.get('/my', auth, (req, res) => {
     list: list.map(s => ({
       id: s.id, title: s.title, category: s.category, genre: s.genre,
       wordCount: s.word_count, synopsis: s.synopsis,
-      status: s.status, evidenceHash: s.evidence_hash,
+      status: s.status, evidenceHash: null, evidenceStatus: 'not_verified', trustedTimestamp: false,
+      submissionDigest: s.digest_kind === 'submission_metadata_v1' ? s.evidence_hash : null,
+      recordedDigest: s.evidence_hash,
+      digestScope: s.digest_kind === 'submission_metadata_v1' ? 'submission_metadata' : 'legacy_unclassified',
       filingNumber: s.filing_number, createdAt: s.created_at,
     })),
   });
@@ -79,19 +80,9 @@ router.get('/my', auth, (req, res) => {
 
 // 浏览剧本库（仅通过审核的制作团队和平台监制可见，需NDA）
 router.get('/browse', auth, (req, res) => {
-  // TODO: 检查用户是否为制作团队或平台监制
-  const list = db.prepare(`SELECT s.*, sw.pen_name
-    FROM scripts s
-    LEFT JOIN scriptwriters sw ON s.scriptwriter_id = sw.id
-    WHERE s.status = 'approved'
-    ORDER BY s.created_at DESC`).all();
-  res.json({
-    list: list.map(s => ({
-      id: s.id, title: s.title, category: s.category, genre: s.genre,
-      wordCount: s.word_count, synopsis: s.synopsis,
-      penName: s.pen_name, createdAt: s.created_at,
-      // fileUrl不返回，需签署NDA后单独申请
-    })),
+  res.status(503).json({
+    code: 'SCRIPT_READING_NOT_READY', status: 'not_enabled',
+    message: '受控阅稿尚未启用，当前无法浏览他人剧本',
   });
 });
 
