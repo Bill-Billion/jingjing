@@ -1,5 +1,9 @@
 # 服务器和数据库：当前进度
 
+当前分支core/review-collaboration-decoupling；[第9份申请](https://github.com/Bill-Billion/jingjing/pull/9)统一提供接口和后端。本轮拆开规则与数据库测试依赖，修正模块选择、迁移数量以及崩溃恢复测试对机器速度的依赖。本机全套129通过、1项缺旧库跳过；远端最新结果见文末。未合入共同版本，新账号HTTP仍未完成。
+
+以下保留此前账号任务及开工记录：
+
 2026-09-22，本侧开始个人/机构权限任务，首批MySQL内部流程已写好：个人与机构身份分开、多能力待审、本人接受邀请、撤回/过期/移除以及事务内的权限和操作记录。[本轮记录](../tasks/records/CORE-S1-002.md)。
 
 本机专项18项通过；全套121项通过、1项缺脱敏旧库跳过。数据库16、后台任务21、外部服务21、旧问题专项31项也通过，分组重叠不相加。代码7c907e2已上传[第8份申请](https://github.com/Bill-Billion/jingjing/pull/8)，[GitHub复验通过](https://github.com/Bill-Billion/jingjing/actions/runs/35680697354)，结果与本机一致。没有公开HTTP、真实登录、页面联调或商业授权，真实服务未启用。

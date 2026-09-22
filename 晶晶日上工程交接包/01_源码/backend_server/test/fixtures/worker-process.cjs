@@ -10,15 +10,15 @@ const { createWorker } = require('../../src/worker/runner');
   if (env.NODE_ENV !== 'test' || env.MYSQL_HOST !== '127.0.0.1' || env.MYSQL_PORT !== '33316' || !/^jx_test_\d+_[a-f0-9]{12}$/.test(database)) throw new Error('UNSAFE_FIXTURE');
   const db = await openDatabase({ ...env, MYSQL_DATABASE: database });
   const repository = createJobRepository(db);
+  try {
   if (mode === 'crash') {
-    const job = await repository.claim('crashed-process', 300);
+    const job = await repository.claim('crashed-process', 30000);
     if (!job) throw new Error('NO_FIXTURE_JOB');
     await repository.saveProviderTask(job, 'synthetic-provider-task-42');
     console.log(JSON.stringify({ id: job.id }));
     process.exit(17); // Deliberately abandon a committed lease without cleanup/ack.
   }
   if (mode !== 'recover') throw new Error('UNKNOWN_FIXTURE_MODE');
-  try {
     const worker = createWorker({ repository, handlers: new Map([['fixture.restart', {
       execute: async () => { throw new Error('MUST_NOT_RESUBMIT'); },
       recover: async (job) => {

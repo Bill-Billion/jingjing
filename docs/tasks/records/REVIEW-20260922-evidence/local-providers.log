@@ -2,129 +2,129 @@ TAP version 13
 # Subtest: all six provider interfaces fail closed without implementations
 ok 1 - all six provider interfaces fail closed without implementations
   ---
-  duration_ms: 4.0642
+  duration_ms: 3.5542
   type: 'test'
   ...
 # Subtest: configuration alone, wrong environment, stale proof and disabled status never call a provider
 ok 2 - configuration alone, wrong environment, stale proof and disabled status never call a provider
   ---
-  duration_ms: 1.0546
+  duration_ms: 1.0085
   type: 'test'
   ...
 # Subtest: timeout reports unknown outcome, aborts and never automatically repeats payment
 ok 3 - timeout reports unknown outcome, aborts and never automatically repeats payment
   ---
-  duration_ms: 26.2555
+  duration_ms: 20.9223
   type: 'test'
   ...
 # Subtest: provider error bodies and logger metadata do not leak credentials or private URLs
 ok 4 - provider error bodies and logger metadata do not leak credentials or private URLs
   ---
-  duration_ms: 0.5692
+  duration_ms: 0.5839
   type: 'test'
   ...
 # Subtest: private files require permission and verified configuration, never local fallback
 ok 5 - private files require permission and verified configuration, never local fallback
   ---
-  duration_ms: 1.3941
+  duration_ms: 1.4123
   type: 'test'
   ...
 # Subtest: private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
 ok 6 - private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
   ---
-  duration_ms: 1.416
+  duration_ms: 1.2507
   type: 'test'
   ...
 # Subtest: changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
 ok 7 - changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
   ---
-  duration_ms: 245.3221
+  duration_ms: 229.1557
   type: 'test'
   ...
 # Subtest: health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
 ok 8 - health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
   ---
-  duration_ms: 65.0891
+  duration_ms: 68.4374
   type: 'test'
   ...
 # Subtest: OSS failures never produce a successful or public result; revocation is checked before each read
 ok 9 - OSS failures never produce a successful or public result; revocation is checked before each read
   ---
-  duration_ms: 1.551
+  duration_ms: 1
   type: 'test'
   ...
-# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-09-22T03:07:43.886Z","level":"warn","event":"legacy_private_upload_blocked"}
+# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-09-22T03:12:36.185Z","level":"warn","event":"legacy_private_upload_blocked"}
 # Subtest: legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
 ok 10 - legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
   ---
-  duration_ms: 50.1022
+  duration_ms: 48.2449
   type: 'test'
   ...
 # Subtest: real isolated MySQL persists provider status, evidence and concurrent edits
     # Subtest: database readiness requires applied migrations, not just a connection
     ok 1 - database readiness requires applied migrations, not just a connection
       ---
-      duration_ms: 326.8341
+      duration_ms: 354.6187
       type: 'test'
       ...
     # Subtest: recording is denied by default and requires genuine server-side evidence checking
     ok 2 - recording is denied by default and requires genuine server-side evidence checking
       ---
-      duration_ms: 4.3886
+      duration_ms: 4.5535
       type: 'test'
       ...
     # Subtest: configuration is saved but does not authorize real calls
     ok 3 - configuration is saved but does not authorize real calls
       ---
-      duration_ms: 6.5022
+      duration_ms: 6.6784
       type: 'test'
       ...
     # Subtest: verified evidence survives closing and reopening the database connection
     ok 4 - verified evidence survives closing and reopening the database connection
       ---
-      duration_ms: 10.3598
+      duration_ms: 10.9377
       type: 'test'
       ...
     # Subtest: disabling and awaiting approval keep history but block new calls
     ok 5 - disabling and awaiting approval keep history but block new calls
       ---
-      duration_ms: 8.0369
+      duration_ms: 9.336
       type: 'test'
       ...
     # Subtest: two concurrent updates cannot overwrite each other silently
     ok 6 - two concurrent updates cannot overwrite each other silently
       ---
-      duration_ms: 7.1599
+      duration_ms: 7.5908
       type: 'test'
       ...
     # Subtest: history write failure rolls back both status and version
     ok 7 - history write failure rolls back both status and version
       ---
-      duration_ms: 3.4653
+      duration_ms: 3.3025
       type: 'test'
       ...
     # Subtest: re-enabling requires fresh evidence and preserves earlier verification
     ok 8 - re-enabling requires fresh evidence and preserves earlier verification
       ---
-      duration_ms: 4.0532
+      duration_ms: 4.4616
       type: 'test'
       ...
     # Subtest: capabilities have separate status even for the same provider
     ok 9 - capabilities have separate status even for the same provider
       ---
-      duration_ms: 2.2279
+      duration_ms: 1.6993
       type: 'test'
       ...
     1..9
 ok 11 - real isolated MySQL persists provider status, evidence and concurrent edits
   ---
-  duration_ms: 485.8108
+  duration_ms: 515.8606
   type: 'test'
   ...
 # Subtest: legacy storage permits only explicit public local test files
 ok 12 - legacy storage permits only explicit public local test files
   ---
-  duration_ms: 13.3546
+  duration_ms: 13.7151
   type: 'test'
   ...
 1..12
@@ -135,4 +135,4 @@ ok 12 - legacy storage permits only explicit public local test files
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 789.4555
+# duration_ms 821.9194

@@ -174,7 +174,7 @@ test('Real MySQL durable jobs, outbox and independent worker', { skip: !process.
       const run = (mode) => spawnSync(process.execPath, ['test/fixtures/worker-process.cjs', db.database, mode], { cwd: path.resolve(__dirname, '..'), env: process.env, encoding: 'utf8', windowsHide: true, timeout: 15000 });
       const crashed = run('crash'); assert.equal(crashed.status, 17, crashed.stderr);
       assert.equal((await repo.get(job.id)).provider_task_id, 'synthetic-provider-task-42');
-      await sleep(350);
+      await expire(db, job.id); // Test recovery after expiry without racing CI scheduling.
       const recovered = run('recover'); assert.equal(recovered.status, 0, recovered.stderr);
       const row = await repo.get(job.id); assert.equal(row.status, 'SUCCEEDED'); assert.equal(row.attempts, 2); assert.equal(row.result_ref, 'test-only:recovered-42');
     });
