@@ -13,3 +13,5 @@
 [完整计划](MAINLINE_PROGRESS.md) · [逐项问题](LEGACY_ISSUES.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md)。
 
 本机测试数据库已关闭，33316端口已停止监听，临时J盘映射核对后已撤销。
+
+新任务开工：CORE-S1-002由chengcongcong222认领，分支core/s1-002-party-membership，基于8a7da41，目录干净，共同版本736a9ec。已读取第1份申请的候选接口约定；本轮先实现MySQL内部服务与真实数据库测试，不复制或假称已合入候选接口。
