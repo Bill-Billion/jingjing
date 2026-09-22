@@ -8,7 +8,7 @@
 |数据|MySQL8/InnoDB，正式优先托管；SQLite仅旧库来源/隔离测试；媒体入私有OSS|CORE-S0-002异步MySQL基础已在隔离8.4.11自验；旧业务路由和真实旧数据尚未迁移，待跨流评审|
 |后端|Node/Express JavaScript模块化单体，async repository/service、mysql2/promise；独立Worker|已形成异步连接/事务/迁移基础；CORE-S0-004独立Worker候选已隔离自验，领域handler未启用，旧路由未整体迁移|
 |队列|MySQL jobs/lease/outbox；API与Worker进程分开；不用Redis/BullMQ/Kafka/ES/微服务|已新增jobs/outbox/人工重试审计，租约与token保护并通过并发/重启测试；旧API不再启动scheduler，真实领域接线待后续任务|
-|契约|REST + OpenAPI3.1；金额minor/currency、request_id、idempotency_key、object_version、actor/acting_party、current_status/allowed_actions|候选0.1.0-rc.1在独立PR #1待评审；本分支不包含未合并主文件，历史接口不能标作R0.6契约|
+|契约|REST + OpenAPI3.1；金额minor/currency、request_id、idempotency_key、object_version、actor/acting_party、current_status/allowed_actions|候选0.1.0-rc.1已随本次复审汇入同一个待审分支；主文件contracts/openapi.yaml尚待双方检查，新HTTP端点尚未实现，历史接口不能标作R0.6契约|
 |生产形态|Nginx+API/Worker pm2+Web静态资源+托管MySQL+OSS；本地CI可Docker|本次不部署，不宣称容量/可用性已验证|
 
 模块：identity / party / avatar / rights / works / licensing / commerce / production / gigs / projects / release / settlement / governance / providers。数据库事务边界与幂等应随契约和状态迁移评审；媒体及大文件不入事务表。

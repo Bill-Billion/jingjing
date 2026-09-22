@@ -1,4 +1,4 @@
-"""Read-only R0.6 governance validation. --render refreshes the task table only.
+"""Read-only R0.6 governance validation. --render refreshes task/requirement tables.
 
 Python 3.10+, standard library; no application imports, DB, network or providers.
 """
@@ -63,6 +63,11 @@ def render_tasks(board):
                   '修改后运行 `python scripts/collaboration_check.py --render` 更新本页，'
                   '再运行不带参数的检查。自动更新也必须遵守 [沟通写法](../collaboration/WRITING_RULES.md)。', ''])
     return '\n'.join(lines)
+
+
+def render_requirement_rows(baseline):
+    return '\n'.join('|'+r['id']+'|'+r['title']+'|'+r['scope']+'|'+', '.join(r['task_refs'])+'|'
+                     for r in baseline['requirements'])+'\n'
 
 
 def validate():
@@ -167,6 +172,9 @@ def validate():
     for tid in tasks:
         visit(tid)
     check((ROOT / 'docs/tasks/README.md').read_text(encoding='utf-8') == render_tasks(board), 'Task README stale; run --render')
+    requirement_md = (ROOT / 'docs/requirements/README.md').read_text(encoding='utf-8')
+    check(requirement_md.split('|REQ-001|', 1)[-1] == render_requirement_rows(baseline).split('|REQ-001|', 1)[-1],
+          'Requirement README stale; run --render')
     # Archives preserve received links exactly. Only current Markdown navigation is checked.
     active = [ROOT / 'README.md', ROOT / 'AGENTS.md', ROOT / 'docs/START_HERE.md',
               ROOT / 'docs/sources/README.md', ROOT / 'contracts/README.md']
@@ -194,4 +202,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.render:
         (ROOT / 'docs/tasks/README.md').write_text(render_tasks(read_json('docs/tasks/board.json')), encoding='utf-8')
+        requirement_path = ROOT / 'docs/requirements/README.md'
+        requirement_intro = requirement_path.read_text(encoding='utf-8').split('|REQ-001|', 1)[0]
+        requirement_path.write_text(requirement_intro + render_requirement_rows(read_json('docs/requirements/baseline.json')), encoding='utf-8')
     raise SystemExit(validate())
