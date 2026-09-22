@@ -2,7 +2,7 @@
 const { descriptor, assertUsable, failure } = require('./readiness');
 const { createLogger } = require('../../infrastructure/observability');
 const methods = Object.freeze({ IdentityProvider:['verify'],PaymentProvider:['create','query','refund'],ObjectStorageProvider:['put','get','sign','remove'],
-  ModerationProvider:['inspect'],DigitalHumanProvider:['submit','query'],ESignProvider:['create','query'] });
+  ModerationProvider:['inspect'],DigitalHumanProvider:['submit','query'],ESignProvider:['create','query'],SmsProvider:['send'] });
 function createAdapter({ provider, repository, inspect, operations = {}, logger = createLogger(), timeoutMs = 15000 }) {
   const identity = descriptor(provider);
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 120000) throw failure('INVALID_PROVIDER_TIMEOUT');
