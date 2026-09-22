@@ -1,5 +1,7 @@
 # 从这里开始
 
+**当前规则已更新（2026-09-22）：按[阶段计划](collaboration/STAGED_DELIVERY.md)集中推送和合并，不再逐任务上传。第4份申请此前已合并，其余8份关闭未合并；第9份不再是开放的合并入口。已有代码与历史证据保留，下面此前申请及上传记录不能当作当前操作指令。本轮流程修订仅在本地，尚未同步给队友。**
+
 最新同步方式见[一个入口获取与继续开发](collaboration/REVIEW_AND_HANDOFF.md)。原分项申请保留历史，当前改从统一待审分支获取；未批准、未合入，新账号HTTP接口尚未接通。
 
 先看 [双方分工](collaboration/TEAM_ONBOARDING.md) 和 [当前进度与下一步](status/MAINLINE_PROGRESS.md)，不需要先记任务编号。完整工作和完成标准在 [任务安排](tasks/README.md)。
