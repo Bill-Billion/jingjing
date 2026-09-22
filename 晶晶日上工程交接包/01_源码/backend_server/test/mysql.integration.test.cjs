@@ -34,14 +34,17 @@ test('Real isolated MySQL8 foundation', {skip:!process.env.JX_MYSQL_TEST_ENV_FIL
     return dir;
   }
   try {
+    const source=path.resolve(__dirname,'../migrations/mysql-runtime');
+    const versions=(await fs.readdir(source)).filter(f=>/^\d{4}_.+\.sql$/.test(f)).sort().map(f=>f.slice(0,4));
+    assert.ok(versions.length>0);assert.equal(new Set(versions).size,versions.length);
     const db=await newDatabase();
     await t.test('status on a fresh database is read-only',async()=>{
-      const state=await status(db);assert.deepEqual(state.migrations.map(x=>x.status),Array(14).fill('PENDING'));assert.equal(state.history.length,0);
+      const state=await status(db);assert.deepEqual(state.migrations.map(x=>x.version),versions);assert.deepEqual(state.migrations.map(x=>x.status),versions.map(()=>'PENDING'));assert.equal(state.history.length,0);
       const [[row]]=await db.execute('SELECT COUNT(*) AS n FROM information_schema.tables WHERE table_schema=DATABASE()');assert.equal(Number(row.n),0);
     });
     await t.test('new schema applies once, repeated migration is a no-op',async()=>{
-      assert.deepEqual((await migrate(db)).applied,['0001','0002','0003','0004','0005','0006','0007','0008','0009','0010','0011','0012','0013','0014']);assert.deepEqual((await migrate(db)).applied,[]);
-      const state=await status(db);assert.equal(state.history.length,14);assert.ok(state.history.every(x=>x.status==='APPLIED'));
+      assert.deepEqual((await migrate(db)).applied,versions);assert.deepEqual((await migrate(db)).applied,[]);
+      const state=await status(db);assert.equal(state.history.length,versions.length);assert.ok(state.history.every(x=>x.status==='APPLIED'));
       const [[marker]]=await db.execute('SELECT schema_value FROM platform_schema_metadata WHERE schema_key=?',['storage_generation']);assert.equal(marker.schema_value,'r06_async_mysql8_v1');
       const [engines]=await db.execute('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE()');assert.ok(engines.every(x=>x.ENGINE==='InnoDB'));
     });

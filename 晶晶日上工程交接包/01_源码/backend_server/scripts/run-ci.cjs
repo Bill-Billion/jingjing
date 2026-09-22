@@ -16,10 +16,7 @@ function main() {
   const env = JSON.parse(fs.readFileSync(process.env.JX_MYSQL_TEST_ENV_FILE, 'utf8'));
   if (env.NODE_ENV !== 'test' || env.DB_CLIENT !== 'mysql' || env.MYSQL_HOST !== '127.0.0.1' || env.MYSQL_PORT !== '33316' || env.MYSQL_USER !== 'jx_local' || env.MYSQL_DATABASE !== 'jx_dev') throw new Error('只允许使用指定的本机隔离测试数据库。');
   const suites = [
-    { name: 'mysql', args: ['scripts/test-mysql.js'], allowedSkips: 0 },
-    { name: 'worker', args: ['scripts/test-mysql.js', 'worker'], allowedSkips: 0 },
-    { name: 'providers', args: ['scripts/test-mysql.js', 'providers'], allowedSkips: 0 },
-    { name: 'party', args: ['scripts/test-mysql.js', 'party'], allowedSkips: 0 },
+    ...Object.keys(require('./mysql-test-suites.cjs')).map(name=>({name,args:['scripts/test-mysql.js',name],allowedSkips:0})),
     { name: 'legacy-safety', args: ['scripts/test-legacy-safety.cjs'], allowedSkips: 0 },
     { name: 'regression', args: ['scripts/run-tests.cjs'], allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
   ];

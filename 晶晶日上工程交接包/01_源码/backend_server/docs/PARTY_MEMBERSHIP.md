@@ -1,6 +1,6 @@
 # 个人、机构和成员邀请：本轮服务器实现边界
 
-代码在src/modules/party/repository.js，通过createPartyRepository(db, {resolvePrincipal})构造，使用现有MySQL事务连接。SQL和事务内的权限检查集中在本模块；没有新增框架或外部服务。尚未挂载HTTP路由，也未替换旧登录。
+代码在src/modules/party/repository.js，通过createPartyRepository(db, {resolvePrincipal})构造，使用现有MySQL事务连接。输入与权限规则在policy.js中独立验证；SQL、可信身份接入和事务内重新核对仍在repository.js中；没有新增框架或外部服务。尚未挂载HTTP路由，也未替换旧登录。
 
 ## 可信身份与允许的操作
 
@@ -33,3 +33,5 @@ MySQL迁移0008–0014分别创建账号、主体、邀请、成员、能力申�
 设置隔离测试配置后执行npm run test:party；npm run test:ci也会自动运行这一组。测试严格限制本机33316、jx_local与jx_dev控制连接，使用随机jx_test_*数据库后清理。没有配置不能跳过后报成功，不调用真实供应商。
 
 公开接口和登录接入、本人退出/所有权交接、停用管理、机构审核、商业合作与佣金授权、分页及保留策略仍未全部完成。不能从测试通过推断已可正式给用户使用。
+
+单独检查权限规则：在仓库根目录执行 `node scripts/backend-check.cjs party-unit`，只需Node，不需要安装服务器依赖、启动数据库或开通外部服务。它不替代MySQL并发/回滚检查；完整检查仍用 `npm run test:ci`。

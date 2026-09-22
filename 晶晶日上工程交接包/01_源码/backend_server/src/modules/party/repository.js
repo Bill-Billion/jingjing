@@ -1,26 +1,6 @@
  'use strict';
 const {randomUUID,createHash}=require('node:crypto');
-const capabilityCodes=Object.freeze(['AUTHOR','SCRIPT_SUPPLIER','PRODUCER','MCN','BRAND_CLIENT']);
-const error=(code,status=403)=>Object.assign(new Error(code),{code,status});
-function ref(value) {
- if(typeof value!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(value))throw error('INVALID_REFERENCE',400);
- return value;
-}
-function id(value) {
- if(typeof value!=='string'||!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(value))throw error('INVALID_ID',400);
- return value;
-}
-function shape(input,keys) {
- if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!keys.includes(k)))throw error('INVALID_INPUT',400);
-}
-function label(value,max) {
- if(typeof value!=='string'||!value.trim()||Array.from(value).length>max)throw error('INVALID_DISPLAY_NAME',400);
- return value;
-}
-function version(value) {
- if(!Number.isInteger(value)||value<1||value>=4294967295)throw error('EXPECTED_VERSION_REQUIRED',428);
- return value;
-}
+const {capabilityCodes,error,ref,id,shape,label,version,pending,assertOwner,allowedActions}=require('./policy');
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const canonical=value=>Object.fromEntries(Object.keys(value).sort().map(k=>[k,value[k]]));
 const one=async(tx,sql,args=[]) => (await tx.execute(sql,args))[0][0];
@@ -52,7 +32,7 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
  }
  async function owner(tx,a,p,organization=false) {
   const m=await membership(tx,p.id,a.account_id);
-  if(!m||m.current_status!=='ACTIVE'||m.role_code!=='OWNER'||(organization&&p.kind!=='ORGANIZATION'))throw error('PARTY_ACTION_FORBIDDEN');
+  assertOwner(p,m,organization);
  }
  async function party(tx,partyId) {
   const p=await one(tx,'SELECT * FROM parties WHERE id=? FOR UPDATE',[id(partyId)]);
@@ -90,11 +70,6 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
   const row=await one(tx,`SELECT *,expires_at<=CURRENT_TIMESTAMP(6) AS expired FROM party_invitations WHERE id=? AND party_id=?`,[id(input.invitation_id),p.id]);
   if(!row||(recipient&&row.invitee_account_id!==a.account_id))throw error('INVITATION_NOT_FOUND',404);
   return row;
- }
- function pending(row,expected) {
-  if(row.object_version!==version(expected))throw error('VERSION_CONFLICT',412);
-  if(row.current_status!=='INVITED')throw error('INVITATION_NOT_PENDING',409);
-  if(Number(row.expired))throw error('INVITATION_EXPIRED',422);
  }
  return Object.freeze({
   async registerAccount(context,input) {
@@ -135,8 +110,7 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
    const result=[];
    for(const p of rows) {
     const [capabilities]=await db.execute('SELECT code,current_status,object_version FROM party_capabilities WHERE party_id=? ORDER BY code',[p.id]);
-    const actions=['SUSPENDED','CLOSED'].includes(p.current_status)?[]:['READ_PARTY'];
-    if(actions.length&&p.role_code==='OWNER') {actions.push('REQUEST_CAPABILITY');if(p.kind==='ORGANIZATION')actions.push('MANAGE_MEMBERS');}
+    const actions=allowedActions(p,{current_status:p.membership_status,role_code:p.role_code});
     result.push({party_id:p.id,kind:p.kind,display_name:p.display_name,current_status:p.current_status,object_version:p.object_version,
      membership_id:p.membership_id,membership_version:p.membership_version,role:p.role_code,capabilities,allowed_actions:actions});
    }
@@ -148,11 +122,8 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
    return db.withTransaction(async tx=>{
     const p=await party(tx,party_id);await active(tx,a);
     const m=await membership(tx,p.id,a.account_id);
-    if(!m||m.current_status!=='ACTIVE')throw error('PARTY_ACTION_FORBIDDEN');
-    if(action==='READ_PARTY')return true;
-    if(action==='REQUEST_CAPABILITY') {await owner(tx,a,p);return true;}
-    if(action==='MANAGE_MEMBERS') {await owner(tx,a,p,true);return true;}
-    throw error('PARTY_ACTION_FORBIDDEN'); // No payment, licensing or platform-admin authority in this slice.
+    if(!allowedActions(p,m).includes(action))throw error('PARTY_ACTION_FORBIDDEN');
+    return true;
    });
   },
   async requestCapability(context,input) {

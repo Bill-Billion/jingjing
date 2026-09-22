@@ -15,3 +15,5 @@
 本机测试数据库已关闭，33316端口不再监听，临时J盘映射核对后已撤销。
 
 复审开工：用户要求复查之前工作及提交、减少耦合；基于a0498f0，目录干净，共同版本736a9ec。新建core/review-collaboration-decoupling整理已有本人工作，保留原分支历史，不代替另一方批准。
+
+当前工作分支已改为core/review-collaboration-decoupling，复查已有提交并修复测试与协作依赖。本机全套129项通过、1项缺脱敏旧库跳过；独立权限规则6项通过；接口格式检查通过。原第8份申请记录为此前成果，不是当前同步入口。[当前交接](../collaboration/REVIEW_AND_HANDOFF.md) · [复查记录](../tasks/records/REVIEW-20260922.md)。远端结果上传后补记。

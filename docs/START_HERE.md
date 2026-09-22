@@ -1,5 +1,7 @@
 # 从这里开始
 
+最新同步方式见[一个入口获取与继续开发](collaboration/REVIEW_AND_HANDOFF.md)。原分项申请保留历史，当前改从统一待审分支获取；未批准、未合入，新账号HTTP接口尚未接通。
+
 先看 [双方分工](collaboration/TEAM_ONBOARDING.md) 和 [当前进度与下一步](status/MAINLINE_PROGRESS.md)，不需要先记任务编号。完整工作和完成标准在 [任务安排](tasks/README.md)。
 
 给接手的Codex：

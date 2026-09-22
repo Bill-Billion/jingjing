@@ -18,20 +18,17 @@ async function fixture(t) {
   const deps={'../db':db,'../services/alipay':alipay,'../services/providers/idVerify':idVerify,'../services/providers/faceVerify':{ready:()=>true,initVerify:bump,describeVerify:bump},'../utils/crypto':cryptoStub,'../middleware/rateLimit':{withdraw:(req,res,next)=>next()},...overrides};
   loaded.filename=filename;loaded.require=id=>Object.hasOwn(deps,id)?deps[id]:realRequire(id);loaded._compile(fs.readFileSync(filename,'utf8'),filename);return loaded.exports;
  }
- const payment=load('services/paymentService.js');
- const app=express();app.use(express.json());app.use(express.urlencoded({extended:false}));
- app.use('/samples',load('routes/samples.js'));
- app.use('/identity',load('routes/identity.js'));
- app.use('/payment',load('routes/payment.js',{'../services/paymentService':payment,'../services/providers/appleIap':{verifyReceipt:bump}}));
- app.use('/pay',load('routes/pay.js'));
- app.use('/settlement',load('routes/settlement.js'));
- app.use('/face',load('routes/faceverify.js'));
- app.use('/scripts',load('routes/scripts.js'));
- app.use('/mcn',load('routes/mcn.js'));
+ const loadedRoutes=new Set(),cache=new Map();
+ function lazy(name,create) {if(!cache.has(name))cache.set(name,create());return cache.get(name);}
+ const getPayment=()=>lazy('paymentService',()=>load('services/paymentService.js'));
  const deliveryDeps={'../utils/idempotent':{withLock:bump},'../utils/consent':{recordConsent:bump},'../utils/deposit':{checkDepositSufficient:bump,collectDepositFromIncome:bump},'./review':{submitReview:bump},'../middleware/rateLimit':{createOrder:(req,res,next)=>next()}};
- const videos=load('routes/videos.js',deliveryDeps);
- app.use('/videos',videos);
- app.use('/endorsement',load('routes/endorsement.js',deliveryDeps));
+ const definitions={samples:()=>load('routes/samples.js'),identity:()=>load('routes/identity.js'),
+  payment:()=>load('routes/payment.js',{'../services/paymentService':getPayment(),'../services/providers/appleIap':{verifyReceipt:bump}}),
+  pay:()=>load('routes/pay.js'),settlement:()=>load('routes/settlement.js'),face:()=>load('routes/faceverify.js'),
+  scripts:()=>load('routes/scripts.js'),mcn:()=>load('routes/mcn.js'),videos:()=>load('routes/videos.js',deliveryDeps),endorsement:()=>load('routes/endorsement.js',deliveryDeps)};
+ function router(name) {return lazy(name,()=>{const result=definitions[name]();loadedRoutes.add(name);return result;});}
+ const app=express();app.use(express.json());app.use(express.urlencoded({extended:false}));
+ for(const name of Object.keys(definitions))app.use('/'+name,(req,res,next)=>router(name)(req,res,next));
  app.use((err,req,res,next)=>res.status(500).json({error:'fixture-handler-error'}));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  t.after(async()=>{await new Promise(resolve=>server.close(resolve));db.close();});
@@ -42,6 +39,6 @@ async function fixture(t) {
    const req=http.request({hostname:'127.0.0.1',port:server.address().port,method,path:url,headers},res=>{let raw='';res.on('data',x=>raw+=x);res.on('end',()=>{let data;try{data=JSON.parse(raw);}catch{data=raw;}resolve({status:res.statusCode,body:data});});});req.setTimeout(2000,()=>req.destroy(Error('Local test request timed out')));req.on('error',reject);req.end(bytes);
   });
  }
- return {db,request,payment,alipay,idVerify,videos,upstream:()=>upstream};
+ return {db,request,get payment(){return getPayment();},alipay,idVerify,get videos(){return router('videos');},loadedRoutes:()=>[...loadedRoutes],upstream:()=>upstream};
 }
 module.exports={fixture};
