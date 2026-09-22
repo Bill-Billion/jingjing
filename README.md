@@ -2,6 +2,8 @@
 
 这是双方共同开发项目的仓库。按最新R0.6方案推进，原始材料保留；功能“写完”“测过”“正式能用”分别说明。
 
+当前先看[第一阶段交付：分工、获取代码与验收方法](docs/collaboration/STAGE_1_HANDOFF.md)。开发分支为core/stage-1-foundation-handoff；合入前默认main不会自动获得这些材料。
+
 日常只需先看这三份：
 
 - [我们各自做什么，现在从哪里开始](docs/collaboration/TEAM_ONBOARDING.md)
