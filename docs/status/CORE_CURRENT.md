@@ -13,3 +13,5 @@
 [完整计划](MAINLINE_PROGRESS.md) · [双方分工](../collaboration/TEAM_ONBOARDING.md) · [需要检查的影响](../collaboration/CCR-008-party-membership.md)。
 
 本机测试数据库已关闭，33316端口不再监听，临时J盘映射核对后已撤销。
+
+复审开工：用户要求复查之前工作及提交、减少耦合；基于a0498f0，目录干净，共同版本736a9ec。新建core/review-collaboration-decoupling整理已有本人工作，保留原分支历史，不代替另一方批准。
