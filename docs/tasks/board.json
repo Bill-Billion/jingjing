@@ -753,10 +753,15 @@
         "rights/licenses"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": [],
-      "current_increment": "先完成不依赖登录或数据库的规则内容封存与校验；阶段内本地提交，尚未同步队友"
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S1-003-content-20260923.md",
+        "docs/tasks/records/CORE-S1-003-content-evidence/validation.json"
+      ],
+      "blockers": [
+        "公开HTTP接线需使用可信账号接口；第11份申请仍待审。纯内容工具不依赖该申请。"
+      ],
+      "current_increment": "内容封存与校验已在本地实现，15项测试通过；数据库、权限和HTTP尚未接入，整组仍进行中"
     },
     {
       "id": "UX-S1-001",
@@ -1548,12 +1553,13 @@
     "mode": "STAGED_LOCAL_FIRST",
     "effective_on": "2026-09-22",
     "guide": "docs/collaboration/STAGED_DELIVERY.md",
-    "remote_sync": "PUBLISHED_STAGE_1",
+    "remote_sync": "STAGE_2_PUBLISHED_STAGE_3_LOCAL_ONLY",
     "open_pull_requests": [
-      10
+      11
     ],
     "previous_merged_pull_requests": [
-      4
+      4,
+      10
     ],
     "previous_closed_unmerged_pull_requests": [
       1,
@@ -1567,19 +1573,18 @@
     ],
     "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
     "current_stage": {
-      "name": "已有基础收口",
-      "branch": "core/stage-1-foundation-handoff",
+      "name": "规则与合同历史留存",
+      "branch": "core/stage-3-rule-snapshots",
+      "status": "IN_PROGRESS_LOCAL_ONLY",
       "owner": "chengcongcong222",
-      "status": "DELIVERED_AWAITING_REVIEW",
-      "review_status": "PENDING",
-      "guide": "docs/collaboration/STAGE_1_HANDOFF.md",
-      "evidence": [
-        "docs/tasks/records/STAGE-1-20260922.md",
-        "docs/tasks/records/STAGE-1-evidence/local-summary.json",
-        "docs/tasks/records/STAGE-1-evidence/github-summary.json"
-      ],
-      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/10",
-      "validated_commit": "a72131c1eeabbcb3377e53edb9ec1fd7d038bf72"
+      "guide": "docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md",
+      "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e"
+    },
+    "pending_previous_stage": {
+      "name": "账号操作接通",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11",
+      "status": "OPEN_NO_REVIEW",
+      "branch": "core/stage-2-account-api"
     }
   }
 }
