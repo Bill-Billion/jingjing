@@ -103,10 +103,12 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
     },async result=>owner(tx,a,await party(tx,result.party_id),true));
    });
   },
-  async listParties(context) {
+  async listParties(context,{after='',limit=20,partyId=null}={}) {
+   if(!Number.isInteger(limit)||limit<1||limit>101)throw error('INVALID_LIMIT',400);
+   if(after)id(after);if(partyId)id(partyId);
    const a=await actor(context);
    const [rows]=await db.execute(`SELECT p.*,m.id AS membership_id,m.role_code,m.current_status AS membership_status,m.object_version AS membership_version
-    FROM parties p JOIN party_memberships m ON p.id=m.party_id WHERE m.account_id=? AND m.current_status='ACTIVE' ORDER BY p.id`,[a.account_id]);
+    FROM parties p JOIN party_memberships m ON p.id=m.party_id WHERE m.account_id=? AND m.current_status='ACTIVE' AND p.id>? AND (? IS NULL OR p.id=?) ORDER BY p.id LIMIT ?`,[a.account_id,after,partyId,partyId,limit]);
    const result=[];
    for(const p of rows) {
     const [capabilities]=await db.execute('SELECT code,current_status,object_version FROM party_capabilities WHERE party_id=? ORDER BY code',[p.id]);
@@ -124,6 +126,25 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
     const m=await membership(tx,p.id,a.account_id);
     if(!allowedActions(p,m).includes(action))throw error('PARTY_ACTION_FORBIDDEN');
     return true;
+   });
+  },
+  async changeDisplayName(context,input) {
+   shape(input,['party_id','display_name','expected_version','operation_key']);label(input.display_name,120);version(input.expected_version);
+   return partyCommand(context,input,'CHANGE_DISPLAY_NAME',owner,async(tx,a,p)=>{
+    if(p.object_version!==input.expected_version)throw error('VERSION_CONFLICT',412);
+    await tx.execute('UPDATE parties SET display_name=?,object_version=object_version+1 WHERE id=?',[input.display_name,p.id]);
+    await audit(tx,a,p.id,'DISPLAY_NAME_CHANGED',p.id,p.object_version+1);
+    const capabilities=(await tx.execute('SELECT code,current_status FROM party_capabilities WHERE party_id=? ORDER BY code',[p.id]))[0];
+    return {id:p.id,kind:p.kind,display_name:input.display_name,current_status:p.current_status,object_version:p.object_version+1,
+     capabilities:capabilities.map(c=>({...c,allowed_actions:[]})),allowed_actions:allowedActions(p,{current_status:'ACTIVE',role_code:'OWNER'})};
+   });
+  },
+  async listMembers(context,partyId,{after='',limit=20}={}) {
+   if(!Number.isInteger(limit)||limit<1||limit>101)throw error('INVALID_LIMIT',400);if(after)id(after);
+   const a=await actor(context);
+   return db.withTransaction(async tx=>{
+    const p=await party(tx,partyId);await active(tx,a);await owner(tx,a,p,true);
+    return (await tx.execute('SELECT id,party_id,account_id,role_code,current_status,object_version FROM party_memberships WHERE party_id=? AND id>? ORDER BY id LIMIT ?',[p.id,after,limit]))[0];
    });
   },
   async requestCapability(context,input) {
@@ -218,10 +239,11 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
     return {membership_id:m.id,current_status:'REVOKED',object_version:m.object_version+1};
    });
   },
-  async listInvitations(context) {
+  async listInvitations(context,{after='',limit=20}={}) {
+   if(!Number.isInteger(limit)||limit<1||limit>101)throw error('INVALID_LIMIT',400);if(after)id(after);
    const a=await actor(context);
    const [rows]=await db.execute(`SELECT id,party_id,inviter_account_id,current_status,object_version,expires_at,
-    expires_at<=CURRENT_TIMESTAMP(6) AS expired FROM party_invitations WHERE invitee_account_id=? ORDER BY created_at,id`,[a.account_id]);
+    expires_at<=CURRENT_TIMESTAMP(6) AS expired FROM party_invitations WHERE invitee_account_id=? AND id>? ORDER BY id LIMIT ?`,[a.account_id,after,limit]);
    return rows.map(row=>({...row,current_status:row.current_status==='INVITED'&&Number(row.expired)?'EXPIRED':row.current_status}));
   },
  });

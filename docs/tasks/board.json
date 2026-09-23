@@ -642,7 +642,7 @@
       "stream": "Core",
       "owner": "chengcongcong222",
       "status": "IN_PROGRESS",
-      "branch": "core/s1-002-party-membership",
+      "branch": "core/stage-2-account-api",
       "work_refs": [
         "WORK-02",
         "WORK-13"
@@ -671,7 +671,8 @@
       ],
       "deliverables": [
         "主体模型和权限service",
-        "审计事件"
+        "审计事件",
+        "docs/collaboration/STAGE_2_ACCOUNT_API.md"
       ],
       "acceptance": "跨主体越权拒绝；MCN邀请本人接受；多能力机构和个人作者成立；权限操作可审计",
       "shared_boundaries": [
@@ -684,18 +685,21 @@
         "docs/tasks/records/CORE-S1-002.md",
         "docs/tasks/records/CORE-S1-002-validation.json",
         "docs/tasks/records/REVIEW-20260922.md",
-        "docs/tasks/records/REVIEW-20260922-validation.json"
+        "docs/tasks/records/REVIEW-20260922-validation.json",
+        "docs/tasks/records/CORE-S1-002-HTTP-20260922.md",
+        "docs/tasks/records/CORE-S1-002-HTTP-validation.json"
       ],
       "blockers": [
-        "数据库/权限及候选接口待另一方检查；公开登录与HTTP未接入，业务能力待审核，历史身份不自动导入。"
+        "本阶段新增共享接口与数据库待另一方检查；真实短信权限/证据及页面联调未完成。"
       ],
-      "current_increment": "复审修复已上传第9份统一申请；规则和模块测试减少依赖，崩溃恢复测试不再猜测过期；本机/GitHub129通过、1缺旧库跳过；公开HTTP仍未完成",
+      "current_increment": "第二阶段后端已集中上传第11份申请，本机和GitHub全套148通过/1跳过；待另一方审阅，真实短信和前端联调未完成",
       "validation_scope": "仅MySQL内部账号/主体/能力申请/成员邀请、权限与审计首批通过；可信登录、公开HTTP、分页、页面联调及完整管理仍未实现。",
       "external_evidence_refs": [
         "https://github.com/Bill-Billion/jingjing/pull/8",
         "https://github.com/Bill-Billion/jingjing/actions/runs/35680697354"
       ],
-      "review_branch": "core/review-collaboration-decoupling"
+      "review_branch": "core/review-collaboration-decoupling",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11"
     },
     {
       "id": "CORE-S1-003",
@@ -753,7 +757,7 @@
         "rights/licenses"
       ],
       "review_status": "PENDING",
-      "test_status": "PASS",
+      "test_status": "IN_PROGRESS",
       "evidence": [
         "docs/tasks/records/CORE-S1-003-content-20260923.md",
         "docs/tasks/records/CORE-S1-003-content-evidence/validation.json",
@@ -763,7 +767,7 @@
       "blockers": [
         "公开HTTP接线需使用可信账号接口；第11份申请仍待审。纯内容工具不依赖该申请。"
       ],
-      "current_increment": "规则合同MySQL内部保存、独立读取授权及原子操作记录已本地自验；专项31通过、全套160通过/1跳过；HTTP/真实业务来源及最终升级顺序未验证，尚未推送"
+      "current_increment": "本地接入待审第11份可信登录作为明确依赖，开始只读HTTP和完整升级验证；不代表该申请已获批准"
     },
     {
       "id": "UX-S1-001",
@@ -1580,7 +1584,8 @@
       "status": "IN_PROGRESS_LOCAL_ONLY",
       "owner": "chengcongcong222",
       "guide": "docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md",
-      "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e"
+      "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e",
+      "pending_dependency": "PR 11 / d2e6c93, merged locally only, not approved or merged into integration"
     },
     "pending_previous_stage": {
       "name": "账号操作接通",

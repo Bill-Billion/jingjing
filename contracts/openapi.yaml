@@ -2,12 +2,14 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.1.0-rc.1
-  description: Core-owned review candidate; all routes below are NOT_IMPLEMENTED in the existing backend. Test fixtures
-    are synthetic. This is the first platform slice, not all Stage0–6 endpoints. No production server is advertised.
+  version: 0.2.0-rc.1
+  description: Account and party HTTP implementation candidate. IMPLEMENTED_ISOLATED_TESTS operations run on the
+    separate MySQL account API. SMS real-provider verification and client integration are not complete; other operations
+    remain NOT_IMPLEMENTED.
 servers:
 - url: http://127.0.0.1:3000
-  description: Local only; future implementation, not a running server
+  description: Account API development entry; requires explicit MySQL configuration, applied migrations and secret.
+    Not a production service.
 security:
 - bearerAuth: []
 tags:
@@ -29,7 +31,7 @@ paths:
         same key must not resend SMS. New challenge creation invalidates only by explicitly documented server policy.
       tags:
       - session
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       - $ref: '#/components/parameters/IdempotencyKey'
@@ -70,7 +72,7 @@ paths:
         mint a second session. No refresh or token storage policy implied.
       tags:
       - session
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       - $ref: '#/components/parameters/IdempotencyKey'
@@ -111,7 +113,7 @@ paths:
         account may read its own status but has only server-allowed actions.
       tags:
       - session
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       responses:
@@ -149,7 +151,7 @@ paths:
         token.
       tags:
       - party
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       - $ref: '#/components/parameters/Cursor'
@@ -186,7 +188,7 @@ paths:
         private object ->404. Capabilities do not imply verified identity.
       tags:
       - party
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       - $ref: '#/components/parameters/ActingParty'
@@ -226,7 +228,7 @@ paths:
         server authorization.
       tags:
       - party
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       - $ref: '#/components/parameters/ActingParty'
@@ -470,7 +472,7 @@ paths:
       description: No credentials or dependency details. Process alive is not business readiness.
       tags:
       - operations
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       responses:
@@ -496,7 +498,7 @@ paths:
         no detailed topology. Unapproved optional Provider does not disable process readiness.
       tags:
       - operations
-      x-implementation-status: NOT_IMPLEMENTED
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
       parameters:
       - $ref: '#/components/parameters/RequestId'
       responses:
@@ -523,6 +525,456 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReadyResponse'
       security: []
+  /api/v1/auth/sessions/current:
+    delete:
+      operationId: revokeCurrentSession
+      summary: 退出当前登录
+      tags:
+      - session
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionRevokedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyRequest'
+  /api/v1/organizations:
+    post:
+      operationId: createOrganization
+      summary: 创建待审机构
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationResultResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreateRequest'
+  /api/v1/me/invitations:
+    get:
+      operationId: listMyInvitations
+      summary: 发给本人的邀请
+      tags:
+      - session
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/parties/{party_id}/capabilities:
+    post:
+      operationId: requestPartyCapability
+      summary: 申请机构或个人能力
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: party_id
+        required: true
+        schema: &id001
+          $ref: '#/components/schemas/Id'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapabilityGrantResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapabilityRequest'
+  /api/v1/parties/{party_id}/members:
+    get:
+      operationId: listPartyMembers
+      summary: 负责人查看本机构成员
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: party_id
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/parties/{party_id}/members/{account_id}:
+    delete:
+      operationId: removePartyMember
+      summary: 移除本机构普通成员
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: party_id
+        required: true
+        schema: *id001
+      - in: path
+        name: account_id
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberRemovedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyRequest'
+  /api/v1/parties/{party_id}/invitations:
+    post:
+      operationId: invitePartyMember
+      summary: 邀请指定账号加入机构
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: party_id
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationCreatedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationCreateRequest'
+  /api/v1/parties/{party_id}/invitations/{invitation_id}/responses:
+    post:
+      operationId: respondPartyInvitation
+      summary: 本人接受或拒绝邀请
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: party_id
+        required: true
+        schema: *id001
+      - in: path
+        name: invitation_id
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationResponseResultResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationDecisionRequest'
+  /api/v1/parties/{party_id}/invitations/{invitation_id}/revocations:
+    post:
+      operationId: revokePartyInvitation
+      summary: 负责人撤回待接受邀请
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: party_id
+        required: true
+        schema: *id001
+      - in: path
+        name: invitation_id
+        required: true
+        schema: *id001
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Committed result; synthetic provider results are test-only.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationRevokedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -804,7 +1256,7 @@ components:
           anyOf:
           - $ref: '#/components/schemas/Actor'
           - type: 'null'
-        acting_party: &id003
+        acting_party: &id004
           anyOf:
           - $ref: '#/components/schemas/Id'
           - type: 'null'
@@ -880,7 +1332,7 @@ components:
           - DELETION_PENDING
         object_version:
           $ref: '#/components/schemas/ObjectVersion'
-        allowed_actions: &id001
+        allowed_actions: &id002
           type: array
           items:
             type: string
@@ -912,7 +1364,7 @@ components:
           - ACTIVE
           - SUSPENDED
           - REJECTED
-        allowed_actions: *id001
+        allowed_actions: *id002
     Party:
       type: object
       additionalProperties: false
@@ -949,7 +1401,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CapabilityGrant'
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Party is a signing/business subject, not an account or avatar. One organization may hold multiple
         capabilities; a person may be an author.
     Membership:
@@ -986,7 +1438,7 @@ components:
           uniqueItems: true
         object_version:
           $ref: '#/components/schemas/ObjectVersion'
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Invitation is not consent or an active membership. Client role strings never grant platform administration.
     PartyAccess:
       type: object
@@ -1046,10 +1498,10 @@ components:
           type: string
           enum:
           - SENT
-        expires_at: &id002
+        expires_at: &id003
           type: string
           format: date-time
-        resend_after: *id002
+        resend_after: *id003
       description: SENT only after the SMS provider accepts dispatch; not proof of delivery or identity. No verification
         code in response. Missing provider returns 503.
     SessionRequest:
@@ -1086,7 +1538,7 @@ components:
           type: string
           enum:
           - Bearer
-        expires_at: *id002
+        expires_at: *id003
         account:
           $ref: '#/components/schemas/Account'
     PartyPatch:
@@ -1118,12 +1570,12 @@ components:
           - EXPIRED
           - REVOKED
           - REVIEW_REQUIRED
-        verification_id: *id003
-        verified_at: &id004
+        verification_id: *id004
+        verified_at: &id005
           anyOf:
-          - *id002
+          - *id003
           - type: 'null'
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Only VERIFIED with recorded evidence enables a verified-identity claim. Legacy unverified_auto
         maps to REVIEW_REQUIRED, never VERIFIED. No raw identity number, name, face or provider credentials.
       allOf:
@@ -1135,7 +1587,7 @@ components:
           properties:
             verification_id:
               $ref: '#/components/schemas/Id'
-            verified_at: *id002
+            verified_at: *id003
     BusinessCapability:
       type: object
       additionalProperties: false
@@ -1164,7 +1616,7 @@ components:
         display_message:
           type: string
           maxLength: 300
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Client-facing effective availability includes product, permissions, rules and required environment
         verification, not merely Provider configuration. Unknown action is disabled.
       allOf:
@@ -1222,7 +1674,7 @@ components:
           - LOCAL
           - SANDBOX
           - PRODUCTION
-        verified_at: *id002
+        verified_at: *id003
         evidence_ref:
           $ref: '#/components/schemas/Id'
       description: Opaque reference accessible only through separately authorized audit evidence access; never a
@@ -1267,6 +1719,7 @@ components:
           - ModerationProvider
           - DigitalHumanProvider
           - ESignProvider
+          - SmsProvider
         provider_code:
           type: string
           minLength: 1
@@ -1294,7 +1747,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/VerificationEvidence'
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Waiting/disabled preserves verification history but does not grant current enablement. Separate
         rows per provider/product capability/environment. A sandbox check is never evidence of production verification.
       allOf:
@@ -1367,13 +1820,13 @@ components:
           - RETIRED
         object_version:
           $ref: '#/components/schemas/ObjectVersion'
-        effective_at: *id004
+        effective_at: *id005
         content_asset_id:
           $ref: '#/components/schemas/Id'
         content_sha256:
           type: string
           pattern: ^[0-9a-f]{64}$
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Immutable approved content addressed by private asset/hash; drafts stay unavailable to transactions.
         Historical versions remain readable to entitled orders/parties even after retirement. Actual rule documents
         and unknown product specifications are not invented by this contract.
@@ -1384,7 +1837,7 @@ components:
               const: EFFECTIVE
         then:
           properties:
-            effective_at: *id002
+            effective_at: *id003
     ContractSnapshot:
       type: object
       additionalProperties: false
@@ -1418,7 +1871,7 @@ components:
             $ref: '#/components/schemas/Id'
           minItems: 1
           uniqueItems: true
-        created_at: *id002
+        created_at: *id003
         object_version:
           type: integer
           const: 1
@@ -1443,7 +1896,7 @@ components:
           items:
             $ref: '#/components/schemas/Id'
           uniqueItems: true
-        allowed_actions: *id001
+        allowed_actions: *id002
       description: Read-only immutable contract snapshot metadata, not proof of signature/payment or a full order
         schema. SEALED means content captured. Signing facts are frozen at capture; new evidence requires a new
         snapshot/version, never overwriting old promises. NOT_SIGNED cannot activate a license. Full monetary/specification/refund/rights
@@ -1616,3 +2069,313 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           $ref: '#/components/schemas/Ready'
+    OrganizationCreateRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - display_name
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+    CapabilityRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      properties:
+        code:
+          type: string
+          enum:
+          - AUTHOR
+          - SCRIPT_SUPPLIER
+          - PRODUCER
+          - MCN
+          - BRAND_CLIENT
+    InvitationCreateRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - invitee_account_id
+      - expires_at
+      properties:
+        invitee_account_id: *id001
+        expires_at: &id007
+          type: string
+          format: date-time
+    InvitationDecisionRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - decision
+      properties:
+        decision:
+          type: string
+          enum:
+          - ACCEPT
+          - DECLINE
+    EmptyRequest:
+      type: object
+      additionalProperties: false
+      required: []
+      properties: {}
+    OrganizationResultResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - party_id
+          - current_status
+          - object_version
+          properties:
+            party_id: *id001
+            current_status:
+              type: string
+              enum:
+              - PENDING_REVIEW
+            object_version: &id006
+              $ref: '#/components/schemas/ObjectVersion'
+    CapabilityGrantResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/CapabilityGrant'
+    SessionRevokedResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - current_status
+          properties:
+            current_status:
+              type: string
+              enum:
+              - REVOKED
+    InvitationCreatedResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - invitation_id
+          - party_id
+          - invitee_account_id
+          - current_status
+          - object_version
+          - expires_at
+          properties:
+            invitation_id: *id001
+            party_id: *id001
+            invitee_account_id: *id001
+            current_status:
+              type: string
+              enum:
+              - INVITED
+            object_version: *id006
+            expires_at: *id007
+    InvitationResponseResultResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - invitation_id
+          - current_status
+          - object_version
+          - membership_id
+          - membership_version
+          properties:
+            invitation_id: *id001
+            current_status:
+              type: string
+              enum:
+              - ACCEPTED
+              - DECLINED
+            object_version: *id006
+            membership_id:
+              anyOf:
+              - *id001
+              - type: 'null'
+            membership_version:
+              anyOf:
+              - *id006
+              - type: 'null'
+    InvitationRevokedResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - invitation_id
+          - current_status
+          - object_version
+          properties:
+            invitation_id: *id001
+            current_status:
+              type: string
+              enum:
+              - REVOKED
+            object_version: *id006
+    MemberRemovedResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - membership_id
+          - current_status
+          - object_version
+          properties:
+            membership_id: *id001
+            current_status:
+              type: string
+              enum:
+              - REVOKED
+            object_version: *id006
+    InvitationPageResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - items
+          - next_cursor
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - invitation_id
+                - party_id
+                - inviter_account_id
+                - current_status
+                - object_version
+                - expires_at
+                properties:
+                  invitation_id: *id001
+                  party_id: *id001
+                  inviter_account_id: *id001
+                  current_status:
+                    type: string
+                    enum:
+                    - INVITED
+                    - ACCEPTED
+                    - DECLINED
+                    - REVOKED
+                    - EXPIRED
+                  object_version: *id006
+                  expires_at: *id007
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              maxLength: 512
+    MemberPageResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - items
+          - next_cursor
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - party_id
+                - account_id
+                - role_code
+                - current_status
+                - object_version
+                properties:
+                  id: *id001
+                  party_id: *id001
+                  account_id: *id001
+                  role_code:
+                    type: string
+                    enum:
+                    - OWNER
+                    - MEMBER
+                  current_status:
+                    type: string
+                    enum:
+                    - ACTIVE
+                    - SUSPENDED
+                    - REVOKED
+                  object_version: *id006
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              maxLength: 512
