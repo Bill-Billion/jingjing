@@ -19,7 +19,7 @@ node --env-file=<本机私有数据库配置> scripts/governance-access.js --app
 
 变更文件须明确填写account_id、action、enabled、expires_at、expected_version、authority_ref、reason。首次版本填0，后续用上次返回的object_version。expires_at必须明确写UTC毫秒时间或null；null表示不设到期时间，缺省不会自动视为永久。撤销用enabled=false。不存在或停用账号不能新增有效授权，停用账号仍允许撤销已有权限。
 
-action只接受CREATE_RULE、READ_RULE、RULE_IN_REVIEW、RULE_APPROVED、RULE_EFFECTIVE、RULE_RETIRED、SEAL。采用哪些人员及分工由实际管理安排决定，本轮没有替用户指定人员或给测试账号永久上线权限。
+action接受CREATE_RULE、READ_RULE、RULE_IN_REVIEW、RULE_APPROVED、RULE_EFFECTIVE、RULE_RETIRED、SEAL，另新增CREATE_SOURCE、READ_SOURCE、REVIEW_SOURCE、WITHDRAW_SOURCE，分别负责录入、读取、复核及撤回合同来源。采用哪些人员及分工由实际管理安排决定，本轮没有替用户指定人员或给测试账号永久上线权限。
 
 authority_ref和reason只用于记录授权依据与原因，不会把用户填写的引用自动认定为已经验证的审批证据。工具的权限边界是受控的维护凭据和执行渠道，不是这两个字符串。正式部署时应限制维护凭据和工具访问；本轮不执行生产授权或提供真实口令。
 
@@ -29,4 +29,4 @@ createGovernanceRepository默认使用数据库权限检查，不再需要用“
 
 新增迁移0025–0026，不修改旧迁移。普通规则状态变化仍有原来的操作记录；权限维护另保留逐版本历史。没有新增公开HTTP或改变此前只读返回格式。
 
-真实合同/订单写入来源、业务启用条件检查及实际人员配置仍待完成。已读接口可继续独立联调；本轮队友无需修改页面，实际认领由其登记。阶段内仅本地提交，完整交付后再集中推送审阅。
+合同来源录入/复核、历史保存与业务必要服务条件检查已接通，见[第三阶段交付](STAGE_3_HANDOFF.md)。新增迁移0027–0028扩展来源权限和保存来源版本；实际人员未配置，真实商业下单仍属后续阶段。页面新增服务条件读取接口；没有公开自助授权或写入HTTP。远端状态见当前进度。

@@ -4,14 +4,17 @@ const {randomUUID}=require('node:crypto');
 const {createAuthRepository}=require('../modules/auth/repository');
 const {createPartyRepository}=require('../modules/party/repository');
 const {createGovernanceRepository}=require('../modules/governance/repository');
+const {createReadinessRepository}=require('../modules/providers/readiness');
+const {createBusinessGate}=require('../modules/governance/business-gate');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[]}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={}}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
- // Read only: privileged approval and real order-source dependencies remain unconfigured/denied.
+ // Public governance routes are read only. Privileged writes use the authenticated service.
  const governance=createGovernanceRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
+ const gate=createBusinessGate({governance,readiness:createReadinessRepository(db),environment:governanceEnvironment,bindings:governanceBindings});
  const app=express();app.disable('x-powered-by');app.disable('etag');app.set('trust proxy',false);app.set('query parser','simple');
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  app.use((req,res,next)=>{
@@ -103,6 +106,11 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[]}) {
  app.get('/api/v1/contract-snapshots/:snapshot_id/content',wrap(async(req,res)=>{
   shape(req.query,[]);
   const data=await governance.readSnapshotForParty(req,{snapshot_id:req.params.snapshot_id,party_id:contentParty(req)});
+  contentReply(req,res,data);
+ }));
+ app.get('/api/v1/contract-snapshots/:snapshot_id/business-readiness',wrap(async(req,res)=>{
+  shape(req.query,['action']);
+  const data=await gate.check(req,{snapshot_id:req.params.snapshot_id,party_id:contentParty(req),action:req.query.action});
   contentReply(req,res,data);
  }));
  app.get('/api/v1/rule-versions/:rule_version_id/content',wrap(async(req,res)=>{

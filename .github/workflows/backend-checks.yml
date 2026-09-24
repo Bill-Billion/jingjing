@@ -72,6 +72,7 @@ jobs:
           .local/contract-venv/bin/python -m pip install -r contracts/requirements-lock.txt
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/account-api-http-fixtures.json --report .local/ci-evidence/runtime-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-http-fixtures.json --report .local/ci-evidence/governance-runtime-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-service-http-fixtures.json --report .local/ci-evidence/governance-service-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop

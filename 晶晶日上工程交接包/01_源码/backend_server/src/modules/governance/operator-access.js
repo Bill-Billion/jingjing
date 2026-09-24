@@ -1,7 +1,7 @@
 'use strict';
 const {randomUUID}=require('node:crypto');
 const {id,ref,shape,label,error}=require('../party/policy');
-const actions=Object.freeze(['CREATE_RULE','READ_RULE','RULE_IN_REVIEW','RULE_APPROVED','RULE_EFFECTIVE','RULE_RETIRED','SEAL']);
+const actions=Object.freeze(['CREATE_RULE','READ_RULE','RULE_IN_REVIEW','RULE_APPROVED','RULE_EFFECTIVE','RULE_RETIRED','SEAL','CREATE_SOURCE','READ_SOURCE','REVIEW_SOURCE','WITHDRAW_SOURCE']);
 function normalize(input){
  shape(input,['account_id','action','enabled','expires_at','expected_version','authority_ref','reason']);
  id(input.account_id);ref(input.authority_ref);label(input.reason,500);

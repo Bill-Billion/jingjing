@@ -247,6 +247,46 @@
         "content_asset_id"
       ],
       "replace_with": "fake_asset"
+    },
+    {
+      "name": "ready cannot retain failure reason",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "START_PAYMENT",
+        "environment": "SANDBOX",
+        "current_status": "SERVICE_READY",
+        "reason_code": "PROVIDER_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "name": "blocked requires reason",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "START_PAYMENT",
+        "environment": "SANDBOX",
+        "current_status": "NOT_ENABLED",
+        "reason_code": null
+      }
+    },
+    {
+      "name": "signed is not a service readiness status",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "START_PAYMENT",
+        "environment": "SANDBOX",
+        "current_status": "SIGNED",
+        "reason_code": "PROVIDER_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "name": "unknown business action rejected",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "AUTO_APPROVE",
+        "environment": "SANDBOX",
+        "current_status": "NOT_ENABLED",
+        "reason_code": "PROVIDER_NOT_IMPLEMENTED"
+      }
     }
   ]
 }

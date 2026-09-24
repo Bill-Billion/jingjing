@@ -2,6 +2,7 @@
 const {randomUUID} = require('node:crypto');
 const content = require('./content');
 const {authorizeOperator}=require('./operator-access');
+const {normalizeSource,sourceData,sourceRef,loadReviewedCommitment,validateParticipants}=require('./source');
 const {error, ref, id, shape, version} = require('../party/policy');
 const one = async (tx, sql, values = []) => (await tx.execute(sql, values))[0][0];
 const parsed = value => typeof value === 'string' ? JSON.parse(value) : value;
@@ -14,7 +15,7 @@ function utc(value) {
 const iso = value => new Date(value.replace(' ','T') + 'Z').toISOString();
 
 // All callbacks are server composition dependencies, never request-supplied roles or flags.
-function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authorize=authorizeOperator, loadCommitment=async()=>null} = {}) {
+function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authorize=authorizeOperator, loadCommitment=loadReviewedCommitment} = {}) {
   async function actor(tx, context) {
     const p = await resolvePrincipal(context);
     if (!p) throw error('AUTHENTICATION_REQUIRED',401);
@@ -57,6 +58,57 @@ function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authori
     return value;
   }
   return Object.freeze({
+    async createSource(context,input) {
+      input=JSON.parse(content.canonical(input));shape(input,['content','operation_key']);
+      const value=normalizeSource(input.content),source_ref=sourceRef(value);
+      return db.withTransaction(async tx=>{
+        const a=await actor(tx,context);await permitted(tx,a,'CREATE_SOURCE',source_ref);
+        return command(tx,a,'CREATE_SOURCE',input,async()=>{
+          await validateParticipants(tx,value,a.account_id);
+          const ruleKeys=new Set();
+          for(const ruleId of [...value.rule_ids].sort()){
+            const row=await one(tx,'SELECT * FROM governance_rules WHERE id=? FOR SHARE',[ruleId]);
+            if(!row)throw error('RULE_NOT_FOUND',404);
+            const data=ruleData(row);
+            if(ruleKeys.has(data.content.rule_key))throw error('CONFLICTING_RULES',400);
+            ruleKeys.add(data.content.rule_key);
+          }
+          const sourceId=randomUUID();
+          try{await tx.execute('INSERT INTO governance_sources(id,source_ref,content_json,content_sha256,created_by) VALUES (?,?,?,?,?)',
+            [sourceId,source_ref,JSON.stringify(value),content.digest(value),a.account_id]);}
+          catch(e){if(e.code==='ER_DUP_ENTRY')throw error('SOURCE_VERSION_EXISTS',409);throw e;}
+          await audit(tx,a,'SOURCE_CREATED',sourceId,1);
+          return sourceData(await one(tx,'SELECT * FROM governance_sources WHERE id=?',[sourceId]));
+        });
+      });
+    },
+    async readSource(context,source_ref) {
+      ref(source_ref);return db.withTransaction(async tx=>{
+        const a=await actor(tx,context);await permitted(tx,a,'READ_SOURCE',source_ref);
+        const row=await one(tx,'SELECT * FROM governance_sources WHERE source_ref=?',[source_ref]);
+        if(!row)throw error('SOURCE_NOT_FOUND',404);return sourceData(row);
+      });
+    },
+    async transitionSource(context,input) {
+      input=JSON.parse(content.canonical(input));shape(input,['source_ref','target_status','expected_version','review_ref','operation_key']);
+      ref(input.source_ref);ref(input.review_ref);version(input.expected_version);
+      if(!['REVIEWED','WITHDRAWN'].includes(input.target_status))throw error('INVALID_SOURCE_STATUS',400);
+      return db.withTransaction(async tx=>{
+        const a=await actor(tx,context);await permitted(tx,a,input.target_status==='REVIEWED'?'REVIEW_SOURCE':'WITHDRAW_SOURCE',input.source_ref);
+        return command(tx,a,'TRANSITION_SOURCE',input,async()=>{
+          const row=await one(tx,'SELECT * FROM governance_sources WHERE source_ref=? FOR UPDATE',[input.source_ref]);
+          if(!row)throw error('SOURCE_NOT_FOUND',404);
+          const value=sourceData(row);
+          if(row.object_version!==input.expected_version)throw error('VERSION_CONFLICT',412);
+          if(row.current_status==='WITHDRAWN'||(input.target_status==='REVIEWED'&&row.current_status!=='DRAFT'))throw error('SOURCE_TRANSITION_FORBIDDEN',409);
+          if(input.target_status==='REVIEWED')await validateParticipants(tx,value.content,row.created_by);
+          await tx.execute('UPDATE governance_sources SET current_status=?,object_version=object_version+1,reviewed_by=?,review_ref=? WHERE id=?',
+            [input.target_status,a.account_id,input.review_ref,row.id]);
+          await audit(tx,a,'SOURCE_'+input.target_status,row.id,row.object_version+1);
+          return {...value,current_status:input.target_status,object_version:row.object_version+1,review_ref:input.review_ref};
+        });
+      });
+    },
     async createRule(context,input) {
       input=JSON.parse(content.canonical(input));
       shape(input,['rule_key','version','terms','effective_at','operation_key']);

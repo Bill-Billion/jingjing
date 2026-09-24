@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.3.0-rc.1
+  version: 0.3.0-rc.2
   description: Account API and private historical content read candidate. Isolated verification only; real SMS,
     business source writers and front-end integration remain unverified.
 servers:
@@ -1057,6 +1057,55 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/contract-snapshots/{snapshot_id}/business-readiness:
+    get:
+      operationId: getContractBusinessReadiness
+      summary: 查看这份合同后续操作所需外部服务是否可用
+      description: Authenticated service precondition only. SERVICE_READY is not permission
+        to pay, sign or activate a license. Startup bindings default absent; current
+        executable returns NOT_ENABLED. Environment comes from server configuration.
+        Recheck at execution using the provider adapter.
+      tags:
+      - governance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/snapshot_id'
+      - name: action
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - START_PAYMENT
+          - START_IDENTITY_CHECK
+          - START_SIGNING
+          - START_DIGITAL_HUMAN
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessServiceReadinessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -1287,6 +1336,79 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    BusinessServiceReadiness:
+      type: object
+      additionalProperties: false
+      required:
+      - action
+      - environment
+      - current_status
+      - reason_code
+      properties:
+        action:
+          type: string
+          enum:
+          - START_PAYMENT
+          - START_IDENTITY_CHECK
+          - START_SIGNING
+          - START_DIGITAL_HUMAN
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        current_status:
+          type: string
+          enum:
+          - NOT_ENABLED
+          - SERVICE_READY
+        reason_code:
+          type:
+          - string
+          - 'null'
+          enum:
+          - PROVIDER_NOT_IMPLEMENTED
+          - PROVIDER_NOT_CONFIGURED
+          - PROVIDER_ENVIRONMENT_NOT_VERIFIED
+          - PROVIDER_NOT_VERIFIED
+          - PROVIDER_CONFIGURATION_CHANGED
+          - VERIFICATION_EVIDENCE_REQUIRED
+          - PROVIDER_STATE_UNAVAILABLE
+          - PROVIDER_ENVIRONMENT_MISMATCH
+          - null
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: SERVICE_READY
+        then:
+          properties:
+            reason_code:
+              type: 'null'
+        else:
+          properties:
+            reason_code:
+              type: string
+              enum:
+              - PROVIDER_NOT_IMPLEMENTED
+              - PROVIDER_NOT_CONFIGURED
+              - PROVIDER_ENVIRONMENT_NOT_VERIFIED
+              - PROVIDER_NOT_VERIFIED
+              - PROVIDER_CONFIGURATION_CHANGED
+              - VERIFICATION_EVIDENCE_REQUIRED
+              - PROVIDER_STATE_UNAVAILABLE
+              - PROVIDER_ENVIRONMENT_MISMATCH
+    BusinessServiceReadinessResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/BusinessServiceReadiness'
     Id:
       type: string
       minLength: 1

@@ -68,3 +68,7 @@ ContractSnapshot首批仅定义只读元数据、版本引用、主体、私有a
 GET /api/v1/contract-snapshots/{snapshot_id}/content返回封存时的未签署JSON内容；GET /api/v1/rule-versions/{rule_version_id}/content?snapshot_id=...返回该历史合同采用的规则原文。两者要求Bearer及X-Acting-Party；当前账号有效、成员关系有效、所选身份属于该合同、账号位于该合同独立读取名单，四项全部满足。缺失或无权读取资源均404；缺头部400，无效/过期/退出登录401。
 
 每次重新校验，no-store，不以条件缓存返回304；内容校验值在正文中，仅辅助识别内容变化。封存后的规则后来停用仍可按原合同读取，但不能借此取得其他或最新版本。未签署内容不含签署证据、付款或有效许可结果。内容字段是JSON正文，不能冒充私有文件asset ID；页面按文本渲染条款，不执行其中HTML。
+
+## 0.3.0-rc.2：合同后续动作必要服务检查
+
+GET /api/v1/contract-snapshots/{snapshot_id}/business-readiness?action=...复用合同内容读取权限。仅四种明确动作；数据结构见BusinessServiceReadiness。环境由服务器确定，不能传入ready或供应商证据。NOT_ENABLED表示缺少条件，SERVICE_READY不代表业务已成功，真正调用时仍须业务规则与适配器再次验证。默认运行入口未绑定这些商业服务，明确未启用；历史验证记录不因禁用或等待审批删除。
