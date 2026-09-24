@@ -2,10 +2,9 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.2.0-rc.1
-  description: Account and party HTTP implementation candidate. IMPLEMENTED_ISOLATED_TESTS operations run on the
-    separate MySQL account API. SMS real-provider verification and client integration are not complete; other operations
-    remain NOT_IMPLEMENTED.
+  version: 0.3.0-rc.1
+  description: Account API and private historical content read candidate. Isolated verification only; real SMS,
+    business source writers and front-end integration remain unverified.
 servers:
 - url: http://127.0.0.1:3000
   description: Account API development entry; requires explicit MySQL configuration, applied migrations and secret.
@@ -975,6 +974,89 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EmptyRequest'
+  /api/v1/contract-snapshots/{snapshot_id}/content:
+    get:
+      operationId: getUnsignedSnapshotContent
+      summary: 读取获准查看的未签署合同内容
+      description: No-store response after a fresh authorization check on each request. Explicit reader grant plus
+        active acting-party membership required. No public writes or automatic approval. Old metadata endpoints
+        remain unimplemented.
+      tags:
+      - governance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/snapshot_id'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsignedSnapshotContentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/rule-versions/{rule_version_id}/content:
+    get:
+      operationId: getHistoricalRuleContent
+      summary: 读取某份历史合同采用的规则原文
+      description: No-store response after a fresh authorization check on each request. Explicit reader grant plus
+        active acting-party membership required. No public writes or automatic approval. Old metadata endpoints
+        remain unimplemented.
+      tags:
+      - governance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/rule_version_id'
+      - name: snapshot_id
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/Id'
+        description: The permitted historical snapshot containing this rule. Cannot read arbitrary or newer rule
+          versions.
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuleContentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -2379,3 +2461,109 @@ components:
               - string
               - 'null'
               maxLength: 512
+    RuleContent:
+      type: object
+      additionalProperties: false
+      required:
+      - format_version
+      - id
+      - rule_key
+      - version
+      - terms
+      - content_sha256
+      properties:
+        format_version:
+          const: rule-content-v1
+        id:
+          $ref: '#/components/schemas/Id'
+        rule_key:
+          type: string
+          minLength: 1
+          maxLength: 100
+        version:
+          type: string
+          minLength: 1
+          maxLength: 64
+        terms:
+          type: object
+          minProperties: 1
+          additionalProperties: true
+        content_sha256: &id008
+          type: string
+          pattern: ^[0-9a-f]{64}$
+      description: Historical content captured with the authorized snapshot, not current rule effectiveness or legal
+        approval. Structured terms are business-specific; no unknown defaults are invented.
+    UnsignedSnapshotContent:
+      type: object
+      additionalProperties: false
+      required:
+      - format_version
+      - id
+      - contract_version_id
+      - party_ids
+      - created_at
+      - rule_contents
+      - commitments
+      - object_version
+      - current_status
+      - signing_method
+      - content_sha256
+      properties:
+        format_version:
+          const: contract-content-v1
+        id:
+          $ref: '#/components/schemas/Id'
+        contract_version_id:
+          $ref: '#/components/schemas/Id'
+        party_ids:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Id'
+        created_at:
+          type: string
+          format: date-time
+        rule_contents:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/RuleContent'
+        commitments:
+          type: object
+          minProperties: 1
+          additionalProperties: true
+        object_version:
+          const: 1
+        current_status:
+          const: SEALED
+        signing_method:
+          const: NOT_SIGNED
+        content_sha256: *id008
+      description: Read-only private inline JSON content, not a fabricated file asset or a signed/paid/effective
+        license. Server verifies session, active membership, acting-party inclusion and explicit per-snapshot reader
+        grant. Render terms as text, never untrusted HTML.
+    RuleContentResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/RuleContent'
+    UnsignedSnapshotContentResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/UnsignedSnapshotContent'

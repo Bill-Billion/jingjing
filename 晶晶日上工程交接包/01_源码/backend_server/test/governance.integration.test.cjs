@@ -5,20 +5,24 @@ const {openDatabase}=require('../src/infrastructure/database');
 const {migrate}=require('../src/infrastructure/database/migrator');
 const {createPartyRepository}=require('../src/modules/party/repository');
 const {createGovernanceRepository}=require('../src/modules/governance/repository');
+const {createAccountApi}=require('../src/http/account-api');
+const {createAuthRepository}=require('../src/modules/auth/repository');
+const http=require('node:http');
 const key=()=>randomUUID();
 test('isolated MySQL preserves rule history, private snapshots and atomic records',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},async t=>{
  const env=JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));
  assert.equal(env.NODE_ENV,'test');assert.equal(env.DB_CLIENT,'mysql');assert.equal(env.MYSQL_HOST,'127.0.0.1');assert.equal(env.MYSQL_PORT,'33316');assert.equal(env.MYSQL_USER,'jx_local');assert.equal(env.MYSQL_DATABASE,'jx_dev');
  const name=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`;assert.match(name,/^jx_test_\d+_[a-f0-9]{12}$/);
  const control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});
- let db;
+ let db,server;
  try {
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});
-  const base=path.resolve(__dirname,'../migrations/mysql-runtime'),planned=path.resolve(__dirname,'../migrations/planned-governance');
+  const base=path.resolve(__dirname,'../migrations/mysql-runtime');
   const fixture=path.resolve(__dirname,'../../../..','.local/governance-migrations',key());await fs.mkdir(fixture,{recursive:true});
-  await t.test('only explicit isolated fixture applies planned migrations; existing records survive',async()=>{
-   await migrate(db);await db.execute('INSERT INTO platform_schema_metadata(schema_key,schema_value) VALUES (?,?)',['governance_test','preserve']);
-   for(const directory of [base,planned])for(const file of await fs.readdir(directory))if(file.endsWith('.sql'))await fs.copyFile(path.join(directory,file),path.join(fixture,file));
+  await t.test('upgrading the authentication schema preserves records and applies governance migrations once',async()=>{
+   for(const file of await fs.readdir(base))if(file.endsWith('.sql')&&file.slice(0,4)<'0020')await fs.copyFile(path.join(base,file),path.join(fixture,file));
+   await migrate(db,{directory:fixture});await db.execute('INSERT INTO platform_schema_metadata(schema_key,schema_value) VALUES (?,?)',['governance_test','preserve']);
+   for(const file of await fs.readdir(base))if(file.endsWith('.sql'))await fs.copyFile(path.join(base,file),path.join(fixture,file));
    assert.deepEqual((await migrate(db,{directory:fixture})).applied,['0020','0021','0022','0023','0024']);
    assert.deepEqual((await migrate(db,{directory:fixture})).applied,[]);
    assert.equal((await db.execute('SELECT schema_value FROM platform_schema_metadata WHERE schema_key=?',['governance_test']))[0][0].schema_value,'preserve');
@@ -29,6 +33,13 @@ test('isolated MySQL preserves rule history, private snapshots and atomic record
   const people=[];
   for(const name of ['operator','reader','outsider']){const ctx=Symbol(name);sessions.set(ctx,{subject_ref:'synthetic:'+key(),request_id:key()});people.push({ctx,...await party.registerAccount(ctx,{display_name:name})});}
   const [operator,reader,outsider]=people;privileged.add(operator.account_id);
+  const secret=randomBytes(32).toString('base64'),auth=createAuthRepository(db,{secret});
+  for(const person of people){person.token=randomBytes(32).toString('base64url');await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[auth.secure.digest('token',person.token),person.account_id]);}
+  server=createAccountApi({db,secret}).listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  function request(url,person,partyId,method='GET',headers={}){
+   return new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port:server.address().port,path:url,method,agent:false,headers:{...(person?{Authorization:'Bearer '+person.token}:{}),...(partyId?{'X-Acting-Party':partyId}:{}),...headers}},res=>{let raw='';res.on('data',v=>raw+=v);res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body:raw?JSON.parse(raw):null}));});req.setTimeout(5000,()=>req.destroy(Error('local HTTP timeout')));req.on('error',reject);req.end();});
+  }
+  const httpCases=[];
   const options={resolvePrincipal,authorize:async(_tx,a)=>privileged.has(a.account_id),loadCommitment:async(_tx,{source_ref})=>sources.get(source_ref)||null};
   const repo=createGovernanceRepository(db,options);
   const draftInput=()=>({rule_key:'synthetic:'+key(),version:'test-only-1',terms:{notice:'合成测试规则，不是商业默认值'},effective_at:'2026-01-01T00:00:00.000Z',operation_key:key()});
@@ -127,11 +138,60 @@ test('isolated MySQL preserves rule history, private snapshots and atomic record
    await db.execute("UPDATE governance_snapshots SET content_json=JSON_SET(content_json,'$.commitments.notice','tampered') WHERE id=?",[value.id]);
    await assert.rejects(repo.readSnapshot(reader.ctx,value.id),{code:'CONTENT_HASH_MISMATCH'});
   });
+  await t.test('real HTTP requires a valid session and explicit contract grant in the acting party',async()=>{
+   const value=await repo.seal(operator.ctx,source(await effective())),url='/api/v1/contract-snapshots/'+value.id+'/content';
+   assert.equal((await request(url,null,reader.personal_party_id)).status,401);
+   assert.equal((await request(url,{token:'legacy.jwt'},reader.personal_party_id)).status,401);
+   assert.equal((await request(url,reader)).status,400);
+   assert.equal((await request(url,reader,operator.personal_party_id)).status,404);
+   assert.equal((await request(url,outsider,outsider.personal_party_id)).status,404);
+   const other=await party.createOrganization(reader.ctx,{display_name:'Unrelated identity',operation_key:key()});
+   assert.equal((await request(url,reader,other.party_id)).status,404);
+   const r=await request(url,reader,reader.personal_party_id);assert.equal(r.status,200);assert.deepEqual(r.body.data,value);
+   assert.equal(r.body.meta.actor.account_id,reader.account_id);assert.equal(r.body.meta.acting_party,reader.personal_party_id);assert.equal(r.headers['cache-control'],'no-store');
+   httpCases.push({schema:'UnsignedSnapshotContentResponse',value:r.body});
+   assert.equal((await request(url,reader,reader.personal_party_id,'GET',{'If-None-Match':'*'})).status,200);
+   assert.equal((await request(url+'?role=admin',reader,reader.personal_party_id)).status,400);
+  });
+  await t.test('HTTP rule reads use the historical snapshot and cannot expose unrelated rule versions',async()=>{
+   const rule=await effective(),value=await repo.seal(operator.ctx,source(rule));
+   await repo.transitionRule(operator.ctx,{rule_id:rule.content.id,target_status:'RETIRED',expected_version:rule.object_version,operation_key:key()});
+   const url='/api/v1/rule-versions/'+rule.content.id+'/content?snapshot_id='+value.id;
+   const r=await request(url,reader,reader.personal_party_id);assert.equal(r.status,200);assert.deepEqual(r.body.data,rule.content);httpCases.push({schema:'RuleContentResponse',value:r.body});
+   const other=await effective();assert.equal((await request('/api/v1/rule-versions/'+other.content.id+'/content?snapshot_id='+value.id,reader,reader.personal_party_id)).status,404);
+   assert.equal((await request('/api/v1/rule-versions/'+rule.content.id+'/content',reader,reader.personal_party_id)).status,400);
+   assert.equal((await request(url,outsider,outsider.personal_party_id)).status,404);
+  });
+  await t.test('HTTP never exposes mutation, approval or fabricated file metadata routes',async()=>{
+   const value=await repo.seal(operator.ctx,source(await effective()));
+   for(const method of ['POST','PATCH','DELETE'])assert.equal((await request('/api/v1/contract-snapshots/'+value.id+'/content',operator,operator.personal_party_id,method)).status,404);
+   assert.equal((await request('/api/v1/contract-snapshots/'+value.id,operator,operator.personal_party_id)).status,404);
+   assert.equal((await request('/api/v1/rule-versions',operator,operator.personal_party_id,'POST',{'X-Role':'admin'})).status,404);
+   await assert.rejects(createGovernanceRepository(db,{resolvePrincipal}).seal(operator.ctx,{source_ref:'fake',operation_key:key()}),{code:'GOVERNANCE_FORBIDDEN'});
+  });
+  await t.test('HTTP rechecks membership and grants, and masks stored corruption without leaking content',async()=>{
+   const value=await repo.seal(operator.ctx,source(await effective())),url='/api/v1/contract-snapshots/'+value.id+'/content';
+   await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE party_id=? AND account_id=?",[reader.personal_party_id,reader.account_id]);
+   assert.equal((await request(url,reader,reader.personal_party_id)).status,404);
+   await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[reader.personal_party_id,reader.account_id]);
+   await db.execute('DELETE FROM governance_snapshot_readers WHERE snapshot_id=? AND account_id=?',[value.id,reader.account_id]);
+   assert.equal((await request(url,reader,reader.personal_party_id)).status,404);
+   await db.execute("UPDATE governance_snapshots SET content_json=JSON_SET(content_json,'$.commitments.notice','synthetic-secret-changed') WHERE id=?",[value.id]);
+   const r=await request(url,operator,operator.personal_party_id);assert.equal(r.status,503);assert.equal(r.body.error.code,'SERVICE_UNAVAILABLE');assert.ok(!JSON.stringify(r.body).includes('synthetic-secret-changed'));httpCases.push({schema:'ErrorResponse',value:r.body});
+  });
+  await t.test('HTTP rejects revoked and expired sessions and inactive accounts on each read',async()=>{
+   const value=await repo.seal(operator.ctx,source(await effective())),url='/api/v1/contract-snapshots/'+value.id+'/content';
+   await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[reader.account_id]);assert.equal((await request(url,reader,reader.personal_party_id)).status,403);
+   await db.execute("UPDATE identity_accounts SET current_status='ACTIVE' WHERE id=?",[reader.account_id]);
+   const logout=await request('/api/v1/auth/sessions/current',reader,null,'DELETE',{'Idempotency-Key':key()});assert.equal(logout.status,200);assert.equal((await request(url,reader,reader.personal_party_id)).status,401);
+   await db.execute('UPDATE auth_sessions SET expires_ms=1 WHERE account_id=?',[operator.account_id]);assert.equal((await request(url,operator,operator.personal_party_id)).status,401);
+  });
   await t.test('a fresh connection reads saved content and empty database creation applies the same plan',async()=>{
    const value=await repo.seal(operator.ctx,source(await effective()));
    const fresh=await openDatabase({...env,MYSQL_DATABASE:name});try{assert.deepEqual(await createGovernanceRepository(fresh,options).readSnapshot(reader.ctx,value.id),value);}finally{await fresh.close();}
    const other=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`;assert.match(other,/^jx_test_\d+_[a-f0-9]{12}$/);await control.query('CREATE DATABASE '+mysql.escapeId(other));
    let empty;try{empty=await openDatabase({...env,MYSQL_DATABASE:other});assert.equal((await migrate(empty,{directory:fixture})).applied.length,(await fs.readdir(fixture)).length);}finally{if(empty)await empty.close();await control.query('DROP DATABASE '+mysql.escapeId(other));}
   });
- }finally{if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
+  const output=path.resolve(__dirname,'../../../..','.local/governance-http-fixtures.json');await fs.mkdir(path.dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify({synthetic_only:true,cases:httpCases},null,2));
+ }finally{if(server)await new Promise(resolve=>server.close(resolve));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

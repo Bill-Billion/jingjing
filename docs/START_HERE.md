@@ -1,5 +1,7 @@
 # 从这里开始
 
+2026-09-24：第三阶段本地已经接通规则/合同只读HTTP，并明确依赖待审第11份登录代码。当前进度以[服务器进度](status/CORE_CURRENT.md)和[读取说明](collaboration/STAGE_3_READ_API.md)为准；下方旧状态保留历史。
+
 2026-09-23接线更新：为实际验证读取接口，本地合入第11份申请d2e6c93作为待审依赖。共同版本仍7d139ff，申请未获审阅/合并，不推送或自行合入。下方“不包含第11份”的描述为此前独立开发记录。
 
 当前本地分支为core/stage-3-rule-snapshots，直接基于共同版本7d139ff；账号接口仍在待审第11份申请中，本分支暂不包含它。最新安排见[服务器进度](status/CORE_CURRENT.md)与[第三阶段计划](collaboration/STAGE_3_RULE_SNAPSHOTS.md)。下方保留前期入口。

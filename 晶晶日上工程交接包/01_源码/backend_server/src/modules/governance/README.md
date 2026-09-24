@@ -1,6 +1,6 @@
 # 规则与合同内容：内部封存工具
 
-当前包括纯内容函数和MySQL内部仓库，已在隔离数据库验证；没有公开HTTP、正式运营角色接线或真实签署处理。完整阶段计划见[规则与合同阶段](../../../../../../docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md)。content.js只依赖Node内置crypto，可独立测试；repository.js依赖已存在的数据库事务和身份记录。
+当前包括纯内容函数和MySQL内部仓库，已在隔离数据库验证；已接入两个只读HTTP，正式运营角色/真实业务写入与签署处理仍未接通。完整阶段计划见[规则与合同阶段](../../../../../../docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md)。content.js只依赖Node内置crypto，可独立测试；repository.js依赖已存在的数据库事务和身份记录。
 
 `createRuleContent`接收明确的版本标识和条款，生成深拷贝、只读的内容及SHA256校验值。它不批准规则、不选择当前版本、不增加任何未知商业参数。`verifyRuleContent`核对读回的内容。
 
@@ -30,6 +30,8 @@ node --test "晶晶日上工程交接包/01_源码/backend_server/test/governanc
 - readSnapshot只允许保存时明确授权且当前有效的账号读取。机构成员身份不自动授予读取权；未授权与不存在统一返回找不到。读取名单由可信来源提供，名单管理/转让/撤回入口后续另做，不能让前端自由填写。
 - 关键内容、读取授权、请求结果和操作记录一起提交，任一失败全部回滚。重复请求也重新检查当前权限；没有自动重试不确定提交或死锁。
 
-数据库表在migrations/planned-governance暂存，普通升级命令不会应用。测试只在随机jx_test数据库中临时合并已启用迁移与计划文件；不会修改正常迁移历史。应先将第11份0015–0019与本阶段0020–0024的顺序统一，再启用本阶段升级并验证实际升级路径。不要把测试拼接目录用于正式数据库；不能在已应用0020后再补插0015。
+2026-09-23本地明确引入第11份依赖后，数据库表已原样移入mysql-runtime，认证表0015–0019之后接0020–0024。测试已在随机jx_test数据库验证认证表之后升级及空库建表，旧迁移内容未修改。不要把测试拼接目录用于正式数据库；不能在已应用0020后再补插0015。
 
-专项测试在backend_server目录执行`node scripts/test-mysql.js governance`，须事先配置JX_MYSQL_TEST_ENV_FILE。当前分支完整检查通过，但不包含尚未合并的第二阶段账号HTTP代码；它的测试证据仍在第11份申请中。
+专项测试在backend_server目录执行`node scripts/test-mysql.js governance`，须事先配置JX_MYSQL_TEST_ENV_FILE。当前分支已本地合入待审第11份账号代码并联合回归；这不代表该申请已获批准或进入integration。
+
+两个只读HTTP调用readSnapshotForParty，在数据库事务中再检查账号、当前身份成员关系、合同当事方范围及独立读取名单。规则正文从获准的历史合同副本中取得，不读任意最新规则。未开放写入API。具体路径见仓库docs/collaboration/STAGE_3_READ_API.md。

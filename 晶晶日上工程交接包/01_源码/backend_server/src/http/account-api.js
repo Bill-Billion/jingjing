@@ -3,12 +3,15 @@ const express=require('express');
 const {randomUUID}=require('node:crypto');
 const {createAuthRepository}=require('../modules/auth/repository');
 const {createPartyRepository}=require('../modules/party/repository');
+const {createGovernanceRepository}=require('../modules/governance/repository');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
 function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[]}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
+ // Read only: privileged approval and real order-source dependencies remain unconfigured/denied.
+ const governance=createGovernanceRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
  const app=express();app.disable('x-powered-by');app.disable('etag');app.set('trust proxy',false);app.set('query parser','simple');
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  app.use((req,res,next)=>{
@@ -90,6 +93,24 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[]}) {
  }));
  app.delete('/api/v1/parties/:party_id/members/:account_id',wrap(async(req,res)=>{
   const partyId=acting(req);id(req.params.account_id);shape(req.body||{},[]);reply(req,res,await party.removeMember(req,{party_id:partyId,account_id:req.params.account_id,expected_version:expected(req),operation_key:key(req)}));
+ }));
+ function contentParty(req){
+  const value=req.get('X-Acting-Party');if(!value)throw error('ACTING_PARTY_REQUIRED',400);
+  req.actingParty=id(value);return req.actingParty;
+ }
+ // Sensitive content is always returned after a fresh permission check, never as an implicit 304.
+ function contentReply(req,res,data){res.status(200).type('application/json').end(JSON.stringify({meta:meta(req),data}));}
+ app.get('/api/v1/contract-snapshots/:snapshot_id/content',wrap(async(req,res)=>{
+  shape(req.query,[]);
+  const data=await governance.readSnapshotForParty(req,{snapshot_id:req.params.snapshot_id,party_id:contentParty(req)});
+  contentReply(req,res,data);
+ }));
+ app.get('/api/v1/rule-versions/:rule_version_id/content',wrap(async(req,res)=>{
+  shape(req.query,['snapshot_id']);id(req.params.rule_version_id);id(req.query.snapshot_id);
+  const saved=await governance.readSnapshotForParty(req,{snapshot_id:req.query.snapshot_id,party_id:contentParty(req)});
+  const data=saved.rule_contents.find(rule=>rule.id===req.params.rule_version_id);
+  if(!data)throw error('RULE_NOT_FOUND',404);
+  contentReply(req,res,data);
  }));
  app.use((req,res,next)=>next(error('NOT_FOUND',404)));
  app.use((e,req,res,next)=>{
