@@ -1,8 +1,18 @@
 # 从这里开始
 
+2026-09-24：当前第三阶段已完成后端开发及本机/GitHub检查，已上传第12份申请待审，完整入口见[第三阶段交付](collaboration/STAGE_3_HANDOFF.md)；实际推送、远端检查和审阅状态见[服务器进度](status/CORE_CURRENT.md)。第11份仍为前置，不得自行合并。
+
+## 历史入口记录
+
+2026-09-24：第三阶段本地已经接通规则/合同只读HTTP，并明确依赖待审第11份登录代码。当前进度以[服务器进度](status/CORE_CURRENT.md)和[读取说明](collaboration/STAGE_3_READ_API.md)为准；下方旧状态保留历史。
+
+2026-09-23接线更新：为实际验证读取接口，本地合入第11份申请d2e6c93作为待审依赖。共同版本仍7d139ff，申请未获审阅/合并，不推送或自行合入。下方“不包含第11份”的描述为此前独立开发记录。
+
+当前本地分支为core/stage-3-rule-snapshots，直接基于共同版本7d139ff；账号接口仍在待审第11份申请中，本分支暂不包含它。最新安排见[服务器进度](status/CORE_CURRENT.md)与[第三阶段计划](collaboration/STAGE_3_RULE_SNAPSHOTS.md)。下方保留前期入口。
+
 **当前规则已更新（2026-09-22）：按[阶段计划](collaboration/STAGED_DELIVERY.md)集中推送和合并，不再逐任务上传。第4份申请此前已合并，其余8份关闭未合并；第9份不再是开放的合并入口。已有代码与历史证据保留，下面此前申请及上传记录不能当作当前操作指令。阶段流程和双方分工随第一阶段集中交付，实际上传状态见服务器当前进度，不代表队友已确认。**
 
-最新同步方式见[一个入口获取与继续开发](collaboration/REVIEW_AND_HANDOFF.md)。原分项申请保留历史，当前改从统一待审分支获取；未批准、未合入，新账号HTTP接口尚未接通。
+最新同步方式见[一个入口获取与继续开发](collaboration/REVIEW_AND_HANDOFF.md)。原分项申请保留历史，当前改从统一待审分支获取；第一阶段已合入，当前第二阶段新增账号接口及限制见[账号API说明](collaboration/STAGE_2_ACCOUNT_API.md)。
 
 先看 [双方分工](collaboration/TEAM_ONBOARDING.md) 和 [当前进度与下一步](status/MAINLINE_PROGRESS.md)，不需要先记任务编号。完整工作和完成标准在 [任务安排](tasks/README.md)。
 
