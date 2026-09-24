@@ -5,6 +5,7 @@ const {openDatabase}=require('../src/infrastructure/database');
 const {migrate}=require('../src/infrastructure/database/migrator');
 const {createPartyRepository}=require('../src/modules/party/repository');
 const {createGovernanceRepository}=require('../src/modules/governance/repository');
+const {maintainOperatorGrant,authorizeOperator}=require('../src/modules/governance/operator-access');
 const {createAccountApi}=require('../src/http/account-api');
 const {createAuthRepository}=require('../src/modules/auth/repository');
 const http=require('node:http');
@@ -23,7 +24,7 @@ test('isolated MySQL preserves rule history, private snapshots and atomic record
    for(const file of await fs.readdir(base))if(file.endsWith('.sql')&&file.slice(0,4)<'0020')await fs.copyFile(path.join(base,file),path.join(fixture,file));
    await migrate(db,{directory:fixture});await db.execute('INSERT INTO platform_schema_metadata(schema_key,schema_value) VALUES (?,?)',['governance_test','preserve']);
    for(const file of await fs.readdir(base))if(file.endsWith('.sql'))await fs.copyFile(path.join(base,file),path.join(fixture,file));
-   assert.deepEqual((await migrate(db,{directory:fixture})).applied,['0020','0021','0022','0023','0024']);
+   assert.deepEqual((await migrate(db,{directory:fixture})).applied,(await fs.readdir(base)).filter(f=>f.endsWith('.sql')&&f.slice(0,4)>='0020').sort().map(f=>f.slice(0,4)));
    assert.deepEqual((await migrate(db,{directory:fixture})).applied,[]);
    assert.equal((await db.execute('SELECT schema_value FROM platform_schema_metadata WHERE schema_key=?',['governance_test']))[0][0].schema_value,'preserve');
   });
@@ -191,6 +192,52 @@ test('isolated MySQL preserves rule history, private snapshots and atomic record
    const fresh=await openDatabase({...env,MYSQL_DATABASE:name});try{assert.deepEqual(await createGovernanceRepository(fresh,options).readSnapshot(reader.ctx,value.id),value);}finally{await fresh.close();}
    const other=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`;assert.match(other,/^jx_test_\d+_[a-f0-9]{12}$/);await control.query('CREATE DATABASE '+mysql.escapeId(other));
    let empty;try{empty=await openDatabase({...env,MYSQL_DATABASE:other});assert.equal((await migrate(empty,{directory:fixture})).applied.length,(await fs.readdir(fixture)).length);}finally{if(empty)await empty.close();await control.query('DROP DATABASE '+mysql.escapeId(other));}
+  });
+  async function staff(){const ctx=Symbol('staff');sessions.set(ctx,{subject_ref:'synthetic:'+key(),request_id:key()});return {ctx,...await party.registerAccount(ctx,{display_name:'Synthetic operator'})};}
+  const grant=(p,extra={})=>({account_id:p.account_id,action:'CREATE_RULE',enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic-maintenance',reason:'Synthetic isolated authorization, not production approval',...extra});
+  const controlled=createGovernanceRepository(db,{resolvePrincipal});
+  await t.test('persisted explicit permission enables only its named operation and survives new composition',async()=>{
+   const p=await staff();await assert.rejects(controlled.createRule(p.ctx,draftInput()),{code:'GOVERNANCE_FORBIDDEN'});
+   await maintainOperatorGrant(db,grant(p));const rule=await createGovernanceRepository(db,{resolvePrincipal}).createRule(p.ctx,draftInput());
+   await assert.rejects(controlled.readRule(p.ctx,rule.content.id),{code:'GOVERNANCE_FORBIDDEN'});
+   await assert.rejects(controlled.transitionRule(p.ctx,{rule_id:rule.content.id,target_status:'IN_REVIEW',expected_version:1,operation_key:key()}),{code:'GOVERNANCE_FORBIDDEN'});
+   assert.equal(await db.withTransaction(tx=>authorizeOperator(tx,{account_id:p.account_id,action:'UNKNOWN'})),false);
+  });
+  await t.test('revoked permission rejects a formerly successful idempotent request',async()=>{
+   const p=await staff(),input=draftInput();await maintainOperatorGrant(db,grant(p));await controlled.createRule(p.ctx,input);
+   await maintainOperatorGrant(db,grant(p,{expected_version:1,enabled:false}));await assert.rejects(controlled.createRule(p.ctx,input),{code:'GOVERNANCE_FORBIDDEN'});
+  });
+  await t.test('expiration and account suspension are evaluated on every privileged operation',async()=>{
+   const p=await staff();await assert.rejects(maintainOperatorGrant(db,grant(p,{expires_at:'2000-01-01T00:00:00.000Z'})),{code:'GRANT_ALREADY_EXPIRED'});
+   await maintainOperatorGrant(db,grant(p));await db.execute("UPDATE governance_operator_grants SET expires_at='2000-01-01' WHERE account_id=?",[p.account_id]);
+   await assert.rejects(controlled.createRule(p.ctx,draftInput()),{code:'GOVERNANCE_FORBIDDEN'});
+   await maintainOperatorGrant(db,grant(p,{expected_version:1}));await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[p.account_id]);
+   await assert.rejects(controlled.createRule(p.ctx,draftInput()),{code:'ACCOUNT_NOT_ACTIVE'});
+   await assert.rejects(maintainOperatorGrant(db,grant(p,{expected_version:2})),{code:'ACCOUNT_NOT_ACTIVE'});
+   assert.equal((await maintainOperatorGrant(db,grant(p,{expected_version:2,enabled:false}))).enabled,false);
+  });
+  await t.test('concurrent maintenance rejects stale versions and retains both historical states',async()=>{
+   const p=await staff(),saved=await maintainOperatorGrant(db,grant(p));
+   const result=await Promise.allSettled([maintainOperatorGrant(db,grant(p,{expected_version:1,enabled:false})),maintainOperatorGrant(db,grant(p,{expected_version:1,expires_at:'2099-01-01T00:00:00.000Z'}))]);
+   assert.equal(result.filter(x=>x.status==='fulfilled').length,1);assert.equal(result.find(x=>x.status==='rejected').reason.code,'VERSION_CONFLICT');
+   assert.equal(Number((await db.execute('SELECT COUNT(*) n FROM governance_operator_history WHERE grant_id=?',[saved.grant_id]))[0][0].n),2);
+  });
+  await t.test('grant and history commit atomically; maintenance cannot silently omit evidence fields',async()=>{
+   const p=await staff();await assert.rejects(maintainOperatorGrant(db,grant(p,{authority_ref:''})),{code:'INVALID_REFERENCE'});
+   await assert.rejects(maintainOperatorGrant(db,grant(p,{reason:''})),{code:'INVALID_DISPLAY_NAME'});
+   const broken={...db,withTransaction:work=>db.withTransaction(tx=>work({execute:async(sql,args)=>{if(sql.startsWith('INSERT INTO governance_operator_history'))throw Error('synthetic history failure');return tx.execute(sql,args);}}))};
+   await assert.rejects(maintainOperatorGrant(broken,grant(p)),/synthetic history failure/);
+   await assert.rejects(controlled.createRule(p.ctx,draftInput()),{code:'GOVERNANCE_FORBIDDEN'});
+   assert.equal((await maintainOperatorGrant(db,grant(p))).object_version,1);
+  });
+  await t.test('maintenance CLI previews without a database and writes only with explicit apply',async()=>{
+   const {main}=require('../scripts/governance-access'),p=await staff();
+   const file=path.join(fixture,'synthetic-grant.json');await fs.writeFile(file,JSON.stringify(grant(p)));
+   assert.equal((await main([file],{})).status,'PREVIEW_ONLY_NO_DATABASE');
+   await assert.rejects(controlled.createRule(p.ctx,draftInput()),{code:'GOVERNANCE_FORBIDDEN'});
+   await assert.rejects(main(['--apply',file],{}),{code:'EXPLICIT_MYSQL_ENV_REQUIRED'});
+   assert.equal((await main(['--apply',file],{...env,MYSQL_DATABASE:name})).status,'APPLIED');
+   assert.equal((await controlled.createRule(p.ctx,draftInput())).current_status,'DRAFT');
   });
   const output=path.resolve(__dirname,'../../../..','.local/governance-http-fixtures.json');await fs.mkdir(path.dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify({synthetic_only:true,cases:httpCases},null,2));
  }finally{if(server)await new Promise(resolve=>server.close(resolve));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}

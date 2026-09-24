@@ -1,6 +1,6 @@
 # 规则与合同内容：内部封存工具
 
-当前包括纯内容函数和MySQL内部仓库，已在隔离数据库验证；已接入两个只读HTTP，正式运营角色/真实业务写入与签署处理仍未接通。完整阶段计划见[规则与合同阶段](../../../../../../docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md)。content.js只依赖Node内置crypto，可独立测试；repository.js依赖已存在的数据库事务和身份记录。
+当前包括纯内容函数和MySQL内部仓库，已在隔离数据库验证；已接入两个只读HTTP，操作权限已接数据库；真实人员配置、真实业务写入与签署处理仍未完成。完整阶段计划见[规则与合同阶段](../../../../../../docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md)。content.js只依赖Node内置crypto，可独立测试；repository.js依赖已存在的数据库事务和身份记录。
 
 `createRuleContent`接收明确的版本标识和条款，生成深拷贝、只读的内容及SHA256校验值。它不批准规则、不选择当前版本、不增加任何未知商业参数。`verifyRuleContent`核对读回的内容。
 
@@ -22,7 +22,7 @@ node --test "晶晶日上工程交接包/01_源码/backend_server/test/governanc
 
 ## MySQL内部仓库怎样使用
 
-`createGovernanceRepository(db, dependencies)`默认拒绝可信身份和特权操作。组合服务必须提供服务器端的resolvePrincipal、authorize及loadCommitment；禁止从请求体注入角色、批准布尔值或回调。当前还没有正式运营角色配置，测试中使用明确标识的服务替身，不能宣称已经接上登录。
+`createGovernanceRepository(db, dependencies)`默认使用数据库内明确配置的逐项权限，无授权则拒绝；可信身份由服务端resolvePrincipal提供，loadCommitment仍须接可信业务来源，不能从请求体注入角色或回调。只读HTTP已经接可信会话。权限维护工具默认预览，无真实账号自动获权；具体说明见仓库docs/collaboration/GOVERNANCE_OPERATOR_ACCESS.md。
 
 - createRule只建草稿；transitionRule依次处理提交审核、批准、生效和停用，每一步分别查授权、原版本和数据库时间，没有自动审批。条款内容只读，新内容必须用新版本。审批职责与实际角色由后续运营服务接线，不能把测试授权当成真实批准。
 - seal只接收source_ref与operation_key。source_ref必须代表不可变的业务来源版本；loadCommitment在同一事务里锁定并验证真实合同/订单来源、当事方、明确规则版本、承诺和获准读取的账号，再返回内容。缺此服务会失败；任意合同ID不构成经过验证的合同，本轮使用合成来源，真实订单/合同来源还未接通。

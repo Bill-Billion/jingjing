@@ -1,6 +1,7 @@
 'use strict';
 const {randomUUID} = require('node:crypto');
 const content = require('./content');
+const {authorizeOperator}=require('./operator-access');
 const {error, ref, id, shape, version} = require('../party/policy');
 const one = async (tx, sql, values = []) => (await tx.execute(sql, values))[0][0];
 const parsed = value => typeof value === 'string' ? JSON.parse(value) : value;
@@ -13,7 +14,7 @@ function utc(value) {
 const iso = value => new Date(value.replace(' ','T') + 'Z').toISOString();
 
 // All callbacks are server composition dependencies, never request-supplied roles or flags.
-function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authorize=async()=>false, loadCommitment=async()=>null} = {}) {
+function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authorize=authorizeOperator, loadCommitment=async()=>null} = {}) {
   async function actor(tx, context) {
     const p = await resolvePrincipal(context);
     if (!p) throw error('AUTHENTICATION_REQUIRED',401);
