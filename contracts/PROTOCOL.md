@@ -76,3 +76,5 @@ GET /api/v1/contract-snapshots/{snapshot_id}/business-readiness?action=...复用
 ## 0.4.0-rc.1：供给、私有材料与本人同意
 
 供给前缀/api/v1/supply。审核操作按账号权限，不用客户端自报角色；列表/读取可选X-Acting-Party，选择时限所属OWNER身份，不选时按相应审核权限。本人撤回从原记录核对真实账号。新增binary私有传输，下载不缓存、不提供公开链接；JSON其余仍为meta/data或meta/error。范围匹配只是条件检查，不是许可、电子签或生成。详细顺序见docs/collaboration/STAGE_4_API.md。
+
+第五阶段许可：新增14项操作、外部材料核验和不可变合同；所有写入带幂等键，已有记录变更带预期版本。审核按账号权限，不接受客户端角色；证据下载是受控二进制，阅稿返回实际分段水印文本。状态与截止时间须一起解释，实际使用由服务器重查。见[第五阶段调用说明](../docs/collaboration/STAGE_5_API.md)。

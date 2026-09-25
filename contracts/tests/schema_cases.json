@@ -323,6 +323,52 @@
         "usable_for_generation"
       ],
       "replace_with": true
+    },
+    {
+      "name": "Reading cannot claim generation rights",
+      "fixture": "LicenseReadingResponse",
+      "mutate_path": [
+        "data",
+        "allows_generation"
+      ],
+      "replace_with": true
+    },
+    {
+      "name": "License record cannot claim a paid status",
+      "fixture": "LicenseRecordResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "PAID"
+    },
+    {
+      "name": "Unknown rights rejected",
+      "schema": "LicenseTerms",
+      "value": {
+        "exclusive": true,
+        "rights": [
+          "EVERYTHING"
+        ]
+      }
+    },
+    {
+      "name": "Evidence approval requires all verification facts",
+      "schema": "LicenseVerification",
+      "value": {
+        "identity_verified": true
+      }
+    },
+    {
+      "name": "Project episode count must be positive",
+      "schema": "LicenseProject",
+      "value": {
+        "title": "synthetic",
+        "purpose": "PRIVATE",
+        "territory": "CN",
+        "language": "zh",
+        "episodes": 0
+      }
     }
   ]
 }
