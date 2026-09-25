@@ -126,7 +126,11 @@ def validate(runtime_fixtures=None):
             if method == 'patch':
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
-            if path.startswith('/api/v1/') and path not in {
+            account_scoped_supply = {'listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
+                'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent'}
+            if op['operationId'] in account_scoped_supply:
+                check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
                     '/api/v1/me/parties','/api/v1/identity-verifications/current',
                     '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:
@@ -139,6 +143,10 @@ def validate(runtime_fixtures=None):
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')
+                if op['operationId']=='downloadSupplyAsset' and code=='200':
+                    check(response['content']['application/octet-stream']['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
+                    check('Cache-Control' in response.get('headers',{}), 'Private file no-store declared')
+                    continue
                 schema_ref = response['content']['application/json']['schema']['$ref']
                 check(schema_ref.split('/')[-1] in fixture_map, f'Response fixture: {path} {code}')
                 if int(code)>=400 and path!='/ready':

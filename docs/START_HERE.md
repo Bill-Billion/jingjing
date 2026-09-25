@@ -1,5 +1,9 @@
 # 从这里开始
 
+2026-09-25：第四阶段后端自验完成，集中交付准备中。先看[阶段交付](collaboration/STAGE_4_HANDOFF.md)、[页面调用](collaboration/STAGE_4_API.md)及[当前进度](status/CORE_CURRENT.md)。实际依赖已在本地明确引入，前置第11、12份仍须审阅。
+
+## 历史入口
+
 2026-09-25：当前从共同版本独立推进[第四阶段作品与材料](collaboration/STAGE_4_WORKS_EVIDENCE.md)，先完成内部规则，未接公开接口。第11、12份已上传待审，仍保留原分支；本分支未引入，旧状态不得当作当前事实。先看[当前进度](status/CORE_CURRENT.md)。
 
 ## 以下保留历史入口

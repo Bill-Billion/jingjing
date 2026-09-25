@@ -287,6 +287,42 @@
         "current_status": "NOT_ENABLED",
         "reason_code": "PROVIDER_NOT_IMPLEMENTED"
       }
+    },
+    {
+      "name": "unfinished upload is not ready",
+      "fixture": "SupplyAssetResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "UPLOADING"
+    },
+    {
+      "name": "private object keys must not be returned",
+      "fixture": "SupplyAssetResponse",
+      "mutate_path": [
+        "data",
+        "object_key"
+      ],
+      "replace_with": "private/hidden"
+    },
+    {
+      "name": "supply cannot create a license",
+      "fixture": "SupplyRecordResponse",
+      "mutate_path": [
+        "data",
+        "kind"
+      ],
+      "replace_with": "AUTO_LICENSE"
+    },
+    {
+      "name": "scope check cannot enable generation",
+      "fixture": "ConsentScopeResponse",
+      "mutate_path": [
+        "data",
+        "usable_for_generation"
+      ],
+      "replace_with": true
     }
   ]
 }

@@ -6,9 +6,10 @@ const {createPartyRepository}=require('../modules/party/repository');
 const {createGovernanceRepository}=require('../modules/governance/repository');
 const {createReadinessRepository}=require('../modules/providers/readiness');
 const {createBusinessGate}=require('../modules/governance/business-gate');
+const {createSupplyRouter}=require('./supply-routes');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={}}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
@@ -26,6 +27,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(origin&&allowedOrigins.includes(origin)){res.set('Access-Control-Allow-Origin',origin);res.vary('Origin');res.set('Access-Control-Allow-Headers','Authorization, Content-Type, X-Request-Id, X-Acting-Party, Idempotency-Key, If-Match');res.set('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE,OPTIONS');res.set('Access-Control-Expose-Headers','X-Request-Id, ETag');}
   if(req.method==='OPTIONS'){if(!origin||!allowedOrigins.includes(origin))return next(error('ORIGIN_NOT_ALLOWED',403));return res.status(204).end();}next();
  });
+ app.use('/api/v1/supply',express.json({limit:'64kb',strict:true}));
  app.use(express.json({limit:'16kb',strict:true}));
  app.use(createOperationsRouter({databaseReady:mysqlReady(db)}));
  const meta=req=>({request_id:req.requestId,actor:req.account?{account_id:req.account.id}:null,acting_party:req.actingParty||null});
@@ -120,6 +122,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
+ app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use((req,res,next)=>next(error('NOT_FOUND',404)));
  app.use((e,req,res,next)=>{
   // Never expose SQL, upstream bodies, phone, code, token or request body.
