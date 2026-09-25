@@ -10,7 +10,7 @@ const {createSupplyRouter}=require('./supply-routes');
 const {createLicensingRouter}=require('./licensing-routes');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
@@ -28,6 +28,9 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(origin&&allowedOrigins.includes(origin)){res.set('Access-Control-Allow-Origin',origin);res.vary('Origin');res.set('Access-Control-Allow-Headers','Authorization, Content-Type, X-Request-Id, X-Acting-Party, Idempotency-Key, If-Match');res.set('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE,OPTIONS');res.set('Access-Control-Expose-Headers','X-Request-Id, ETag');}
   if(req.method==='OPTIONS'){if(!origin||!allowedOrigins.includes(origin))return next(error('ORIGIN_NOT_ALLOWED',403));return res.status(204).end();}next();
  });
+ const trade=require('./trade-routes').createTradeRouters({db,resolvePrincipal:async req=>principals.get(req)||null,env:tradeEnv,providersFactory:tradeProvidersFactory,storageFactory:supplyStorageFactory});
+ app.use('/api/v1/trade/notifications',trade.callbacks);
+ app.use('/api/v1/trade',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/supply',express.json({limit:'64kb',strict:true}));
  app.use(express.json({limit:'16kb',strict:true}));
@@ -124,6 +127,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
+ app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use((req,res,next)=>next(error('NOT_FOUND',404)));

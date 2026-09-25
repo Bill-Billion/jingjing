@@ -75,6 +75,7 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-service-http-fixtures.json --report .local/ci-evidence/governance-service-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/supply-http-fixtures.json --report .local/ci-evidence/supply-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/licensing-http-fixtures.json --report .local/ci-evidence/licensing-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/trade-http-fixtures.json --report .local/ci-evidence/trade-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop
