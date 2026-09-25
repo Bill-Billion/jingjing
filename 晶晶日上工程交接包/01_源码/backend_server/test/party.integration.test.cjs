@@ -23,7 +23,8 @@ test('MySQL party identity, consent, authority and transactional audit',{skip:!p
    for(const file of await fs.readdir(source))if(/^000[1-7]_/.test(file))await fs.copyFile(path.join(source,file),path.join(oldDir,file));
    await migrate(db,{directory:oldDir});
    await db.execute('INSERT INTO platform_schema_metadata(schema_key,schema_value) VALUES (?,?)',['synthetic_prior_value','preserve']);
-   assert.deepEqual((await migrate(db)).applied,['0008','0009','0010','0011','0012','0013','0014']);
+   const additions=(await fs.readdir(source)).filter(f=>/^\d{4}_.+\.sql$/.test(f)&&f.slice(0,4)>'0007').sort().map(f=>f.slice(0,4));
+   assert.deepEqual((await migrate(db)).applied,additions);
    assert.deepEqual((await migrate(db)).applied,[]);
    assert.equal((await db.execute('SELECT schema_value FROM platform_schema_metadata WHERE schema_key=?',['synthetic_prior_value']))[0][0].schema_value,'preserve');
   });

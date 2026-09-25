@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-09-22",
+  "updated_on": "2026-09-25",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -642,7 +642,7 @@
       "stream": "Core",
       "owner": "chengcongcong222",
       "status": "IN_PROGRESS",
-      "branch": "core/s1-002-party-membership",
+      "branch": "core/stage-2-account-api",
       "work_refs": [
         "WORK-02",
         "WORK-13"
@@ -671,7 +671,8 @@
       ],
       "deliverables": [
         "主体模型和权限service",
-        "审计事件"
+        "审计事件",
+        "docs/collaboration/STAGE_2_ACCOUNT_API.md"
       ],
       "acceptance": "跨主体越权拒绝；MCN邀请本人接受；多能力机构和个人作者成立；权限操作可审计",
       "shared_boundaries": [
@@ -684,27 +685,30 @@
         "docs/tasks/records/CORE-S1-002.md",
         "docs/tasks/records/CORE-S1-002-validation.json",
         "docs/tasks/records/REVIEW-20260922.md",
-        "docs/tasks/records/REVIEW-20260922-validation.json"
+        "docs/tasks/records/REVIEW-20260922-validation.json",
+        "docs/tasks/records/CORE-S1-002-HTTP-20260922.md",
+        "docs/tasks/records/CORE-S1-002-HTTP-validation.json"
       ],
       "blockers": [
-        "数据库/权限及候选接口待另一方检查；公开登录与HTTP未接入，业务能力待审核，历史身份不自动导入。"
+        "本阶段新增共享接口与数据库待另一方检查；真实短信权限/证据及页面联调未完成。"
       ],
-      "current_increment": "复审修复已上传第9份统一申请；规则和模块测试减少依赖，崩溃恢复测试不再猜测过期；本机/GitHub129通过、1缺旧库跳过；公开HTTP仍未完成",
+      "current_increment": "第二阶段后端已集中上传第11份申请，本机和GitHub全套148通过/1跳过；待另一方审阅，真实短信和前端联调未完成",
       "validation_scope": "仅MySQL内部账号/主体/能力申请/成员邀请、权限与审计首批通过；可信登录、公开HTTP、分页、页面联调及完整管理仍未实现。",
       "external_evidence_refs": [
         "https://github.com/Bill-Billion/jingjing/pull/8",
         "https://github.com/Bill-Billion/jingjing/actions/runs/35680697354"
       ],
-      "review_branch": "core/review-collaboration-decoupling"
+      "review_branch": "core/review-collaboration-decoupling",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11"
     },
     {
       "id": "CORE-S1-003",
       "title": "规则/合同/订单快照与Readiness业务门禁",
       "stage": 1,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-3-rule-snapshots",
       "work_refs": [
         "WORK-05",
         "WORK-07"
@@ -753,9 +757,25 @@
         "rights/licenses"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S1-003-content-20260923.md",
+        "docs/tasks/records/CORE-S1-003-content-evidence/validation.json",
+        "docs/tasks/records/CORE-S1-003-mysql-20260923.md",
+        "docs/tasks/records/CORE-S1-003-mysql-evidence/validation.json",
+        "docs/tasks/records/CORE-S1-003-http-20260924.md",
+        "docs/tasks/records/CORE-S1-003-http-evidence/validation.json",
+        "docs/tasks/records/CORE-S1-003-operator-20260924.md",
+        "docs/tasks/records/CORE-S1-003-operator-evidence/validation.json",
+        "docs/tasks/records/CORE-S1-003-stage3-20260924.md",
+        "docs/tasks/records/CORE-S1-003-stage3-evidence/validation.json",
+        "docs/tasks/records/CORE-S1-003-stage3-evidence/github-summary.json"
+      ],
+      "blockers": [
+        "第11份账号接口前置仍待审；真实人员授权、供应商开通、页面联调与正式启用尚未发生，不阻止本阶段交付审阅。"
+      ],
+      "current_increment": "第三阶段后端已集中上传第12份申请，b936258本机/GitHub回归203通过/1缺样本跳过、专项55通过；等待队友审阅，未合并或正式启用",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/12"
     },
     {
       "id": "UX-S1-001",
@@ -859,9 +879,9 @@
       "title": "数字人/脸声同意、作者供给、Work/Version、证据双审",
       "stage": 2,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-4-works-evidence",
       "work_refs": [
         "WORK-02",
         "WORK-03",
@@ -905,9 +925,18 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S2-001-policy-20260925.md",
+        "docs/tasks/records/CORE-S2-001-policy-evidence/validation.json",
+        "docs/tasks/records/CORE-S2-001-stage4-20260925.md",
+        "docs/tasks/records/CORE-S2-001-stage4-evidence/validation.json",
+        "docs/tasks/records/CORE-S2-001-stage4-evidence/github-summary.json"
+      ],
+      "blockers": [
+        "第11、12份待审依赖未合入；真实人员及供应商、页面联调尚未启用；改稿需后续项目许可核验，外部资产清理事件待处理。"
+      ],
+      "current_increment": "第四阶段后端已交付第13份申请待审：供给申请、私有材料、作品双审、本人同意与撤回；15个接口；本机及GitHub全套238通过/1缺样本跳过，未合并未上线"
     },
     {
       "id": "CORE-S2-002",
@@ -1547,12 +1576,13 @@
     "mode": "STAGED_LOCAL_FIRST",
     "effective_on": "2026-09-22",
     "guide": "docs/collaboration/STAGED_DELIVERY.md",
-    "remote_sync": "PUBLISHED_STAGE_1",
+    "remote_sync": "STAGE_2_PUBLISHED_STAGE_3_LOCAL_ONLY",
     "open_pull_requests": [
-      10
+      11
     ],
     "previous_merged_pull_requests": [
-      4
+      4,
+      10
     ],
     "previous_closed_unmerged_pull_requests": [
       1,
@@ -1566,19 +1596,19 @@
     ],
     "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
     "current_stage": {
-      "name": "已有基础收口",
-      "branch": "core/stage-1-foundation-handoff",
+      "name": "规则与合同历史留存",
+      "branch": "core/stage-3-rule-snapshots",
+      "status": "IN_PROGRESS_LOCAL_ONLY",
       "owner": "chengcongcong222",
-      "status": "DELIVERED_AWAITING_REVIEW",
-      "review_status": "PENDING",
-      "guide": "docs/collaboration/STAGE_1_HANDOFF.md",
-      "evidence": [
-        "docs/tasks/records/STAGE-1-20260922.md",
-        "docs/tasks/records/STAGE-1-evidence/local-summary.json",
-        "docs/tasks/records/STAGE-1-evidence/github-summary.json"
-      ],
-      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/10",
-      "validated_commit": "a72131c1eeabbcb3377e53edb9ec1fd7d038bf72"
+      "guide": "docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md",
+      "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e",
+      "pending_dependency": "PR 11 / d2e6c93, merged locally only, not approved or merged into integration"
+    },
+    "pending_previous_stage": {
+      "name": "账号操作接通",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11",
+      "status": "OPEN_NO_REVIEW",
+      "branch": "core/stage-2-account-api"
     }
   }
 }
