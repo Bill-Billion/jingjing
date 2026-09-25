@@ -1,6 +1,8 @@
 # 从这里开始
 
-2026-09-25：当前优先看[第七阶段进度](status/CORE_CURRENT.md)和[制作与验收接口](collaboration/STAGE_7_API.md)。后端已写好，集中交付检查中；历史入口不代表当前版本。真实数字人供应商接入尚未完成。
+2026-09-25：第七阶段后端已集中交付[第16份合并申请](https://github.com/Bill-Billion/jingjing/pull/16)，等待队友审阅。功能提交6532ac3通过[GitHub完整检查](https://github.com/Bill-Billion/jingjing/actions/runs/36138395598)：全套311通过、1项缺脱敏旧库样本跳过；制作20通过、许可28通过，七组实际HTTP格式通过。本机结果一致。后续文档提交的检查以申请页为准。未合并、未上线；真实数字人供应商网络接口仍未实现。
+
+2026-09-25：当前优先看[第七阶段进度](status/CORE_CURRENT.md)和[制作与验收接口](collaboration/STAGE_7_API.md)。后端已写好，已集中交付待审；历史入口不代表当前版本。真实数字人供应商接入尚未完成。
 
 ## 此前记录
 
