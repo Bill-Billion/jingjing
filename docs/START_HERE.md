@@ -1,6 +1,6 @@
 # 从这里开始
 
-第五阶段许可与项目使用后端自验已通过，准备集中交付；先看[当前进度](status/CORE_CURRENT.md)与[第五阶段调用说明](collaboration/STAGE_5_API.md)。历史条目中的“未接项目许可”不再代表本分支现状；前置申请仍需逐份审阅。
+第五阶段许可与项目使用后端已通过本机和GitHub检查，交付[第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)待审；先看[当前进度](status/CORE_CURRENT.md)与[第五阶段调用说明](collaboration/STAGE_5_API.md)。历史条目中的“未接项目许可”不再代表本分支现状；前置申请仍需逐份审阅。
 
 ## 以下保留此前交付记录
 
