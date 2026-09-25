@@ -1,5 +1,9 @@
 # 从这里开始
 
+2026-09-25：当前优先看[第七阶段进度](status/CORE_CURRENT.md)和[制作与验收接口](collaboration/STAGE_7_API.md)。后端已写好，集中交付检查中；历史入口不代表当前版本。真实数字人供应商接入尚未完成。
+
+## 此前记录
+
 第六阶段报价、订单与收付款后端已通过本机和GitHub检查，交付[第15份申请](https://github.com/Bill-Billion/jingjing/pull/15)待审；未合并、未上线。先看[当前进度](status/CORE_CURRENT.md)和[页面调用](collaboration/STAGE_6_API.md)，不要把后面的历史状态当当前结论。
 
 第五阶段许可与项目使用后端已通过本机和GitHub检查，交付[第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)待审；先看[当前进度](status/CORE_CURRENT.md)与[第五阶段调用说明](collaboration/STAGE_5_API.md)。历史条目中的“未接项目许可”不再代表本分支现状；前置申请仍需逐份审阅。

@@ -131,7 +131,7 @@ def validate(runtime_fixtures=None):
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
             account_scoped_supply = {'listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
                 'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent',
-                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence'}
+                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob'}
             if op['operationId'] in account_scoped_supply:
                 check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
             if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks and path not in {
@@ -147,7 +147,7 @@ def validate(runtime_fixtures=None):
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')
-                if op['operationId'] in {'downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence'} and code=='200':
+                if op['operationId'] in {'downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence','downloadProductionContent','downloadProductionEvidence'} and code=='200':
                     check(response['content']['application/octet-stream']['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
                     check('Cache-Control' in response.get('headers',{}), 'Private file no-store declared')
                     continue
