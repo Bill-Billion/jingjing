@@ -1,28 +1,374 @@
 {
   "description": "Negative protocol payloads. These are schema tests, not runtime authorization or Provider tests.",
   "cases": [
-    {"name":"fractional minor units rejected","schema":"Money","value":{"amount_minor":1.25,"currency":"CNY"}},
-    {"name":"negative transaction price rejected","schema":"Money","value":{"amount_minor":-1,"currency":"CNY"}},
-    {"name":"unsafe JavaScript integer rejected","schema":"Money","value":{"amount_minor":9007199254740992,"currency":"CNY"}},
-    {"name":"string amount rejected","schema":"Money","value":{"amount_minor":"100","currency":"CNY"}},
-    {"name":"currency required","schema":"Money","value":{"amount_minor":100}},
-    {"name":"lowercase currency rejected","schema":"Money","value":{"amount_minor":100,"currency":"cny"}},
-    {"name":"client may not choose actor","schema":"PartyPatch","value":{"display_name":"Synthetic","actor":{"account_id":"someone_else"}}},
-    {"name":"profile patch cannot grant MCN capability","schema":"PartyPatch","value":{"display_name":"Synthetic","capabilities":[{"code":"MCN","current_status":"ACTIVE"}]}},
-    {"name":"empty profile mutation rejected","schema":"PartyPatch","value":{}},
-    {"name":"login cannot supply verified flag","schema":"SessionRequest","value":{"challenge_id":"test_challenge","phone":"13800000000","code":"000000","verified":true}},
-    {"name":"non numeric login code rejected","schema":"SessionRequest","value":{"challenge_id":"test_challenge","phone":"13800000000","code":"abcdef"}},
-    {"name":"login challenge required","schema":"SessionRequest","value":{"phone":"13800000000","code":"000000"}},
-    {"name":"auto approval is not a real identity status","schema":"IdentityVerification","value":{"current_status":"unverified_auto","verification_id":null,"verified_at":null,"allowed_actions":[]}},
-    {"name":"verified identity needs evidence and time","schema":"IdentityVerification","value":{"current_status":"VERIFIED","verification_id":null,"verified_at":null,"allowed_actions":[]}},
-    {"name":"disabled business capability cannot grant actions","schema":"BusinessCapability","value":{"code":"payment.create","availability":"NOT_ENABLED","reason_code":"PROVIDER_NOT_READY","display_message":"未启用","allowed_actions":["payment.create"]}},
-    {"name":"disabled capability explains reason","schema":"BusinessCapability","value":{"code":"payment.create","availability":"NOT_ENABLED","reason_code":null,"display_message":"未启用","allowed_actions":[]}},
-    {"name":"immutable snapshot version cannot increment","fixture":"ContractSnapshotResponse","mutate_path":["data","object_version"],"replace_with":2},
-    {"name":"signature claim requires evidence refs","fixture":"ContractSnapshotResponse","mutate_path":["data","signing_method"],"replace_with":"PLATFORM_ESIGN"},
-    {"name":"production readiness cannot use sandbox proof","fixture":"ProviderReadinessPageResponse","mutate_path":["data","items",0,"current_status"],"replace_with":"PRODUCTION_VERIFIED"},
-    {"name":"effective rule needs effective time","fixture":"RuleVersionResponse","mutate_path":["data","effective_at"],"replace_with":null},
-    {"name":"malformed UTC timestamp rejected","fixture":"ContractSnapshotResponse","mutate_path":["data","created_at"],"replace_with":"yesterday"},
-    {"name":"unknown provider state rejected","fixture":"ProviderReadinessPageResponse","mutate_path":["data","items",0,"current_status"],"replace_with":"SUCCESS"},
-    {"name":"request correlation is required","fixture":"ErrorResponse","remove_path":["meta","request_id"]}
+    {
+      "name": "fractional minor units rejected",
+      "schema": "Money",
+      "value": {
+        "amount_minor": 1.25,
+        "currency": "CNY"
+      }
+    },
+    {
+      "name": "negative transaction price rejected",
+      "schema": "Money",
+      "value": {
+        "amount_minor": -1,
+        "currency": "CNY"
+      }
+    },
+    {
+      "name": "unsafe JavaScript integer rejected",
+      "schema": "Money",
+      "value": {
+        "amount_minor": 9007199254740992,
+        "currency": "CNY"
+      }
+    },
+    {
+      "name": "string amount rejected",
+      "schema": "Money",
+      "value": {
+        "amount_minor": "100",
+        "currency": "CNY"
+      }
+    },
+    {
+      "name": "currency required",
+      "schema": "Money",
+      "value": {
+        "amount_minor": 100
+      }
+    },
+    {
+      "name": "lowercase currency rejected",
+      "schema": "Money",
+      "value": {
+        "amount_minor": 100,
+        "currency": "cny"
+      }
+    },
+    {
+      "name": "client may not choose actor",
+      "schema": "PartyPatch",
+      "value": {
+        "display_name": "Synthetic",
+        "actor": {
+          "account_id": "someone_else"
+        }
+      }
+    },
+    {
+      "name": "profile patch cannot grant MCN capability",
+      "schema": "PartyPatch",
+      "value": {
+        "display_name": "Synthetic",
+        "capabilities": [
+          {
+            "code": "MCN",
+            "current_status": "ACTIVE"
+          }
+        ]
+      }
+    },
+    {
+      "name": "empty profile mutation rejected",
+      "schema": "PartyPatch",
+      "value": {}
+    },
+    {
+      "name": "login cannot supply verified flag",
+      "schema": "SessionRequest",
+      "value": {
+        "challenge_id": "test_challenge",
+        "phone": "13800000000",
+        "code": "000000",
+        "verified": true
+      }
+    },
+    {
+      "name": "non numeric login code rejected",
+      "schema": "SessionRequest",
+      "value": {
+        "challenge_id": "test_challenge",
+        "phone": "13800000000",
+        "code": "abcdef"
+      }
+    },
+    {
+      "name": "login challenge required",
+      "schema": "SessionRequest",
+      "value": {
+        "phone": "13800000000",
+        "code": "000000"
+      }
+    },
+    {
+      "name": "auto approval is not a real identity status",
+      "schema": "IdentityVerification",
+      "value": {
+        "current_status": "unverified_auto",
+        "verification_id": null,
+        "verified_at": null,
+        "allowed_actions": []
+      }
+    },
+    {
+      "name": "verified identity needs evidence and time",
+      "schema": "IdentityVerification",
+      "value": {
+        "current_status": "VERIFIED",
+        "verification_id": null,
+        "verified_at": null,
+        "allowed_actions": []
+      }
+    },
+    {
+      "name": "disabled business capability cannot grant actions",
+      "schema": "BusinessCapability",
+      "value": {
+        "code": "payment.create",
+        "availability": "NOT_ENABLED",
+        "reason_code": "PROVIDER_NOT_READY",
+        "display_message": "未启用",
+        "allowed_actions": [
+          "payment.create"
+        ]
+      }
+    },
+    {
+      "name": "disabled capability explains reason",
+      "schema": "BusinessCapability",
+      "value": {
+        "code": "payment.create",
+        "availability": "NOT_ENABLED",
+        "reason_code": null,
+        "display_message": "未启用",
+        "allowed_actions": []
+      }
+    },
+    {
+      "name": "immutable snapshot version cannot increment",
+      "fixture": "ContractSnapshotResponse",
+      "mutate_path": [
+        "data",
+        "object_version"
+      ],
+      "replace_with": 2
+    },
+    {
+      "name": "signature claim requires evidence refs",
+      "fixture": "ContractSnapshotResponse",
+      "mutate_path": [
+        "data",
+        "signing_method"
+      ],
+      "replace_with": "PLATFORM_ESIGN"
+    },
+    {
+      "name": "production readiness cannot use sandbox proof",
+      "fixture": "ProviderReadinessPageResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "current_status"
+      ],
+      "replace_with": "PRODUCTION_VERIFIED"
+    },
+    {
+      "name": "effective rule needs effective time",
+      "fixture": "RuleVersionResponse",
+      "mutate_path": [
+        "data",
+        "effective_at"
+      ],
+      "replace_with": null
+    },
+    {
+      "name": "malformed UTC timestamp rejected",
+      "fixture": "ContractSnapshotResponse",
+      "mutate_path": [
+        "data",
+        "created_at"
+      ],
+      "replace_with": "yesterday"
+    },
+    {
+      "name": "unknown provider state rejected",
+      "fixture": "ProviderReadinessPageResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "current_status"
+      ],
+      "replace_with": "SUCCESS"
+    },
+    {
+      "name": "request correlation is required",
+      "fixture": "ErrorResponse",
+      "remove_path": [
+        "meta",
+        "request_id"
+      ]
+    },
+    {
+      "name": "unsigned inline snapshot cannot claim signed",
+      "fixture": "UnsignedSnapshotContentResponse",
+      "mutate_path": [
+        "data",
+        "signing_method"
+      ],
+      "replace_with": "PLATFORM_ESIGN"
+    },
+    {
+      "name": "inline snapshot needs historical rules",
+      "fixture": "UnsignedSnapshotContentResponse",
+      "mutate_path": [
+        "data",
+        "rule_contents"
+      ],
+      "replace_with": []
+    },
+    {
+      "name": "historical rule hash required",
+      "fixture": "RuleContentResponse",
+      "remove_path": [
+        "data",
+        "content_sha256"
+      ]
+    },
+    {
+      "name": "inline content cannot fabricate a file asset",
+      "fixture": "UnsignedSnapshotContentResponse",
+      "mutate_path": [
+        "data",
+        "content_asset_id"
+      ],
+      "replace_with": "fake_asset"
+    },
+    {
+      "name": "ready cannot retain failure reason",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "START_PAYMENT",
+        "environment": "SANDBOX",
+        "current_status": "SERVICE_READY",
+        "reason_code": "PROVIDER_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "name": "blocked requires reason",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "START_PAYMENT",
+        "environment": "SANDBOX",
+        "current_status": "NOT_ENABLED",
+        "reason_code": null
+      }
+    },
+    {
+      "name": "signed is not a service readiness status",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "START_PAYMENT",
+        "environment": "SANDBOX",
+        "current_status": "SIGNED",
+        "reason_code": "PROVIDER_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "name": "unknown business action rejected",
+      "schema": "BusinessServiceReadiness",
+      "value": {
+        "action": "AUTO_APPROVE",
+        "environment": "SANDBOX",
+        "current_status": "NOT_ENABLED",
+        "reason_code": "PROVIDER_NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "name": "unfinished upload is not ready",
+      "fixture": "SupplyAssetResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "UPLOADING"
+    },
+    {
+      "name": "private object keys must not be returned",
+      "fixture": "SupplyAssetResponse",
+      "mutate_path": [
+        "data",
+        "object_key"
+      ],
+      "replace_with": "private/hidden"
+    },
+    {
+      "name": "supply cannot create a license",
+      "fixture": "SupplyRecordResponse",
+      "mutate_path": [
+        "data",
+        "kind"
+      ],
+      "replace_with": "AUTO_LICENSE"
+    },
+    {
+      "name": "scope check cannot enable generation",
+      "fixture": "ConsentScopeResponse",
+      "mutate_path": [
+        "data",
+        "usable_for_generation"
+      ],
+      "replace_with": true
+    },
+    {
+      "name": "Reading cannot claim generation rights",
+      "fixture": "LicenseReadingResponse",
+      "mutate_path": [
+        "data",
+        "allows_generation"
+      ],
+      "replace_with": true
+    },
+    {
+      "name": "License record cannot claim a paid status",
+      "fixture": "LicenseRecordResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "PAID"
+    },
+    {
+      "name": "Unknown rights rejected",
+      "schema": "LicenseTerms",
+      "value": {
+        "exclusive": true,
+        "rights": [
+          "EVERYTHING"
+        ]
+      }
+    },
+    {
+      "name": "Evidence approval requires all verification facts",
+      "schema": "LicenseVerification",
+      "value": {
+        "identity_verified": true
+      }
+    },
+    {
+      "name": "Project episode count must be positive",
+      "schema": "LicenseProject",
+      "value": {
+        "title": "synthetic",
+        "purpose": "PRIVATE",
+        "territory": "CN",
+        "language": "zh",
+        "episodes": 0
+      }
+    }
   ]
 }

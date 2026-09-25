@@ -1,6 +1,6 @@
 'use strict';
 const { createHash, randomUUID } = require('node:crypto');
-const kinds = Object.freeze(['IdentityProvider','PaymentProvider','ObjectStorageProvider','ModerationProvider','DigitalHumanProvider','ESignProvider']);
+const kinds = Object.freeze(['IdentityProvider','PaymentProvider','ObjectStorageProvider','ModerationProvider','DigitalHumanProvider','ESignProvider','SmsProvider']);
 const states = Object.freeze(['NOT_IMPLEMENTED','IMPLEMENTED','CONFIGURED','SANDBOX_VERIFIED','PRODUCTION_VERIFIED','WAITING_PROVIDER_APPROVAL','DISABLED_BY_PRODUCT']);
 const environments = ['LOCAL','SANDBOX','PRODUCTION'];
 const failure = (code) => Object.assign(new Error(code), { code, status: 503 });
