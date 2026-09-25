@@ -641,8 +641,8 @@
       "stage": 1,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "IN_PROGRESS",
-      "branch": "core/s1-002-party-membership",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-2-account-api",
       "work_refs": [
         "WORK-02",
         "WORK-13"
@@ -684,27 +684,29 @@
         "docs/tasks/records/CORE-S1-002.md",
         "docs/tasks/records/CORE-S1-002-validation.json",
         "docs/tasks/records/REVIEW-20260922.md",
-        "docs/tasks/records/REVIEW-20260922-validation.json"
+        "docs/tasks/records/REVIEW-20260922-validation.json",
+        "docs/tasks/records/CORE-S2-001-policy-20260925.md"
       ],
       "blockers": [
         "数据库/权限及候选接口待另一方检查；公开登录与HTTP未接入，业务能力待审核，历史身份不自动导入。"
       ],
-      "current_increment": "复审修复已上传第9份统一申请；规则和模块测试减少依赖，崩溃恢复测试不再猜测过期；本机/GitHub129通过、1缺旧库跳过；公开HTTP仍未完成",
+      "current_increment": "已在原阶段分支交付待审；本分支只从共同版本独立开工，未引入该待审成果",
       "validation_scope": "仅MySQL内部账号/主体/能力申请/成员邀请、权限与审计首批通过；可信登录、公开HTTP、分页、页面联调及完整管理仍未实现。",
       "external_evidence_refs": [
         "https://github.com/Bill-Billion/jingjing/pull/8",
         "https://github.com/Bill-Billion/jingjing/actions/runs/35680697354"
       ],
-      "review_branch": "core/review-collaboration-decoupling"
+      "review_branch": "core/review-collaboration-decoupling",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11"
     },
     {
       "id": "CORE-S1-003",
       "title": "规则/合同/订单快照与Readiness业务门禁",
       "stage": 1,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-3-rule-snapshots",
       "work_refs": [
         "WORK-05",
         "WORK-07"
@@ -754,8 +756,12 @@
       ],
       "review_status": "PENDING",
       "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "evidence": [
+        "docs/tasks/records/CORE-S2-001-policy-20260925.md"
+      ],
+      "blockers": [],
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/12",
+      "current_increment": "已在原阶段分支交付待审；本分支只从共同版本独立开工，未引入该待审成果"
     },
     {
       "id": "UX-S1-001",
@@ -859,9 +865,9 @@
       "title": "数字人/脸声同意、作者供给、Work/Version、证据双审",
       "stage": 2,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/stage-4-works-evidence",
       "work_refs": [
         "WORK-02",
         "WORK-03",
@@ -905,9 +911,15 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S2-001-policy-20260925.md",
+        "docs/tasks/records/CORE-S2-001-policy-evidence/validation.json"
+      ],
+      "blockers": [
+        "公开接口接线前需明确待审账号与合同依赖；当前纯规则可从共同版本独立实现。"
+      ],
+      "current_increment": "作品版本与两类审核内部规则13项通过；未接数据库、权限、私有文件或HTTP，阶段继续进行"
     },
     {
       "id": "CORE-S2-002",
