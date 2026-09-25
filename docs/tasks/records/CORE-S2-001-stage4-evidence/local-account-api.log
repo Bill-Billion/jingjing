@@ -1,0 +1,127 @@
+TAP version 13
+# {"provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-09-25T09:02:22.581Z","level":"warn","event":"provider_call_blocked"}
+# Subtest: real MySQL and HTTP account lifecycle
+    # Subtest: probes work; missing provider evidence and legacy tokens do not grant login
+    ok 1 - probes work; missing provider evidence and legacy tokens do not grant login
+      ---
+      duration_ms: 101.9979
+      type: 'test'
+      ...
+    # Subtest: duplicate SMS requests dispatch once and keep phone/code out of storage and response
+    ok 2 - duplicate SMS requests dispatch once and keep phone/code out of storage and response
+      ---
+      duration_ms: 42.3096
+      type: 'test'
+      ...
+    # Subtest: login consumes once and replays the same protected session even with reordered JSON
+    ok 3 - login consumes once and replays the same protected session even with reordered JSON
+      ---
+      duration_ms: 78.3016
+      type: 'test'
+      ...
+    # Subtest: attempt counters commit on failure; expired and superseded codes are rejected
+    ok 4 - attempt counters commit on failure; expired and superseded codes are rejected
+      ---
+      duration_ms: 160.1639
+      type: 'test'
+      ...
+    # Subtest: different concurrent login keys cannot mint two sessions from one code
+    ok 5 - different concurrent login keys cannot mint two sessions from one code
+      ---
+      duration_ms: 33.4412
+      type: 'test'
+      ...
+    # Subtest: untrusted identities, malformed bodies and oversized input fail without exposing secrets
+    ok 6 - untrusted identities, malformed bodies and oversized input fail without exposing secrets
+      ---
+      duration_ms: 37.1422
+      type: 'test'
+      ...
+    # Subtest: provider uncertainty neither reports SENT nor resends an identical request
+    ok 7 - provider uncertainty neither reports SENT nor resends an identical request
+      ---
+      duration_ms: 33.1717
+      type: 'test'
+      ...
+    # Subtest: HTTP invitations require the intended recipient; removal preserves personal identity
+    ok 8 - HTTP invitations require the intended recipient; removal preserves personal identity
+      ---
+      duration_ms: 217.8616
+      type: 'test'
+      ...
+    # Subtest: rename replays original result, rejects stale versions and cursors from another account/resource
+    ok 9 - rename replays original result, rejects stale versions and cursors from another account/resource
+      ---
+      duration_ms: 137.1328
+      type: 'test'
+      ...
+    # Subtest: declining and owner revocation create no membership; unknown caller fields are rejected
+    ok 10 - declining and owner revocation create no membership; unknown caller fields are rejected
+      ---
+      duration_ms: 118.6522
+      type: 'test'
+      ...
+    # Subtest: logout, expiry and account suspension are enforced on subsequent HTTP calls
+    ok 11 - logout, expiry and account suspension are enforced on subsequent HTTP calls
+      ---
+      duration_ms: 82.7028
+      type: 'test'
+      ...
+    # Subtest: rate limits survive a fresh repository and browser origins are explicit
+    ok 12 - rate limits survive a fresh repository and browser origins are explicit
+      ---
+      duration_ms: 35.7686
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back account, session and consumption; retry works after repair
+    ok 13 - audit failure rolls back account, session and consumption; retry works after repair
+      ---
+      duration_ms: 36.7384
+      type: 'test'
+      ...
+    # Subtest: sessions survive fresh composition and expired secrets can be removed
+    ok 14 - sessions survive fresh composition and expired secrets can be removed
+      ---
+      duration_ms: 38.5112
+      type: 'test'
+      ...
+# {"request_id":"4178b3e0-c9a9-47ab-bbf0-1d44896a7910","provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-09-25T09:02:23.726Z","level":"warn","event":"provider_call_blocked"}
+    # Subtest: actual server entry starts only with explicit MySQL configuration and leaves SMS disabled
+    ok 15 - actual server entry starts only with explicit MySQL configuration and leaves SMS disabled
+      ---
+      duration_ms: 85.8456
+      type: 'test'
+      ...
+    1..15
+ok 1 - real MySQL and HTTP account lifecycle
+  ---
+  duration_ms: 2440.202
+  type: 'test'
+  ...
+# Subtest: auth requires explicit secret and encrypted replay binds to its request
+ok 2 - auth requires explicit secret and encrypted replay binds to its request
+  ---
+  duration_ms: 4.2432
+  type: 'test'
+  ...
+# Subtest: auth security configuration rejects invalid bounds
+ok 3 - auth security configuration rejects invalid bounds
+  ---
+  duration_ms: 0.7107
+  type: 'test'
+  ...
+# Subtest: configured SMS refuses SDK debug logging before any network call
+ok 4 - configured SMS refuses SDK debug logging before any network call
+  ---
+  duration_ms: 21.5433
+  type: 'test'
+  ...
+1..4
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2852.0998
