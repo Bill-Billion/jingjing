@@ -127,6 +127,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
+ app.use('/api/v1/gigs',require('./gigs-routes').createGigsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
