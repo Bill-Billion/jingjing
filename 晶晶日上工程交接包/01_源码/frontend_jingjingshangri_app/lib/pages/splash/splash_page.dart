@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
 import '../../services/user_provider.dart';
+import '../../account/account_session.dart';
 import '../../utils/motion.dart';
 import '../onboarding/onboarding_page.dart';
 import '../login/login_page.dart';
@@ -76,10 +77,13 @@ class _SplashPageState extends State<SplashPage>
     if (!mounted) return;
 
     final sp = await SharedPreferences.getInstance();
+    if (!mounted) return;
     final onboardSeen = sp.getBool(_kOnboardSeen) ?? false;
 
     Widget next;
-    if (loggedIn) {
+    if (context.read<AccountSession?>()?.isLoggedIn ?? false) {
+      next = const MainScaffold(initialTab: 4);
+    } else if (loggedIn) {
       next = const MainScaffold();
     } else if (!onboardSeen) {
       next = const OnboardingPage();

@@ -31,7 +31,6 @@ import 'package:jingjingshangri_app/services/app_mode.dart';
 import 'package:jingjingshangri_app/services/user_provider.dart';
 import 'package:jingjingshangri_app/services/mock_data.dart';
 import 'package:jingjingshangri_app/utils/project_brief.dart';
-import 'package:jingjingshangri_app/pages/login/login_page.dart';
 import 'package:jingjingshangri_app/widgets/main_scaffold.dart';
 import 'package:jingjingshangri_app/widgets/glass_card.dart';
 import 'package:jingjingshangri_app/pages/projects/projects_page.dart';
@@ -148,37 +147,11 @@ void main() {
   setUpAll(_bootInfra);
 
   testWidgets(
-      'J1 买家黄金旅程：协议门登录→主导航五槽→切Tab→艺人详情→祝福视频下单',
+      'J1 旧版展示旅程：显式演示账号→主导航五槽→切Tab→艺人详情→祝福视频下单',
       (t) async {
-    // —— 起点：登录页（未登录态），完整走一遍协议门登录 ——
-    await _pump(t, const LoginPage(), UserProvider());
-
-    await t.enterText(find.byType(TextField).first, '13800001111');
-    await _frames(t, n: 2);
-    await t.tap(find.text('获取验证码'));
-    expect(await _waitFor(t, find.textContaining('后重发')), isTrue);
-    await t.enterText(find.byType(TextField).last, '123456');
-    await _frames(t, n: 2);
-
-    // 协议默认不勾：首次登录必须被拦
-    await t.tap(find.text('登录 / 注册'));
-    expect(
-        await _waitFor(
-            t, find.text('请先阅读并同意用户协议与隐私政策')),
-        isTrue);
-    expect(find.byType(MainScaffold), findsNothing);
-
-    // 等拦截 SnackBar 退场，避免浮层遮挡下一次点击
-    await _dismissSnack(t, seconds: 3);
-
-    // 勾选后登录，进入主导航
-    await t.tap(find.byIcon(Icons.radio_button_unchecked_rounded));
-    await _frames(t, n: 2);
-    await t.tap(find.text('登录 / 注册'));
-    await t.pump();
-    await t.pump(const Duration(milliseconds: 700)); // 越过 650ms 成功停留
-    await _frames(t, n: 3);
-    expect(find.byType(MainScaffold), findsOneWidget);
+    // Historical UI coverage only. Real account login is tested in test/account;
+    // never treat an arbitrary six-digit code as a successful phone login.
+    await _pump(t, const MainScaffold(), await _loggedUser());
 
     // 主导航五槽文案（中央创作位无文字）
     expect(find.text('首页'), findsOneWidget);

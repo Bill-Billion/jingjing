@@ -1,4 +1,6 @@
 import '../../widgets/app_network_image.dart';
+import '../../account/account_session.dart';
+import '../../account/account_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/app_theme.dart';
@@ -82,6 +84,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<AccountSession?>();
+    if ((account?.isLoggedIn ?? false) || account?.authNotice != null) {
+      return const AccountPage(embedded: true);
+    }
     final provider = context.watch<UserProvider>();
     final loggedIn = provider.isLoggedIn;
     return Scaffold(
@@ -142,6 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 SliverToBoxAdapter(child: _groupLabel('机构服务')),
                 SliverToBoxAdapter(
                   child: _buildMenuGroup([
+                    _MenuItem(Icons.manage_accounts_outlined, '账号与机构', () => _go('/account', requireAuth: false)),
                     _MenuItem(Icons.business, 'MCN 管理后台（H5）', _mcnH5),
                     _MenuItem(Icons.settings, '设置', () => _go('/settings', requireAuth: false)),
                   ]),
