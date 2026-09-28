@@ -66,6 +66,16 @@ jobs:
         env:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
         run: npm run test:ci
+      - name: 校验真实隔离HTTP返回与接口文档一致
+        run: |
+          python3 -m venv .local/contract-venv
+          .local/contract-venv/bin/python -m pip install -r contracts/requirements-lock.txt
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/account-api-http-fixtures.json --report .local/ci-evidence/runtime-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-http-fixtures.json --report .local/ci-evidence/governance-runtime-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-service-http-fixtures.json --report .local/ci-evidence/governance-service-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/supply-http-fixtures.json --report .local/ci-evidence/supply-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/licensing-http-fixtures.json --report .local/ci-evidence/licensing-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/trade-http-fixtures.json --report .local/ci-evidence/trade-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop
