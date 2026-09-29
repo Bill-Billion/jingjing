@@ -58,7 +58,7 @@ def resolve(spec, pointer):
     return result
 
 
-def validate():
+def validate(runtime_fixtures=None):
     spec = yaml.load(CONTRACT.read_text(encoding='utf-8'), Loader=UniqueKeyLoader)
     for pointer in refs(spec):
         resolve(spec, pointer)
@@ -67,6 +67,12 @@ def validate():
     fixtures = json.loads((ROOT/'contracts/examples/platform.json').read_text(encoding='utf-8'))
     negatives = json.loads((ROOT/'contracts/tests/schema_cases.json').read_text(encoding='utf-8'))['cases']
     failures, checks = [], []
+    runtime_cases = []
+    if runtime_fixtures:
+        runtime_data=json.loads(runtime_fixtures.read_text(encoding='utf-8'))
+        if runtime_data.get('synthetic_only') is not True or not runtime_data.get('cases'):
+            raise ValueError('Runtime fixtures must contain explicitly synthetic cases')
+        runtime_cases=runtime_data['cases']
 
     def check(condition, name):
         checks.append(name)
@@ -98,9 +104,14 @@ def validate():
             schema, value = x['schema'], x['value']
         check(not valid(schema, value), 'Rejected example: '+x['name'])
 
+    for x in runtime_cases:
+        check(valid(x['schema'],x['value']), 'Actual HTTP response: '+x['schema'])
+
     # Candidate protocol invariants. These are not server behavioral tests.
+    implemented_ids=set(json.loads((ROOT/'contracts/implementation.json').read_text(encoding='utf-8'))['isolated_tested_operations'])
     operations = []
-    public_ids = {'createSmsChallenge','createSession','getLiveness','getReadiness'}
+    provider_callbacks={'receiveAppleTradeNotification','receiveAlipayTradeNotification'}
+    public_ids = provider_callbacks | {'createSmsChallenge','createSession','getLiveness','getReadiness'}
     for path, item in spec['paths'].items():
         for method, op in item.items():
             if method not in {'get','post','patch','put','delete'}:
@@ -110,20 +121,39 @@ def validate():
             check((security == []) == (op['operationId'] in public_ids), 'Security: '+op['operationId'])
             params = [resolve(spec, p['$ref']) if '$ref' in p else p for p in op.get('parameters',[])]
             headers = {p['name']:p for p in params if p['in']=='header'}
-            if method in {'post','patch','put','delete'}:
+            if op['operationId'] in provider_callbacks:
+                check(op.get('x-provider-signature-required') is True, 'Provider signature required: '+path)
+            if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
                 check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
             if method == 'patch':
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
-            if path.startswith('/api/v1/') and path not in {
+            account_scoped_supply = {'listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
+                'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent',
+                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob'}
+            if op['operationId'] in account_scoped_supply:
+                check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
-                    '/api/v1/me/parties','/api/v1/identity-verifications/current'}:
+                    '/api/v1/me/parties','/api/v1/identity-verifications/current',
+                    '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:
                 check(headers.get('X-Acting-Party',{}).get('required') is True, 'Acting party: '+path)
-            check(op['x-implementation-status']=='NOT_IMPLEMENTED', 'Implementation truth: '+op['operationId'])
+            check(op['x-implementation-status'] in {'NOT_IMPLEMENTED','IMPLEMENTED_ISOLATED_TESTS'}, 'Implementation status declared: '+op['operationId'])
+            if op['x-implementation-status']=='IMPLEMENTED_ISOLATED_TESTS':
+                check(op['operationId'] in implemented_ids, 'Runtime evidence declared: '+op['operationId'])
+            else:
+                check(op['operationId'] not in implemented_ids, 'Unimplemented boundary: '+op['operationId'])
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')
+                if op['operationId'] in {'downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence','downloadProductionContent','downloadProductionEvidence'} and code=='200':
+                    check(response['content']['application/octet-stream']['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
+                    check('Cache-Control' in response.get('headers',{}), 'Private file no-store declared')
+                    continue
+                if op['operationId']=='receiveAlipayTradeNotification' and code=='200':
+                    check(response['content']['text/plain']['schema'].get('const')=='success', 'Alipay acknowledgement')
+                    continue
                 schema_ref = response['content']['application/json']['schema']['$ref']
                 check(schema_ref.split('/')[-1] in fixture_map, f'Response fixture: {path} {code}')
                 if int(code)>=400 and path!='/ready':
@@ -144,7 +174,7 @@ def validate():
     report = {'result':'FAIL' if failures else 'PASS','contract_version':spec['info']['version'],
               'contract_sha256':hashlib.sha256(CONTRACT.read_bytes()).hexdigest(),
               'openapi_version':spec['openapi'],'operations':len(operations),'schemas':len(schemas),
-              'valid_fixtures':len(fixtures['cases']),'negative_cases':len(negatives),
+              'runtime_response_cases':len(runtime_cases),'valid_fixtures':len(fixtures['cases']),'negative_cases':len(negatives),
               'checks':len(checks),'failures':failures,'python':platform.python_version(),
               'tools':{p:version(p) for p in ['openapi-spec-validator','jsonschema','PyYAML']},
               'network_during_validation':'DISABLED','runtime_tests':'NOT_RUN',
@@ -155,10 +185,11 @@ def validate():
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report',type=Path,help='Optional JSON result file')
+    parser.add_argument('--runtime-fixtures',type=Path,help='Synthetic responses captured by real loopback HTTP tests')
     args=parser.parse_args()
     try:
         with patch('socket.socket.connect',side_effect=RuntimeError('Network forbidden during contract validation')):
-            report=validate()
+            report=validate(args.runtime_fixtures)
     except Exception as exc:
         report={'result':'FAIL','error':str(exc),'runtime_tests':'NOT_RUN'}
     output=json.dumps(report,ensure_ascii=False,indent=2)+'\n'

@@ -1,5 +1,27 @@
 # 从这里开始
 
+2026-09-25：第七阶段后端已集中交付[第16份合并申请](https://github.com/Bill-Billion/jingjing/pull/16)，等待队友审阅。功能提交6532ac3通过[GitHub完整检查](https://github.com/Bill-Billion/jingjing/actions/runs/36138395598)：全套311通过、1项缺脱敏旧库样本跳过；制作20通过、许可28通过，七组实际HTTP格式通过。本机结果一致。后续文档提交的检查以申请页为准。未合并、未上线；真实数字人供应商网络接口仍未实现。
+
+2026-09-25：当前优先看[第七阶段进度](status/CORE_CURRENT.md)和[制作与验收接口](collaboration/STAGE_7_API.md)。后端已写好，已集中交付待审；历史入口不代表当前版本。真实数字人供应商接入尚未完成。
+
+## 此前记录
+
+第六阶段报价、订单与收付款后端已通过本机和GitHub检查，交付[第15份申请](https://github.com/Bill-Billion/jingjing/pull/15)待审；未合并、未上线。先看[当前进度](status/CORE_CURRENT.md)和[页面调用](collaboration/STAGE_6_API.md)，不要把后面的历史状态当当前结论。
+
+第五阶段许可与项目使用后端已通过本机和GitHub检查，交付[第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)待审；先看[当前进度](status/CORE_CURRENT.md)与[第五阶段调用说明](collaboration/STAGE_5_API.md)。历史条目中的“未接项目许可”不再代表本分支现状；前置申请仍需逐份审阅。
+
+## 以下保留此前交付记录
+
+第四阶段后端已通过本机及GitHub检查，交付[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)待审。审阅顺序第11→12→13份；未合并或上线。
+
+2026-09-25：第四阶段后端自验完成，集中交付准备中。先看[阶段交付](collaboration/STAGE_4_HANDOFF.md)、[页面调用](collaboration/STAGE_4_API.md)及[当前进度](status/CORE_CURRENT.md)。实际依赖已在本地明确引入，前置第11、12份仍须审阅。
+
+## 历史入口
+
+2026-09-25：当前从共同版本独立推进[第四阶段作品与材料](collaboration/STAGE_4_WORKS_EVIDENCE.md)，先完成内部规则，未接公开接口。第11、12份已上传待审，仍保留原分支；本分支未引入，旧状态不得当作当前事实。先看[当前进度](status/CORE_CURRENT.md)。
+
+## 以下保留历史入口
+
 **当前规则已更新（2026-09-22）：按[阶段计划](collaboration/STAGED_DELIVERY.md)集中推送和合并，不再逐任务上传。第4份申请此前已合并，其余8份关闭未合并；第9份不再是开放的合并入口。已有代码与历史证据保留，下面此前申请及上传记录不能当作当前操作指令。阶段流程和双方分工随第一阶段集中交付，实际上传状态见服务器当前进度，不代表队友已确认。**
 
 最新同步方式见[一个入口获取与继续开发](collaboration/REVIEW_AND_HANDOFF.md)。原分项申请保留历史，当前改从统一待审分支获取；未批准、未合入，新账号HTTP接口尚未接通。
