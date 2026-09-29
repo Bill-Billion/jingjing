@@ -80,6 +80,7 @@ async function moreParties() {
         <p class="nav-caption">工作空间</p>
         <nav aria-label="工作台导航">
           <RouterLink to="/workspace"><OfficeBuilding aria-hidden="true" />账号与机构</RouterLink>
+          <RouterLink to="/supply/works"><Document aria-hidden="true" />作者与作品</RouterLink>
           <RouterLink to="/contracts" class="current" aria-current="page"><Document aria-hidden="true" />合同与规则</RouterLink>
         </nav>
         <div class="identity-control"><label for="contract-party">当前工作身份</label>

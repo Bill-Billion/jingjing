@@ -4,6 +4,9 @@ import 'account/account_session.dart';
 import 'theme/app_theme.dart';
 import 'account/account_page.dart';
 import 'contracts/contract_page.dart';
+import 'supply/supply_page.dart';
+import 'supply/supply_form.dart';
+import 'supply/supply_record.dart';
 import 'utils/responsive.dart';
 import 'utils/motion.dart';
 import 'pages/splash/splash_page.dart';
@@ -47,11 +50,31 @@ class JingjingShangriApp extends StatelessWidget {
       final route = Uri.tryParse(settings.name ?? '');
       final path = route?.path ?? settings.name;
       if ((context.read<AccountSession?>()?.isLoggedIn ?? false) &&
-          !['/account', '/contract', '/agreement', '/privacy'].contains(path)) {
+          ![
+            '/account',
+            '/contract',
+            '/agreement',
+            '/privacy',
+            '/supply',
+            '/supply/profile',
+            '/supply/work/new',
+            '/supply/record'
+          ].contains(path)) {
         return _route(const _AccountBusinessUnavailable());
       }
       final args = settings.arguments;
       switch (path) {
+        case '/supply':
+          return _route(const SupplyPage());
+        case '/supply/profile':
+          return _route(SupplyForm(
+              work: false, previousId: route?.queryParameters['previousId']));
+        case '/supply/work/new':
+          return _route(SupplyForm(
+              work: true, previousId: route?.queryParameters['previousId']));
+        case '/supply/record':
+          return _route(SupplyRecordPage(
+              recordId: route?.queryParameters['recordId'] ?? ''));
         case '/account':
           return _route(const AccountPage());
         case '/contract':

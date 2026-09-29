@@ -139,7 +139,7 @@ async function moreParties() { try { await session.loadMoreParties() } catch (e)
 
 <template>
   <div class="workspace">
-    <header class="topbar"><div><p class="brand">晶晶日上</p><h1>账号与机构</h1></div><div class="head-actions"><RouterLink class="contract-link" to="/contracts">合同与规则</RouterLink><button :disabled="loading" @click="refresh">{{ loading ? '刷新中…' : '刷新' }}</button><button @click="logout">退出登录</button></div></header>
+    <header class="topbar"><div><p class="brand">晶晶日上</p><h1>账号与机构</h1></div><div class="head-actions"><RouterLink class="contract-link" to="/supply/works">作者与作品</RouterLink><RouterLink class="contract-link" to="/contracts">合同与规则</RouterLink><button :disabled="loading" @click="refresh">{{ loading ? '刷新中…' : '刷新' }}</button><button @click="logout">退出登录</button></div></header>
     <section class="account-strip" data-testid="card-account"><div><strong>{{ session.account?.display_name || '正在读取账号…' }}</strong><span v-if="session.account">{{ resolveLabel('account-status', session.account.current_status).text }}</span></div><div class="account-number"><span>我的账号编号</span><code>{{ session.account?.id || '—' }}</code><button v-if="session.account" @click="copyAccount">复制</button></div></section>
     <div v-if="session.pending" class="pending" role="status"><strong>“{{ session.pending.label }}”的结果尚未确认</strong><p>请重试原操作以核对结果，暂不能提交其他修改。</p><button class="primary" :disabled="session.commandBusy" data-testid="retry-original" @click="act()">{{ session.commandBusy ? '正在核对…' : '重试原操作' }}</button></div>
     <ApiErrorAlert :error="error" testid="workspace-error" />

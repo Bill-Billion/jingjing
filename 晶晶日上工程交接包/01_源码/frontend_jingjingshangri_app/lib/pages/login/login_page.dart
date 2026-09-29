@@ -17,7 +17,8 @@ import '../../widgets/main_scaffold.dart';
 class LoginPage extends StatefulWidget {
   /// 来源场景说明，如「下单前请先登录」
   final String? reason;
-  const LoginPage({super.key, this.reason});
+  final String? returnRoute;
+  const LoginPage({super.key, this.reason, this.returnRoute});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -184,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
           .logout(); // New sessions must never authenticate legacy APIs.
       if (!mounted) return;
       setState(() => _loginState = ButtonState.success);
-      _enterAfterLogin();
+      await _enterAfterLogin();
     } on AccountError catch (e) {
       if (!mounted) return;
       setState(() {
@@ -205,9 +206,30 @@ class _LoginPageState extends State<LoginPage> {
         Motion.fadeSlideRoute(const MainScaffold()), (_) => false);
   }
 
-  void _enterAfterLogin() {
-    // A new account must not return into an old private route or resume its action.
-    Navigator.of(context).pushNamedAndRemoveUntil('/account', (_) => false);
+  Future<void> _enterAfterLogin() async {
+    // Resume only an explicit supply read/form route with fresh session reads.
+    // No old private route or pending action survives login.
+    final route = Uri.tryParse(widget.returnRoute ?? '');
+    final destination = route != null &&
+            !route.hasAuthority &&
+            ['/supply', '/supply/profile', '/supply/work/new', '/supply/record']
+                .contains(route.path)
+        ? route.toString()
+        : '/account';
+    if (destination != '/account') {
+      try {
+        await context.read<AccountSession>().loadParties();
+      } on AccountError {
+        if (mounted) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/account', (_) => false);
+        }
+        return;
+      }
+    }
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil(destination, (_) => false);
+    }
   }
 
   @override
