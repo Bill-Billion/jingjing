@@ -1,3 +1,5 @@
+> 2026-09-29，第11份申请已有App与网页账号页面，交付范围见[页面记录](../tasks/records/UX-PR11-account-pages-20260929.md)。本轮统一后端权限文档和错误重试约定，现有页面沿用大写动作及原请求恢复逻辑，布局无需修改。网页可读取限流等待头；真实短信、原生包及完整App浏览器流程仍未验收。[修复与验证记录](../tasks/records/PR11-contract-repair-20260929.md)。下文是历史阶段记录。
+
 # App和网页：现在可以接入哪些功能
 
 第一阶段已合入共同版本。第二阶段账号后端已集中上传core/stage-2-account-api，已通过远端复验，[第11份申请](https://github.com/Bill-Billion/jingjing/pull/11)待另一方审阅后合入。队友从[第二阶段调用说明](../collaboration/STAGE_2_ACCOUNT_API.md)开始，不用再拼接旧申请。

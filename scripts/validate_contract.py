@@ -66,6 +66,7 @@ def validate(runtime_fixtures=None):
     schemas = spec['components']['schemas']
     fixtures = json.loads((ROOT/'contracts/examples/platform.json').read_text(encoding='utf-8'))
     negatives = json.loads((ROOT/'contracts/tests/schema_cases.json').read_text(encoding='utf-8'))['cases']
+    negatives += json.loads((ROOT/'contracts/tests/account_permission_cases.json').read_text(encoding='utf-8'))['cases']
     failures, checks = [], []
     runtime_cases = []
     if runtime_fixtures:

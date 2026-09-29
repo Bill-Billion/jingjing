@@ -8,6 +8,18 @@ Bearer只识别账户。`GET /api/v1/me/parties`返回本人关系，邀请可�
 
 公开操作仅短信challenge、登录、health和ready。运营Provider列表还须`platform.providers.read`，机构owner不等于平台管理员；新契约不接受旧`X-Admin-Token`作为权限模型。对象不可见统一404避免泄露存在性。allowed_actions帮助界面显示，不能替代写时服务端鉴权；客户端对未知动作保持禁用。
 
+第二阶段账号与主体接口的动作名称区分大小写，与当前服务器、App和网页保持一致：
+
+|返回对象与身份|`allowed_actions`|
+|---|---|
+|正常账号|`READ_ACCOUNT`、`LIST_PARTIES`、`CREATE_ORGANIZATION`|
+|个人身份的有效`OWNER`|`READ_PARTY`、`REQUEST_CAPABILITY`|
+|机构的有效`OWNER`|`READ_PARTY`、`REQUEST_CAPABILITY`、`MANAGE_MEMBERS`|
+|机构的有效`MEMBER`|`READ_PARTY`|
+|停用或待删除账号；停用、关闭或没有有效成员关系的主体|空数组|
+
+待审主体仍按有效成员角色返回上述动作，不能据此认定其业务能力已获批准。`Membership`和`CapabilityGrant`当前返回的动作均为空数组，机构成员管理入口读取`Party.allowed_actions`。账号、主体的名称校验仅约束各自对象，不作为作品、订单或其他领域的全局动作枚举。
+
 手机号登录与实名验证分开。本人核验只读接口不能查询任意account_id，不返回身份证/原图；旧`unverified_auto`需要迁为REVIEW_REQUIRED并保留来源，不改成VERIFIED。新实名提交/活体细节由后续Provider契约补充。
 
 ## 返回、错误与列表
@@ -15,6 +27,18 @@ Bearer只识别账户。`GET /api/v1/me/parties`返回本人关系，邀请可�
 成功为`{meta, data}`；错误为`{meta, error}`。meta含request_id、服务端识别的actor、实际acting_party；公开请求尚未登录时actor=null。响应X-Request-Id与meta.request_id一致。私有响应/会话响应使用Cache-Control:no-store。日志不得保存token、验证码、身份原件或私有正文。
 
 400为格式/游标/缺主体；401会话或登录凭据错误；403权限/主体不一致；404不可见或不存在；409幂等冲突；412对象版本过期；422业务条件未满足；428缺对象版本条件；429限流；503能力/依赖尚不可用。不得以HTTP200配假成功吞掉这些结果。重试根据error.retryable和具体操作决定；403/412/422不能盲目重放。
+
+`error.retryable=true`表示允许按该操作规则重试原请求，不表示可以换请求键再创建一笔操作，也不保证下次成功。第二阶段账号接口按明确错误码返回：
+
+|错误码|`retryable`|客户端处理|
+|---|---|---|
+|`IDEMPOTENCY_IN_PROGRESS`|`true`|原请求仍在处理，稍后用相同请求键、内容及原`If-Match`重放。|
+|`COMMIT_OUTCOME_UNKNOWN`|`true`|原操作可能已经提交，保留原请求并重放核对结果。|
+|`RATE_LIMITED`|`true`|先等待`Retry-After`所给的实际剩余秒数，再重试原请求；服务器按触发的限流窗口或短信冷却截止时间计算，不填写固定估计值。|
+|`SMS_CHALLENGE_UNAVAILABLE`|`false`|原短信申请不可用，不能用原键重新发信；冷却结束后由用户明确发起新申请。|
+|其他错误，包括无法明确分类的503|`false`|按错误原因处理输入、权限、版本或服务状态，不能盲目重放。|
+
+`false`不等于“原操作确定失败”。网络中断、提交结果不明或未知503发生后，客户端仍须保留原操作，不能自动换键再次提交；核对时保持原请求身份。短信发送失败可能隐藏供应商结果不明，同样不能自动换键重发。账号接口通过CORS暴露`Retry-After`供网页读取；该头只说明等待时间，不额外授予任何动作权限。
 
 列表使用不透明cursor及limit；默认20、最多100是技术分页值，不是业务商品参数。游标与主体/过滤/排序绑定；主体切换不能复用旧游标。分页按稳定顺序避免重复/漏项；实际排序随资源实现明确。next_cursor=null为结束，不用空字符串混用。
 
