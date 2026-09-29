@@ -527,6 +527,63 @@
         "as_of": "2026-09-28T00:00:00.000Z",
         "clicks": 9000
       }
+    },
+    {
+      "name": "finance fractional payout rejected",
+      "schema": "FinanceRequestpayoutRequest",
+      "value": {
+        "recipient_party_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "amount_minor": 0.1,
+        "destination_asset_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "note": "synthetic"
+      }
+    },
+    {
+      "name": "finance confirmation requires content hash",
+      "schema": "FinanceConfirmRequest",
+      "value": {
+        "decision": "APPROVED",
+        "reason": "synthetic"
+      }
+    },
+    {
+      "name": "finance client cannot claim direct paid balance",
+      "schema": "FinanceSettleRequest",
+      "value": {
+        "period_reference": "test",
+        "note": "test",
+        "paid_minor": 1000
+      }
+    },
+    {
+      "name": "finance automatic payout cannot be ready",
+      "fixture": "FinanceReadinessResponse",
+      "mutate_path": [
+        "data",
+        "automatic_payout",
+        "current_status"
+      ],
+      "replace_with": "PRODUCTION_VERIFIED"
+    },
+    {
+      "name": "finance percentage cannot be floating",
+      "schema": "FinanceShare",
+      "value": {
+        "party_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "bps": 1.5,
+        "role": "MCN"
+      }
+    },
+    {
+      "name": "finance manual proof must have outcome",
+      "schema": "FinancePayoutevidenceRequest",
+      "value": {
+        "amount_minor": 1000,
+        "external_reference": "synthetic",
+        "occurred_at": "2020-01-01T00:00:00.000Z",
+        "evidence_asset_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "note": "test"
+      }
     }
   ]
 }

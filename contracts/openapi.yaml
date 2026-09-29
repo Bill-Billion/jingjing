@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.9.0-rc.1
+  version: 0.10.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -6156,6 +6156,1191 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/agreements:
+    post:
+      operationId: agreementFinanceOperation
+      summary: 提交按订单或发行来源的结算约定
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceAgreementRequest'
+    get:
+      operationId: listFinanceAgreements
+      summary: 查看本人参与的结算约定
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/records/{record_id}/confirmations:
+    post:
+      operationId: confirmFinanceOperation
+      summary: 确认准确的约定或结算单版本
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceConfirmRequest'
+    get:
+      operationId: listFinanceConfirmations
+      summary: 查看每方确认情况
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceConfirmationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/agreements/{record_id}/settlements:
+    post:
+      operationId: settleFinanceOperation
+      summary: 核对来源并生成结算单
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceSettleRequest'
+  /api/v1/finance/agreements/{record_id}/statements:
+    post:
+      operationId: statementFinanceOperation
+      summary: 登记发行渠道账单或冲减单
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceStatementRequest'
+  /api/v1/finance/statements/{record_id}/receipts:
+    post:
+      operationId: receiptFinanceOperation
+      summary: 登记渠道实际到账凭据
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceReceiptRequest'
+  /api/v1/finance/agreements/{record_id}/adjustments:
+    post:
+      operationId: adjustFinanceOperation
+      summary: 提交有依据且收支相平的差额调整
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceAdjustRequest'
+  /api/v1/finance/agreements/{record_id}/payouts:
+    post:
+      operationId: requestPayoutFinanceOperation
+      summary: 申请向合作方付款
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceRequestpayoutRequest'
+  /api/v1/finance/payouts/{record_id}/evidence:
+    post:
+      operationId: payoutEvidenceFinanceOperation
+      summary: 登记实际付款失败或退回凭据
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinancePayoutevidenceRequest'
+  /api/v1/finance/payouts/{record_id}/cancellation:
+    post:
+      operationId: cancelPayoutFinanceOperation
+      summary: 取消尚未批准的付款申请
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceCancelpayoutRequest'
+  /api/v1/finance/records/{record_id}/disputes:
+    post:
+      operationId: disputeFinanceOperation
+      summary: 提出质量权利退款或结算异议
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceDisputeRequest'
+  /api/v1/finance/disputes/{record_id}/responses:
+    post:
+      operationId: respondFinanceOperation
+      summary: 提交异议回复和举证
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceRespondRequest'
+  /api/v1/finance/disputes/{record_id}/decisions:
+    post:
+      operationId: decideDisputeFinanceOperation
+      summary: 独立处理异议并保留每次决定
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceDecidedisputeRequest'
+  /api/v1/finance/records/{record_id}/reviews:
+    post:
+      operationId: reviewFinanceOperation
+      summary: 独立复核结算或付款证据
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceReviewRequest'
+  /api/v1/finance/agreements/{record_id}/reconciliations:
+    post:
+      operationId: reconcileFinanceOperation
+      summary: 对比支付账单和平台已核实事实
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinanceReconcileRequest'
+  /api/v1/finance/agreements/{record_id}/records:
+    get:
+      operationId: listFinanceRecords
+      summary: 查看约定内获准查看的记录
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: kind
+        in: query
+        required: true
+        schema:
+          enum:
+          - SETTLEMENT
+          - PAYOUT
+          - PAYOUT_EVIDENCE
+          - DISPUTE
+          - RESPONSE
+          - ADJUSTMENT
+          - RECONCILIATION
+          - STATEMENT
+          - RECEIPT
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/records/{record_id}:
+    get:
+      operationId: getFinanceRecord
+      summary: 读取获准查看的记录
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/agreements/{record_id}/readiness:
+    get:
+      operationId: getFinanceReadiness
+      summary: 检查真实出款方式是否可用
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceReadinessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/agreements/{record_id}/balances:
+    get:
+      operationId: getFinanceBalances
+      summary: 区分待收应付已付及待追回金额
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceBalancesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/agreements/{record_id}/entries:
+    get:
+      operationId: listFinanceEntries
+      summary: 追溯追加记账事实
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceEntriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/notifications:
+    get:
+      operationId: listFinanceNotifications
+      summary: 读取本人业务通知
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceNotificationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/finance/records/{record_id}/evidence/{asset_id}:
+    get:
+      operationId: downloadFinanceEvidence
+      summary: 按当前权限下载私有结算材料
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -6386,6 +7571,2013 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    FinanceShare:
+      type: object
+      additionalProperties: false
+      properties:
+        party_id:
+          type: string
+          format: uuid
+        bps:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        role:
+          enum:
+          - SUPPLIER
+          - PLATFORM
+          - MCN
+          - RIGHTSHOLDER
+          - PRODUCER
+          - PARTICIPANT
+      required:
+      - party_id
+      - bps
+      - role
+    FinanceDeduction:
+      type: object
+      additionalProperties: false
+      properties:
+        category:
+          enum:
+          - CHANNEL_FEE
+          - TAX
+          - DISCOUNT
+          - OTHER
+        party_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        basis:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        refund_behavior:
+          enum:
+          - RETAIN
+          - PROPORTIONAL
+      required:
+      - category
+      - party_id
+      - amount_minor
+      - basis
+      - refund_behavior
+    FinanceRules:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        settlement_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        release_condition:
+          enum:
+          - RECEIVED
+          - DELIVERY_ACCEPTED
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              shares:
+                type: array
+                minItems: 1
+                maxItems: 30
+                items:
+                  $ref: '#/components/schemas/FinanceShare'
+              deductions:
+                type: array
+                maxItems: 30
+                items:
+                  $ref: '#/components/schemas/FinanceDeduction'
+            required:
+            - line_id
+            - shares
+            - deductions
+      required:
+      - version
+      - settlement_at
+      - release_condition
+      - terms
+      - lines
+    FinanceVerification:
+      type: object
+      additionalProperties: false
+      properties:
+        parties_verified:
+          type: boolean
+        contract_verified:
+          type: boolean
+        amount_verified:
+          type: boolean
+        evidence_verified:
+          type: boolean
+      required:
+      - parties_verified
+      - contract_verified
+      - amount_verified
+      - evidence_verified
+    FinanceReview:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        verification:
+          $ref: '#/components/schemas/FinanceVerification'
+        reviewer_account_id:
+          type: string
+          format: uuid
+        method:
+          const: INDEPENDENT_MANUAL_EVIDENCE_REVIEW
+      required:
+      - decision
+      - reason
+      - verification
+      - reviewer_account_id
+      - method
+    FinanceAdjustmentEntry:
+      type: object
+      additionalProperties: false
+      properties:
+        party_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: -900000000000
+          maximum: 900000000000
+      required:
+      - party_id
+      - amount_minor
+    FinanceExternalLine:
+      type: object
+      additionalProperties: false
+      properties:
+        record_id:
+          type: string
+          format: uuid
+        direction:
+          enum:
+          - RECEIPT
+          - REFUND
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required:
+      - record_id
+      - direction
+      - external_reference
+      - amount_minor
+    FinanceSourceReference:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          record_id:
+            type: string
+            format: uuid
+          direction:
+            enum:
+            - RECEIPT
+            - REFUND
+          provider:
+            enum:
+            - APPLE
+            - ALIPAY
+          environment:
+            enum:
+            - SANDBOX
+            - PRODUCTION
+          external_reference:
+            type: string
+            minLength: 1
+            maxLength: 128
+          amount_minor:
+            type: integer
+            minimum: 0
+            maximum: 900000000000
+          sha256:
+            type: string
+            pattern: ^[0-9a-f]{64}$
+        required:
+        - id
+        - record_id
+        - direction
+        - provider
+        - environment
+        - external_reference
+        - amount_minor
+        - sha256
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          direction:
+            enum:
+            - STATEMENT
+            - RECEIPT
+          sha256:
+            type: string
+            pattern: ^[0-9a-f]{64}$
+          amount_minor:
+            type: integer
+            minimum: -900000000000
+            maximum: 900000000000
+        required:
+        - id
+        - direction
+        - sha256
+        - amount_minor
+    FinanceAgreementRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        source_type:
+          enum:
+          - ORDER
+          - RELEASE
+        source_id:
+          type: string
+          format: uuid
+        previous_agreement_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        environment:
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        rule_id:
+          type: string
+          format: uuid
+        rules:
+          $ref: '#/components/schemas/FinanceRules'
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - source_type
+      - source_id
+      - previous_agreement_id
+      - environment
+      - rule_id
+      - rules
+      - evidence_asset_id
+    FinanceConfirmRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - content_sha256
+      - decision
+      - reason
+    FinanceSettleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        period_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - period_reference
+      - note
+    FinanceStatementRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        period_start:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        period_end:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        gross_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        refund_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        channel_fee_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        tax_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        direction:
+          enum:
+          - CREDIT
+          - DEBIT
+        original_statement_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        evidence_asset_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - external_reference
+      - period_start
+      - period_end
+      - gross_minor
+      - refund_minor
+      - channel_fee_minor
+      - tax_minor
+      - direction
+      - original_statement_id
+      - evidence_asset_id
+      - note
+    FinanceReceiptRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        amount_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        occurred_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        evidence_asset_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - amount_minor
+      - external_reference
+      - occurred_at
+      - evidence_asset_id
+      - note
+    FinanceAdjustRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        entries:
+          type: array
+          minItems: 2
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/FinanceAdjustmentEntry'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - entries
+      - reason
+      - evidence_asset_id
+    FinanceRequestpayoutRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        recipient_party_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        destination_asset_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - recipient_party_id
+      - amount_minor
+      - destination_asset_id
+      - note
+    FinancePayoutevidenceRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        outcome:
+          enum:
+          - PAID
+          - FAILED
+          - RETURNED
+        amount_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        occurred_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        evidence_asset_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - outcome
+      - amount_minor
+      - external_reference
+      - occurred_at
+      - evidence_asset_id
+      - note
+    FinanceCancelpayoutRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    FinanceDisputeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        category:
+          enum:
+          - QUALITY
+          - REFUND
+          - RIGHTS_DEFECT
+          - EXCLUSIVITY
+          - SETTLEMENT
+          - OTHER
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 30
+      required:
+      - category
+      - reason
+      - evidence_asset_ids
+    FinanceRespondRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 0
+          maxItems: 30
+      required:
+      - message
+      - evidence_asset_ids
+    FinanceDecidedisputeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - ACTION_REQUIRED
+          - RESUME
+          - REMEDIED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        action_record_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+      required:
+      - decision
+      - reason
+      - action_record_id
+    FinanceReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        verification:
+          $ref: '#/components/schemas/FinanceVerification'
+      required:
+      - decision
+      - reason
+      - verification
+    FinanceReconcileRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        provider:
+          enum:
+          - APPLE
+          - ALIPAY
+        environment:
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/FinanceExternalLine'
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - provider
+      - environment
+      - external_reference
+      - items
+      - evidence_asset_id
+    FinanceAgreementRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: AGREEMENT
+        agreement_id:
+          type: 'null'
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - REJECTED
+          - APPROVED
+          - SUPERSEDED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            previous_agreement_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            source_type:
+              enum:
+              - ORDER
+              - RELEASE
+            source_id:
+              type: string
+              format: uuid
+            source_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            environment:
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            currency:
+              const: CNY
+            rule_id:
+              type: string
+              format: uuid
+            rule_snapshot:
+              type: object
+              additionalProperties: false
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                terms:
+                  type: object
+                version:
+                  type: string
+                  maxLength: 8000
+                rule_key:
+                  type: string
+                  maxLength: 8000
+                content_sha256:
+                  type: string
+                  pattern: ^[0-9a-f]{64}$
+                format_version:
+                  type: string
+                  maxLength: 8000
+              required:
+              - id
+              - terms
+              - version
+              - rule_key
+              - content_sha256
+              - format_version
+            rules:
+              $ref: '#/components/schemas/FinanceRules'
+            parties:
+              type: array
+              items:
+                type: string
+                format: uuid
+            evidence_asset_id:
+              type: string
+              format: uuid
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+          required:
+          - previous_agreement_id
+          - source_type
+          - source_id
+          - source_sha256
+          - environment
+          - currency
+          - rule_id
+          - rule_snapshot
+          - rules
+          - parties
+          - evidence_asset_id
+          - review
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceSettlementRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: SETTLEMENT
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            period_reference:
+              type: string
+              maxLength: 8000
+            note:
+              type: string
+              maxLength: 8000
+            facts_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            source_references:
+              type: array
+              items:
+                $ref: '#/components/schemas/FinanceSourceReference'
+            received_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            receivable_minor:
+              type: integer
+              minimum: -900000000000
+              maximum: 900000000000
+            balances:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  party_id:
+                    type: string
+                    format: uuid
+                  accrued_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  adjustment_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  paid_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  balance_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                required:
+                - party_id
+                - accrued_minor
+                - adjustment_minor
+                - paid_minor
+                - balance_minor
+            rule_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+          required:
+          - period_reference
+          - note
+          - facts_sha256
+          - source_references
+          - received_minor
+          - receivable_minor
+          - balances
+          - rule_sha256
+          - review
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinancePayoutRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: PAYOUT
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - REQUESTED
+          - CANCELLED
+          - APPROVED
+          - REJECTED
+          - PAID
+          - FAILED
+          - RETURNED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            recipient_party_id:
+              type: string
+              format: uuid
+            amount_minor:
+              type: integer
+              minimum: 1
+              maximum: 900000000000
+            destination_asset_id:
+              type: string
+              format: uuid
+            destination_owner_party_id:
+              type: string
+              format: uuid
+            note:
+              type: string
+              maxLength: 8000
+            method:
+              type: string
+              maxLength: 8000
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+            cancel_reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+            last_evidence_id:
+              type: string
+              format: uuid
+          required:
+          - recipient_party_id
+          - amount_minor
+          - destination_asset_id
+          - destination_owner_party_id
+          - note
+          - method
+          - review
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinancePayoutEvidenceRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: PAYOUT_EVIDENCE
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            payout_id:
+              type: string
+              format: uuid
+            recipient_party_id:
+              type: string
+              format: uuid
+            outcome:
+              enum:
+              - PAID
+              - FAILED
+              - RETURNED
+            amount_minor:
+              type: integer
+              minimum: 1
+              maximum: 900000000000
+            external_reference:
+              type: string
+              maxLength: 8000
+            occurred_at:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            evidence_asset_id:
+              type: string
+              format: uuid
+            note:
+              type: string
+              maxLength: 8000
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+            method:
+              type: string
+              maxLength: 8000
+          required:
+          - payout_id
+          - recipient_party_id
+          - outcome
+          - amount_minor
+          - external_reference
+          - occurred_at
+          - evidence_asset_id
+          - note
+          - review
+          - method
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceDisputeRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: DISPUTE
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - OPEN
+          - ACTION_REQUIRED
+          - RESOLVED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            about_record_id:
+              type: string
+              format: uuid
+            category:
+              enum:
+              - QUALITY
+              - REFUND
+              - RIGHTS_DEFECT
+              - EXCLUSIVITY
+              - SETTLEMENT
+              - OTHER
+            reason:
+              type: string
+              maxLength: 8000
+            evidence_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+            decision_history:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - ACTION_REQUIRED
+                    - RESUME
+                    - REMEDIED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 8000
+                  action_record_id:
+                    anyOf:
+                    - type: string
+                      format: uuid
+                    - type: 'null'
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                required:
+                - decision
+                - reason
+                - action_record_id
+                - reviewer_account_id
+          required:
+          - about_record_id
+          - category
+          - reason
+          - evidence_asset_ids
+          - decision_history
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceResponseRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RESPONSE
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - RECORDED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            dispute_id:
+              type: string
+              format: uuid
+            message:
+              type: string
+              maxLength: 8000
+            evidence_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+          required:
+          - dispute_id
+          - message
+          - evidence_asset_ids
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceAdjustmentRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: ADJUSTMENT
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            entries:
+              type: array
+              minItems: 2
+              maxItems: 30
+              items:
+                $ref: '#/components/schemas/FinanceAdjustmentEntry'
+            reason:
+              type: string
+              maxLength: 8000
+            evidence_asset_id:
+              type: string
+              format: uuid
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+          required:
+          - entries
+          - reason
+          - evidence_asset_id
+          - review
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceReconciliationRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RECONCILIATION
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - MATCHED
+          - DIFFERENCES
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            provider:
+              enum:
+              - APPLE
+              - ALIPAY
+            environment:
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            external_reference:
+              type: string
+              maxLength: 8000
+            items:
+              type: array
+              maxItems: 200
+              items:
+                $ref: '#/components/schemas/FinanceExternalLine'
+            facts_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            differences:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  record_id:
+                    type: string
+                    format: uuid
+                  reason:
+                    enum:
+                    - MISSING_IN_EXTERNAL_STATEMENT
+                    - FACT_MISMATCH
+                    - UNKNOWN_PLATFORM_FACT
+                required:
+                - record_id
+                - reason
+            evidence_asset_id:
+              type: string
+              format: uuid
+            meaning:
+              type: string
+              maxLength: 8000
+          required:
+          - provider
+          - environment
+          - external_reference
+          - items
+          - facts_sha256
+          - differences
+          - evidence_asset_id
+          - meaning
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceStatementRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: STATEMENT
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            external_reference:
+              type: string
+              minLength: 1
+              maxLength: 128
+            period_start:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            period_end:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            gross_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            refund_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            channel_fee_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            tax_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            net_minor:
+              type: integer
+              minimum: -900000000000
+              maximum: 900000000000
+            direction:
+              enum:
+              - CREDIT
+              - DEBIT
+            original_statement_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            evidence_asset_id:
+              type: string
+              format: uuid
+            note:
+              type: string
+              minLength: 1
+              maxLength: 4000
+            environment:
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+          required:
+          - external_reference
+          - period_start
+          - period_end
+          - gross_minor
+          - refund_minor
+          - channel_fee_minor
+          - tax_minor
+          - net_minor
+          - direction
+          - original_statement_id
+          - evidence_asset_id
+          - note
+          - environment
+          - review
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceReceiptRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RECEIPT
+        agreement_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            statement_id:
+              type: string
+              format: uuid
+            amount_minor:
+              type: integer
+              minimum: 1
+              maximum: 900000000000
+            external_reference:
+              type: string
+              maxLength: 8000
+            occurred_at:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            evidence_asset_id:
+              type: string
+              format: uuid
+            note:
+              type: string
+              maxLength: 8000
+            environment:
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            review:
+              anyOf:
+              - $ref: '#/components/schemas/FinanceReview'
+              - type: 'null'
+          required:
+          - statement_id
+          - amount_minor
+          - external_reference
+          - occurred_at
+          - evidence_asset_id
+          - note
+          - environment
+          - review
+      required:
+      - id
+      - kind
+      - agreement_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    FinanceRecord:
+      oneOf:
+      - $ref: '#/components/schemas/FinanceAgreementRecord'
+      - $ref: '#/components/schemas/FinanceSettlementRecord'
+      - $ref: '#/components/schemas/FinancePayoutRecord'
+      - $ref: '#/components/schemas/FinancePayoutEvidenceRecord'
+      - $ref: '#/components/schemas/FinanceDisputeRecord'
+      - $ref: '#/components/schemas/FinanceResponseRecord'
+      - $ref: '#/components/schemas/FinanceAdjustmentRecord'
+      - $ref: '#/components/schemas/FinanceReconciliationRecord'
+      - $ref: '#/components/schemas/FinanceStatementRecord'
+      - $ref: '#/components/schemas/FinanceReceiptRecord'
+    FinanceRecordResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/FinanceRecord'
+      required:
+      - meta
+      - data
+    FinanceListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/FinanceRecord'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    FinanceBalancesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            agreement_id:
+              type: string
+              format: uuid
+            currency:
+              const: CNY
+            environment:
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            customer_payment_separate:
+              const: true
+            received_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            receivable_minor:
+              type: integer
+              minimum: -900000000000
+              maximum: 900000000000
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  party_id:
+                    type: string
+                    format: uuid
+                  accrued_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  adjustment_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  paid_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  balance_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  expected_accrued_minor:
+                    type: integer
+                    minimum: -900000000000
+                    maximum: 900000000000
+                  available_minor:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  recovery_due_minor:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  reason_code:
+                    anyOf:
+                    - type: string
+                      minLength: 1
+                      maxLength: 128
+                    - type: 'null'
+                  meaning:
+                    enum:
+                    - MERCHANT_RETAINED_NOT_TRANSFER
+                    - PAYABLE_NOT_YET_TRANSFERRED
+                required:
+                - party_id
+                - accrued_minor
+                - adjustment_minor
+                - paid_minor
+                - balance_minor
+                - expected_accrued_minor
+                - available_minor
+                - recovery_due_minor
+                - reason_code
+                - meaning
+          required:
+          - agreement_id
+          - currency
+          - environment
+          - customer_payment_separate
+          - received_minor
+          - receivable_minor
+          - items
+      required:
+      - meta
+      - data
+    FinanceReadinessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            environment:
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            automatic_payout:
+              type: object
+              additionalProperties: false
+              properties:
+                current_status:
+                  const: NOT_IMPLEMENTED
+                reason_code:
+                  const: PAYOUT_PROVIDER_NOT_VERIFIED
+              required:
+              - current_status
+              - reason_code
+            manual_payment:
+              type: object
+              additionalProperties: false
+              properties:
+                current_status:
+                  const: IMPLEMENTED
+                meaning:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - current_status
+              - meaning
+          required:
+          - environment
+          - automatic_payout
+          - manual_payment
+      required:
+      - meta
+      - data
+    FinanceEntriesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                oneOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]*$
+                    party_id:
+                      type: string
+                      format: uuid
+                    amount_minor:
+                      type: integer
+                      minimum: -900000000000
+                      maximum: 900000000000
+                    source_id:
+                      type: string
+                      format: uuid
+                    category:
+                      const: ACCRUAL
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        facts_sha256:
+                          type: string
+                          pattern: ^[0-9a-f]{64}$
+                        source_references:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/FinanceSourceReference'
+                        target_minor:
+                          type: integer
+                          minimum: -900000000000
+                          maximum: 900000000000
+                      required:
+                      - facts_sha256
+                      - source_references
+                      - target_minor
+                  required:
+                  - id
+                  - party_id
+                  - amount_minor
+                  - source_id
+                  - category
+                  - data
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]*$
+                    party_id:
+                      type: string
+                      format: uuid
+                    amount_minor:
+                      type: integer
+                      minimum: -900000000000
+                      maximum: 900000000000
+                    source_id:
+                      type: string
+                      format: uuid
+                    category:
+                      const: ADJUSTMENT
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        reason:
+                          type: string
+                          minLength: 1
+                          maxLength: 4000
+                        evidence_asset_id:
+                          type: string
+                          format: uuid
+                      required:
+                      - reason
+                      - evidence_asset_id
+                  required:
+                  - id
+                  - party_id
+                  - amount_minor
+                  - source_id
+                  - category
+                  - data
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]*$
+                    party_id:
+                      type: string
+                      format: uuid
+                    amount_minor:
+                      type: integer
+                      minimum: -900000000000
+                      maximum: 900000000000
+                    source_id:
+                      type: string
+                      format: uuid
+                    category:
+                      const: PAYOUT
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        payout_id:
+                          type: string
+                          format: uuid
+                        external_reference:
+                          type: string
+                          minLength: 1
+                          maxLength: 128
+                        evidence_asset_id:
+                          type: string
+                          format: uuid
+                        method:
+                          const: EXTERNAL_MANUAL_PAYMENT
+                      required:
+                      - payout_id
+                      - external_reference
+                      - evidence_asset_id
+                      - method
+                  required:
+                  - id
+                  - party_id
+                  - amount_minor
+                  - source_id
+                  - category
+                  - data
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]*$
+                    party_id:
+                      type: string
+                      format: uuid
+                    amount_minor:
+                      type: integer
+                      minimum: -900000000000
+                      maximum: 900000000000
+                    source_id:
+                      type: string
+                      format: uuid
+                    category:
+                      const: PAYOUT_RETURN
+                    data:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        payout_id:
+                          type: string
+                          format: uuid
+                        external_reference:
+                          type: string
+                          minLength: 1
+                          maxLength: 128
+                        evidence_asset_id:
+                          type: string
+                          format: uuid
+                        method:
+                          const: EXTERNAL_MANUAL_PAYMENT
+                      required:
+                      - payout_id
+                      - external_reference
+                      - evidence_asset_id
+                      - method
+                  required:
+                  - id
+                  - party_id
+                  - amount_minor
+                  - source_id
+                  - category
+                  - data
+            next_cursor:
+              anyOf:
+              - type: string
+                pattern: ^[1-9][0-9]*$
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    FinanceNotificationsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    pattern: ^[1-9][0-9]*$
+                  agreement_id:
+                    type: string
+                    format: uuid
+                  record_id:
+                    type: string
+                    format: uuid
+                  event_code:
+                    type: string
+                    minLength: 1
+                    maxLength: 128
+                required:
+                - id
+                - agreement_id
+                - record_id
+                - event_code
+            next_cursor:
+              anyOf:
+              - type: string
+                pattern: ^[1-9][0-9]*$
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    FinanceConfirmationsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  party_id:
+                    type: string
+                    format: uuid
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  content_sha256:
+                    type: string
+                    pattern: ^[0-9a-f]{64}$
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                required:
+                - party_id
+                - decision
+                - content_sha256
+                - reason
+          required:
+          - items
+      required:
+      - meta
+      - data
     ProjectProjectRecord:
       type: object
       additionalProperties: false
