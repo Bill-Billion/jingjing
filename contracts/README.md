@@ -1,6 +1,21 @@
 # 页面与服务器的数据约定
 
-当前候选版本0.2.0-rc.1，主文件[openapi.yaml](openapi.yaml)。共22个操作，其中17个已接入独立MySQL账号API并进行隔离测试；其余5个仍未实现。具体状态见各操作的x-implementation-status及[实现清单](implementation.json)。这些是后端自验结果，不是短信供应商已开通、前端已联调或正式上线。
+当前候选0.10.0-rc.1：本阶段新增23项结算、付款凭据、发行收入和争议接口，并保留第八、九阶段全部接口。共148项操作、252种结构；143项已接隔离实现，其余5项原有入口仍未实现。自动出款未实现也未启用。旧125项操作与212个定义结构逐项核对不变。
+
+[队友怎样接结算页面](../docs/collaboration/STAGE_10_API.md) · [分工、升级与验收](../docs/collaboration/STAGE_10_HANDOFF.md) · [实际上传和审阅状态](../docs/status/CORE_CURRENT.md)。候选格式需对方审阅，程序字段和测试通过不代表真实业务启用。
+
+## 以下为历史版本说明
+
+0.7.0-rc.1：新增15项制作、版本反馈、验收和数字人任务接口，共85项操作、153种结构；80项已接隔离实现，原有5项仍未实现。具体数字人供应商网络适配仍未实现，不能把任务接口存在当作真实生成可用。旧字段保持，样片/成片付款节点改为检查实际当前验收结果。详见[第七阶段页面说明](../docs/collaboration/STAGE_7_API.md)。
+
+## 之前版本说明
+0.8.0-rc.1：第八阶段新增18项商单、直接合作、佣金与榜单接口，共88项操作、161种结构。旧路径不变，仅报价增加可选commercial_offer_id及对应商业约定。候选约定待队友审阅。基于第六阶段；第七阶段制作接口仍在独立申请，合并时须保留双方定义。详见[第八阶段页面说明](../docs/collaboration/STAGE_8_API.md)。
+
+## 以下为此前版本记录
+
+0.6.0-rc.1：新增16项订单、支付、退款及旧单入口；旧字段保持。支付通知使用供应商签名与交易编号去重，不要求用户Bearer或Idempotency-Key；普通写入仍要求两者。报价确认使用返回的content_sha256；重复提交返回记录当前状态。付款成功与签署、制作完成分开。共享审阅及真实渠道验证待完成。详见[第六阶段接口](../docs/collaboration/STAGE_6_API.md)。
+
+当前候选版本0.5.0-rc.1，主文件[openapi.yaml](openapi.yaml)。共54个操作，其中49个已接入独立MySQL账号API并进行隔离测试；其余5个仍未实现。具体状态见各操作的x-implementation-status及[实现清单](implementation.json)。这些是后端自验结果，不是短信供应商已开通、前端已联调或正式上线。
 
 新增的账号API独立于旧app.js，不接受旧JWT或客户端自报角色。调用方法与环境准备见[第二阶段接口交付](../docs/collaboration/STAGE_2_ACCOUNT_API.md)。[协议细则](PROTOCOL.md) · [变更记录](CHANGELOG.md) · [旧接口映射](LEGACY_MAPPING.md)。第一阶段合并并不自动批准本次新增格式，仍需队友核对。
 
@@ -19,3 +34,5 @@ Linux将Scripts/python.exe替换成bin/python。安装需要网络，校验期�
 ```
 
 [示例](examples/platform.json)与[反例](tests/schema_cases.json)均为合成数据，不能拿示例令牌当作登录凭据。格式校验不替代并发、权限或供应商真实验证。
+
+第三阶段新增两个只读内容接口，说明见[规则合同读取接线](../docs/collaboration/STAGE_3_READ_API.md)。原规则/合同文件元数据接口仍未实现，不伪造asset ID。校验实际返回时另执行`--runtime-fixtures .local/governance-http-fixtures.json`。当前仅本地集成待审第11份依赖，未推送或批准新格式。

@@ -1,0 +1,137 @@
+TAP version 13
+# Subtest: Real MySQL durable jobs, outbox and independent worker
+    # Subtest: same business intent is idempotent; conflicting intent is rejected, case remains distinct
+    ok 1 - same business intent is idempotent; conflicting intent is rejected, case remains distinct
+      ---
+      duration_ms: 586.8232
+      type: 'test'
+      ...
+    # Subtest: business transaction and outbox both roll back; publish requires explicit transaction
+    ok 2 - business transaction and outbox both roll back; publish requires explicit transaction
+      ---
+      duration_ms: 628.3845
+      type: 'test'
+      ...
+    # Subtest: parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+    ok 3 - parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+      ---
+      duration_ms: 722.98
+      type: 'test'
+      ...
+    # Subtest: conflicting outbox intent is visibly blocked and does not replace the original job
+    ok 4 - conflicting outbox intent is visibly blocked and does not replace the original job
+      ---
+      duration_ms: 637.0643
+      type: 'test'
+      ...
+    # Subtest: failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+    ok 5 - failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+      ---
+      duration_ms: 645.4881
+      type: 'test'
+      ...
+    # Subtest: concurrent workers claim one job once while its lease is valid
+    ok 6 - concurrent workers claim one job once while its lease is valid
+      ---
+      duration_ms: 672.4857
+      type: 'test'
+      ...
+    # Subtest: expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+    ok 7 - expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+      ---
+      duration_ms: 626.0214
+      type: 'test'
+      ...
+    # Subtest: retry is delayed, capped and manually resumed without erasing attempt history
+    ok 8 - retry is delayed, capped and manually resumed without erasing attempt history
+      ---
+      duration_ms: 674.7392
+      type: 'test'
+      ...
+    # Subtest: crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+    ok 9 - crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+      ---
+      duration_ms: 603.7528
+      type: 'test'
+      ...
+    # Subtest: worker renews a long-running handler lease; other worker cannot take it over
+    ok 10 - worker renews a long-running handler lease; other worker cannot take it over
+      ---
+      duration_ms: 1984.4211
+      type: 'test'
+      ...
+    # Subtest: missing handlers and ambiguous handler errors block without fake success or immediate replay
+    ok 11 - missing handlers and ambiguous handler errors block without fake success or immediate replay
+      ---
+      duration_ms: 683.039
+      type: 'test'
+      ...
+    # Subtest: active worker aborts after lease takeover and cannot overwrite its successor result
+    ok 12 - active worker aborts after lease takeover and cannot overwrite its successor result
+      ---
+      duration_ms: 875.7056
+      type: 'test'
+      ...
+    # Subtest: provider retry without a recovery adapter becomes blocked instead of executing again
+    ok 13 - provider retry without a recovery adapter becomes blocked instead of executing again
+      ---
+      duration_ms: 671.2329
+      type: 'test'
+      ...
+    # Subtest: unknown provider submission is reconciled by stable key, never blindly resubmitted
+    ok 14 - unknown provider submission is reconciled by stable key, never blindly resubmitted
+      ---
+      duration_ms: 668.9212
+      type: 'test'
+      ...
+    # Subtest: separate process crash preserves provider task ID and a new process recovers it
+    ok 15 - separate process crash preserves provider task ID and a new process recovers it
+      ---
+      duration_ms: 1023.6096
+      type: 'test'
+      ...
+    # Subtest: graceful stop signals a handler, leaves durable recovery and does not claim the next task
+    ok 16 - graceful stop signals a handler, leaves durable recovery and does not claim the next task
+      ---
+      duration_ms: 601.7104
+      type: 'test'
+      ...
+    1..16
+ok 1 - Real MySQL durable jobs, outbox and independent worker
+  ---
+  duration_ms: 15227.9758
+  type: 'test'
+  ...
+# Subtest: worker CLI fails visibly while domain adapters are not enabled
+ok 2 - worker CLI fails visibly while domain adapters are not enabled
+  ---
+  duration_ms: 159.933
+  type: 'test'
+  ...
+# Subtest: worker intent requires explicit retry budget and bounded references
+ok 3 - worker intent requires explicit retry budget and bounded references
+  ---
+  duration_ms: 0.4809
+  type: 'test'
+  ...
+# Subtest: stopping during claim never starts the newly acquired handler
+ok 4 - stopping during claim never starts the newly acquired handler
+  ---
+  duration_ms: 3.3716
+  type: 'test'
+  ...
+# Subtest: API and historical scheduler do not bootstrap timers or visual recovery
+ok 5 - API and historical scheduler do not bootstrap timers or visual recovery
+  ---
+  duration_ms: 25.2986
+  type: 'test'
+  ...
+1..5
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15394.7371

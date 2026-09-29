@@ -1,0 +1,8 @@
+CREATE TABLE ops_events (
+id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+source_key CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL UNIQUE,
+domain VARCHAR(20) NOT NULL, record_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL, event_code VARCHAR(80) NOT NULL,
+object_version INT UNSIGNED NOT NULL, actor_account_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
+created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+KEY ops_event_object(domain,record_id,id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin
