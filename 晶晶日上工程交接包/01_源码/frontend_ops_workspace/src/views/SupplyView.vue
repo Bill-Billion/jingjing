@@ -2,7 +2,6 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
-import { Document, OfficeBuilding, Reading, CircleCheck } from '@element-plus/icons-vue'
 import { useSessionStore } from '@/stores/session'
 import { useSupply } from '@/composables/useSupply'
 import { ApiError, asApiError } from '@/api/client'
@@ -10,6 +9,7 @@ import { creditRoles, getSupplyAsset, mediaTypes, recordTitle, shortSupplyId, su
 import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import SupplyUpload from '@/components/SupplyUpload.vue'
 import SupplyRecordPanel from '@/components/SupplyRecordPanel.vue'
+import WorkspaceNav from '@/components/WorkspaceNav.vue'
 import '@/styles/supply.css'
 
 const session = useSessionStore(), route = useRoute(), router = useRouter()
@@ -136,7 +136,7 @@ async function moreIdentities() { try { await session.loadMoreParties() } catch 
 <template>
   <div class="supply-workspace">
     <header class="supply-header"><RouterLink class="supply-brand" to="/workspace">晶晶日上</RouterLink><span>合作工作台</span><div class="account-actions"><span class="account-name">{{ session.account?.display_name || '我的账号' }}</span><button @click="logout">退出登录</button></div></header>
-    <div class="supply-layout"><aside class="supply-sidebar"><nav class="supply-nav" aria-label="工作区导航"><RouterLink to="/workspace"><OfficeBuilding />账号与机构</RouterLink><RouterLink to="/contracts"><Document />合同与规则</RouterLink><RouterLink to="/supply/profiles" :class="{ active: profilePage && !reviewer }"><Document />供给申请</RouterLink><RouterLink to="/supply/works" :class="{ active: !profilePage && !reviewer }"><Reading />我的作品</RouterLink><p class="nav-caption">独立审核</p><RouterLink to="/supply/reviews/profile" :class="{ active: reviewer && profilePage }"><CircleCheck />供给审核</RouterLink><RouterLink to="/supply/reviews/rights" :class="{ active: reviewer && !profilePage }"><CircleCheck />作品审核</RouterLink></nav>
+    <div class="supply-layout"><aside class="supply-sidebar"><WorkspaceNav />
       <div class="supply-identity" v-if="!reviewer"><label for="supply-party">当前工作身份</label><select id="supply-party" :value="session.selectedId" :disabled="initializing" @change="selectParty"><option value="" disabled>请选择身份</option><option v-for="item in session.parties" :key="item.party.id" :value="item.party.id">{{ item.party.display_name }}</option></select><p class="muted">{{ session.selected?.party.kind === 'PERSON' ? '个人身份' : '机构身份' }} · 当前供给资料由负责人办理</p><button v-if="session.nextCursor" @click="moreIdentities">加载更多身份</button></div><div v-else class="supply-identity"><p>审核工作区</p><p class="muted">按当前账号核对独立审核权限，不使用机构身份代为审批。</p></div>
     </aside><main class="supply-main" :aria-busy="initializing || busy || pageLoading"><div class="supply-heading"><div><h1>{{ title }}</h1><p>{{ subtitle }}</p></div><div><button class="outline" :disabled="initializing || busy" @click="loadPage">刷新记录</button><RouterLink v-if="!reviewer && !profilePage && !formPage" to="/supply/works/new" class="button-link primary">新投稿</RouterLink></div></div>
       <nav v-if="reviewer && !profilePage" class="loaded-tabs" aria-label="独立审核轨道"><RouterLink to="/supply/reviews/rights" :class="{ active: reviewChannel === 'rights' }">权属审核</RouterLink><RouterLink to="/supply/reviews/content" :class="{ active: reviewChannel === 'content' }">内容审核</RouterLink></nav>

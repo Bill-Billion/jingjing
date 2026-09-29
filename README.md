@@ -12,6 +12,10 @@
 - [现在做到哪里，下一步做什么](docs/status/MAINLINE_PROGRESS.md)
 - [全部工作安排及完成标准](docs/tasks/README.md)
 
+页面整合遵守[导航与新版页面验收](docs/ux/navigation-acceptance.md)：网页工作区保持同一套菜单，App顶层固定首页、入戏、培育、成角、我的；正式入口不跳回旧版。尚未开放的业务按阶段接入，最终所有页面按最新规划和已确认图册替换，菜单和路由检查属于每批验收的一部分。
+
+2026-09-30现场审查发现的菜单消失与APP旧版绕行已在当前工作分支本地修复，并完成[逐项点击与截图](docs/ux/pr13-ui/README.md#现场导航问题与修复2026-09-30本地待交付)；这批新增修改尚未推送到第13份申请，原远端检查不覆盖它。第14–17份业务页面仍按各自阶段接入真实接口。
+
 交给Codex执行时，从 [开工说明](docs/START_HERE.md) 和 [项目指令](AGENTS.md) 开始。两个Codex也必须用直白中文汇报，不能让人先翻译缩写才能看懂分工。
 
 需要查细节时： [需求清单](docs/requirements/README.md) · [业务与技术设计](docs/architecture/TARGET_DESIGN.md) · [尚缺的外部条件](docs/operations/EXTERNAL_READINESS.md) · [上传和合并代码的方法](docs/collaboration/GIT_WORKFLOW.md) · [原始资料](docs/sources/README.md)。

@@ -100,7 +100,7 @@ jobs:
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
           flutter/bin/flutter config --no-analytics
       - run: flutter pub get --enforce-lockfile
-      - run: dart analyze lib/account lib/contracts lib/supply test/account test/contracts test/supply
-      - run: flutter test test/account test/contracts test/supply test/interaction_flows_test.dart test/widget_test.dart
+      - run: dart analyze lib/account lib/contracts lib/supply lib/navigation lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/navigation
+      - run: flutter test test/account test/contracts test/supply test/navigation test/interaction_flows_test.dart test/widget_test.dart
       - name: 检查完整 App 可以生成网页发布文件
         run: flutter build web --no-pub

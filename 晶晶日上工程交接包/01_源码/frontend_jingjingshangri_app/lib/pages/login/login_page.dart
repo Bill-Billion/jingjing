@@ -6,13 +6,11 @@ import '../../account/account_theme.dart';
 import '../../account/account_api.dart';
 import '../../account/account_session.dart';
 import '../../services/user_provider.dart';
-import '../../utils/motion.dart';
 import '../../widgets/primary_button.dart';
-import '../../widgets/main_scaffold.dart';
 
 /// 手机号 + 验证码登录。
-/// - 登录成功清除旧业务路由，进入新账号页面；
-/// - 登录成功进入独立账号页，旧展示导航仅由浏览入口打开；
+/// - 登录成功清除旧业务路由，进入新版“我的”；
+/// - 供给深链接只恢复目标读取，不继续此前的写入或旧业务；
 /// - 只使用账号服务实际发送的验证码；未启用时明确显示失败。
 class LoginPage extends StatefulWidget {
   /// 来源场景说明，如「下单前请先登录」
@@ -71,7 +69,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _sending = false;
   ButtonState _loginState = ButtonState.idle;
   int _countdown = 0;
-  bool _enteringDemo = false; // 免验证体验进入中（不依赖短信）
   Timer? _timer;
   String? _errorText;
 
@@ -196,16 +193,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  /// Browsing legacy screens does not create an account or a synthetic token.
-  Future<void> _quickDemo() async {
-    if (_enteringDemo || _sending || _loginState == ButtonState.loading) return;
-    setState(() => _enteringDemo = true);
-    await context.read<UserProvider>().logout();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-        Motion.fadeSlideRoute(const MainScaffold()), (_) => false);
-  }
-
   Future<void> _enterAfterLogin() async {
     // Resume only an explicit supply read/form route with fresh session reads.
     // No old private route or pending action survives login.
@@ -215,14 +202,13 @@ class _LoginPageState extends State<LoginPage> {
             ['/supply', '/supply/profile', '/supply/work/new', '/supply/record']
                 .contains(route.path)
         ? route.toString()
-        : '/account';
-    if (destination != '/account') {
+        : '/my';
+    if (destination != '/my') {
       try {
         await context.read<AccountSession>().loadParties();
       } on AccountError {
         if (mounted) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/account', (_) => false);
+          Navigator.of(context).pushNamedAndRemoveUntil('/my', (_) => false);
         }
         return;
       }
@@ -237,7 +223,13 @@ class _LoginPageState extends State<LoginPage> {
     final busy = _loginState == ButtonState.loading;
     return AccountTheme(
         child: Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(leading: BackButton(onPressed: () {
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        } else {
+          Navigator.pushReplacementNamed(context, '/my');
+        }
+      })),
       body: SafeArea(
           child: Center(
               child: SingleChildScrollView(
@@ -364,17 +356,6 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           color: AccountTheme.muted,
                           fontSize: 13,
-                          height: 1.6)),
-                  const SizedBox(height: 24),
-                  TextButton(
-                      onPressed:
-                          _enteringDemo || busy || _sending ? null : _quickDemo,
-                      child: const Text('浏览旧版展示')),
-                  const Text('仅浏览旧页面，不创建账号、不代表付款或业务办理成功。真实登录需要短信服务已启用。',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: AccountTheme.muted,
-                          fontSize: 12,
                           height: 1.6)),
                 ])),
       ))),

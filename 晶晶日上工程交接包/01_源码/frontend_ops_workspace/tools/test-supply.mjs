@@ -5,6 +5,8 @@ import { createServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { createSSRApp, effectScope, h, reactive } from 'vue'
 import { renderToString } from '@vue/server-renderer'
+import { createPinia } from 'pinia'
+import { createMemoryHistory, createRouter, RouterView } from 'vue-router'
 const root = fileURLToPath(new URL('..', import.meta.url))
 const server = await createServer({ root, configFile: false, plugins: [vue()], resolve: { alias: { '@': `${root}/src` } }, server: { middlewareMode: true }, appType: 'custom' })
 const originalFetch = globalThis.fetch
@@ -164,6 +166,46 @@ try {
     const {ui,context,scope}=state();onUnauthorized(token=>{if(token===context.token)context.token=null})
     const late=defer();globalThis.fetch=()=>late.promise;const p=ui.loadRecord(id(11),'PROFILE');context.token='new-token';late.resolve(failed(401,'AUTHENTICATION_REQUIRED'));await p;assert.equal(context.token,'new-token')
     globalThis.fetch=async()=>failed(401,'AUTHENTICATION_REQUIRED');await ui.loadRecord(id(11),'PROFILE');assert.equal(context.token,null);assert.equal(ui.detail.value,null);scope.stop();onUnauthorized(()=>{})
+  })
+  test('账号、合同、供给及审核页面保留同一菜单，详情和内容审核正确标记当前入口', async()=>{
+    const previousWindow = globalThis.window
+    // This application runs in a browser. SSR here only checks its rendered
+    // navigation, so the account page's countdown timer must remain inactive.
+    globalThis.window = { setInterval:()=>0, clearInterval:()=>{} }
+    try {
+    const entries = [
+      ['/workspace','账号与机构'], ['/contracts','合同与规则'],
+      ['/supply/profiles','供给申请'], ['/supply/works','我的作品'],
+      ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'],
+    ]
+    for (const [view,path,current] of [
+      ['ContractsView','/contracts','/contracts'],
+      ['WorkspaceView','/workspace','/workspace'],
+      ['SupplyView','/supply/profiles','/supply/profiles'],
+      ['SupplyView','/supply/works/new','/supply/works'],
+      ['SupplyView',`/supply/works/${id(20)}/revision`,'/supply/works'],
+      ['SupplyView',`/supply/reviews/profile/${id(11)}`,'/supply/reviews/profile'],
+      ['SupplyView',`/supply/reviews/content/${id(20)}`,'/supply/reviews/rights'],
+    ]) {
+      const {default:View} = await server.ssrLoadModule(`/src/views/${view}.vue`)
+      const router = createRouter({history:createMemoryHistory(),routes:[{path:'/:pathMatch(.*)*',component:View}]})
+      const app = createSSRApp({render:()=>h(RouterView)}).use(createPinia()).use(router)
+      await router.push(path); await router.isReady()
+      const html = await renderToString(app)
+      const nav = html.match(/<nav\b[^>]*aria-label="工作区导航"[^>]*>([\s\S]*?)<\/nav>/)?.[1]
+      assert.ok(nav,`${path} 缺少统一导航`)
+      const links = [...nav.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)].map(([,attrs,text])=>({
+        href:attrs.match(/\bhref="([^"]+)"/)?.[1],
+        label:text.replace(/<[^>]*>/g,'').trim(),
+        current:attrs.includes('aria-current="page"'),
+      }))
+      assert.deepEqual(links.map(link=>[link.href,link.label]),entries,`${path} 菜单发生变化`)
+      assert.deepEqual(links.filter(link=>link.current).map(link=>link.href),[current],`${path} 当前入口标记错误`)
+    }
+    } finally {
+      if (previousWindow === undefined) delete globalThis.window
+      else globalThis.window = previousWindow
+    }
   })
   test('实际组件缩略编号保留完整title，内容审核正文优先且权属顺序不变', async()=>{
     const {default:Panel}=await server.ssrLoadModule('/src/components/SupplyRecordPanel.vue')
