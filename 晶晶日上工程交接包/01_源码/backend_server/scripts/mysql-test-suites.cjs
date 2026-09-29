@@ -3,6 +3,7 @@
 module.exports=Object.freeze({
  projects:['test/projects-policy.test.cjs','test/projects.integration.test.cjs'],
  production:['test/production-policy.test.cjs','test/production.integration.test.cjs'],
+ gigs:['test/gigs-policy.test.cjs','test/gigs.integration.test.cjs'],
  trade:['test/trade-providers.test.cjs','test/trade-policy.test.cjs','test/trade.integration.test.cjs'],
  licensing:['test/license-policy.test.cjs','test/licensing.integration.test.cjs'],
  supply:['test/works-version-policy.test.cjs','test/consent-policy.test.cjs','test/supply.integration.test.cjs'],
