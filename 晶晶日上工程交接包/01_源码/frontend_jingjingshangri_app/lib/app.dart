@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'account/account_session.dart';
 import 'theme/app_theme.dart';
+import 'account/account_page.dart';
 import 'utils/responsive.dart';
 import 'utils/motion.dart';
 import 'pages/splash/splash_page.dart';
@@ -49,8 +52,13 @@ class JingjingShangriApp extends StatelessWidget {
       builder: (context, child) =>
           LimitedTextScale(child: child ?? const SizedBox.shrink()),
       onGenerateRoute: (settings) {
+        if ((context.read<AccountSession?>()?.isLoggedIn ?? false) &&
+            !['/account', '/agreement', '/privacy'].contains(settings.name)) {
+          return _route(const _AccountBusinessUnavailable());
+        }
         final args = settings.arguments;
         switch (settings.name) {
+          case '/account': return _route(const AccountPage());
           case '/wallet': return _route(const WalletPage());
           case '/identity': return _route(const IdentityPage());
           case '/orders': return _route(const OrdersPage());
@@ -117,4 +125,14 @@ class _UnknownRoutePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AccountBusinessUnavailable extends StatelessWidget {
+  const _AccountBusinessUnavailable();
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('功能接入中')),
+    body: const Center(child: Padding(padding: EdgeInsets.all(24),
+      child: Text('此旧版业务尚未接入新账号，请返回“我的”管理账号与机构。', textAlign: TextAlign.center))),
+  );
 }
