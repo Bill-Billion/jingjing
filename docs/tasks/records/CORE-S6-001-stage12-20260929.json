@@ -364,5 +364,60 @@
     "mysql_test_server_stopped": true,
     "port_33316_closed": true,
     "temporary_drive_removed": true
+  },
+  "supplemental_fix": {
+    "commit": "c5f4ab4c13db4881e9df986ad8f68fa34c4cb815",
+    "scope": "backup and CLI restore with a one-connection pool",
+    "test_pass": 21,
+    "test_fail": 0,
+    "test_skip": 0,
+    "rehearsal": {
+      "format": "JX_RELEASE_REHEARSAL_V1",
+      "synthetic_only": true,
+      "production_access": false,
+      "paid_services": false,
+      "checks": [
+        {
+          "name": "legacy-retention",
+          "id": "677fd0fc8cc01f5a19ed2ae43e70b3e8e2a895359efa613f419743d31cd3ce32",
+          "result": "MATCHED",
+          "source_kind": "SYNTHETIC",
+          "tables": 2,
+          "rows": 2,
+          "current_status": "RETAINED_REVIEW_REQUIRED",
+          "verified_payments": 0,
+          "converted_accounts": 0,
+          "activated_licenses": 0
+        },
+        {
+          "name": "database-restore",
+          "result": "MATCHED",
+          "tables": 78,
+          "rows": 180,
+          "payload_sha256": "861de30f8d43106f9b165371535aa2148153bcdc30a0a37aaa124383bccafe89",
+          "runtime_status": "QUARANTINED",
+          "comparison_excludes": [
+            "platform_schema_metadata.recovery_status"
+          ],
+          "external_objects_restored": false,
+          "duration_ms": 2584
+        },
+        {
+          "name": "release-check",
+          "result": "BLOCKS_UNVERIFIED",
+          "production_release": "NOT_APPROVED"
+        }
+      ],
+      "metrics": {
+        "requests": 160,
+        "concurrency": 8,
+        "duration_ms": 605,
+        "p50_ms": 29,
+        "p95_ms": 37,
+        "max_ms": 50,
+        "unexpected_responses": 0,
+        "meaning": "隔离环境有限并发观测，不是生产容量承诺"
+      }
+    }
   }
 }
