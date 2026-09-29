@@ -1,123 +1,42 @@
-/*
- * 全局设计变量。
- * 规则：页面里不写死颜色，一律用这里的变量。
- *
- * 色调沿用 App 的品牌（曜石墨 + 香槟金）。这不是随便挑的配色，
- * 是产品既有识别，改它等于换品牌。
- *
- * 关于中文字体：不引 webfont。中文字库动辄 5–10MB，为了一个登录页下载
- * 一整套中文字体不划算。用系统字体栈——macOS 有 Songti SC / PingFang SC，
- * Windows 退到中易宋体 / 微软雅黑，都够用。
- */
-
+/* Shared warm-white and forest-green foundation for account and contract pages. */
 :root {
-  /* —— 品牌墨：整块底色、主按钮、标题 —— */
-  --ops-ink: #101a2e;
-  --ops-ink-2: #1b2740;
-  --ops-ink-3: #35435f;
-
-  /* —— 香槟金：只做细线和小面积点缀，永远不做底色 —— */
-  --ops-gold: #c9a45e;
-  --ops-gold-dim: rgba(201, 164, 94, 0.34);
-  --ops-gold-soft: #f2e2b8;
-
-  /* —— 页面底色与面板 —— */
-  --ops-bg: #eef1f6;
-  --ops-surface: #ffffff;
-  --ops-border: #dde2ec;
-  --ops-border-strong: #c3cbdb;
-
-  /* —— 文字 —— */
-  --ops-text: #101a2e;
-  --ops-text-2: #5b6885;
-  --ops-text-3: #8d98ae;
-  --ops-text-invert: #f2f5fa;
-
-  /* —— 状态色，与后端错误语义对应 —— */
-  --ops-danger: #b23a2e;
-  --ops-warning: #a16a12;
-  --ops-success: #2c7a5b;
-  --ops-info: #2b6cb0;
-
-  --ops-radius: 10px;
-  --ops-radius-sm: 6px;
-
-  /* —— 字体族 —— */
-  /* 宋体：只给品牌名用。中文衬线比无衬线更像"机构"而不是"App" */
-  --ops-serif: 'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Noto Serif SC', STSong, SimSun, serif;
-  /* 界面字体：全站正文与控件 */
-  --ops-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC',
-    'Microsoft YaHei', 'Segoe UI', sans-serif;
-  /* 等宽：只给错误码、请求号、ID 这类机器值 */
-  --ops-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-}
-
-/* 覆盖 Element Plus 的主色，让它跟品牌一致 */
-:root {
-  --el-color-primary: #1b2740;
-  --el-color-primary-light-3: #35435f;
-  --el-color-primary-light-5: #6f7d96;
-  --el-color-primary-light-7: #a6b0c4;
-  --el-color-primary-light-8: #c3cad8;
-  --el-color-primary-light-9: #e3e7ef;
-  --el-color-primary-dark-2: #101a2e;
+  --ops-ink: #335D46;
+  --ops-ink-2: #294C39;
+  --ops-ink-3: #507761;
+  --ops-accent-soft: #EDF2EC;
+  --ops-gold: #335D46;
+  --ops-gold-dim: #BCD0C0;
+  --ops-gold-soft: #F5F0E4;
+  --ops-bg: #F5F6F2;
+  --ops-surface: #FFFFFF;
+  --ops-border: #DDE3DB;
+  --ops-border-strong: #C8D2C7;
+  --ops-text: #252C27;
+  --ops-text-2: #667267;
+  --ops-text-3: #758076;
+  --ops-text-invert: #FFFFFF;
+  --ops-danger: #B83A37;
+  --ops-warning: #996217;
+  --ops-success: #3D7051;
+  --ops-info: #416A8A;
+  --ops-radius: 12px;
+  --ops-radius-sm: 10px;
+  --ops-sans: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ops-serif: var(--ops-sans);
+  --ops-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --el-color-primary: #335D46;
+  --el-color-primary-light-3: #507761;
+  --el-color-primary-light-5: #7E9A85;
+  --el-color-primary-light-7: #B6CBB9;
+  --el-color-primary-light-8: #D0DDD1;
+  --el-color-primary-light-9: #EDF2EC;
+  --el-color-primary-dark-2: #294C39;
+  --el-border-color: var(--ops-border);
   --el-border-radius-base: var(--ops-radius-sm);
   --el-font-family: var(--ops-sans);
 }
-
-html,
-body,
-#app {
-  height: 100%;
-  margin: 0;
-}
-
-/*
- * 全局 border-box。
- *
- * 不写这一条的后果实测过：`.auth { min-height: 100%; padding: 56px 20px 32px }`
- * 在默认的 content-box 下，"100%" 只约束**内容盒**，于是总高变成
- * 900 + 88 = 988px —— 登录页凭空多出一条 88px 的竖直滚动条，
- * 而且因为内容是居中的，肉眼几乎看不出来，只有量 scrollHeight 才发现。
- *
- * Element Plus 也是按 border-box 设计的（它的 height: 32px 指的是含边框的总高），
- * 所以这一条对它是修正而不是破坏。
- */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  background: var(--ops-bg);
-  color: var(--ops-text);
-  font-family: var(--ops-sans);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* 通用工具类 */
-.ops-mono {
-  font-family: var(--ops-mono);
-}
-
-.ops-serif {
-  font-family: var(--ops-serif);
-}
-
-.ops-muted {
-  color: var(--ops-text-3);
-}
-
-.ops-reqid {
-  font-family: var(--ops-mono);
-  font-size: 12px;
-  color: var(--ops-text-3);
-  word-break: break-all;
-}
-
-/* 键盘焦点：金色描边，在深墨底和白面板上都看得见 */
-:where(a, button, input, [tabindex]):focus-visible {
-  outline: 2px solid var(--ops-gold);
-  outline-offset: 2px;
-}
+html,body,#app{height:100%;margin:0}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--ops-bg);color:var(--ops-text);font-family:var(--ops-sans);-webkit-font-smoothing:antialiased}
+.ops-mono{font-family:var(--ops-mono)}.ops-serif{font-family:var(--ops-serif)}.ops-muted{color:var(--ops-text-3)}.ops-reqid{font:12px var(--ops-mono);color:var(--ops-text-3);word-break:break-all}
+:where(a,button,input,select,summary,[tabindex]):focus-visible{outline:2px solid var(--ops-ink);outline-offset:3px}

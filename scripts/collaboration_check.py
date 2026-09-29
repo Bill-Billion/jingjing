@@ -62,7 +62,8 @@ def render_tasks(board):
                   '直白中文名称和完成标准在 [文字说明文件](plain_language.json)。'
                   '修改后运行 `python scripts/collaboration_check.py --render` 更新本页，'
                   '再运行不带参数的检查。自动更新也必须遵守 [沟通写法](../collaboration/WRITING_RULES.md)。', ''])
-    return '\n'.join(lines)
+    # Derive the displayed count without changing the stage narrative template.
+    return re.sub(r'下面共\d+组工作', f"下面共{len(board['tasks'])}组工作", '\n'.join(lines), count=1)
 
 
 def render_requirement_rows(baseline):

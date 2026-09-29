@@ -26,10 +26,15 @@ Future<void> pump(WidgetTester tester, AccountSession session, Widget child,
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  await tester.pumpWidget(MultiProvider(providers: [
-    ChangeNotifierProvider.value(value: session),
-    ChangeNotifierProvider.value(value: legacy ?? UserProvider()),
-  ], child: MaterialApp(theme: AppTheme.darkTheme, home: child)));
+  await tester.pumpWidget(MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: session),
+        ChangeNotifierProvider.value(value: legacy ?? UserProvider()),
+      ],
+      child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: child,
+          routes: {'/account': (_) => const AccountPage()})));
   await frames(tester);
 }
 
@@ -77,7 +82,7 @@ void main() {
     await close(tester);
   });
 
-  testWidgets('正式登录返回旧守卫后不继续旧交易，账号不写入旧用户态', (tester) async {
+  testWidgets('真实登录进入独立账号页并清空旧路由，旧交易和会话不继续', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     final legacy = UserProvider();
@@ -109,7 +114,11 @@ void main() {
     expect(legacy.isLoggedIn, isFalse);
     expect(continued, isFalse);
     expect(find.byType(LoginPage), findsNothing);
-    expect(find.byType(MainScaffold), findsOneWidget);
+    expect(find.byType(MainScaffold), findsNothing);
+    expect(find.byType(AccountPage), findsOneWidget);
+    expect(
+        ModalRoute.of(tester.element(find.byType(AccountPage)))?.settings.name,
+        '/account');
     expect(find.text('旧业务入口'), findsNothing); // Old private routes are removed.
     expect(find.text('账号与机构'), findsOneWidget);
     expect(continued, isFalse);
@@ -247,7 +256,7 @@ void main() {
     await tester
         .runAsync(() => session.login('13800000000', invitationId, '123456'));
     await pump(tester, session, const AccountPage());
-    await tester.scrollUntilVisible(find.text('申请').first, 400,
+    await tester.scrollUntilVisible(find.text('申请能力'), 400,
         scrollable: find.byType(Scrollable).first);
     await frames(tester);
     await tester.tap(find.text('申请').first);

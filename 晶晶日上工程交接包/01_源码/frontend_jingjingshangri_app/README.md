@@ -1,6 +1,6 @@
 # 晶晶日上 Flutter 客户端
 
-晶晶日上数字人 IP 经纪与定制圆梦平台的主客户端工程。保留原有暗色页面；本轮把真实手机号登录和账号、机构、成员管理接到了 PR #11 的新服务。
+晶晶日上数字人 IP 经纪与定制圆梦平台的主客户端工程。保留原有暗色业务页面；真实手机号登录和账号、机构、成员管理已接到 PR #11 的新服务。本轮增加 PR #12 的指定合同阅读、关联历史规则和外部服务条件检查，并将登录、账号、合同区域统一为暖白铜橙样式。
 
 完整项目背景见[仓库根 README](../../../README.md)，账号接口和服务启动条件见[账号与机构接口说明](../../../docs/collaboration/STAGE_2_ACCOUNT_API.md)。当前应用版本为 `12.3.1+22`；本轮使用 Flutter 3.47.5 / Dart 3.13.4 验证。
 
@@ -18,7 +18,7 @@ flutter run -d <Android设备ID> --dart-define=JX_ACCOUNT_API_URL=http://10.0.2.
 flutter build web --no-web-resources-cdn --dart-define=JX_ACCOUNT_API_URL=http://127.0.0.1:3000
 ```
 
-未配置 `JX_ACCOUNT_API_URL` 时，登录页明确提示服务地址未配置。它不会继承旧生产地址，也不会使用演示验证码。真实短信必须已经配置和验证；服务返回未启用时，不显示“已发送”，也不启动假倒计时。上述 `3000` 是示例端口，须与自己的服务一致。本轮临时隔离验证使用 `3220`，没有开启真实短信或访问生产数据库。
+未配置 `JX_ACCOUNT_API_URL` 时，登录页明确提示服务地址未配置。它不会继承旧生产地址，也不会使用演示验证码。真实短信必须已经配置和验证；服务返回未启用时，不显示“已发送”，也不启动假倒计时。上述 `3000` 是示例端口，须与自己的服务一致。本轮临时隔离验证使用 `3222`，没有开启真实短信或访问生产数据库。
 
 ## 本轮可以使用的页面
 
@@ -31,9 +31,23 @@ flutter build web --no-web-resources-cdn --dart-define=JX_ACCOUNT_API_URL=http:/
 
 机构审核、账号停用、所有权转移、本人退出机构没有接口，本轮不制作能假装成功的按钮。服务器也没有历史发件列表接口，所以发送回执仅保留在本次登录内；不能把回执当成对方尚未处理的实时结论。成员身份不自动授予付款、作品使用或商业代理权。
 
+## 指定合同与历史规则
+
+登录并选择办事身份后，从“我的账号 → 读取指定合同”粘贴完整合同编号。也可打开 `/#/contract?snapshotId=<合同编号>`，或在应用内向 `/contract` 传入 `{'snapshotId': '<合同编号>'}`。没有合同列表、创建、审批或签署入口。
+
+三个读取接口共用 `JX_ACCOUNT_API_URL` 和当前新账号会话：
+
+- `GET /api/v1/contract-snapshots/{snapshot_id}/content`：合同信息、保存的承诺及关联规则版本。
+- `GET /api/v1/rule-versions/{rule_version_id}/content?snapshot_id=…`：从当前合同包含的规则中选择版本，重新核对权限后读取。
+- `GET /api/v1/contract-snapshots/{snapshot_id}/business-readiness?action=…`：选择支付、身份核验、签署或数字人服务，检查必要服务条件。
+
+合同保留 `SEALED / NOT_SIGNED` 的真实含义：内容已保存、尚未签署。`SERVICE_READY` 只表示本次检查的服务条件具备，不能作为付款、签署或许可生效的依据。页面不会提供这些未接入动作。结构化条款和承诺按纯文本展示，不执行 HTML，也不生成下载文件或公开链接。
+
+每次请求都携带当前 `X-Acting-Party`。普通成员拥有有效查看授权时可读取；负责人也必须有独立授权。权限失败统一提示“内容不存在或无权查看”。合同、规则和服务结果只在内存保存；退出、登录失效、身份变化和重新查询立即移除旧内容，迟到响应不会恢复旧数据。旧元数据格式或不完整的成功响应会显示读取失败，规则或服务检查失败也会移除此前正文。限流时按服务器 `Retry-After` 秒数等待，未返回等待时长时不编造倒计时。
+
 ## 新旧业务如何分开
 
-新令牌只用于 `/api/v1`，不写入旧 `UserProvider`、旧 JWT 或演示服务。新账号登录后，“我的”显示账号管理；其他尚未接入的旧导航页说明待接入，旧登录守卫不会继续执行下单等动作，也不会要求已登录的新用户反复登录。
+新令牌只用于 `/api/v1`，不写入旧 `UserProvider`、旧 JWT 或演示服务。新账号登录后清空旧私有路由，直接进入独立 `/account` 账号页，再从那里打开合同阅读。新账号区域不叠加旧版主导航；“浏览旧版展示”保留为历史页面入口。旧登录守卫不会继续执行下单等动作，也不会要求已登录的新用户反复登录。
 
 “浏览旧版展示”仅进入历史页面，不创建体验账号或伪造真实登录。旧 `ApiService` 的服务器与演示配置仍只属于历史页面，不能用于判断新账号接口是否可用；在本地验证这些历史页面前须隔离旧生产地址。
 
@@ -44,11 +58,11 @@ flutter build web --no-web-resources-cdn --dart-define=JX_ACCOUNT_API_URL=http:/
 ```sh
 # 新账号模块必须无静态检查问题
 # 多路径 flutter analyze 在本机中文路径触发 SDK 的 LSP 格式异常，使用 dart analyze 可正常检查。
-dart analyze lib/account test/account
-flutter test test/account test/interaction_flows_test.dart test/widget_test.dart
+dart analyze lib/account lib/contracts lib/pages/login/login_page.dart lib/app.dart test/account test/contracts
+flutter test test/account test/contracts test/interaction_flows_test.dart test/widget_test.dart
 flutter build web --no-web-resources-cdn --dart-define=JX_ACCOUNT_API_URL=http://127.0.0.1:3000
 ```
 
-本轮覆盖重复点击、网络未知后保留原请求、处理中重试、短信挑战恢复、账号与身份切换隔离、并行分页、退出与登录失效、旧业务守卫、邀请版本头以及实际主入口。旧旅程测试中的“任意验证码登录”已移除；历史展示测试使用明确的演示夹具，不作为真实登录证据。
+本轮静态检查无问题；账号、合同及旧旅程的 47 项针对性测试已通过。覆盖重复点击、网络未知后保留原请求、短信挑战恢复、账号与身份切换隔离、并行分页、退出与登录失效、旧业务守卫、邀请版本头，以及合同/规则/服务检查的迟到响应、权限与完整性失败清空、服务端限流等待、纯文本条款和带编号启动路由。旧旅程测试中的“任意验证码登录”已移除；历史展示测试使用明确的演示夹具，不作为真实登录证据。
 
-`test/account/` 使用合成接口返回，不会发送真实短信。原生 Android／iOS 安装包、设备权限和真实短信供应商仍需各自验证；浏览器构建通过不代表这些工作已完成。`lib/` 是应用源码；旁边的 `gate0-docs-src-20260909/` 是旧性能实验副本，不是主工程。
+`test/account/` 与 `test/contracts/` 使用合成接口返回，不会发送真实短信。原生 Android／iOS 安装包、设备权限和真实短信供应商仍需各自验证；浏览器构建通过不代表这些工作已完成。`lib/` 是应用源码；旁边的 `gate0-docs-src-20260909/` 是旧性能实验副本，不是主工程。

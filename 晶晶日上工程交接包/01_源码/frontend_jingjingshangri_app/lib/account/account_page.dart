@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../pages/login/login_page.dart';
-import '../theme/app_theme.dart';
+import 'account_theme.dart';
+import '../contracts/contract_page.dart';
 import 'account_api.dart';
 import 'account_session.dart';
 
@@ -164,18 +165,20 @@ class _AccountPageState extends State<AccountPage> {
   Future<bool> _confirm(String title, String message) async =>
       await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(dialogContext, false),
-                child: const Text('取消')),
-            FilledButton(
-                onPressed: () => Navigator.pop(dialogContext, true),
-                child: const Text('确认')),
-          ],
-        ),
+        builder: (dialogContext) => Theme(
+            data: AccountTheme.data,
+            child: AlertDialog(
+              title: Text(title),
+              content: Text(message),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(dialogContext, false),
+                    child: const Text('取消')),
+                FilledButton(
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    child: const Text('确认')),
+              ],
+            )),
       ) ??
       false;
 
@@ -189,7 +192,9 @@ class _AccountPageState extends State<AccountPage> {
     final result = await showDialog<String>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => _NameDialog(
+        builder: (_) => Theme(
+            data: AccountTheme.data,
+            child: _NameDialog(
               title: create ? '创建机构' : '修改机构名称',
               initial: pending?['body']?['display_name'] as String? ??
                   (create ? '' : '${party?['display_name'] ?? ''}'),
@@ -210,7 +215,7 @@ class _AccountPageState extends State<AccountPage> {
                       body: {'display_name': value});
                 }
               },
-            ));
+            )));
     if (!mounted || epoch != _session.epoch) return;
     if (result != null) {
       setState(() => _notice = create ? '机构已创建，状态为待审核。' : '机构名称已更新。');
@@ -226,19 +231,21 @@ class _AccountPageState extends State<AccountPage> {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => _InviteDialog(
-          pending: pending,
-          submit: (accountId, expiresAt) async {
-            if (epoch != _session.epoch) {
-              throw const AccountError(0, 'CONTEXT_CHANGED');
-            }
-            return _session.write('POST', '/api/v1/parties/$id/invitations',
-                actingParty: id,
-                body: {
-                  'invitee_account_id': accountId,
-                  'expires_at': expiresAt
-                });
-          }),
+      builder: (_) => Theme(
+          data: AccountTheme.data,
+          child: _InviteDialog(
+              pending: pending,
+              submit: (accountId, expiresAt) async {
+                if (epoch != _session.epoch) {
+                  throw const AccountError(0, 'CONTEXT_CHANGED');
+                }
+                return _session.write('POST', '/api/v1/parties/$id/invitations',
+                    actingParty: id,
+                    body: {
+                      'invitee_account_id': accountId,
+                      'expires_at': expiresAt
+                    });
+              })),
     );
     if (result == null || !mounted || epoch != _session.epoch) return;
     _session.rememberInvitation(result);
@@ -319,7 +326,7 @@ class _AccountPageState extends State<AccountPage> {
                       padding: const EdgeInsets.only(top: 7),
                       child: Text(subtitle,
                           style: const TextStyle(
-                              color: AppTheme.textSecondary, height: 1.5))),
+                              color: AccountTheme.muted, height: 1.5))),
                 const SizedBox(height: 16),
                 ...children
               ],
@@ -328,7 +335,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget _small(String value) => Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(value,
-          style: const TextStyle(color: AppTheme.textSecondary, height: 1.5)));
+          style: const TextStyle(color: AccountTheme.muted, height: 1.5)));
   Widget _id(String title, dynamic value) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -358,7 +365,7 @@ class _AccountPageState extends State<AccountPage> {
             padding: const EdgeInsets.all(24),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Icon(Icons.manage_accounts_outlined,
-                  size: 52, color: AppTheme.cyanSoft),
+                  size: 52, color: AccountTheme.accent),
               const SizedBox(height: 16),
               const Text('登录后管理账号与机构', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
@@ -385,7 +392,7 @@ class _AccountPageState extends State<AccountPage> {
                 if (_busy) const LinearProgressIndicator(),
                 if (_error != null)
                   Card(
-                      color: AppTheme.surfaceDark,
+                      color: AccountTheme.surface,
                       child: Padding(
                           padding: const EdgeInsets.all(14),
                           child: Column(
@@ -393,7 +400,7 @@ class _AccountPageState extends State<AccountPage> {
                               children: [
                                 Text(_error!,
                                     style: const TextStyle(
-                                        color: AppTheme.errorLight)),
+                                        color: AccountTheme.danger)),
                                 TextButton(
                                     onPressed: _busy ? null : _refresh,
                                     child: const Text('刷新当前记录')),
@@ -402,7 +409,7 @@ class _AccountPageState extends State<AccountPage> {
                   Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: Text(_notice!,
-                          style: const TextStyle(color: AppTheme.cyanSoft))),
+                          style: const TextStyle(color: AccountTheme.accent))),
                 _card(
                     '账号与机构',
                     [
@@ -419,7 +426,7 @@ class _AccountPageState extends State<AccountPage> {
                         _button('退出登录', _logout, icon: Icons.logout),
                       ]),
                     ],
-                    subtitle: '已登录新账号。当前可管理身份、机构和成员；订单、钱包等旧业务尚未接入。'),
+                    subtitle: '管理账号、机构和成员，按授权阅读保存的合同。'),
                 _card(
                     '选择办事身份',
                     [
@@ -434,8 +441,8 @@ class _AccountPageState extends State<AccountPage> {
                                   alignment: Alignment.centerLeft,
                                   side: BorderSide(
                                       color: selected
-                                          ? AppTheme.cyanSoft
-                                          : AppTheme.border),
+                                          ? AccountTheme.accent
+                                          : AccountTheme.border),
                                   padding: const EdgeInsets.all(14)),
                               onPressed: _busy ||
                                       ['SUSPENDED', 'CLOSED']
@@ -458,7 +465,7 @@ class _AccountPageState extends State<AccountPage> {
                                           '${value['kind'] == 'ORGANIZATION' ? '机构' : '个人'} · ${_status(value['current_status'])}',
                                           style: const TextStyle(
                                               fontSize: 12,
-                                              color: AppTheme.textSecondary)),
+                                              color: AccountTheme.muted)),
                                     ]))
                               ]),
                             ));
@@ -471,6 +478,16 @@ class _AccountPageState extends State<AccountPage> {
                             icon: Icons.add_business_outlined),
                     ],
                     subtitle: '切换只选择代表谁办事，具体权限由服务器核对。'),
+                if (party != null)
+                  _card('合同与原约定', [
+                    _small('输入指定合同编号，查看当时保存的内容与规则。'),
+                    _button(
+                        '读取指定合同',
+                        () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                                builder: (_) => const ContractPage())),
+                        icon: Icons.description_outlined),
+                  ]),
                 if (party != null)
                   _card('${party['display_name']}', [
                     _id('当前身份编号', party['id']),
@@ -609,9 +626,9 @@ class _AccountPageState extends State<AccountPage> {
                 ],
               ],
             ));
-    return Scaffold(
-      backgroundColor:
-          widget.embedded ? Colors.transparent : AppTheme.liquidBase,
+    return AccountTheme(
+        child: Scaffold(
+      backgroundColor: AccountTheme.canvas,
       appBar: AppBar(
           automaticallyImplyLeading: !widget.embedded,
           title: const Text('我的账号'),
@@ -623,7 +640,7 @@ class _AccountPageState extends State<AccountPage> {
                   icon: const Icon(Icons.refresh))
           ]),
       body: body,
-    );
+    ));
   }
 }
 
@@ -695,7 +712,7 @@ class _NameDialogState extends State<_NameDialog> {
               decoration: const InputDecoration(labelText: '机构名称')),
           if (_uncertain) const Text('上次结果尚未确认，已保留原内容，请重试原操作。'),
           if (_error != null)
-            Text(_error!, style: const TextStyle(color: AppTheme.errorLight)),
+            Text(_error!, style: const TextStyle(color: AccountTheme.danger)),
         ])),
         actions: [
           TextButton(
@@ -809,14 +826,13 @@ class _InviteDialogState extends State<_InviteDialog> {
                       ? '选择截止日期与时间'
                       : _time(_expiry!.toIso8601String()))),
               const Text('按本机时区显示，发送时转换为 UTC。',
-                  style:
-                      TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                  style: TextStyle(color: AccountTheme.muted, fontSize: 12)),
               if (_uncertain) const Text('上次结果尚未确认，已保留原收件人和截止时间，请重试原操作。'),
               if (_error != null)
                 Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(_error!,
-                        style: const TextStyle(color: AppTheme.errorLight))),
+                        style: const TextStyle(color: AccountTheme.danger))),
             ])),
         actions: [
           TextButton(

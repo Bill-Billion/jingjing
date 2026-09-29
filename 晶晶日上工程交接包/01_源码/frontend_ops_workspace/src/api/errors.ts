@@ -67,6 +67,9 @@ const CODE_MESSAGES: Record<string, string> = {
   COMMIT_OUTCOME_UNKNOWN: '提交结果暂未确认，请用同样的内容重试。',
   SERVICE_UNAVAILABLE: '服务暂不可用，请稍后重试。',
   NOT_FOUND: '找不到该内容，或你没有权限查看。',
+  SNAPSHOT_NOT_FOUND: '内容不存在或当前身份无权查看。请核对合同编号与所选身份。',
+  RULE_NOT_FOUND: '这份合同下无法读取该规则，请重新读取合同后选择。',
+  UNKNOWN_BUSINESS_ACTION: '无法核对所选服务，请重新选择。',
 }
 
 /** 按 HTTP 状态码兜底（当后端没有给出可识别的 code） */
