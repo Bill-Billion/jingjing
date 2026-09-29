@@ -1,0 +1,948 @@
+TAP version 13
+# {"provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-09-22T07:30:20.375Z","level":"warn","event":"provider_call_blocked"}
+# Subtest: real MySQL and HTTP account lifecycle
+    # Subtest: probes work; missing provider evidence and legacy tokens do not grant login
+    ok 1 - probes work; missing provider evidence and legacy tokens do not grant login
+      ---
+      duration_ms: 96.72707
+      type: 'test'
+      ...
+    # Subtest: duplicate SMS requests dispatch once and keep phone/code out of storage and response
+    ok 2 - duplicate SMS requests dispatch once and keep phone/code out of storage and response
+      ---
+      duration_ms: 42.35361
+      type: 'test'
+      ...
+    # Subtest: login consumes once and replays the same protected session even with reordered JSON
+    ok 3 - login consumes once and replays the same protected session even with reordered JSON
+      ---
+      duration_ms: 104.100304
+      type: 'test'
+      ...
+    # Subtest: attempt counters commit on failure; expired and superseded codes are rejected
+    ok 4 - attempt counters commit on failure; expired and superseded codes are rejected
+      ---
+      duration_ms: 205.376365
+      type: 'test'
+      ...
+    # Subtest: different concurrent login keys cannot mint two sessions from one code
+    ok 5 - different concurrent login keys cannot mint two sessions from one code
+      ---
+      duration_ms: 50.389832
+      type: 'test'
+      ...
+    # Subtest: untrusted identities, malformed bodies and oversized input fail without exposing secrets
+    ok 6 - untrusted identities, malformed bodies and oversized input fail without exposing secrets
+      ---
+      duration_ms: 39.395604
+      type: 'test'
+      ...
+    # Subtest: provider uncertainty neither reports SENT nor resends an identical request
+    ok 7 - provider uncertainty neither reports SENT nor resends an identical request
+      ---
+      duration_ms: 39.309598
+      type: 'test'
+      ...
+    # Subtest: HTTP invitations require the intended recipient; removal preserves personal identity
+    ok 8 - HTTP invitations require the intended recipient; removal preserves personal identity
+      ---
+      duration_ms: 258.397407
+      type: 'test'
+      ...
+    # Subtest: rename replays original result, rejects stale versions and cursors from another account/resource
+    ok 9 - rename replays original result, rejects stale versions and cursors from another account/resource
+      ---
+      duration_ms: 156.543057
+      type: 'test'
+      ...
+    # Subtest: declining and owner revocation create no membership; unknown caller fields are rejected
+    ok 10 - declining and owner revocation create no membership; unknown caller fields are rejected
+      ---
+      duration_ms: 131.100203
+      type: 'test'
+      ...
+    # Subtest: logout, expiry and account suspension are enforced on subsequent HTTP calls
+    ok 11 - logout, expiry and account suspension are enforced on subsequent HTTP calls
+      ---
+      duration_ms: 97.448983
+      type: 'test'
+      ...
+    # Subtest: rate limits survive a fresh repository and browser origins are explicit
+    ok 12 - rate limits survive a fresh repository and browser origins are explicit
+      ---
+      duration_ms: 40.055964
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back account, session and consumption; retry works after repair
+    ok 13 - audit failure rolls back account, session and consumption; retry works after repair
+      ---
+      duration_ms: 42.104988
+      type: 'test'
+      ...
+    # Subtest: sessions survive fresh composition and expired secrets can be removed
+    ok 14 - sessions survive fresh composition and expired secrets can be removed
+      ---
+      duration_ms: 48.740751
+      type: 'test'
+      ...
+# {"request_id":"8a5c231e-1963-4248-8f83-753314af0edc","provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-09-22T07:30:21.694Z","level":"warn","event":"provider_call_blocked"}
+    # Subtest: actual server entry starts only with explicit MySQL configuration and leaves SMS disabled
+    ok 15 - actual server entry starts only with explicit MySQL configuration and leaves SMS disabled
+      ---
+      duration_ms: 55.488654
+      type: 'test'
+      ...
+    1..15
+ok 1 - real MySQL and HTTP account lifecycle
+  ---
+  duration_ms: 1782.540134
+  type: 'test'
+  ...
+# {"time":"2026-09-22T07:30:19.877Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:19.879Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:19.881Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:19.882Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:19.893Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:19.897Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:19.897Z","level":"info","event":"db_migrations_applied"}
+# {"time":"2026-09-22T07:30:19.909Z","level":"info","event":"ai_deliverable_version"}
+# {"time":"2026-09-22T07:30:19.910Z","level":"info","event":"ai_deliverable_version"}
+# {"time":"2026-09-22T07:30:19.911Z","level":"info","event":"ai_deliverable_version"}
+# {"time":"2026-09-22T07:30:19.912Z","level":"info","event":"ai_regenerate"}
+# {"time":"2026-09-22T07:30:19.912Z","level":"info","event":"ai_deliverable_version"}
+# {"time":"2026-09-22T07:30:19.916Z","level":"info","event":"ai_deliverable_version"}
+# {"time":"2026-09-22T07:30:19.916Z","level":"info","event":"ai_deliverable_review"}
+# {"time":"2026-09-22T07:30:19.917Z","level":"info","event":"ai_deliverable_version"}
+# Subtest: webhook 验签：错误签名拒绝、缺密钥拒绝
+ok 2 - webhook 验签：错误签名拒绝、缺密钥拒绝
+  ---
+  duration_ms: 1.981146
+  type: 'test'
+  ...
+# Subtest: 合法 webhook 成功推进并幂等：重复回调不重复出版本
+ok 3 - 合法 webhook 成功推进并幂等：重复回调不重复出版本
+  ---
+  duration_ms: 1.43348
+  type: 'test'
+  ...
+# Subtest: 轮询与回调 CAS 互斥：先 finalize 者推进，另一方不重复
+ok 4 - 轮询与回调 CAS 互斥：先 finalize 者推进，另一方不重复
+  ---
+  duration_ms: 1.234471
+  type: 'test'
+  ...
+# Subtest: 重做生成新版本行：parent 关联、版本号递增、不覆盖旧文件
+ok 5 - 重做生成新版本行：parent 关联、版本号递增、不覆盖旧文件
+  ---
+  duration_ms: 1.498779
+  type: 'test'
+  ...
+# Subtest: 审核开关开启：干净内容 pending_review→人工 approve；命中敏感词直接 rejected
+ok 6 - 审核开关开启：干净内容 pending_review→人工 approve；命中敏感词直接 rejected
+  ---
+  duration_ms: 5.084525
+  type: 'test'
+  ...
+# Subtest: auth requires explicit secret and encrypted replay binds to its request
+ok 7 - auth requires explicit secret and encrypted replay binds to its request
+  ---
+  duration_ms: 4.034502
+  type: 'test'
+  ...
+# Subtest: auth security configuration rejects invalid bounds
+ok 8 - auth security configuration rejects invalid bounds
+  ---
+  duration_ms: 0.640115
+  type: 'test'
+  ...
+# Subtest: configured SMS refuses SDK debug logging before any network call
+ok 9 - configured SMS refuses SDK debug logging before any network call
+  ---
+  duration_ms: 2.472537
+  type: 'test'
+  ...
+# Subtest: CI rejects failure, empty output, missing totals and nonzero process exits
+ok 10 - CI rejects failure, empty output, missing totals and nonzero process exits
+  ---
+  duration_ms: 2.132275
+  type: 'test'
+  ...
+# Subtest: CI only permits the named missing legacy snapshot skip, never skipped MySQL suites
+ok 11 - CI only permits the named missing legacy snapshot skip, never skipped MySQL suites
+  ---
+  duration_ms: 0.565873
+  type: 'test'
+  ...
+# {"time":"2026-09-22T07:30:19.998Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:20.001Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:20.003Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:20.003Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:20.013Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:20.016Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:20.017Z","level":"info","event":"db_migrations_applied"}
+# {"time":"2026-09-22T07:30:20.028Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T07:30:20.030Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T07:30:20.031Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T07:30:20.033Z","level":"info","event":"refund_success"}
+# {"time":"2026-09-22T07:30:20.036Z","level":"info","event":"reconciliation_done"}
+# Subtest: 成功（无退款）：四账守恒、reconcile 无该单差异
+ok 12 - 成功（无退款）：四账守恒、reconcile 无该单差异
+  ---
+  duration_ms: 2.552889
+  type: 'test'
+  ...
+# Subtest: 全额退款：kind=full、支付单 refunded、账仍平
+ok 13 - 全额退款：kind=full、支付单 refunded、账仍平
+  ---
+  duration_ms: 1.802998
+  type: 'test'
+  ...
+# Subtest: 部分退两次到全退：partial→refunded，超额被拒，账平
+ok 14 - 部分退两次到全退：partial→refunded，超额被拒，账平
+  ---
+  duration_ms: 2.791308
+  type: 'test'
+  ...
+# Subtest: 重复回调/重复请求幂等：同 idemKey 不重复出款
+ok 15 - 重复回调/重复请求幂等：同 idemKey 不重复出款
+  ---
+  duration_ms: 1.352198
+  type: 'test'
+  ...
+# Subtest: 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+ok 16 - 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+  ---
+  duration_ms: 0.904053
+  type: 'test'
+  ...
+# Subtest: runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+ok 17 - runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+  ---
+  duration_ms: 2.001147
+  type: 'test'
+  ...
+# Subtest: 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+ok 18 - 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+  ---
+  duration_ms: 1.702366
+  type: 'test'
+  ...
+# Subtest: field encryption requires exactly 32 UTF8 bytes without default or truncation
+ok 19 - field encryption requires exactly 32 UTF8 bytes without default or truncation
+  ---
+  duration_ms: 1.441412
+  type: 'test'
+  ...
+# Subtest: field encryption reads legacy AES-GCM format, uses fresh IVs, and round trips Unicode
+ok 20 - field encryption reads legacy AES-GCM format, uses fresh IVs, and round trips Unicode
+  ---
+  duration_ms: 1.613572
+  type: 'test'
+  ...
+# Subtest: wrong key or damaged ciphertext is an explicit sanitized error, never an empty identity
+ok 21 - wrong key or damaged ciphertext is an explicit sanitized error, never an empty identity
+  ---
+  duration_ms: 0.996722
+  type: 'test'
+  ...
+# Subtest: sample library query works with nullable video links and keeps old data
+ok 22 - sample library query works with nullable video links and keeps old data
+  ---
+  duration_ms: 80.228734
+  type: 'test'
+  ...
+# Subtest: script submission records only metadata digest and never claims external evidence
+ok 23 - script submission records only metadata digest and never claims external evidence
+  ---
+  duration_ms: 59.492772
+  type: 'test'
+  ...
+# Subtest: watermark placeholders cannot fabricate success with any configured provider
+ok 24 - watermark placeholders cannot fabricate success with any configured provider
+  ---
+  duration_ms: 0.665673
+  type: 'test'
+  ...
+# Subtest: all three delivery routes reject before changing orders or contacting providers
+ok 25 - all three delivery routes reject before changing orders or contacting providers
+  ---
+  duration_ms: 39.573288
+  type: 'test'
+  ...
+# Subtest: application startup rejects missing production and malformed supplied keys before database access
+ok 26 - application startup rejects missing production and malformed supplied keys before database access
+  ---
+  duration_ms: 673.55289
+  type: 'test'
+  ...
+# Subtest: agency cannot bind an artist or overwrite their identity even by claiming consent
+ok 27 - agency cannot bind an artist or overwrite their identity even by claiming consent
+  ---
+  duration_ms: 109.38103
+  type: 'test'
+  ...
+# Subtest: removing unrelated or historical members cannot overwrite any identity or delete history
+ok 28 - removing unrelated or historical members cannot overwrite any identity or delete history
+  ---
+  duration_ms: 42.153639
+  type: 'test'
+  ...
+# Subtest: agency application only records pending materials and preserves personal identity
+ok 29 - agency application only records pending materials and preserves personal identity
+  ---
+  duration_ms: 52.919758
+  type: 'test'
+  ...
+# Subtest: historical relationships grant no access to artist income, lists or exports
+ok 30 - historical relationships grant no access to artist income, lists or exports
+  ---
+  duration_ms: 50.576435
+  type: 'test'
+  ...
+# Subtest: batch payout and fan analytics cannot fabricate submission or statistics
+ok 31 - batch payout and fan analytics cannot fabricate submission or statistics
+  ---
+  duration_ms: 52.743232
+  type: 'test'
+  ...
+# Subtest: old delivered flags cannot settle money or pay MCN commission through HTTP or internal caller
+ok 32 - old delivered flags cannot settle money or pay MCN commission through HTTP or internal caller
+  ---
+  duration_ms: 44.364517
+  type: 'test'
+  ...
+# Subtest: sample payment buttons cannot mark either installment paid
+ok 33 - sample payment buttons cannot mark either installment paid
+  ---
+  duration_ms: 123.383249
+  type: 'test'
+  ...
+# Subtest: unavailable identity verification cannot autoapprove or collect identity documents
+ok 34 - unavailable identity verification cannot autoapprove or collect identity documents
+  ---
+  duration_ms: 52.71314
+  type: 'test'
+  ...
+# Subtest: old transaction status is visible only to the owner of its matching business order
+ok 35 - old transaction status is visible only to the owner of its matching business order
+  ---
+  duration_ms: 37.575755
+  type: 'test'
+  ...
+# Subtest: transaction ownership covers every old order type, collisions, unknown types and orphan records
+ok 36 - transaction ownership covers every old order type, collisions, unknown types and orphan records
+  ---
+  duration_ms: 59.136102
+  type: 'test'
+  ...
+# Subtest: Alipay status returns only owned rows and never queries or advances a payment during a read
+ok 37 - Alipay status returns only owned rows and never queries or advances a payment during a read
+  ---
+  duration_ms: 37.214276
+  type: 'test'
+  ...
+# Subtest: legacy writes, callbacks and Apple receipts are disabled even with configured test providers
+ok 38 - legacy writes, callbacks and Apple receipts are disabled even with configured test providers
+  ---
+  duration_ms: 39.597002
+  type: 'test'
+  ...
+# Subtest: old approved identities stay unchanged but are not exposed as verified or accepted by dependent actions
+ok 39 - old approved identities stay unchanged but are not exposed as verified or accepted by dependent actions
+  ---
+  duration_ms: 40.766815
+  type: 'test'
+  ...
+# Subtest: company submissions remain pending and rejected history is not promoted to verified
+ok 40 - company submissions remain pending and rejected history is not promoted to verified
+  ---
+  duration_ms: 23.041245
+  type: 'test'
+  ...
+# Subtest: default finance service cannot create, confirm or refund money in any environment
+ok 41 - default finance service cannot create, confirm or refund money in any environment
+  ---
+  duration_ms: 21.530196
+  type: 'test'
+  ...
+# Subtest: obsolete scripts that expected demo success are stopped before loading services
+ok 42 - obsolete scripts that expected demo success are stopped before loading services
+  ---
+  duration_ms: 158.084676
+  type: 'test'
+  ...
+# Subtest: 场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在
+ok 43 - 场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在
+  ---
+  duration_ms: 59.330015
+  type: 'test'
+  ...
+# Subtest: 场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据
+ok 44 - 场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据
+  ---
+  duration_ms: 221.354029
+  type: 'test'
+  ...
+# Subtest: 场景3 重复执行幂等：第二次全部跳过、结构与版本不重复
+ok 45 - 场景3 重复执行幂等：第二次全部跳过、结构与版本不重复
+  ---
+  duration_ms: 30.244363
+  type: 'test'
+  ...
+# Subtest: 等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致）
+ok 46 - 等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致） # SKIP 未提供显式脱敏旧库样本，未执行结构等价比较
+  ---
+  duration_ms: 0.487134
+  type: 'test'
+  ...
+# Subtest: 006 adds sample URL and classifies no historical digest; existing manually added URL survives
+ok 47 - 006 adds sample URL and classifies no historical digest; existing manually added URL survives
+  ---
+  duration_ms: 56.284078
+  type: 'test'
+  ...
+# Subtest: MySQL config is explicit, bounded and never defaults to a database
+ok 48 - MySQL config is explicit, bounded and never defaults to a database
+  ---
+  duration_ms: 2.482953
+  type: 'test'
+  ...
+# Subtest: Production cannot disable TLS, use root or load missing trust material
+ok 49 - Production cannot disable TLS, use root or load missing trust material
+  ---
+  duration_ms: 0.378069
+  type: 'test'
+  ...
+# Subtest: Legacy SQLite is permitted only in local/test; mysql and typo never fall back
+ok 50 - Legacy SQLite is permitted only in local/test; mysql and typo never fall back
+  ---
+  duration_ms: 0.334745
+  type: 'test'
+  ...
+# Subtest: Legacy entry rejects before SQLite is imported or a database is opened
+ok 51 - Legacy entry rejects before SQLite is imported or a database is opened
+  ---
+  duration_ms: 35.47238
+  type: 'test'
+  ...
+# Subtest: test command network guard blocks external TCP before a provider request
+ok 52 - test command network guard blocks external TCP before a provider request
+  ---
+  duration_ms: 1.375183
+  type: 'test'
+  ...
+# Subtest: Real isolated MySQL8 foundation
+    # Subtest: status on a fresh database is read-only
+    ok 1 - status on a fresh database is read-only
+      ---
+      duration_ms: 21.269884
+      type: 'test'
+      ...
+    # Subtest: new schema applies once, repeated migration is a no-op
+    ok 2 - new schema applies once, repeated migration is a no-op
+      ---
+      duration_ms: 277.987194
+      type: 'test'
+      ...
+    # Subtest: parameters, UTC, utf8mb4 and BIGINT are preserved
+    ok 3 - parameters, UTC, utf8mb4 and BIGINT are preserved
+      ---
+      duration_ms: 17.122111
+      type: 'test'
+      ...
+    # Subtest: business transaction commits, rolls back and refuses implicit-commit SQL
+    ok 4 - business transaction commits, rolls back and refuses implicit-commit SQL
+      ---
+      duration_ms: 20.015112
+      type: 'test'
+      ...
+    # Subtest: concurrent business updates keep both increments
+    ok 5 - concurrent business updates keep both increments
+      ---
+      duration_ms: 10.204854
+      type: 'test'
+      ...
+    # Subtest: a second migration session cannot acquire the same database lock
+    ok 6 - a second migration session cannot acquire the same database lock
+      ---
+      duration_ms: 42.670055
+      type: 'test'
+      ...
+    # Subtest: historical checksum/name drift and inserted older migration are rejected
+    ok 7 - historical checksum/name drift and inserted older migration are rejected
+      ---
+      duration_ms: 37.12161
+      type: 'test'
+      ...
+    # Subtest: DDL failure keeps earlier commits, blocks silent replay and supports inspected retry
+    ok 8 - DDL failure keeps earlier commits, blocks silent replay and supports inspected retry
+      ---
+      duration_ms: 88.818363
+      type: 'test'
+      ...
+    # Subtest: connection loss preserves APPLYING and refuses unsafe automatic retry
+    ok 9 - connection loss preserves APPLYING and refuses unsafe automatic retry
+      ---
+      duration_ms: 78.911779
+      type: 'test'
+      ...
+    # Subtest: wrong credentials fail without connecting to SQLite
+    ok 10 - wrong credentials fail without connecting to SQLite
+      ---
+      duration_ms: 9.632471
+      type: 'test'
+      ...
+    1..10
+ok 53 - Real isolated MySQL8 foundation
+  ---
+  duration_ms: 727.524894
+  type: 'test'
+  ...
+# Real MySQL 8.4.11 on loopback:33316; generated jx_test_* databases only
+# Subtest: party rules load with built-ins only, without database or provider modules
+ok 54 - party rules load with built-ins only, without database or provider modules
+  ---
+  duration_ms: 41.906674
+  type: 'test'
+  ...
+# Subtest: pending organization owner can manage membership but gains no commercial authority
+ok 55 - pending organization owner can manage membership but gains no commercial authority
+  ---
+  duration_ms: 1.30028
+  type: 'test'
+  ...
+# Subtest: inactive membership, missing membership and suspended/closed parties expose no actions
+ok 56 - inactive membership, missing membership and suspended/closed parties expose no actions
+  ---
+  duration_ms: 0.373193
+  type: 'test'
+  ...
+# Subtest: owner-only actions reject ordinary members, personal parties and missing memberships
+ok 57 - owner-only actions reject ordinary members, personal parties and missing memberships
+  ---
+  duration_ms: 0.742209
+  type: 'test'
+  ...
+# Subtest: invitation transition checks version, pending status and numeric expiry in order
+ok 58 - invitation transition checks version, pending status and numeric expiry in order
+  ---
+  duration_ms: 0.702349
+  type: 'test'
+  ...
+# Subtest: input validation refuses injected authority, invalid references and oversized unicode names
+ok 59 - input validation refuses injected authority, invalid references and oversized unicode names
+  ---
+  duration_ms: 0.858223
+  type: 'test'
+  ...
+# Subtest: MySQL party identity, consent, authority and transactional audit
+    # Subtest: upgrading from the seven prior migrations preserves data and applies only new tables
+    ok 1 - upgrading from the seven prior migrations preserves data and applies only new tables
+      ---
+      duration_ms: 276.740835
+      type: 'test'
+      ...
+    # Subtest: default authentication is denied and caller actor/roles cannot be injected
+    ok 2 - default authentication is denied and caller actor/roles cannot be injected
+      ---
+      duration_ms: 36.94247
+      type: 'test'
+      ...
+    # Subtest: same verified subject registers one account and one personal party under concurrency
+    ok 3 - same verified subject registers one account and one personal party under concurrency
+      ---
+      duration_ms: 32.245034
+      type: 'test'
+      ...
+    # Subtest: organization creation is idempotent without overwriting the personal party
+    ok 4 - organization creation is idempotent without overwriting the personal party
+      ---
+      duration_ms: 57.773499
+      type: 'test'
+      ...
+    # Subtest: individual authors and organizations can request multiple capabilities without activating business
+    ok 5 - individual authors and organizations can request multiple capabilities without activating business
+      ---
+      duration_ms: 94.041587
+      type: 'test'
+      ...
+    # Subtest: pending invitation grants no membership and only its intended account can respond
+    ok 6 - pending invitation grants no membership and only its intended account can respond
+      ---
+      duration_ms: 84.058453
+      type: 'test'
+      ...
+    # Subtest: cross-party identifiers and outsider mutation are rejected
+    ok 7 - cross-party identifiers and outsider mutation are rejected
+      ---
+      duration_ms: 59.41316
+      type: 'test'
+      ...
+    # Subtest: concurrent same-key acceptance produces one membership and one audit event
+    ok 8 - concurrent same-key acceptance produces one membership and one audit event
+      ---
+      duration_ms: 66.244403
+      type: 'test'
+      ...
+    # Subtest: concurrent invitations to the same person produce only one pending invitation
+    ok 9 - concurrent invitations to the same person produce only one pending invitation
+      ---
+      duration_ms: 35.619962
+      type: 'test'
+      ...
+    # Subtest: accept and revoke races yield one transition and never create membership after revocation
+    ok 10 - accept and revoke races yield one transition and never create membership after revocation
+      ---
+      duration_ms: 44.246416
+      type: 'test'
+      ...
+    # Subtest: declined, revoked, stale and expired invitations cannot activate membership
+    ok 11 - declined, revoked, stale and expired invitations cannot activate membership
+      ---
+      duration_ms: 168.246665
+      type: 'test'
+      ...
+    # Subtest: suspended accounts and parties cannot mutate or replay successful operations
+    ok 12 - suspended accounts and parties cannot mutate or replay successful operations
+      ---
+      duration_ms: 57.036081
+      type: 'test'
+      ...
+    # Subtest: pending acceptance rechecks the inviter and idempotent replay rechecks the owner
+    ok 13 - pending acceptance rechecks the inviter and idempotent replay rechecks the owner
+      ---
+      duration_ms: 64.837557
+      type: 'test'
+      ...
+    # Subtest: removal preserves identity/history, affects only one organization, and forbids replay after revocation
+    ok 14 - removal preserves identity/history, affects only one organization, and forbids replay after revocation
+      ---
+      duration_ms: 107.46637
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back invitation, membership and replay result together
+    ok 15 - audit failure rolls back invitation, membership and replay result together
+      ---
+      duration_ms: 42.478366
+      type: 'test'
+      ...
+    # Subtest: input rejects missing versions, unknown fields and invalid or past expiry
+    ok 16 - input rejects missing versions, unknown fields and invalid or past expiry
+      ---
+      duration_ms: 33.685551
+      type: 'test'
+      ...
+    # Subtest: accepted identity and audit survive reconnect without provider calls or a process cache
+    ok 17 - accepted identity and audit survive reconnect without provider calls or a process cache
+      ---
+      duration_ms: 61.275783
+      type: 'test'
+      ...
+    1..17
+ok 60 - MySQL party identity, consent, authority and transactional audit
+  ---
+  duration_ms: 1433.353585
+  type: 'test'
+  ...
+# Subtest: all declared provider interfaces fail closed without implementations
+ok 61 - all declared provider interfaces fail closed without implementations
+  ---
+  duration_ms: 4.473845
+  type: 'test'
+  ...
+# Subtest: configuration alone, wrong environment, stale proof and disabled status never call a provider
+ok 62 - configuration alone, wrong environment, stale proof and disabled status never call a provider
+  ---
+  duration_ms: 2.273256
+  type: 'test'
+  ...
+# Subtest: timeout reports unknown outcome, aborts and never automatically repeats payment
+ok 63 - timeout reports unknown outcome, aborts and never automatically repeats payment
+  ---
+  duration_ms: 11.395068
+  type: 'test'
+  ...
+# Subtest: provider error bodies and logger metadata do not leak credentials or private URLs
+ok 64 - provider error bodies and logger metadata do not leak credentials or private URLs
+  ---
+  duration_ms: 0.957693
+  type: 'test'
+  ...
+# Subtest: private files require permission and verified configuration, never local fallback
+ok 65 - private files require permission and verified configuration, never local fallback
+  ---
+  duration_ms: 2.629114
+  type: 'test'
+  ...
+# Subtest: private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+ok 66 - private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+  ---
+  duration_ms: 2.697186
+  type: 'test'
+  ...
+# Subtest: changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+ok 67 - changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+  ---
+  duration_ms: 144.087872
+  type: 'test'
+  ...
+# Subtest: health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+ok 68 - health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+  ---
+  duration_ms: 70.107797
+  type: 'test'
+  ...
+# Subtest: OSS failures never produce a successful or public result; revocation is checked before each read
+ok 69 - OSS failures never produce a successful or public result; revocation is checked before each read
+  ---
+  duration_ms: 1.753684
+  type: 'test'
+  ...
+# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-09-22T07:30:22.238Z","level":"warn","event":"legacy_private_upload_blocked"}
+# Subtest: legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+ok 70 - legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+  ---
+  duration_ms: 35.202828
+  type: 'test'
+  ...
+# Subtest: real isolated MySQL persists provider status, evidence and concurrent edits
+    # Subtest: database readiness requires applied migrations, not just a connection
+    ok 1 - database readiness requires applied migrations, not just a connection
+      ---
+      duration_ms: 277.940542
+      type: 'test'
+      ...
+    # Subtest: recording is denied by default and requires genuine server-side evidence checking
+    ok 2 - recording is denied by default and requires genuine server-side evidence checking
+      ---
+      duration_ms: 7.626863
+      type: 'test'
+      ...
+    # Subtest: configuration is saved but does not authorize real calls
+    ok 3 - configuration is saved but does not authorize real calls
+      ---
+      duration_ms: 12.348615
+      type: 'test'
+      ...
+    # Subtest: verified evidence survives closing and reopening the database connection
+    ok 4 - verified evidence survives closing and reopening the database connection
+      ---
+      duration_ms: 22.271358
+      type: 'test'
+      ...
+    # Subtest: disabling and awaiting approval keep history but block new calls
+    ok 5 - disabling and awaiting approval keep history but block new calls
+      ---
+      duration_ms: 18.051658
+      type: 'test'
+      ...
+    # Subtest: two concurrent updates cannot overwrite each other silently
+    ok 6 - two concurrent updates cannot overwrite each other silently
+      ---
+      duration_ms: 14.479984
+      type: 'test'
+      ...
+    # Subtest: history write failure rolls back both status and version
+    ok 7 - history write failure rolls back both status and version
+      ---
+      duration_ms: 8.202896
+      type: 'test'
+      ...
+    # Subtest: re-enabling requires fresh evidence and preserves earlier verification
+    ok 8 - re-enabling requires fresh evidence and preserves earlier verification
+      ---
+      duration_ms: 12.796035
+      type: 'test'
+      ...
+    # Subtest: capabilities have separate status even for the same provider
+    ok 9 - capabilities have separate status even for the same provider
+      ---
+      duration_ms: 6.898639
+      type: 'test'
+      ...
+    1..9
+ok 71 - real isolated MySQL persists provider status, evidence and concurrent edits
+  ---
+  duration_ms: 504.989422
+  type: 'test'
+  ...
+# {"time":"2026-09-22T07:30:22.438Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:22.443Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:22.446Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:22.447Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:22.459Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:22.462Z","level":"info","event":"migration_applied"}
+# {"time":"2026-09-22T07:30:22.462Z","level":"info","event":"db_migrations_applied"}
+# {"time":"2026-09-22T07:30:22.473Z","level":"warn","event":"alert:unit_test_event"}
+# Subtest: providerStatus 返回六类通道就绪度且不含任何密钥字段
+ok 72 - providerStatus 返回六类通道就绪度且不含任何密钥字段
+  ---
+  duration_ms: 1.905462
+  type: 'test'
+  ...
+# Subtest: alert 未配置 webhook 时只落日志、不外发、不抛错
+ok 73 - alert 未配置 webhook 时只落日志、不外发、不抛错
+  ---
+  duration_ms: 0.666395
+  type: 'test'
+  ...
+# Subtest: Apple IAP 缺共享密钥/缺票据时拒绝，绝不伪造成功
+ok 74 - Apple IAP 缺共享密钥/缺票据时拒绝，绝不伪造成功
+  ---
+  duration_ms: 1.035691
+  type: 'test'
+  ...
+# Subtest: legacy storage permits only explicit public local test files
+ok 75 - legacy storage permits only explicit public local test files
+  ---
+  duration_ms: 20.116861
+  type: 'test'
+  ...
+# Subtest: unknown test suite fails instead of running another module
+ok 76 - unknown test suite fails instead of running another module
+  ---
+  duration_ms: 39.625184
+  type: 'test'
+  ...
+# Subtest: requesting one legacy router does not load payment or unrelated routers
+ok 77 - requesting one legacy router does not load payment or unrelated routers
+  ---
+  duration_ms: 107.002746
+  type: 'test'
+  ...
+# Subtest: Real MySQL durable jobs, outbox and independent worker
+    # Subtest: same business intent is idempotent; conflicting intent is rejected, case remains distinct
+    ok 1 - same business intent is idempotent; conflicting intent is rejected, case remains distinct
+      ---
+      duration_ms: 227.910729
+      type: 'test'
+      ...
+    # Subtest: business transaction and outbox both roll back; publish requires explicit transaction
+    ok 2 - business transaction and outbox both roll back; publish requires explicit transaction
+      ---
+      duration_ms: 159.673506
+      type: 'test'
+      ...
+    # Subtest: parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+    ok 3 - parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+      ---
+      duration_ms: 205.076251
+      type: 'test'
+      ...
+    # Subtest: conflicting outbox intent is visibly blocked and does not replace the original job
+    ok 4 - conflicting outbox intent is visibly blocked and does not replace the original job
+      ---
+      duration_ms: 166.691401
+      type: 'test'
+      ...
+    # Subtest: failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+    ok 5 - failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+      ---
+      duration_ms: 162.42535
+      type: 'test'
+      ...
+    # Subtest: concurrent workers claim one job once while its lease is valid
+    ok 6 - concurrent workers claim one job once while its lease is valid
+      ---
+      duration_ms: 166.014351
+      type: 'test'
+      ...
+    # Subtest: expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+    ok 7 - expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+      ---
+      duration_ms: 161.624242
+      type: 'test'
+      ...
+    # Subtest: retry is delayed, capped and manually resumed without erasing attempt history
+    ok 8 - retry is delayed, capped and manually resumed without erasing attempt history
+      ---
+      duration_ms: 163.617011
+      type: 'test'
+      ...
+    # Subtest: crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+    ok 9 - crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+      ---
+      duration_ms: 151.955107
+      type: 'test'
+      ...
+    # Subtest: worker renews a long-running handler lease; other worker cannot take it over
+    ok 10 - worker renews a long-running handler lease; other worker cannot take it over
+      ---
+      duration_ms: 1475.935396
+      type: 'test'
+      ...
+    # Subtest: missing handlers and ambiguous handler errors block without fake success or immediate replay
+    ok 11 - missing handlers and ambiguous handler errors block without fake success or immediate replay
+      ---
+      duration_ms: 162.48876
+      type: 'test'
+      ...
+    # Subtest: active worker aborts after lease takeover and cannot overwrite its successor result
+    ok 12 - active worker aborts after lease takeover and cannot overwrite its successor result
+      ---
+      duration_ms: 357.729565
+      type: 'test'
+      ...
+    # Subtest: provider retry without a recovery adapter becomes blocked instead of executing again
+    ok 13 - provider retry without a recovery adapter becomes blocked instead of executing again
+      ---
+      duration_ms: 177.354795
+      type: 'test'
+      ...
+    # Subtest: unknown provider submission is reconciled by stable key, never blindly resubmitted
+    ok 14 - unknown provider submission is reconciled by stable key, never blindly resubmitted
+      ---
+      duration_ms: 158.434549
+      type: 'test'
+      ...
+    # Subtest: separate process crash preserves provider task ID and a new process recovers it
+    ok 15 - separate process crash preserves provider task ID and a new process recovers it
+      ---
+      duration_ms: 383.154453
+      type: 'test'
+      ...
+    # Subtest: graceful stop signals a handler, leaves durable recovery and does not claim the next task
+    ok 16 - graceful stop signals a handler, leaves durable recovery and does not claim the next task
+      ---
+      duration_ms: 157.684729
+      type: 'test'
+      ...
+    1..16
+ok 78 - Real MySQL durable jobs, outbox and independent worker
+  ---
+  duration_ms: 5348.217744
+  type: 'test'
+  ...
+# Subtest: worker CLI fails visibly while domain adapters are not enabled
+ok 79 - worker CLI fails visibly while domain adapters are not enabled
+  ---
+  duration_ms: 110.153721
+  type: 'test'
+  ...
+# Subtest: worker intent requires explicit retry budget and bounded references
+ok 80 - worker intent requires explicit retry budget and bounded references
+  ---
+  duration_ms: 0.895721
+  type: 'test'
+  ...
+# Subtest: stopping during claim never starts the newly acquired handler
+ok 81 - stopping during claim never starts the newly acquired handler
+  ---
+  duration_ms: 7.4292
+  type: 'test'
+  ...
+# Subtest: API and historical scheduler do not bootstrap timers or visual recovery
+ok 82 - API and historical scheduler do not bootstrap timers or visual recovery
+  ---
+  duration_ms: 0.551141
+  type: 'test'
+  ...
+1..82
+# tests 149
+# suites 0
+# pass 148
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 8635.958201
