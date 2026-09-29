@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
+import 'account/account_session.dart';
 import 'services/api_service.dart';
 import 'services/user_provider.dart';
 import 'theme/app_theme.dart';
@@ -26,8 +27,11 @@ Future<void> main() async {
   };
   await ApiService().init();
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => UserProvider()..restore(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()..restore()),
+        ChangeNotifierProvider(create: (_) => AccountSession()),
+      ],
       child: const JingjingShangriApp(),
     ),
   );

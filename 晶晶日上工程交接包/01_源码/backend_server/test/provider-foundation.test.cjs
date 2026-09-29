@@ -8,8 +8,8 @@ const silent=createLogger(()=>{});
 const provider={provider_kind:'PaymentProvider',provider_code:'test-only',capability_code:'pay',environment:'SANDBOX'};
 const inspection={implemented:true,configured:true,config_revision:'revision1'};
 function verifiedRepo(revision='revision1',environment='SANDBOX') {return {read:async()=>({current_status:environment+'_VERIFIED',config_revision:revision,object_version:1,verification_history:[{environment,verified_state:environment+'_VERIFIED',config_revision:revision,object_version:1,evidence_ref:'synthetic-evidence'}]})};}
-test('all six provider interfaces fail closed without implementations',async()=>{
- assert.equal(Object.keys(methods).length,6);
+test('all declared provider interfaces fail closed without implementations',async()=>{
+ assert.deepEqual(Object.keys(methods).sort(),[...require('../src/modules/providers/readiness').kinds].sort());
  for(const kind of Object.keys(methods)){
   const adapter=createAdapter({provider:{...provider,provider_kind:kind},logger:silent});
   assert.deepEqual(await adapter.inspect(),{implemented:false,configured:false});

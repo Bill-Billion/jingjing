@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../theme/app_theme.dart';
-import '../../services/api_service.dart';
+import '../../account/account_api.dart';
+import '../../account/account_session.dart';
 import '../../services/user_provider.dart';
 import '../../utils/motion.dart';
 import '../../utils/responsive.dart';
@@ -18,7 +19,7 @@ import '../../widgets/brand_mark.dart';
 /// 手机号 + 验证码登录。
 /// - 可被任意页面以模态方式推入（AuthGuard），登录成功 pop(true) 回来源并继续原动作；
 /// - 作为冷启动根页时，登录成功进入主导航；
-/// - dev 兜底码只存在于数据层，UI 不展示任何“任意 6 位/兜底码”提示。
+/// - 只使用账号服务实际发送的验证码；未启用时明确显示失败。
 class LoginPage extends StatefulWidget {
   /// 来源场景说明，如「下单前请先登录」
   final String? reason;
@@ -29,7 +30,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final ApiService _api = ApiService();
+  String? _challengeId;
+  String? _challengePhone;
+  bool _pendingSms = false;
+  bool _pendingLogin = false;
+  bool _restoredPending = false;
   final TextEditingController _phoneCtrl = TextEditingController();
   final TextEditingController _codeCtrl = TextEditingController();
   final FocusNode _phoneFocus = FocusNode();
@@ -41,6 +46,28 @@ class _LoginPageState extends State<LoginPage> {
     // 聚焦态变化时重绘描边（聚焦转鎏金）
     _phoneFocus.addListener(_onFocus);
     _codeFocus.addListener(_onFocus);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_restoredPending) return;
+    _restoredPending = true;
+    final api = context.read<AccountSession?>()?.api;
+    final login = api?.pending('POST', '/api/v1/auth/sessions');
+    final sms = api?.pending('POST', '/api/v1/auth/sms-challenges');
+    final input = (login ?? sms)?['body'];
+    if (input is Map) {
+      _phoneCtrl.text = '${input['phone']}';
+      _pendingSms = sms != null;
+      _pendingLogin = login != null;
+      if (login != null) {
+        _challengeId = input['challenge_id'] as String;
+        _challengePhone = input['phone'] as String;
+        _codeCtrl.text = input['code'] as String;
+      }
+      _errorText = '上次结果尚未确认，已恢复原内容，请重试原操作。';
+    }
   }
 
   void _onFocus() => setState(() {});
@@ -87,24 +114,36 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _sending = true;
       _errorText = null;
+      _challengeId = null;
+      _codeCtrl.clear();
     });
     try {
-      await _api.sendSmsCode(_phoneCtrl.text.trim());
+      final phone = _phoneCtrl.text.trim();
+      final data = await context.read<AccountSession>().sendCode(phone);
       if (!mounted) return;
+      _pendingSms = false;
+      _challengeId = data['challenge_id'] as String;
+      _challengePhone = phone;
       _toast('验证码已发送，请查收短信');
-      _startCountdown();
-    } catch (e) {
-      _toast('验证码发送失败，已为你保留倒计时，请稍后重试');
-      // 演示/断网环境同样启动倒计时，保证流程可继续
-      _startCountdown();
+      _startCountdown(DateTime.parse(data['resend_after'] as String));
+    } on AccountError catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorText = e.message;
+          _pendingSms = e.uncertain;
+        });
+      }
     } finally {
       if (mounted) setState(() => _sending = false);
     }
   }
 
-  void _startCountdown() {
+  void _startCountdown(DateTime resendAfter) {
     _timer?.cancel();
-    setState(() => _countdown = 60);
+    int remaining() =>
+        ((resendAfter.difference(DateTime.now()).inMilliseconds / 1000).ceil())
+            .clamp(0, 86400);
+    setState(() => _countdown = remaining());
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (!mounted) {
         t.cancel();
@@ -114,16 +153,21 @@ class _LoginPageState extends State<LoginPage> {
         t.cancel();
         setState(() => _countdown = 0);
       } else {
-        setState(() => _countdown -= 1);
+        setState(() => _countdown = remaining());
       }
     });
   }
 
   Future<void> _login() async {
+    if (_loginState == ButtonState.loading || _sending) return;
     final phone = _phoneCtrl.text.trim();
     final code = _codeCtrl.text.trim();
     if (!RegExp(r'^1[3-9]\d{9}$').hasMatch(phone)) {
       setState(() => _errorText = '请输入正确的手机号');
+      return;
+    }
+    if (_challengeId == null || _challengePhone != phone) {
+      _toast('请先为当前手机号获取验证码');
       return;
     }
     if (code.length != 6) {
@@ -141,79 +185,36 @@ class _LoginPageState extends State<LoginPage> {
     });
     try {
       final userProvider = context.read<UserProvider>();
-      final res = await _api.loginWithPhone(phone, code);
-      if (res['code'] == 0 || res['token'] != null || res['user'] != null) {
-        final data = res['data'] is Map
-            ? Map<String, dynamic>.from(res['data'] as Map)
-            : <String, dynamic>{...res, 'phone': phone};
-        await userProvider.saveLogin(data);
-        if (!mounted) return;
-        setState(() => _loginState = ButtonState.success);
-        await Future.delayed(const Duration(milliseconds: 650));
-        if (!mounted) return;
-        _enterAfterLogin();
-      } else {
-        setState(() => _loginState = ButtonState.errorState);
-        _toast('${res['message'] ?? '登录失败，请检查验证码'}');
-        Future.delayed(const Duration(milliseconds: 1600), () {
-          if (mounted) setState(() => _loginState = ButtonState.idle);
-        });
-      }
-    } catch (e) {
+      await context.read<AccountSession>().login(phone, _challengeId!, code);
+      await userProvider
+          .logout(); // New sessions must never authenticate legacy APIs.
       if (!mounted) return;
-      setState(() => _loginState = ButtonState.errorState);
-      _toast('网络异常，请稍后重试');
-      Future.delayed(const Duration(milliseconds: 1600), () {
-        if (mounted) setState(() => _loginState = ButtonState.idle);
+      setState(() => _loginState = ButtonState.success);
+      _enterAfterLogin();
+    } on AccountError catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loginState = ButtonState.errorState;
+        _errorText = e.message;
+        _pendingLogin = e.uncertain;
       });
     }
   }
 
-  /// 免验证码体验登录：短信通道未开通期间，一键以本地体验账号进入（真实验证码链路保留）。
+  /// Browsing legacy screens does not create an account or a synthetic token.
   Future<void> _quickDemo() async {
-    if (!_agreed) {
-      _toast('请先阅读并同意用户协议与隐私政策');
-      return;
-    }
-    FocusScope.of(context).unfocus();
+    if (_enteringDemo || _sending || _loginState == ButtonState.loading) return;
     setState(() => _enteringDemo = true);
-    try {
-      final userProvider = context.read<UserProvider>();
-      final res = await _api.demoQuickLogin();
-      final u = res['user'] is Map
-          ? Map<String, dynamic>.from(res['user'] as Map)
-          : <String, dynamic>{};
-      final phone = _phoneCtrl.text.trim();
-      if (phone.length == 11) {
-        u['phone'] = '${phone.substring(0, 3)}****${phone.substring(7)}';
-      }
-      u['isDemo'] = true;
-      u['nickname'] ??= '体验用户';
-      await userProvider.saveLogin({
-        'token': (res['token'] ?? 'demo-token').toString(),
-        'user': u,
-      });
-      if (!mounted) return;
-      await Future.delayed(const Duration(milliseconds: 480));
-      if (!mounted) return;
-      _enterAfterLogin();
-    } catch (_) {
-      if (!mounted) return;
-      _toast('进入体验失败，请重试');
-    } finally {
-      if (mounted) setState(() => _enteringDemo = false);
-    }
-  }
-  void _enterAfterLogin() {
-    final navigator = Navigator.of(context);
-    // 被守卫推入：可以 pop 说明上层有来源页，pop(true) 回跳并继续来源动作
-    if (navigator.canPop()) {
-      navigator.pop(true);
-      return;
-    }
-    // 冷启动根登录：进入主导航
+    await context.read<UserProvider>().logout();
+    if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      Motion.fadeSlideRoute(const MainScaffold()),
+        Motion.fadeSlideRoute(const MainScaffold()), (_) => false);
+  }
+
+  void _enterAfterLogin() {
+    // A new account must not return into an old private route or resume its action.
+    Navigator.of(context).pushAndRemoveUntil(
+      Motion.fadeSlideRoute(const MainScaffold(initialTab: 4)),
       (_) => false,
     );
   }
@@ -277,7 +278,8 @@ class _LoginPageState extends State<LoginPage> {
                       Text(widget.reason ?? '欢迎来到晶晶日上 · 手机号验证登录',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: AppTheme.iceHighlight.withValues(alpha: 0.78),
+                              color:
+                                  AppTheme.iceHighlight.withValues(alpha: 0.78),
                               fontSize: 12.5)),
                       const SizedBox(height: 30),
                       _buildPhoneField(),
@@ -335,6 +337,10 @@ class _LoginPageState extends State<LoginPage> {
       accent: accent,
       padding: const EdgeInsets.only(left: 6, right: 6),
       child: TextField(
+        enabled: !_sending &&
+            _loginState != ButtonState.loading &&
+            !_pendingSms &&
+            !_pendingLogin,
         controller: _phoneCtrl,
         focusNode: _phoneFocus,
         keyboardType: TextInputType.phone,
@@ -342,7 +348,14 @@ class _LoginPageState extends State<LoginPage> {
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         style: const TextStyle(
             color: AppTheme.textPrimary, fontSize: 16, letterSpacing: 1.2),
-        onChanged: (_) => setState(() {}),
+        onChanged: (_) => setState(() {
+          if (_challengePhone != _phoneCtrl.text.trim()) {
+            _challengeId = null;
+            _timer?.cancel();
+            _countdown = 0;
+            _codeCtrl.clear();
+          }
+        }),
         decoration: InputDecoration(
           counterText: '',
           prefixIcon: Icon(Icons.phone_iphone_rounded,
@@ -374,15 +387,16 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           Expanded(
             child: TextField(
+              enabled: !_sending &&
+                  _loginState != ButtonState.loading &&
+                  !_pendingLogin,
               controller: _codeCtrl,
               focusNode: _codeFocus,
               keyboardType: TextInputType.number,
               maxLength: 6,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 16,
-                  letterSpacing: 2),
+                  color: AppTheme.textPrimary, fontSize: 16, letterSpacing: 2),
               decoration: InputDecoration(
                 counterText: '',
                 prefixIcon: Icon(Icons.lock_outline_rounded,
@@ -400,14 +414,17 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           PressScale(
-            onTap: (_countdown > 0 || _sending || !_phoneValid)
+            onTap: (_countdown > 0 ||
+                    _sending ||
+                    _loginState == ButtonState.loading ||
+                    _pendingLogin ||
+                    !_phoneValid)
                 ? null
                 : _sendCode,
             borderRadius: BorderRadius.circular(999),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: Motion.short),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
                 color: (_countdown == 0 && !_sending && _phoneValid)
                     ? AppTheme.aquaBright.withValues(alpha: 0.10)
@@ -426,8 +443,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 15,
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: AppTheme.onGold))
-                  : Text(
-                      _countdown > 0 ? '${_countdown}s 后重发' : '获取验证码',
+                  : Text(_countdown > 0 ? '${_countdown}s 后重发' : '获取验证码',
                       style: TextStyle(
                         color: (_countdown == 0 && _phoneValid)
                             ? AppTheme.goldLight
@@ -514,7 +530,7 @@ class _LoginPageState extends State<LoginPage> {
                         Icon(Icons.bolt_rounded,
                             size: 18, color: AppTheme.aquaBright),
                         SizedBox(width: 8),
-                        Text('免验证码 · 先体验',
+                        Text('浏览旧版展示',
                             style: TextStyle(
                                 color: AppTheme.iceHighlight,
                                 fontSize: 15,
@@ -529,7 +545,7 @@ class _LoginPageState extends State<LoginPage> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            '短信通道暂未开通，可免验证先体验全部环节；开通后用验证码正式登录',
+            '仅浏览旧页面，不创建账号、不代表付款或业务办理成功。真实登录需要短信服务已启用。',
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: AppTheme.textHint, fontSize: 10.5, height: 1.4),
@@ -538,6 +554,7 @@ class _LoginPageState extends State<LoginPage> {
       ],
     );
   }
+
   Widget _buildDivider() {
     return Row(
       children: [

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../account/account_session.dart';
 import '../theme/app_theme.dart';
 import '../utils/motion.dart';
 import '../utils/perf_trace.dart';
@@ -58,6 +60,11 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   void _onTap(int i) {
     PerfTrace.stamp('tab tap i=$i from=$_currentIndex'); // Gate0 时间线：点击瞬间
+    if (i == 2 && (context.read<AccountSession?>()?.isLoggedIn ?? false)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('创作业务尚未接入新账号，请先使用“我的”管理账号与机构。')));
+      return;
+    }
     if (i == 2) {
       GlowPanel.show(context);
       return;
@@ -72,6 +79,8 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final accountLoggedIn =
+        context.watch<AccountSession?>()?.isLoggedIn ?? false;
     return Scaffold(
       backgroundColor: AppTheme.liquidBase,
       // V15.2：五个主 Tab 共用同一层曜石流光背景，切 Tab 时背景连续不重建；
@@ -92,7 +101,30 @@ class _MainScaffoldState extends State<MainScaffold> {
                 final bool alive = i == 2 || _visited.contains(i);
                 return TickerMode(
                   enabled: _currentIndex == i,
-                  child: alive ? _pages[i] : const SizedBox.shrink(),
+                  child: accountLoggedIn && i != 4
+                      ? Center(
+                          child: Padding(
+                              padding: const EdgeInsets.all(28),
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.construction_outlined,
+                                        size: 44, color: AppTheme.cyanSoft),
+                                    const SizedBox(height: 18),
+                                    const Text('这部分业务还在接入新账号',
+                                        style: TextStyle(fontSize: 19)),
+                                    const SizedBox(height: 10),
+                                    const Text(
+                                        '账号与机构管理已开放。旧版订单、钱包、创作和消息的数据不会混入你的新账号。',
+                                        textAlign: TextAlign.center),
+                                    const SizedBox(height: 18),
+                                    FilledButton(
+                                        onPressed: () => _onTap(4),
+                                        child: const Text('前往我的账号')),
+                                  ])))
+                      : alive
+                          ? _pages[i]
+                          : const SizedBox.shrink(),
                 );
               }),
             ),
