@@ -2,9 +2,9 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.3.0-rc.2
-  description: Account API and private historical content read candidate. Isolated verification only; real SMS,
-    business source writers and front-end integration remain unverified.
+  version: 0.4.0-rc.1
+  description: Account, historical contract and supply API candidate. Isolated verification only; real providers,
+    identity verification, project license binding and front-end integration remain unverified.
 servers:
 - url: http://127.0.0.1:3000
   description: Account API development entry; requires explicit MySQL configuration, applied migrations and secret.
@@ -12,6 +12,7 @@ servers:
 security:
 - bearerAuth: []
 tags:
+- name: supply
 - name: session
 - name: party
 - name: identity
@@ -1106,6 +1107,834 @@ paths:
           $ref: '#/components/responses/RateLimited'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/supply/assets:
+    post:
+      operationId: uploadSupplyAsset
+      summary: 上传私有作品或证据材料
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: purpose
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - WORK_CONTENT
+          - RIGHTS_EVIDENCE
+          - CONSENT_EVIDENCE
+          - REVIEW_EVIDENCE
+          - AVATAR_MATERIAL
+      - name: media_type
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - application/pdf
+          - text/plain
+          - image/jpeg
+          - image/png
+          - audio/wav
+          - audio/mpeg
+          - video/mp4
+          - application/octet-stream
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyAssetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              maxLength: 8388608
+  /api/v1/supply/assets/{asset_id}:
+    get:
+      operationId: getSupplyAsset
+      summary: 读取获准材料的元数据
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          $ref: '#/components/schemas/Id'
+        description: Owner selects an authorized party; omission uses explicit operator
+          permissions. Subject may select own personal party for consent.
+      - name: asset_id
+        in: path
+        required: true
+        schema: &supplypath001
+          type: string
+          pattern: ^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyAssetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/assets/{asset_id}/content:
+    get:
+      operationId: downloadSupplyAsset
+      summary: 下载获准的私有材料
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          $ref: '#/components/schemas/Id'
+        description: Owner selects an authorized party; omission uses explicit operator
+          permissions. Subject may select own personal party for consent.
+      - name: asset_id
+        in: path
+        required: true
+        schema: *supplypath001
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/records:
+    get:
+      operationId: listSupplyRecords
+      summary: 分页查看自己的资料或获准审核的资料
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          $ref: '#/components/schemas/Id'
+        description: Owner selects an authorized party; omission uses explicit operator
+          permissions. Subject may select own personal party for consent.
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - PROFILE
+          - WORK_VERSION
+          - AVATAR
+          - CONSENT
+      - name: cursor
+        in: query
+        required: false
+        schema: *supplypath001
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/records/{record_id}:
+    get:
+      operationId: getSupplyRecord
+      summary: 读取获准查看的投稿版本或同意记录
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          $ref: '#/components/schemas/Id'
+        description: Owner selects an authorized party; omission uses explicit operator
+          permissions. Subject may select own personal party for consent.
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/profiles:
+    post:
+      operationId: createSupplyProfile
+      summary: 提交个人或机构供给申请
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyProfileRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/profiles/{record_id}/reviews:
+    post:
+      operationId: reviewSupplyProfile
+      summary: 审核供给申请，不允许批准本人或所属机构
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyReviewRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/work-versions:
+    post:
+      operationId: createSupplyWorkVersion
+      summary: 创建原作或新修订版本
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyWorkRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/work-versions/{record_id}/actions:
+    post:
+      operationId: changeSupplyWorkVersion
+      summary: 提交作品审核或撤回当前版本
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyWorkActionRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/work-versions/{record_id}/reviews:
+    post:
+      operationId: reviewSupplyWorkVersion
+      summary: 分别核对权属或内容
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyWorkReviewRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/avatars:
+    post:
+      operationId: createSupplyAvatar
+      summary: 记录数字人资料，不自动启用生成
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyAvatarRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/consents:
+    post:
+      operationId: createSupplyConsent
+      summary: 本人提交明确用途与期限的脸声同意
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyConsentRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/consents/{record_id}/reviews:
+    post:
+      operationId: reviewSupplyConsent
+      summary: 独立核对同意材料，不冒充实名或电子签
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyReviewRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/consents/{record_id}/withdrawals:
+    post:
+      operationId: withdrawSupplyConsent
+      summary: 本人撤回同意并记录后续处置事件
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplyWithdrawalRequest'
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplyRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+  /api/v1/supply/consents/{record_id}/scope:
+    get:
+      operationId: getSupplyConsentScope
+      summary: 检查同意范围，未核验条件下不启用生成
+      tags:
+      - supply
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      description: Isolated HTTP/MySQL verified. No real supplier, identity verification,
+        electronic signature, project license or generation is implied. Read requests
+        recheck permissions and never cache private content.
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema: *supplypath001
+      - name: feature
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - FACE
+          - VOICE
+      - name: purpose
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: territory
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      responses:
+        '200':
+          description: Actual saved result or authorized read; not commercial activation.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentScopeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
 components:
   securitySchemes:
     bearerAuth:
@@ -1336,6 +2165,705 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    SupplyReview:
+      type: object
+      additionalProperties: false
+      required:
+      - decision
+      - reason
+      - reviewer_account_id
+      - recorded_at
+      properties:
+        decision:
+          type: string
+          enum: &supplyschema003
+          - APPROVED
+          - CHANGES_REQUESTED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        reviewer_account_id: &supplyschema002
+          type: string
+          pattern: ^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$
+        recorded_at: &supplyschema001
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+    SupplyWithdrawal:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      - recorded_at
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        recorded_at: *supplyschema001
+    SupplyCredit:
+      type: object
+      additionalProperties: false
+      required:
+      - party_id
+      - role
+      - evidence_asset_ids
+      properties:
+        party_id: *supplyschema002
+        role:
+          type: string
+          enum:
+          - AUTHOR
+          - RIGHTS_HOLDER
+          - AGENT
+        evidence_asset_ids: &supplyschema005
+          type: array
+          items: *supplyschema002
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+    SupplyWorkContent:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - work_id
+      - revision
+      - kind
+      - source_version_id
+      - project_id
+      - owner_party_id
+      - title
+      - content_asset_id
+      - content_sha256
+      - evidence_ids
+      properties:
+        id: *supplyschema002
+        work_id: *supplyschema002
+        revision: &supplyschema004
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        kind:
+          type: string
+          enum:
+          - ORIGINAL
+          - PROJECT_ADAPTATION
+        source_version_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+        project_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+        owner_party_id: *supplyschema002
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content_asset_id: *supplyschema002
+        content_sha256: &supplyschema006
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        evidence_ids:
+          type: array
+          items: *supplyschema002
+          minItems: 0
+          maxItems: 100
+          uniqueItems: true
+    SupplyWorkReview:
+      type: object
+      additionalProperties: false
+      required:
+      - channel
+      - decision
+      - reviewer_account_id
+      - evidence_ref
+      - reason
+      - recorded_at
+      - version_id
+      properties:
+        channel:
+          type: string
+          enum:
+          - RIGHTS
+          - CONTENT
+        decision:
+          type: string
+          enum: *supplyschema003
+        reviewer_account_id: *supplyschema002
+        evidence_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        recorded_at: *supplyschema001
+        version_id: *supplyschema002
+    SupplyWorkVersion:
+      type: object
+      additionalProperties: false
+      required:
+      - content
+      - object_version
+      - current_status
+      - submitted_at
+      - reviews
+      - withdrawal
+      properties:
+        content:
+          $ref: '#/components/schemas/SupplyWorkContent'
+        object_version: *supplyschema004
+        current_status:
+          type: string
+          enum:
+          - DRAFT
+          - SUBMITTED
+          - WITHDRAWN
+        submitted_at:
+          anyOf:
+          - *supplyschema001
+          - type: 'null'
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplyWorkReview'
+          maxItems: 2
+        withdrawal:
+          anyOf:
+          - $ref: '#/components/schemas/SupplyWithdrawal'
+          - type: 'null'
+    SupplyConsentTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - avatar_id
+      - subject_party_id
+      - features
+      - purposes
+      - territories
+      - valid_from
+      - valid_until
+      - terms
+      - evidence_asset_ids
+      properties:
+        avatar_id: *supplyschema002
+        subject_party_id: *supplyschema002
+        features:
+          type: array
+          items:
+            type: string
+            enum:
+            - FACE
+            - VOICE
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+        purposes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+        territories:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+        valid_from: *supplyschema001
+        valid_until: *supplyschema001
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        evidence_asset_ids: *supplyschema005
+    SupplyProfileData:
+      type: object
+      additionalProperties: false
+      required:
+      - display_name
+      - description
+      - evidence_asset_ids
+      - review
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        evidence_asset_ids: *supplyschema005
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/SupplyReview'
+          - type: 'null'
+    SupplyWorkData:
+      type: object
+      additionalProperties: false
+      required:
+      - version
+      - credits
+      properties:
+        version:
+          $ref: '#/components/schemas/SupplyWorkVersion'
+        credits: &supplyschema007
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplyCredit'
+          minItems: 1
+          maxItems: 30
+    SupplyAvatarData:
+      type: object
+      additionalProperties: false
+      required:
+      - display_name
+      - material_asset_ids
+      - provider_asset_ref
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        material_asset_ids: *supplyschema005
+        provider_asset_ref:
+          type: 'null'
+    SupplyConsentData:
+      type: object
+      additionalProperties: false
+      required:
+      - consent
+      - review
+      - withdrawal
+      - signing_method
+      - identity_verification
+      properties:
+        consent:
+          $ref: '#/components/schemas/SupplyConsentTerms'
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/SupplyReview'
+          - type: 'null'
+        withdrawal:
+          anyOf:
+          - $ref: '#/components/schemas/SupplyWithdrawal'
+          - type: 'null'
+        signing_method:
+          const: IN_APP_DECLARATION
+        identity_verification:
+          const: NOT_VERIFIED
+    SupplyAsset:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - owner_party_id
+      - purpose
+      - media_type
+      - byte_size
+      - content_sha256
+      - current_status
+      properties:
+        id: *supplyschema002
+        owner_party_id: *supplyschema002
+        purpose:
+          type: string
+          enum:
+          - WORK_CONTENT
+          - RIGHTS_EVIDENCE
+          - CONSENT_EVIDENCE
+          - REVIEW_EVIDENCE
+          - AVATAR_MATERIAL
+        media_type:
+          type: string
+          enum:
+          - application/pdf
+          - text/plain
+          - image/jpeg
+          - image/png
+          - audio/wav
+          - audio/mpeg
+          - video/mp4
+          - application/octet-stream
+        byte_size:
+          type: integer
+          minimum: 1
+          maximum: 8388608
+        content_sha256: *supplyschema006
+        current_status:
+          const: READY
+    SupplyRecord:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - kind
+        - stream_ref
+        - revision
+        - owner_party_id
+        - created_by
+        - current_status
+        - object_version
+        - data
+        properties:
+          id: *supplyschema002
+          kind:
+            const: PROFILE
+          stream_ref:
+            type: string
+            minLength: 1
+            maxLength: 128
+          revision: *supplyschema004
+          owner_party_id: *supplyschema002
+          created_by: *supplyschema002
+          current_status:
+            type: string
+            enum:
+            - PENDING_REVIEW
+            - APPROVED
+            - CHANGES_REQUESTED
+            - REJECTED
+          object_version: *supplyschema004
+          data:
+            $ref: '#/components/schemas/SupplyProfileData'
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - kind
+        - stream_ref
+        - revision
+        - owner_party_id
+        - created_by
+        - current_status
+        - object_version
+        - data
+        properties:
+          id: *supplyschema002
+          kind:
+            const: WORK_VERSION
+          stream_ref:
+            type: string
+            minLength: 1
+            maxLength: 128
+          revision: *supplyschema004
+          owner_party_id: *supplyschema002
+          created_by: *supplyschema002
+          current_status:
+            type: string
+            enum:
+            - DRAFT
+            - AWAITING_REVIEW
+            - REVIEWS_COMPLETE
+            - CHANGES_REQUESTED
+            - REJECTED
+            - WITHDRAWN
+          object_version: *supplyschema004
+          data:
+            $ref: '#/components/schemas/SupplyWorkData'
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - kind
+        - stream_ref
+        - revision
+        - owner_party_id
+        - created_by
+        - current_status
+        - object_version
+        - data
+        properties:
+          id: *supplyschema002
+          kind:
+            const: AVATAR
+          stream_ref:
+            type: string
+            minLength: 1
+            maxLength: 128
+          revision: *supplyschema004
+          owner_party_id: *supplyschema002
+          created_by: *supplyschema002
+          current_status:
+            type: string
+            enum:
+            - RECORDED
+          object_version: *supplyschema004
+          data:
+            $ref: '#/components/schemas/SupplyAvatarData'
+      - type: object
+        additionalProperties: false
+        required:
+        - id
+        - kind
+        - stream_ref
+        - revision
+        - owner_party_id
+        - created_by
+        - current_status
+        - object_version
+        - data
+        properties:
+          id: *supplyschema002
+          kind:
+            const: CONSENT
+          stream_ref:
+            type: string
+            minLength: 1
+            maxLength: 128
+          revision: *supplyschema004
+          owner_party_id: *supplyschema002
+          created_by: *supplyschema002
+          current_status:
+            type: string
+            enum:
+            - PENDING_REVIEW
+            - WITHDRAWN
+            - APPROVED
+            - CHANGES_REQUESTED
+            - REJECTED
+          object_version: *supplyschema004
+          data:
+            $ref: '#/components/schemas/SupplyConsentData'
+    SupplyRecordList:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplyRecord'
+          maxItems: 100
+        next_cursor:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+    ConsentScope:
+      type: object
+      additionalProperties: false
+      required:
+      - consent_id
+      - scope_matches
+      - usable_for_generation
+      - reason_code
+      properties:
+        consent_id: *supplyschema002
+        scope_matches:
+          type: boolean
+        usable_for_generation:
+          const: false
+        reason_code:
+          type: string
+          enum:
+          - IDENTITY_AND_PROVIDER_NOT_VERIFIED
+          - CONSENT_SCOPE_NOT_AVAILABLE
+    SupplyAssetResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/SupplyAsset'
+    SupplyRecordResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/SupplyRecord'
+    SupplyRecordListResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/SupplyRecordList'
+    ConsentScopeResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ConsentScope'
+    SupplyProfileRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - display_name
+      - description
+      - evidence_asset_ids
+      - previous_profile_id
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        evidence_asset_ids: *supplyschema005
+        previous_profile_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+    SupplyReviewRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - decision
+      - reason
+      properties:
+        decision:
+          type: string
+          enum: *supplyschema003
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    SupplyWorkRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - work_id
+      - previous_version_id
+      - title
+      - kind
+      - source_version_id
+      - project_id
+      - content_asset_id
+      - evidence_ids
+      - credits
+      properties:
+        work_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+        previous_version_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        kind:
+          type: string
+          enum:
+          - ORIGINAL
+          - PROJECT_ADAPTATION
+        source_version_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+        project_id:
+          anyOf:
+          - *supplyschema002
+          - type: 'null'
+        content_asset_id: *supplyschema002
+        evidence_ids: *supplyschema005
+        credits: *supplyschema007
+    SupplyWorkActionRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - action
+      - reason
+      properties:
+        action:
+          type: string
+          enum:
+          - SUBMIT
+          - WITHDRAW
+        reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 1000
+          - type: 'null'
+    SupplyWorkReviewRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - channel
+      - decision
+      - reason
+      properties:
+        channel:
+          type: string
+          enum:
+          - RIGHTS
+          - CONTENT
+        decision:
+          type: string
+          enum: *supplyschema003
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    SupplyAvatarRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - display_name
+      - material_asset_ids
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        material_asset_ids: *supplyschema005
+    SupplyConsentRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - consent
+      properties:
+        consent:
+          $ref: '#/components/schemas/SupplyConsentTerms'
+    SupplyWithdrawalRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
     BusinessServiceReadiness:
       type: object
       additionalProperties: false
