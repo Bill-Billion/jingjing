@@ -2,7 +2,7 @@
 
 这是双方共同开发项目的仓库。按最新R0.6方案推进，原始材料保留；功能“写完”“测过”“正式能用”分别说明。
 
-当前先看[第一阶段交付：分工、获取代码与验收方法](docs/collaboration/STAGE_1_HANDOFF.md)。开发分支为core/stage-1-foundation-handoff；合入前默认main不会自动获得这些材料。
+第一阶段已合入integration；后续阶段仍按申请逐项审阅。当前本侧推进到第十阶段结算，完整后端分支为 `core/stage-10-settlement`，已经整合商单、制作和项目发行。先看[最新进展与下一步分工](docs/status/MAINLINE_PROGRESS.md)和[结算页面调用说明](docs/collaboration/STAGE_10_API.md)。后端自验不等于页面联调、审阅合并或正式上线。
 
 日常只需先看这三份：
 

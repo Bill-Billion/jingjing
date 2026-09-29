@@ -1,0 +1,6 @@
+CREATE TABLE supply_commands (
+ id CHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ fingerprint CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ result_json JSON NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

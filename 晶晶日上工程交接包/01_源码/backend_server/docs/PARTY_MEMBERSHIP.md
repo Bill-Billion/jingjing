@@ -1,5 +1,7 @@
 # 个人、机构和成员邀请：本轮服务器实现边界
 
+2026-09-22更新：下方为第一批内部流程的历史记录。第一阶段已合入，新的登录、机构与邀请HTTP接口已实现并通过隔离测试；最新范围和限制见[第二阶段说明](../../../../docs/collaboration/STAGE_2_ACCOUNT_API.md)。
+
 代码在src/modules/party/repository.js，通过createPartyRepository(db, {resolvePrincipal})构造，使用现有MySQL事务连接。输入与权限规则在policy.js中独立验证；SQL、可信身份接入和事务内重新核对仍在repository.js中；没有新增框架或外部服务。尚未挂载HTTP路由，也未替换旧登录。
 
 ## 可信身份与允许的操作
