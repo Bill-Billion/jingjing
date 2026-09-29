@@ -25,7 +25,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  });
  app.use((req,res,next)=>{
   const origin=req.get('Origin');
-  if(origin&&allowedOrigins.includes(origin)){res.set('Access-Control-Allow-Origin',origin);res.vary('Origin');res.set('Access-Control-Allow-Headers','Authorization, Content-Type, X-Request-Id, X-Acting-Party, Idempotency-Key, If-Match');res.set('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE,OPTIONS');res.set('Access-Control-Expose-Headers','X-Request-Id, ETag');}
+  if(origin&&allowedOrigins.includes(origin)){res.set('Access-Control-Allow-Origin',origin);res.vary('Origin');res.set('Access-Control-Allow-Headers','Authorization, Content-Type, X-Request-Id, X-Acting-Party, Idempotency-Key, If-Match');res.set('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE,OPTIONS');res.set('Access-Control-Expose-Headers','X-Request-Id, ETag, Retry-After');}
   if(req.method==='OPTIONS'){if(!origin||!allowedOrigins.includes(origin))return next(error('ORIGIN_NOT_ALLOWED',403));return res.status(204).end();}next();
  });
  const trade=require('./trade-routes').createTradeRouters({db,resolvePrincipal:async req=>principals.get(req)||null,env:tradeEnv,providersFactory:tradeProvidersFactory,storageFactory:supplyStorageFactory});
@@ -143,7 +143,11 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   const safeCode=typeof e.code==='string'&&/^[A-Z][A-Z0-9_]*$/.test(e.code);
   const status=e.type==='entity.parse.failed'?400:e.type==='entity.too.large'?413:client?e.status:503;
   const code=e.type==='entity.parse.failed'?'INVALID_JSON':e.type==='entity.too.large'?'BODY_TOO_LARGE':((client&&safeCode)||['SMS_NOT_READY','SMS_CHALLENGE_UNAVAILABLE','COMMIT_OUTCOME_UNKNOWN'].includes(e.code)?e.code:'SERVICE_UNAVAILABLE');
-  res.status(status).json({meta:meta(req),error:{code,message:status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查',retryable:false,details:[]}});
+  // Retry the original operation only; this flag never proves a failed commit or authorizes a new key.
+  const retryable=['IDEMPOTENCY_IN_PROGRESS','COMMIT_OUTCOME_UNKNOWN','RATE_LIMITED'].includes(code);
+  if(code==='RATE_LIMITED'&&Number.isSafeInteger(e.retryAfter)&&e.retryAfter>0)res.set('Retry-After',String(e.retryAfter));
+  const message=code==='RATE_LIMITED'?'请求过于频繁，请等待后重试':retryable?'操作结果尚未确认，请稍后重试原请求':status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查';
+  res.status(status).json({meta:meta(req),error:{code,message,retryable,details:[]}});
  });
  return app;
 }

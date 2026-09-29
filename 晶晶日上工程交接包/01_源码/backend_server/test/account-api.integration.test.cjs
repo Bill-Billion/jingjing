@@ -39,11 +39,20 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
   async function login(c,k=key()){return request('POST','/api/v1/auth/sessions',{phone:c.phone,challenge_id:c.response.body.data.challenge_id,code:c.code},null,{'Idempotency-Key':k});}
   async function user(){const c=await challenge();assert.equal(c.response.status,200);const r=await login(c);assert.equal(r.status,200,JSON.stringify(r.body));return {token:r.body.data.access_token,id:r.body.data.account.id,c,response:r};}
   function record(schema,response){assert.equal(response.status,200,JSON.stringify(response.body));const value=structuredClone(response.body);if(value.data?.access_token)value.data.access_token='synthetic-token-not-usable';responses.push({schema,value});}
+  function recordError(response,status,code,retryable){
+   assert.equal(response.status,status);assert.equal(response.body.error.code,code);assert.equal(response.body.error.retryable,retryable);
+   responses.push({schema:'ErrorResponse',value:response.body});
+  }
+  async function withApi(overrides,work){
+   const previous=server,temporary=createAccountApi({db,secret,sms,authSettings:settings,allowedOrigins:['http://localhost:5173'],...overrides}).listen(0,'127.0.0.1');
+   await new Promise(resolve=>temporary.once('listening',resolve));server=temporary;
+   try{return await work();}finally{server=previous;await new Promise(resolve=>temporary.close(resolve));}
+  }
   await t.test('probes work; missing provider evidence and legacy tokens do not grant login',async()=>{
    record('HealthResponse',await request('GET','/health'));record('ReadyResponse',await request('GET','/ready'));
    assert.equal((await request('GET','/api/v1/me')).status,401);
    assert.equal((await request('GET','/api/v1/me',undefined,'legacy.jwt.token')).status,401);
-   const r=await challenge();assert.equal(r.response.status,503);assert.equal(calls,0);assert.ok(!JSON.stringify(r.response.body).includes(r.phone));
+   const r=await challenge();recordError(r.response,503,'SMS_NOT_READY',false);assert.equal(calls,0);assert.ok(!JSON.stringify(r.response.body).includes(r.phone));
    await assert.rejects(createSmsProvider(db,{NODE_ENV:'test'}).call('send',{phone:nextPhone(),code:'123456'}),{code:'PROVIDER_NOT_CONFIGURED'});
    await readiness.record({...descriptor,current_status:'SANDBOX_VERIFIED',config_revision:'synthetic-v1',expected_version:0,evidence_ref:'synthetic-no-network'},{actor_ref:'test-only'});
   });
@@ -60,8 +69,11 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    const c=await challenge(),k=key();const [a,b]=await Promise.all([login(c,k),login(c,k)]);
    record('SessionResponse',a);assert.equal(b.status,200);assert.equal(a.body.data.access_token,b.body.data.access_token);
    const token=a.body.data.access_token,me=await request('GET','/api/v1/me',undefined,token);record('AccountResponse',me);
+   assert.deepEqual(me.body.data.allowed_actions,['READ_ACCOUNT','LIST_PARTIES','CREATE_ORGANIZATION']);
    assert.equal(me.headers['cache-control'],'no-store');assert.equal(me.headers.etag,'"1"');assert.equal(me.body.meta.actor.account_id,me.body.data.id);
    const parties=await request('GET','/api/v1/me/parties',undefined,token);record('PartyPageResponse',parties);assert.equal(parties.body.data.items.length,1);assert.equal(parties.body.data.items[0].party.kind,'PERSON');
+   assert.deepEqual(parties.body.data.items[0].party.allowed_actions,['READ_PARTY','REQUEST_CAPABILITY']);
+   assert.deepEqual(parties.body.data.items[0].membership.allowed_actions,[]);
    assert.equal((await login(c)).status,401);
    const [[stored]]=await db.execute('SELECT * FROM auth_login_results WHERE token_hash=?',[auth.secure.digest('token',token)]);assert.ok(!stored.encrypted_token.includes(token));
    const reordered=await request('POST','/api/v1/auth/sessions',{code:c.code,phone:c.phone,challenge_id:c.response.body.data.challenge_id},null,{'Idempotency-Key':k});assert.equal(reordered.status,200);assert.equal(reordered.body.data.access_token,token);
@@ -90,7 +102,8 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
   });
   await t.test('provider uncertainty neither reports SENT nor resends an identical request',async()=>{
    unknown=true;const phone=nextPhone(),k=key(),before=calls;try{
-    const first=await challenge(phone,k);assert.equal(first.response.status,503);assert.equal((await challenge(phone,k)).response.status,503);assert.equal(calls,before+1);
+    const first=await challenge(phone,k);recordError(first.response,503,'SMS_NOT_READY',false);
+    recordError((await challenge(phone,k)).response,503,'SMS_CHALLENGE_UNAVAILABLE',false);assert.equal(calls,before+1);
     const [[row]]=await db.execute('SELECT id FROM auth_challenges WHERE phone_hash=?',[auth.secure.digest('phone',phone)]);
     assert.equal((await request('POST','/api/v1/auth/sessions',{phone,challenge_id:row.id,code:sent.get(phone)},null,{'Idempotency-Key':key()})).status,401);
    }finally{unknown=false;}
@@ -99,7 +112,8 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    const owner=await user(),recipient=await user(),outsider=await user();
    const org=await request('POST','/api/v1/organizations',{display_name:'合成机构'},owner.token,{'Idempotency-Key':key()});record('OrganizationResultResponse',org);
    const partyId=org.body.data.party_id,headers={'X-Acting-Party':partyId,'Idempotency-Key':key()},base='/api/v1/parties/'+partyId;
-   record('PartyResponse',await request('GET',base,undefined,owner.token,headers));
+   const owned=await request('GET',base,undefined,owner.token,headers);record('PartyResponse',owned);
+   assert.deepEqual(owned.body.data.allowed_actions,['READ_PARTY','REQUEST_CAPABILITY','MANAGE_MEMBERS']);
    assert.equal((await request('GET',base,undefined,outsider.token,headers)).status,404);
    assert.equal((await request('GET',base,undefined,owner.token,{'X-Acting-Party':key()})).status,403);
    assert.equal((await request('GET',base,undefined,owner.token)).status,400);
@@ -111,13 +125,20 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    record('InvitationPageResponse',await request('GET','/api/v1/me/invitations',undefined,recipient.token));
    const a=await request('POST',url,{decision:'ACCEPT'},recipient.token,acceptHeaders);record('InvitationResponseResultResponse',a);
    assert.deepEqual((await request('POST',url,{decision:'ACCEPT'},recipient.token,acceptHeaders)).body.data,a.body.data);
-   assert.equal((await request('GET',base,undefined,recipient.token,headers)).status,200);
-   assert.equal((await request('GET',base+'/members',undefined,recipient.token,headers)).status,403);
+   const memberView=await request('GET',base,undefined,recipient.token,headers);record('PartyResponse',memberView);
+   assert.deepEqual(memberView.body.data.allowed_actions,['READ_PARTY']);
+   recordError(await request('GET',base+'/members',undefined,recipient.token,headers),403,'PARTY_ACTION_FORBIDDEN',false);
    record('MemberPageResponse',await request('GET',base+'/members',undefined,owner.token,headers));
    const remove=await request('DELETE',base+'/members/'+recipient.id,{},owner.token,{...headers,'Idempotency-Key':key(),'If-Match':'"1"'});record('MemberRemovedResponse',remove);
    assert.equal((await request('POST',url,{decision:'ACCEPT'},recipient.token,acceptHeaders)).status,403);
    assert.equal((await request('GET','/api/v1/me/parties',undefined,recipient.token)).body.data.items.length,1);
-   record('CapabilityGrantResponse',await request('POST',base+'/capabilities',{code:'MCN'},owner.token,{...headers,'Idempotency-Key':key()}));
+   const capability=await request('POST',base+'/capabilities',{code:'MCN'},owner.token,{...headers,'Idempotency-Key':key()});record('CapabilityGrantResponse',capability);
+   assert.deepEqual(capability.body.data.allowed_actions,[]);
+   for(const status of ['SUSPENDED','CLOSED']){
+    await db.execute('UPDATE parties SET current_status=? WHERE id=?',[status,partyId]);
+    const inactive=await request('GET',base,undefined,owner.token,headers);record('PartyResponse',inactive);
+    assert.deepEqual(inactive.body.data.allowed_actions,[]);
+   }
   });
   await t.test('rename replays original result, rejects stale versions and cursors from another account/resource',async()=>{
    const u=await user(),other=await user();
@@ -131,7 +152,52 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    const a=await request('PATCH',url,{display_name:'改名一'},u.token,headers);record('PartyResponse',a);
    assert.equal((await request('PATCH',url,{display_name:'改名二'},u.token,{...headers,'Idempotency-Key':key(),'If-Match':'"2"'})).status,200);
    assert.deepEqual((await request('PATCH',url,{display_name:'改名一'},u.token,headers)).body.data,a.body.data);
-   assert.equal((await request('PATCH',url,{display_name:'过期改名'},u.token,{...headers,'Idempotency-Key':key()})).status,412);
+   recordError(await request('PATCH',url,{display_name:'过期改名'},u.token,{...headers,'Idempotency-Key':key()}),412,'VERSION_CONFLICT',false);
+  });
+  await t.test('an uncertain committed organization and rename replay the original result without duplicate writes',async()=>{
+   const u=await user(),headers={'Idempotency-Key':key()},body={display_name:'提交后连接中断'};
+   let loseReply=true;
+   const proxy={...db,withTransaction:async work=>{const result=await db.withTransaction(work);if(loseReply){loseReply=false;throw Object.assign(Error('synthetic lost commit acknowledgement'),{code:'COMMIT_OUTCOME_UNKNOWN'});}return result;}};
+   await withApi({db:proxy},async()=>{
+    recordError(await request('POST','/api/v1/organizations',body,u.token,headers),503,'COMMIT_OUTCOME_UNKNOWN',true);
+    const replay=await request('POST','/api/v1/organizations',body,u.token,headers);record('OrganizationResultResponse',replay);
+    const [[count]]=await db.execute("SELECT COUNT(*) AS n FROM parties WHERE created_by=? AND kind='ORGANIZATION'",[u.id]);assert.equal(Number(count.n),1);
+    const partyId=replay.body.data.party_id,url='/api/v1/parties/'+partyId,renameHeaders={'Idempotency-Key':key(),'X-Acting-Party':partyId,'If-Match':'"1"'};
+    loseReply=true;
+    recordError(await request('PATCH',url,{display_name:'只改一次'},u.token,renameHeaders),503,'COMMIT_OUTCOME_UNKNOWN',true);
+    const renamed=await request('PATCH',url,{display_name:'只改一次'},u.token,renameHeaders);record('PartyResponse',renamed);
+    assert.equal(renamed.body.data.object_version,2);assert.equal(renamed.body.data.display_name,'只改一次');
+    const latest=await request('GET',url,undefined,u.token,renameHeaders);assert.equal(latest.body.data.object_version,2);
+   });
+  });
+  await t.test('an uncertain committed login replays one session and does not send another SMS',async()=>{
+   const c=await challenge(),k=key(),before=calls;let loseReply=true;
+   const proxy={...db,withTransaction:async work=>{const result=await db.withTransaction(work);if(loseReply&&result?.token){loseReply=false;throw Object.assign(Error('synthetic lost login commit acknowledgement'),{code:'COMMIT_OUTCOME_UNKNOWN'});}return result;}};
+   await withApi({db:proxy},async()=>{
+    recordError(await login(c,k),503,'COMMIT_OUTCOME_UNKNOWN',true);
+    const recovered=await login(c,k);record('SessionResponse',recovered);
+    const again=await login(c,k);assert.equal(again.body.data.access_token,recovered.body.data.access_token);
+    const [[count]]=await db.execute('SELECT COUNT(*) AS n FROM auth_sessions WHERE account_id=?',[recovered.body.data.account.id]);assert.equal(Number(count.n),1);assert.equal(calls,before);
+   });
+  });
+  await t.test('pending command can be retried, while changed content with the same key cannot',async()=>{
+   const u=await user(),headers={'Idempotency-Key':key()},body={display_name:'等待原操作'};
+   const original=await request('POST','/api/v1/organizations',body,u.token,headers);assert.equal(original.status,200);
+   const [[command]]=await db.execute("SELECT id,result_json FROM party_commands WHERE actor_account_id=? AND operation_code='CREATE_ORGANIZATION'",[u.id]);
+   // Model a persisted pending command; no second business write may be started.
+   await db.execute('UPDATE party_commands SET result_json=NULL WHERE id=?',[command.id]);
+   recordError(await request('POST','/api/v1/organizations',body,u.token,headers),409,'IDEMPOTENCY_IN_PROGRESS',true);
+   recordError(await request('POST','/api/v1/organizations',{display_name:'不是同一操作'},u.token,headers),409,'IDEMPOTENCY_CONFLICT',false);
+   const [[count]]=await db.execute("SELECT COUNT(*) AS n FROM parties WHERE created_by=? AND kind='ORGANIZATION'",[u.id]);assert.equal(Number(count.n),1);
+   await db.execute('UPDATE party_commands SET result_json=? WHERE id=?',[typeof command.result_json==='string'?command.result_json:JSON.stringify(command.result_json),command.id]);
+   assert.deepEqual((await request('POST','/api/v1/organizations',body,u.token,headers)).body.data,original.body.data);
+  });
+  await t.test('unknown service failures do not advertise automatic retry or expose internal errors',async()=>{
+   const proxy={...db,execute:async()=>{throw Object.assign(Error('synthetic private database details'),{code:'ER_TEST_UNAVAILABLE'});}};
+   await withApi({db:proxy},async()=>{
+    const r=await request('GET','/api/v1/me',undefined,'a'.repeat(43));recordError(r,503,'SERVICE_UNAVAILABLE',false);
+    assert.ok(!JSON.stringify(r.body).includes('private'));assert.equal(r.headers['retry-after'],undefined);
+   });
   });
   await t.test('declining and owner revocation create no membership; unknown caller fields are rejected',async()=>{
    const owner=await user(),recipient=await user();
@@ -152,7 +218,7 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    assert.equal((await request('GET','/api/v1/me',undefined,u.token)).status,401);
    assert.equal((await request('DELETE','/api/v1/auth/sessions/current',{},u.token,{'Idempotency-Key':key()})).status,200);
    const v=await user();await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[v.id]);
-   assert.deepEqual((await request('GET','/api/v1/me',undefined,v.token)).body.data.allowed_actions,[]);
+   const suspended=await request('GET','/api/v1/me',undefined,v.token);record('AccountResponse',suspended);assert.deepEqual(suspended.body.data.allowed_actions,[]);
    assert.equal((await request('POST','/api/v1/organizations',{display_name:'no'},v.token,{'Idempotency-Key':key()})).status,403);
    await db.execute('UPDATE auth_sessions SET expires_ms=1 WHERE account_id=?',[v.id]);assert.equal((await request('GET','/api/v1/me',undefined,v.token)).status,401);
   });
@@ -160,10 +226,27 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    const input={phone:nextPhone(),challenge_id:key(),code:'123456'},ip='synthetic-rate-limit';
    const options={secret,sms,settings:{...settings,ipLoginsPerMinute:1}};
    await assert.rejects(createAuthRepository(db,options).login(input,key(),ip),{code:'INVALID_CREDENTIALS'});
-   await assert.rejects(createAuthRepository(db,options).login(input,key(),ip),{code:'RATE_LIMITED'});
+   await assert.rejects(createAuthRepository(db,options).login(input,key(),ip),e=>e.code==='RATE_LIMITED'&&e.retryAfter>0&&e.retryAfter<=60);
    const c=await challenge();assert.equal((await challenge(c.phone)).response.status,429);
    assert.equal((await request('OPTIONS','/api/v1/me',undefined,null,{Origin:'http://localhost:5173'})).status,204);
    assert.equal((await request('OPTIONS','/api/v1/me',undefined,null,{Origin:'https://unapproved.invalid'})).status,403);
+  });
+  await t.test('rate limits report real remaining seconds through HTTP, including limits after SMS reservation',async()=>{
+   const c=await challenge(),before=calls;
+   await db.execute('UPDATE auth_subjects SET next_send_ms=ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+12500 WHERE phone_hash=?',[auth.secure.digest('phone',c.phone)]);
+   const waiting=await request('POST','/api/v1/auth/sms-challenges',{phone:c.phone,purpose:'LOGIN'},null,{'Idempotency-Key':key(),Origin:'http://localhost:5173'});
+   recordError(waiting,429,'RATE_LIMITED',true);assert.ok(Number(waiting.headers['retry-after'])>0&&Number(waiting.headers['retry-after'])<=13);
+   assert.ok(waiting.headers['access-control-expose-headers'].split(', ').includes('Retry-After'));assert.equal(calls,before);
+   await withApi({authSettings:{...settings,phoneSendsPerHour:1}},async()=>{
+    const first=await challenge(),retryKey=key(),phoneHash=auth.secure.digest('phone',first.phone),rateHash=auth.secure.digest('rate',['sms-phone',phoneHash]),sentBefore=calls;
+    await db.execute('UPDATE auth_subjects SET next_send_ms=0 WHERE phone_hash=?',[phoneHash]);
+    await db.execute('UPDATE auth_rate_limits SET window_ms=ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)-3600000+12500 WHERE key_hash=?',[rateHash]);
+    const limited=await challenge(first.phone,retryKey);recordError(limited.response,429,'RATE_LIMITED',true);assert.ok(Number(limited.response.headers['retry-after'])>0&&Number(limited.response.headers['retry-after'])<=13);
+    recordError((await challenge(first.phone,retryKey)).response,503,'SMS_CHALLENGE_UNAVAILABLE',false);assert.equal(calls,sentBefore);
+    await db.execute('UPDATE auth_rate_limits SET window_ms=0 WHERE key_hash=?',[rateHash]);
+    await db.execute('UPDATE auth_subjects SET next_send_ms=0 WHERE phone_hash=?',[phoneHash]);
+    const fresh=await challenge(first.phone);assert.equal(fresh.response.status,200);assert.equal(calls,sentBefore+1);
+   });
   });
   await t.test('audit failure rolls back account, session and consumption; retry works after repair',async()=>{
    const c=await challenge(),loginKey=key();

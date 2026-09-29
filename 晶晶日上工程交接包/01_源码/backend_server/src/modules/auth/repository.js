@@ -7,15 +7,15 @@ const accountData=a=>({id:a.id,display_name:a.display_name,current_status:a.curr
 function createAuthRepository(db,{secret,sms,settings={}}) {
  const secure=createSecurity(secret),cfg=config(settings);
  async function rate(scope,limit,span) {
-  const accepted=await db.withTransaction(async tx=>{
+  const retryAfter=await db.withTransaction(async tx=>{
    const hash=secure.digest('rate',scope),now=await timestamp(tx);
    await tx.execute('INSERT INTO auth_rate_limits(key_hash,window_ms,hits) VALUES (?,?,0) ON DUPLICATE KEY UPDATE key_hash=auth_rate_limits.key_hash',[hash,now]);
    const row=await one(tx,'SELECT * FROM auth_rate_limits WHERE key_hash=? FOR UPDATE',[hash]);
    const hits=now-Number(row.window_ms)>=span?0:row.hits;
-   if(hits>=limit)return false;
-   await tx.execute('UPDATE auth_rate_limits SET hits=?,window_ms=? WHERE key_hash=?',[hits+1,hits===0?now:row.window_ms,hash]);return true;
+   if(hits>=limit)return Math.max(1,Math.ceil((Number(row.window_ms)+span-now)/1000));
+   await tx.execute('UPDATE auth_rate_limits SET hits=?,window_ms=? WHERE key_hash=?',[hits+1,hits===0?now:row.window_ms,hash]);return 0;
   });
-  if(!accepted)throw error('RATE_LIMITED',429);
+  if(retryAfter)throw Object.assign(error('RATE_LIMITED',429),{retryAfter});
  }
  const subject=p=>secure.digest('phone',p);
  function challengeData(row){return {challenge_id:row.id,current_status:'SENT',expires_at:new Date(Number(row.expires_ms)).toISOString(),resend_after:new Date(Number(row.resend_ms)).toISOString()};}
@@ -38,7 +38,7 @@ function createAuthRepository(db,{secret,sms,settings={}}) {
     const who=await one(tx,'SELECT * FROM auth_subjects WHERE phone_hash=? FOR UPDATE',[ph]);
     const prior=await one(tx,'SELECT * FROM auth_challenges WHERE key_hash=?',[kh]);
     if(prior){if(prior.fingerprint!==fp)throw error('IDEMPOTENCY_CONFLICT',409);return {...prior,replay:true};}
-    if(Number(who.next_send_ms)>now)throw error('RATE_LIMITED',429);
+    if(Number(who.next_send_ms)>now)throw Object.assign(error('RATE_LIMITED',429),{retryAfter:Math.ceil((Number(who.next_send_ms)-now)/1000)});
     await tx.execute("UPDATE auth_challenges SET current_status='EXPIRED' WHERE phone_hash=? AND current_status IN ('PENDING','SENT','UNKNOWN')",[ph]);
     await tx.execute('UPDATE auth_subjects SET next_send_ms=? WHERE phone_hash=?',[now+cfg.resendMs,ph]);
     await tx.execute("INSERT INTO auth_challenges(id,phone_hash,key_hash,fingerprint,code_hash,current_status,expires_ms,resend_ms) VALUES (?,?,?,?,?,'PENDING',?,?)",[challengeId,ph,kh,fp,secure.digest('code',[challengeId,ph,code]),now+cfg.challengeMs,now+cfg.resendMs]);
@@ -54,7 +54,8 @@ function createAuthRepository(db,{secret,sms,settings={}}) {
     if(changed.affectedRows!==1)throw error('SMS_OUTCOME_UNKNOWN',503);
    } catch(e) {
     await db.execute("UPDATE auth_challenges SET current_status='UNKNOWN' WHERE id=? AND current_status='PENDING'",[row.id]);
-    throw error(e.status===429?'RATE_LIMITED':'SMS_NOT_READY',e.status===429?429:503);
+    if(e.code==='RATE_LIMITED'&&e.status===429)throw e;
+    throw error('SMS_NOT_READY',503);
    }
    return challengeData(row);
   },
