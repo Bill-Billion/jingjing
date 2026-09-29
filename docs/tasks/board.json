@@ -1387,9 +1387,9 @@
       "title": "应付/出款/发行收入/结算/调整/对账与争议",
       "stage": 5,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/stage-10-settlement",
       "work_refs": [
         "WORK-12"
       ],
@@ -1414,9 +1414,10 @@
         "CORE-S4-002"
       ],
       "deliverables": [
-        "settlement模块",
-        "对账与调整",
-        "线下付款证据流程"
+        "docs/collaboration/STAGE_10_API.md",
+        "docs/collaboration/STAGE_10_HANDOFF.md",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/settlement"
       ],
       "acceptance": "三类钱独立可追溯；可真实线下付款附凭证，自动出款未验收不得报成功；冲正不改历史",
       "shared_boundaries": [
@@ -1425,9 +1426,15 @@
         "schema/migration"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S5-001-stage10-20260929.md",
+        "docs/tasks/records/CORE-S5-001-stage10-evidence.json"
+      ],
+      "blockers": [
+        "真实财务审核人员、合同和银行凭据未验收；自动出款未实现；不影响隔离后端交付"
+      ],
+      "current_increment": "第十阶段后端已写好，专项26项通过；准备完整回归与阶段集中交付，未审阅未合并未正式启用"
     },
     {
       "id": "CORE-S5-002",
@@ -1609,9 +1616,16 @@
     "mode": "STAGED_LOCAL_FIRST",
     "effective_on": "2026-09-22",
     "guide": "docs/collaboration/STAGED_DELIVERY.md",
-    "remote_sync": "STAGE_2_PUBLISHED_STAGE_3_LOCAL_ONLY",
+    "remote_sync": "STAGE_10_LOCAL_VALIDATION",
     "open_pull_requests": [
-      11
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
     ],
     "previous_merged_pull_requests": [
       4,
@@ -1629,19 +1643,21 @@
     ],
     "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
     "current_stage": {
-      "name": "规则与合同历史留存",
-      "branch": "core/stage-3-rule-snapshots",
+      "name": "把应付、实际付款和发行收入核对清楚",
+      "branch": "core/stage-10-settlement",
       "status": "IN_PROGRESS_LOCAL_ONLY",
       "owner": "chengcongcong222",
-      "guide": "docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md",
+      "guide": "docs/collaboration/STAGE_10_FINANCE.md",
       "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e",
-      "pending_dependency": "PR 11 / d2e6c93, merged locally only, not approved or merged into integration"
+      "pending_dependency": "Stage 8 9852d8a and Stage 9 0a51e9e merged locally; PRs 11–18 still require actual review, not merged into integration"
     },
     "pending_previous_stage": {
-      "name": "账号操作接通",
-      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11",
-      "status": "OPEN_NO_REVIEW",
-      "branch": "core/stage-2-account-api"
+      "name": "商单、制作及项目发行",
+      "pull_requests": [
+        17,
+        18
+      ],
+      "status": "OPEN_NO_REVIEW"
     }
   }
 }
