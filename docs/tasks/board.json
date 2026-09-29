@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-09-25",
+  "updated_on": "2026-09-29",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -1245,9 +1245,9 @@
       "title": "商单、直接MCN合作、单笔佣金、三榜事实",
       "stage": 4,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-8-gigs-mcn",
       "work_refs": [
         "WORK-10"
       ],
@@ -1278,18 +1278,22 @@
         "settlement"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S4-001-stage8-20260928.md",
+        "docs/tasks/records/CORE-S4-001-stage8-evidence.json"
+      ],
+      "blockers": [],
+      "current_increment": "第八阶段后端已交付第17份申请；本机及GitHub全套313通过/1缺样本跳过，商单23通过，七组HTTP格式通过；待实际审阅，未合并或启用"
     },
     {
       "id": "CORE-S4-002",
       "title": "项目、角色报名邀约筛选、多方确认及发行台账",
       "stage": 4,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/stage-9-projects-release",
       "work_refs": [
         "WORK-11"
       ],
@@ -1311,7 +1315,10 @@
         "CORE-S2-002"
       ],
       "deliverables": [
-        "projects/release模块"
+        "docs/collaboration/STAGE_9_API.md",
+        "docs/collaboration/STAGE_9_HANDOFF.md",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects"
       ],
       "acceptance": "无通用竞拍；许可用途和多方确认满足再送审；内部通过不标外部已发行",
       "shared_boundaries": [
@@ -1319,9 +1326,15 @@
         "schema/migration"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S4-002-stage9-20260929.md",
+        "docs/tasks/records/CORE-S4-002-stage9-evidence.json"
+      ],
+      "blockers": [
+        "真实外部渠道、真实合同审核与前端联调未验收；不影响隔离后端交付"
+      ],
+      "current_increment": "第九阶段后端已写好并通过本机25项专项及全套336通过/1跳过；集中交付准备中，尚未合并"
     },
     {
       "id": "UX-S4-001",
