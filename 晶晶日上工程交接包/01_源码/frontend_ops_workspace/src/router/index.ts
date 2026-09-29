@@ -7,6 +7,7 @@ import { useSessionStore } from '@/stores/session'
  * 页面：
  *   /login       登录（按 PR #11 的账号接口做）
  *   /workspace   账号、身份、机构、邀请与成员管理
+ *   /contracts/:snapshotId? 指定合同、采用规则与服务条件读取
  *   /dev/status  开发自检（探针、接口前缀、未实现清单）——**只在开发构建里注册**
  *
  * 运营区 /admin 与合作方区 /partner 的版式与页面还没做，等接口补齐后再加。
@@ -30,6 +31,12 @@ const router = createRouter({
       name: 'workspace',
       component: () => import('@/views/WorkspaceView.vue'),
       meta: { title: '工作台' },
+    },
+    {
+      path: '/contracts/:snapshotId?',
+      name: 'contracts',
+      component: () => import('@/views/ContractsView.vue'),
+      meta: { title: '合同与规则' },
     },
     // 开发自检页：整个路由项在构建时按 import.meta.env.DEV 决定要不要加。
     // 用 import.meta.env.DEV 而不是路由守卫里判断，是为了让生产构建干脆
@@ -68,7 +75,7 @@ router.beforeEach((to) => {
 
 router.afterEach((to) => {
   const title = typeof to.meta.title === 'string' ? to.meta.title : ''
-  document.title = title ? `${title} · 晶选片场工作台` : '晶选片场工作台'
+  document.title = title ? `${title} · 晶晶日上工作台` : '晶晶日上工作台'
 })
 
 export default router

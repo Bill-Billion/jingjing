@@ -2,7 +2,7 @@
 
 这是双方共同开发项目的仓库。按最新R0.6方案推进，原始材料保留；功能“写完”“测过”“正式能用”分别说明。
 
-第一阶段已合入integration。当前第二阶段先看[账号接口、双方分工与调用方法](docs/collaboration/STAGE_2_ACCOUNT_API.md)，开发分支为core/stage-2-account-api；新改动在审阅合并前不代表共同版本或main已更新。
+第11份账号与机构功能已合入integration。按用户要求，第12份申请现一并交付合同、历史规则、服务条件页面，并采用已选暖白 App / 浅色工作台风格。[第一批页面与图册对应](docs/ux/pr12-ui/README.md) · [实际验证与交付状态](docs/tasks/records/UX-PR12-CONTRACT-UI-20260929.md) · [界面截图与验收](design-qa.md)。[第12份前后端交付](https://github.com/Bill-Billion/jingjing/pull/12)尚待审阅与合入，页面本地验证不代表正式服务已经开通。
 
 日常只需先看这三份：
 

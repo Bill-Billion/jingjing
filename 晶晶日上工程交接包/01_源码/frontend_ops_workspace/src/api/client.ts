@@ -33,6 +33,7 @@ export class ApiError extends Error {
   readonly retryable: boolean
   readonly requestId: string | null
   readonly details: unknown[]
+  readonly retryAfterAt: number | null
 
   constructor(init: {
     status: number
@@ -41,6 +42,7 @@ export class ApiError extends Error {
     retryable?: boolean
     requestId?: string | null
     details?: unknown[]
+    retryAfterAt?: number | null
   }) {
     super(init.message)
     this.name = 'ApiError'
@@ -49,6 +51,7 @@ export class ApiError extends Error {
     this.retryable = init.retryable ?? false
     this.requestId = init.requestId ?? null
     this.details = init.details ?? []
+    this.retryAfterAt = init.retryAfterAt ?? null
   }
 }
 
@@ -75,6 +78,7 @@ export interface RequestOptions {
   /** 修改已有对象时必带，值形如 "1" */
   ifMatch?: string | number
   signal?: AbortSignal
+  cache?: RequestCache
 }
 
 /** 生成一个请求编号（X-Request-Id），服务端会回显同一个值 */
@@ -101,7 +105,7 @@ export interface ApiResult<T> {
  * 失败一定抛 ApiError，绝不返回"看起来成功"的空结果。
  */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
-  const { method = 'GET', body, token, actingParty, idempotencyKey, ifMatch, signal } = options
+  const { method = 'GET', body, token, actingParty, idempotencyKey, ifMatch, signal, cache } = options
 
   const headers: Record<string, string> = {
     Accept: 'application/json',
@@ -122,6 +126,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000),
       // 会话令牌走 Bearer 头而不是 Cookie，这里不涉及凭据模式
       credentials: 'omit',
+      cache,
     })
   } catch (e) {
     // 连不上后端、被浏览器拦截、请求被取消——全部如实抛出，不假装成功
@@ -153,7 +158,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (!response.ok) {
     if (response.status === 401 && token) unauthorized?.(token)
     const errBody = (parsed as ErrBody | null)?.error
-    throw toApiError(response.status, errBody, echoRequestId, raw)
+    throw toApiError(response.status, errBody, echoRequestId, raw, retryAfterAt(response.headers.get('Retry-After')))
   }
 
   const ok = parsed as OkBody<T> | null
@@ -179,6 +184,7 @@ function toApiError(
   errBody: ErrorBody | undefined,
   echoRequestId: string | null,
   rawText: string,
+  retryAfterAt: number | null,
 ): ApiError {
   if (errBody && typeof errBody.code === 'string') {
     return new ApiError({
@@ -188,6 +194,7 @@ function toApiError(
       retryable: errBody.retryable,
       requestId: echoRequestId,
       details: errBody.details,
+      retryAfterAt,
     })
   }
   // 拿不到 {meta, error} 结构：可能是网关/代理返回的，如实说明
@@ -196,7 +203,15 @@ function toApiError(
     code: `HTTP_${status}`,
     message: `服务器返回 ${status}，但响应体不是约定的错误结构。原始内容前 200 字：${rawText.slice(0, 200)}`,
     requestId: echoRequestId,
+    retryAfterAt,
   })
+}
+
+function retryAfterAt(value: string | null): number | null {
+  if (!value) return null
+  const trimmed = value.trim()
+  const deadline = /^\d+$/.test(trimmed) ? Date.now() + Number(trimmed) * 1000 : Date.parse(trimmed)
+  return Number.isFinite(deadline) && deadline >= Date.now() ? deadline : null
 }
 
 /** 探针：GET /health 或 /ready。返回 true/false，不抛异常（探针失败是正常情况） */

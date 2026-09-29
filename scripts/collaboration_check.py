@@ -30,8 +30,8 @@ def render_tasks(board):
         '# 全部工作安排：谁做什么，怎样算做完', '',
         '**本侧负责服务器和数据库；队友负责App和网页。** '
         '下面共30组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
-        '前三批旧问题修复保留；本轮已写好MySQL个人/机构与本人接受邀请的内部流程并自验，下一步接可信登录和公开接口，再完善合同留存；'
-        '队友可先运行现有App、整理五个主入口，并搭建运营和合作方网页。'
+        '这张表记录完整工作范围，逐次成果与待审状态以当前进度为准；各阶段完成部分不等于整组已经验收。'
+        '本侧负责后端，队友负责App与网页，按当前阶段说明协作。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
         '表中的“需先完成”指整项工作最后验收前需要的其他成果。'
@@ -62,7 +62,8 @@ def render_tasks(board):
                   '直白中文名称和完成标准在 [文字说明文件](plain_language.json)。'
                   '修改后运行 `python scripts/collaboration_check.py --render` 更新本页，'
                   '再运行不带参数的检查。自动更新也必须遵守 [沟通写法](../collaboration/WRITING_RULES.md)。', ''])
-    return '\n'.join(lines)
+    # Derive the displayed count without changing the stage narrative template.
+    return re.sub(r'下面共\d+组工作', f"下面共{len(board['tasks'])}组工作", '\n'.join(lines), count=1)
 
 
 def render_requirement_rows(baseline):

@@ -24,6 +24,7 @@ import { ApiError, newIdempotencyKey, outcomeUnknown } from '@/api/client'
 import { createSmsChallenge } from '@/api/modules/account'
 import type { SmsChallenge } from '@/api/types'
 import { useSessionStore } from '@/stores/session'
+import { loginRedirect } from '@/router/loginRedirect'
 import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 
 const router = useRouter()
@@ -189,9 +190,8 @@ async function submitLogin() {
     })
     loginOutcomeUnknown.value = false
 
-    // Workspace reads the account and identities; a read failure must not spend the OTP again.
-    const redirect = typeof route.query.redirect === 'string' && route.query.redirect === '/workspace' ? route.query.redirect : '/workspace'
-    await router.replace(redirect)
+    // The destination reads its identities; a read failure must not spend the OTP again.
+    await router.replace(loginRedirect(route.query.redirect))
   } catch (e) {
     const err = toApiError(e)
     error.value = err
@@ -218,12 +218,12 @@ const year = new Date().getFullYear()
   <div class="auth">
     <main class="stage">
       <header class="brand">
-        <h1 class="wordmark">晶选片场</h1>
-        <p class="role">运营工作台</p>
+        <h1 class="wordmark">晶晶日上</h1>
+        <p class="role">让每次合作<br>都有清晰依据</p><p class="brand-note">从账号、机构到合同，安心推进每一步。</p>
       </header>
 
       <div class="panel">
-        <span class="mk tl" /><span class="mk tr" /><span class="mk bl" /><span class="mk br" />
+        <h2 class="panel-title">登录工作台</h2><p class="panel-intro">使用本人手机号，继续你的合作。</p>
 
         <p v-if="session.notice" class="hint" role="status">{{ session.notice }}</p>
         <form @submit.prevent="submitLogin">
@@ -285,253 +285,12 @@ const year = new Date().getFullYear()
       </div>
     </main>
 
-    <footer class="foot">© {{ year }} 晶选片场</footer>
+    <footer class="foot">© {{ year }} 晶晶日上</footer>
   </div>
 </template>
 
 <style scoped>
-/*
- * 版面：满屏深墨底 + 居中白色面板。
- * 不用圆角、不用投影——白面板压在墨底上，边界本身就是分界，
- * 加了圆角和柔和投影就变成"后台模板卡片套装"了。
- */
-.auth {
-  position: relative;
-  min-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /*
-   * 底部比顶部多留 32px：页脚是绝对定位钉在底边的，不参与居中。
-   * 这样"面板居中"和"页脚在底"是两件互不干扰的事——如果页脚也在流里，
-   * 居中的就是「面板 + 页脚」这一整块，面板会被页脚的高度顶得偏上。
-   */
-  padding: 56px 20px 88px;
-  background: var(--ops-ink);
-  /* 一点极淡的顶光，让整块墨底不是死板的纯色 */
-  background-image: radial-gradient(1100px 520px at 50% 20%, rgba(201, 164, 94, 0.09), transparent 62%);
-}
-
-.stage {
-  width: 100%;
-  max-width: 384px;
-  /* 一次到位的进场：只此一处动效，不做逐段 fade-slide */
-  animation: rise 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stage {
-    animation: none;
-  }
-}
-
-/* —— 品牌区 —— */
-.brand {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.wordmark {
-  /* 宋体只用在品牌名上：像一个机构的名字，而不是一个 App 的名字 */
-  font-family: var(--ops-serif);
-  font-size: clamp(30px, 4.4vw, 40px);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  /* 字距会在最后一个字后面留出空白，补一个同宽缩进把视觉重心拉回中间 */
-  text-indent: 0.12em;
-  color: var(--ops-text-invert);
-  margin: 0;
-}
-
-.role {
-  margin: 12px 0 0;
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  text-indent: 0.2em;
-  color: var(--ops-gold);
-}
-
-/* —— 面板与四角裁切标记 —— */
-.panel {
-  position: relative;
-  background: var(--ops-surface);
-  padding: 42px 38px 36px;
-}
-
-/*
- * 四角 L 形细线，借自印厂接触印样/场记单上的裁切标记。
- * 整个页面只在一处用力，就是这里，所以别处一律素着。
- */
-.mk {
-  position: absolute;
-  width: 13px;
-  height: 13px;
-  border: 0 solid var(--ops-gold);
-  pointer-events: none;
-}
-
-.mk.tl {
-  top: 15px;
-  left: 15px;
-  border-top-width: 1px;
-  border-left-width: 1px;
-}
-
-.mk.tr {
-  top: 15px;
-  right: 15px;
-  border-top-width: 1px;
-  border-right-width: 1px;
-}
-
-.mk.bl {
-  bottom: 15px;
-  left: 15px;
-  border-bottom-width: 1px;
-  border-left-width: 1px;
-}
-
-.mk.br {
-  bottom: 15px;
-  right: 15px;
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-}
-
-/* —— 表单 —— */
-.field + .field {
-  margin-top: 22px;
-}
-
-.label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--ops-text-2);
-  margin-bottom: 1px;
-}
-
-.hint {
-  font-size: 12px;
-  color: var(--ops-text-3);
-  font-variant-numeric: tabular-nums;
-}
-
-/* 下划线式输入行：不用方框，躲开后端模板的长相 */
-.row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--ops-border-strong);
-  transition: border-color 0.15s ease;
-}
-
-.row:focus-within {
-  border-bottom-color: var(--ops-gold);
-  /* 叠一层 1px 阴影，聚焦时看起来是 2px，够显眼但不粗糙 */
-  box-shadow: 0 1px 0 0 var(--ops-gold);
-}
-
-.row input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 16px;
-  color: var(--ops-text);
-  padding: 10px 0;
-}
-
-/* 焦点指示由整行的金色下划线承担，输入框自己不再画一圈描边 */
-.row input:focus-visible {
-  outline: none;
-}
-
-.row input::placeholder {
-  color: var(--ops-text-3);
-}
-
-.send {
-  flex: none;
-  border: 0;
-  border-left: 1px solid var(--ops-border);
-  background: transparent;
-  font-family: inherit;
-  font-size: 13px;
-  color: var(--ops-ink);
-  padding: 4px 0 4px 12px;
-  cursor: pointer;
-  font-variant-numeric: tabular-nums;
-}
-
-.send:hover:not(:disabled) {
-  color: var(--ops-gold);
-}
-
-.send:disabled {
-  color: var(--ops-text-3);
-  cursor: default;
-}
-
-.submit {
-  width: 100%;
-  height: 46px;
-  margin-top: 28px;
-  border: 0;
-  background: var(--ops-ink);
-  color: var(--ops-text-invert);
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  /* 两个汉字的主按钮：拉开字距比堆粗体更有分量 */
-  letter-spacing: 0.34em;
-  text-indent: 0.34em;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.submit:hover:not(:disabled) {
-  background: var(--ops-ink-2);
-}
-
-.submit:disabled {
-  background: #c6cdda;
-  cursor: default;
-}
-
-/* —— 页脚：钉在底边，不参与居中 —— */
-.foot {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 30px;
-  text-align: center;
-  font-size: 12px;
-  color: rgba(242, 245, 250, 0.4);
-}
-
-@media (max-width: 420px) {
-  .panel {
-    padding: 34px 22px 28px;
-  }
-
-  .mk {
-    display: none;
-  }
-}
+.auth{position:relative;min-height:100%;display:flex;align-items:center;justify-content:center;padding:80px 32px 110px;background:var(--ops-bg)}.stage{width:100%;max-width:1100px;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:110px}.brand{text-align:left}.wordmark{font-size:32px;font-weight:650;letter-spacing:.1em;color:var(--ops-ink);margin:0 0 38px}.role{font-size:40px;font-weight:600;line-height:1.55;color:var(--ops-text);margin:0 0 22px;letter-spacing:.03em}.brand-note{font-size:15px;line-height:1.8;color:var(--ops-text-2)}.panel{background:var(--ops-surface);padding:40px;border:1px solid var(--ops-border);border-radius:12px;min-width:0}.panel-title{font-size:26px;font-weight:600;margin:0 0 12px}.panel-intro{color:var(--ops-text-2);font-size:14px;line-height:1.8;margin:0 0 32px}.field+.field{margin-top:24px}.label{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:14px;color:var(--ops-text);margin-bottom:10px}.hint{font-size:12px;color:var(--ops-text-2);line-height:1.6;font-variant-numeric:tabular-nums}.row{display:flex;align-items:center;gap:10px}.row input{flex:1;min-width:0;min-height:48px;border:1px solid var(--ops-border-strong);border-radius:10px;background:var(--ops-surface);font:16px var(--ops-sans);color:var(--ops-text);padding:11px 12px}.row input::placeholder{color:var(--ops-text-3)}.send{flex:none;min-height:48px;border:1px solid var(--ops-border-strong);border-radius:10px;background:var(--ops-surface);font:14px var(--ops-sans);color:var(--ops-ink);padding:10px 12px;cursor:pointer;font-variant-numeric:tabular-nums}.send:hover:not(:disabled){background:var(--ops-accent-soft)}.send:disabled{color:var(--ops-text-3);cursor:default}.submit{width:100%;min-height:48px;margin-top:28px;border:0;border-radius:10px;background:var(--ops-ink);color:white;font:500 16px var(--ops-sans);cursor:pointer}.submit:hover:not(:disabled){background:var(--ops-ink-2)}.submit:disabled{opacity:.45;cursor:default}.foot{position:absolute;left:0;right:0;bottom:30px;text-align:center;font-size:12px;color:var(--ops-text-2)}
+@media(max-width:900px){.stage{gap:50px}.panel{padding:32px}.role{font-size:32px}}
+@media(max-width:680px){.auth{padding:40px 20px 90px;align-items:flex-start}.stage{grid-template-columns:1fr;max-width:440px;gap:30px}.wordmark{font-size:26px;margin-bottom:20px}.role{font-size:26px;margin-bottom:10px}.role br{display:none}.brand-note{font-size:13px;margin:0}.panel{padding:28px 22px}.panel-title{font-size:24px}.panel-intro{margin-bottom:26px}.foot{bottom:22px}}
 </style>

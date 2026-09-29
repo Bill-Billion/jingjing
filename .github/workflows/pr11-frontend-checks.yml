@@ -1,4 +1,4 @@
-name: App 与网页账号页面检查
+name: App 与网页账号及合同页面检查
 
 on:
   push:
@@ -42,6 +42,7 @@ jobs:
           cache: npm
           cache-dependency-path: 晶晶日上工程交接包/01_源码/frontend_ops_workspace/package-lock.json
       - run: npm ci --no-audit --no-fund
+      - run: npm run test:contracts
       - run: npm run build
       - name: 安装浏览器及隔离接口测试依赖
         run: |
@@ -77,7 +78,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: node scripts/ci-mysql.cjs stop
   app:
-    name: App 账号测试与网页构建
+    name: App 账号合同测试与网页构建
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     defaults:
@@ -96,7 +97,7 @@ jobs:
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
           flutter/bin/flutter config --no-analytics
       - run: flutter pub get --enforce-lockfile
-      - run: dart analyze lib/account test/account
-      - run: flutter test test/account test/interaction_flows_test.dart test/widget_test.dart
+      - run: dart analyze lib/account lib/contracts test/account test/contracts
+      - run: flutter test test/account test/contracts test/interaction_flows_test.dart test/widget_test.dart
       - name: 检查完整 App 可以生成网页发布文件
         run: flutter build web --no-pub

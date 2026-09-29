@@ -128,7 +128,12 @@ class AccountApi {
       }
       final error = envelope is Map ? envelope['error'] : null;
       final code = error is Map ? '${error['code']}' : 'INVALID_RESPONSE';
+      final retrySeconds =
+          int.tryParse(response.headers.value('retry-after') ?? '');
       throw AccountError(status, code,
+          retryAt: status == 429 && retrySeconds != null && retrySeconds >= 0
+              ? DateTime.now().add(Duration(seconds: retrySeconds))
+              : null,
           uncertain: code != 'SMS_CHALLENGE_UNAVAILABLE' &&
               (status == 0 ||
                   status >= 500 ||
@@ -142,10 +147,12 @@ class AccountApi {
 }
 
 class AccountError implements Exception {
-  const AccountError(this.status, this.code, {this.uncertain = false});
+  const AccountError(this.status, this.code,
+      {this.uncertain = false, this.retryAt});
   final int status;
   final String code;
   final bool uncertain;
+  final DateTime? retryAt;
   String get message {
     switch (code) {
       case 'ACCOUNT_API_NOT_CONFIGURED':
