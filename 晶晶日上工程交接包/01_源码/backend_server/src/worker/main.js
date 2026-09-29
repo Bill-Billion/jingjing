@@ -17,6 +17,7 @@ async function main() {
   try {
     const schema = await status(db);
     if (schema.migrations.some((m) => m.status !== 'APPLIED')) throw Object.assign(new Error('Migrations required'), { code: 'WORKER_SCHEMA_NOT_READY' });
+    if(!await require('../infrastructure/database/recovery-guard').recoveryAllowed(db))throw Object.assign(new Error('Restored database requires independent review'),{code:'RESTORE_REVIEW_REQUIRED'});
     const enabled = new Map(handlers);
     if (process.env.PRODUCTION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/production/handlers').createProductionHandlers(db,{env:process.env})) enabled.set(name,handler);
     if (process.env.OPERATIONS_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/operations/reports').createOperationsHandlers(db)) enabled.set(name,handler);

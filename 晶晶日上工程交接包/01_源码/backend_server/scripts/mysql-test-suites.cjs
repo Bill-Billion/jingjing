@@ -1,6 +1,7 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
+ release:['test/release-policy.test.cjs','test/release.integration.test.cjs'],
  operations:['test/operations-policy.test.cjs','test/operations.integration.test.cjs'],
  finance:['test/settlement-policy.test.cjs','test/settlement.integration.test.cjs'],
  projects:['test/projects-policy.test.cjs','test/projects.integration.test.cjs'],
