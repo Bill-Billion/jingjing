@@ -584,6 +584,52 @@
         "evidence_asset_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
         "note": "test"
       }
+    },
+    {
+      "name": "comments cannot select author",
+      "schema": "OpsAddCommentRequest",
+      "value": {
+        "body": "text",
+        "reply_to": null,
+        "author_account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+      }
+    },
+    {
+      "name": "report requires environment",
+      "schema": "OpsReportRequest",
+      "value": {
+        "kind": "CASH",
+        "period_start": "2026-01-01T00:00:00Z",
+        "period_end": "2026-02-01T00:00:00Z"
+      }
+    },
+    {
+      "name": "profit is not cash report",
+      "schema": "OpsReportRequest",
+      "value": {
+        "kind": "PROFIT",
+        "environment": "PRODUCTION",
+        "period_start": "2026-01-01T00:00:00Z",
+        "period_end": "2026-02-01T00:00:00Z"
+      }
+    },
+    {
+      "name": "withdrawn comments cannot retain visible body",
+      "fixture": "OpsCommentResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "WITHDRAWN"
+    },
+    {
+      "name": "pending report cannot claim success",
+      "fixture": "OpsReportResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "SUCCEEDED"
     }
   ]
 }

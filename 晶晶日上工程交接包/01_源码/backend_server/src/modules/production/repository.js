@@ -1,4 +1,4 @@
- 'use strict';
+'use strict';
 const {randomUUID,createHash}=require('node:crypto');
 const {id,ref,label,shape,version,error}=require('../party/policy');
 const {digest}=require('../governance/content');
@@ -25,7 +25,7 @@ function createProductionRepository(db,{resolvePrincipal=async()=>null}={}){
   if(role==='producer'&&(party!==p.data.producer_party_id||a.id!==p.data.assignee_account_id))throw error('PRODUCTION_ASSIGNEE_REQUIRED');
   if(role==='read'&&m.role_code!=='OWNER'&&a.id!==p.data.assignee_account_id)throw error('PRODUCTION_PARTY_FORBIDDEN');
  }
- async function audit(tx,a,r,event){await tx.execute('INSERT INTO production_audit(id,record_id,actor_account_id,event_code,object_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?)',[randomUUID(),r.id,a.id,event,r.object_version,digest(r.data),a.request_id]);}
+ async function audit(tx,a,r,event){const eventId=randomUUID();await tx.execute('INSERT INTO production_audit(id,record_id,actor_account_id,event_code,object_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?)',[eventId,r.id,a.id,event,r.object_version,digest(r.data),a.request_id]);await require('../operations/events').publishEvent(tx,{domain:'PRODUCTION',record_id:r.id,event_id:eventId,event_code:event,object_version:r.object_version,actor_account_id:a.id});}
  async function insert(tx,a,kind,p,order,status,data){const r={id:randomUUID(),kind,project_id:p,order_id:order,created_by:a.id,current_status:status,object_version:1,content_sha256:digest(data),data};await tx.execute('INSERT INTO production_records(id,kind,project_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,?,?,?,?,?,?,?)',[r.id,kind,p,order,a.id,status,JSON.stringify(data),r.content_sha256]);await audit(tx,a,r,kind+'_CREATED');return r;}
  async function save(tx,a,r,status,data,event){const next={...r,current_status:status,object_version:r.object_version+1,content_sha256:digest(data),data};await tx.execute('UPDATE production_records SET current_status=?,object_version=?,data_json=?,data_sha256=? WHERE id=?',[status,next.object_version,JSON.stringify(data),next.content_sha256,r.id]);await audit(tx,a,next,event);return next;}
  async function command(tx,a,op,input,fn){const key=digest([a.id,op,ref(input.operation_key)]),hash=digest(input);try{await tx.execute('INSERT INTO production_commands(id,fingerprint) VALUES (?,?)',[key,hash]);}catch(e){if(e.code!=='ER_DUP_ENTRY')throw e;const old=await one(tx,'SELECT * FROM production_commands WHERE id=?',[key]);if(old.fingerprint!==hash)throw error('IDEMPOTENCY_CONFLICT',409);if(!old.result_id)throw error('IDEMPOTENCY_IN_PROGRESS',409);return load(tx,old.result_id,null,'FOR SHARE');}const r=await fn();await tx.execute('UPDATE production_commands SET result_id=? WHERE id=?',[r.id,key]);return r;}

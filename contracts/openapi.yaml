@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.10.0-rc.1
+  version: 0.11.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -7341,6 +7341,602 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/operations/notifications:
+    get:
+      operationId: listBusinessNotifications
+      summary: 查看当前身份可读的业务通知
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      - $ref: '#/components/parameters/Limit'
+      - name: unread_only
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsNotificationListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/operations/notifications/{event_id}/read:
+    post:
+      operationId: readBusinessNotification
+      summary: 将当前账号及身份的通知标记已读
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: event_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsReadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpsEmptyRequest'
+  /api/v1/operations/objects/{domain}/{record_id}/comments:
+    get:
+      operationId: listBusinessComments
+      summary: 查看订单、项目或制作版本内留言
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsCommentListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+    post:
+      operationId: addBusinessComment
+      summary: 在业务对象内留言或回复
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsCommentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpsAddCommentRequest'
+  /api/v1/operations/comments/{comment_id}/actions:
+    post:
+      operationId: changeBusinessComment
+      summary: 撤回本人留言或由有权限人员隐藏内容
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsCommentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpsChangeCommentRequest'
+  /api/v1/operations/audit:
+    get:
+      operationId: listOperationsAudit
+      summary: 有明确权限的运营人员查询留言和报表操作
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      - $ref: '#/components/parameters/Limit'
+      - name: object_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsAuditListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/operations/objects/{domain}/{record_id}/audit:
+    get:
+      operationId: listBusinessAudit
+      summary: 按现有业务权限查询原始操作记录
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsBusinessAuditListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/operations/reports:
+    post:
+      operationId: requestBusinessReport
+      summary: 申请带期间和环境的后台统计报表
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsReportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpsReportRequest'
+  /api/v1/operations/reports/{report_id}:
+    get:
+      operationId: getBusinessReport
+      summary: 按当前权限查看报表状态和结果
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: report_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsReportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/operations/reports/{report_id}/content:
+    get:
+      operationId: downloadBusinessReport
+      summary: 按当前权限下载带口径说明的表格
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: report_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/operations/reports/{report_id}/retries:
+    post:
+      operationId: retryBusinessReport
+      summary: 条件修复后手动重试未完成报表
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: report_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsReportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpsRetryRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -7571,6 +8167,665 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    OpsComment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        domain:
+          type: string
+          enum:
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+        record_id:
+          type: string
+          format: uuid
+        author_account_id:
+          type: string
+          format: uuid
+        party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        reply_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        body:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 4000
+          - type: 'null'
+        current_status:
+          type: string
+          enum:
+          - VISIBLE
+          - WITHDRAWN
+          - HIDDEN
+        object_version:
+          type: integer
+          minimum: 1
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - domain
+      - record_id
+      - author_account_id
+      - party_id
+      - reply_to
+      - body
+      - current_status
+      - object_version
+      - created_at
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: VISIBLE
+        then:
+          properties:
+            body:
+              type: string
+              minLength: 1
+              maxLength: 4000
+        else:
+          properties:
+            body:
+              type: 'null'
+    OpsNotification:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        domain:
+          type: string
+          enum:
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+        record_id:
+          type: string
+          format: uuid
+        event_code:
+          type: string
+          minLength: 1
+          maxLength: 80
+        object_version:
+          type: integer
+          minimum: 1
+        read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - domain
+      - record_id
+      - event_code
+      - object_version
+      - read
+      - created_at
+    OpsAudit:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        object_id:
+          type: string
+          format: uuid
+        actor_account_id:
+          type: string
+          format: uuid
+        event_code:
+          type: string
+          minLength: 1
+          maxLength: 80
+        object_version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          maxLength: 1000
+        request_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - object_id
+      - actor_account_id
+      - event_code
+      - object_version
+      - reason
+      - request_id
+      - created_at
+    OpsBusinessAudit:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        record_id:
+          type: string
+          format: uuid
+        actor_account_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        event_code:
+          type: string
+          minLength: 1
+          maxLength: 80
+        object_version:
+          type: integer
+          minimum: 1
+        request_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - record_id
+      - actor_account_id
+      - event_code
+      - object_version
+      - request_id
+      - created_at
+    OpsAddCommentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        reply_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+      required:
+      - body
+      - reply_to
+    OpsChangeCommentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - WITHDRAW
+          - HIDE
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - action
+      - reason
+    OpsReportRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+          - CASH
+          - SETTLEMENT
+          - WORKLOAD
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+      required:
+      - kind
+      - environment
+      - period_start
+      - period_end
+    OpsRetryRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - reason
+    OpsEmptyRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    OpsReportRow:
+      type: object
+      additionalProperties: false
+      properties:
+        domain:
+          type: string
+          enum:
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+        record_id:
+          type: string
+          format: uuid
+        source_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        source_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        category:
+          type: string
+          enum:
+          - RECEIPT
+          - REFUND
+          - ACCRUAL
+          - ADJUSTMENT
+          - PAYOUT
+          - PAYOUT_RETURN
+          - PROJECT
+        amount_minor:
+          anyOf:
+          - type: integer
+            minimum: -9007199254740991
+            maximum: 9007199254740991
+          - type: 'null'
+        currency:
+          anyOf:
+          - type: string
+            enum:
+            - CNY
+          - type: 'null'
+        status:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 80
+          - type: 'null'
+        party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        occurred_at:
+          type: string
+          format: date-time
+      required:
+      - domain
+      - record_id
+      - source_id
+      - source_sha256
+      - category
+      - amount_minor
+      - currency
+      - status
+      - party_id
+      - occurred_at
+    OpsReportResult:
+      type: object
+      additionalProperties: false
+      properties:
+        metric_version:
+          const: '1'
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        generated_at:
+          type: string
+          format: date-time
+        row_count:
+          type: integer
+          minimum: 0
+          maximum: 2000
+        totals:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: -9007199254740991
+            maximum: 9007199254740991
+        rows:
+          type: array
+          maxItems: 2000
+          items:
+            $ref: '#/components/schemas/OpsReportRow'
+        sources:
+          type: array
+          maxItems: 2000
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              domain:
+                type: string
+                enum:
+                - TRADE
+                - PRODUCTION
+                - PROJECTS
+                - FINANCE
+                - SUPPLY
+                - LICENSE
+                - GIGS
+              record_id:
+                type: string
+                format: uuid
+              content_sha256:
+                type: string
+                pattern: ^[0-9a-f]{64}$
+            required:
+            - domain
+            - record_id
+            - content_sha256
+        limitations:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            minLength: 1
+            maxLength: 4000
+      required:
+      - metric_version
+      - environment
+      - period_start
+      - period_end
+      - generated_at
+      - row_count
+      - totals
+      - rows
+      - sources
+      - limitations
+    OpsReport:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        request:
+          type: object
+          additionalProperties: false
+          properties:
+            kind:
+              type: string
+              enum:
+              - CASH
+              - SETTLEMENT
+              - WORKLOAD
+            environment:
+              type: string
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            period_start:
+              type: string
+              format: date-time
+            period_end:
+              type: string
+              format: date-time
+            metric_version:
+              const: '1'
+          required:
+          - kind
+          - environment
+          - period_start
+          - period_end
+          - metric_version
+        current_status:
+          type: string
+          enum:
+          - PENDING
+          - RUNNING
+          - RETRY
+          - SUCCEEDED
+          - FAILED
+          - BLOCKED
+        error_code:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 80
+          - type: 'null'
+        content_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/OpsReportResult'
+          - type: 'null'
+      required:
+      - id
+      - party_id
+      - request
+      - current_status
+      - error_code
+      - content_sha256
+      - result
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: SUCCEEDED
+        then:
+          properties:
+            content_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            result:
+              $ref: '#/components/schemas/OpsReportResult'
+            error_code:
+              type: 'null'
+        else:
+          properties:
+            content_sha256:
+              type: 'null'
+            result:
+              type: 'null'
+    OpsNotificationListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/OpsNotification'
+            next_cursor:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 9007199254740991
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    OpsCommentListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/OpsComment'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    OpsAuditListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/OpsAudit'
+            next_cursor:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 9007199254740991
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    OpsBusinessAuditListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/OpsBusinessAudit'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    OpsReadResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: integer
+              minimum: 1
+            read:
+              const: true
+          required:
+          - id
+          - read
+      required:
+      - meta
+      - data
+    OpsCommentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/OpsComment'
+      required:
+      - meta
+      - data
+    OpsReportResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/OpsReport'
+      required:
+      - meta
+      - data
     FinanceShare:
       type: object
       additionalProperties: false

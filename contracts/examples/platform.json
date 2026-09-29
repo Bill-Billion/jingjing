@@ -187,37 +187,107 @@
       "name": "Organization owner actions",
       "schema": "PartyAccess",
       "value": {
-        "party": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"PENDING_REVIEW","object_version":1,"capabilities":[],"allowed_actions":["READ_PARTY","REQUEST_CAPABILITY","MANAGE_MEMBERS"]},
-        "membership": {"id":"member_owner","account_id":"acc_test","party_id":"org_test","current_status":"ACTIVE","roles":["OWNER"],"object_version":1,"allowed_actions":[]}
+        "party": {
+          "id": "org_test",
+          "kind": "ORGANIZATION",
+          "display_name": "Test organization",
+          "current_status": "PENDING_REVIEW",
+          "object_version": 1,
+          "capabilities": [],
+          "allowed_actions": [
+            "READ_PARTY",
+            "REQUEST_CAPABILITY",
+            "MANAGE_MEMBERS"
+          ]
+        },
+        "membership": {
+          "id": "member_owner",
+          "account_id": "acc_test",
+          "party_id": "org_test",
+          "current_status": "ACTIVE",
+          "roles": [
+            "OWNER"
+          ],
+          "object_version": 1,
+          "allowed_actions": []
+        }
       }
     },
     {
       "name": "Organization member actions",
       "schema": "PartyAccess",
       "value": {
-        "party": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"ACTIVE","object_version":1,"capabilities":[],"allowed_actions":["READ_PARTY"]},
-        "membership": {"id":"member_test","account_id":"acc_test","party_id":"org_test","current_status":"ACTIVE","roles":["MEMBER"],"object_version":1,"allowed_actions":[]}
+        "party": {
+          "id": "org_test",
+          "kind": "ORGANIZATION",
+          "display_name": "Test organization",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "capabilities": [],
+          "allowed_actions": [
+            "READ_PARTY"
+          ]
+        },
+        "membership": {
+          "id": "member_test",
+          "account_id": "acc_test",
+          "party_id": "org_test",
+          "current_status": "ACTIVE",
+          "roles": [
+            "MEMBER"
+          ],
+          "object_version": 1,
+          "allowed_actions": []
+        }
       }
     },
     {
       "name": "Suspended account has no actions",
       "schema": "Account",
-      "value": {"id":"acc_test","display_name":"Test account","current_status":"SUSPENDED","object_version":1,"allowed_actions":[]}
+      "value": {
+        "id": "acc_test",
+        "display_name": "Test account",
+        "current_status": "SUSPENDED",
+        "object_version": 1,
+        "allowed_actions": []
+      }
     },
     {
       "name": "Account pending deletion has no actions",
       "schema": "Account",
-      "value": {"id":"acc_test","display_name":"Test account","current_status":"DELETION_PENDING","object_version":1,"allowed_actions":[]}
+      "value": {
+        "id": "acc_test",
+        "display_name": "Test account",
+        "current_status": "DELETION_PENDING",
+        "object_version": 1,
+        "allowed_actions": []
+      }
     },
     {
       "name": "Suspended party has no actions",
       "schema": "Party",
-      "value": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"SUSPENDED","object_version":1,"capabilities":[],"allowed_actions":[]}
+      "value": {
+        "id": "org_test",
+        "kind": "ORGANIZATION",
+        "display_name": "Test organization",
+        "current_status": "SUSPENDED",
+        "object_version": 1,
+        "capabilities": [],
+        "allowed_actions": []
+      }
     },
     {
       "name": "Closed party has no actions",
       "schema": "Party",
-      "value": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"CLOSED","object_version":1,"capabilities":[],"allowed_actions":[]}
+      "value": {
+        "id": "org_test",
+        "kind": "ORGANIZATION",
+        "display_name": "Test organization",
+        "current_status": "CLOSED",
+        "object_version": 1,
+        "capabilities": [],
+        "allowed_actions": []
+      }
     },
     {
       "name": "IdentityVerificationResponse",
@@ -2386,7 +2456,238 @@
           ]
         }
       }
+    },
+    {
+      "name": "synthetic_operations_OpsNotificationListResponse",
+      "schema": "OpsNotificationListResponse",
+      "value": {
+        "meta": {
+          "request_id": "7c3f8843-08ef-4080-8ea3-1cd9df0e7b82",
+          "actor": {
+            "account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0"
+          },
+          "acting_party": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24"
+        },
+        "data": {
+          "items": [
+            {
+              "id": 6,
+              "domain": "TRADE",
+              "record_id": "d06fc9d2-36e7-43ab-a81f-74fb6f613dc6",
+              "event_code": "QUOTE_ACCEPTED",
+              "object_version": 3,
+              "read": false,
+              "created_at": "2026-09-29T03:42:20.708Z"
+            },
+            {
+              "id": 5,
+              "domain": "TRADE",
+              "record_id": "9e8f2a79-fe7b-40b2-a30e-d0aeae66b84a",
+              "event_code": "ORDER_CREATED",
+              "object_version": 1,
+              "read": false,
+              "created_at": "2026-09-29T03:42:20.706Z"
+            },
+            {
+              "id": 4,
+              "domain": "TRADE",
+              "record_id": "d06fc9d2-36e7-43ab-a81f-74fb6f613dc6",
+              "event_code": "INDEPENDENT_REVIEW",
+              "object_version": 2,
+              "read": false,
+              "created_at": "2026-09-29T03:42:20.688Z"
+            },
+            {
+              "id": 3,
+              "domain": "TRADE",
+              "record_id": "d06fc9d2-36e7-43ab-a81f-74fb6f613dc6",
+              "event_code": "QUOTE_CREATED",
+              "object_version": 1,
+              "read": false,
+              "created_at": "2026-09-29T03:42:20.675Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "synthetic_operations_OpsReadResponse",
+      "schema": "OpsReadResponse",
+      "value": {
+        "meta": {
+          "request_id": "45b0091a-7173-4093-8dfa-727236871902",
+          "actor": {
+            "account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0"
+          },
+          "acting_party": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24"
+        },
+        "data": {
+          "id": 6,
+          "read": true
+        }
+      }
+    },
+    {
+      "name": "synthetic_operations_OpsCommentResponse",
+      "schema": "OpsCommentResponse",
+      "value": {
+        "meta": {
+          "request_id": "a27c6976-e9ee-48eb-887b-a7da197355a1",
+          "actor": {
+            "account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0"
+          },
+          "acting_party": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24"
+        },
+        "data": {
+          "id": "977387fb-a5c6-41b0-b6eb-c1c871297690",
+          "domain": "TRADE",
+          "record_id": "9e8f2a79-fe7b-40b2-a30e-d0aeae66b84a",
+          "author_account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0",
+          "party_id": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24",
+          "reply_to": null,
+          "body": "Please confirm this project requirement. <script> is plain text.",
+          "current_status": "VISIBLE",
+          "object_version": 1,
+          "created_at": "2026-09-29T03:42:20.966Z"
+        }
+      }
+    },
+    {
+      "name": "synthetic_operations_OpsCommentListResponse",
+      "schema": "OpsCommentListResponse",
+      "value": {
+        "meta": {
+          "request_id": "9f100447-b9d1-4839-be3c-ab3d36876f06",
+          "actor": {
+            "account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0"
+          },
+          "acting_party": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "977387fb-a5c6-41b0-b6eb-c1c871297690",
+              "domain": "TRADE",
+              "record_id": "9e8f2a79-fe7b-40b2-a30e-d0aeae66b84a",
+              "author_account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0",
+              "party_id": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24",
+              "reply_to": null,
+              "body": "Please confirm this project requirement. <script> is plain text.",
+              "current_status": "VISIBLE",
+              "object_version": 1,
+              "created_at": "2026-09-29T03:42:20.966Z"
+            },
+            {
+              "id": "e3aaea26-6ce0-4951-88e4-e2c1748c75db",
+              "domain": "TRADE",
+              "record_id": "9e8f2a79-fe7b-40b2-a30e-d0aeae66b84a",
+              "author_account_id": "f3a0b94d-6a41-4f00-aa3b-ba5f5963485b",
+              "party_id": "a91588b4-aba3-4691-8215-904ed97a0099",
+              "reply_to": "977387fb-a5c6-41b0-b6eb-c1c871297690",
+              "body": "Confirmed.",
+              "current_status": "VISIBLE",
+              "object_version": 1,
+              "created_at": "2026-09-29T03:42:20.993Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "synthetic_operations_OpsAuditListResponse",
+      "schema": "OpsAuditListResponse",
+      "value": {
+        "meta": {
+          "request_id": "0220cfd4-ea82-4541-9c86-4fccc198c255",
+          "actor": {
+            "account_id": "5471b7b7-fe82-43fc-81b5-7ac88d89301f"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": 5,
+              "object_id": "68d23260-09fa-4584-86c9-b1c99d1f5083",
+              "actor_account_id": "5471b7b7-fe82-43fc-81b5-7ac88d89301f",
+              "event_code": "COMMENT_HIDE",
+              "object_version": 2,
+              "reason": "independent review",
+              "request_id": "4bbbb726-2fd6-42e0-b965-f2a43be42cb0",
+              "created_at": "2026-09-29T03:42:21.109Z"
+            },
+            {
+              "id": 4,
+              "object_id": "68d23260-09fa-4584-86c9-b1c99d1f5083",
+              "actor_account_id": "f3a0b94d-6a41-4f00-aa3b-ba5f5963485b",
+              "event_code": "COMMENT_CREATED",
+              "object_version": 1,
+              "reason": "",
+              "request_id": "b64f3b8b-73de-4ef2-8ce6-a48441f462fe",
+              "created_at": "2026-09-29T03:42:21.093Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "synthetic_operations_OpsBusinessAuditListResponse",
+      "schema": "OpsBusinessAuditListResponse",
+      "value": {
+        "meta": {
+          "request_id": "6f735cd7-e6f6-4b61-a248-9a6492066422",
+          "actor": {
+            "account_id": "5471b7b7-fe82-43fc-81b5-7ac88d89301f"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "705bd73c-cf5b-438e-bd0e-48fbd4c49ef8",
+              "record_id": "9e8f2a79-fe7b-40b2-a30e-d0aeae66b84a",
+              "actor_account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0",
+              "event_code": "ORDER_CREATED",
+              "object_version": 1,
+              "request_id": "0be80429-228e-41f0-8bd7-7a385262f875",
+              "created_at": "2026-09-29T03:42:20.706Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "synthetic_operations_OpsReportResponse",
+      "schema": "OpsReportResponse",
+      "value": {
+        "meta": {
+          "request_id": "0c5b8fd1-421b-44f9-8ed7-a2c8efeae0a4",
+          "actor": {
+            "account_id": "46025f13-9850-454c-9846-7a6c34f2dfe0"
+          },
+          "acting_party": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24"
+        },
+        "data": {
+          "id": "94070c19-41a0-45f6-8c4a-8588f1ea65ab",
+          "party_id": "7d536f12-4bf8-40b7-89d2-fc4849ef4f24",
+          "request": {
+            "kind": "CASH",
+            "period_end": "2027-01-01T00:00:00.000Z",
+            "environment": "SANDBOX",
+            "period_start": "2026-01-01T00:00:00.000Z",
+            "metric_version": "1"
+          },
+          "current_status": "PENDING",
+          "error_code": null,
+          "content_sha256": null,
+          "result": null
+        }
+      }
     }
   ],
-  "contract_version": "0.10.0-rc.1"
+  "contract_version": "0.11.0-rc.1"
 }

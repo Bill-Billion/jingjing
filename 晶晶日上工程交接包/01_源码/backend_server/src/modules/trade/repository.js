@@ -1,4 +1,4 @@
- 'use strict';
+'use strict';
 const {randomUUID}=require('node:crypto');
 const {id,ref,label,shape,version,error}=require('../party/policy');
 const {digest,sealUnsignedContent}=require('../governance/content');
@@ -16,7 +16,7 @@ function createTradeRepository(db,{resolvePrincipal=async()=>null,fulfillmentGat
  async function load(tx,key,kind,lock='FOR UPDATE'){const r=record(await one(tx,'SELECT * FROM trade_records WHERE id=? '+lock,[id(key)]));if(kind&&r.kind!==kind)throw error('TRADE_NOT_FOUND',404);return r;}
  async function locked(tx,key,kind){const hint=await load(tx,key,kind,'');if(hint.order_id)await load(tx,hint.order_id,'ORDER');return load(tx,key,kind);}
  async function now(tx){return Number((await one(tx,'SELECT ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000) ms')).ms);}
- async function audit(tx,a,r,event){await tx.execute('INSERT INTO trade_audit(id,record_id,actor_account_id,actor_kind,event_code,object_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?,?)',[randomUUID(),r.id,a.id,a.kind,event,r.object_version,digest(r.data),a.request_id]);}
+ async function audit(tx,a,r,event){const eventId=randomUUID();await tx.execute('INSERT INTO trade_audit(id,record_id,actor_account_id,actor_kind,event_code,object_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?,?)',[eventId,r.id,a.id,a.kind,event,r.object_version,digest(r.data),a.request_id]);await require('../operations/events').publishEvent(tx,{domain:'TRADE',record_id:r.id,event_id:eventId,event_code:event,object_version:r.object_version,actor_account_id:a.id});}
  async function insert(tx,a,kind,buyer,merchant,parent,order,status,data){const r={id:randomUUID(),kind,buyer_party_id:buyer,merchant_party_id:merchant,parent_id:parent,order_id:order,created_by:a.id,current_status:status,object_version:1,content_sha256:digest(data),data};await tx.execute('INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,parent_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,?,?,?,?,?,?,?,?,?)',[r.id,kind,buyer,merchant,parent,order,a.id,status,JSON.stringify(data),digest(data)]);await audit(tx,a,r,kind+'_CREATED');return r;}
  async function save(tx,a,r,status,data,event){const next={...r,current_status:status,object_version:r.object_version+1,content_sha256:digest(data),data};await tx.execute('UPDATE trade_records SET current_status=?,object_version=?,data_json=?,data_sha256=? WHERE id=?',[status,next.object_version,JSON.stringify(data),digest(data),r.id]);await audit(tx,a,next,event);return next;}
  const match=(r,v)=>{if(r.object_version!==version(v))throw error('VERSION_CONFLICT',412);};
