@@ -1,10 +1,11 @@
 'use strict';
 const express=require('express');
 const {createSupplyRepository}=require('../modules/works/repository');
+const {validBinding}=require('../modules/licensing/repository');
 const {createSupplyAssets}=require('../modules/works/assets');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createSupplyRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=createSupplyRepository(db,{resolvePrincipal}),assets=createSupplyAssets({db,repository:repo,env,storageFactory});
+ const router=express.Router(),repo=createSupplyRepository(db,{resolvePrincipal,verifyProjectSource:validBinding}),assets=createSupplyAssets({db,repository:repo,env,storageFactory});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const value=req.get('X-Acting-Party');if(!value){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}req.actingParty=id(value);return req.actingParty;};
  const key=req=>ref(req.get('Idempotency-Key'));

@@ -34,3 +34,5 @@ createGovernanceRepository默认使用数据库权限检查，不再需要用“
 ## 第四阶段供给审核
 
 新增SUPPLY_REVIEW_PROFILE、SUPPLY_REVIEW_RIGHTS、SUPPLY_REVIEW_CONTENT、SUPPLY_REVIEW_CONSENT，分别授权，仍用本页同一受控维护工具。没有真实人员自动获权；即使拥有审核权限，也不能批准本人或所属机构提交的材料。对应迁移0029只扩充动作，旧权限不自动包含新权限。
+
+第五阶段新增LICENSE_REVIEW：独立核验许可商品、外部签署与付款材料、阅稿依据，核验后发放或暂停许可。买卖双方成员不能自审。不得仅因附件存在就批准；具体必核字段见[第五阶段接口说明](STAGE_5_API.md)。真实人员未授权。
