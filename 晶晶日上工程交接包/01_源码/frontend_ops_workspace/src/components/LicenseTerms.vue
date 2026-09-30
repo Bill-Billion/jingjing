@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { rights, purposes, type Terms } from '@/api/modules/licensing'
+import { rights, purposes, territoryText, languageText, type Terms } from '@/api/modules/licensing'
 defineProps<{ terms: Terms }>()
 const date = (s: string) => new Date(s).toLocaleString('zh-CN',{hour12:false})
 </script>
@@ -8,7 +8,7 @@ const date = (s: string) => new Date(s).toLocaleString('zh-CN',{hour12:false})
     <div><dt>独家约定</dt><dd>{{ terms.exclusive ? '独家，仅限下列约定范围' : '非独家' }}</dd></div>
     <div><dt>逐项获准权利</dt><dd>{{ terms.rights.map(r => rights[r]).join('、') }}</dd></div>
     <div><dt>允许用途</dt><dd>{{ terms.purposes.map(p => purposes[p]).join('、') }}</dd></div>
-    <div><dt>地域 / 语言</dt><dd>{{ terms.territories.join('、') }} / {{ terms.languages.join('、') }}</dd></div>
+    <div><dt>地域 / 语言</dt><dd>{{ terms.territories.map(territoryText).join('、') }} / {{ terms.languages.map(languageText).join('、') }}</dd></div>
     <div><dt>许可开始（本地时间）</dt><dd>{{ date(terms.valid_from) }}</dd></div>
     <div><dt>开发截止（本地时间）</dt><dd>{{ date(terms.development_until) }}</dd></div>
     <div><dt>许可有效截止（本地时间）</dt><dd>{{ date(terms.valid_until) }}</dd></div>

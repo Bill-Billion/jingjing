@@ -58,6 +58,13 @@ try{
   for(const [binding,grantRecord,projectRecord,party] of [[{...b,parent_id:id(99)},g,p,id(2)],[{...b,data:{...b.data,work_version_id:id(99)}},g,p,id(2)],[b,{...g,current_status:'SUSPENDED'},p,id(2)],[b,{...g,data:{...g.data,terms:{...g.data.terms,rights:['PRODUCE']}}},p,id(2)],[b,g,{...p,data:{...p.data,purpose:'RELEASE'}},id(2)],[b,g,p,id(99)]])assert.equal(api.canAdaptBinding(binding,grantRecord,projectRecord,party,now),false)
   assert.equal(api.canAdaptBinding(b,g,p,id(2),Date.parse(end)),false);assert.equal(loginRedirect(`/supply/adaptations/${b.id}/new`),`/supply/adaptations/${b.id}/new`);assert.equal(loginRedirect('/supply/adaptations/invalid/new'),'/workspace')
  })
+ test('项目登记和绑定不冒充许可生效，地域语言名称保留原代码且不改使用范围',async()=>{
+  const p=base('PROJECT',30,'ACTIVE',{title:'项目',purpose:'PRIVATE',territory:'CN',language:'zh',episodes:5}),b={...base('BINDING',31,'ACTIVE',{project_id:p.id,work_version_id:id(9),terms_sha256:hash}),parent_id:id(12)}
+  assert.equal(api.recordStatus(p),'已登记用途');assert.equal(api.recordStatus(b),'已绑定项目');assert.equal(api.recordStatus(grant()),'已生效，请核对期限');assert.equal(api.recordStatus({...grant(),current_status:'SUSPENDED'}),'已暂停')
+  assert.equal(api.territoryText('CN'),'中国（CN）');assert.equal(api.languageText('zh'),'中文（zh）');assert.equal(api.territoryText('ZZ'),'ZZ');assert.equal(api.languageText('zz'),'zz')
+  const snapshot=structuredClone(p);assert.equal(api.projectFits(terms(),p.data,Date.parse(stamp)+1),true)
+  const {default:Panel}=await server.ssrLoadModule('/src/components/LicenseRecordPanel.vue'),html=await renderToString(createSSRApp({render:()=>h(Panel,{record:p})}));assert.ok(html.includes('已登记用途'));assert.ok(html.includes('中国（CN）'));assert.ok(html.includes('中文（zh）'));assert.equal(html.includes('已生效，请核对期限'),false);assert.deepEqual(p,snapshot)
+ })
  test('未知预留结果只重试完整原请求和同一键，成功重放后重新读当前记录',async()=>{
   const {ui,scope}=state(),calls=[];let post=0
   globalThis.fetch=async(url,o)=>{calls.push({url,o});if(o.method==='POST'){if(++post===1)throw Error('connection lost');return response(reservation())}return response({...reservation(),object_version:2})}

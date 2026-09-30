@@ -23,6 +23,16 @@ export interface LicensePage { items: LicenseRecord[]; next_cursor: string | nul
 export interface LicenseWrite { path: string; body: unknown; version?: number; targetId?: string; resultKind: LicenseKind | 'ACTIVATION'; label: string }
 export interface ReadingContent { record_id: string; watermarked_text: string; allows_generation: false }
 export const statuses: Record<string, string> = { IN_REVIEW: '待独立核验', LISTED: '已上架', UNLISTED: '已下架', REJECTED: '已拒绝', HELD: '已预留，未取得许可', COMMITTED: '已发放许可', CANCELLED: '已取消', REVIEW_REQUIRED: '需要人工补救，未取得许可', APPROVED: '依据已批准', ACTIVE: '已生效，请核对期限', SUSPENDED: '已暂停', REVOKED: '已撤销' }
+export function recordStatus(record: Pick<LicenseRecord,'kind'|'current_status'>): string {
+  if(record.current_status==='ACTIVE' && record.kind==='PROJECT')return '已登记用途'
+  if(record.current_status==='ACTIVE' && record.kind==='BINDING')return '已绑定项目'
+  return statuses[record.current_status] || record.current_status
+}
+const territoryNames:Record<string,string>={WORLD:'全球',CN:'中国',US:'美国',GB:'英国',JP:'日本',KR:'韩国',FR:'法国',DE:'德国'}
+const languageNames:Record<string,string>={ALL:'全部语言',zh:'中文',en:'英语',ja:'日语',ko:'韩语',fr:'法语',de:'德语',es:'西班牙语',ru:'俄语'}
+/** Labels never change the scope code used in requests or eligibility checks. */
+export const territoryText = (code:string):string => territoryNames[code] ? `${territoryNames[code]}（${code}）` : code
+export const languageText = (code:string):string => languageNames[code] ? `${languageNames[code]}（${code}）` : code
 const obj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 const str = (v: unknown, max = 2000): v is string => typeof v === 'string' && v.trim().length > 0 && v.length <= max
 const hash = (v: unknown) => typeof v === 'string' && /^[a-f0-9]{64}$/.test(v)
