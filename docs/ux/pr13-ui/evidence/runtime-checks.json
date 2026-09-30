@@ -1,0 +1,17 @@
+{
+  "test_only": true,
+  "api_url": "http://127.0.0.1:3232",
+  "verification": {
+    "passed": 6,
+    "checks": [
+      "Four real SMS logins; organization invite accepted through HTTP",
+      "Actual private bytes/hash; exact upload replay performs no second put",
+      "Two approved personal profiles; pending organization profile; approved history, fresh pending revision and private draft",
+      "Reviewer queue excludes draft; cross-owner and MEMBER reads denied; missing/stale If-Match refused without writes",
+      "Authorized binary download matches exact bytes; no-store/attachment/nosniff; draft and foreign/private material denied",
+      "Private controls deny anonymous/Origin; storage failure returns real 503; scoped reviewer revocation returns real 403 and restores"
+    ]
+  },
+  "storage": "isolated in-memory adapter; real authorization and HTTP",
+  "production_services": "NOT_VERIFIED"
+}

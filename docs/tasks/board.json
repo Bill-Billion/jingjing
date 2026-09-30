@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-09-24",
+  "updated_on": "2026-09-25",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -885,9 +885,9 @@
       "title": "数字人/脸声同意、作者供给、Work/Version、证据双审",
       "stage": 2,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-4-works-evidence",
       "work_refs": [
         "WORK-02",
         "WORK-03",
@@ -931,9 +931,18 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S2-001-policy-20260925.md",
+        "docs/tasks/records/CORE-S2-001-policy-evidence/validation.json",
+        "docs/tasks/records/CORE-S2-001-stage4-20260925.md",
+        "docs/tasks/records/CORE-S2-001-stage4-evidence/validation.json",
+        "docs/tasks/records/CORE-S2-001-stage4-evidence/github-summary.json"
+      ],
+      "blockers": [
+        "第11、12份待审依赖未合入；真实人员及供应商、页面联调尚未启用；改稿需后续项目许可核验，外部资产清理事件待处理。"
+      ],
+      "current_increment": "第四阶段后端已交付第13份申请待审：供给申请、私有材料、作品双审、本人同意与撤回；15个接口；本机及GitHub全套238通过/1缺样本跳过，未合并未上线"
     },
     {
       "id": "CORE-S2-002",
@@ -1574,7 +1583,7 @@
       "stage": 1,
       "stream": "Experience",
       "owner": "用户授权的本次前端任务 / Codex",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "branch": "ux/pr12-delivery",
       "work_refs": [],
       "req_refs": [
@@ -1605,24 +1614,84 @@
       "evidence": [
         "docs/tasks/records/UX-PR12-CONTRACT-UI-20260929.md",
         "docs/ux/pr12-ui/README.md",
-        "design-qa.md"
+        "docs/ux/pr12-ui/design-qa.md",
+        "docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md"
       ],
       "blockers": [
-        "本批按用户要求统一通过第12份申请交付，仍待阶段审阅与合入；原生包及正式外部服务未验收。"
-      ]
+        "原生包与正式外部服务仍按后续发布阶段验收。"
+      ],
+      "current_increment": "已于2026-09-29通过第12份申请进入integration/e58c7fc；8项远端检查通过，未部署。"
+    },
+    {
+      "id": "UX-PR13-SUPPLY-PAGES-20260929",
+      "title": "作者申请、作品资料与独立审核页面",
+      "stage": 2,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr13-pages",
+      "work_refs": [
+        "WORK-03",
+        "WORK-04"
+      ],
+      "req_refs": [
+        "REQ-014",
+        "REQ-022",
+        "REQ-046",
+        "REQ-047",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR12-CONTRACT-UI-20260929",
+        "CORE-S2-001"
+      ],
+      "deliverables": [
+        "App作者申请、作品投稿及修订资料",
+        "网页供给申请、作品管理和独立双审",
+        "私有材料上传下载与异常处理",
+        "暖白界面验收、测试和交付说明"
+      ],
+      "acceptance": "按第13份真实接口提交、补材料、保留作品历史；权属与内容分开审核；权限或身份变化清除私有内容；重试保留原操作；图册与实际页面一致",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md",
+        "docs/ux/pr13-ui/README.md",
+        "docs/ux/pr13-ui/ui-checks.md",
+        "docs/ux/pr13-ui/api-review.md",
+        "design-qa.md",
+        "docs/ux/pr13-ui/evidence/runtime-checks.json"
+      ],
+      "blockers": [
+        "前后端统一通过第13份交付，仍待共同版本验收；真实存储和原生包后续验收。"
+      ],
+      "updated_on": "2026-09-30"
     }
   ],
   "delivery_policy": {
     "mode": "STAGED_LOCAL_FIRST",
     "effective_on": "2026-09-22",
     "guide": "docs/collaboration/STAGED_DELIVERY.md",
-    "remote_sync": "STAGE_2_PUBLISHED_STAGE_3_LOCAL_ONLY",
+    "remote_sync": "PR13_COMBINED_DELIVERY_IN_REVIEW",
     "open_pull_requests": [
-      11
+      13,
+      14,
+      15,
+      16,
+      17
     ],
     "previous_merged_pull_requests": [
       4,
-      10
+      10,
+      11,
+      12
     ],
     "previous_closed_unmerged_pull_requests": [
       1,
@@ -1636,19 +1705,18 @@
     ],
     "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
     "current_stage": {
-      "name": "规则与合同历史留存",
-      "branch": "core/stage-3-rule-snapshots",
-      "status": "IN_PROGRESS_LOCAL_ONLY",
-      "owner": "chengcongcong222",
-      "guide": "docs/collaboration/STAGE_3_RULE_SNAPSHOTS.md",
-      "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e",
-      "pending_dependency": "PR 11 / d2e6c93, merged locally only, not approved or merged into integration"
-    },
-    "pending_previous_stage": {
-      "name": "账号操作接通",
-      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/11",
-      "status": "OPEN_NO_REVIEW",
-      "branch": "core/stage-2-account-api"
+      "name": "作者与作品资料前端",
+      "branch": "ux/pr13-pages",
+      "status": "DELIVERY_IN_REVIEW",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "guide": "docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md",
+      "base_commit": "e58c7fcaa86610715ff1c621b4126f2a9c605737",
+      "pending_dependency": "PR13 原后端318f263与前端81a9727统一交付，尚待共同审阅及合入integration",
+      "updated_on": "2026-09-30",
+      "delivery_branch": "core/stage-4-works-evidence",
+      "pull_request": 13,
+      "source_commit": "81a9727dcb606517cd82731abe6a632579ec2d14",
+      "remote_checks": "SEE_PR13_CURRENT_HEAD_CHECKS"
     }
   }
 }

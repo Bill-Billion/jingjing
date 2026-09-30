@@ -31,10 +31,14 @@ Future<void> pump(WidgetTester tester, AccountSession session, Widget child,
         ChangeNotifierProvider.value(value: session),
         ChangeNotifierProvider.value(value: legacy ?? UserProvider()),
       ],
-      child: MaterialApp(
-          theme: AppTheme.darkTheme,
-          home: child,
-          routes: {'/account': (_) => const AccountPage()})));
+      child: MaterialApp(theme: AppTheme.darkTheme, home: child, routes: {
+        '/account': (_) => const AccountPage(),
+        '/home': (_) => const MainScaffold(),
+        '/enter': (_) => const MainScaffold(initialTab: 1),
+        '/cultivate': (_) => const MainScaffold(initialTab: 2),
+        '/roles': (_) => const MainScaffold(initialTab: 3),
+        '/my': (_) => const MainScaffold(initialTab: 4),
+      })));
   await frames(tester);
 }
 
@@ -82,7 +86,7 @@ void main() {
     await close(tester);
   });
 
-  testWidgets('真实登录进入独立账号页并清空旧路由，旧交易和会话不继续', (tester) async {
+  testWidgets('真实登录进入新版我的并清空旧路由，旧交易和会话不继续', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     final legacy = UserProvider();
@@ -114,11 +118,11 @@ void main() {
     expect(legacy.isLoggedIn, isFalse);
     expect(continued, isFalse);
     expect(find.byType(LoginPage), findsNothing);
-    expect(find.byType(MainScaffold), findsNothing);
-    expect(find.byType(AccountPage), findsOneWidget);
+    expect(find.byType(MainScaffold), findsOneWidget);
+    expect(find.byType(AccountPage), findsNothing);
     expect(
-        ModalRoute.of(tester.element(find.byType(AccountPage)))?.settings.name,
-        '/account');
+        ModalRoute.of(tester.element(find.byType(MainScaffold)))?.settings.name,
+        '/my');
     expect(find.text('旧业务入口'), findsNothing); // Old private routes are removed.
     expect(find.text('账号与机构'), findsOneWidget);
     expect(continued, isFalse);
@@ -293,11 +297,12 @@ void main() {
     nav.pushNamed('/wallet');
     await frames(tester);
     expect(find.byType(WalletPage), findsNothing);
-    expect(find.text('功能接入中'), findsOneWidget);
+    expect(find.text('暂未开放'), findsOneWidget);
+    expect(find.text('我的结算'), findsOneWidget);
     await close(tester);
   });
 
-  testWidgets('新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录', (tester) async {
+  testWidgets('新账号主导航展示规划入口，退出清空并显示登录', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     await tester
@@ -305,8 +310,11 @@ void main() {
     await pump(tester, session, const MainScaffold(initialTab: 4));
     await tester.tap(find.text('首页').last);
     await frames(tester);
-    expect(find.text('这部分业务还在接入新账号'), findsOneWidget);
-    await tester.tap(find.text('前往我的账号'));
+    expect(find.text('让故事与你有关'), findsOneWidget);
+    expect(find.text('入戏'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('app-tab-4')));
+    await frames(tester);
+    await tester.tap(find.text('账号与机构'));
     await frames(tester);
     await tester.tap(find.text('退出登录'));
     await frames(tester);

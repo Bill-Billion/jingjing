@@ -69,6 +69,7 @@ export function asApiError(e: unknown): ApiError {
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
   body?: unknown
+  rawBody?: Blob
   /** Bearer 令牌 */
   token?: string | null
   /** 主体级接口必须带，且必须与地址里的 party_id 一致 */
@@ -105,13 +106,14 @@ export interface ApiResult<T> {
  * 失败一定抛 ApiError，绝不返回"看起来成功"的空结果。
  */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
-  const { method = 'GET', body, token, actingParty, idempotencyKey, ifMatch, signal, cache } = options
+  const { method = 'GET', body, rawBody, token, actingParty, idempotencyKey, ifMatch, signal, cache } = options
 
   const headers: Record<string, string> = {
     Accept: 'application/json',
     'X-Request-Id': newRequestId(),
   }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (rawBody) headers['Content-Type'] = 'application/octet-stream'
+  else if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (token) headers['Authorization'] = `Bearer ${token}`
   if (actingParty) headers['X-Acting-Party'] = actingParty
   if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey
@@ -122,7 +124,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     response = await fetch(`${API_BASE}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: rawBody ?? (body !== undefined ? JSON.stringify(body) : undefined),
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000),
       // 会话令牌走 Bearer 头而不是 Cookie，这里不涉及凭据模式
       credentials: 'omit',
@@ -231,4 +233,25 @@ export async function probe(path: '/health' | '/ready'): Promise<{ ok: boolean; 
   } catch (e) {
     return { ok: false, detail: e instanceof Error ? e.message : String(e) }
   }
+}
+
+/** Private attachment transport: bytes stay in memory; no URL from the server is trusted. */
+export async function requestBytes(path: string, options: RequestOptions): Promise<Blob> {
+  const headers: Record<string, string> = { Accept: 'application/octet-stream', 'X-Request-Id': newRequestId() }
+  if (options.token) headers.Authorization = `Bearer ${options.token}`
+  if (options.actingParty) headers['X-Acting-Party'] = options.actingParty
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}${path}`, { method: 'GET', headers, credentials: 'omit', cache: 'no-store', signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000) })
+  } catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
+  if (!response.ok) {
+    if (response.status === 401 && options.token) unauthorized?.(options.token)
+    const raw = await response.text()
+    let error: ErrorBody | undefined
+    try { error = JSON.parse(raw)?.error } catch { /* Non-JSON gateway error. */ }
+    throw toApiError(response.status, error, response.headers.get('X-Request-Id'), raw, retryAfterAt(response.headers.get('Retry-After')))
+  }
+  if (response.headers.get('Content-Type')?.split(';')[0] !== 'application/octet-stream') throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '材料返回格式不正确，未下载。' })
+  try { return await response.blob() }
+  catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
 }

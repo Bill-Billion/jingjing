@@ -1,0 +1,1222 @@
+{
+  "source_commit": "acd5f99acc43c7408c61b499deb809f9860c0fe0",
+  "source_directory": "design/full-ui-20260929",
+  "backend_dependency": "PR13 / 318f263bdfa79264135c772d4b6b1a29282e039f",
+  "pages": [
+    {
+      "id": "APP-36",
+      "title": "供给入驻与作品投稿",
+      "role": "个人作者、机构版权方",
+      "requirements": [
+        "REQ-022",
+        "REQ-046",
+        "REQ-047",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-059"
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records",
+          "use": "分页查看自己的资料或获准审核的资料"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records/{record_id}",
+          "use": "读取获准查看的投稿版本或同意记录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传私有作品或证据材料"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/profiles",
+          "use": "提交个人或机构供给申请"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/work-versions",
+          "use": "创建原作或新修订版本"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/assets/{asset_id}/content",
+          "use": "下载获准的私有材料"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/work-versions/{record_id}/actions",
+          "use": "提交作品审核或撤回当前版本"
+        }
+      ],
+      "constraints": [
+        "供给需APPROVED才能投稿。保存草稿与SUBMIT分开。许可商品preview_text在许可模块，不混入work表单。",
+        "所有示例仅用于设计，不设为商业默认值。写入保留本次唯一键；已有对象更新附原版本，结果不确定先核对。",
+        "成功状态来自重新读取当前对象；不把保存文本、审批、确认、支付、授权或实付相互替代。"
+      ],
+      "gaps": [
+        {
+          "feature": "作品公开封面与热度",
+          "reason": "无字段/API"
+        },
+        {
+          "feature": "App商品运营全功能",
+          "reason": "当前设计引导Web许可商品页，依已有许可接口"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "需补材料",
+          "trigger": "PROFILE/WORK CHANGES_REQUESTED",
+          "message": "请按审核意见提交新修订",
+          "handling": "关联最新previous ID，保留旧稿与旧意见"
+        },
+        {
+          "state": "双审完成",
+          "trigger": "REVIEWS_COMPLETE",
+          "message": "权属与内容审核已完成",
+          "handling": "可进入许可商品流程；不显示已售或已发行"
+        },
+        {
+          "state": "加载中",
+          "trigger": "首次读取或刷新",
+          "message": "正在加载",
+          "handling": "保留页面框架，隐藏未取到的数据与主操作"
+        },
+        {
+          "state": "空内容",
+          "trigger": "成功返回空列表或无当前记录",
+          "message": "暂无相关记录",
+          "handling": "显示说明及已有权限下可用的入口；有下一页游标仍允许继续读取"
+        },
+        {
+          "state": "登录或权限失效",
+          "trigger": "401/403/404",
+          "message": "请重新登录，或确认当前身份",
+          "handling": "不展示私有缓存；返回登录或身份选择"
+        },
+        {
+          "state": "版本已更新",
+          "trigger": "412 或准确版本校验失败",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，保留未提交文字；不自动替用户确认新版本"
+        },
+        {
+          "state": "服务暂不可用",
+          "trigger": "503 或真实服务未就绪",
+          "message": "暂时无法完成，请稍后核对",
+          "handling": "保留当前操作；不显示成功，不自动换键重发"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "申请作品供给",
+          "role": "个人或机构负责人",
+          "state": "首次申请表单",
+          "nav_active": "我的",
+          "layout": [
+            "当前个人/机构身份",
+            "供给展示名称",
+            "简介",
+            "权利证明上传",
+            "提交审核"
+          ],
+          "fields": [
+            {
+              "label": "名称",
+              "source": "request.display_name",
+              "example": "填写供给展示名称",
+              "editable": true
+            },
+            {
+              "label": "说明",
+              "source": "request.description",
+              "example": "介绍作品来源及供给范围",
+              "editable": true
+            },
+            {
+              "label": "权利证明",
+              "source": "request.evidence_asset_ids",
+              "example": "上传私有证明材料",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "上传材料",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "purpose=RIGHTS_EVIDENCE、有效OWNER、存储就绪",
+              "enabled": true
+            },
+            {
+              "label": "提交供给申请",
+              "method": "POST",
+              "path": "/api/v1/supply/profiles",
+              "condition": "首次previous_profile_id=null，表单完整",
+              "enabled": false
+            }
+          ],
+          "id": "APP-36-01"
+        },
+        {
+          "title": "我的作品版本",
+          "role": "已获供给批准的负责人",
+          "state": "已有草稿与待审版本",
+          "nav_active": "我的",
+          "layout": [
+            "当前身份",
+            "作品标题和修订号",
+            "权属/内容状态",
+            "新建投稿入口",
+            "加载更多"
+          ],
+          "fields": [
+            {
+              "label": "作品标题",
+              "source": "record.data.version.content.title",
+              "example": "海边来信",
+              "editable": false
+            },
+            {
+              "label": "修订号",
+              "source": "record.revision",
+              "example": "修订 2",
+              "editable": false
+            },
+            {
+              "label": "审核状态",
+              "source": "record.current_status",
+              "example": "等待权属与内容审核",
+              "editable": false
+            },
+            {
+              "label": "稳定作品编号",
+              "source": "record.stream_ref",
+              "example": "作品 · 2c18",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "新建投稿",
+              "method": "LOCAL",
+              "path": "APP-36-03",
+              "condition": "当前身份有该对象的操作权限",
+              "enabled": true
+            },
+            {
+              "label": "查看版本",
+              "method": "LOCAL",
+              "path": "APP-36-04",
+              "condition": "当前身份有该对象的操作权限",
+              "enabled": true
+            },
+            {
+              "label": "加载更多",
+              "method": "GET",
+              "path": "/api/v1/supply/records",
+              "condition": "kind=WORK_VERSION且next_cursor存在",
+              "enabled": true
+            }
+          ],
+          "id": "APP-36-02"
+        },
+        {
+          "title": "提交作品新版本",
+          "role": "已获供给批准的负责人",
+          "state": "原作投稿表单待填",
+          "nav_active": "我的",
+          "layout": [
+            "作品标题与原作类型",
+            "正文文件",
+            "作者/权利人/代理",
+            "各项证据",
+            "保存新版本"
+          ],
+          "fields": [
+            {
+              "label": "作品标题",
+              "source": "request.title",
+              "example": "输入作品标题",
+              "editable": true
+            },
+            {
+              "label": "类型",
+              "source": "request.kind",
+              "example": "原作",
+              "editable": false
+            },
+            {
+              "label": "正文",
+              "source": "request.content_asset_id",
+              "example": "上传作品正文",
+              "editable": true
+            },
+            {
+              "label": "作者/权利人/代理",
+              "source": "request.credits[].party_id + role",
+              "example": "填写各方主体编号和角色",
+              "editable": true
+            },
+            {
+              "label": "各方权利依据",
+              "source": "request.credits[].evidence_asset_ids",
+              "example": "为每一项声明关联证据",
+              "editable": true
+            },
+            {
+              "label": "作品权利材料",
+              "source": "request.evidence_ids",
+              "example": "上传作品权利链材料",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "上传材料",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "按正文或权利证明用途上传，最大8MiB",
+              "enabled": true
+            },
+            {
+              "label": "保存新版本",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions",
+              "condition": "完整字段且至少RIGHTS_HOLDER，主图尚未填完；新作品自动发送work_id=null、previous_version_id=null；新增修订从原记录带入稳定work_id与最新previous_version_id。原作kind=ORIGINAL并显式source_version_id=null、project_id=null；项目改稿变体必须从已绑定许可带入有效来源版本和项目，不能省略这些nullable键。",
+              "enabled": false
+            }
+          ],
+          "id": "APP-36-03"
+        },
+        {
+          "title": "作品版本详情",
+          "role": "作品供给负责人",
+          "state": "草稿已保存尚未提交审核",
+          "nav_active": "我的",
+          "layout": [
+            "标题与修订状态",
+            "稿件信息",
+            "权利链",
+            "两类审核区",
+            "提交审核/撤回"
+          ],
+          "fields": [
+            {
+              "label": "标题",
+              "source": "record.data.version.content.title",
+              "example": "海边来信",
+              "editable": false
+            },
+            {
+              "label": "修订",
+              "source": "record.revision",
+              "example": "修订 2",
+              "editable": false
+            },
+            {
+              "label": "状态",
+              "source": "record.current_status",
+              "example": "草稿",
+              "editable": false
+            },
+            {
+              "label": "稿件",
+              "source": "record.data.version.content.content_asset_id",
+              "example": "正文文件 · 5e22",
+              "editable": false
+            },
+            {
+              "label": "权利链",
+              "source": "record.data.credits",
+              "example": "作者与权利人分别登记",
+              "editable": false
+            },
+            {
+              "label": "审核记录",
+              "source": "record.data.version.reviews",
+              "example": "尚未提交审核",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "下载正文",
+              "method": "GET",
+              "path": "/api/v1/supply/assets/{asset_id}/content",
+              "condition": "当前OWNER有权私有材料",
+              "enabled": true
+            },
+            {
+              "label": "提交审核",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions/{record_id}/actions",
+              "condition": "DRAFT、供给批准且材料就绪，action=SUBMIT",
+              "enabled": true
+            },
+            {
+              "label": "新增修订",
+              "method": "LOCAL",
+              "path": "APP-36-03",
+              "condition": "保留work_id并使用最新previous_version_id",
+              "enabled": true
+            }
+          ],
+          "id": "APP-36-04"
+        }
+      ]
+    },
+    {
+      "id": "WEB-05",
+      "title": "供给资质与入驻审核",
+      "role": "个人作者/机构供给方、独立运营审核员",
+      "requirements": [
+        "REQ-014",
+        "REQ-046",
+        "REQ-047",
+        "REQ-049",
+        "REQ-059"
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records",
+          "use": "分页查看自己的资料或获准审核的资料"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records/{record_id}",
+          "use": "读取获准查看的投稿版本或同意记录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传私有作品或证据材料"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/profiles",
+          "use": "提交个人或机构供给申请"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/assets/{asset_id}/content",
+          "use": "下载获准的私有材料"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/profiles/{record_id}/reviews",
+          "use": "审核供给申请，不允许批准本人或所属机构"
+        }
+      ],
+      "constraints": [
+        "审核权独立逐项授予；本人/本机构不可自审。通过供给不意味着作品、许可或实名通过。",
+        "所有示例仅用于设计，不设为商业默认值。写入保留本次唯一键；已有对象更新附原版本，结果不确定先核对。",
+        "成功状态来自重新读取当前对象；不把保存文本、审批、确认、支付、授权或实付相互替代。"
+      ],
+      "gaps": [],
+      "state_specs": [
+        {
+          "state": "本人不能审核",
+          "trigger": "SELF_REVIEW_FORBIDDEN",
+          "message": "您不能审核本人或所属机构的申请",
+          "handling": "保留只读或退出，交独立审核员"
+        },
+        {
+          "state": "加载中",
+          "trigger": "首次读取或刷新",
+          "message": "正在加载",
+          "handling": "保留页面框架，隐藏未取到的数据与主操作"
+        },
+        {
+          "state": "空内容",
+          "trigger": "成功返回空列表或无当前记录",
+          "message": "暂无相关记录",
+          "handling": "显示说明及已有权限下可用的入口；有下一页游标仍允许继续读取"
+        },
+        {
+          "state": "登录或权限失效",
+          "trigger": "401/403/404",
+          "message": "请重新登录，或确认当前身份",
+          "handling": "不展示私有缓存；返回登录或身份选择"
+        },
+        {
+          "state": "版本已更新",
+          "trigger": "412 或准确版本校验失败",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，保留未提交文字；不自动替用户确认新版本"
+        },
+        {
+          "state": "服务暂不可用",
+          "trigger": "503 或真实服务未就绪",
+          "message": "暂时无法完成，请稍后核对",
+          "handling": "保留当前操作；不显示成功，不自动换键重发"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "供给申请",
+          "role": "个人作者或机构负责人",
+          "state": "填写首次申请或补正修订",
+          "nav_active": "供给申请",
+          "layout": [
+            "共享壳",
+            "个人/机构身份说明",
+            "名称与简介",
+            "私有权利材料",
+            "历史最新意见",
+            "提交"
+          ],
+          "fields": [
+            {
+              "label": "名称",
+              "source": "request.display_name",
+              "example": "填写供给展示名称",
+              "editable": true
+            },
+            {
+              "label": "简介",
+              "source": "request.description",
+              "example": "说明作品来源和供给范围",
+              "editable": true
+            },
+            {
+              "label": "权利材料",
+              "source": "request.evidence_asset_ids",
+              "example": "上传证明材料",
+              "editable": true
+            },
+            {
+              "label": "上一修订",
+              "source": "request.previous_profile_id",
+              "example": "首次申请为空",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "上传材料",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "purpose=RIGHTS_EVIDENCE、OWNER",
+              "enabled": true
+            },
+            {
+              "label": "提交申请",
+              "method": "POST",
+              "path": "/api/v1/supply/profiles",
+              "condition": "材料完整；补正引用最新previous_profile_id",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-05-01"
+        },
+        {
+          "title": "供给申请审核队列",
+          "role": "获独立供给审核权限的运营人员",
+          "state": "按权限读取已提交申请",
+          "nav_active": "供给审核",
+          "layout": [
+            "运营共享壳",
+            "队列说明与刷新",
+            "申请表格",
+            "逐条进入审核",
+            "分页"
+          ],
+          "fields": [
+            {
+              "label": "申请名称",
+              "source": "records.items[].data.display_name",
+              "example": "海岸编剧工作室",
+              "editable": false
+            },
+            {
+              "label": "主体编号",
+              "source": "records.items[].owner_party_id",
+              "example": "主体 · 7bc4",
+              "editable": false
+            },
+            {
+              "label": "修订",
+              "source": "records.items[].revision",
+              "example": "修订 2",
+              "editable": false
+            },
+            {
+              "label": "状态",
+              "source": "records.items[].current_status",
+              "example": "待审核",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "进入审核",
+              "method": "LOCAL",
+              "path": "WEB-05-03",
+              "condition": "当前身份有该对象的操作权限",
+              "enabled": true
+            },
+            {
+              "label": "刷新",
+              "method": "GET",
+              "path": "/api/v1/supply/records",
+              "condition": "不传acting_party，kind=PROFILE，具SUPPLY_REVIEW_PROFILE",
+              "enabled": true
+            },
+            {
+              "label": "加载更多",
+              "method": "GET",
+              "path": "/api/v1/supply/records",
+              "condition": "有next_cursor",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-05-02"
+        },
+        {
+          "title": "核对供给申请",
+          "role": "独立SUPPLY_REVIEW_PROFILE运营人员",
+          "state": "待审核申请已打开",
+          "nav_active": "供给审核",
+          "layout": [
+            "申请名称与修订",
+            "资料说明",
+            "关联私有材料",
+            "历史修订入口",
+            "审核意见",
+            "三种独立决定"
+          ],
+          "fields": [
+            {
+              "label": "名称",
+              "source": "record.data.display_name",
+              "example": "海岸编剧工作室",
+              "editable": false
+            },
+            {
+              "label": "简介",
+              "source": "record.data.description",
+              "example": "提交原创剧本及权利来源材料",
+              "editable": false
+            },
+            {
+              "label": "关联材料",
+              "source": "record.data.evidence_asset_ids",
+              "example": "权利材料 · 62a1",
+              "editable": false
+            },
+            {
+              "label": "审核意见",
+              "source": "request.reason",
+              "example": "写明已核对事实与结论",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "下载关联材料",
+              "method": "GET",
+              "path": "/api/v1/supply/assets/{asset_id}/content",
+              "condition": "仅该申请关联材料并且有审核权限",
+              "enabled": true
+            },
+            {
+              "label": "通过",
+              "method": "POST",
+              "path": "/api/v1/supply/profiles/{record_id}/reviews",
+              "condition": "独立审核、PENDING_REVIEW、原版本、reason必填；APPROVED",
+              "enabled": false
+            },
+            {
+              "label": "要求补材料",
+              "method": "POST",
+              "path": "/api/v1/supply/profiles/{record_id}/reviews",
+              "condition": "CHANGES_REQUESTED+明确reason",
+              "enabled": false
+            },
+            {
+              "label": "拒绝",
+              "method": "POST",
+              "path": "/api/v1/supply/profiles/{record_id}/reviews",
+              "condition": "REJECTED+明确reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-05-03"
+        }
+      ]
+    },
+    {
+      "id": "WEB-07",
+      "title": "作品库、投稿与版本",
+      "role": "个人作者、机构版权方、编辑",
+      "requirements": [
+        "REQ-022",
+        "REQ-046",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-059"
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records",
+          "use": "继续加载"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records/{record_id}",
+          "use": "查看当前版本"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/work-versions/{record_id}/actions",
+          "use": "撤回版本"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/work-versions",
+          "use": "创建版本"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传私有材料"
+        }
+      ],
+      "constraints": [
+        "供给写入仅OWNER；作品列表kind/cursor/limit。",
+        "补正创建新WORK_VERSION；作品编号稳定，上一版本必须最新。",
+        "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+        "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+      ],
+      "gaps": [
+        {
+          "feature": "作品搜索、封面、收藏和公开展示",
+          "reason": "当前供给记录没有这些字段或接口"
+        },
+        {
+          "feature": "编辑或删除已有稿件",
+          "reason": "只支持新版本和撤回，不能原地覆盖"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "loading",
+          "trigger": "首次请求或继续加载尚未返回",
+          "message": "正在加载",
+          "handling": "保留页面结构，禁止重复提交；不生成演示成功记录"
+        },
+        {
+          "state": "empty",
+          "trigger": "items为空",
+          "message": "暂无可查看记录",
+          "handling": "next_cursor非空仍可继续加载；不伪称全站为零"
+        },
+        {
+          "state": "forbidden",
+          "trigger": "401/403/404或当前主体失权",
+          "message": "当前身份无法查看这条记录",
+          "handling": "停止文件/数据读取，提供本地返回入口"
+        },
+        {
+          "state": "version_changed",
+          "trigger": "412 VERSION_CONFLICT",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，不能静默提交旧决定"
+        },
+        {
+          "state": "blocked",
+          "trigger": "409业务前置不满足或503服务未启用",
+          "message": "当前条件未齐，请先处理提示事项",
+          "handling": "显示具体原因，保留原记录与操作编号，禁止假成功"
+        },
+        {
+          "state": "version_action_confirmation",
+          "trigger": "用户从当前草稿提交或选择撤回",
+          "message": "确认本次版本操作",
+          "handling": "提交审核body.action=SUBMIT且reason=null；撤回二次确认对话框必填reason（1–1000字符）、action=WITHDRAW。准确record_id及最新object_version隐藏绑定，不让用户手填。"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "我的作品与版本",
+          "role": "供给主体负责人",
+          "state": "当前版本待提交",
+          "layout": [
+            "标题与新投稿入口",
+            "本页作品记录表",
+            "选中版本的权利链和审核事实",
+            "历史版本入口"
+          ],
+          "fields": [
+            {
+              "label": "作品标题",
+              "source": "GET /api/v1/supply/records → response.data.items[].data.version.content.title",
+              "example": "归途（设计示例）",
+              "editable": false
+            },
+            {
+              "label": "作品编号",
+              "source": "GET /api/v1/supply/records → response.data.items[].stream_ref",
+              "example": "已选作品编号",
+              "editable": false
+            },
+            {
+              "label": "修订版本",
+              "source": "GET /api/v1/supply/records → response.data.items[].revision",
+              "example": "第2版（示例）",
+              "editable": false
+            },
+            {
+              "label": "当前状态",
+              "source": "GET /api/v1/supply/records → response.data.items[].current_status",
+              "example": "草稿",
+              "editable": false
+            },
+            {
+              "label": "作者与权利人",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.credits",
+              "example": "按主体编号列示作者、权利人及其证明",
+              "editable": false
+            },
+            {
+              "label": "已记录审核",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.reviews",
+              "example": "尚未提交审核",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "新投稿",
+              "method": "LOCAL",
+              "path": "WEB-07-02",
+              "condition": "本地页面导航，不更改业务状态",
+              "enabled": true
+            },
+            {
+              "label": "查看当前版本",
+              "method": "GET",
+              "path": "/api/v1/supply/records/{record_id}",
+              "condition": "有当前记录权限；以服务器当前状态和版本为准",
+              "enabled": true
+            },
+            {
+              "label": "继续加载",
+              "method": "GET",
+              "path": "/api/v1/supply/records",
+              "condition": "next_cursor非空；仅kind=WORK_VERSION",
+              "enabled": true
+            },
+            {
+              "label": "提交审核",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions/{record_id}/actions",
+              "condition": "本人OWNER，当前DRAFT；action=SUBMIT 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.action←固定SUBMIT；body.reason←固定null；必填结构：action枚举=SUBMIT,WITHDRAW；reason；reason可显式null",
+              "enabled": true
+            },
+            {
+              "label": "撤回版本",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions/{record_id}/actions",
+              "condition": "本人OWNER且服务端允许WITHDRAW；先填写原因 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.action←固定WITHDRAW；body.reason←撤回确认对话框必填原因；必填结构：action枚举=SUBMIT,WITHDRAW；reason；reason可显式null",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-07-01",
+          "nav_active": "作品管理"
+        },
+        {
+          "title": "新投稿或补正版本",
+          "role": "供给主体负责人",
+          "state": "本地填写，尚未创建版本",
+          "layout": [
+            "作品信息",
+            "原作或获许可项目改稿",
+            "私有正文及证明",
+            "作者、权利人、代理权利链",
+            "创建版本操作"
+          ],
+          "fields": [
+            {
+              "label": "作品标题",
+              "source": "POST /api/v1/supply/work-versions → request.title",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "作品类型",
+              "source": "POST /api/v1/supply/work-versions → request.kind",
+              "example": "请选择原作或项目改稿",
+              "editable": true
+            },
+            {
+              "label": "作品编号",
+              "source": "POST /api/v1/supply/work-versions → request.work_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "上一作品版本",
+              "source": "POST /api/v1/supply/work-versions → request.previous_version_id",
+              "example": "首次可留空",
+              "editable": true
+            },
+            {
+              "label": "改稿来源版本",
+              "source": "POST /api/v1/supply/work-versions → request.source_version_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "用途项目编号",
+              "source": "POST /api/v1/supply/work-versions → request.project_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "正文材料",
+              "source": "POST /api/v1/supply/work-versions → request.content_asset_id",
+              "example": "先上传私有正文",
+              "editable": true
+            },
+            {
+              "label": "证明材料",
+              "source": "POST /api/v1/supply/work-versions → request.evidence_ids",
+              "example": "先上传私有证明",
+              "editable": true
+            },
+            {
+              "label": "主体编号",
+              "source": "POST /api/v1/supply/work-versions → request.credits[].party_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "权利角色",
+              "source": "POST /api/v1/supply/work-versions → request.credits[].role",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "私有证明材料编号",
+              "source": "POST /api/v1/supply/work-versions → request.credits[].evidence_asset_ids[]",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "上传私有材料",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "当前OWNER；用途和类型按所选文件填写，8MiB限制 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+              "enabled": true
+            },
+            {
+              "label": "创建版本",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions",
+              "condition": "最新供给申请APPROVED且必填齐全；创建后另行提交审核 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.work_id←本页“作品编号”字段；body.previous_version_id←本页“上一作品版本”字段；body.title←本页“作品标题”字段；body.kind←本页“作品类型”字段；body.source_version_id←本页“改稿来源版本”字段；body.project_id←本页“用途项目编号”字段；body.content_asset_id←本页“正文材料”字段；body.evidence_ids←本页“证明材料”字段；body.credits←本页“主体编号 / 权利角色 / 私有证明材料编号”字段；必填结构：work_id；work_id可显式null；previous_version_id；previous_version_id可显式null；title；kind枚举=ORIGINAL,PROJECT_ADAPTATION；source_version_id；source_version_id可显式null；project_id；project_id可显式null；content_asset_id；evidence_ids[]；credits[].party_id；credits[].role枚举=AUTHOR,RIGHTS_HOLDER,AGENT；credits[].evidence_asset_ids[]",
+              "enabled": false
+            },
+            {
+              "label": "返回作品",
+              "method": "LOCAL",
+              "path": "WEB-07-01",
+              "condition": "本地页面导航，不更改业务状态",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-07-02",
+          "nav_active": "作品管理"
+        }
+      ]
+    },
+    {
+      "id": "WEB-08",
+      "title": "权属与内容双轨审核",
+      "role": "独立权属审核、独立内容审核",
+      "requirements": [
+        "REQ-011",
+        "REQ-014",
+        "REQ-017",
+        "REQ-022",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052"
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/records/{record_id}",
+          "use": "已有审核轨迹"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/work-versions/{record_id}/reviews",
+          "use": "提交内容结论"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/supply/assets/{asset_id}/content",
+          "use": "读取当前正文"
+        }
+      ],
+      "constraints": [
+        "RIGHTS与CONTENT权限独立，禁止自审。",
+        "运营列表仅kind分页且排除草稿/撤回；无按审核轨道筛选接口。",
+        "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+        "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+      ],
+      "gaps": [
+        {
+          "feature": "双审一键通过或自动内容风险评分",
+          "reason": "无对应能力，不得画为可用"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "loading",
+          "trigger": "首次请求或继续加载尚未返回",
+          "message": "正在加载",
+          "handling": "保留页面结构，禁止重复提交；不生成演示成功记录"
+        },
+        {
+          "state": "empty",
+          "trigger": "items为空",
+          "message": "暂无可查看记录",
+          "handling": "next_cursor非空仍可继续加载；不伪称全站为零"
+        },
+        {
+          "state": "forbidden",
+          "trigger": "401/403/404或当前主体失权",
+          "message": "当前身份无法查看这条记录",
+          "handling": "停止文件/数据读取，提供本地返回入口"
+        },
+        {
+          "state": "version_changed",
+          "trigger": "412 VERSION_CONFLICT",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，不能静默提交旧决定"
+        },
+        {
+          "state": "blocked",
+          "trigger": "409业务前置不满足或503服务未启用",
+          "message": "当前条件未齐，请先处理提示事项",
+          "handling": "显示具体原因，保留原记录与操作编号，禁止假成功"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "权属审核",
+          "role": "独立权属审核员",
+          "state": "待权属结论",
+          "layout": [
+            "待审版本定位",
+            "作品来源与权利链",
+            "私有权属证明读取区",
+            "本轨审核表单",
+            "另一轨只读结果"
+          ],
+          "fields": [
+            {
+              "label": "作品与版本",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.content.title / data.revision",
+              "example": "归途 · 第2版（示例）",
+              "editable": false
+            },
+            {
+              "label": "作者及权利链",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.credits",
+              "example": "权利人主体、代理依据、证明编号",
+              "editable": false
+            },
+            {
+              "label": "权属材料",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.content.evidence_ids",
+              "example": "已上传私有证明",
+              "editable": false
+            },
+            {
+              "label": "内容审核结果",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.reviews",
+              "example": "尚待内容审核",
+              "editable": false
+            },
+            {
+              "label": "本轨结论",
+              "source": "POST /api/v1/supply/work-versions/{record_id}/reviews → request.decision",
+              "example": "请选择通过、要求修改或拒绝",
+              "editable": true
+            },
+            {
+              "label": "审核理由",
+              "source": "POST /api/v1/supply/work-versions/{record_id}/reviews → request.reason",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "审核轨道",
+              "source": "POST /api/v1/supply/work-versions/{record_id}/reviews → request.channel",
+              "example": "权属审核",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "读取授权材料",
+              "method": "GET",
+              "path": "/api/v1/supply/assets/{asset_id}/content",
+              "condition": "仅获当前审核授权且材料属于该版本",
+              "enabled": true
+            },
+            {
+              "label": "提交权属结论",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions/{record_id}/reviews",
+              "condition": "SUPPLY_REVIEW_RIGHTS；非创建者/所属机构；channel=RIGHTS 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.channel←本页“审核轨道”字段；body.decision←本页“本轨结论”字段；body.reason←本页“审核理由”字段；必填结构：channel枚举=RIGHTS,CONTENT；decision枚举=APPROVED,CHANGES_REQUESTED,REJECTED；reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-08-01",
+          "nav_active": "作品审核"
+        },
+        {
+          "title": "内容审核",
+          "role": "独立内容审核员",
+          "state": "待内容结论",
+          "layout": [
+            "准确版本与正文",
+            "相关材料",
+            "本轨内容核验",
+            "本轨审核结论与理由",
+            "权属轨只读结果"
+          ],
+          "fields": [
+            {
+              "label": "当前作品",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.content.title",
+              "example": "归途（设计示例）",
+              "editable": false
+            },
+            {
+              "label": "正文材料编号",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.content.content_asset_id",
+              "example": "本版本私有正文",
+              "editable": false
+            },
+            {
+              "label": "已有审核轨迹",
+              "source": "GET /api/v1/supply/records/{record_id} → response.data.data.version.reviews",
+              "example": "权属审核已通过（示例）",
+              "editable": false
+            },
+            {
+              "label": "本轨结论",
+              "source": "POST /api/v1/supply/work-versions/{record_id}/reviews → request.decision",
+              "example": "请选择通过、要求修改或拒绝",
+              "editable": true
+            },
+            {
+              "label": "理由",
+              "source": "POST /api/v1/supply/work-versions/{record_id}/reviews → request.reason",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "轨道",
+              "source": "POST /api/v1/supply/work-versions/{record_id}/reviews → request.channel",
+              "example": "内容审核",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "读取当前正文",
+              "method": "GET",
+              "path": "/api/v1/supply/assets/{asset_id}/content",
+              "condition": "材料属于当前版本且有独立内容审核权限",
+              "enabled": true
+            },
+            {
+              "label": "提交内容结论",
+              "method": "POST",
+              "path": "/api/v1/supply/work-versions/{record_id}/reviews",
+              "condition": "SUPPLY_REVIEW_CONTENT；不能审核自己或本机构版本；channel=CONTENT 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.channel←本页“轨道”字段；body.decision←本页“本轨结论”字段；body.reason←本页“理由”字段；必填结构：channel枚举=RIGHTS,CONTENT；decision枚举=APPROVED,CHANGES_REQUESTED,REJECTED；reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-08-02",
+          "nav_active": "作品审核"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "id": "APP-36-01",
+      "image": "images/APP-36-01-v2.png",
+      "status": "pass"
+    },
+    {
+      "id": "APP-36-02",
+      "image": "images/APP-36-02-v2.png",
+      "status": "pass"
+    },
+    {
+      "id": "APP-36-03",
+      "image": "images/APP-36-03-v2.png",
+      "status": "pass"
+    },
+    {
+      "id": "APP-36-04",
+      "image": "images/APP-36-04.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-05-01",
+      "image": "images/WEB-05-01-v2.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-05-02",
+      "image": "images/WEB-05-02.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-05-03",
+      "image": "images/WEB-05-03.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-07-01",
+      "image": "images/WEB-07-01-v2.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-07-02",
+      "image": "images/WEB-07-02-v4.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-08-01",
+      "image": "images/WEB-08-01-v2.png",
+      "status": "pass"
+    },
+    {
+      "id": "WEB-08-02",
+      "image": "images/WEB-08-02.png",
+      "status": "pass"
+    }
+  ]
+}

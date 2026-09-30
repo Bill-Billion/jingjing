@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../pages/login/login_page.dart';
 import 'account_theme.dart';
-import '../contracts/contract_page.dart';
 import 'account_api.dart';
 import 'account_session.dart';
 
@@ -369,7 +368,7 @@ class _AccountPageState extends State<AccountPage> {
               const SizedBox(height: 16),
               const Text('登录后管理账号与机构', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
-              Text(session.authNotice ?? '使用真实短信验证码登录；旧版体验账号不能办理机构事务。',
+              Text(session.authNotice ?? '使用短信验证码登录，再选择代表谁办事。',
                   textAlign: TextAlign.center),
               if (session.hasPendingLogout)
                 TextButton(
@@ -479,15 +478,17 @@ class _AccountPageState extends State<AccountPage> {
                     ],
                     subtitle: '切换只选择代表谁办事，具体权限由服务器核对。'),
                 if (party != null)
-                  _card('合同与原约定', [
-                    _small('输入指定合同编号，查看当时保存的内容与规则。'),
-                    _button(
-                        '读取指定合同',
-                        () => Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                                builder: (_) => const ContractPage())),
-                        icon: Icons.description_outlined),
+                  _card('作者与作品', [
+                    _small('申请作者资格，管理作品版本与私有权利证明。'),
+                    _button('进入作者与作品',
+                        () => Navigator.pushNamed(context, '/supply')),
                   ]),
+                _card('合同与原约定', [
+                  _small('输入指定合同编号，查看当时保存的内容与规则。'),
+                  _button(
+                      '读取指定合同', () => Navigator.pushNamed(context, '/contract'),
+                      icon: Icons.description_outlined),
+                ]),
                 if (party != null)
                   _card('${party['display_name']}', [
                     _id('当前身份编号', party['id']),
@@ -631,6 +632,15 @@ class _AccountPageState extends State<AccountPage> {
       backgroundColor: AccountTheme.canvas,
       appBar: AppBar(
           automaticallyImplyLeading: !widget.embedded,
+          leading: widget.embedded
+              ? null
+              : BackButton(onPressed: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    Navigator.pushReplacementNamed(context, '/my');
+                  }
+                }),
           title: const Text('我的账号'),
           actions: [
             if (session.isLoggedIn)

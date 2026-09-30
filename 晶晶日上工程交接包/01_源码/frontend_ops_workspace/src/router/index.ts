@@ -38,6 +38,11 @@ const router = createRouter({
       component: () => import('@/views/ContractsView.vue'),
       meta: { title: '合同与规则' },
     },
+    { path: '/supply/profiles/:recordId?', name: 'supply-profile', component: () => import('@/views/SupplyView.vue'), meta: { title: '供给申请' } },
+    { path: '/supply/works/new', name: 'supply-new', component: () => import('@/views/SupplyView.vue'), meta: { title: '新投稿' } },
+    { path: '/supply/works/:recordId/revision', name: 'supply-revision', component: () => import('@/views/SupplyView.vue'), meta: { title: '新修订' } },
+    { path: '/supply/works/:recordId?', name: 'supply-work', component: () => import('@/views/SupplyView.vue'), meta: { title: '我的作品' } },
+    { path: '/supply/reviews/:channel(profile|rights|content)/:recordId?', name: 'supply-review', component: () => import('@/views/SupplyView.vue'), meta: { title: '独立审核' } },
     // 开发自检页：整个路由项在构建时按 import.meta.env.DEV 决定要不要加。
     // 用 import.meta.env.DEV 而不是路由守卫里判断，是为了让生产构建干脆
     // 不产生这条路由、也不打包这个页面，而不是"能访问但被拦下"。
