@@ -169,9 +169,17 @@ try {
   })
   test('账号、合同、供给及审核页面保留同一菜单，详情和内容审核正确标记当前入口', async()=>{
     const previousWindow = globalThis.window
+    const previousStorage = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
+    const storage = new Map()
     // This application runs in a browser. SSR here only checks its rendered
-    // navigation, so the account page's countdown timer must remain inactive.
+    // navigation, with an isolated anonymous session on every Node version.
     globalThis.window = { setInterval:()=>0, clearInterval:()=>{} }
+    Object.defineProperty(globalThis, 'sessionStorage', { configurable:true, value:{
+      getItem:key=>storage.get(key) ?? null,
+      setItem:(key,value)=>storage.set(key,String(value)),
+      removeItem:key=>storage.delete(key),
+      clear:()=>storage.clear(),
+    } })
     try {
     const entries = [
       ['/workspace','账号与机构'], ['/contracts','合同与规则'],
@@ -205,6 +213,8 @@ try {
     } finally {
       if (previousWindow === undefined) delete globalThis.window
       else globalThis.window = previousWindow
+      if (previousStorage) Object.defineProperty(globalThis, 'sessionStorage', previousStorage)
+      else delete globalThis.sessionStorage
     }
   })
   test('实际组件缩略编号保留完整title，内容审核正文优先且权属顺序不变', async()=>{
