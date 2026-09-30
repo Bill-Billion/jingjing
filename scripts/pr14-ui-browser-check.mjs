@@ -22,6 +22,7 @@ for (const url of [state.apiUrl, state.controlUrl]) assert.equal(new URL(url).ho
 const base = process.env.BASE_URL || process.env.PR14_WEB_URL || 'http://127.0.0.1:5202'
 const onlyAdaptation = process.argv.includes('--only-adaptation')
 const onlyPendingNav = process.argv.includes('--only-pending-nav')
+const onlyFinalShots = process.argv.includes('--only-final-shots')
 assert(['localhost', '127.0.0.1'].includes(new URL(base).hostname))
 const evidence = resolve(root, 'docs/ux/pr14-ui/evidence')
 const shots = resolve(evidence, 'screenshots')
@@ -143,6 +144,49 @@ async function runPendingNavigation() {
   await shot(page, 'pr14-web-license-mobile.png')
 }
 
+async function runFinalScreenshots() {
+  const buyer = await login('otherOwner'), page = buyer.page
+  for (const [route, file] of [[`/licensing/catalog/${state.records.product.id}`, 'pr14-web-product-desktop.png'], [`/licensing/bindings/${state.records.binding.id}`, 'pr14-web-project-binding-desktop.png']]) {
+    await go(page, route)
+    await page.locator('.supply-card').first().waitFor()
+    assert.equal(await page.locator('.workspace-nav').count(), 1)
+    if (route.includes('/bindings/')) await page.getByRole('link', { name: '按此绑定提交项目改稿', exact: true }).waitFor()
+    await page.screenshot({ path: resolve(shots, file), fullPage: true })
+  }
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.bringToFront()
+  for (const [route, file] of [[`/licensing/catalog/${state.records.product.id}`, 'pr14-web-product-mobile.png'], [`/licensing/reservations/${state.records.held.id}`, 'pr14-web-reservation-mobile.png'], [`/licensing/grants/${state.records.grant.id}`, 'pr14-web-license-mobile.png'], [`/licensing/projects/${state.records.project.id}`, 'pr14-web-project-mobile.png']]) {
+    await go(page, route)
+    await page.locator('.supply-card').first().waitFor()
+    assert.equal(await page.locator('.workspace-nav').count(), 1)
+    assert.equal(await page.locator('.supply-header').count(), 1)
+    await page.locator('.supply-card').first().scrollIntoViewIfNeeded()
+    await page.screenshot({ path: resolve(shots, file), fullPage: false })
+    if (route.includes('/catalog/')) {
+      await page.getByRole('heading', { name: '许可范围与期限', exact: true }).scrollIntoViewIfNeeded()
+      await page.screenshot({ path: resolve(shots, 'pr14-web-product-terms-mobile.png'), fullPage: false })
+    }
+  }
+  await go(page, '/licensing/bindings/' + state.records.binding.id)
+  await page.getByRole('link', { name: '按此绑定提交项目改稿', exact: true }).scrollIntoViewIfNeeded()
+  await page.screenshot({ path: resolve(shots, 'pr14-web-binding-focused-mobile.png'), fullPage: false })
+  await go(page, '/licensing/readings/' + state.records.reading.id)
+  await page.getByRole('heading', { name: '指定人阅稿授权', exact: true }).waitFor()
+  assert.equal(await page.locator('.workspace-nav').count(), 1)
+  assert.equal(await page.locator('.supply-header').count(), 1)
+  await page.getByRole('button', { name: '重新核验并读取带水印正文', exact: true }).click()
+  await page.locator('pre.controlled-reader').waitFor()
+  assert((await page.locator('pre.controlled-reader').innerText()).includes('<b>此文本不可执行</b>'))
+  assert.equal(await page.locator('pre.controlled-reader b').count(), 0)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.screenshot({ path: resolve(shots, 'pr14-web-controlled-reader-mobile.png'), fullPage: false })
+  await page.locator('pre.controlled-reader').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: resolve(shots, 'pr14-web-reader-focused-mobile.png'), fullPage: false })
+  assert((await page.locator('pre.controlled-reader').innerText()).includes(buyer.accountId))
+  assert.equal(await page.locator('.workspace-nav').count(), 1)
+  assert.equal(await page.locator('.supply-header').count(), 1)
+}
+
 async function runAdaptation() {
   const buyer = await login('otherOwner'), page = buyer.page
   const binding = await record(buyer, state.records.binding.id)
@@ -208,7 +252,7 @@ async function runAdaptation() {
 }
 
 try {
-  if (!onlyAdaptation && !onlyPendingNav) {
+  if (!onlyAdaptation && !onlyPendingNav && !onlyFinalShots) {
   await check('真实表单登录四类账号，选择身份而不注入会话', async () => {
     for (const name of ['owner', 'otherOwner', 'reviewer', 'member']) await login(name)
   })
@@ -573,8 +617,9 @@ try {
     await page.waitForURL(url => url.pathname === '/login' && url.searchParams.has('redirect'))
   })
   }
-  if (!onlyPendingNav) await check('有效项目绑定进入改稿、真实保存草稿与无效绑定拒绝、返回统一导航', runAdaptation)
+  if (!onlyPendingNav && !onlyFinalShots) await check('有效项目绑定进入改稿、真实保存草稿与无效绑定拒绝、返回统一导航', runAdaptation)
   if (onlyPendingNav) await check('未知写入阻止菜单跳转、保留原请求重试、成功后恢复导航', runPendingNavigation)
+  if (onlyFinalShots) await check('最终390×844视口截图只有一套导航、真实正文可见且HTML按纯文本显示', runFinalScreenshots)
 } catch (cause) {
   console.error(`Browser acceptance failed: ${redact(cause.message)}`)
   for (const [name, actor] of Object.entries(actors)) await shot(actor.page, `pr14-web-last-${name}.png`).catch(() => {})
@@ -584,9 +629,9 @@ try {
   if (forbiddenConsole.length) { results.push({ label: '浏览器控制台错误', result: 'FAIL', errors: forbiddenConsole.map(redact) }); process.exitCode = 1 }
   const failed = results.filter(row => row.result === 'FAIL').length
   const report = { synthetic_only: true, api: 'Real isolated HTTP/MySQL, synthetic SMS and private storage', browser: 'Real Google Chrome / Playwright',
-    base_url: base, scope: onlyPendingNav ? 'PENDING_NAVIGATION_ONLY' : onlyAdaptation ? 'PROJECT_ADAPTATION_ONLY' : 'FULL_LICENSING_AND_ADAPTATION', result: failed ? 'FAIL' : 'PASS', passed: results.filter(row => row.result === 'PASS').length, failed,
+    base_url: base, scope: onlyFinalShots ? 'FINAL_VIEWPORT_SCREENSHOTS_ONLY' : onlyPendingNav ? 'PENDING_NAVIGATION_ONLY' : onlyAdaptation ? 'PROJECT_ADAPTATION_ONLY' : 'FULL_LICENSING_AND_ADAPTATION', result: failed ? 'FAIL' : 'PASS', passed: results.filter(row => row.result === 'PASS').length, failed,
     checked_at: new Date().toISOString(), checks: results,
     limits: 'No production access, payment provider, real identity vendor, e-sign vendor or deployment. Screenshots contain synthetic test identities only.' }
-  await writeFile(resolve(evidence, onlyPendingNav ? 'web-pending-navigation-runtime.json' : onlyAdaptation ? 'web-adaptation-runtime.json' : 'web-runtime.json'), JSON.stringify(report, null, 2) + '\n')
+  await writeFile(resolve(evidence, onlyFinalShots ? 'web-final-screenshots-runtime.json' : onlyPendingNav ? 'web-pending-navigation-runtime.json' : onlyAdaptation ? 'web-adaptation-runtime.json' : 'web-runtime.json'), JSON.stringify(report, null, 2) + '\n')
   await browser.close()
 }

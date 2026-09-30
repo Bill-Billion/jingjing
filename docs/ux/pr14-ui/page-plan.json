@@ -1,0 +1,2646 @@
+{
+  "gallery_commit": "acd5f99",
+  "common_baseline": "90cb6a9",
+  "backend_dependency": "ce576af",
+  "pages": [
+    {
+      "id": "APP-07",
+      "title": "入戏：选剧本与内容方案",
+      "surface": "app",
+      "role": "已登录且有效个人/机构OWNER",
+      "requirements": [
+        "REQ-009",
+        "REQ-021",
+        "REQ-022",
+        "REQ-024",
+        "REQ-048",
+        "REQ-051",
+        "REQ-053"
+      ],
+      "support": "partial",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records",
+          "use": "查询许可商品或自己的业务记录"
+        }
+      ],
+      "constraints": [
+        "目录query kind=PRODUCT,catalog=true；只列LISTED；无匿名目录、搜索/分类/排序/总数。",
+        "允许标题、preview_text、许可摘要、price；没有封面和作者显示名。",
+        "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+        "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+        "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+      ],
+      "gaps": [
+        {
+          "feature": "内容分类、搜索、主题封面和推荐",
+          "reason": "当前目录无这些字段和参数"
+        }
+      ],
+      "render_views": [
+        {
+          "id": "APP-07-01",
+          "title": "入戏",
+          "role": "已登录且有效个人/机构OWNER",
+          "state": "许可目录有已上架示例商品",
+          "nav_active": "入戏",
+          "layout": [
+            "标题与私人定制说明",
+            "选剧本主入口说明",
+            "文字为主的商品卡列表",
+            "已有需求/报价入口",
+            "加载更多与五导航"
+          ],
+          "fields": [
+            {
+              "label": "副标题",
+              "source": "static_local_asset",
+              "example": "从一个故事开始",
+              "editable": false
+            },
+            {
+              "label": "商品标题",
+              "source": "PRODUCT.data.title",
+              "example": "《回到那年夏天》",
+              "editable": false
+            },
+            {
+              "label": "短试读",
+              "source": "PRODUCT.data.preview_text",
+              "example": "久别重逢的两个人，在旧车站完成一次迟来的告别。",
+              "editable": false
+            },
+            {
+              "label": "许可摘要",
+              "source": "PRODUCT.data.terms.purposes/exclusive",
+              "example": "私人使用 · 非独家",
+              "editable": false
+            },
+            {
+              "label": "许可价格",
+              "source": "PRODUCT.data.price.amount_minor/currency",
+              "example": "¥120.00（设计示例）",
+              "editable": false
+            },
+            {
+              "label": "说明",
+              "source": "static_local_asset",
+              "example": "许可费用不等于整片制作费用。",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "查看剧本",
+              "method": "LOCAL",
+              "path": "APP-08-01",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "已有报价",
+              "method": "LOCAL",
+              "path": "APP-13",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "定制流程",
+              "method": "LOCAL",
+              "path": "APP-10",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "加载更多",
+              "method": "GET",
+              "path": "/api/v1/licensing/records",
+              "condition": "目录next_cursor非空",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“入戏”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“许可目录有已上架示例商品”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：标题与私人定制说明；选剧本主入口说明；文字为主的商品卡列表；已有需求/报价入口；加载更多与五导航。字段与准确示例文字：副标题：从一个故事开始；商品标题：《回到那年夏天》；短试读：久别重逢的两个人，在旧车站完成一次迟来的告别。；许可摘要：私人使用 · 非独家；许可价格：¥120.00（设计示例）；说明：许可费用不等于整片制作费用。。只绘制以下操作：“查看剧本”为可操作按钮；“已有报价”为可操作按钮；“定制流程”为可操作按钮；“加载更多”为可操作按钮。底部保留五个等宽导航，准确依次为“首页、入戏、培育、成角、我的”，当前只选中“入戏”。图标与文字同时保留，不能用中央无字球体替代创作。用纯排版与一枚静态书页符号建立质感，不把臆造的电影海报当商品封面。不放星级、销量、作者头像、排序栏或限时折扣。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "登录失效或无权",
+          "trigger": "HTTP401/403/404",
+          "message": "请重新登录，或切换有权限的身份",
+          "handling": "清理本页私有缓存；不显示其他身份数据；不回退演示成功"
+        },
+        {
+          "state": "结果暂不可用",
+          "trigger": "HTTP503或存储服务未启用",
+          "message": "暂时无法完成，请稍后再试",
+          "handling": "保留已有记录及原操作编号；不伪造结果"
+        },
+        {
+          "state": "记录已更新",
+          "trigger": "HTTP412",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "读取最新版本；禁止自动重放用户旧决定"
+        },
+        {
+          "state": "内容为空",
+          "trigger": "合法空列表",
+          "message": "暂时没有记录",
+          "handling": "next_cursor非空继续加载；不显示虚构总数"
+        }
+      ],
+      "sources": [
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "contracts/openapi.yaml"
+      ]
+    },
+    {
+      "id": "APP-08",
+      "title": "剧本详情与公开试读",
+      "surface": "app",
+      "role": "潜在买方OWNER；预留的买卖双方OWNER",
+      "requirements": [
+        "REQ-022",
+        "REQ-034",
+        "REQ-036",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052",
+        "REQ-053",
+        "REQ-055",
+        "REQ-056"
+      ],
+      "support": "implemented",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "查看有权限的许可记录和合同"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/reservations",
+          "use": "保存约定条款并预留权利范围"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/records/{record_id}/closures",
+          "use": "下架商品、取消预留或撤销阅稿"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传私有作品或证据材料"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/evidence",
+          "use": "提交真实外部签署、身份及付款材料"
+        }
+      ],
+      "constraints": [
+        "许可terms全部维度须展示：exclusive/rights/purposes/territories/languages/valid_from/development_until/valid_until/project_limit/episode_limit/terms_text。",
+        "预留仅请求product_id；expires_at由后端计算，不凭前端倒计时恢复过期权利。",
+        "合同在RESERVATION.data.contract内，SEALED/NOT_SIGNED；提交真实外部材料后待独立核验，不是平台电子签完成。",
+        "证据请求全部字段reservation_id/contract_sha256/seller_signature_asset_id/buyer_signature_asset_id/identity_asset_id/payment_asset_id/external_reference。",
+        "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+        "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+        "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+      ],
+      "gaps": [],
+      "render_views": [
+        {
+          "id": "APP-08-01",
+          "title": "剧本与许可",
+          "role": "潜在买方OWNER；预留的买卖双方OWNER",
+          "state": "已上架私人许可；未预留",
+          "nav_active": null,
+          "layout": [
+            "返回与作品标题",
+            "短试读正文",
+            "许可价格与生效前应付",
+            "权利范围摘要",
+            "期限与项目额度",
+            "完整条款入口",
+            "底部预留按钮"
+          ],
+          "fields": [
+            {
+              "label": "标题",
+              "source": "PRODUCT.data.title",
+              "example": "《回到那年夏天》",
+              "editable": false
+            },
+            {
+              "label": "试读",
+              "source": "PRODUCT.data.preview_text",
+              "example": "久别重逢的两个人，在旧车站完成一次迟来的告别。",
+              "editable": false
+            },
+            {
+              "label": "总价",
+              "source": "PRODUCT.data.price",
+              "example": "¥120.00",
+              "editable": false
+            },
+            {
+              "label": "生效前应付",
+              "source": "PRODUCT.data.payment_due_minor",
+              "example": "¥120.00",
+              "editable": false
+            },
+            {
+              "label": "许可",
+              "source": "PRODUCT.data.terms.exclusive/rights/purposes",
+              "example": "非独家 · 制作 · 私人使用",
+              "editable": false
+            },
+            {
+              "label": "地域/语言",
+              "source": "PRODUCT.data.terms.territories/languages",
+              "example": "中国 / 中文",
+              "editable": false
+            },
+            {
+              "label": "开发至",
+              "source": "PRODUCT.data.terms.development_until",
+              "example": "2026-11-30",
+              "editable": false
+            },
+            {
+              "label": "有效至",
+              "source": "PRODUCT.data.terms.valid_until",
+              "example": "2026-12-31",
+              "editable": false
+            },
+            {
+              "label": "项目/集数额度",
+              "source": "PRODUCT.data.terms.project_limit/episode_limit",
+              "example": "1 个项目 / 1 集",
+              "editable": false
+            },
+            {
+              "label": "权利提醒",
+              "source": "static_local_asset",
+              "example": "不包含公开发行和通用训练",
+              "editable": false
+            },
+            {
+              "label": "许可开始",
+              "source": "PRODUCT.data.terms.valid_from",
+              "example": "2026-09-29",
+              "editable": false,
+              "image_visible": false
+            },
+            {
+              "label": "完整条款",
+              "source": "PRODUCT.data.terms.terms_text",
+              "example": "按原许可逐条展示",
+              "editable": false,
+              "image_visible": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "完整许可条款",
+              "method": "LOCAL",
+              "path": "LOCAL:product-terms",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "预留这份许可",
+              "method": "POST",
+              "path": "/api/v1/licensing/reservations",
+              "condition": "买方非卖方；商品LISTED；请求product_id；服务端校验当前冲突",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“剧本与许可”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“已上架私人许可；未预留”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回与作品标题；短试读正文；许可价格与生效前应付；权利范围摘要；期限与项目额度；完整条款入口；底部预留按钮。字段与准确示例文字：标题：《回到那年夏天》；试读：久别重逢的两个人，在旧车站完成一次迟来的告别。；总价：¥120.00；生效前应付：¥120.00；许可：非独家 · 制作 · 私人使用；地域/语言：中国 / 中文；开发至：2026-11-30；有效至：2026-12-31；项目/集数额度：1 个项目 / 1 集；权利提醒：不包含公开发行和通用训练。只绘制以下操作：“完整许可条款”为可操作按钮；“预留这份许可”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。明确“设计示例”的价格，不把¥120作为平台统一价格。权利范围必须先于购买按钮被看见，不能以“独家买断”等营销词代替精确范围。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        },
+        {
+          "id": "APP-08-02",
+          "title": "许可预留与合同",
+          "role": "潜在买方OWNER；预留的买卖双方OWNER",
+          "state": "预留有效，合同内容已保存但未签署",
+          "nav_active": null,
+          "layout": [
+            "返回标题",
+            "预留截止与待条件说明",
+            "剧本许可和金额摘要",
+            "双方主体编号",
+            "合同条款入口",
+            "签署/身份/付款材料进度",
+            "底部提交材料与取消入口"
+          ],
+          "fields": [
+            {
+              "label": "预留",
+              "source": "RESERVATION.current_status",
+              "example": "已预留，等待条件核验",
+              "editable": false
+            },
+            {
+              "label": "截止",
+              "source": "RESERVATION.data.expires_at",
+              "example": "2026-09-29 18:00",
+              "editable": false
+            },
+            {
+              "label": "许可",
+              "source": "RESERVATION.data.title",
+              "example": "《回到那年夏天》",
+              "editable": false
+            },
+            {
+              "label": "金额",
+              "source": "RESERVATION.data.price",
+              "example": "¥120.00",
+              "editable": false
+            },
+            {
+              "label": "合同",
+              "source": "RESERVATION.data.contract.signing_method",
+              "example": "合同内容已保存，尚未签署",
+              "editable": false
+            },
+            {
+              "label": "买卖主体",
+              "source": "RESERVATION.owner_party_id/counterparty_id",
+              "example": "买方 …0001 / 卖方 …0002",
+              "editable": false
+            },
+            {
+              "label": "材料",
+              "source": "static_local_asset",
+              "example": "请提交真实签署、身份及付款材料",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "阅读合同",
+              "method": "LOCAL",
+              "path": "LOCAL:reservation-inline-contract",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "提交核验材料",
+              "method": "LOCAL",
+              "path": "APP-08-03",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "取消预留",
+              "method": "POST",
+              "path": "/api/v1/licensing/records/{record_id}/closures",
+              "condition": "当前预留负责人且尚未承诺；必填reason",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“许可预留与合同”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“预留有效，合同内容已保存但未签署”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题；预留截止与待条件说明；剧本许可和金额摘要；双方主体编号；合同条款入口；签署/身份/付款材料进度；底部提交材料与取消入口。字段与准确示例文字：预留：已预留，等待条件核验；截止：2026-09-29 18:00；许可：《回到那年夏天》；金额：¥120.00；合同：合同内容已保存，尚未签署；买卖主体：买方 …0001 / 卖方 …0002；材料：请提交真实签署、身份及付款材料。只绘制以下操作：“阅读合同”为可操作按钮；“提交核验材料”为可操作按钮；“取消预留”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。不能把保存合同画成双方已签名。状态进度采用“已预留—待核验—待许可生效”，后两项未完成。清晰说明“预留不代表已获准制作”。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        },
+        {
+          "id": "APP-08-03",
+          "title": "提交许可核验材料",
+          "role": "潜在买方OWNER；预留的买卖双方OWNER",
+          "state": "外部材料提交表单尚未齐备",
+          "nav_active": null,
+          "layout": [
+            "返回标题",
+            "关联预留与合同摘要",
+            "卖方签署文件",
+            "买方签署文件",
+            "身份依据",
+            "付款依据",
+            "外部材料编号",
+            "底部提交按钮"
+          ],
+          "fields": [
+            {
+              "label": "预留",
+              "source": "evidence.reservation_id",
+              "example": "…0003",
+              "editable": false
+            },
+            {
+              "label": "合同校验值",
+              "source": "evidence.contract_sha256",
+              "example": "当前预留合同，自动带入",
+              "editable": false
+            },
+            {
+              "label": "卖方签署文件",
+              "source": "evidence.seller_signature_asset_id",
+              "example": "未上传",
+              "editable": true
+            },
+            {
+              "label": "买方签署文件",
+              "source": "evidence.buyer_signature_asset_id",
+              "example": "未上传",
+              "editable": true
+            },
+            {
+              "label": "身份依据",
+              "source": "evidence.identity_asset_id",
+              "example": "未上传",
+              "editable": true
+            },
+            {
+              "label": "付款依据",
+              "source": "evidence.payment_asset_id",
+              "example": "未上传；仅零应付时可为空",
+              "editable": true
+            },
+            {
+              "label": "外部编号",
+              "source": "evidence.external_reference",
+              "example": "请输入真实材料编号",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "添加私有材料",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "purpose=REVIEW_EVIDENCE，上传READY才可引用",
+              "enabled": true
+            },
+            {
+              "label": "提交核验",
+              "method": "POST",
+              "path": "/api/v1/licensing/evidence",
+              "condition": "必填材料未齐；齐备后服务器提交IN_REVIEW",
+              "enabled": false
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“提交许可核验材料”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“外部材料提交表单尚未齐备”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题；关联预留与合同摘要；卖方签署文件；买方签署文件；身份依据；付款依据；外部材料编号；底部提交按钮。字段与准确示例文字：预留：…0003；合同校验值：当前预留合同，自动带入；卖方签署文件：未上传；买方签署文件：未上传；身份依据：未上传；付款依据：未上传；仅零应付时可为空；外部编号：请输入真实材料编号。只绘制以下操作：“添加私有材料”为可操作按钮；“提交核验”为不可操作按钮，呈清晰禁用状态。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。每个上传行使用文件图标、标签及未上传文字，不预放盖章合同或伪造付款凭证。顶端提示“提交后由独立人员核验，不代表已签署或已到账”。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "登录失效或无权",
+          "trigger": "HTTP401/403/404",
+          "message": "请重新登录，或切换有权限的身份",
+          "handling": "清理本页私有缓存；不显示其他身份数据；不回退演示成功"
+        },
+        {
+          "state": "结果暂不可用",
+          "trigger": "HTTP503或存储服务未启用",
+          "message": "暂时无法完成，请稍后再试",
+          "handling": "保留已有记录及原操作编号；不伪造结果"
+        },
+        {
+          "state": "记录已更新",
+          "trigger": "HTTP412",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "读取最新版本；禁止自动重放用户旧决定"
+        },
+        {
+          "state": "内容为空",
+          "trigger": "合法空列表",
+          "message": "暂时没有记录",
+          "handling": "next_cursor非空继续加载；不显示虚构总数"
+        },
+        {
+          "state": "独家范围冲突",
+          "trigger": "LICENSE_SCOPE_CONFLICT",
+          "message": "这个范围已不可预留，请重新选择",
+          "handling": "不创建假预留；回详情重新读取"
+        },
+        {
+          "state": "预留过期或迟到激活",
+          "trigger": "过expires_at或REVIEW_REQUIRED",
+          "message": "预留已到期，需要人工核对",
+          "handling": "不自动恢复、不显示许可已生效"
+        }
+      ],
+      "sources": [
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/licensing/repository.js",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js"
+      ]
+    },
+    {
+      "id": "APP-09",
+      "title": "受控全本阅读",
+      "surface": "app",
+      "role": "指定读者账号与有权OWNER身份",
+      "requirements": [
+        "REQ-014",
+        "REQ-041",
+        "REQ-051",
+        "REQ-055",
+        "REQ-056"
+      ],
+      "support": "implemented",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records",
+          "use": "查询许可商品或自己的业务记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "查看有权限的许可记录和合同"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/readings/{record_id}/content",
+          "use": "核验权限后读取分段带水印的正文"
+        }
+      ],
+      "constraints": [
+        "kind=READING仅本人获准记录；正文仅watermarked_text纯文本，allows_generation=false。",
+        "客户端不可提供导出原稿、去水印、训练、生成；不得把NDA阅读当许可。",
+        "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+        "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+        "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+      ],
+      "gaps": [],
+      "render_views": [
+        {
+          "id": "APP-09-01",
+          "title": "我的阅稿授权",
+          "role": "指定读者账号与有权OWNER身份",
+          "state": "已有指定人的有效阅读记录",
+          "nav_active": null,
+          "layout": [
+            "返回标题",
+            "阅读权限说明",
+            "授权卡片",
+            "期限与依据",
+            "阅读入口"
+          ],
+          "fields": [
+            {
+              "label": "授权编号",
+              "source": "READING.id",
+              "example": "阅稿 …0009",
+              "editable": false
+            },
+            {
+              "label": "作品版本",
+              "source": "READING.data.work_version_id",
+              "example": "作品版本 …0021",
+              "editable": false
+            },
+            {
+              "label": "依据",
+              "source": "READING.data.basis_type",
+              "example": "保密协议",
+              "editable": false
+            },
+            {
+              "label": "期限",
+              "source": "READING.data.valid_until",
+              "example": "2026-10-06 18:00",
+              "editable": false
+            },
+            {
+              "label": "状态",
+              "source": "READING.current_status",
+              "example": "阅读授权已批准",
+              "editable": false
+            },
+            {
+              "label": "说明",
+              "source": "READING.data.allows_generation",
+              "example": "仅限阅读，不含生成许可",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "开始阅读",
+              "method": "GET",
+              "path": "/api/v1/licensing/readings/{record_id}/content",
+              "condition": "当前指定reader_account_id及reader_party_id且未到期",
+              "enabled": true
+            },
+            {
+              "label": "加载更多",
+              "method": "GET",
+              "path": "/api/v1/licensing/records",
+              "condition": "kind=READING且next_cursor非空",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“我的阅稿授权”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“已有指定人的有效阅读记录”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题；阅读权限说明；授权卡片；期限与依据；阅读入口。字段与准确示例文字：授权编号：阅稿 …0009；作品版本：作品版本 …0021；依据：保密协议；期限：2026-10-06 18:00；状态：阅读授权已批准；说明：仅限阅读，不含生成许可。只绘制以下操作：“开始阅读”为可操作按钮；“加载更多”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。未获商品标题时使用版本编号，不从不可见作品里猜标题。卡片不放价格或立即购买，不称高额阅稿商品。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        },
+        {
+          "id": "APP-09-02",
+          "title": "受控阅读",
+          "role": "指定读者账号与有权OWNER身份",
+          "state": "指定账号在有效期内阅读纯文本",
+          "nav_active": null,
+          "layout": [
+            "返回与阅读标题",
+            "期限/阅读用途提示",
+            "适合手机阅读的分段正文",
+            "正文内重复轻量身份时间水印",
+            "底部刷新入口"
+          ],
+          "fields": [
+            {
+              "label": "期限",
+              "source": "READING.data.valid_until",
+              "example": "有效至 2026-10-06 18:00",
+              "editable": false
+            },
+            {
+              "label": "正文",
+              "source": "ReadingContentResponse.data.watermarked_text",
+              "example": "第一场　旧车站\n林站在站台边，望向远处。\n“这次，我想把那句话说完。”\n\n读者 …0001 · 2026-09-29",
+              "editable": false
+            },
+            {
+              "label": "用途",
+              "source": "ReadingContentResponse.data.allows_generation",
+              "example": "此授权仅限阅读",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "重新读取",
+              "method": "GET",
+              "path": "/api/v1/licensing/readings/{record_id}/content",
+              "condition": "每次请求重新核验指定人、期限和权限",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“受控阅读”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“指定账号在有效期内阅读纯文本”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回与阅读标题；期限/阅读用途提示；适合手机阅读的分段正文；正文内重复轻量身份时间水印；底部刷新入口。字段与准确示例文字：期限：有效至 2026-10-06 18:00；正文：第一场　旧车站\n林站在站台边，望向远处。\n“这次，我想把那句话说完。”\n\n读者 …0001 · 2026-09-29；用途：此授权仅限阅读。只绘制以下操作：“重新读取”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。正文不能排成代码块，采用舒适的剧本文字行与段落节奏；水印是正文已有的一部分。不要绘制分享、下载原稿、AI生成、训练或删除水印按钮，也不宣称不能截图。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "登录失效或无权",
+          "trigger": "HTTP401/403/404",
+          "message": "请重新登录，或切换有权限的身份",
+          "handling": "清理本页私有缓存；不显示其他身份数据；不回退演示成功"
+        },
+        {
+          "state": "结果暂不可用",
+          "trigger": "HTTP503或存储服务未启用",
+          "message": "暂时无法完成，请稍后再试",
+          "handling": "保留已有记录及原操作编号；不伪造结果"
+        },
+        {
+          "state": "记录已更新",
+          "trigger": "HTTP412",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "读取最新版本；禁止自动重放用户旧决定"
+        },
+        {
+          "state": "内容为空",
+          "trigger": "合法空列表",
+          "message": "暂时没有记录",
+          "handling": "next_cursor非空继续加载；不显示虚构总数"
+        },
+        {
+          "state": "阅稿过期",
+          "trigger": "READING_EXPIRED",
+          "message": "阅稿已到期",
+          "handling": "清理正文；仅返回授权列表"
+        },
+        {
+          "state": "格式不支持",
+          "trigger": "READING_FORMAT_NOT_SUPPORTED",
+          "message": "当前材料暂不支持在线阅读",
+          "handling": "不改用公开原件链接"
+        }
+      ],
+      "sources": [
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js"
+      ]
+    },
+    {
+      "id": "APP-13",
+      "title": "我的订单与许可交易",
+      "surface": "app",
+      "role": "当前买方/卖方OWNER",
+      "requirements": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-024",
+        "REQ-042",
+        "REQ-053",
+        "REQ-059"
+      ],
+      "support": "implemented",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "查看有权限的订单及支付记录"
+        }
+      ],
+      "constraints": [
+        "kind可ORDER/QUOTE/LEGACY等；无服务端状态/日期/名称搜索及总数。",
+        "不新增基于缺字段的订单创建日期；订单标题由已有quote.lines[].title组成。",
+        "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+        "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+        "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。",
+        "旧记录只读使用kind=LEGACY；用户不具备POST legacy-orders登记或读取legacy证据文件的权限。旧单登记/核验只在显式TRADE_REVIEW运营工作区。",
+        "LEGACY.payment_verified始终false；VERIFIED_REFERENCE_ONLY仅说明原始参考材料已核验，不显示渠道到账成功。"
+      ],
+      "gaps": [],
+      "render_views": [],
+      "state_specs": [
+        {
+          "state": "登录失效或无权",
+          "trigger": "HTTP401/403/404",
+          "message": "请重新登录，或切换有权限的身份",
+          "handling": "清理本页私有缓存；不显示其他身份数据；不回退演示成功"
+        },
+        {
+          "state": "结果暂不可用",
+          "trigger": "HTTP503或存储服务未启用",
+          "message": "暂时无法完成，请稍后再试",
+          "handling": "保留已有记录及原操作编号；不伪造结果"
+        },
+        {
+          "state": "记录已更新",
+          "trigger": "HTTP412",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "读取最新版本；禁止自动重放用户旧决定"
+        },
+        {
+          "state": "内容为空",
+          "trigger": "合法空列表",
+          "message": "暂时没有记录",
+          "handling": "next_cursor非空继续加载；不显示虚构总数"
+        },
+        {
+          "state": "旧记录只读",
+          "trigger": "kind=LEGACY且本人是买卖方OWNER",
+          "message": "历史记录待核对，不代表渠道已确认付款",
+          "handling": "读取原金额、原条款和reported_status；不允许用户登记/修改旧单，不能用新报价重算。"
+        }
+      ],
+      "sources": [
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/trade/repository.js"
+      ]
+    },
+    {
+      "id": "APP-16",
+      "title": "已购许可与凭证",
+      "surface": "app",
+      "role": "许可接受方OWNER",
+      "requirements": [
+        "REQ-022",
+        "REQ-036",
+        "REQ-041",
+        "REQ-042",
+        "REQ-051",
+        "REQ-052",
+        "REQ-054",
+        "REQ-055"
+      ],
+      "support": "implemented",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records",
+          "use": "查询许可商品或自己的业务记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "查看有权限的许可记录和合同"
+        }
+      ],
+      "constraints": [
+        "列表kind=GRANT；data没有标题，标题只可在有权限的来源预留/商品成功读取后显示，否则用作品版本编号。",
+        "ACTIVE不覆盖期限和开发期；BINDING记录无现成剩余额度汇总，未加载完整绑定不能显示精确可用额度。",
+        "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+        "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+        "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+      ],
+      "gaps": [],
+      "render_views": [
+        {
+          "id": "APP-16-01",
+          "title": "我的许可",
+          "role": "许可接受方OWNER",
+          "state": "已有一份生效许可",
+          "nav_active": null,
+          "layout": [
+            "返回标题",
+            "许可列表",
+            "范围/期限摘要",
+            "绑定入口",
+            "分页"
+          ],
+          "fields": [
+            {
+              "label": "许可编号",
+              "source": "GRANT.id",
+              "example": "许可 …0061",
+              "editable": false
+            },
+            {
+              "label": "作品版本",
+              "source": "GRANT.data.work_version_id",
+              "example": "作品版本 …0021",
+              "editable": false
+            },
+            {
+              "label": "用途",
+              "source": "GRANT.data.terms.purposes",
+              "example": "私人使用",
+              "editable": false
+            },
+            {
+              "label": "地域与语言",
+              "source": "GRANT.data.terms.territories/languages",
+              "example": "中国 · 中文",
+              "editable": false
+            },
+            {
+              "label": "有效期",
+              "source": "GRANT.data.terms.valid_until",
+              "example": "有效至 2026-12-31",
+              "editable": false
+            },
+            {
+              "label": "状态",
+              "source": "GRANT.current_status",
+              "example": "许可已生效",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "查看许可",
+              "method": "LOCAL",
+              "path": "APP-16-02",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "加载更多",
+              "method": "GET",
+              "path": "/api/v1/licensing/records",
+              "condition": "kind=GRANT且next_cursor非空",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“我的许可”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“已有一份生效许可”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题；许可列表；范围/期限摘要；绑定入口；分页。字段与准确示例文字：许可编号：许可 …0061；作品版本：作品版本 …0021；用途：私人使用；地域与语言：中国 · 中文；有效期：有效至 2026-12-31；状态：许可已生效。只绘制以下操作：“查看许可”为可操作按钮；“加载更多”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。不用剧本封面猜作品名，不显示已购许可数量。状态旁同时显示期限，不能画永久绿色认证章。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        },
+        {
+          "id": "APP-16-02",
+          "title": "许可凭证",
+          "role": "许可接受方OWNER",
+          "state": "当前许可已生效，范围与期限明确",
+          "nav_active": null,
+          "layout": [
+            "返回标题与许可编号",
+            "许可双方编号",
+            "权利范围与用途",
+            "地域/语言/开发期/有效期",
+            "项目和集数约定",
+            "历史合同与已绑定项目",
+            "绑定操作"
+          ],
+          "fields": [
+            {
+              "label": "接受方",
+              "source": "GRANT.owner_party_id",
+              "example": "主体 …0001",
+              "editable": false
+            },
+            {
+              "label": "许可方",
+              "source": "GRANT.counterparty_id",
+              "example": "主体 …0002",
+              "editable": false
+            },
+            {
+              "label": "权利",
+              "source": "GRANT.data.terms.rights",
+              "example": "制作",
+              "editable": false
+            },
+            {
+              "label": "用途",
+              "source": "GRANT.data.terms.purposes",
+              "example": "私人使用",
+              "editable": false
+            },
+            {
+              "label": "独家性",
+              "source": "GRANT.data.terms.exclusive",
+              "example": "非独家",
+              "editable": false
+            },
+            {
+              "label": "地域语言",
+              "source": "GRANT.data.terms.territories/languages",
+              "example": "中国 / 中文",
+              "editable": false
+            },
+            {
+              "label": "开发截止",
+              "source": "GRANT.data.terms.development_until",
+              "example": "2026-11-30",
+              "editable": false
+            },
+            {
+              "label": "有效截止",
+              "source": "GRANT.data.terms.valid_until",
+              "example": "2026-12-31",
+              "editable": false
+            },
+            {
+              "label": "额度",
+              "source": "GRANT.data.terms.project_limit/episode_limit",
+              "example": "约定 1 个项目 / 1 集",
+              "editable": false
+            },
+            {
+              "label": "生效日期",
+              "source": "GRANT.data.activated_at",
+              "example": "2026-09-29",
+              "editable": false
+            },
+            {
+              "label": "许可开始",
+              "source": "GRANT.data.terms.valid_from",
+              "example": "2026-09-29",
+              "editable": false,
+              "image_visible": false
+            },
+            {
+              "label": "原文条款",
+              "source": "GRANT.data.terms.terms_text",
+              "example": "按许可原文展开",
+              "editable": false,
+              "image_visible": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "查看原合同",
+              "method": "LOCAL",
+              "path": "LOCAL:grant-inline-contract",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "用于具体项目",
+              "method": "LOCAL",
+              "path": "APP-17-02",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "查看绑定记录",
+              "method": "GET",
+              "path": "/api/v1/licensing/records",
+              "condition": "kind=BINDING；仅显示返回的本人有权记录并本地关联",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“许可凭证”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“当前许可已生效，范围与期限明确”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题与许可编号；许可双方编号；权利范围与用途；地域/语言/开发期/有效期；项目和集数约定；历史合同与已绑定项目；绑定操作。字段与准确示例文字：接受方：主体 …0001；许可方：主体 …0002；权利：制作；用途：私人使用；独家性：非独家；地域语言：中国 / 中文；开发截止：2026-11-30；有效截止：2026-12-31；额度：约定 1 个项目 / 1 集；生效日期：2026-09-29。只绘制以下操作：“查看原合同”为可操作按钮；“用于具体项目”为可操作按钮；“查看绑定记录”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。额度写“约定1个”，不能在未完整核对绑定列表时写“剩余1个”。底部短说明“本许可不自动包含公开分享、发行或训练”。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "登录失效或无权",
+          "trigger": "HTTP401/403/404",
+          "message": "请重新登录，或切换有权限的身份",
+          "handling": "清理本页私有缓存；不显示其他身份数据；不回退演示成功"
+        },
+        {
+          "state": "结果暂不可用",
+          "trigger": "HTTP503或存储服务未启用",
+          "message": "暂时无法完成，请稍后再试",
+          "handling": "保留已有记录及原操作编号；不伪造结果"
+        },
+        {
+          "state": "记录已更新",
+          "trigger": "HTTP412",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "读取最新版本；禁止自动重放用户旧决定"
+        },
+        {
+          "state": "内容为空",
+          "trigger": "合法空列表",
+          "message": "暂时没有记录",
+          "handling": "next_cursor非空继续加载；不显示虚构总数"
+        }
+      ],
+      "sources": [
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "contracts/openapi.yaml"
+      ]
+    },
+    {
+      "id": "APP-17",
+      "title": "许可项目绑定与用途检查",
+      "surface": "app",
+      "role": "许可接受方OWNER",
+      "requirements": [
+        "REQ-024",
+        "REQ-028",
+        "REQ-036",
+        "REQ-051",
+        "REQ-052",
+        "REQ-054",
+        "REQ-056"
+      ],
+      "support": "implemented",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records",
+          "use": "查询许可商品或自己的业务记录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/projects",
+          "use": "建立不可变项目用途记录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/grants/{record_id}/bindings",
+          "use": "为具体项目分配许可额度"
+        }
+      ],
+      "constraints": [
+        "licensing PROJECT是不可变用途记录，不是后续projects完整项目；新建字段project.title/purpose/territory/language/episodes。",
+        "绑定只project_id；用途/地域/语言/集数/开发期限与剩余额度后端核验，不能人工绕过。",
+        "没有解除绑定返还额度和编辑项目用途接口。",
+        "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+        "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+        "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+      ],
+      "gaps": [],
+      "render_views": [
+        {
+          "id": "APP-17-01",
+          "title": "登记许可用途项目",
+          "role": "许可接受方OWNER",
+          "state": "表单尚未填写",
+          "nav_active": null,
+          "layout": [
+            "返回标题",
+            "用途记录说明",
+            "项目名称",
+            "用途选择",
+            "地域和语言",
+            "集数",
+            "保存按钮"
+          ],
+          "fields": [
+            {
+              "label": "名称",
+              "source": "request.project.title",
+              "example": "请输入项目名称",
+              "editable": true
+            },
+            {
+              "label": "用途",
+              "source": "request.project.purpose",
+              "example": "私人使用 / 公开分享 / 商业用途 / 发行",
+              "editable": true
+            },
+            {
+              "label": "地域",
+              "source": "request.project.territory",
+              "example": "请选择国家或地区",
+              "editable": true
+            },
+            {
+              "label": "语言",
+              "source": "request.project.language",
+              "example": "请选择语言",
+              "editable": true
+            },
+            {
+              "label": "集数",
+              "source": "request.project.episodes",
+              "example": "请填写",
+              "editable": true
+            },
+            {
+              "label": "说明",
+              "source": "static_local_asset",
+              "example": "用于核对许可范围，不代表制作项目已开工。",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "保存用途项目",
+              "method": "POST",
+              "path": "/api/v1/licensing/projects",
+              "condition": "必填尚未齐；合法值后可创建，保存后不直接改用途",
+              "enabled": false
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“登记许可用途项目”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“表单尚未填写”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题；用途记录说明；项目名称；用途选择；地域和语言；集数；保存按钮。字段与准确示例文字：名称：请输入项目名称；用途：私人使用 / 公开分享 / 商业用途 / 发行；地域：请选择国家或地区；语言：请选择语言；集数：请填写；说明：用于核对许可范围，不代表制作项目已开工。。只绘制以下操作：“保存用途项目”为不可操作按钮，呈清晰禁用状态。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。不预设集数为1、不预选全球或中文；示例空表单突出5个必填字段。四类用途可以下拉选择，不要给私人用户自动勾选发行。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        },
+        {
+          "id": "APP-17-02",
+          "title": "将许可用于项目",
+          "role": "许可接受方OWNER",
+          "state": "已选有效许可和本人用途项目，待绑定",
+          "nav_active": null,
+          "layout": [
+            "返回标题",
+            "当前许可摘要",
+            "已选项目摘要",
+            "用途对照",
+            "额度与生效条件说明",
+            "底部确认"
+          ],
+          "fields": [
+            {
+              "label": "许可",
+              "source": "GRANT.id",
+              "example": "许可 …0061",
+              "editable": false
+            },
+            {
+              "label": "项目名称",
+              "source": "PROJECT.data.title",
+              "example": "夏日私人短片",
+              "editable": false
+            },
+            {
+              "label": "用途",
+              "source": "PROJECT.data.purpose",
+              "example": "私人使用",
+              "editable": false
+            },
+            {
+              "label": "地域/语言",
+              "source": "PROJECT.data.territory/language",
+              "example": "中国 / 中文",
+              "editable": false
+            },
+            {
+              "label": "集数",
+              "source": "PROJECT.data.episodes",
+              "example": "1 集（示例项目）",
+              "editable": false
+            },
+            {
+              "label": "条件说明",
+              "source": "static_local_asset",
+              "example": "确认时再次核对范围、期限与可用额度。",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "更换用途项目",
+              "method": "GET",
+              "path": "/api/v1/licensing/records",
+              "condition": "kind=PROJECT，仅本人可见",
+              "enabled": true
+            },
+            {
+              "label": "新建用途项目",
+              "method": "LOCAL",
+              "path": "APP-17-01",
+              "condition": "按所选身份导航后再次由服务器核验权限",
+              "enabled": true
+            },
+            {
+              "label": "确认绑定",
+              "method": "POST",
+              "path": "/api/v1/licensing/grants/{record_id}/bindings",
+              "condition": "请求project_id；当前许可有效、日期和用途满足，后端最终校验",
+              "enabled": true
+            }
+          ],
+          "image_brief": "绘制一张可直接用于评审的单个手机页面，页面标题准确写“将许可用于项目”。这是一张独立页面，不拼贴其他页面、不出现设备外壳、桌面背景或页面说明面板。屏幕应表现用户真的打开此页时看到的内容，顶部保留自然状态栏和明确标题，所有中文短文案清晰完整。当前情境为“已选有效许可和本人用途项目，待绑定”，只表现这一状态，不能把成功、失败与加载画面并排。页面角落小字“设计示例”，这不是营销海报。布局从上到下：返回标题；当前许可摘要；已选项目摘要；用途对照；额度与生效条件说明；底部确认。字段与准确示例文字：许可：许可 …0061；项目名称：夏日私人短片；用途：私人使用；地域/语言：中国 / 中文；集数：1 集（示例项目）；条件说明：确认时再次核对范围、期限与可用额度。。只绘制以下操作：“更换用途项目”为可操作按钮；“新建用途项目”为可操作按钮；“确认绑定”为可操作按钮。这是二级页面，顶部有返回箭头，不强放底部五栏导航；主要操作放在安全区上方，内容可纵向滚动，不重复放另一套菜单。主图不要显示前端自算的“全部校验通过”。项目用途与许可范围并列可读，但实际能否绑定由确认请求判断。明确说明“绑定后不返还使用额度”，没有解绑按钮。区块间通过标题、对齐和留白建立顺序；文字内容采用短段和清楚的字段行，长条款可用独立入口或折叠区域，不压成密集小字。不要新增搜索框、筛选项、统计数字、用户头像、成员昵称、星级评价、点赞数、示例外价格、额外菜单或未经列出的功能按钮。需要材料时只表现权限内的文件记录，不把私有素材当公域海报；任何占位只能使用本页明确的文字。图内不写接口路径、数据库字段、状态代码、实现注释或程序员提示。保留清晰点击范围，禁用按钮有邻近的简短原因，读者应能立即看出下一步。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "登录失效或无权",
+          "trigger": "HTTP401/403/404",
+          "message": "请重新登录，或切换有权限的身份",
+          "handling": "清理本页私有缓存；不显示其他身份数据；不回退演示成功"
+        },
+        {
+          "state": "结果暂不可用",
+          "trigger": "HTTP503或存储服务未启用",
+          "message": "暂时无法完成，请稍后再试",
+          "handling": "保留已有记录及原操作编号；不伪造结果"
+        },
+        {
+          "state": "记录已更新",
+          "trigger": "HTTP412",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "读取最新版本；禁止自动重放用户旧决定"
+        },
+        {
+          "state": "内容为空",
+          "trigger": "合法空列表",
+          "message": "暂时没有记录",
+          "handling": "next_cursor非空继续加载；不显示虚构总数"
+        },
+        {
+          "state": "额度或用途不符",
+          "trigger": "LICENSE_QUOTA_EXHAUSTED/PROJECT_LICENSE_NOT_READY",
+          "message": "当前许可无法用于这个项目",
+          "handling": "显示具体原因；不提供强行继续"
+        },
+        {
+          "state": "重复绑定",
+          "trigger": "PROJECT_ALREADY_BOUND",
+          "message": "此项目已绑定该许可",
+          "handling": "读取已有记录，不再重复扣额度"
+        }
+      ],
+      "sources": [
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/licensing/repository.js"
+      ]
+    },
+    {
+      "id": "WEB-09",
+      "title": "许可商品与服务规格",
+      "surface": "web",
+      "role": "供给负责人、独立交易/许可审核员",
+      "requirements": [
+        "REQ-001",
+        "REQ-018",
+        "REQ-021",
+        "REQ-022",
+        "REQ-040",
+        "REQ-042",
+        "REQ-048",
+        "REQ-051",
+        "REQ-052",
+        "REQ-053",
+        "REQ-060"
+      ],
+      "support": "partial",
+      "api_refs": [
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/products",
+          "use": "提交许可商品审核"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/specifications",
+          "use": "提交规格审核"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "查看原商品记录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/records/{record_id}/reviews",
+          "use": "提交审核"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "状态"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/records/{record_id}/reviews",
+          "use": "提交规格审核"
+        }
+      ],
+      "constraints": [
+        "许可商品与服务规格是不同接口、不同审核权限。",
+        "变价创建新版本不覆盖旧成交；许可商品可下架，服务规格无下架接口。",
+        "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+        "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+      ],
+      "gaps": [
+        {
+          "feature": "服务规格结构化画幅、清晰度、角色数与下架",
+          "reason": "当前TradeSpecification无字段/动作"
+        },
+        {
+          "feature": "全局规则选择器",
+          "reason": "治理规则没有列表接口"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "新建剧本许可商品",
+          "role": "作品供给负责人",
+          "state": "条款待填写",
+          "layout": [
+            "已双审原作与旧商品关联",
+            "商品标题与短试读",
+            "许可范围与期限",
+            "金额与预留条件",
+            "规则依据与提交"
+          ],
+          "fields": [
+            {
+              "label": "作品版本编号",
+              "source": "POST /api/v1/licensing/products → request.work_version_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "上一许可商品版本",
+              "source": "POST /api/v1/licensing/products → request.previous_product_id",
+              "example": "首次可留空",
+              "editable": true
+            },
+            {
+              "label": "标题",
+              "source": "POST /api/v1/licensing/products → request.title",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "短试读正文",
+              "source": "POST /api/v1/licensing/products → request.preview_text",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "获准权利",
+              "source": "POST /api/v1/licensing/products → request.terms.rights",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "允许用途",
+              "source": "POST /api/v1/licensing/products → request.terms.purposes",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "是否独家",
+              "source": "POST /api/v1/licensing/products → request.terms.exclusive",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "允许地域",
+              "source": "POST /api/v1/licensing/products → request.terms.territories",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "允许语言",
+              "source": "POST /api/v1/licensing/products → request.terms.languages",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "开始时间",
+              "source": "POST /api/v1/licensing/products → request.terms.valid_from",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "开发截止时间",
+              "source": "POST /api/v1/licensing/products → request.terms.development_until",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "有效截止时间",
+              "source": "POST /api/v1/licensing/products → request.terms.valid_until",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "项目数量上限",
+              "source": "POST /api/v1/licensing/products → request.terms.project_limit",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "集数上限",
+              "source": "POST /api/v1/licensing/products → request.terms.episode_limit",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "完整许可条款",
+              "source": "POST /api/v1/licensing/products → request.terms.terms_text",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "许可总价",
+              "source": "POST /api/v1/licensing/products → request.price.amount_minor",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "币种",
+              "source": "POST /api/v1/licensing/products → request.price.currency",
+              "example": "人民币",
+              "editable": false
+            },
+            {
+              "label": "生效前应付金额",
+              "source": "POST /api/v1/licensing/products → request.payment_due_minor",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "预留时长（分钟）",
+              "source": "POST /api/v1/licensing/products → request.reservation_minutes",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "规则编号",
+              "source": "POST /api/v1/licensing/products → request.rule_id",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "提交许可商品审核",
+              "method": "POST",
+              "path": "/api/v1/licensing/products",
+              "condition": "本人OWNER；全部条款和生效规则明确 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.work_version_id←本页“作品版本编号”字段；body.title←本页“标题”字段；body.preview_text←本页“短试读正文”字段；body.terms←本页“获准权利 / 允许用途 / 是否独家 / 允许地域 / 允许语言 / 开始时间 / 开发截止时间 / 有效截止时间 / 项目数量上限 / 集数上限 / 完整许可条款”字段；body.price←本页“许可总价 / 币种”字段；body.payment_due_minor←本页“生效前应付金额”字段；body.reservation_minutes←本页“预留时长（分钟）”字段；body.rule_id←本页“规则编号”字段；body.previous_product_id←本页“上一许可商品版本”字段；必填结构：work_version_id；title；preview_text；terms.exclusive；terms.rights[]枚举=ADAPT,PRODUCE,DISTRIBUTE,PROMOTE,SEQUEL,AI_PROCESS,AI_TRAIN；terms.purposes[]枚举=PRIVATE,PUBLIC_SHARE,COMMERCIAL,RELEASE；terms.territories[]；terms.languages[]；terms.valid_from；terms.valid_until；terms.development_until；terms.project_limit；terms.episode_limit；terms.terms_text；price.amount_minor；price.currency；payment_due_minor；reservation_minutes；rule_id；previous_product_id；previous_product_id可显式null",
+              "enabled": false
+            },
+            {
+              "label": "返回商品",
+              "method": "LOCAL",
+              "path": "WEB-09",
+              "condition": "本地页面导航，不更改业务状态",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-09-01",
+          "nav_active": "商品规格",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“新建剧本许可商品”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“商品规格”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“作品供给负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“条款待填写”。主体从上到下严格安排：已双审原作与旧商品关联；商品标题与短试读；许可范围与期限；金额与预留条件；规则依据与提交。长表单以分区组织，独家旁写清“独家不自动包含发行或训练”。价格、时间、额度均为空待填，规则编号从已核验交接获取，不画不存在的规则商城。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“作品版本编号”可填写，显示“待填写”；“上一许可商品版本”可填写，显示“首次可留空”；“标题”可填写，显示“待填写”；“短试读正文”可填写，显示“待填写”；“获准权利”可填写，显示“待选择”；“允许用途”可填写，显示“待选择”；“是否独家”可填写，显示“待选择”；“允许地域”可填写，显示“待填写”；“允许语言”可填写，显示“待填写”；“开始时间”可填写，显示“待填写”；“开发截止时间”可填写，显示“待填写”；“有效截止时间”可填写，显示“待填写”；“项目数量上限”可填写，显示“待填写”；“集数上限”可填写，显示“待填写”；“完整许可条款”可填写，显示“待填写”；“许可总价”可填写，显示“待填写”；“币种”只读，显示“人民币”；“生效前应付金额”可填写，显示“待填写”；“预留时长（分钟）”可填写，显示“待填写”；“规则编号”可填写，显示“待填写”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“提交许可商品审核”不可用，旁边用短句说明当前条件未齐或暂未开放；“返回商品”可用，点击意图和本页职责保持一致；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "许可商品独立审核",
+          "role": "独立许可审核员",
+          "state": "许可商品审核中",
+          "layout": [
+            "许可商品快照",
+            "权利、范围、期限和额度",
+            "价格及预留约定",
+            "本次审核结论"
+          ],
+          "fields": [
+            {
+              "label": "标题",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.title",
+              "example": "归途许可（设计示例）",
+              "editable": false
+            },
+            {
+              "label": "条款",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms",
+              "example": "已提交明确权利、用途和期限",
+              "editable": false
+            },
+            {
+              "label": "价格与应付",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.price / data.data.payment_due_minor",
+              "example": "以本商品已提交值为准",
+              "editable": false
+            },
+            {
+              "label": "商品状态",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.current_status",
+              "example": "审核中",
+              "editable": false
+            },
+            {
+              "label": "本次决定",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.decision",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "本次理由",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.reason",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "查看原商品记录",
+              "method": "GET",
+              "path": "/api/v1/licensing/records/{record_id}",
+              "condition": "有当前记录权限；以服务器当前状态和版本为准",
+              "enabled": true
+            },
+            {
+              "label": "提交审核",
+              "method": "POST",
+              "path": "/api/v1/licensing/records/{record_id}/reviews",
+              "condition": "LICENSE_REVIEW且与买卖方/创建者独立；verification=null 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；body.verification=null（PRODUCT/READING；不填证据核验对象）；必填结构：decision枚举=APPROVED,REJECTED；reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-09-03",
+          "nav_active": "商品规格",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“许可商品独立审核”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“商品规格”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“独立许可审核员”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“许可商品审核中”。主体从上到下严格安排：许可商品快照；权利、范围、期限和额度；价格及预留约定；本次审核结论。审核页面没有改价表单。通过后可列入许可商品目录，仍不是签约完成或授予许可；下架属于供给方另一状态动作。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“标题”只读，显示“归途许可（设计示例）”；“条款”只读，显示“已提交明确权利、用途和期限”；“价格与应付”只读，显示“以本商品已提交值为准”；“商品状态”只读，显示“审核中”；“本次决定”可填写，显示“待选择”；“本次理由”可填写，显示“待填写”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“查看原商品记录”可用，点击意图和本页职责保持一致；“提交审核”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "loading",
+          "trigger": "首次请求或继续加载尚未返回",
+          "message": "正在加载",
+          "handling": "保留页面结构，禁止重复提交；不生成演示成功记录"
+        },
+        {
+          "state": "empty",
+          "trigger": "items为空",
+          "message": "暂无可查看记录",
+          "handling": "next_cursor非空仍可继续加载；不伪称全站为零"
+        },
+        {
+          "state": "forbidden",
+          "trigger": "401/403/404或当前主体失权",
+          "message": "当前身份无法查看这条记录",
+          "handling": "停止文件/数据读取，提供本地返回入口"
+        },
+        {
+          "state": "version_changed",
+          "trigger": "412 VERSION_CONFLICT",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，不能静默提交旧决定"
+        },
+        {
+          "state": "blocked",
+          "trigger": "409业务前置不满足或503服务未启用",
+          "message": "当前条件未齐，请先处理提示事项",
+          "handling": "显示具体原因，保留原记录与操作编号，禁止假成功"
+        }
+      ],
+      "sources": [
+        "contracts/openapi.yaml",
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "docs/baselines/r03/intake_reports/03_TARGET_DESIGN.md",
+        "docs/baselines/r06/01_FINAL_ARCHITECTURE.md",
+        "docs/tasks/README.md",
+        "docs/collaboration/STAGE_5_API.md",
+        "docs/collaboration/STAGE_6_API.md",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:16",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:27",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:17",
+        "design/full-ui-20260929/qa/contract-snapshot.json"
+      ]
+    },
+    {
+      "id": "WEB-10",
+      "title": "许可预留、合同与证据核验",
+      "surface": "web",
+      "role": "许可买卖方负责人、独立许可审核员",
+      "requirements": [
+        "REQ-005",
+        "REQ-014",
+        "REQ-034",
+        "REQ-036",
+        "REQ-042",
+        "REQ-051",
+        "REQ-052",
+        "REQ-053",
+        "REQ-054"
+      ],
+      "support": "partial",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "外部核验方式"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/reservations",
+          "use": "建立预留"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/records/{record_id}/closures",
+          "use": "取消预留"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/evidence",
+          "use": "提交核验"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传私有依据"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/records/{record_id}/reviews",
+          "use": "提交证据审核"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/reservations/{record_id}/activation",
+          "use": "发放许可"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/evidence/{record_id}/assets/{asset_id}/content",
+          "use": "读取关联材料"
+        }
+      ],
+      "constraints": [
+        "合同快照封存不等于签署。",
+        "许可激活还核查真实交易门槛、范围冲突及预留时限。",
+        "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+        "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+      ],
+      "gaps": [
+        {
+          "feature": "自动签署或自动识别凭据",
+          "reason": "当前为人工核验外部事实"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "许可预留与合同",
+          "role": "许可买方负责人",
+          "state": "预留有效，签署依据待核验",
+          "layout": [
+            "预留商品与权利",
+            "服务器截止时间",
+            "不可变合同快照",
+            "外部材料状态",
+            "预留操作"
+          ],
+          "fields": [
+            {
+              "label": "商品与范围",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.title / data.data.terms",
+              "example": "归途许可（设计示例）",
+              "editable": false
+            },
+            {
+              "label": "预留截止",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.expires_at",
+              "example": "以本预留返回时间为准",
+              "editable": false
+            },
+            {
+              "label": "保存的合同",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.contract",
+              "example": "文本已保存，签署尚待核验",
+              "editable": false
+            },
+            {
+              "label": "金额约定",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.price / data.data.payment_due_minor",
+              "example": "本预留快照金额",
+              "editable": false
+            },
+            {
+              "label": "预留状态",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.current_status",
+              "example": "预留有效",
+              "editable": false
+            },
+            {
+              "label": "预留商品",
+              "source": "POST /api/v1/licensing/reservations → request.product_id",
+              "example": "从已审商品进入",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "建立预留",
+              "method": "POST",
+              "path": "/api/v1/licensing/reservations",
+              "condition": "买方OWNER；已上架且范围无冲突 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.product_id←本页“预留商品”字段；必填结构：product_id",
+              "enabled": false
+            },
+            {
+              "label": "提交外部材料",
+              "method": "LOCAL",
+              "path": "WEB-10-02",
+              "condition": "本地页面导航，不更改业务状态",
+              "enabled": true
+            },
+            {
+              "label": "取消预留",
+              "method": "POST",
+              "path": "/api/v1/licensing/records/{record_id}/closures",
+              "condition": "预留所有方OWNER，原记录未完成；先写原因 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；X-Acting-Party=必填当前已鉴权主体id；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.reason←取消确认对话框原因；必填结构：reason",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-10-01",
+          "nav_active": "剧本许可",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“许可预留与合同”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“剧本许可”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“许可买方负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“预留有效，签署依据待核验”。主体从上到下严格安排：预留商品与权利；服务器截止时间；不可变合同快照；外部材料状态；预留操作。本页不画已签署章或支付成功。有效性同时依赖截止时间，不能只凭“预留有效”标签永久保留；冲突显示明确原因而不是绕过。具体字段按以下次序放进对应区块：“商品与范围”显示“归途许可（设计示例）”，作为只读事实，不画成可以直接修改的输入框；“预留截止”显示“以本预留返回时间为准”，作为只读事实，不画成可以直接修改的输入框；“保存的合同”显示“文本已保存，签署尚待核验”，作为只读事实，不画成可以直接修改的输入框；“金额约定”显示“本预留快照金额”，作为只读事实，不画成可以直接修改的输入框；“预留状态”显示“预留有效”，作为只读事实，不画成可以直接修改的输入框；“预留商品”显示“从已审商品进入”，作为待填写表单控件，保留标签和空值提示；动作区只出现以下动作：“建立预留”不可用，旁边用短句说明当前条件未齐或暂未开放；“提交外部材料”可用，点击意图和本页职责保持一致；“取消预留”可用，点击意图和本页职责保持一致；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "提交签署与付款依据",
+          "role": "许可买卖方负责人",
+          "state": "外部证据尚未提交",
+          "layout": [
+            "准确预留及合同摘要",
+            "双方签署依据",
+            "身份核验依据",
+            "约定付款依据",
+            "外部参考与提交"
+          ],
+          "fields": [
+            {
+              "label": "预留记录编号",
+              "source": "POST /api/v1/licensing/evidence → request.reservation_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "合同内容指纹",
+              "source": "POST /api/v1/licensing/evidence → request.contract_sha256",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "卖方签署材料",
+              "source": "POST /api/v1/licensing/evidence → request.seller_signature_asset_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "买方签署材料",
+              "source": "POST /api/v1/licensing/evidence → request.buyer_signature_asset_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "身份材料",
+              "source": "POST /api/v1/licensing/evidence → request.identity_asset_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "付款依据",
+              "source": "POST /api/v1/licensing/evidence → request.payment_asset_id",
+              "example": "应付为零可为空，其他情况提供",
+              "editable": true
+            },
+            {
+              "label": "外部参考编号",
+              "source": "POST /api/v1/licensing/evidence → request.external_reference",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "上传私有依据",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "按实际用途上传私有证据 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+              "enabled": true
+            },
+            {
+              "label": "提交核验",
+              "method": "POST",
+              "path": "/api/v1/licensing/evidence",
+              "condition": "本预留任一方OWNER；必需材料齐备 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.reservation_id←本页“预留记录编号”字段；body.contract_sha256←本页“合同内容指纹”字段；body.seller_signature_asset_id←本页“卖方签署材料”字段；body.buyer_signature_asset_id←本页“买方签署材料”字段；body.identity_asset_id←本页“身份材料”字段；body.payment_asset_id←本页“付款依据”字段；body.external_reference←本页“外部参考编号”字段；必填结构：reservation_id；contract_sha256；seller_signature_asset_id；buyer_signature_asset_id；identity_asset_id；payment_asset_id；payment_asset_id可显式null；external_reference",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-10-02",
+          "nav_active": "剧本许可",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“提交签署与付款依据”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“剧本许可”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“许可买卖方负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“外部证据尚未提交”。主体从上到下严格安排：准确预留及合同摘要；双方签署依据；身份核验依据；约定付款依据；外部参考与提交。材料控件按编号和用途区分，不展示身份证或银行凭据真实样张。上传仅提交审核，不能自动变成许可生效。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“预留记录编号”可填写，显示“待填写”；“合同内容指纹”可填写，显示“待填写”；“卖方签署材料”可填写，显示“待填写”；“买方签署材料”可填写，显示“待填写”；“身份材料”可填写，显示“待填写”；“付款依据”可填写，显示“应付为零可为空，其他情况提供”；“外部参考编号”可填写，显示“待填写”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“上传私有依据”可用，点击意图和本页职责保持一致；“提交核验”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "许可证据核验与发放",
+          "role": "独立许可审核员",
+          "state": "待核验证据",
+          "layout": [
+            "预留合同和金额",
+            "关联私有依据逐份读取",
+            "身份与双方签署核对",
+            "实际收款核对",
+            "证据结论及许可发放条件"
+          ],
+          "fields": [
+            {
+              "label": "外部核验方式",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.verification_method",
+              "example": "外部材料人工核验",
+              "editable": false
+            },
+            {
+              "label": "所签合同内容指纹",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.signed_contract_sha256",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "身份已核实",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.identity_verified",
+              "example": "尚未核对",
+              "editable": true
+            },
+            {
+              "label": "卖方签署已核实",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.seller_signature_verified",
+              "example": "尚未核对",
+              "editable": true
+            },
+            {
+              "label": "买方签署已核实",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.buyer_signature_verified",
+              "example": "尚未核对",
+              "editable": true
+            },
+            {
+              "label": "币种",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.currency",
+              "example": "人民币",
+              "editable": false
+            },
+            {
+              "label": "实际收款金额",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.received_minor",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "实际收款主体编号",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.payee_party_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "实收凭据参考编号",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.verification.receipt_ref",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "本次决定",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.decision",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "本次理由",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.reason",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "已核验证据编号",
+              "source": "POST /api/v1/licensing/reservations/{record_id}/activation → request.evidence_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "本次理由",
+              "source": "POST /api/v1/licensing/reservations/{record_id}/activation → request.reason",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "读取关联材料",
+              "method": "GET",
+              "path": "/api/v1/licensing/evidence/{record_id}/assets/{asset_id}/content",
+              "condition": "独立LICENSE_REVIEW且文件确属本记录",
+              "enabled": true
+            },
+            {
+              "label": "提交证据审核",
+              "method": "POST",
+              "path": "/api/v1/licensing/records/{record_id}/reviews",
+              "condition": "逐项已核实后提交 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；必填结构：decision枚举=APPROVED,REJECTED；reason",
+              "enabled": false
+            },
+            {
+              "label": "发放许可",
+              "method": "POST",
+              "path": "/api/v1/licensing/reservations/{record_id}/activation",
+              "condition": "证据APPROVED且未过期、无冲突、付款门槛满足 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.evidence_id←本页“已核验证据编号”字段；body.reason←本页“本次理由”字段；必填结构：evidence_id；reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-10-03",
+          "nav_active": "剧本许可",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“许可证据核验与发放”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“剧本许可”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“独立许可审核员”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“待核验证据”。主体从上到下严格安排：预留合同和金额；关联私有依据逐份读取；身份与双方签署核对；实际收款核对；证据结论及许可发放条件。核验和发放是两个操作。当前主图停在待核验，不允许两个绿色成功同时出现。迟到证据、重复付款凭据或范围冲突应进入人工核对，不能强制激活。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“外部核验方式”只读，显示“外部材料人工核验”；“所签合同内容指纹”可填写，显示“待填写”；“身份已核实”可填写，显示“尚未核对”；“卖方签署已核实”可填写，显示“尚未核对”；“买方签署已核实”可填写，显示“尚未核对”；“币种”只读，显示“人民币”；“实际收款金额”可填写，显示“待填写”；“实际收款主体编号”可填写，显示“待填写”；“实收凭据参考编号”可填写，显示“待填写”；“本次决定”可填写，显示“待选择”；“本次理由”可填写，显示“待填写”；“已核验证据编号”可填写，显示“待填写”；“本次理由”可填写，显示“待填写”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“读取关联材料”可用，点击意图和本页职责保持一致；“提交证据审核”不可用，旁边用短句说明当前条件未齐或暂未开放；“发放许可”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "loading",
+          "trigger": "首次请求或继续加载尚未返回",
+          "message": "正在加载",
+          "handling": "保留页面结构，禁止重复提交；不生成演示成功记录"
+        },
+        {
+          "state": "empty",
+          "trigger": "items为空",
+          "message": "暂无可查看记录",
+          "handling": "next_cursor非空仍可继续加载；不伪称全站为零"
+        },
+        {
+          "state": "forbidden",
+          "trigger": "401/403/404或当前主体失权",
+          "message": "当前身份无法查看这条记录",
+          "handling": "停止文件/数据读取，提供本地返回入口"
+        },
+        {
+          "state": "version_changed",
+          "trigger": "412 VERSION_CONFLICT",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，不能静默提交旧决定"
+        },
+        {
+          "state": "blocked",
+          "trigger": "409业务前置不满足或503服务未启用",
+          "message": "当前条件未齐，请先处理提示事项",
+          "handling": "显示具体原因，保留原记录与操作编号，禁止假成功"
+        },
+        {
+          "state": "reservation_closure",
+          "trigger": "用户选择取消当前预留",
+          "message": "请填写取消原因",
+          "handling": "取消确认对话框必填reason（1–2000字符）；POST closures引用当前预留record_id、最新object_version，成功后重读状态。"
+        }
+      ],
+      "sources": [
+        "contracts/openapi.yaml",
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "docs/baselines/r03/intake_reports/03_TARGET_DESIGN.md",
+        "docs/baselines/r06/01_FINAL_ARCHITECTURE.md",
+        "docs/tasks/README.md",
+        "docs/collaboration/STAGE_5_API.md",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:27",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:19",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:18",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:20",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/supply-routes.js:15",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:17",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:21",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:30",
+        "design/full-ui-20260929/qa/contract-snapshot.json"
+      ]
+    },
+    {
+      "id": "WEB-11",
+      "title": "许可凭证与项目使用",
+      "surface": "web",
+      "role": "许可接受方、供给方、审核员",
+      "requirements": [
+        "REQ-022",
+        "REQ-024",
+        "REQ-028",
+        "REQ-036",
+        "REQ-041",
+        "REQ-051",
+        "REQ-052",
+        "REQ-054",
+        "REQ-056"
+      ],
+      "support": "partial",
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "当前范围"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records",
+          "use": "继续加载绑定"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/projects",
+          "use": "创建用途记录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/grants/{record_id}/bindings",
+          "use": "绑定许可额度"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/grants/{record_id}/suspensions",
+          "use": "暂停后续使用"
+        }
+      ],
+      "constraints": [
+        "ACTIVE同时受日期、退款、暂停和范围影响。",
+        "没有额度释放/许可恢复/续期接口。",
+        "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+        "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+      ],
+      "gaps": [
+        {
+          "feature": "恢复、续期、终止与自动释放额度",
+          "reason": "尚无HTTP动作"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "许可凭证与使用范围",
+          "role": "许可接受方负责人",
+          "state": "许可有效，仍受期限约束",
+          "layout": [
+            "许可凭证摘要",
+            "权利用途地域语言",
+            "开发和许可期限",
+            "项目额度与已绑定记录",
+            "使用操作"
+          ],
+          "fields": [
+            {
+              "label": "许可状态",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.current_status",
+              "example": "有效（示例）",
+              "editable": false
+            },
+            {
+              "label": "获准权利",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms.rights",
+              "example": "按本许可逐项列明",
+              "editable": false
+            },
+            {
+              "label": "使用范围",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms.purposes / data.data.terms.territories / data.data.terms.languages",
+              "example": "按许可范围展示",
+              "editable": false
+            },
+            {
+              "label": "开发和使用截止",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms.development_until / data.data.terms.valid_until",
+              "example": "两个日期分别列示",
+              "editable": false
+            },
+            {
+              "label": "项目额度与集数",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms.project_limit / data.data.terms.episode_limit",
+              "example": "以本许可明确值为准",
+              "editable": false
+            },
+            {
+              "label": "绑定记录",
+              "source": "GET /api/v1/licensing/records → response.data.items",
+              "example": "当前页获准项目绑定记录",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "分配项目额度",
+              "method": "LOCAL",
+              "path": "WEB-11-02",
+              "condition": "本地页面导航，不更改业务状态",
+              "enabled": true
+            },
+            {
+              "label": "读取许可",
+              "method": "GET",
+              "path": "/api/v1/licensing/records/{record_id}",
+              "condition": "有当前记录权限；以服务器当前状态和版本为准",
+              "enabled": true
+            },
+            {
+              "label": "继续加载绑定",
+              "method": "GET",
+              "path": "/api/v1/licensing/records",
+              "condition": "kind=BINDING；按获准记录过滤关联本许可",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-11-01",
+          "nav_active": "剧本许可",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“许可凭证与使用范围”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“剧本许可”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“许可接受方负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“许可有效，仍受期限约束”。主体从上到下严格安排：许可凭证摘要；权利用途地域语言；开发和许可期限；项目额度与已绑定记录；使用操作。供给方可按权限看凭证，但本图只给接受方绑定入口。额度不可释放后循环利用，不出现永久有效或自动续期。具体字段按以下次序放进对应区块：“许可状态”显示“有效（示例）”，作为只读事实，不画成可以直接修改的输入框；“获准权利”显示“按本许可逐项列明”，作为只读事实，不画成可以直接修改的输入框；“使用范围”显示“按许可范围展示”，作为只读事实，不画成可以直接修改的输入框；“开发和使用截止”显示“两个日期分别列示”，作为只读事实，不画成可以直接修改的输入框；“项目额度与集数”显示“以本许可明确值为准”，作为只读事实，不画成可以直接修改的输入框；“绑定记录”显示“当前页获准项目绑定记录”，作为只读事实，不画成可以直接修改的输入框；动作区只出现以下动作：“分配项目额度”可用，点击意图和本页职责保持一致；“读取许可”可用，点击意图和本页职责保持一致；“继续加载绑定”可用，点击意图和本页职责保持一致；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "登记用途并绑定许可",
+          "role": "许可接受方负责人",
+          "state": "项目用途待填写",
+          "layout": [
+            "当前许可只读范围",
+            "用途记录表单",
+            "地域语言和集数",
+            "创建与绑定分步操作"
+          ],
+          "fields": [
+            {
+              "label": "许可范围",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms",
+              "example": "当前许可的明确范围",
+              "editable": false
+            },
+            {
+              "label": "项目用途名称",
+              "source": "POST /api/v1/licensing/projects → request.project.title",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "用途",
+              "source": "POST /api/v1/licensing/projects → request.project.purpose",
+              "example": "私人/公开分享/商业/发行中选择本许可允许项",
+              "editable": true
+            },
+            {
+              "label": "地域",
+              "source": "POST /api/v1/licensing/projects → request.project.territory",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "语言",
+              "source": "POST /api/v1/licensing/projects → request.project.language",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "集数",
+              "source": "POST /api/v1/licensing/projects → request.project.episodes",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "要绑定的用途记录",
+              "source": "POST /api/v1/licensing/grants/{record_id}/bindings → request.project_id",
+              "example": "先创建用途记录后引用",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "创建用途记录",
+              "method": "POST",
+              "path": "/api/v1/licensing/projects",
+              "condition": "接受方OWNER；字段齐全 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.project←本页“项目用途名称 / 用途 / 地域 / 语言 / 集数”字段；必填结构：project.title；project.purpose枚举=PRIVATE,PUBLIC_SHARE,COMMERCIAL,RELEASE；project.territory；project.language；project.episodes",
+              "enabled": false
+            },
+            {
+              "label": "绑定许可额度",
+              "method": "POST",
+              "path": "/api/v1/licensing/grants/{record_id}/bindings",
+              "condition": "同一接受方，许可有效、范围匹配、额度未耗尽 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；X-Acting-Party=必填当前已鉴权主体id；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.project_id←本页“要绑定的用途记录”字段；必填结构：project_id",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-11-02",
+          "nav_active": "剧本许可",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“登记用途并绑定许可”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“剧本许可”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“许可接受方负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“项目用途待填写”。主体从上到下严格安排：当前许可只读范围；用途记录表单；地域语言和集数；创建与绑定分步操作。这里是许可的用途记录，不是完整制作或发行项目。创建用途与绑定占用额度分成两步，不能把创建成功显示成已获得额外权利。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“许可范围”只读，显示“当前许可的明确范围”；“项目用途名称”可填写，显示“待填写”；“用途”可填写，显示“私人/公开分享/商业/发行中选择本许可允许项”；“地域”可填写，显示“待填写”；“语言”可填写，显示“待填写”；“集数”可填写，显示“待填写”；“要绑定的用途记录”可填写，显示“先创建用途记录后引用”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“创建用途记录”不可用，旁边用短句说明当前条件未齐或暂未开放；“绑定许可额度”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "许可暂停处理",
+          "role": "独立许可审核员",
+          "state": "许可当前有效，待处理权利异议",
+          "layout": [
+            "准确许可和原合同",
+            "当前范围及使用记录",
+            "暂停原因",
+            "独立操作确认"
+          ],
+          "fields": [
+            {
+              "label": "许可状态",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.current_status",
+              "example": "有效",
+              "editable": false
+            },
+            {
+              "label": "许可合同",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.contract",
+              "example": "原合同保持不变",
+              "editable": false
+            },
+            {
+              "label": "当前范围",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.terms",
+              "example": "原许可约定",
+              "editable": false
+            },
+            {
+              "label": "暂停原因",
+              "source": "POST /api/v1/licensing/grants/{record_id}/suspensions → request.reason",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "暂停后续使用",
+              "method": "POST",
+              "path": "/api/v1/licensing/grants/{record_id}/suspensions",
+              "condition": "LICENSE_REVIEW且独立；仅ACTIVE许可 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.reason←本页“暂停原因”字段；必填结构：reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-11-03",
+          "nav_active": "剧本许可",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“许可暂停处理”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“剧本许可”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“独立许可审核员”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“许可当前有效，待处理权利异议”。主体从上到下严格安排：准确许可和原合同；当前范围及使用记录；暂停原因；独立操作确认。暂停不改写历史合同，不说明外部视频已下架。只呈现当前可用的暂停动作，不画恢复、终止或自动退钱按钮。具体字段按以下次序放进对应区块：“许可状态”显示“有效”，作为只读事实，不画成可以直接修改的输入框；“许可合同”显示“原合同保持不变”，作为只读事实，不画成可以直接修改的输入框；“当前范围”显示“原许可约定”，作为只读事实，不画成可以直接修改的输入框；“暂停原因”显示“待填写”，作为待填写表单控件，保留标签和空值提示；动作区只出现以下动作：“暂停后续使用”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "loading",
+          "trigger": "首次请求或继续加载尚未返回",
+          "message": "正在加载",
+          "handling": "保留页面结构，禁止重复提交；不生成演示成功记录"
+        },
+        {
+          "state": "empty",
+          "trigger": "items为空",
+          "message": "暂无可查看记录",
+          "handling": "next_cursor非空仍可继续加载；不伪称全站为零"
+        },
+        {
+          "state": "forbidden",
+          "trigger": "401/403/404或当前主体失权",
+          "message": "当前身份无法查看这条记录",
+          "handling": "停止文件/数据读取，提供本地返回入口"
+        },
+        {
+          "state": "version_changed",
+          "trigger": "412 VERSION_CONFLICT",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，不能静默提交旧决定"
+        },
+        {
+          "state": "blocked",
+          "trigger": "409业务前置不满足或503服务未启用",
+          "message": "当前条件未齐，请先处理提示事项",
+          "handling": "显示具体原因，保留原记录与操作编号，禁止假成功"
+        }
+      ],
+      "sources": [
+        "contracts/openapi.yaml",
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "docs/baselines/r03/intake_reports/03_TARGET_DESIGN.md",
+        "docs/baselines/r06/01_FINAL_ARCHITECTURE.md",
+        "docs/tasks/README.md",
+        "docs/collaboration/STAGE_5_API.md",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:27",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:26",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:23",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:24",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:22",
+        "design/full-ui-20260929/qa/contract-snapshot.json"
+      ]
+    },
+    {
+      "id": "WEB-12",
+      "title": "受控阅稿与材料访问",
+      "surface": "web",
+      "role": "供给负责人、指定阅读人、必要审核人员",
+      "requirements": [
+        "REQ-014",
+        "REQ-041",
+        "REQ-051",
+        "REQ-055",
+        "REQ-056"
+      ],
+      "support": "partial",
+      "api_refs": [
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/readings",
+          "use": "提交阅读申请"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传依据"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/records/{record_id}",
+          "use": "截止时间"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/licensing/records/{record_id}/reviews",
+          "use": "提交阅稿审核"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/evidence/{record_id}/assets/{asset_id}/content",
+          "use": "读取本申请依据"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/licensing/readings/{record_id}/content",
+          "use": "读取正文"
+        }
+      ],
+      "constraints": [
+        "纯文本水印，不返回公开原文件URL。",
+        "撤销由供给负责人在阅读记录使用closures，审核员不能代为授予所有人访问。",
+        "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+        "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+      ],
+      "gaps": [
+        {
+          "feature": "受控导出、AI交接、PDF阅读与访问日志列表",
+          "reason": "当前只提供纯文本读取，无这些独立HTTP入口"
+        }
+      ],
+      "render_views": [
+        {
+          "title": "申请指定人员阅稿",
+          "role": "作品供给负责人",
+          "state": "阅读申请待填写",
+          "layout": [
+            "作品版本",
+            "指定账号及其操作主体",
+            "阅读截止时间",
+            "保密或评估依据",
+            "提交独立审核"
+          ],
+          "fields": [
+            {
+              "label": "作品版本",
+              "source": "POST /api/v1/licensing/readings → request.work_version_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "指定阅读账号",
+              "source": "POST /api/v1/licensing/readings → request.reader_account_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "指定阅读主体",
+              "source": "POST /api/v1/licensing/readings → request.reader_party_id",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "阅读截止",
+              "source": "POST /api/v1/licensing/readings → request.valid_until",
+              "example": "待填写",
+              "editable": true
+            },
+            {
+              "label": "依据类型",
+              "source": "POST /api/v1/licensing/readings → request.basis_type",
+              "example": "保密协议或评估许可",
+              "editable": true
+            },
+            {
+              "label": "私有依据",
+              "source": "POST /api/v1/licensing/readings → request.basis_asset_id",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "上传依据",
+              "method": "POST",
+              "path": "/api/v1/supply/assets",
+              "condition": "供给方OWNER上传私有证明 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+              "enabled": true
+            },
+            {
+              "label": "提交阅读申请",
+              "method": "POST",
+              "path": "/api/v1/licensing/readings",
+              "condition": "作品属于本人且条件齐全 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.work_version_id←本页“作品版本”字段；body.reader_account_id←本页“指定阅读账号”字段；body.valid_until←本页“阅读截止”字段；body.basis_type←本页“依据类型”字段；body.basis_asset_id←本页“私有依据”字段；body.reader_party_id←本页“指定阅读主体”字段；必填结构：work_version_id；reader_account_id；valid_until；basis_type枚举=NDA,EVALUATION_PERMISSION；basis_asset_id；reader_party_id",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-12-01",
+          "nav_active": "受控阅读",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“申请指定人员阅稿”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“受控阅读”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“作品供给负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“阅读申请待填写”。主体从上到下严格安排：作品版本；指定账号及其操作主体；阅读截止时间；保密或评估依据；提交独立审核。不是手机号邀请。不得添加无限期、任何人可看或公开链接开关。阅读只用于评估，不授予训练、生成、制作或发行。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“作品版本”可填写，显示“待填写”；“指定阅读账号”可填写，显示“待填写”；“指定阅读主体”可填写，显示“待填写”；“阅读截止”可填写，显示“待填写”；“依据类型”可填写，显示“保密协议或评估许可”；“私有依据”可填写，显示“待填写”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“上传依据”可用，点击意图和本页职责保持一致；“提交阅读申请”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "阅稿依据独立审核",
+          "role": "独立许可审核员",
+          "state": "阅读申请待审",
+          "layout": [
+            "作品和指定阅读人",
+            "截止时间与依据",
+            "私有依据读取",
+            "审核理由与结论"
+          ],
+          "fields": [
+            {
+              "label": "阅读账号",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.reader_account_id",
+              "example": "指定账号编号",
+              "editable": false
+            },
+            {
+              "label": "操作主体",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.counterparty_id",
+              "example": "指定主体编号",
+              "editable": false
+            },
+            {
+              "label": "到期时间",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.valid_until",
+              "example": "按申请显示",
+              "editable": false
+            },
+            {
+              "label": "依据",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.basis_type / data.data.basis_asset_id",
+              "example": "保密协议材料",
+              "editable": false
+            },
+            {
+              "label": "本次决定",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.decision",
+              "example": "待选择",
+              "editable": true
+            },
+            {
+              "label": "本次理由",
+              "source": "POST /api/v1/licensing/records/{record_id}/reviews → request.reason",
+              "example": "待填写",
+              "editable": true
+            }
+          ],
+          "actions": [
+            {
+              "label": "读取本申请依据",
+              "method": "GET",
+              "path": "/api/v1/licensing/evidence/{record_id}/assets/{asset_id}/content",
+              "condition": "LICENSE_REVIEW且材料属于申请",
+              "enabled": true
+            },
+            {
+              "label": "提交阅稿审核",
+              "method": "POST",
+              "path": "/api/v1/licensing/records/{record_id}/reviews",
+              "condition": "独立审核且verification=null 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；body.verification=null（PRODUCT/READING；不填证据核验对象）；必填结构：decision枚举=APPROVED,REJECTED；reason",
+              "enabled": false
+            }
+          ],
+          "id": "WEB-12-02",
+          "nav_active": "受控阅读",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“阅稿依据独立审核”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“受控阅读”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“独立许可审核员”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“阅读申请待审”。主体从上到下严格安排：作品和指定阅读人；截止时间与依据；私有依据读取；审核理由与结论。只有核实依据后才批准，不能把批准阅稿标成完整版权购买。审核员与申请人没有混用身份按钮。具体字段逐项安排，组合含义必须分成可独立填写的控件，不能用一个万能下拉框代替：“阅读账号”只读，显示“指定账号编号”；“操作主体”只读，显示“指定主体编号”；“到期时间”只读，显示“按申请显示”；“依据”只读，显示“保密协议材料”；“本次决定”可填写，显示“待选择”；“本次理由”可填写，显示“待填写”；涉及多个日期、金额、比例、编号、条款和核验项时，分别放置对应控件；条款及理由用多行框，日期用日期时间框，核验项用未勾选复选框。数组明细组织成可读的逐行表格，一行内各列单独填写；不把不同对象编号合在一个输入框。动作区只出现以下动作：“读取本申请依据”可用，点击意图和本页职责保持一致；“提交阅稿审核”不可用，旁边用短句说明当前条件未齐或暂未开放；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        },
+        {
+          "title": "受控剧本阅读",
+          "role": "被指定账号且为指定主体负责人",
+          "state": "阅读已批准且未到期",
+          "layout": [
+            "阅读授权摘要",
+            "带账号与时间标识的纯文本正文",
+            "阅读边界提示",
+            "返回入口"
+          ],
+          "fields": [
+            {
+              "label": "阅读状态",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.current_status",
+              "example": "已批准",
+              "editable": false
+            },
+            {
+              "label": "截止时间",
+              "source": "GET /api/v1/licensing/records/{record_id} → response.data.data.valid_until",
+              "example": "按授权记录显示",
+              "editable": false
+            },
+            {
+              "label": "正文与水印",
+              "source": "GET /api/v1/licensing/readings/{record_id}/content → response.data.watermarked_text",
+              "example": "纯文本正文，每段附阅读标识",
+              "editable": false
+            },
+            {
+              "label": "用途说明",
+              "source": "LOCAL:页面解释文案，不持久化业务数据",
+              "example": "仅供评估阅读，不授予生成、训练或发行",
+              "editable": false
+            },
+            {
+              "label": "格式范围",
+              "source": "LOCAL:页面解释文案，不持久化业务数据",
+              "example": "当前支持纯文本",
+              "editable": false
+            }
+          ],
+          "actions": [
+            {
+              "label": "读取正文",
+              "method": "GET",
+              "path": "/api/v1/licensing/readings/{record_id}/content",
+              "condition": "指定账号且为指定主体OWNER，阅读APPROVED、未过期、原作可用且正文为text/plain",
+              "enabled": true
+            },
+            {
+              "label": "返回授权记录",
+              "method": "LOCAL",
+              "path": "WEB-12",
+              "condition": "本地页面导航，不更改业务状态",
+              "enabled": true
+            }
+          ],
+          "id": "WEB-12-03",
+          "nav_active": "受控阅读",
+          "image_brief": "绘制一张完整的桌面网页，页面标题严格为“受控剧本阅读”，这是一个独立页面，不是几张页面的拼贴。共享工作台外壳只保留当前有权的“受控阅读”菜单高亮、当前身份文字和返回入口。顶栏写“设计示例”，本图身份为“被指定账号且为指定主体负责人”，不要绘制头像、手机号、昵称或可以自授权限的角色切换。标题下用一行短说明写清正在办理的事情，并放置当前状态“阅读已批准且未到期”。主体从上到下严格安排：阅读授权摘要；带账号与时间标识的纯文本正文；阅读边界提示；返回入口。正文区域是阅读页面主要部分，呈现少量示例文字和可见水印；不做PDF播放器，不加下载原件、导出AI、复制链接或防截图保证。具体字段按以下次序放进对应区块：“阅读状态”显示“已批准”，作为只读事实，不画成可以直接修改的输入框；“截止时间”显示“按授权记录显示”，作为只读事实，不画成可以直接修改的输入框；“正文与水印”显示“纯文本正文，每段附阅读标识”，作为只读事实，不画成可以直接修改的输入框；“用途说明”显示“仅供评估阅读，不授予生成、训练或发行”，作为只读事实，不画成可以直接修改的输入框；“格式范围”显示“当前支持纯文本”，作为只读事实，不画成可以直接修改的输入框；动作区只出现以下动作：“读取正文”可用，点击意图和本页职责保持一致；“返回授权记录”可用，点击意图和本页职责保持一致；请将详情、填写和审核区域分清，表单可采用两列，但权利条款、依据说明、反馈正文与审核理由横跨整行。列表只使用已列出的字段，记录编号可缩短显示；不要添加全库数量、评分、营收卡片、搜索框、时间筛选或未列出的批量操作。金额未知保持“待填写”或“以本单约定为准”，不能填零或预设价格、比例、天数、修改次数。所有示例都属于当前设计，不代表正式业务数据。页面上只写简短通俗中文，隐藏接口路径、英文状态码、字段名、源码注释和任何技术解释。材料区域只展示材料编号及获准读取的状态，不绘制公开下载地址；条款批准、双方签署、付款到账、客户验收和实际发行或打款是不同事实，只画本图明确的这一阶段。底部留出稳定的操作区，主动作与返回动作明确区分，禁用动作保持可识别并附简短原因。不要把加载、空态、错误态同时塞进这张主图，也不要画弹窗拼图。"
+        }
+      ],
+      "state_specs": [
+        {
+          "state": "loading",
+          "trigger": "首次请求或继续加载尚未返回",
+          "message": "正在加载",
+          "handling": "保留页面结构，禁止重复提交；不生成演示成功记录"
+        },
+        {
+          "state": "empty",
+          "trigger": "items为空",
+          "message": "暂无可查看记录",
+          "handling": "next_cursor非空仍可继续加载；不伪称全站为零"
+        },
+        {
+          "state": "forbidden",
+          "trigger": "401/403/404或当前主体失权",
+          "message": "当前身份无法查看这条记录",
+          "handling": "停止文件/数据读取，提供本地返回入口"
+        },
+        {
+          "state": "version_changed",
+          "trigger": "412 VERSION_CONFLICT",
+          "message": "内容已更新，请重新查看后确认",
+          "handling": "重新读取，不能静默提交旧决定"
+        },
+        {
+          "state": "blocked",
+          "trigger": "409业务前置不满足或503服务未启用",
+          "message": "当前条件未齐，请先处理提示事项",
+          "handling": "显示具体原因，保留原记录与操作编号，禁止假成功"
+        }
+      ],
+      "sources": [
+        "contracts/openapi.yaml",
+        "design/full-ui-20260929/research/api-foundation.json",
+        "design/full-ui-20260929/research/api-workflows.json",
+        "docs/requirements/baseline.json",
+        "docs/baselines/r03/intake_reports/03_TARGET_DESIGN.md",
+        "docs/baselines/r06/01_FINAL_ARCHITECTURE.md",
+        "docs/tasks/README.md",
+        "docs/collaboration/STAGE_5_API.md",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:25",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/supply-routes.js:15",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:27",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:17",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:30",
+        "晶晶日上工程交接包/01_源码/backend_server/src/http/licensing-routes.js:29",
+        "design/full-ui-20260929/qa/contract-snapshot.json"
+      ]
+    }
+  ],
+  "scope_note": "APP-13只实现许可预留，不开启PR15制作订单；APP-17只实现许可项目用途及额度绑定，公开项目与发行仍按后续阶段。 WEB-09-02/04服务规格及APP-13订单/报价视图没有纳入本批，只保留许可预留导航。"
+}

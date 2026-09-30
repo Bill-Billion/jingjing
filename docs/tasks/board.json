@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-09-25",
+  "updated_on": "2026-09-30",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -1635,7 +1635,7 @@
       "stage": 2,
       "stream": "Experience",
       "owner": "用户授权的本次前端任务 / Codex",
-      "status": "IN_REVIEW",
+      "status": "DONE",
       "branch": "ux/pr13-pages",
       "work_refs": [
         "WORK-03",
@@ -1655,8 +1655,7 @@
         "REQ-060"
       ],
       "dependencies": [
-        "UX-PR12-CONTRACT-UI-20260929",
-        "CORE-S2-001"
+        "UX-PR12-CONTRACT-UI-20260929"
       ],
       "deliverables": [
         "App作者申请、作品投稿及修订资料",
@@ -1674,21 +1673,84 @@
         "docs/ux/pr13-ui/ui-checks.md",
         "docs/ux/pr13-ui/api-review.md",
         "design-qa.md",
-        "docs/ux/pr13-ui/evidence/runtime-checks.json"
+        "docs/ux/pr13-ui/evidence/runtime-checks.json",
+        "docs/ux/pr13-ui/merge-review.md",
+        "docs/ux/navigation-acceptance.md"
       ],
       "blockers": [
-        "前后端统一通过第13份交付，仍待共同版本验收；真实存储和原生包后续验收。"
+        "正式短信、持久存储、原生包及真实权利材料仍按发布阶段验收，不阻止本批代码交付完成。"
       ],
-      "updated_on": "2026-09-30"
+      "updated_on": "2026-09-30",
+      "current_increment": "2026-09-30已随第13份合入integration/90cb6a9；最终7abafab的8项远端检查通过。所需第四阶段后端接口已同时合入，不再等待更宽后端任务整体关闭；数字人同意等后续页面未完成，尚未部署。"
+    },
+    {
+      "id": "UX-PR14-LICENSING-PAGES-20260930",
+      "title": "选剧本、办理许可、绑定项目和受控阅读页面",
+      "stage": 2,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr14-pages",
+      "work_refs": [
+        "WORK-04"
+      ],
+      "req_refs": [
+        "REQ-014",
+        "REQ-021",
+        "REQ-022",
+        "REQ-024",
+        "REQ-028",
+        "REQ-034",
+        "REQ-036",
+        "REQ-041",
+        "REQ-042",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052",
+        "REQ-053",
+        "REQ-054",
+        "REQ-055",
+        "REQ-056",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR13-SUPPLY-PAGES-20260929"
+      ],
+      "deliverables": [
+        "App选本、许可办理、项目绑定及受控阅读",
+        "网页许可商品、证据核验、许可与阅稿管理",
+        "统一新版导航、接口检查和实际界面验收"
+      ],
+      "acceptance": "消费第14份真实接口；独立核验后才取得许可；保留历史合同和价格；项目用途、期限和额度按服务端核对；全文只展示有水印纯文本；身份变化清理私有内容；所有入口和返回路径正常。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR14-LICENSING-PAGES-20260930.md",
+        "docs/ux/pr14-ui/README.md",
+        "docs/ux/pr14-ui/page-plan.md",
+        "docs/ux/pr14-ui/ui-checks.md",
+        "docs/ux/pr14-ui/api-review.md",
+        "docs/ux/pr14-ui/design-qa.md",
+        "docs/ux/pr14-ui/evidence/app-runtime.json",
+        "docs/ux/pr14-ui/evidence/web-runtime.json"
+      ],
+      "blockers": [
+        "第14份后端已明确引入本地，仍待阶段审阅合入；正式供应商与原生包后续验收。"
+      ],
+      "updated_on": "2026-09-30",
+      "current_increment": "两端许可页面和绑定后项目改稿已本地完成；App91项、网页57项检查及构建通过，真实HTTP和页面证据已登记；待按用户后续授权追加到原第14份申请，未合并或部署。"
     }
   ],
   "delivery_policy": {
     "mode": "STAGED_LOCAL_FIRST",
     "effective_on": "2026-09-22",
     "guide": "docs/collaboration/STAGED_DELIVERY.md",
-    "remote_sync": "PR13_COMBINED_DELIVERY_IN_REVIEW",
+    "remote_sync": "PR13_MERGED_PR14_FRONTEND_LOCAL",
     "open_pull_requests": [
-      13,
       14,
       15,
       16,
@@ -1698,7 +1760,8 @@
       4,
       10,
       11,
-      12
+      12,
+      13
     ],
     "previous_closed_unmerged_pull_requests": [
       1,
@@ -1712,18 +1775,18 @@
     ],
     "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
     "current_stage": {
-      "name": "作者与作品资料前端",
-      "branch": "ux/pr13-pages",
-      "status": "DELIVERY_IN_REVIEW",
+      "name": "选剧本、办理许可、绑定项目和受控阅读前端",
+      "branch": "ux/pr14-pages",
+      "status": "LOCAL_READY_FOR_REVIEW",
       "owner": "用户授权的本次前端任务 / Codex",
-      "guide": "docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md",
-      "base_commit": "e58c7fcaa86610715ff1c621b4126f2a9c605737",
-      "pending_dependency": "PR13 原后端318f263与前端81a9727统一交付，尚待共同审阅及合入integration",
+      "guide": "docs/tasks/records/UX-PR14-LICENSING-PAGES-20260930.md",
+      "base_commit": "90cb6a9e2a1412e2cba70becd29a455c53a6d82f",
+      "pending_dependency": "原第14份后端ce576af已明确引入本地；阶段合并仍需正式审阅，尚未追加上传前端。",
       "updated_on": "2026-09-30",
-      "delivery_branch": "core/stage-4-works-evidence",
-      "pull_request": 13,
-      "source_commit": "81a9727dcb606517cd82731abe6a632579ec2d14",
-      "remote_checks": "SEE_PR13_CURRENT_HEAD_CHECKS"
+      "delivery_branch": "core/stage-5-script-licensing",
+      "pull_request": 14,
+      "source_commit": "0536ac8",
+      "remote_checks": "NOT_PUSHED"
     }
   }
 }

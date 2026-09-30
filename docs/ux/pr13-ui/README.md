@@ -2,7 +2,7 @@
 
 本批让作者提交供给资料、保存每一版作品和权利证明，再由获准人员分别审核资格、权属与内容。App 和网页都接入第13份的真实接口，继续使用已选暖白 App、浅色深绿工作台风格。
 
-本批从已合入第12份的`integration/e58c7fc`建立`ux/pr13-pages`，通过`1f6edd3`原样合并第13份后端`318f263`；前端功能提交`81a9727`按用户授权统一通过原[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)交付，目标分支`core/stage-4-works-evidence`。未修改后端源码、数据库迁移或接口文件。最新上传版本和自动检查结果以申请页为准；尚未合入共同版本或部署。
+本批从已合入第12份的`integration/e58c7fc`建立`ux/pr13-pages`，通过`1f6edd3`原样合并第13份后端`318f263`；前端功能提交`81a9727`按用户授权统一通过原[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)交付，目标分支`core/stage-4-works-evidence`。未修改后端源码、数据库迁移或接口文件。最终交付版本`7abafab`的8项远端检查全部通过；用户已于2026-09-30将第13份合入共同版本`integration/90cb6a9`，尚未部署。
 
 ## 页面与使用顺序
 
@@ -44,7 +44,7 @@
 
 本地修复后，网页账号、合同、供给申请、我的作品、供给审核、作品审核共用六入口菜单，当前项保持高亮；App 根启动与登录后进入暖白五入口：首页、入戏、培育、成角、我的。账号、合同和作者作品使用返回式子页；旧地址映射到正确新版目的地或明确“暂未开放”，未知地址可返回新版首页。后续 PR14–17 的许可、订单、制作、商单等业务页面仍须逐批接入真实接口，不能把当前未开放页算作已完成。
 
-网页六入口已在真实浏览器逐项点击，桌面与390px手机宽度均保留菜单和正确高亮；App 五入口、账号／合同／作者作品子页返回、登录回跳、旧`/my-works`及错误地址已在重建的 Flutter Web 预览中实点。证据：[网页结果](evidence/navigation-web.json) · [APP结果](evidence/navigation-app.json) · [网页合同页](evidence/web-contract-navigation.png) · [手机宽度网页](evidence/web-contract-navigation-mobile.png) · [APP新版“我的”](evidence/app-new-navigation.png)。新增 Vue 供给测试共19项、已有合同17项、Flutter相关74项及Dart静态分析通过；两端构建通过。本次导航修复已按用户授权追加到原PR13；此前head的检查不能替代最新head复验，实际结果见申请Checks。未修改PR14–17的提交。
+网页六入口已在真实浏览器逐项点击，桌面与390px手机宽度均保留菜单和正确高亮；App 五入口、账号／合同／作者作品子页返回、登录回跳、旧`/my-works`及错误地址已在重建的 Flutter Web 预览中实点。证据：[网页结果](evidence/navigation-web.json) · [APP结果](evidence/navigation-app.json) · [网页合同页](evidence/web-contract-navigation.png) · [手机宽度网页](evidence/web-contract-navigation-mobile.png) · [APP新版“我的”](evidence/app-new-navigation.png)。新增 Vue 供给测试共19项、已有合同17项、Flutter相关74项及Dart静态分析通过；两端构建通过。本次导航修复已追加到原PR13，最终版本`7abafab`的8项检查全部通过，并随第13份合入`integration/90cb6a9`。未修改PR14–17的提交。
 
 |验证|实际结果|
 |---|---|
