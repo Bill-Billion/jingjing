@@ -64,6 +64,38 @@ void main() {
           ['/home', '/enter', '/cultivate', '/roles', '/my'][i]);
       expect(tester.takeException(), isNull);
     }
+    await tester.tap(find.byTooltip('设置与帮助'));
+    await frames(tester);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.text('用户协议'), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await frames(tester);
+    await tester.tap(find.byKey(const Key('app-tab-0')));
+    await frames(tester);
+    await tester.tap(find.byTooltip('通知'));
+    await frames(tester);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.text('暂未开放'), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await frames(tester);
+    expectFiveTabs();
+    expect(tester.takeException(), isNull);
+    expect(adapter.requests, isEmpty);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('320窄屏和放大文字的五入口保持可用，无布局异常', (tester) async {
+    final adapter = FakeAccountAdapter();
+    await openApp(tester, AccountSession(api: adapter.createApi()));
+    tester.view.physicalSize = const Size(320, 693);
+    tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    for (var i = 0; i < 5; i++) {
+      await tester.tap(find.byKey(Key('app-tab-$i')));
+      await frames(tester);
+      expectFiveTabs();
+      expect(tester.takeException(), isNull, reason: 'tab $i');
+    }
     expect(adapter.requests, isEmpty);
     await tester.pumpWidget(const SizedBox.shrink());
   });

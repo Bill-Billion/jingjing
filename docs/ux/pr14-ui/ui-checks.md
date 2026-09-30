@@ -2,7 +2,21 @@
 
 2026-09-30。使用本批随机隔离 MySQL、真实账号和许可 HTTP、合成短信、进程内私有文件传输；从正常页面登录，没有向页面注入会话或审批角色。
 
-## 已执行的检查
+## 原图册样式修订：最终检查
+
+- App：最终完整受影响范围96项全部通过，包含账号、合同、供给、许可、导航和原交互/启动；覆盖320宽大字号、字段无障碍名称、空登录/空邀请灰置及未知请求按原body和幂等编号恢复。之前93项和38项复核有重叠，不相加。`dart analyze` 无问题，接3242接口的最终Flutter Web构建成功。最终 `main.dart.js` SHA256为 `67b6568b562b533e3707a39833305b26aaaad6fb5d66a30288a6bbf2f8e67f87`。
+- 网页：许可21、供给19、合同17项共57项全部通过；独立隔离账号真实浏览器24项另行通过；最终typecheck/build通过。账号联调前两次因测试手机号环境和表格选择器不匹配失败，日志保留；成功结果以 `vue-style-account-isolated-e2e.log` 为准。
+- 网页最终只读实拍：39组通过、183张截图，涵盖1440×900、390×844、320×693及真实长页滚动、完整编号展开和独立核验空选状态；没有业务写入、运行错误或全页横向溢出。治理合同用有效独立快照后成功读取；旧混用许可内嵌编号的404不算成功详情验证。
+- App最终只读实拍：29组通过、95张390/320截图，全部来自上方最终构建的实际网络响应；账号分组、有效治理合同、许可/绑定/正文及五入口正常。邀请空态白底和真实灰置已复拍；没有业务写入或运行异常。[最终App实拍](evidence/style-app-runtime.json)。
+- 两端逐页原图映射、截图尺寸/哈希与实际路由见[覆盖清单](evidence/style-coverage.json)，目视结论及接口适配见[样式验收](style-qa.md)。原生真机与生产服务没有在本轮执行。
+
+[App最终96项](evidence/style-flutter-final-tests.log) · [最终静态分析](evidence/style-dart-final-analyze.log) · [最终App构建](evidence/style-flutter-final-build.log) · [邀请空态与原请求恢复](evidence/style-flutter-invite-tests.log) · [网页许可21项](evidence/vue-style-licensing-tests.log) · [供给19项](evidence/vue-style-supply-tests.log) · [合同17项](evidence/vue-style-contracts-tests.log) · [账号真实联调24项](evidence/vue-style-account-isolated-e2e.log) · [网页类型检查](evidence/vue-style-typecheck.log) · [网页构建](evidence/vue-style-build.log) · [网页逐页实拍](evidence/style-web-runtime.json)
+
+本机 `flutter analyze` 的中文路径LSP输出遇到SDK自身Content-Length读取问题，改用同一任务SDK的 `dart analyze` 成功完成等价静态分析，没有修改SDK或项目来绕过诊断。Vue保留现有构建体积提示；Flutter最终交付为JS构建；Wasm干跑成功，但未执行Wasm应用或真机包验收。视觉修订没有修改后端，保留下面原功能阶段的MySQL/HTTP证据，不重复跑相同后端测试计数。
+
+- 收尾资料：新脚本语法、差异格式、凭据脱敏、原图册及主检出未被修改均核对通过；[本轮资料检查](evidence/style-collaboration-check.json)只验证资料结构与链接，应用结果以实际测试及浏览器报告为准。
+
+## 功能交付阶段已执行的检查（视觉修订前）
 
 - App：任务内 Flutter/Dart 静态检查无问题；账号、合同、供给、许可、导航 82 项通过，包含 17 项许可检查。现有交互和启动 9 项另行通过；两组测试文件不重复。3242 接口配置的 Flutter Web 构建成功。
 - 网页：许可原20项及最终新增的状态/范围语义1项、供给19项、合同17项全部通过，共57项，类型检查及构建成功。新增检查和最终构建单独留日志；没有将旧20项日志写成21项全量运行。所有新旧业务页面共用12项导航，详情和审核正确高亮。

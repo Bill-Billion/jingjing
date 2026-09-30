@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../account/app_visual.dart';
 import '../pages/login/login_page.dart';
 import '../supply/supply_widgets.dart';
 import 'license_models.dart';
@@ -24,7 +25,7 @@ Widget licenseScaffold(
                     child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 760),
                         child: ListView(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(16),
                             children: [
                               ...children,
                               const SizedBox(height: 24)
@@ -92,22 +93,19 @@ Widget licenseTermsView(LicenseTerms terms) {
   return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
     supplyCard('权利范围', [
       supplyFact('许可', terms.summary),
-      supplyFact(
-          '地域',
-          (d['territories'] as List)
-              .map((v) => licenseCountries[v] ?? v)
-              .join('、')),
-      supplyFact(
-          '语言',
-          (d['languages'] as List)
-              .map((v) => licenseLanguages[v] ?? v)
-              .join('、')),
-      supplyNote('仅包含以上明确列出的权利。独家不自动包含发行，阅稿不授予生成或训练。'),
+      supplyFact('地域 / 语言',
+          '${(d['territories'] as List).map((v) => licenseCountries[v] ?? v).join('、')} / ${(d['languages'] as List).map((v) => licenseLanguages[v] ?? v).join('、')}'),
+      appNotice('仅包含明确列出的权利。独家不自动包含发行，阅稿不授予生成或训练。'),
     ]),
     supplyCard('期限与额度', [
       supplyFact('许可开始', licenseDate(d['valid_from'])),
-      supplyFact('开发至', licenseDate(d['development_until'])),
-      supplyFact('有效至', licenseDate(d['valid_until'])),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(child: _termDate('开发至', licenseDate(d['development_until']))),
+        Container(width: 1, height: 48, color: AccountTheme.border),
+        const SizedBox(width: 16),
+        Expanded(child: _termDate('有效至', licenseDate(d['valid_until']))),
+      ]),
+      const SizedBox(height: 16),
       supplyFact(
           '项目 / 集数额度', '${d['project_limit']} 个项目 / ${d['episode_limit']} 集'),
     ]),
@@ -115,18 +113,85 @@ Widget licenseTermsView(LicenseTerms terms) {
         child: ExpansionTile(
             title: const Text('完整许可条款',
                 style: TextStyle(fontWeight: FontWeight.w600)),
-            childrenPadding: const EdgeInsets.all(18),
+            childrenPadding: const EdgeInsets.all(16),
             children: [
           SelectableText(d['terms_text'], style: const TextStyle(height: 1.7))
         ])),
   ]);
 }
 
-Widget licenseAmount(Map<String, dynamic> price, {int? due}) =>
-    supplyCard('许可费用', [
-      supplyFact('总价', licenseMoney(price)),
-      if (due != null) supplyFact('生效前应付', licenseMoney(price, amount: due)),
-      supplyNote('许可费用不等于整片制作费用。签署与付款由真实外部材料经独立人员核验。'),
+Widget _termDate(String label, String value) =>
+    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label,
+          style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
+      const SizedBox(height: 6),
+      Text(value, style: const TextStyle(fontSize: 16, height: 1.4)),
+    ]);
+
+Widget licenseGrantTerms(LicenseTerms terms) {
+  final d = terms.data;
+  return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    supplyCard('权利与用途', [
+      supplyFact('权利',
+          (d['rights'] as List).map((v) => licenseRights[v] ?? v).join('、')),
+      supplyFact(
+          '用途',
+          (d['purposes'] as List)
+              .map((v) => licensePurposes[v] ?? v)
+              .join('、')),
+      supplyFact('独家性', d['exclusive'] == true ? '独家' : '非独家'),
+    ]),
+    supplyCard('范围与期限', [
+      supplyFact('地域 / 语言',
+          '${(d['territories'] as List).map((v) => licenseCountries[v] ?? v).join('、')} / ${(d['languages'] as List).map((v) => licenseLanguages[v] ?? v).join('、')}'),
+      supplyFact('开发截止', licenseDate(d['development_until'])),
+      supplyFact('有效截止', licenseDate(d['valid_until'])),
+      supplyFact('许可开始', licenseDate(d['valid_from'])),
+    ]),
+    supplyCard('项目与集数约定', [
+      supplyFact('额度', '${d['project_limit']} 个项目 / ${d['episode_limit']} 集')
+    ]),
+    Card(
+        child: ExpansionTile(
+            title: const Text('完整许可条款',
+                style: TextStyle(fontWeight: FontWeight.w600)),
+            childrenPadding: const EdgeInsets.all(16),
+            children: [
+          SelectableText(d['terms_text'],
+              style: const TextStyle(fontSize: 14, height: 1.7))
+        ])),
+  ]);
+}
+
+Widget licenseAmount(Map<String, dynamic> price, {int? due}) => Card(
+    child: Padding(
+        padding: const EdgeInsets.all(16),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(child: _amount('总价', licenseMoney(price))),
+            if (due != null) ...[
+              Container(width: 1, height: 56, color: AccountTheme.border),
+              const SizedBox(width: 16),
+              Expanded(
+                  child: _amount('生效前应付', licenseMoney(price, amount: due))),
+            ],
+          ]),
+          const SizedBox(height: 16),
+          supplyNote('许可费用不等于整片制作费用。签署与付款由真实外部材料经独立人员核验。'),
+        ])));
+
+Widget _amount(String label, String value) =>
+    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label,
+          style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
+      const SizedBox(height: 6),
+      Text(value,
+          style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w700,
+              color: AccountTheme.accent,
+              height: 1.3)),
     ]);
 Future<bool> licenseConfirm(
         BuildContext context, String title, List<Widget> facts) =>

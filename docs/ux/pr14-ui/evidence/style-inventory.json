@@ -1,0 +1,922 @@
+{
+  "prepared_at": "2026-09-30T07:50:22.592Z",
+  "status": "INVENTORY_ONLY_NOT_RUNTIME_ACCEPTANCE",
+  "scope": "Existing PR11–14 frontend families only; future business pages retain real unavailable states",
+  "design_root": "/Users/yanghaoran/Code/jingjing-ui-design/design/full-ui-20260929",
+  "manifest_sha256": "32ddf55cca9d10fe4d162eb1400a64ddb0a73b4c57c5a1569ecb3402d39a373f",
+  "design_system": {
+    "version": "1.0",
+    "date": "2026-09-29",
+    "app": {
+      "name": "暖白内容型",
+      "canvas": "#F7F5F0",
+      "surface": "#FFFFFF",
+      "text": "#252923",
+      "muted": "#6A706A",
+      "accent": "#B45D3D",
+      "border": "#E2E3DB",
+      "navigation": [
+        "首页",
+        "入戏",
+        "培育",
+        "成角",
+        "我的"
+      ],
+      "screen": "single flat mobile UI, 9:19.5 portrait; no device hardware; readable Chinese"
+    },
+    "web": {
+      "name": "浅色协作工作台",
+      "canvas": "#F5F6F2",
+      "surface": "#FFFFFF",
+      "text": "#252C27",
+      "muted": "#758076",
+      "accent": "#335D46",
+      "border": "#DDE3DB",
+      "screen": "single flat desktop UI, 16:10 landscape; no device hardware; readable Chinese",
+      "shell": "220px left sidebar, current acting-party selector, breadcrumb, task-focused main surface, no self-granting role switch"
+    },
+    "type": {
+      "family": "PingFang SC / Microsoft YaHei / system sans-serif",
+      "app_title": 24,
+      "web_title": 28,
+      "body": 16,
+      "secondary": 14,
+      "minimum": 12
+    },
+    "spacing": [
+      4,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48
+    ],
+    "radii": {
+      "control": 10,
+      "card": 12,
+      "bottom_sheet": 20
+    },
+    "states": {
+      "success": "#3D7051",
+      "warning": "#996217",
+      "danger": "#B83A37",
+      "info": "#416A8A"
+    },
+    "invariants": [
+      "53px app top bar + 16px side padding; primary controls >=44px touch area",
+      "One explicit primary action per task region; no glowing orb or excessive badges",
+      "Unknown business values remain blank or pending; no fake fixed package prices",
+      "Account/party identifiers use copy controls, not invented names or photos",
+      "No unsupported live search, total counts, timecode feedback, payment success or public private assets",
+      "No brand logos invented differently on each page: use simple text 晶晶日上",
+      "Only top-level App screens carry the five bottom tabs; child pages use back navigation",
+      "No API paths, PR numbers or technical implementation notes inside the product UI",
+      "Pictures are static fictional illustrative assets; do not imply people or services exist in APIs"
+    ]
+  },
+  "planned_viewports": [
+    {
+      "surface": "app",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "surface": "app",
+      "width": 320,
+      "height": 693
+    },
+    {
+      "surface": "web",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "surface": "web",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "surface": "web",
+      "width": 320,
+      "height": 693
+    }
+  ],
+  "mappings": [
+    {
+      "surface": "app",
+      "route": "/home",
+      "gallery_ids": [
+        "APP-01-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "已开发首页，未开放的业务保持当前真实状态",
+      "references": [
+        {
+          "id": "APP-01-01",
+          "title": "晶晶日上",
+          "image": "images/APP-01-01-v2.png",
+          "state": "已登录首页；三条业务导航可用，艺人发现暂未开放"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/enter; /licensing/catalog",
+      "gallery_ids": [
+        "APP-07-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "首页导航与catalog独立子页同一内容族",
+      "references": [
+        {
+          "id": "APP-07-01",
+          "title": "入戏",
+          "image": "images/APP-07-01-v2.png",
+          "state": "许可目录有已上架示例商品"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/record?recordId=PRODUCT",
+      "gallery_ids": [
+        "APP-08-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "短试读、整数报价、明确权利、期限额度",
+      "references": [
+        {
+          "id": "APP-08-01",
+          "title": "剧本与许可",
+          "image": "images/APP-08-01-v2.png",
+          "state": "已上架私人许可；未预留"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/record?recordId=RESERVATION",
+      "gallery_ids": [
+        "APP-08-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "未签署/未取得许可与真实HELD状态",
+      "references": [
+        {
+          "id": "APP-08-02",
+          "title": "许可预留与合同",
+          "image": "images/APP-08-02.png",
+          "state": "预留有效，合同内容已保存但未签署"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/evidence?reservationId=…",
+      "gallery_ids": [
+        "APP-08-03"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "四种私有材料独立上传，空表单不提交",
+      "references": [
+        {
+          "id": "APP-08-03",
+          "title": "提交许可核验材料",
+          "image": "images/APP-08-03.png",
+          "state": "外部材料提交表单尚未齐备"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing?kind=READING; recordId=READING",
+      "gallery_ids": [
+        "APP-09-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "仅指定账号及OWNER身份获准阅读",
+      "references": [
+        {
+          "id": "APP-09-01",
+          "title": "我的阅稿授权",
+          "image": "images/APP-09-01.png",
+          "state": "已有指定人的有效阅读记录"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/reading?recordId=…",
+      "gallery_ids": [
+        "APP-09-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "服务器水印、纯文本、有效截止",
+      "references": [
+        {
+          "id": "APP-09-02",
+          "title": "受控阅读",
+          "image": "images/APP-09-02.png",
+          "state": "指定账号在有效期内阅读纯文本"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing?kind=GRANT",
+      "gallery_ids": [
+        "APP-16-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "本方许可列表，无伪造全部统计",
+      "references": [
+        {
+          "id": "APP-16-01",
+          "title": "我的许可",
+          "image": "images/APP-16-01.png",
+          "state": "已有一份生效许可"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/record?recordId=GRANT",
+      "gallery_ids": [
+        "APP-16-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "范围/期限/额度及当时合同",
+      "references": [
+        {
+          "id": "APP-16-02",
+          "title": "许可凭证",
+          "image": "images/APP-16-02-v2.png",
+          "state": "当前许可已生效，范围与期限明确"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/project/new",
+      "gallery_ids": [
+        "APP-17-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "五个商业参数无默认值",
+      "references": [
+        {
+          "id": "APP-17-01",
+          "title": "登记许可用途项目",
+          "image": "images/APP-17-01-v2.png",
+          "state": "表单尚未填写"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/licensing/bind?grantId=…; recordId=BINDING",
+      "gallery_ids": [
+        "APP-17-02"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "已绑定详情依绑定页面语法，不伪造未绑定状态",
+      "references": [
+        {
+          "id": "APP-17-02",
+          "title": "将许可用于项目",
+          "image": "images/APP-17-02.png",
+          "state": "已选有效许可和本人用途项目，待绑定"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/my",
+      "gallery_ids": [
+        "APP-33-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "本人业务入口，与五个主tab一致",
+      "references": [
+        {
+          "id": "APP-33-01",
+          "title": "我的",
+          "image": "images/APP-33-01.png",
+          "state": "个人主体已选定"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/login",
+      "gallery_ids": [
+        "APP-34-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "正常表单登录，协议初始未勾选",
+      "references": [
+        {
+          "id": "APP-34-01",
+          "title": "手机号登录",
+          "image": "images/APP-34-01.png",
+          "state": "尚未发送验证码"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/account",
+      "gallery_ids": [
+        "APP-34-02",
+        "APP-35-01",
+        "APP-35-02",
+        "APP-35-03",
+        "APP-35-04"
+      ],
+      "relation": "CONSOLIDATED",
+      "note": "同一路由中的账号/身份/主体/成员与邀请区",
+      "references": [
+        {
+          "id": "APP-34-02",
+          "title": "账户与核验",
+          "image": "images/APP-34-02-v2.png",
+          "state": "已登录但实名查询尚未开放"
+        },
+        {
+          "id": "APP-35-01",
+          "title": "选择操作身份",
+          "image": "images/APP-35-01-v2.png",
+          "state": "展示个人及已加入机构"
+        },
+        {
+          "id": "APP-35-02",
+          "title": "主体资料与能力",
+          "image": "images/APP-35-02.png",
+          "state": "机构待审，部分能力待申请"
+        },
+        {
+          "id": "APP-35-03",
+          "title": "成员与邀请",
+          "image": "images/APP-35-03.png",
+          "state": "有负责人和普通成员，邀请表单未填"
+        },
+        {
+          "id": "APP-35-04",
+          "title": "收到的机构邀请",
+          "image": "images/APP-35-04.png",
+          "state": "一条有效待回应邀请"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/supply/profile",
+      "gallery_ids": [
+        "APP-36-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "空新申请或真实既有资格详情",
+      "references": [
+        {
+          "id": "APP-36-01",
+          "title": "申请作品供给",
+          "image": "images/APP-36-01-v2.png",
+          "state": "首次申请表单"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/supply",
+      "gallery_ids": [
+        "APP-36-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "作品版本、原申请、更新状态",
+      "references": [
+        {
+          "id": "APP-36-02",
+          "title": "我的作品版本",
+          "image": "images/APP-36-02-v2.png",
+          "state": "已有草稿与待审版本"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/supply/work/new; previousId=…; bindingId=…",
+      "gallery_ids": [
+        "APP-36-03"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "原作/修订/许可项目改稿共享表单，来源只读",
+      "references": [
+        {
+          "id": "APP-36-03",
+          "title": "提交作品新版本",
+          "image": "images/APP-36-03-v2.png",
+          "state": "原作投稿表单待填"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/supply/record?recordId=WORK_VERSION",
+      "gallery_ids": [
+        "APP-36-04"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "草稿、待审、批准与真实双轨结果区分",
+      "references": [
+        {
+          "id": "APP-36-04",
+          "title": "作品版本详情",
+          "image": "images/APP-36-04.png",
+          "state": "草稿已保存尚未提交审核"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/contract",
+      "gallery_ids": [
+        "APP-11-02"
+      ],
+      "relation": "ADAPTED_SCOPE",
+      "note": "仅合同原约定样式，不增加报价、签署或支付",
+      "references": [
+        {
+          "id": "APP-11-02",
+          "title": "订单合同与原约定",
+          "image": "images/APP-11-02-v2.png",
+          "state": "合同快照已保存，未代表正式签署"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/settings; /agreement; /privacy",
+      "gallery_ids": [
+        "APP-38-01"
+      ],
+      "relation": "ADAPTED_SCOPE",
+      "note": "设置及法律正文共享暖白阅读布局",
+      "references": [
+        {
+          "id": "APP-38-01",
+          "title": "设置与帮助",
+          "image": "images/APP-38-01.png",
+          "state": "基础设置可见，删除注销等未开放"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/cultivate",
+      "gallery_ids": [
+        "APP-19-01"
+      ],
+      "relation": "UNOPENED_STATE",
+      "note": "只对齐页面母版，现阶段没有真实商单列表",
+      "references": [
+        {
+          "id": "APP-19-01",
+          "title": "培育",
+          "image": "images/APP-19-01-v2.png",
+          "state": "公开已审商单摘要列表"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/roles",
+      "gallery_ids": [
+        "APP-23-01"
+      ],
+      "relation": "UNOPENED_STATE",
+      "note": "只对齐页面母版，现阶段没有真实招募项目",
+      "references": [
+        {
+          "id": "APP-23-01",
+          "title": "成角",
+          "image": "images/APP-23-01-v2.png",
+          "state": "有可公开展示的招募项目"
+        }
+      ]
+    },
+    {
+      "surface": "app",
+      "route": "/my-projects",
+      "gallery_ids": [
+        "APP-17-01",
+        "APP-17-02"
+      ],
+      "relation": "ADAPTED_SCOPE",
+      "note": "当前是许可用途项目，不是APP26制作项目工作区",
+      "references": [
+        {
+          "id": "APP-17-01",
+          "title": "登记许可用途项目",
+          "image": "images/APP-17-01-v2.png",
+          "state": "表单尚未填写"
+        },
+        {
+          "id": "APP-17-02",
+          "title": "将许可用于项目",
+          "image": "images/APP-17-02.png",
+          "state": "已选有效许可和本人用途项目，待绑定"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/login",
+      "gallery_ids": [
+        "WEB-01-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "正常验证码登录，无伪会话",
+      "references": [
+        {
+          "id": "WEB-01-01",
+          "title": "登录工作台",
+          "image": "images/WEB-01-01.png",
+          "state": "验证码未申请"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/workspace",
+      "gallery_ids": [
+        "WEB-01-02",
+        "WEB-02-01",
+        "WEB-03-01",
+        "WEB-04-01",
+        "WEB-04-02"
+      ],
+      "relation": "CONSOLIDATED",
+      "note": "账号身份、主体能力、机构成员/邀请，统计以实际接口能力为限",
+      "references": [
+        {
+          "id": "WEB-01-02",
+          "title": "选择工作身份",
+          "image": "images/WEB-01-02-v2.png",
+          "state": "有个人与机构身份可选"
+        },
+        {
+          "id": "WEB-02-01",
+          "title": "工作台概览",
+          "image": "images/WEB-02-01.png",
+          "state": "最近加载的作品记录与业务通知并列展示"
+        },
+        {
+          "id": "WEB-03-01",
+          "title": "主体资料与业务能力",
+          "image": "images/WEB-03-01.png",
+          "state": "机构处于待审状态，制作能力已申请"
+        },
+        {
+          "id": "WEB-04-01",
+          "title": "机构成员与邀请",
+          "image": "images/WEB-04-01-v2.png",
+          "state": "展示真实成员编号并可邀请新账号"
+        },
+        {
+          "id": "WEB-04-02",
+          "title": "收到的机构邀请",
+          "image": "images/WEB-04-02.png",
+          "state": "待本人接受的邀请列表"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/contracts/:snapshotId?",
+      "gallery_ids": [
+        "WEB-34-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "指定合同原文及引用规则，只读",
+      "references": [
+        {
+          "id": "WEB-34-01",
+          "title": "指定合同与引用规则",
+          "image": "images/WEB-34-01.png",
+          "state": "已知合同快照可读，尚无签署事实"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/supply/profiles/:recordId?",
+      "gallery_ids": [
+        "WEB-05-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "供给申请/版本详情",
+      "references": [
+        {
+          "id": "WEB-05-01",
+          "title": "供给申请",
+          "image": "images/WEB-05-01-v2.png",
+          "state": "填写首次申请或补正修订"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/supply/reviews/profile/:recordId?",
+      "gallery_ids": [
+        "WEB-05-02",
+        "WEB-05-03"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "独立供给审核队列/详情",
+      "references": [
+        {
+          "id": "WEB-05-02",
+          "title": "供给申请审核队列",
+          "image": "images/WEB-05-02.png",
+          "state": "按权限读取已提交申请"
+        },
+        {
+          "id": "WEB-05-03",
+          "title": "核对供给申请",
+          "image": "images/WEB-05-03.png",
+          "state": "待审核申请已打开"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/supply/works/:recordId?",
+      "gallery_ids": [
+        "WEB-07-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "本方作品与版本详情",
+      "references": [
+        {
+          "id": "WEB-07-01",
+          "title": "我的作品与版本",
+          "image": "images/WEB-07-01-v2.png",
+          "state": "当前版本待提交"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/supply/works/new; /:recordId/revision; /supply/adaptations/:bindingId/new",
+      "gallery_ids": [
+        "WEB-07-02"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "最终原图为v4，真实新稿/补正/项目改稿不自动获批",
+      "references": [
+        {
+          "id": "WEB-07-02",
+          "title": "新投稿或补正版本",
+          "image": "images/WEB-07-02-v4.png",
+          "state": "本地填写，尚未创建版本"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/supply/reviews/rights/:recordId?",
+      "gallery_ids": [
+        "WEB-08-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "独立权属审核",
+      "references": [
+        {
+          "id": "WEB-08-01",
+          "title": "权属审核",
+          "image": "images/WEB-08-01-v2.png",
+          "state": "待权属结论"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/supply/reviews/content/:recordId?",
+      "gallery_ids": [
+        "WEB-08-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "独立内容审核",
+      "references": [
+        {
+          "id": "WEB-08-02",
+          "title": "内容审核",
+          "image": "images/WEB-08-02.png",
+          "state": "待内容结论"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/catalog/:recordId?",
+      "gallery_ids": [
+        "APP-07-01",
+        "APP-08-01"
+      ],
+      "relation": "CROSS_SURFACE_ADAPTATION",
+      "note": "没有独立原WEB目录图，内容层级采用App07/08加Web220px shell",
+      "references": [
+        {
+          "id": "APP-07-01",
+          "title": "入戏",
+          "image": "images/APP-07-01-v2.png",
+          "state": "许可目录有已上架示例商品"
+        },
+        {
+          "id": "APP-08-01",
+          "title": "剧本与许可",
+          "image": "images/APP-08-01-v2.png",
+          "state": "已上架私人许可；未预留"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/products/new; /products/:recordId?",
+      "gallery_ids": [
+        "WEB-09-01"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "创建/商品版本详情和列表",
+      "references": [
+        {
+          "id": "WEB-09-01",
+          "title": "新建剧本许可商品",
+          "image": "images/WEB-09-01.png",
+          "state": "条款待填写"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/reviews/products/:recordId?",
+      "gallery_ids": [
+        "WEB-09-03"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "独立商品核验",
+      "references": [
+        {
+          "id": "WEB-09-03",
+          "title": "许可商品独立审核",
+          "image": "images/WEB-09-03-v2.png",
+          "state": "许可商品审核中"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/reservations/:recordId?",
+      "gallery_ids": [
+        "WEB-10-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "实际预留/历史合同",
+      "references": [
+        {
+          "id": "WEB-10-01",
+          "title": "许可预留与合同",
+          "image": "images/WEB-10-01.png",
+          "state": "预留有效，签署依据待核验"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/evidence/:recordId?",
+      "gallery_ids": [
+        "WEB-10-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "提交外部证据与事实详情",
+      "references": [
+        {
+          "id": "WEB-10-02",
+          "title": "提交签署与付款依据",
+          "image": "images/WEB-10-02.png",
+          "state": "外部证据尚未提交"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/reviews/evidence/:recordId?; /reviews/activation/:recordId?",
+      "gallery_ids": [
+        "WEB-10-03"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "证据核验与发放分开；REVIEW_REQUIRED不得显示grant成功",
+      "references": [
+        {
+          "id": "WEB-10-03",
+          "title": "许可证据核验与发放",
+          "image": "images/WEB-10-03-v2.png",
+          "state": "待核验证据"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/grants/:recordId?",
+      "gallery_ids": [
+        "WEB-11-01"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "许可范围、期限及历史合同",
+      "references": [
+        {
+          "id": "WEB-11-01",
+          "title": "许可凭证与使用范围",
+          "image": "images/WEB-11-01-v2.png",
+          "state": "许可有效，仍受期限约束"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/projects/new; /projects/:recordId?; /bindings/:recordId?",
+      "gallery_ids": [
+        "WEB-11-02"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "用途项目/绑定/改稿入口，不声称制作开工",
+      "references": [
+        {
+          "id": "WEB-11-02",
+          "title": "登记用途并绑定许可",
+          "image": "images/WEB-11-02.png",
+          "state": "项目用途待填写"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/reviews/grants/:recordId?",
+      "gallery_ids": [
+        "WEB-11-03"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "独立许可暂停",
+      "references": [
+        {
+          "id": "WEB-11-03",
+          "title": "许可暂停处理",
+          "image": "images/WEB-11-03.png",
+          "state": "许可当前有效，待处理权利异议"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/readings/new; /readings/:recordId?",
+      "gallery_ids": [
+        "WEB-12-01",
+        "WEB-12-03"
+      ],
+      "relation": "ADAPTED_STATE",
+      "note": "创建授权与指定读者详情/纯文本阅读",
+      "references": [
+        {
+          "id": "WEB-12-01",
+          "title": "申请指定人员阅稿",
+          "image": "images/WEB-12-01.png",
+          "state": "阅读申请待填写"
+        },
+        {
+          "id": "WEB-12-03",
+          "title": "受控剧本阅读",
+          "image": "images/WEB-12-03-v2.png",
+          "state": "阅读已批准且未到期"
+        }
+      ]
+    },
+    {
+      "surface": "web",
+      "route": "/licensing/reviews/readings/:recordId?",
+      "gallery_ids": [
+        "WEB-12-02"
+      ],
+      "relation": "EXACT_FAMILY",
+      "note": "独立阅稿依据核验",
+      "references": [
+        {
+          "id": "WEB-12-02",
+          "title": "阅稿依据独立审核",
+          "image": "images/WEB-12-02.png",
+          "state": "阅读申请待审"
+        }
+      ]
+    }
+  ]
+}

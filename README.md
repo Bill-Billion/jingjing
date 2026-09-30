@@ -8,6 +8,8 @@
 
 第14份对应的选本、许可办理、项目绑定和受控阅读前端已在 `ux/pr14-pages` 本地完成：App接目录、预留、历史合同、私有材料、许可与项目；网页增加商品审核、外部证据核验、发放与暂停、指定阅稿授权，两端可从有效绑定提交项目改稿。继续采用暖白App和浅色深绿工作台，新旧入口共用稳定导航。[本批交付与预览](docs/ux/pr14-ui/README.md) · [固定页面方案](docs/ux/pr14-ui/page-plan.md) · [验证记录](docs/ux/pr14-ui/ui-checks.md)。当前明确引入第14份后端 `ce576af`，尚未将本批追加上传、合并或部署；第15–17份分支保持原状。
 
+所有页面的视觉基准固定为已确认原图册 `acd5f99`，按manifest最终修订图核对结构、字体、间距、控件和导航。[全页面实现标准](docs/ux/gallery-implementation-standard.md) · [已开发页面与原图对应](docs/ux/gallery-page-map.md) · [共用视觉参数](docs/ux/gallery-visual-system.json)。第11–14份已开发两端已按该基准统一布局和控件，[逐页实拍与适配说明](docs/ux/pr14-ui/style-qa.md)单独留档；尚未开放业务随后续阶段接入，不把172张参考图写成172个业务页面已完成。
+
 日常只需先看这三份：
 
 - [我们各自做什么，现在从哪里开始](docs/collaboration/TEAM_ONBOARDING.md)

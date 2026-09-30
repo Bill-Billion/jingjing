@@ -63,6 +63,44 @@ void main() {
     expect(t.takeException(), isNull);
     await close(t);
   });
+  testWidgets('320窄屏放大文字与长商品标题的目录、金额及用途表单无溢出', (t) async {
+    final product = licenseData('PRODUCT');
+    product['data']['title'] = List.filled(20, '一个需要完整呈现的故事').join();
+    product['data']['preview_text'] =
+        List.filled(12, '久别重逢的朋友，在暖光旧车站完成一场迟来的告别。').join();
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(
+        handler: (r) => r.path.endsWith('/records')
+            ? envelope({
+                'items': [product],
+                'next_cursor': null
+              })
+            : r.path.endsWith(productId)
+                ? envelope(product)
+                : adapter.defaultReply(r));
+    final s = (await t.runAsync(() => contractSession(adapter)))!;
+    t.platformDispatcher.textScaleFactorTestValue = 1.6;
+    addTearDown(t.platformDispatcher.clearTextScaleFactorTestValue);
+    for (final page in [
+      const LicenseCatalog(),
+      const LicenseRecordPage(recordId: productId),
+      const LicenseProjectForm()
+    ]) {
+      await pump(t, s, page);
+      await t.binding.setSurfaceSize(const Size(320, 693));
+      await frames(t);
+      expect(t.takeException(), isNull);
+      await t.drag(find.byType(ListView), const Offset(0, -1500));
+      await frames(t);
+      expect(t.takeException(), isNull);
+    }
+    expect(
+        adapter.requests
+            .where((r) => r.method == 'POST' && r.path.contains('/licensing/')),
+        isEmpty);
+    await close(t);
+  });
+
   testWidgets('用途项目空表单没有预设用途、国家、语言或集数', (t) async {
     final adapter = FakeAccountAdapter();
     final s = (await t.runAsync(() => contractSession(adapter)))!;

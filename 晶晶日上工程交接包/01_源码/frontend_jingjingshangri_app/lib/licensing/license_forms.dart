@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../account/app_visual.dart';
 import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import '../supply/supply_models.dart';
@@ -151,6 +152,7 @@ class _EvidenceFormState extends State<_EvidenceForm> {
       if (_busy && _reservation == null)
         const Center(child: CircularProgressIndicator()),
       if (_reservation != null) ...[
+        appNotice('提交后由独立人员核验，不代表已签署或已到账。'),
         supplyCard('对应的许可合同', [
           supplyFact('许可', _reservation!.title),
           supplyFact('预留截止', licenseDate(_reservation!.data['expires_at'])),
@@ -175,13 +177,16 @@ class _EvidenceFormState extends State<_EvidenceForm> {
                 _LicenseMaterial(
                     api: _supply, controller: entry.value, enabled: !locked),
               ]),
-        TextField(
-            controller: _ref,
-            enabled: !locked,
-            maxLength: 128,
-            decoration: const InputDecoration(
-                labelText: '外部材料引用（必填）',
-                helperText: '填写可核对的合同或材料引用，不填写密码或供应商密钥。')),
+        supplyCard('外部材料引用（必填）', [
+          Semantics(
+              label: '外部材料引用（必填）',
+              child: TextField(
+                  controller: _ref,
+                  enabled: !locked,
+                  maxLength: 128,
+                  decoration: const InputDecoration(
+                      helperText: '填写可核对的合同或材料引用，不填写密码或供应商密钥。')))
+        ]),
         const SizedBox(height: 20),
         FilledButton(
             onPressed: _busy || (!_valid && pending == null) ? null : _submit,
@@ -206,15 +211,16 @@ class _LicenseMaterialState extends State<_LicenseMaterial> {
   @override
   Widget build(BuildContext context) =>
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        TextField(
-            controller: widget.controller,
-            enabled: widget.enabled,
-            decoration: const InputDecoration(
-                labelText: '材料编号（必填）',
-                helperText: '可引用买卖双方提供的私有文件编号，或上传本身份的真实材料。'),
-            onChanged: (v) {
-              if (!_uploaded.contains(v)) setState(() => _uploaded = []);
-            }),
+        appField(
+            '材料编号（必填）',
+            TextField(
+                controller: widget.controller,
+                enabled: widget.enabled,
+                decoration: const InputDecoration(
+                    helperText: '可引用买卖双方提供的私有文件编号，或上传本身份的真实材料。'),
+                onChanged: (v) {
+                  if (!_uploaded.contains(v)) setState(() => _uploaded = []);
+                })),
         const SizedBox(height: 12),
         if (widget.api.session.supplyAccessDenied) ...[
           supplyNote('私有材料权限已失效，已清空文件信息。请重新核对权限后再上传。', error: true),
@@ -347,23 +353,30 @@ class _ProjectFormState extends State<_ProjectForm> {
   Widget build(BuildContext context) {
     final pending = _api.pending(_path), enabled = !_busy && pending == null;
     return licenseScaffold(context, '登记许可用途项目', [
-      supplyNote('填写真实的项目用途，随后选择许可进行绑定。范围和集数必须与许可相符；没有默认用途或集数。'),
+      appNotice('填写项目实际用途与范围，保存后再选择许可绑定。集数必须与许可相符。'),
       if (pending != null) supplyNote('上次保存结果未确认，请恢复原内容。', error: true),
       if (_error != null) supplyNote(_error!, error: true),
-      TextField(
-          controller: _title,
-          enabled: enabled,
-          maxLength: 200,
-          decoration: const InputDecoration(labelText: '项目名称（必填）')),
+      appField(
+          '项目名称（必填）',
+          TextField(
+              controller: _title,
+              enabled: enabled,
+              maxLength: 200,
+              decoration: const InputDecoration(hintText: '填写项目名称'))),
       const SizedBox(height: 16),
-      DropdownButtonFormField<String>(
-          initialValue: _purpose,
-          decoration: const InputDecoration(labelText: '用途（必选）'),
-          items: licensePurposes.entries
-              .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-              .toList(),
-          onChanged: enabled ? (v) => setState(() => _purpose = v) : null),
-      const SizedBox(height: 16),
+      appField(
+          '用途（必选）',
+          DropdownButtonFormField<String>(
+              isExpanded: true,
+              itemHeight: null,
+              initialValue: _purpose,
+              decoration: const InputDecoration(),
+              items: licensePurposes.entries
+                  .map((e) =>
+                      DropdownMenuItem(value: e.key, child: Text(e.value)))
+                  .toList(),
+              onChanged: enabled ? (v) => setState(() => _purpose = v) : null)),
+      const SizedBox(height: 24),
       _ScopeChoice(
           controller: _territory,
           choices: Map.fromEntries(
@@ -371,7 +384,7 @@ class _ProjectFormState extends State<_ProjectForm> {
           label: '国家或地区（必选）',
           codeLabel: '其他地区：两位大写国家代码',
           enabled: enabled),
-      const SizedBox(height: 16),
+      const SizedBox(height: 24),
       _ScopeChoice(
           controller: _language,
           choices: Map.fromEntries(
@@ -380,12 +393,14 @@ class _ProjectFormState extends State<_ProjectForm> {
           codeLabel: '其他语言：两位小写语言代码',
           enabled: enabled),
       const SizedBox(height: 16),
-      TextField(
-          controller: _episodes,
-          enabled: enabled,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-              labelText: '集数（必填）', helperText: '填写 1 至 100000 之间的整数。')),
+      appField(
+          '集数（必填）',
+          TextField(
+              controller: _episodes,
+              enabled: enabled,
+              keyboardType: TextInputType.number,
+              decoration:
+                  const InputDecoration(helperText: '填写 1 至 100000 之间的整数。'))),
       const SizedBox(height: 24),
       FilledButton(
           onPressed: _busy || (!_valid && pending == null) ? null : _submit,
@@ -417,28 +432,35 @@ class _ScopeChoiceState extends State<_ScopeChoice> {
           : 'OTHER';
   @override
   Widget build(BuildContext context) => Column(children: [
-        DropdownButtonFormField<String>(
-            initialValue: _selected,
-            decoration: InputDecoration(labelText: widget.label),
-            items: [
-              for (final e in widget.choices.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
-              const DropdownMenuItem(value: 'OTHER', child: Text('其他（填写标准代码）'))
-            ],
-            onChanged: widget.enabled
-                ? (v) {
-                    setState(() => _selected = v);
-                    widget.controller.text = v == 'OTHER' ? '' : v ?? '';
-                  }
-                : null),
+        appField(
+            widget.label,
+            DropdownButtonFormField<String>(
+                isExpanded: true,
+                itemHeight: null,
+                initialValue: _selected,
+                decoration: const InputDecoration(),
+                items: [
+                  for (final e in widget.choices.entries)
+                    DropdownMenuItem(value: e.key, child: Text(e.value)),
+                  const DropdownMenuItem(
+                      value: 'OTHER', child: Text('其他（填写标准代码）'))
+                ],
+                onChanged: widget.enabled
+                    ? (v) {
+                        setState(() => _selected = v);
+                        widget.controller.text = v == 'OTHER' ? '' : v ?? '';
+                      }
+                    : null)),
         if (_selected == 'OTHER')
           Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: TextField(
-                  controller: widget.controller,
-                  enabled: widget.enabled,
-                  maxLength: 2,
-                  decoration: InputDecoration(labelText: widget.codeLabel))),
+              child: appField(
+                  widget.codeLabel,
+                  TextField(
+                      controller: widget.controller,
+                      enabled: widget.enabled,
+                      maxLength: 2,
+                      decoration: const InputDecoration()))),
       ]);
 }
 
@@ -572,19 +594,23 @@ class _BindingFormState extends State<_BindingForm> {
         if (pending != null)
           supplyNote('上次绑定结果未确认，将恢复原项目、原版本及原操作。', error: true),
         if (_projects.isEmpty) supplyNote('当前身份还没有用途项目，请先新建。'),
-        DropdownButtonFormField<String>(
-            key: ValueKey(_selected),
-            initialValue:
-                _projects.any((v) => v.id == _selected) ? _selected : null,
-            decoration: const InputDecoration(labelText: '选择本人用途项目（必选）'),
-            items: _projects
-                .map((p) => DropdownMenuItem(
-                    value: p.id,
-                    child: Text(p.title, overflow: TextOverflow.ellipsis)))
-                .toList(),
-            onChanged: _busy || pending != null
-                ? null
-                : (v) => setState(() => _selected = v)),
+        appField(
+            '选择本人用途项目（必选）',
+            DropdownButtonFormField<String>(
+                isExpanded: true,
+                itemHeight: null,
+                key: ValueKey(_selected),
+                initialValue:
+                    _projects.any((v) => v.id == _selected) ? _selected : null,
+                decoration: const InputDecoration(),
+                items: _projects
+                    .map((p) => DropdownMenuItem(
+                        value: p.id,
+                        child: Text(p.title, overflow: TextOverflow.ellipsis)))
+                    .toList(),
+                onChanged: _busy || pending != null
+                    ? null
+                    : (v) => setState(() => _selected = v))),
         const SizedBox(height: 16),
         if (project != null)
           supplyCard('项目用途对照', [

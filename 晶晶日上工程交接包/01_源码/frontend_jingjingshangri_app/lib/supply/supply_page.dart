@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import 'supply_api.dart';
@@ -134,37 +135,64 @@ class _SupplyHomeState extends State<_SupplyHome> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => open('/supply/record?recordId=${p['id']}')),
         ]),
-      if (works != null)
-        supplyCard('我的作品版本', [
+      if (works != null) ...[
+        const Padding(
+            padding: EdgeInsets.only(bottom: 16),
+            child: Text('我的作品版本',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700))),
+        if (works!.isEmpty)
+          supplyCard('还没有作品版本', [supplyNote('稿件与权利证明将随每一版保存。')]),
+        for (final w in works!)
+          Card(
+              child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(w['data']['version']['content']['title'],
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        Text('第 ${w['revision']} 版',
+                            style: const TextStyle(fontSize: 14)),
+                        const Divider(height: 28),
+                        Row(children: [
+                          const Text('状态', style: TextStyle(fontSize: 14)),
+                          const SizedBox(width: 16),
+                          supplyStatus(w['current_status'] as String)
+                        ]),
+                        const Divider(height: 28),
+                        Row(children: [
+                          const Text('版本编号', style: TextStyle(fontSize: 14)),
+                          const SizedBox(width: 16),
+                          Expanded(
+                              child: Text(shortSupplyId(w['id'] as String),
+                                  style: const TextStyle(fontSize: 14))),
+                          IconButton(
+                              tooltip: '复制版本编号',
+                              onPressed: () => Clipboard.setData(
+                                  ClipboardData(text: w['id'] as String)),
+                              icon: const Icon(Icons.copy_outlined, size: 18))
+                        ]),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                            onPressed: () =>
+                                open('/supply/record?recordId=${w['id']}'),
+                            child: const Text('查看版本')),
+                      ]))),
+        supplyCard('新增作品', [
+          supplyNote('稿件和证明随作品版本保存。'),
           FilledButton.icon(
               onPressed: approved ? () => open('/supply/work/new') : null,
               icon: const Icon(Icons.add),
               label: const Text('投稿原作')),
           if (!approved) supplyNote('当前作者申请尚未通过，暂不能新增作品或提交草稿。'),
-          const SizedBox(height: 12),
-          if (works!.isEmpty) supplyNote('还没有作品版本。稿件与权利证明将随每一版保存。'),
-          for (final w in works!)
-            Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(w['data']['version']['content']['title'],
-                        style: const TextStyle(fontWeight: FontWeight.w600)),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 6),
-                          Text(
-                              '第 ${w['revision']} 版 · ${shortSupplyId(w['id'] as String)}'),
-                          supplyStatus(w['current_status'] as String)
-                        ]),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => open('/supply/record?recordId=${w['id']}'))),
-          if (cursor != null)
-            OutlinedButton(
-                onPressed: busy ? null : () => load(more: true),
-                child: const Text('加载更多版本')),
         ]),
+        if (cursor != null)
+          OutlinedButton(
+              onPressed: busy ? null : () => load(more: true),
+              child: const Text('加载更多版本')),
+      ],
     ]);
   }
 }

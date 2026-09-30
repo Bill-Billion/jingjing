@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
 import '../supply/supply_widgets.dart';
 import 'license_api.dart';
@@ -95,32 +97,146 @@ class _LicenseListState extends State<_LicenseList> {
     if (mounted) _load();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final children = <Widget>[
-      if (widget.catalog) ...[
-        const Text('从一个故事开始',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 12),
-        Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-                color: const Color(0xFFF0E5D7),
-                borderRadius: BorderRadius.circular(12)),
-            child: const Row(children: [
+  Widget _recordCard(LicenseRecord r) => r.kind == 'GRANT'
+      ? _grantCard(r)
+      : Card(
+          child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (widget.catalog) ...[
+                            const Padding(
+                                padding: EdgeInsets.only(top: 20),
+                                child: Icon(Icons.description_outlined,
+                                    size: 44, color: AccountTheme.accent)),
+                            const SizedBox(width: 16),
+                            Container(
+                                width: 1,
+                                height: 136,
+                                color: AccountTheme.border),
+                            const SizedBox(width: 16),
+                          ],
+                          Expanded(
+                              child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                Text(r.title,
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        height: 1.4)),
+                                if (r.data['preview_text'] != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(r.data['preview_text'],
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          color: AccountTheme.muted,
+                                          height: 1.5)),
+                                ],
+                                const Divider(height: 24),
+                                if (r.terms != null)
+                                  Text(r.terms!.summary,
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          color: AccountTheme.muted)),
+                                if (r.data['price'] != null) ...[
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                      spacing: 12,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        const Text('许可价格',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: AccountTheme.muted)),
+                                        Text(
+                                            licenseMoney(
+                                                Map<String, dynamic>.from(
+                                                    r.data['price'])),
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w700,
+                                                color: AccountTheme.accent)),
+                                      ]),
+                                ],
+                                const SizedBox(height: 8),
+                                Text(r.statusText,
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        color: AccountTheme.accent)),
+                                if (widget.catalog)
+                                  const Padding(
+                                      padding: EdgeInsets.only(top: 8),
+                                      child: Text('许可费用不等于整片制作费用。',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: AccountTheme.muted))),
+                                if (r.data['expires_at'] != null)
+                                  supplyFact('预留截止',
+                                      licenseDate(r.data['expires_at'])),
+                                if (r.data['valid_until'] != null)
+                                  supplyFact('截止时间',
+                                      licenseDate(r.data['valid_until'])),
+                                if (r.kind == 'PROJECT')
+                                  supplyFact(
+                                      '用途', licensePurposes[r.data['purpose']]),
+                              ])),
+                        ]),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                        onPressed: () => _open(r),
+                        child: Text(widget.catalog ? '查看剧本' : '查看记录')),
+                  ])));
+
+  Widget _grantCard(LicenseRecord r) => Card(
+      child: Padding(
+          padding: const EdgeInsets.all(16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(children: [
+              const CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Color(0xFFF0E8DE),
+                  child: Icon(Icons.workspace_premium_outlined,
+                      size: 36, color: AccountTheme.accent)),
+              const SizedBox(width: 16),
               Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                    Text('发现好剧本',
-                        style: TextStyle(
+                    Text(
+                        r.status == 'ACTIVE' && !r.expired
+                            ? '许可已生效'
+                            : r.statusText,
+                        style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.w700)),
-                    SizedBox(height: 10),
-                    Text('每一个好故事，\n都有被看见的可能。', style: TextStyle(height: 1.6))
+                    const SizedBox(height: 8),
+                    Text('有效至 ${licenseDate(r.terms!.data['valid_until'])}',
+                        style: const TextStyle(
+                            fontSize: 14, color: AccountTheme.muted)),
                   ])),
-              Icon(Icons.menu_book_outlined,
-                  size: 64, color: AccountTheme.accent)
-            ])),
+            ]),
+            const Divider(height: 28),
+            supplyFact('许可编号', shortSupplyId(r.id)),
+            supplyFact('作品版本', shortSupplyId(r.data['work_version_id'])),
+            supplyFact('许可摘要', r.terms!.summary),
+            supplyFact('状态', r.statusText),
+            const SizedBox(height: 8),
+            FilledButton(onPressed: () => _open(r), child: const Text('查看记录')),
+          ])));
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[
+      if (widget.catalog) ...[
+        supplyNote('从一个故事开始'),
+        const ManuscriptHero(title: '发现好剧本', subtitle: '每一个好故事，\n都有被看见的可能。'),
         const SizedBox(height: 24),
         const Text('已上架的剧本',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
@@ -132,9 +248,14 @@ class _LicenseListState extends State<_LicenseList> {
             : _kind == 'READING'
                 ? '只展示当前身份的阅稿记录。指定账号获批且未到期后可受控阅读。'
                 : '这里保存许可办理与历史记录，制作订单将在后续开放。'),
+        const Text('查看记录',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
         DropdownButtonFormField<String>(
+            isExpanded: true,
+            itemHeight: null,
             initialValue: _kind,
-            decoration: const InputDecoration(labelText: '查看记录'),
+            decoration: const InputDecoration(),
             items: licenseKinds.entries
                 .map(
                     (e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
@@ -170,34 +291,7 @@ class _LicenseListState extends State<_LicenseList> {
               ? '作品审核完成后还需商品核验上架，请稍后重新查看。'
               : '请从选剧本、登记项目或已有办理记录开始。')
         ]),
-      for (final r in _items)
-        supplyCard(r.title, [
-          if (widget.catalog)
-            const Icon(Icons.description_outlined,
-                size: 40, color: AccountTheme.accent),
-          if (r.data['preview_text'] != null)
-            Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(r.data['preview_text'],
-                    style: const TextStyle(height: 1.6))),
-          if (r.terms != null) supplyNote(r.terms!.summary),
-          if (r.data['price'] != null)
-            supplyFact('许可价格',
-                licenseMoney(Map<String, dynamic>.from(r.data['price']))),
-          Text(r.statusText,
-              style: const TextStyle(
-                  color: AccountTheme.accent, fontWeight: FontWeight.w600)),
-          if (r.data['expires_at'] != null)
-            supplyFact('预留截止', licenseDate(r.data['expires_at'])),
-          if (r.data['valid_until'] != null)
-            supplyFact('截止时间', licenseDate(r.data['valid_until'])),
-          if (r.kind == 'PROJECT')
-            supplyFact('用途', licensePurposes[r.data['purpose']]),
-          const SizedBox(height: 12),
-          FilledButton(
-              onPressed: () => _open(r),
-              child: Text(widget.catalog ? '查看剧本' : '查看记录')),
-        ]),
+      for (final r in _items) _recordCard(r),
       if (_cursor != null)
         OutlinedButton(
             onPressed: _busy ? null : () => _load(more: true),
@@ -371,11 +465,14 @@ class _LicenseDetailState extends State<_LicenseDetail> {
         context: context,
         builder: (c) => AlertDialog(
                 title: const Text('取消预留'),
-                content: TextField(
-                    controller: controller,
-                    maxLength: 2000,
-                    maxLines: 3,
-                    decoration: const InputDecoration(labelText: '取消原因（必填）')),
+                content: appField(
+                    '取消原因（必填）',
+                    TextField(
+                        controller: controller,
+                        maxLength: 2000,
+                        maxLines: 3,
+                        decoration:
+                            const InputDecoration(hintText: '填写取消这份预留的原因'))),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(c),
@@ -394,6 +491,62 @@ class _LicenseDetailState extends State<_LicenseDetail> {
           version: r.version, kind: r.kind);
     }
   }
+
+  Widget _statusPanel(LicenseRecord r) => Card(
+      color: r.kind == 'RESERVATION' ? const Color(0xFFFAF4ED) : Colors.white,
+      child: Padding(
+          padding: const EdgeInsets.all(16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              CircleAvatar(
+                  radius: 28,
+                  backgroundColor: const Color(0xFFF0E8DE),
+                  child: Icon(
+                      r.kind == 'RESERVATION'
+                          ? Icons.schedule_outlined
+                          : Icons.workspace_premium_outlined,
+                      size: 32,
+                      color: AccountTheme.accent)),
+              const SizedBox(width: 16),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(
+                        r.kind == 'GRANT' && r.status == 'ACTIVE' && !r.expired
+                            ? '当前许可已生效'
+                            : r.statusText,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 8),
+                    Text(
+                        r.kind == 'RESERVATION'
+                            ? '预留不代表已获准制作。请按要求提交材料，经独立核验后办理许可。'
+                            : '许可范围与期限明确，每次使用仍须核对。',
+                        style: const TextStyle(
+                            fontSize: 14,
+                            color: AccountTheme.muted,
+                            height: 1.5)),
+                  ])),
+            ]),
+            const Divider(height: 28),
+            if (r.kind == 'RESERVATION')
+              supplyFact('截止时间', licenseDate(r.data['expires_at']))
+            else
+              supplyFact('有效至', licenseDate(r.terms!.data['valid_until'])),
+            Row(children: [
+              Expanded(
+                  child: Text(
+                      '${r.kind == 'GRANT' ? '许可' : '预留'} ${shortSupplyId(r.id)}',
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600))),
+              IconButton(
+                  tooltip: '复制记录编号',
+                  onPressed: () => Clipboard.setData(ClipboardData(text: r.id)),
+                  icon: const Icon(Icons.copy_outlined, size: 18)),
+            ]),
+          ])));
 
   Widget _contract(Map<String, dynamic> c) => Card(
           child: ExpansionTile(
@@ -426,32 +579,49 @@ class _LicenseDetailState extends State<_LicenseDetail> {
                 ? '剧本与许可'
                 : r.kind == 'RESERVATION'
                     ? '许可预留与合同'
-                    : licenseKinds[r.kind]!,
+                    : r.kind == 'GRANT'
+                        ? '许可凭证'
+                        : licenseKinds[r.kind]!,
         [
           if (_busy && r == null)
             const Center(child: CircularProgressIndicator()),
           if (_error != null) supplyNote(_error!, error: true),
           if (r != null) ...[
-            if (r.kind == 'PRODUCT')
-              const Padding(
-                  padding: EdgeInsets.only(bottom: 20),
-                  child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Icon(Icons.description_outlined,
-                          size: 56, color: AccountTheme.accent))),
-            Text(r.title,
-                style:
-                    const TextStyle(fontSize: 26, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 12),
-            Text(r.statusText,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600, color: AccountTheme.accent)),
-            const SizedBox(height: 16),
+            if (r.kind == 'RESERVATION' || r.kind == 'GRANT')
+              _statusPanel(r)
+            else if (r.kind == 'READING') ...[
+              const ManuscriptHero(
+                  title: '指定账号受控阅稿', subtitle: '获批且未到期后，\n仅作评估阅读。'),
+              const SizedBox(height: 16),
+              Text(r.statusText,
+                  style: const TextStyle(
+                      fontSize: 14, color: AccountTheme.accent)),
+              const SizedBox(height: 16),
+            ] else ...[
+              if (r.kind == 'PRODUCT')
+                const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Icon(Icons.description_outlined,
+                            size: 48, color: AccountTheme.accent))),
+              Text(r.title,
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
+              Text(r.statusText,
+                  style: const TextStyle(
+                      fontSize: 12, color: AccountTheme.accent)),
+              const SizedBox(height: 16),
+            ],
             if (d!['preview_text'] != null)
               Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: SelectableText(d['preview_text'],
-                      style: const TextStyle(height: 1.7))),
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: AccountTheme.muted,
+                          height: 1.7))),
             if (d['expires_at'] != null)
               supplyCard('预留截止', [
                 supplyFact('截止时间', licenseDate(d['expires_at'])),
@@ -460,19 +630,12 @@ class _LicenseDetailState extends State<_LicenseDetail> {
             if (d['price'] != null)
               licenseAmount(Map<String, dynamic>.from(d['price']),
                   due: d['payment_due_minor']),
-            if (r.terms != null) licenseTermsView(r.terms!),
+            if (r.terms != null)
+              r.kind == 'GRANT'
+                  ? licenseGrantTerms(r.terms!)
+                  : licenseTermsView(r.terms!),
             if (d['contract'] != null)
               _contract(Map<String, dynamic>.from(d['contract'])),
-            supplyCard('记录信息', [
-              supplyFact('记录编号', r.id),
-              supplyFact(r.kind == 'RESERVATION' ? '买方身份' : '所属身份', r.owner),
-              if (r.counterparty != null)
-                supplyFact(
-                    r.kind == 'RESERVATION' ? '卖方身份' : '对方身份', r.counterparty),
-              if (d['work_version_id'] != null)
-                supplyFact('作品版本', d['work_version_id']),
-              supplyFact('当前版本', r.version)
-            ]),
             if (r.kind == 'PRODUCT') ...[
               if (r.owner == widget.session.partyId)
                 supplyNote('这份商品属于当前身份，不能向自己预留。'),
@@ -620,6 +783,21 @@ class _LicenseDetailState extends State<_LicenseDetail> {
                           context, '/licensing/reading?recordId=${r.id}'),
                   child: const Text('开始阅读'))
             ],
+            Card(
+                child: ExpansionTile(
+                    title: const Text('记录信息'),
+                    childrenPadding: const EdgeInsets.all(16),
+                    children: [
+                  supplyFact('记录编号', r.id),
+                  supplyFact(
+                      r.kind == 'RESERVATION' ? '买方身份' : '所属身份', r.owner),
+                  if (r.counterparty != null)
+                    supplyFact(r.kind == 'RESERVATION' ? '卖方身份' : '对方身份',
+                        r.counterparty),
+                  if (d['work_version_id'] != null)
+                    supplyFact('作品版本', d['work_version_id']),
+                  supplyFact('当前版本', r.version)
+                ])),
             if (d['close_reason'] != null)
               supplyFact('关闭原因', d['close_reason']),
             if (d['late_reason'] != null) supplyFact('补救原因', d['late_reason']),
@@ -775,16 +953,20 @@ class _ControlledReaderState extends State<_ControlledReader>
 
   @override
   Widget build(BuildContext context) => licenseScaffold(context, '受控阅读', [
-        supplyNote('正文包含服务器生成的读者、授权编号和读取时间水印。仅作评估阅读，不授予生成或训练；不承诺阻止截屏或人工复制。'),
+        appNotice('有效期内的指定账号可阅读此文本。此授权仅限评估阅读，正文包含读者、授权编号和读取时间水印，不授予生成或训练。',
+            icon: Icons.description_outlined),
         if (_record != null)
           supplyFact('授权截止', licenseDate(_record!.data['valid_until'])),
         if (_error != null) supplyNote(_error!, error: true),
         if (_busy) const Center(child: CircularProgressIndicator()),
         if (_text != null)
-          SelectableText(_text!,
-              style: const TextStyle(fontSize: 16, height: 1.9)),
+          Card(
+              child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: SelectableText(_text!,
+                      style: const TextStyle(fontSize: 16, height: 1.9)))),
         const SizedBox(height: 20),
-        OutlinedButton(
+        FilledButton(
             onPressed: _busy ? null : _read, child: const Text('重新核对授权并读取')),
       ]);
 }
