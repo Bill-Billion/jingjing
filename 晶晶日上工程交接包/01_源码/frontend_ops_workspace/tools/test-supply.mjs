@@ -35,7 +35,7 @@ try {
   }
   const profileWrite = () => ({ path: '/supply/profiles', kind: 'PROFILE', label: '提交申请', body: { display_name: '真实输入', description: '权利来源说明', evidence_asset_ids: [id(3)], previous_profile_id: null } })
   test('安全登录返回覆盖本批各路由，拒绝外站和伪编号', async () => {
-    for (const path of ['/supply/profiles', `/supply/profiles/${id(11)}`, '/supply/works', '/supply/works/new', `/supply/works/${id(20)}`, `/supply/works/${id(20)}/revision`, '/supply/reviews/profile', `/supply/reviews/rights/${id(20)}`, '/supply/reviews/content']) assert.equal(loginRedirect(path), path)
+    for (const path of ['/supply/profiles', `/supply/profiles/${id(11)}`, '/supply/works', '/supply/works/new', `/supply/adaptations/${id(15)}/new`, `/supply/works/${id(20)}`, `/supply/works/${id(20)}/revision`, '/supply/reviews/profile', `/supply/reviews/rights/${id(20)}`, '/supply/reviews/content']) assert.equal(loginRedirect(path), path)
     for (const path of ['//host/supply/works', '/supply/works/new?role=OWNER', '/supply/works/../new', '/supply/works/' + '-'.repeat(36), '/supply/reviews/admin', '/supply/works\n', ['/supply/works']]) assert.equal(loginRedirect(path), '/workspace')
   })
   test('负责人列表准确带身份头，审核列表不带身份且只用kind/cursor/limit', async () => {
@@ -184,13 +184,15 @@ try {
     const entries = [
       ['/workspace','账号与机构'], ['/contracts','合同与规则'],
       ['/supply/profiles','供给申请'], ['/supply/works','我的作品'],
-      ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'],
+      ['/licensing/catalog','选剧本'], ['/licensing/products','许可商品'], ['/licensing/reservations','许可办理'], ['/licensing/projects','项目与绑定'], ['/licensing/readings','受控阅稿'],
+      ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'], ['/licensing/reviews/products','许可核验'],
     ]
     for (const [view,path,current] of [
       ['ContractsView','/contracts','/contracts'],
       ['WorkspaceView','/workspace','/workspace'],
       ['SupplyView','/supply/profiles','/supply/profiles'],
       ['SupplyView','/supply/works/new','/supply/works'],
+      ['SupplyView',`/supply/adaptations/${id(15)}/new`,'/supply/works'],
       ['SupplyView',`/supply/works/${id(20)}/revision`,'/supply/works'],
       ['SupplyView',`/supply/reviews/profile/${id(11)}`,'/supply/reviews/profile'],
       ['SupplyView',`/supply/reviews/content/${id(20)}`,'/supply/reviews/rights'],

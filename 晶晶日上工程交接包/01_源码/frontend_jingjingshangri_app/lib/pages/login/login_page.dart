@@ -10,7 +10,7 @@ import '../../widgets/primary_button.dart';
 
 /// 手机号 + 验证码登录。
 /// - 登录成功清除旧业务路由，进入新版“我的”；
-/// - 供给深链接只恢复目标读取，不继续此前的写入或旧业务；
+/// - 供给及许可深链接只恢复目标读取，不继续此前的写入或旧业务；
 /// - 只使用账号服务实际发送的验证码；未启用时明确显示失败。
 class LoginPage extends StatefulWidget {
   /// 来源场景说明，如「下单前请先登录」
@@ -194,13 +194,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _enterAfterLogin() async {
-    // Resume only an explicit supply read/form route with fresh session reads.
+    // Resume only an explicit current read/form route with fresh session reads.
     // No old private route or pending action survives login.
     final route = Uri.tryParse(widget.returnRoute ?? '');
     final destination = route != null &&
             !route.hasAuthority &&
-            ['/supply', '/supply/profile', '/supply/work/new', '/supply/record']
-                .contains(route.path)
+            !route.hasScheme &&
+            [
+              '/supply',
+              '/supply/profile',
+              '/supply/work/new',
+              '/supply/record',
+              '/enter',
+              '/licensing',
+              '/licensing/catalog',
+              '/licensing/record',
+              '/licensing/reading',
+              '/licensing/evidence',
+              '/licensing/project/new',
+              '/licensing/bind',
+              '/orders',
+              '/my-projects'
+            ].contains(route.path)
         ? route.toString()
         : '/my';
     if (destination != '/my') {

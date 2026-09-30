@@ -8,12 +8,22 @@ const links = [
   { to: '/contracts', label: '合同与规则', icon: Document },
   { to: '/supply/profiles', label: '供给申请', icon: Document },
   { to: '/supply/works', label: '我的作品', icon: Reading },
+  { to: '/licensing/catalog', label: '选剧本', icon: Reading },
+  { to: '/licensing/products', label: '许可商品', icon: Document },
+  { to: '/licensing/reservations', label: '许可办理', icon: Document },
+  { to: '/licensing/projects', label: '项目与绑定', icon: OfficeBuilding },
+  { to: '/licensing/readings', label: '受控阅稿', icon: Reading },
 ]
 const reviews = [
   { to: '/supply/reviews/profile', label: '供给审核' },
   { to: '/supply/reviews/rights', label: '作品审核' },
+  { to: '/licensing/reviews/products', label: '许可核验' },
 ]
 function active(target: string) {
+  if (target === '/supply/works' && route.path.startsWith('/supply/adaptations/')) return true
+  if (target === '/licensing/reviews/products') return route.path.startsWith('/licensing/reviews/')
+  if (target === '/licensing/reservations') return ['reservations', 'evidence', 'grants'].some(section => route.path === `/licensing/${section}` || route.path.startsWith(`/licensing/${section}/`))
+  if (target === '/licensing/projects' && route.path.startsWith('/licensing/bindings')) return true
   if (target === '/supply/reviews/rights') {
     return ['/supply/reviews/rights', '/supply/reviews/content']
       .some(path => route.path === path || route.path.startsWith(path + '/'))

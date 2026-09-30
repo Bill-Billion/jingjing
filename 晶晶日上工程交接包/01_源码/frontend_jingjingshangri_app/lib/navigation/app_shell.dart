@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../licensing/license_pages.dart';
 
 /// The five business entrances share one shell. Private tasks open as child
 /// routes and keep their own permission gates and back navigation.
@@ -56,6 +57,8 @@ class _AppShellState extends State<AppShell> {
 
   List<Widget> _currentTools() => [
         _heading('现在可以办理'),
+        _entry('选剧本与许可', '了解许可范围，预留、提交材料并绑定用途项目。', Icons.menu_book_outlined,
+            () => _open('/licensing/catalog')),
         _entry('作者与作品', '申请作者资格，管理投稿与私有权利材料。', Icons.edit_note_outlined,
             () => _open('/supply')),
         _entry('合同与原约定', '按权限查看合同当时保存的内容和规则。', Icons.description_outlined,
@@ -135,9 +138,9 @@ class _AppShellState extends State<AppShell> {
         _heading('我的业务'),
         _entry('数字人资料', '本人脸部、声音与用途授权 · 暂未开放', Icons.face_outlined,
             () => _open('/my-humans')),
-        _entry('订单与许可', '查看定制订单与作品使用范围 · 暂未开放', Icons.receipt_long_outlined,
+        _entry('订单与许可', '查看预留、外部材料核验与作品使用许可', Icons.receipt_long_outlined,
             () => _open('/orders')),
-        _entry('我的项目', '参与项目与发行进度 · 暂未开放', Icons.movie_outlined,
+        _entry('我的项目', '登记用途项目，查看许可绑定记录', Icons.movie_outlined,
             () => _open('/my-projects')),
         _entry('我的结算', '核对收付款与依据 · 暂未开放', Icons.account_balance_outlined,
             () => _open('/wallet')),
@@ -155,7 +158,7 @@ class _AppShellState extends State<AppShell> {
     final session = context.watch<AccountSession>();
     final identityName = session.party?['display_name'] as String?;
     final children = switch (_selected) {
-      1 => _business('从一个故事开始', '入戏承接私人定制：选剧本、确认内容方案，再逐步完成制作与验收。'),
+      1 => [const LicenseCatalog(embedded: true)],
       2 => _business('让创作连接真实需求', '培育承接商业委托：发布品牌需求、确认接单约定，并按用途完成交付。'),
       3 => _business('在故事里找到你的角色', '成角承接公开项目与发行：了解招募、参与项目，并逐项确认授权与发行条件。'),
       4 => _mine(session),

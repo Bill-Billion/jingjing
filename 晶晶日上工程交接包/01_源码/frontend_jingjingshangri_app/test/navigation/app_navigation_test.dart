@@ -111,13 +111,7 @@ void main() {
       nav.pop();
       await frames(tester);
     }
-    for (final route in [
-      '/wallet',
-      '/orders',
-      '/my-humans',
-      '/my-works',
-      '/chat'
-    ]) {
+    for (final route in ['/wallet', '/my-humans', '/my-works', '/chat']) {
       nav.pushNamed(route);
       await frames(tester);
       expect(find.text('暂未开放'), findsOneWidget, reason: route);
@@ -137,7 +131,19 @@ void main() {
     final session = AccountSession(api: adapter.createApi());
     await openApp(tester, session);
     final nav = tester.state<NavigatorState>(find.byType(Navigator).last);
-    for (final route in ['/account', '/contract', '/supply']) {
+    for (final route in [
+      '/account',
+      '/contract',
+      '/supply',
+      '/orders',
+      '/my-projects',
+      '/licensing/catalog',
+      '/licensing/record?recordId=bad',
+      '/licensing/reading?recordId=bad',
+      '/licensing/project/new',
+      '/licensing/bind?grantId=bad',
+      '/licensing/evidence?reservationId=bad'
+    ]) {
       nav.pushNamed(route);
       await frames(tester);
       expect(find.byType(NavigationBar), findsNothing, reason: route);
