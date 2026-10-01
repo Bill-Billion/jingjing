@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
@@ -5,6 +7,34 @@ import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import 'package:flutter/services.dart';
 import '../licensing/license_pages.dart';
+
+/// Keep the current tab address without replacing the mounted shell. Child
+/// routes still use ordinary Material routes and return to this updated address.
+class AppShellRoute extends MaterialPageRoute<dynamic> {
+  AppShellRoute({required RouteSettings settings, required AppShell shell})
+      : _shellSettings = settings,
+        super(settings: settings, builder: (_) => shell);
+
+  RouteSettings _shellSettings;
+
+  @override
+  RouteSettings get settings => _shellSettings;
+
+  @override
+  Duration get transitionDuration => Duration.zero;
+
+  @override
+  Duration get reverseTransitionDuration => Duration.zero;
+
+  void selectTab(String address) {
+    _shellSettings = RouteSettings(name: address);
+    changedInternalState();
+    if (kIsWeb) {
+      unawaited(SystemNavigator.routeInformationUpdated(
+          uri: Uri.parse(address), replace: true));
+    }
+  }
+}
 
 /// The five business entrances share one shell. Private tasks open as child
 /// routes and keep their own permission gates and back navigation.
@@ -17,7 +47,9 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  late final int _selected = widget.initialTab.clamp(0, 4);
+  late int _selected = widget.initialTab.clamp(0, 4);
+  final _visited = <int>{};
+  (int, String?, String?)? _sessionContext;
   static const _labels = ['首页', '入戏', '培育', '成角', '我的'];
   static const _routes = ['/home', '/enter', '/cultivate', '/roles', '/my'];
   static const _icons = [
@@ -30,7 +62,28 @@ class _AppShellState extends State<AppShell> {
 
   void _select(int index) {
     if (index != _selected) {
-      Navigator.pushReplacementNamed(context, _routes[index]);
+      setState(() {
+        _selected = index;
+        _visited.add(index);
+      });
+      final route = ModalRoute.of(context);
+      if (route is AppShellRoute) route.selectTab(_routes[index]);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final session = context.watch<AccountSession>();
+    final next =
+        (session.epoch, session.account?['id'] as String?, session.partyId);
+    if (_sessionContext != next) {
+      _sessionContext = next;
+      // Drop inactive tabs on an identity/session change. Their private gates
+      // will read fresh data only when the user opens that section again.
+      _visited
+        ..clear()
+        ..add(_selected);
     }
   }
 
@@ -257,17 +310,50 @@ class _AppShellState extends State<AppShell> {
             () => _open('/settings')),
       ];
 
-  @override
-  Widget build(BuildContext context) {
-    final session = context.watch<AccountSession>();
+  Widget _section(int index, AccountSession session) {
     final identityName = session.party?['display_name'] as String?;
-    final children = switch (_selected) {
+    final children = switch (index) {
       1 => [const LicenseCatalog(embedded: true)],
       2 => _business('让创作连接真实需求', '培育承接商业委托：发布品牌需求、确认接单约定，并按用途完成交付。'),
       3 => _business('在故事里找到你的角色', '成角承接公开项目与发行：了解招募、参与项目，并逐项确认授权与发行条件。'),
       4 => _mine(session),
       _ => _home(session),
     };
+    return ListView(
+        key: PageStorageKey('app-section-$index:$_sessionContext'),
+        primary: false,
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (index == 0)
+            Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () => _open('/account'),
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(children: [
+                          const Icon(Icons.person_outline,
+                              color: AccountTheme.muted, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(
+                              child: Text(
+                                  session.isLoggedIn
+                                      ? (identityName ?? '请选择办事身份')
+                                      : '登录后选择办事身份',
+                                  style: const TextStyle(
+                                      color: AccountTheme.muted))),
+                          const Icon(Icons.chevron_right,
+                              size: 20, color: AccountTheme.muted),
+                        ])))),
+          ...children,
+          const SizedBox(height: 24),
+        ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final session = context.watch<AccountSession>();
     return AccountTheme(
         child: Scaffold(
       appBar: AppBar(
@@ -289,41 +375,23 @@ class _AppShellState extends State<AppShell> {
           child: Center(
               child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 760),
-                  child: ListView(
-                      key: ValueKey('app-section-$_selected'),
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        if (_selected == 0)
-                          Padding(
-                              padding: const EdgeInsets.only(bottom: 24),
-                              child: InkWell(
-                                  borderRadius: BorderRadius.circular(10),
-                                  onTap: () => _open('/account'),
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12),
-                                      child: Row(children: [
-                                        const Icon(Icons.person_outline,
-                                            color: AccountTheme.muted,
-                                            size: 20),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                            child: Text(
-                                                session.isLoggedIn
-                                                    ? (identityName ??
-                                                        '请选择办事身份')
-                                                    : '登录后选择办事身份',
-                                                style: const TextStyle(
-                                                    color:
-                                                        AccountTheme.muted))),
-                                        const Icon(Icons.chevron_right,
-                                            size: 20,
-                                            color: AccountTheme.muted),
-                                      ])))),
-                        ...children,
-                        const SizedBox(height: 24),
-                      ])))),
+                  child: KeyedSubtree(
+                      key: ValueKey(_sessionContext),
+                      child: IndexedStack(
+                          index: _selected,
+                          children: List.generate(
+                              5,
+                              (index) => _visited.contains(index)
+                                  ? ExcludeFocus(
+                                      excluding: index != _selected,
+                                      child: TickerMode(
+                                          enabled: index == _selected,
+                                          child: _section(index, session)))
+                                  : const SizedBox.shrink())))))),
       bottomNavigationBar: NavigationBar(
+          animationDuration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 140),
           height: 72,
           elevation: 0,
           backgroundColor: AccountTheme.surface,

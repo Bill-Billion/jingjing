@@ -109,6 +109,9 @@ class JingjingShangriApp extends StatelessWidget {
         _ => const AppUnknownPage(),
       };
     }
+    if (page is AppShell) {
+      return AppShellRoute(settings: settings, shell: page);
+    }
     return MaterialPageRoute<dynamic>(settings: settings, builder: (_) => page);
   }
 

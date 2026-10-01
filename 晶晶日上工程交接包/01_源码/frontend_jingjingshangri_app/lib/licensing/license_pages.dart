@@ -94,7 +94,9 @@ class _LicenseListState extends State<_LicenseList> {
 
   Future<void> _open(LicenseRecord r) async {
     await Navigator.pushNamed(context, '/licensing/record?recordId=${r.id}');
-    if (mounted) _load();
+    // Opening a public catalog item does not edit the catalog. Keep its loaded
+    // pages and scroll position; users can explicitly reload the catalog.
+    if (mounted && !widget.catalog) _load();
   }
 
   Widget _recordCard(LicenseRecord r) => r.kind == 'GRANT'
