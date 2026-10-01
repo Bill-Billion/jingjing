@@ -225,7 +225,14 @@ try {
     const render=component=>renderToString(createSSRApp({render:()=>component}))
     const record=submitted(),snapshot=structuredClone(record)
     for(const contentFirst of [false,true]){
-      const html=await render(h(Panel,{record,assets:{},contentFirst})),visible=html.replace(/<[^>]*>/g,'')
+      const html=await render(h(Panel,{record,assets:{},contentFirst}))
+      const identifiers=html.match(/<details\b([^>]*)>([\s\S]*?)<\/details>/)
+      assert.ok(identifiers,'完整编号应可由用户主动展开')
+      assert.doesNotMatch(identifiers[1],/\bopen(?:\s|=|$)/,'完整编号默认折叠')
+      assert.ok(identifiers[2].includes('查看完整记录与身份编号'))
+      for(const value of [record.id,record.stream_ref,record.created_by,record.owner_party_id])assert.ok(identifiers[2].includes(value))
+      // SSR includes closed details in the markup; only its summary is visible.
+      const visible=html.replace(/<details\b[^>]*>[\s\S]*?<summary\b[^>]*>([\s\S]*?)<\/summary>[\s\S]*?<\/details>/g,'$1').replace(/<[^>]*>/g,'')
       assert.equal(html.indexOf('当前版本正文')<html.indexOf('作者、权利人和代理'),contentFirst)
       assert.ok(html.indexOf('记录编号')<html.indexOf('当前版本正文'))
       for(const value of [record.id,record.stream_ref,record.created_by,id(2),id(3)]){assert.ok(html.includes(`title="${value}"`));assert.ok(visible.includes(api.shortSupplyId(value)));assert.equal(visible.includes(value),false)}
