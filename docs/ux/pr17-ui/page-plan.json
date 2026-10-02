@@ -1,0 +1,1450 @@
+[
+  {
+    "id": "APP-02-01",
+    "title": "发现",
+    "image": "images/APP-02-01.png",
+    "layout": [
+      "返回与发现标题",
+      "抽象索引插画",
+      "主说明",
+      "可用业务入口列表",
+      "榜单说明"
+    ],
+    "fields": [
+      {
+        "label": "标题说明",
+        "source": "static_local_asset",
+        "example": "更多发现，正在准备",
+        "editable": false
+      },
+      {
+        "label": "内容",
+        "source": "static_local_asset",
+        "example": "艺人搜索、关注和收藏暂未开放。",
+        "editable": false
+      },
+      {
+        "label": "已有入口",
+        "source": "static_local_asset",
+        "example": "你可以先浏览已上架剧本和商单。",
+        "editable": false
+      },
+      {
+        "label": "榜单说明",
+        "source": "static_local_asset",
+        "example": "榜单发布后，可从对应入口查看。",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "浏览剧本",
+        "method": "LOCAL",
+        "path": "APP-07",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      },
+      {
+        "label": "浏览商单",
+        "method": "LOCAL",
+        "path": "APP-19",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      },
+      {
+        "label": "搜索艺人",
+        "method": "NONE",
+        "path": "",
+        "condition": "无搜索接口",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "a3036ea7f23c879ad5b53f9e108239e695cb4eb6340686ae65c64d714f818f32"
+  },
+  {
+    "id": "APP-02-02",
+    "title": "片场榜单",
+    "image": "images/APP-02-02.png",
+    "layout": [
+      "返回与标题",
+      "快照日期和来源说明",
+      "热度/新兴/地区三个本地标签",
+      "空榜单状态",
+      "规则折叠入口"
+    ],
+    "fields": [
+      {
+        "label": "日期",
+        "source": "GigRankingResponse.data.as_of",
+        "example": "2026-09-29",
+        "editable": false
+      },
+      {
+        "label": "榜单状态",
+        "source": "GigRankingResponse.data.data_status",
+        "example": "数据不足，暂未形成榜单",
+        "editable": false
+      },
+      {
+        "label": "来源",
+        "source": "GigRankingResponse.data.source",
+        "example": "仅计入同意上榜且已核验的正式交易",
+        "editable": false
+      },
+      {
+        "label": "说明",
+        "source": "static_local_asset",
+        "example": "上榜不代表收益承诺。",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "刷新榜单",
+        "method": "GET",
+        "path": "/api/v1/gigs/rankings/{record_id}",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      },
+      {
+        "label": "查看本榜规则",
+        "method": "LOCAL",
+        "path": "LOCAL:ranking-rule",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "a8cf4f3564d6c37d5b2aad573d9d89a16b7c14dec7a16aee290e92c5e24b83d7"
+  },
+  {
+    "id": "APP-19-01",
+    "title": "培育",
+    "image": "images/APP-19-01-v2.png",
+    "layout": [
+      "顶部标题与通知入口",
+      "商业委托说明",
+      "我的商单/发布需求入口",
+      "真实目录文字卡",
+      "当前规则入口",
+      "五栏导航"
+    ],
+    "fields": [
+      {
+        "label": "副标题",
+        "source": "static_local_asset",
+        "example": "让创作连接真实需求",
+        "editable": false
+      },
+      {
+        "label": "需求标题",
+        "source": "GigCatalogueResponse.data.items[0].title",
+        "example": "品牌产品介绍短片",
+        "editable": false
+      },
+      {
+        "label": "需求摘要",
+        "source": "GigCatalogueResponse.data.items[0].brief",
+        "example": "以清晰的产品讲解呈现品牌服务。",
+        "editable": false
+      },
+      {
+        "label": "品类",
+        "source": "GigCatalogueResponse.data.items[0].category",
+        "example": "产品介绍",
+        "editable": false
+      },
+      {
+        "label": "用途地域",
+        "source": "GigCatalogueResponse.data.items[0].scope.purpose/territory",
+        "example": "商业用途 · 中国",
+        "editable": false
+      },
+      {
+        "label": "有效期",
+        "source": "GigCatalogueResponse.data.items[0].scope.valid_until",
+        "example": "需求有效至 2026-10-20",
+        "editable": false
+      },
+      {
+        "label": "委托主体",
+        "source": "GigCatalogueResponse.data.items[0].buyer_party_id",
+        "example": "委托方 …0081",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "查看需求摘要",
+        "method": "LOCAL",
+        "path": "APP-20",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      },
+      {
+        "label": "发布商单",
+        "method": "LOCAL",
+        "path": "APP-20",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      },
+      {
+        "label": "我的接单约定",
+        "method": "LOCAL",
+        "path": "APP-21",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      },
+      {
+        "label": "查看当前规则",
+        "method": "LOCAL",
+        "path": "LOCAL:gig-catalogue-rules",
+        "condition": "按所选身份导航后再次由服务器核验权限",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "435b5cd54976763e4163dfe570b2bfb77ca9c432deba3ed04f526b9e02902573"
+  },
+  {
+    "id": "APP-20-01",
+    "title": "商单需求",
+    "image": "images/APP-20-01-v2.png",
+    "layout": [
+      "返回与标题",
+      "需求标题与商业用途标签",
+      "需求说明",
+      "品类、地域、有效期",
+      "需求主体编号",
+      "接单入口"
+    ],
+    "fields": [
+      {
+        "label": "需求标题",
+        "source": "catalogue.items[].title",
+        "example": "品牌短片内容合作",
+        "editable": false
+      },
+      {
+        "label": "需求说明",
+        "source": "catalogue.items[].brief",
+        "example": "为新品制作一段有故事感的介绍视频。具体交付规格以确认报价为准。",
+        "editable": false
+      },
+      {
+        "label": "品类",
+        "source": "catalogue.items[].category",
+        "example": "品牌内容",
+        "editable": false
+      },
+      {
+        "label": "用途",
+        "source": "catalogue.items[].scope.purpose",
+        "example": "商业使用",
+        "editable": false
+      },
+      {
+        "label": "地域",
+        "source": "catalogue.items[].scope.territory",
+        "example": "中国",
+        "editable": false
+      },
+      {
+        "label": "有效期",
+        "source": "catalogue.items[].scope.valid_until",
+        "example": "2026年12月31日",
+        "editable": false
+      },
+      {
+        "label": "需求主体",
+        "source": "catalogue.items[].buyer_party_id",
+        "example": "主体 · 8f2a",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "提出接单约定",
+        "method": "LOCAL",
+        "path": "APP-21-01",
+        "condition": "供给方为有效OWNER且另有有效商品与商用同意",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "bf615043c471984fdb32284b3d3a59cc51892d8025122a9425aed6b50e5030da"
+  },
+  {
+    "id": "APP-20-02",
+    "title": "发布商业需求",
+    "image": "images/APP-20-02-v2.png",
+    "layout": [
+      "标题与当前主体",
+      "需求标题/说明",
+      "生效规则及可用品类",
+      "商业用途、地域和截止时间",
+      "所需证明材料",
+      "底部提交审核"
+    ],
+    "fields": [
+      {
+        "label": "需求标题",
+        "source": "request.title",
+        "example": "输入需求名称",
+        "editable": true
+      },
+      {
+        "label": "需求说明",
+        "source": "request.brief",
+        "example": "说明希望制作的内容与要求",
+        "editable": true
+      },
+      {
+        "label": "适用规则",
+        "source": "request.rule_id",
+        "example": "选择当前已生效规则",
+        "editable": true
+      },
+      {
+        "label": "品类",
+        "source": "request.category",
+        "example": "按所选规则选择",
+        "editable": true
+      },
+      {
+        "label": "用途",
+        "source": "request.scope.purpose",
+        "example": "商业使用",
+        "editable": false
+      },
+      {
+        "label": "业务地域",
+        "source": "request.scope.territory",
+        "example": "填写明确地域",
+        "editable": true
+      },
+      {
+        "label": "有效期",
+        "source": "request.scope.valid_until",
+        "example": "选择截止日期与时间",
+        "editable": true
+      },
+      {
+        "label": "证明材料",
+        "source": "request.proofs[].code + asset_id",
+        "example": "按该品类要求上传材料",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "上传材料",
+        "method": "POST",
+        "path": "/api/v1/supply/assets",
+        "condition": "有效OWNER，私有存储已就绪",
+        "enabled": true
+      },
+      {
+        "label": "提交审核",
+        "method": "POST",
+        "path": "/api/v1/gigs/requests",
+        "condition": "必填完整、规则有效、证明齐备；主图未填完整",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "c96b643a79f0f2a150fa59c6a36936445e7bbfea5dfec2873e342fc750992347"
+  },
+  {
+    "id": "APP-21-01",
+    "title": "提交接单约定",
+    "image": "images/APP-21-01-v3.png",
+    "layout": [
+      "商单摘要",
+      "服务商品与数字人",
+      "本人商用同意",
+      "直接MCN关系及佣金",
+      "完整约定与上榜选择",
+      "证据与提交"
+    ],
+    "fields": [
+      {
+        "label": "服务商品",
+        "source": "request.spec_id",
+        "example": "选择有效服务商品",
+        "editable": true
+      },
+      {
+        "label": "数字人资料",
+        "source": "request.avatar_id",
+        "example": "选择本人可用资料",
+        "editable": true
+      },
+      {
+        "label": "本人同意",
+        "source": "request.consent_id",
+        "example": "选择覆盖本单商用范围的同意",
+        "editable": true
+      },
+      {
+        "label": "直接MCN关系",
+        "source": "request.relation_id",
+        "example": "无合作则不选择",
+        "editable": true
+      },
+      {
+        "label": "平台佣金",
+        "source": "request.commission.platform_bps",
+        "example": "填写本单约定比例",
+        "editable": true
+      },
+      {
+        "label": "MCN佣金",
+        "source": "request.commission.mcn_bps",
+        "example": "填写本单约定比例",
+        "editable": true
+      },
+      {
+        "label": "接单条款",
+        "source": "request.terms",
+        "example": "写清范围和交付约定",
+        "editable": true
+      },
+      {
+        "label": "参加榜单",
+        "source": "request.ranking_opt_in",
+        "example": "由本人选择，不预勾",
+        "editable": true
+      },
+      {
+        "label": "依据材料",
+        "source": "request.evidence_asset_ids",
+        "example": "上传本单依据",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "提交约定审核",
+        "method": "POST",
+        "path": "/api/v1/gigs/offers",
+        "condition": "全部资料与范围有效；未齐备禁用",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "99a099d451a65c4012fb7b4a355da1dbb96e4fb9291be0b34f6e9a109d282b5b"
+  },
+  {
+    "id": "APP-21-02",
+    "title": "接单约定确认",
+    "image": "images/APP-21-02-v2.png",
+    "layout": [
+      "返回与状态",
+      "需求和供给主体编号",
+      "服务商品/数字人/同意摘要",
+      "本单条款",
+      "佣金与上榜选择",
+      "底部确认约定"
+    ],
+    "fields": [
+      {
+        "label": "状态",
+        "source": "record.current_status",
+        "example": "等待您确认",
+        "editable": false
+      },
+      {
+        "label": "供给主体",
+        "source": "record.owner_party_id",
+        "example": "主体 · 3ac1",
+        "editable": false
+      },
+      {
+        "label": "服务商品",
+        "source": "record.data.spec_id",
+        "example": "商品 · 62d0",
+        "editable": false
+      },
+      {
+        "label": "约定条款",
+        "source": "record.data.terms",
+        "example": "按本单确认的使用范围与交付规格履行。",
+        "editable": false
+      },
+      {
+        "label": "商业授权",
+        "source": "record.data.consent_id",
+        "example": "同意记录 · 49e2",
+        "editable": false
+      },
+      {
+        "label": "平台/MCN约定",
+        "source": "record.data.commission",
+        "example": "以本次约定为准",
+        "editable": false
+      },
+      {
+        "label": "榜单选择",
+        "source": "record.data.ranking_opt_in",
+        "example": "不参加榜单",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "确认接单约定",
+        "method": "POST",
+        "path": "/api/v1/gigs/offers/{record_id}/acceptance",
+        "condition": "当前指定需求方OWNER，APPROVED，提交准确offer_sha256",
+        "enabled": true
+      },
+      {
+        "label": "查看关联订单",
+        "method": "LOCAL",
+        "path": "APP-13",
+        "condition": "已有经过trade确认生成的关联订单时才显示",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "a5292a3fd1f841f1aa29aee6729409ccb93bdf4b74f7071232e2fb9cc113489f"
+  },
+  {
+    "id": "APP-22-01",
+    "title": "MCN合作",
+    "image": "images/APP-22-01.png",
+    "layout": [
+      "邀请状态",
+      "双方主体编号",
+      "商业合作范围与期限",
+      "独家选择与完整条款",
+      "佣金约定",
+      "接受或拒绝"
+    ],
+    "fields": [
+      {
+        "label": "合作方",
+        "source": "record.owner_party_id",
+        "example": "机构 · 7bc4",
+        "editable": false
+      },
+      {
+        "label": "本人主体",
+        "source": "record.counterparty_id",
+        "example": "主体 · 3ac1",
+        "editable": false
+      },
+      {
+        "label": "范围",
+        "source": "record.data.scope",
+        "example": "商业使用",
+        "editable": false
+      },
+      {
+        "label": "有效期",
+        "source": "record.data.valid_from / valid_until",
+        "example": "2026年10月1日至2027年9月30日",
+        "editable": false
+      },
+      {
+        "label": "独家",
+        "source": "record.data.exclusive",
+        "example": "非独家",
+        "editable": false
+      },
+      {
+        "label": "合作条款",
+        "source": "record.data.terms",
+        "example": "仅按约定范围承接商业合作。",
+        "editable": false
+      },
+      {
+        "label": "佣金依据",
+        "source": "record.data.commission",
+        "example": "以本次约定为准",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "接受合作",
+        "method": "POST",
+        "path": "/api/v1/gigs/relations/{record_id}/decision",
+        "condition": "被邀请艺人OWNER，INVITED；decision=ACCEPT；主图点击只打开本地确认表单，不直接提交；接受和拒绝均须填写非空reason（最多2000字符），确认表单完整后才以对应decision、目标原版本及本次幂等键提交。",
+        "enabled": true
+      },
+      {
+        "label": "拒绝",
+        "method": "POST",
+        "path": "/api/v1/gigs/relations/{record_id}/decision",
+        "condition": "被邀请艺人OWNER，INVITED；decision=REJECT，填写原因；主图点击只打开本地确认表单，不直接提交；接受和拒绝均须填写非空reason（最多2000字符），确认表单完整后才以对应decision、目标原版本及本次幂等键提交。",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "9351b43a96353af80a9c0282a9318ed0218ed650ab398bb223afe5c202a9329f"
+  },
+  {
+    "id": "APP-22-02",
+    "title": "发起直接合作",
+    "image": "images/APP-22-02-v2.png",
+    "layout": [
+      "当前MCN主体",
+      "艺人主体编号",
+      "范围、期限和独家",
+      "完整条款与佣金",
+      "私有依据",
+      "提交邀请"
+    ],
+    "fields": [
+      {
+        "label": "艺人主体编号",
+        "source": "request.artist_party_id",
+        "example": "粘贴对方主体编号",
+        "editable": true
+      },
+      {
+        "label": "范围",
+        "source": "request.scope",
+        "example": "商业使用",
+        "editable": false
+      },
+      {
+        "label": "开始时间",
+        "source": "request.valid_from",
+        "example": "选择生效时间",
+        "editable": true
+      },
+      {
+        "label": "截止时间",
+        "source": "request.valid_until",
+        "example": "选择明确截止时间",
+        "editable": true
+      },
+      {
+        "label": "独家合作",
+        "source": "request.exclusive",
+        "example": "由双方约定，不预选",
+        "editable": true
+      },
+      {
+        "label": "合作条款",
+        "source": "request.terms",
+        "example": "填写双方确认的范围",
+        "editable": true
+      },
+      {
+        "label": "平台佣金",
+        "source": "request.commission.platform_bps",
+        "example": "填写明确比例",
+        "editable": true
+      },
+      {
+        "label": "MCN佣金",
+        "source": "request.commission.mcn_bps",
+        "example": "填写明确比例",
+        "editable": true
+      },
+      {
+        "label": "依据材料",
+        "source": "request.evidence_asset_ids",
+        "example": "上传合作依据",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "提交合作邀请",
+        "method": "POST",
+        "path": "/api/v1/gigs/relations",
+        "condition": "有效MCN能力OWNER、条件完整且独家范围无冲突",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "09cd8b35eb1bcfb74847e21b73a0db5a5a3ad8b7b7fd20bc4a136a3577749846"
+  },
+  {
+    "id": "WEB-19-01",
+    "title": "商单需求目录",
+    "image": "images/WEB-19-01-v2.png",
+    "layout": [
+      "已审商单需求目录",
+      "当前主体需求记录",
+      "需求状态与范围",
+      "详情与新建入口"
+    ],
+    "fields": [
+      {
+        "label": "已审商单需求",
+        "source": "GET /api/v1/gigs/catalogue → response.data.items",
+        "example": "已审需求的标题、正文、品类、范围及买方主体编号",
+        "editable": false
+      },
+      {
+        "label": "我的需求记录",
+        "source": "GET /api/v1/gigs/records → response.data.items",
+        "example": "需求标题、范围和当前状态",
+        "editable": false
+      },
+      {
+        "label": "当前页状态",
+        "source": "GET /api/v1/gigs/records → response.data.items[].current_status",
+        "example": "审核中（示例）",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "查看已审需求目录",
+        "method": "GET",
+        "path": "/api/v1/gigs/catalogue",
+        "condition": "只展示实际返回目录；最多100条",
+        "enabled": true
+      },
+      {
+        "label": "读取我的需求",
+        "method": "GET",
+        "path": "/api/v1/gigs/records",
+        "condition": "当前主体OWNER；kind=GIG",
+        "enabled": true
+      },
+      {
+        "label": "发布商单需求",
+        "method": "LOCAL",
+        "path": "WEB-19-02",
+        "condition": "本地页面导航，不更改业务状态",
+        "enabled": true
+      },
+      {
+        "label": "打开需求",
+        "method": "GET",
+        "path": "/api/v1/gigs/records/{record_id}",
+        "condition": "有当前记录权限；以服务器当前状态和版本为准",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "3ba2b9830e1c93335e3439c679286227d3371d129a23db7976d54801ea14819a"
+  },
+  {
+    "id": "WEB-19-02",
+    "title": "登记商单需求",
+    "image": "images/WEB-19-02.png",
+    "layout": [
+      "标题和需求正文",
+      "规则品类及商业范围",
+      "有效期限",
+      "规则要求的证明材料",
+      "提交审核"
+    ],
+    "fields": [
+      {
+        "label": "标题",
+        "source": "POST /api/v1/gigs/requests → request.title",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "需求正文",
+        "source": "POST /api/v1/gigs/requests → request.brief",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "需求品类",
+        "source": "POST /api/v1/gigs/requests → request.category",
+        "example": "待选择",
+        "editable": true
+      },
+      {
+        "label": "规则编号",
+        "source": "POST /api/v1/gigs/requests → request.rule_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "用途",
+        "source": "POST /api/v1/gigs/requests → request.scope.purpose",
+        "example": "商业用途",
+        "editable": false
+      },
+      {
+        "label": "地域",
+        "source": "POST /api/v1/gigs/requests → request.scope.territory",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "有效截止时间",
+        "source": "POST /api/v1/gigs/requests → request.scope.valid_until",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "证明类型",
+        "source": "POST /api/v1/gigs/requests → request.proofs[].code",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "私有证明材料编号",
+        "source": "POST /api/v1/gigs/requests → request.proofs[].asset_id",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "上传证明",
+        "method": "POST",
+        "path": "/api/v1/supply/assets",
+        "condition": "需求方OWNER，私有审核证据 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+        "enabled": true
+      },
+      {
+        "label": "提交商单需求",
+        "method": "POST",
+        "path": "/api/v1/gigs/requests",
+        "condition": "规则有效、品类允许、证明齐备 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.title←本页“标题”字段；body.brief←本页“需求正文”字段；body.category←本页“需求品类”字段；body.scope←本页“用途 / 地域 / 有效截止时间”字段；body.rule_id←本页“规则编号”字段；body.proofs←本页“证明类型 / 私有证明材料编号”字段；必填结构：title；brief；category；scope.purpose固定=COMMERCIAL；scope.territory；scope.valid_until；rule_id；proofs[].code；proofs[].asset_id",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "a65dabe96fbc56525f04691c628e139d96946c561bffe91f1ddab99197c451d4"
+  },
+  {
+    "id": "WEB-19-03",
+    "title": "商单需求独立审核",
+    "image": "images/WEB-19-03.png",
+    "layout": [
+      "需求与规则快照",
+      "商业用途和证明",
+      "五项人工核验",
+      "结论与理由"
+    ],
+    "fields": [
+      {
+        "label": "需求正文",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data.brief",
+        "example": "本条需求内容",
+        "editable": false
+      },
+      {
+        "label": "规则与范围",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data.rule_id / data.data.rule_sha256 / data.data.scope",
+        "example": "按实际保存内容展示",
+        "editable": false
+      },
+      {
+        "label": "身份已核实",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.identity_verified",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "业务授权已核实",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.authority_verified",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "证明材料已核对",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.materials_reviewed",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "内容已核对",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.content_reviewed",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "标识已核对",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.marking_reviewed",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "本次决定",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.decision",
+        "example": "待选择",
+        "editable": true
+      },
+      {
+        "label": "本次理由",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.reason",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "查看私有证明",
+        "method": "GET",
+        "path": "/api/v1/gigs/records/{record_id}/evidence/{asset_id}",
+        "condition": "独立GIG_REVIEW且材料属于本记录",
+        "enabled": true
+      },
+      {
+        "label": "提交商单审核",
+        "method": "POST",
+        "path": "/api/v1/gigs/records/{record_id}/reviews",
+        "condition": "独立于创建者、需求方、供给及获佣主体 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；body.checks←本页“身份已核实 / 业务授权已核实 / 证明材料已核对 / 内容已核对 / 标识已核对”字段；RULE的checks=null；GIG/OFFER为五项布尔核验对象；必填结构：decision枚举=APPROVED,REJECTED；reason；checks.identity_verified；checks.authority_verified；checks.materials_reviewed；checks.content_reviewed；checks.marking_reviewed；checks可显式null",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "568edafe93fec936d989315de2730fc29e1d3b69c43659f340590244088d7a6b"
+  },
+  {
+    "id": "WEB-20-01",
+    "title": "提交商单服务提案",
+    "image": "images/WEB-20-01.png",
+    "layout": [
+      "指定商单与服务规格",
+      "数字人和有效本人同意",
+      "直接MCN关系及分配",
+      "条款和榜单选择",
+      "证据及提交"
+    ],
+    "fields": [
+      {
+        "label": "商单需求编号",
+        "source": "POST /api/v1/gigs/offers → request.gig_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "已审服务规格编号",
+        "source": "POST /api/v1/gigs/offers → request.spec_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "数字人资料编号",
+        "source": "POST /api/v1/gigs/offers → request.avatar_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "有效本人同意编号",
+        "source": "POST /api/v1/gigs/offers → request.consent_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "直接MCN合作编号",
+        "source": "POST /api/v1/gigs/offers → request.relation_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "平台比例（万分数）",
+        "source": "POST /api/v1/gigs/offers → request.commission.platform_bps",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "MCN比例（万分数）",
+        "source": "POST /api/v1/gigs/offers → request.commission.mcn_bps",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "提案条款",
+        "source": "POST /api/v1/gigs/offers → request.terms",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "是否参与榜单",
+        "source": "POST /api/v1/gigs/offers → request.ranking_opt_in",
+        "example": "明确选择",
+        "editable": true
+      },
+      {
+        "label": "私有依据",
+        "source": "POST /api/v1/gigs/offers → request.evidence_asset_ids",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "上传提案依据",
+        "method": "POST",
+        "path": "/api/v1/supply/assets",
+        "condition": "私有审核证据 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+        "enabled": true
+      },
+      {
+        "label": "提交提案审核",
+        "method": "POST",
+        "path": "/api/v1/gigs/offers",
+        "condition": "供给方OWNER；商单有效且规格已审，相关关系有效 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.gig_id←本页“商单需求编号”字段；body.spec_id←本页“已审服务规格编号”字段；body.avatar_id←本页“数字人资料编号”字段；body.consent_id←本页“有效本人同意编号”字段；body.relation_id←本页“直接MCN合作编号”字段；body.commission←本页“平台比例（万分数） / MCN比例（万分数）”字段；body.terms←本页“提案条款”字段；body.ranking_opt_in←本页“是否参与榜单”字段；body.evidence_asset_ids←本页“私有依据”字段；必填结构：gig_id；spec_id；avatar_id；consent_id；relation_id；relation_id可显式null；commission.platform_bps；commission.mcn_bps；terms；ranking_opt_in；evidence_asset_ids[]",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "85f3758183332936562b0f35434c9ce9398c753fed8d98beccf72809ffe2c257"
+  },
+  {
+    "id": "WEB-20-02",
+    "title": "服务提案独立审核",
+    "image": "images/WEB-20-02-v2.png",
+    "layout": [
+      "商单和服务条款",
+      "脸声同意及直接合作",
+      "佣金约定与私有依据",
+      "五项核验",
+      "审核结论"
+    ],
+    "fields": [
+      {
+        "label": "提案内容",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data",
+        "example": "显示规格、同意、关系、条款与佣金快照",
+        "editable": false
+      },
+      {
+        "label": "身份已核实",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.identity_verified",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "业务授权已核实",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.authority_verified",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "证明材料已核对",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.materials_reviewed",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "内容已核对",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.content_reviewed",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "标识已核对",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.checks.marking_reviewed",
+        "example": "尚未核对",
+        "editable": true
+      },
+      {
+        "label": "本次决定",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.decision",
+        "example": "待选择",
+        "editable": true
+      },
+      {
+        "label": "本次理由",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.reason",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "读取提案证据",
+        "method": "GET",
+        "path": "/api/v1/gigs/records/{record_id}/evidence/{asset_id}",
+        "condition": "独立GIG_REVIEW且材料属于本记录",
+        "enabled": true
+      },
+      {
+        "label": "提交提案审核",
+        "method": "POST",
+        "path": "/api/v1/gigs/records/{record_id}/reviews",
+        "condition": "不能是创建者、交易方或获佣MCN成员 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；body.checks←本页“身份已核实 / 业务授权已核实 / 证明材料已核对 / 内容已核对 / 标识已核对”字段；RULE的checks=null；GIG/OFFER为五项布尔核验对象；必填结构：decision枚举=APPROVED,REJECTED；reason；checks.identity_verified；checks.authority_verified；checks.materials_reviewed；checks.content_reviewed；checks.marking_reviewed；checks可显式null",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "cadc1b1ea3554e5cde0f77d99f5f606ef623260d86d4d79c4c7b137acaf4faa1"
+  },
+  {
+    "id": "WEB-20-03",
+    "title": "客户确认提案与履约关联",
+    "image": "images/WEB-20-03.png",
+    "layout": [
+      "已审提案全文",
+      "佣金和交付范围只读",
+      "内容指纹确认",
+      "后续报价订单关联",
+      "佣金计提说明"
+    ],
+    "fields": [
+      {
+        "label": "提案条款及服务",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data.terms / data.data.spec_id",
+        "example": "本提案确定内容",
+        "editable": false
+      },
+      {
+        "label": "指纹与状态",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.content_sha256 / data.current_status",
+        "example": "当前提案已审",
+        "editable": false
+      },
+      {
+        "label": "确认的提案内容",
+        "source": "POST /api/v1/gigs/offers/{record_id}/acceptance → request.offer_sha256",
+        "example": "自动带入当前提案指纹",
+        "editable": false
+      },
+      {
+        "label": "佣金含义",
+        "source": "LOCAL:页面解释文案，不持久化业务数据",
+        "example": "按真实订单计提，实际付款须走财务结算",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "接受当前提案",
+        "method": "POST",
+        "path": "/api/v1/gigs/offers/{record_id}/acceptance",
+        "condition": "需求方OWNER且提案APPROVED，内容指纹一致 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.offer_sha256←本页“确认的提案内容”字段；必填结构：offer_sha256",
+        "enabled": true
+      },
+      {
+        "label": "查看后续报价订单",
+        "method": "LOCAL",
+        "path": "WEB-13",
+        "condition": "本地页面导航，不更改业务状态",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "9945e6f700911e8c7643b8c687fa7414c4f7d6f384e8b5108997f2c26203f9ad"
+  },
+  {
+    "id": "WEB-21-01",
+    "title": "发起直接MCN合作",
+    "image": "images/WEB-21-01-v2.png",
+    "layout": [
+      "合作艺人主体",
+      "商业用途和有效期",
+      "是否独家及具体条款",
+      "本关系佣金约定",
+      "证明及发送"
+    ],
+    "fields": [
+      {
+        "label": "艺人主体",
+        "source": "POST /api/v1/gigs/relations → request.artist_party_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "用途和日期",
+        "source": "POST /api/v1/gigs/relations → request.scope / valid_from / valid_until",
+        "example": "商业范围及起止日期",
+        "editable": true
+      },
+      {
+        "label": "独家和条款",
+        "source": "POST /api/v1/gigs/relations → request.exclusive / terms",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "平台与MCN比例",
+        "source": "POST /api/v1/gigs/relations → request.commission.platform_bps / commission.mcn_bps",
+        "example": "按实际协商填写",
+        "editable": true
+      },
+      {
+        "label": "依据材料",
+        "source": "POST /api/v1/gigs/relations → request.evidence_asset_ids",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "上传合作依据",
+        "method": "POST",
+        "path": "/api/v1/supply/assets",
+        "condition": "MCN OWNER 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+        "enabled": true
+      },
+      {
+        "label": "建立合作邀请",
+        "method": "POST",
+        "path": "/api/v1/gigs/relations",
+        "condition": "直接MCN发起且参数齐备；对方尚未接受 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.artist_party_id←本页“艺人主体”字段；body.scope←本页“用途和日期”字段；body.valid_from←本页“用途和日期”字段；body.valid_until←本页“用途和日期”字段；body.exclusive←本页“独家和条款”字段；body.terms←本页“独家和条款”字段；body.commission←本页“平台与MCN比例”字段；body.evidence_asset_ids←本页“依据材料”字段；必填结构：artist_party_id；scope固定=COMMERCIAL；valid_from；valid_until；exclusive；terms；commission.platform_bps；commission.mcn_bps；evidence_asset_ids[]",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "7ff5c5378d0045c79d23803acfa14364decf606bf605dc8cc198cdf075640e55"
+  },
+  {
+    "id": "WEB-21-02",
+    "title": "直接合作确认与历史",
+    "image": "images/WEB-21-02.png",
+    "layout": [
+      "MCN与艺人主体编号",
+      "合作范围有效期和独家约定",
+      "分配条款及私有依据",
+      "明确决定与理由",
+      "相关历史记录"
+    ],
+    "fields": [
+      {
+        "label": "合作双方和条款",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data",
+        "example": "按此关系实际内容显示",
+        "editable": false
+      },
+      {
+        "label": "关系状态",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.current_status",
+        "example": "待接受",
+        "editable": false
+      },
+      {
+        "label": "决定",
+        "source": "POST /api/v1/gigs/relations/{record_id}/decision → request.decision",
+        "example": "接受或拒绝邀请",
+        "editable": true
+      },
+      {
+        "label": "理由",
+        "source": "POST /api/v1/gigs/relations/{record_id}/decision → request.reason",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "读取合作依据",
+        "method": "GET",
+        "path": "/api/v1/gigs/records/{record_id}/evidence/{asset_id}",
+        "condition": "关系有权参与方",
+        "enabled": true
+      },
+      {
+        "label": "提交接受或拒绝",
+        "method": "POST",
+        "path": "/api/v1/gigs/relations/{record_id}/decision",
+        "condition": "艺人OWNER；邀请未处理 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“决定”字段；body.reason←本页“理由”字段；必填结构：decision枚举=ACCEPT,REJECT,END；reason",
+        "enabled": false
+      },
+      {
+        "label": "结束已生效合作",
+        "method": "POST",
+        "path": "/api/v1/gigs/relations/{record_id}/decision",
+        "condition": "关系任一方OWNER且ACTIVE，decision=END；当前邀请不可用 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“决定”字段；body.reason←本页“理由”字段；必填结构：decision枚举=ACCEPT,REJECT,END；reason",
+        "enabled": false
+      },
+      {
+        "label": "继续加载历史关系",
+        "method": "GET",
+        "path": "/api/v1/gigs/records",
+        "condition": "kind=RELATION且当前主体有权",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "2c95e0906649e37fd55c42da87388c48ffec17766ee7fb1cd9b9ba199d161b8a"
+  },
+  {
+    "id": "WEB-21-03",
+    "title": "订单佣金计提记录",
+    "image": "images/WEB-21-03-v3.png",
+    "layout": [
+      "订单事实与计提依据",
+      "供给方平台MCN分项",
+      "计提分录",
+      "实际付款边界"
+    ],
+    "fields": [
+      {
+        "label": "要计提的订单",
+        "source": "POST /api/v1/gigs/commissions → request.order_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "金额分项",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data.amounts.net_minor / data.data.amounts.supplier_minor / data.data.amounts.platform_minor / data.data.amounts.mcn_minor",
+        "example": "按实际记录显示",
+        "editable": false
+      },
+      {
+        "label": "分录",
+        "source": "GET /api/v1/gigs/commissions/{record_id}/entries → response.data.items",
+        "example": "本次佣金计提分录",
+        "editable": false
+      },
+      {
+        "label": "计提含义",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data.meaning / data.data.paid_out_minor",
+        "example": "应计记录；实际已打款为零",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "生成订单佣金计提",
+        "method": "POST",
+        "path": "/api/v1/gigs/commissions",
+        "condition": "订单相关方OWNER且真实交易条件满足 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.order_id←本页“要计提的订单”字段；必填结构：order_id",
+        "enabled": false
+      },
+      {
+        "label": "查看计提分录",
+        "method": "GET",
+        "path": "/api/v1/gigs/commissions/{record_id}/entries",
+        "condition": "当前计提记录可读",
+        "enabled": true
+      },
+      {
+        "label": "进入财务结算",
+        "method": "LOCAL",
+        "path": "WEB-28",
+        "condition": "本地页面导航，不更改业务状态",
+        "enabled": true
+      }
+    ],
+    "image_sha256": "d61a23bdec82577128ba39f9c51f3a566981467981f785ef88bea5c1e01effa3"
+  },
+  {
+    "id": "WEB-22-01",
+    "title": "登记商单规则版本",
+    "image": "images/WEB-22-01.png",
+    "layout": [
+      "规则版本与业务条款",
+      "允许品类和必需证据",
+      "榜单计算参数",
+      "提交独立审核"
+    ],
+    "fields": [
+      {
+        "label": "规则版本及条款",
+        "source": "POST /api/v1/gigs/rules → request.rule.version / rule.terms",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "品类和证明要求",
+        "source": "POST /api/v1/gigs/rules → request.rule.categories[].code / rule.categories[].allowed / rule.categories[].required_proofs",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "统计窗口和新人条件",
+        "source": "POST /api/v1/gigs/rules → request.rule.ranking.window_days / rule.ranking.newcomer_days / rule.ranking.minimum_orders",
+        "example": "全部待业务明确",
+        "editable": true
+      },
+      {
+        "label": "权重与新人项",
+        "source": "POST /api/v1/gigs/rules → request.rule.ranking.order_weight / rule.ranking.net_minor_weight / rule.ranking.newcomer_bonus",
+        "example": "全部待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "提交规则版本",
+        "method": "POST",
+        "path": "/api/v1/gigs/rules",
+        "condition": "GIG_REVIEW授权；受控规则维护资格，参数完整且合法 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.rule←本页“规则版本及条款 / 品类和证明要求 / 统计窗口和新人条件 / 权重与新人项”字段；必填结构：rule.version；rule.categories[].code；rule.categories[].allowed；rule.categories[].required_proofs[]；rule.ranking.window_days；rule.ranking.newcomer_days；rule.ranking.minimum_orders；rule.ranking.order_weight；rule.ranking.net_minor_weight；rule.ranking.newcomer_bonus；rule.terms",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "495ce9fdee45afda9b7b0e255d9d3c89af5c053389e4f26738bb1b30c0e6cd50"
+  },
+  {
+    "id": "WEB-22-02",
+    "title": "商单规则独立审核",
+    "image": "images/WEB-22-02-v3.png",
+    "layout": [
+      "完整规则内容",
+      "品类和证据要求",
+      "榜单参数与生效边界",
+      "结论与理由"
+    ],
+    "fields": [
+      {
+        "label": "规则版本",
+        "source": "GET /api/v1/gigs/records/{record_id} → response.data.data.rule",
+        "example": "已提交规则完整快照",
+        "editable": false
+      },
+      {
+        "label": "审核结论及理由",
+        "source": "POST /api/v1/gigs/records/{record_id}/reviews → request.decision / reason",
+        "example": "待填写",
+        "editable": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "提交规则审核",
+        "method": "POST",
+        "path": "/api/v1/gigs/records/{record_id}/reviews",
+        "condition": "独立GIG_REVIEW；checks=null 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“审核结论及理由”字段；body.reason←本页“审核结论及理由”字段；body.checks←固定null（RULE分支）；RULE的checks=null；GIG/OFFER为五项布尔核验对象；必填结构：decision枚举=APPROVED,REJECTED；reason；checks.identity_verified；checks.authority_verified；checks.materials_reviewed；checks.content_reviewed；checks.marking_reviewed；checks可显式null",
+        "enabled": false
+      },
+      {
+        "label": "停用已审规则",
+        "method": "POST",
+        "path": "/api/v1/gigs/rules/{record_id}/retirement",
+        "condition": "GIG_REVIEW授权；有规则维护权限且可停用；本图待审不可用 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.reason←停用确认对话框必填原因；必填结构：reason",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "a715bb1d7de3e12b7ef4a7345841a76af671b7a396c8f5939599359c1a72b58f"
+  },
+  {
+    "id": "WEB-22-03",
+    "title": "生成与查看榜单快照",
+    "image": "images/WEB-22-03.png",
+    "layout": [
+      "有效规则与统计截点",
+      "快照生成操作",
+      "已知快照结果",
+      "计算来源和数据状态"
+    ],
+    "fields": [
+      {
+        "label": "榜单规则",
+        "source": "POST /api/v1/gigs/rankings → request.rule_id",
+        "example": "待填写",
+        "editable": true
+      },
+      {
+        "label": "统计截点",
+        "source": "POST /api/v1/gigs/rankings → request.as_of",
+        "example": "过去日期UTC零点，明确显示时区",
+        "editable": true
+      },
+      {
+        "label": "榜单结果",
+        "source": "GET /api/v1/gigs/rankings/{record_id} → response.data.boards",
+        "example": "仅已知且已生成快照返回后展示",
+        "editable": false
+      },
+      {
+        "label": "依据与状态",
+        "source": "GET /api/v1/gigs/rankings/{record_id} → response.data.rule / data.source / data.data_status",
+        "example": "实际规则、来源和数据完整性",
+        "editable": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "生成榜单快照",
+        "method": "POST",
+        "path": "/api/v1/gigs/rankings",
+        "condition": "GIG_REVIEW授权；受控运营权限；规则有效且截点合法 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.rule_id←本页“榜单规则”字段；body.as_of←本页“统计截点”字段；必填结构：rule_id；as_of",
+        "enabled": false
+      },
+      {
+        "label": "读取已知榜单",
+        "method": "GET",
+        "path": "/api/v1/gigs/rankings/{record_id}",
+        "condition": "拥有实际已生成快照编号",
+        "enabled": false
+      }
+    ],
+    "image_sha256": "fa1ec2ed815f0803b1563ab91696f5a4fad7165e464a937cba7f0eedd7176d1e"
+  }
+]
