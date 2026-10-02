@@ -1,0 +1,1578 @@
+{
+  "gallery_commit": "acd5f99",
+  "common_baseline": "5974f3fbde3dcae3d7752147d52d186e48f34672",
+  "backend_dependency": "b9f90bdad0b5e26f0bcdef17e085463cafb9557e",
+  "task": "UX-PR15-ORDER-PAGES-20261002",
+  "status": "LOCAL_VERIFIED_NOT_PUSHED",
+  "views": [
+    {
+      "id": "APP-11-01",
+      "title": "确认报价",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-11-01.png",
+      "role": "收到报价的买方OWNER",
+      "layout": [
+        "返回标题与示例标识",
+        "交易双方与责任模式",
+        "分项报价",
+        "合同规格折叠区",
+        "付款节点",
+        "有效期与合同入口",
+        "底部合计和确认"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "查看订单记录与原始承诺"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+            "use": "确认当前报价并封存订单承诺"
+          }
+        ],
+        "constraints": [
+          "报价data含lines/installments/total_minor/currency/channel/transaction_model/rule_id/expires_at/payment_window_minutes/license_reservation_id及review。",
+          "商品line.specification含version/service_tier/sample_seconds/final_seconds/revision_limit/deliverables/terms；只读快照，不用新规则重算。",
+          "acceptance只提交quote_sha256并If-Match；确认只生成订单封存合同，不是签署或支付。",
+          "交易合同读取ORDER.data.contract内嵌内容，不假设所有合同均可调用治理快照入口。",
+          "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+          "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+          "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。",
+          "接受报价用QUOTE.content_sha256，对应当前data摘要；POST acceptance不包含客户端自算价格、合同签署标记或付款结果。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+          "use": "按原报价指纹和版本确认生成订单"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/record?recordId=QUOTE_ID"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-quote-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "a1961edb3f0cdb1fcf89bf721f1a3d2c7c31ae7455c1a57a94c2ac785db15d69"
+    },
+    {
+      "id": "APP-11-02",
+      "title": "订单合同与原约定",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-11-02-v2.png",
+      "role": "收到报价的买方OWNER",
+      "layout": [
+        "返回标题",
+        "合同状态",
+        "双方主体及保存时间",
+        "已成交报价与付款节点",
+        "规格/交付/修改/退款条款折叠区",
+        "采用规则与版本",
+        "底部返回订单"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "查看订单记录与原始承诺"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+            "use": "确认当前报价并封存订单承诺"
+          }
+        ],
+        "constraints": [
+          "报价data含lines/installments/total_minor/currency/channel/transaction_model/rule_id/expires_at/payment_window_minutes/license_reservation_id及review。",
+          "商品line.specification含version/service_tier/sample_seconds/final_seconds/revision_limit/deliverables/terms；只读快照，不用新规则重算。",
+          "acceptance只提交quote_sha256并If-Match；确认只生成订单封存合同，不是签署或支付。",
+          "交易合同读取ORDER.data.contract内嵌内容，不假设所有合同均可调用治理快照入口。",
+          "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+          "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+          "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。",
+          "接受报价用QUOTE.content_sha256，对应当前data摘要；POST acceptance不包含客户端自算价格、合同签署标记或付款结果。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/record?recordId=ORDER_ID&section=contract"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-contract-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "5045374c23cbd3977f5bb05c562cb2eb46eb1ee916e385e988f124afc435b400"
+    },
+    {
+      "id": "APP-12-01",
+      "title": "订单付款",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-12-01-v2.png",
+      "role": "订单买方OWNER",
+      "layout": [
+        "返回标题",
+        "应付金额与对应节点",
+        "订单摘要",
+        "渠道说明",
+        "未启用提示",
+        "底部返回订单"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "查看订单记录与原始承诺"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments",
+            "use": "为约定付款节点创建支付凭证"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+            "use": "向支付服务核对本人的指定付款"
+          }
+        ],
+        "constraints": [
+          "支付方式由quote.channel决定，不让用户随意选择不匹配的渠道；POST payments只order_id/installment_key。",
+          "支付宝/Apple真实服务仍受配置和生产验证条件限制；不调用外部收费服务制作图。",
+          "核对body transaction_id：支付宝null，Apple由SDK返回指定交易编号。SDK成功不是服务器到账。",
+          "UNKNOWN保留原payment.id和幂等键，先核对不新建重复付款。",
+          "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+          "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+          "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/payments",
+          "use": "按原订单付款节点建立记录，不代表扣款"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+          "use": "用真实渠道返回核对原付款"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/record?recordId=ORDER_ID",
+        "/trade/record?recordId=PAYMENT_ID"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-payment-mobile.png",
+        "evidence/screenshots/pr15-app-payment-320-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "e4feca914e5a434a2c7fa6ae35fddc785c38668765c60cff91d1db9ea56a8917"
+    },
+    {
+      "id": "APP-12-02",
+      "title": "核对付款结果",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-12-02.png",
+      "role": "订单买方OWNER",
+      "layout": [
+        "返回标题",
+        "处理中状态图形",
+        "待核实主说明",
+        "对应付款金额与编号",
+        "避免重复付款提示",
+        "核对和回订单操作"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "查看订单记录与原始承诺"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments",
+            "use": "为约定付款节点创建支付凭证"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+            "use": "向支付服务核对本人的指定付款"
+          }
+        ],
+        "constraints": [
+          "支付方式由quote.channel决定，不让用户随意选择不匹配的渠道；POST payments只order_id/installment_key。",
+          "支付宝/Apple真实服务仍受配置和生产验证条件限制；不调用外部收费服务制作图。",
+          "核对body transaction_id：支付宝null，Apple由SDK返回指定交易编号。SDK成功不是服务器到账。",
+          "UNKNOWN保留原payment.id和幂等键，先核对不新建重复付款。",
+          "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+          "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+          "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+          "use": "用真实渠道返回核对原付款"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/record?recordId=PAYMENT_ID"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-unknown-mobile.png",
+        "evidence/screenshots/pr15-app-unknown-recovered-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "00e4e7136a98c26f95295b0ffd15db9da4111b50576335c6db265885d3421a1a"
+    },
+    {
+      "id": "APP-13-01",
+      "title": "订单与报价",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-13-01-v2.png",
+      "role": "当前买方/卖方OWNER",
+      "layout": [
+        "返回标题与身份行",
+        "订单/报价/旧记录本地类型标签",
+        "订单卡片",
+        "加载更多"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records",
+            "use": "查看有权限的订单及支付记录"
+          }
+        ],
+        "constraints": [
+          "kind可ORDER/QUOTE/LEGACY等；无服务端状态/日期/名称搜索及总数。",
+          "不新增基于缺字段的订单创建日期；订单标题由已有quote.lines[].title组成。",
+          "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+          "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+          "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。",
+          "旧记录只读使用kind=LEGACY；用户不具备POST legacy-orders登记或读取legacy证据文件的权限。旧单登记/核验只在显式TRADE_REVIEW运营工作区。",
+          "LEGACY.payment_verified始终false；VERIFIED_REFERENCE_ONLY仅说明原始参考材料已核验，不显示渠道到账成功。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/orders",
+        "/orders?kind=QUOTE",
+        "/orders?kind=LEGACY"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-orders-mobile.png",
+        "evidence/screenshots/pr15-app-legacy-list-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "1a6d4a0131173bff5a771cd413f5ddcdb90b9bec272fc3269c123da505429520"
+    },
+    {
+      "id": "APP-14-01",
+      "title": "订单详情",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-14-01-v2.png",
+      "role": "订单买方主体OWNER",
+      "layout": [
+        "返回标题与订单编号",
+        "下一步任务突出区域",
+        "订单付款事实",
+        "制作四阶段进度",
+        "合同与许可入口",
+        "订单留言摘要",
+        "售后入口"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "查看订单记录与原始承诺"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/production/projects",
+            "use": "查看本人机构或获分配的制作项目"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/production/records/{record_id}",
+            "use": "查看有权限的制作记录"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/operations/objects/{domain}/{record_id}/comments",
+            "use": "查看订单、项目或制作版本内留言"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/orders/{record_id}/cancellation",
+            "use": "取消尚未支付且没有结果未知付款的订单"
+          }
+        ],
+        "constraints": [
+          "订单状态仅付款事实；制作进度另查production project，不把PARTIALLY_PAID当制作中。",
+          "项目与订单通过order_id关联；无按订单过滤项目接口，客户端只能关联已加载的可见项目，未完整加载不宣称无项目。",
+          "评论domain=TRADE且对象为ORDER；不显示私聊或客服在线头像。",
+          "取消body reason；有付款结果未知/已付等条件由后端阻止，不能一键抹除交易。",
+          "所有图为设计示例。日期、价格和次数只可来自明确标注的示例记录，不是新商业默认。",
+          "写入保持原Idempotency-Key；已有对象动作携带当前If-Match；身份与权限由后端复核。",
+          "未核验业务数据不补昵称、头像、评分、总数；材料与全文只能通过私有访问接口读取。",
+          "此处订单留言domain必须为大写TRADE，且record_id为ORDER；不能将PAYMENT/QUOTE/REFUND或任意账号作为留言对象。",
+          "本主图为买方OWNER视角。商家/制作方可依自身权限读取相关记录，但不能显示客户确认、客户付款为本人可执行动作。",
+          "制作原始开工evidence仅PRODUCTION_REVIEW运营人员读取；本客户订单页不提供该私有证据下载入口。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/payments",
+          "use": "按原订单付款节点建立记录，不代表扣款"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/orders/{record_id}/cancellation",
+          "use": "按当前版本取消并保存理由"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/record?recordId=ORDER_ID"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-order-mobile.png"
+      ],
+      "implementation_note": "订单、原报价/合同、财务事实和真实许可入口；制作进度与留言属于后续阶段，不绘制虚假履约资料。",
+      "reference_image_sha256": "70c25ea7c4a0f94f146789176bd28a909f76588406f1dfdbe50bf161afedbb5e"
+    },
+    {
+      "id": "APP-31-01",
+      "title": "申请退款",
+      "surface": "app",
+      "image": "design/full-ui-20260929/images/APP-31-01.png",
+      "role": "该付款的买方或商家主体负责人",
+      "layout": [
+        "关联订单与付款",
+        "原约定退款依据",
+        "明细金额",
+        "申请原因",
+        "底部提交审核"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "查看订单记录与原始承诺"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/finance/agreements/{record_id}/records",
+            "use": "查看约定内获准查看的记录"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/reconciliation",
+            "use": "核实指定退款的真实结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds",
+            "use": "按已付明细申请退款"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/supply/assets",
+            "use": "上传私有作品或证据材料"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/finance/records/{record_id}/disputes",
+            "use": "提出质量权利退款或结算异议"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/finance/disputes/{record_id}/responses",
+            "use": "提交异议回复和举证"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/finance/records/{record_id}",
+            "use": "读取获准查看的记录"
+          }
+        ],
+        "constraints": [
+          "退款与finance异议为两条关联但不同流程。退款执行是运营权限，不给普通用户执行按钮；用户可对已有退款查真实结果。",
+          "所有示例仅用于设计，不设为商业默认值。写入保留本次唯一键；已有对象更新附原版本，结果不确定先核对。",
+          "成功状态来自重新读取当前对象；不把保存文本、审批、确认、支付、授权或实付相互替代。",
+          "退款仅原PAYMENT.SUCCEEDED可申请，分配不得超该付款明细尚可退额度；Apple当前只允许该付款全额退款。执行退款仅独立TRADE_REFUND，普通业务方只能申请和查核已提交结果。",
+          "财务争议回复仅DISPUTE.OPEN/ACTION_REQUIRED；RESOLVED后关闭回复输入。相关方可看处理决定，不可调用独立FINANCE_REVIEW的decisions替自己裁定。",
+          "异议必须挂在当前可读的finance记录，并属于同一约定；没有finance约定的普通投诉不得伪造finance_id。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/refunds",
+          "use": "对原成功付款逐项申请退款"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/refund?paymentId=PAYMENT_ID"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-app-refund-form-mobile.png",
+        "evidence/screenshots/pr15-app-refund-form-lower-mobile.png",
+        "evidence/screenshots/pr15-app-refund-requested-mobile.png"
+      ],
+      "implementation_note": "本批只接原付款逐项退款；图册相关财务争议入口属于后续阶段。",
+      "reference_image_sha256": "3faf817f5f285805c0ec202152121f12a6b8666181959a503a8ff48b119c3d70"
+    },
+    {
+      "id": "WEB-09-02",
+      "title": "新建服务规格版本",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-09-02.png",
+      "role": "服务商主体负责人",
+      "layout": [
+        "商品名称与提供方",
+        "服务类型和单价",
+        "约定交付规格",
+        "历史版本关联",
+        "提交独立审核"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "POST",
+            "path": "/api/v1/licensing/products",
+            "use": "提交许可商品审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/specifications",
+            "use": "提交规格审核"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/licensing/records/{record_id}",
+            "use": "查看原商品记录"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/licensing/records/{record_id}/reviews",
+            "use": "提交审核"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "状态"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交规格审核"
+          }
+        ],
+        "constraints": [
+          "许可商品与服务规格是不同接口、不同审核权限。",
+          "变价创建新版本不覆盖旧成交；许可商品可下架，服务规格无下架接口。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/specifications",
+          "use": "提交明确的服务规格新版本"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/specifications/new",
+        "/trade/specifications/:id/new"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-spec-form-desktop.png"
+      ],
+      "implementation_note": "此处新实现的是trade服务规格；licensing商品仍由PR14既有工作区独立办理。",
+      "reference_image_sha256": "3962a152a8c37b9acaad4a18611ba2df56e294ff380bc2b233e4b8ea5b53d576"
+    },
+    {
+      "id": "WEB-09-04",
+      "title": "服务规格独立审核",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-09-04-v2.png",
+      "role": "独立交易审核员",
+      "layout": [
+        "规格快照",
+        "提供方与原条款",
+        "价格和交付约定",
+        "独立审核表单"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "POST",
+            "path": "/api/v1/licensing/products",
+            "use": "提交许可商品审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/specifications",
+            "use": "提交规格审核"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/licensing/records/{record_id}",
+            "use": "查看原商品记录"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/licensing/records/{record_id}/reviews",
+            "use": "提交审核"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "状态"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交规格审核"
+          }
+        ],
+        "constraints": [
+          "许可商品与服务规格是不同接口、不同审核权限。",
+          "变价创建新版本不覆盖旧成交；许可商品可下架，服务规格无下架接口。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/records/{record_id}/reviews",
+          "use": "独立审核当前版本并保留理由"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/reviews/specifications/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-review-specifications-desktop.png"
+      ],
+      "implementation_note": "此处新实现的是trade服务规格；licensing商品仍由PR14既有工作区独立办理。",
+      "reference_image_sha256": "724c59315e0c78f3bf620fa3286d7ea7dd659a391d206f9c95e88395a0d0f0a6"
+    },
+    {
+      "id": "WEB-13-01",
+      "title": "报价与订单记录",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-13-01-v2.png",
+      "role": "交易主体负责人",
+      "layout": [
+        "记录类型选择",
+        "本页记录表",
+        "记录详情入口",
+        "继续加载"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records",
+            "use": "加载订单"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "分期触发"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes",
+            "use": "提交报价审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交审核结论"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+            "use": "确认报价并建立订单"
+          }
+        ],
+        "constraints": [
+          "列表只有kind/cursor/limit。",
+          "审核、客户确认和支付分别处理。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/quotes"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-quotes-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "53f33cfae2ec5daf8308259229c3d1ef80b4b9832f204c0c331d4b9a42a1e626"
+    },
+    {
+      "id": "WEB-13-02",
+      "title": "创建明确报价",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-13-02.png",
+      "role": "商家主体负责人",
+      "layout": [
+        "客户及规则依据",
+        "逐项服务规格与数量",
+        "分期金额及触发条件",
+        "支付渠道与有效期",
+        "提交审核"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records",
+            "use": "加载订单"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "分期触发"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes",
+            "use": "提交报价审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交审核结论"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+            "use": "确认报价并建立订单"
+          }
+        ],
+        "constraints": [
+          "列表只有kind/cursor/limit。",
+          "审核、客户确认和支付分别处理。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/quotes",
+          "use": "提交明确买卖方、多行服务和分期分配"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/quotes/new"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-quote-form-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "067ce840c9f216245a36ca3a891f49684176cb6651ee251be60b566d34cfb926"
+    },
+    {
+      "id": "WEB-13-03",
+      "title": "报价独立审核",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-13-03.png",
+      "role": "独立交易审核员",
+      "layout": [
+        "买卖主体",
+        "服务规格快照",
+        "分期金额与触发条件",
+        "期限渠道与依据",
+        "审核表单"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records",
+            "use": "加载订单"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "分期触发"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes",
+            "use": "提交报价审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交审核结论"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+            "use": "确认报价并建立订单"
+          }
+        ],
+        "constraints": [
+          "列表只有kind/cursor/limit。",
+          "审核、客户确认和支付分别处理。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/records/{record_id}/reviews",
+          "use": "独立审核当前版本并保留理由"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/reviews/quotes/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-review-quotes-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "56c9239bbd64b9b9dbc5e8c2c67dcc04486a77ca8fde6b800f0bfcc1e6e49aea"
+    },
+    {
+      "id": "WEB-13-04",
+      "title": "客户确认报价",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-13-04.png",
+      "role": "买方主体负责人",
+      "layout": [
+        "报价内容摘要",
+        "逐项服务与金额",
+        "付款阶段和期限",
+        "明确确认操作"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records",
+            "use": "加载订单"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "分期触发"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes",
+            "use": "提交报价审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交审核结论"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+            "use": "确认报价并建立订单"
+          }
+        ],
+        "constraints": [
+          "列表只有kind/cursor/limit。",
+          "审核、客户确认和支付分别处理。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/quotes/{record_id}/acceptance",
+          "use": "按原报价指纹和版本确认生成订单"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/quotes/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-quote-confirm-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "e6efc1adef0eab9020eba0c592abbc957c904e0a4fdaa2a3fb11093bc41b7594"
+    },
+    {
+      "id": "WEB-14-01",
+      "title": "订单履约详情",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-14-01.png",
+      "role": "买方或商家主体负责人",
+      "layout": [
+        "保存的订单条款",
+        "服务明细和双方主体",
+        "各付款阶段与实收事实",
+        "制作及许可关联",
+        "业务留言和后续入口"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "确认依据"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/orders/{record_id}/cancellation",
+            "use": "取消订单"
+          }
+        ],
+        "constraints": [
+          "订单状态不能替代每笔付款或生产验收状态。",
+          "关联业务需分别读取并重新校验权限。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/orders/{record_id}/cancellation",
+          "use": "按当前版本取消并保存理由"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/orders/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-order-desktop.png",
+        "evidence/screenshots/pr15-web-order-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "d7e09c4d15ed6b44e09cd0806b1439acf22a61d584bac1b7a3be309b11fc5ab0"
+    },
+    {
+      "id": "WEB-15-01",
+      "title": "付款状态与到账核实",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-15-01-v2.png",
+      "role": "订单买方负责人",
+      "layout": [
+        "订单及当前分期",
+        "应付金额与触发条件",
+        "支付尝试和真实状态",
+        "渠道返回入口",
+        "重新核实"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments",
+            "use": "发起本期支付"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "状态"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+            "use": "核实支付结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds",
+            "use": "提交退款申请"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/reconciliation",
+            "use": "核实已有退款结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交退款审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/execution",
+            "use": "执行已审退款"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/legacy-orders",
+            "use": "登记历史订单"
+          }
+        ],
+        "constraints": [
+          "真实付款与退款均依服务商核实，不能手动改为成功。",
+          "旧单核对使用TRADE_REVIEW；保留原文及证据，不追认新交易。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/payments",
+          "use": "按原订单付款节点建立记录，不代表扣款"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+          "use": "用真实渠道返回核对原付款"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/payments",
+        "/trade/payments/new",
+        "/trade/payments/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-payment-create-desktop.png",
+        "evidence/screenshots/pr15-web-payment-unknown-desktop.png",
+        "evidence/screenshots/pr15-web-payment-mobile.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "c8663ad8cecfdbb0785c38dca1b7210a57922662bfd84344073afd482fa85848"
+    },
+    {
+      "id": "WEB-15-02",
+      "title": "退款申请",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-15-02-v2.png",
+      "role": "买方负责人",
+      "layout": [
+        "原付款和可退明细",
+        "逐项退款金额",
+        "退款原因",
+        "申请提交"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments",
+            "use": "发起本期支付"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "状态"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+            "use": "核实支付结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds",
+            "use": "提交退款申请"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/reconciliation",
+            "use": "核实已有退款结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交退款审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/execution",
+            "use": "执行已审退款"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/legacy-orders",
+            "use": "登记历史订单"
+          }
+        ],
+        "constraints": [
+          "真实付款与退款均依服务商核实，不能手动改为成功。",
+          "旧单核对使用TRADE_REVIEW；保留原文及证据，不追认新交易。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/refunds",
+          "use": "对原成功付款逐项申请退款"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/refunds/new"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-refund-form-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "8b3411308e081a6850e44b9a83b7c48eb1c400b7c58325d5b323a38aece61108"
+    },
+    {
+      "id": "WEB-15-03",
+      "title": "退款独立复核与执行",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-15-03-v2.png",
+      "role": "独立退款审核员",
+      "layout": [
+        "原付款和退款分摊",
+        "当前退款状态",
+        "独立审核意见",
+        "执行已审退款及其即时返回"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments",
+            "use": "发起本期支付"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "状态"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+            "use": "核实支付结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds",
+            "use": "提交退款申请"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/reconciliation",
+            "use": "核实已有退款结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交退款审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/execution",
+            "use": "执行已审退款"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/legacy-orders",
+            "use": "登记历史订单"
+          }
+        ],
+        "constraints": [
+          "真实付款与退款均依服务商核实，不能手动改为成功。",
+          "旧单核对使用TRADE_REVIEW；保留原文及证据，不追认新交易。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/records/{record_id}/reviews",
+          "use": "独立审核当前版本并保留理由"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/refunds/{record_id}/execution",
+          "use": "单独执行已独立批准的原退款"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/refunds/{record_id}/reconciliation",
+          "use": "核对既有退款，不自报成功"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/reviews/refunds/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-review-refunds-desktop.png",
+        "evidence/screenshots/pr15-web-refund-result-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "738faee251a17b87e39cefdc03cf2444ac3266e2139628bfe78910dbe191e43e"
+    },
+    {
+      "id": "WEB-15-04",
+      "title": "历史订单登记与核对",
+      "surface": "web",
+      "image": "design/full-ui-20260929/images/WEB-15-04-v2.png",
+      "role": "具备交易审核授权的旧单登记人员",
+      "layout": [
+        "原系统与原单编号",
+        "历史买卖主体",
+        "原始明细与原条款",
+        "私有原单证明",
+        "登记及审核说明"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "visual_check": "REAL_BROWSER_AND_LAYOUT_CHECKED",
+      "gallery_context": {
+        "note": "原参考图的跨阶段上下文，不能作为本批实际调用或完成清单。",
+        "api_refs": [
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments",
+            "use": "发起本期支付"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/trade/records/{record_id}",
+            "use": "状态"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/payments/{record_id}/reconciliation",
+            "use": "核实支付结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds",
+            "use": "提交退款申请"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/reconciliation",
+            "use": "核实已有退款结果"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/records/{record_id}/reviews",
+            "use": "提交退款审核"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/refunds/{record_id}/execution",
+            "use": "执行已审退款"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/trade/legacy-orders",
+            "use": "登记历史订单"
+          }
+        ],
+        "constraints": [
+          "真实付款与退款均依服务商核实，不能手动改为成功。",
+          "旧单核对使用TRADE_REVIEW；保留原文及证据，不追认新交易。",
+          "实现协议：技术上下文写在action.condition，不渲染为业务表单。Bearer来自当前会话；主体来自已鉴权选择；修改前读取准确目标版本；重复请求复用原幂等键和完整原payload，内容改变新建幂等键；412重读重新确认，409保留原记录核实，不能假成功。",
+          "字段具体化：每个独立required请求子字段对应独立控件；金额/日期/条款/编号/核验不可塞进同一万能下拉框。字段组合只允许作为布局分组，数组对象以逐行多列呈现。"
+        ]
+      },
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "读取本人可见或独立审核可见的原记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "use": "按种类读取可见记录，不作为公开目录"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/legacy-orders",
+          "use": "独立权限登记历史原明细和材料"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/records/{record_id}/reviews",
+          "use": "独立审核当前版本并保留理由"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/legacy-orders/{record_id}/evidence/{asset_id}/content",
+          "use": "按当前记录和权限读取私有原件字节"
+        }
+      ],
+      "constraints": [
+        "图册示例不作为商业默认；名字、头像、价格、时间与统计事实仅采用真实接口数据。",
+        "普通操作使用当前OWNER身份，独立审核不传办事主体且由服务器核验单独权限。",
+        "写入保留原Idempotency-Key、body和原版本；未知结果先读取核对，412重新确认，身份变化清理私有内容。",
+        "订单合同读取内嵌data.contract，保存不代表签署；付款、退款和许可生效分别核验。",
+        "本批不调用生产制作、留言、财务争议、结算或支付平台通知接口；SDK与正式服务未验证。"
+      ],
+      "route_patterns": [
+        "/trade/legacy/new",
+        "/trade/reviews/legacy/:id"
+      ],
+      "screenshots": [
+        "evidence/screenshots/pr15-web-legacy-form-desktop.png",
+        "evidence/screenshots/pr15-web-legacy-reviewed-desktop.png"
+      ],
+      "implementation_note": "按本批实际API及design-qa.md的结构适配；原始参考图与上下文保留。",
+      "reference_image_sha256": "89ca0feaee0bb72f1d2be38eb0659366ffde9dcdd388f80d7559ebf6a5559733"
+    }
+  ],
+  "scope_note": "api_refs为实际PR15交易调用清单；gallery_context含跨阶段原图说明，不能据此宣称PR16–17已接入。",
+  "feature_commit": "f0441b3899533a3098d426ecc7561c899efe5417",
+  "artifact_index": "evidence/verification-summary.json"
+}
