@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.6.0-rc.1
+  version: 0.7.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers and front-end integration remain unverified.
 servers:
 - url: http://127.0.0.1:3000
@@ -3514,6 +3514,807 @@ paths:
                   const: RSA2
               additionalProperties:
                 type: string
+  /api/v1/production/projects:
+    post:
+      operationId: createProductionProject
+      summary: 为已确认订单建立制作项目
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionProjectRequest'
+    get:
+      operationId: listProductionProjects
+      summary: 查看本人机构或获分配的制作项目
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/production/records/{record_id}/reviews:
+    post:
+      operationId: reviewProductionRecord
+      summary: 独立核验开工依据或交付版本
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionReviewRequest'
+  /api/v1/production/projects/{record_id}/assignment:
+    post:
+      operationId: assignProductionProject
+      summary: 指定制作方当前成员负责制作
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionAssignmentRequest'
+  /api/v1/production/projects/{record_id}/versions:
+    post:
+      operationId: submitProductionVersion
+      summary: 提交不可覆盖的剧本样片粗剪或成片
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionVersionRequest'
+  /api/v1/production/versions/{record_id}/feedback:
+    post:
+      operationId: submitProductionFeedback
+      summary: 客户对当前版本提出修改或确认验收
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionFeedbackRequest'
+  /api/v1/production/records/{record_id}:
+    get:
+      operationId: getProductionRecord
+      summary: 查看有权限的制作记录
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Act as a project party; omit only for authorized reviewer.
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/production/projects/{project_id}/records:
+    get:
+      operationId: listProductionRecords
+      summary: 查看项目版本反馈及任务
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Act as a project party; omit only for authorized reviewer.
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - FILE
+          - VERSION
+          - FEEDBACK
+          - GENERATION
+          - DIGITAL_ASSET
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/production/projects/{project_id}/files:
+    post:
+      operationId: uploadProductionFile
+      summary: 上传私有制作文件
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: media_type
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - text/plain
+          - video/mp4
+          - audio/mpeg
+          - image/png
+          - application/pdf
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              maxLength: 52428800
+  /api/v1/production/versions/{record_id}/content:
+    get:
+      operationId: downloadProductionContent
+      summary: 权限与付款核验后读取预览或交付文件
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Act as a project party; omit only for authorized reviewer.
+      - name: variant
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - preview
+          - final
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/production/projects/{record_id}/evidence:
+    get:
+      operationId: downloadProductionEvidence
+      summary: 审核人员读取开工依据
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/production/projects/{record_id}/generation-readiness:
+    get:
+      operationId: getProductionReadiness
+      summary: 查看长期数字人服务是否启用
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionReadinessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/production/projects/{record_id}/generation:
+    post:
+      operationId: requestProductionGeneration
+      summary: 请求长期数字人创建生成或删除
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionGenerationRequest'
+  /api/v1/production/generations/{record_id}/job:
+    get:
+      operationId: getProductionJob
+      summary: 查看后台任务真实执行状态
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Act as a project party; omit only for authorized reviewer.
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionJobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/production/generations/{record_id}/retry:
+    post:
+      operationId: retryProductionJob
+      summary: 审核人员恢复原任务并查原结果
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied
+            real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductionRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionRetryRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -3744,6 +4545,1176 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ProductionRecord:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: PROJECT
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            type: string
+            format: uuid
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - IN_REVIEW
+            - READY
+            - IN_PROGRESS
+            - ACCEPTED
+            - REJECTED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/ProductionProjectData'
+        required:
+        - id
+        - kind
+        - project_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: FILE
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            type: string
+            format: uuid
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - UPLOADING
+            - READY
+            - FAILED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/ProductionFileData'
+        required:
+        - id
+        - kind
+        - project_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: VERSION
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            type: string
+            format: uuid
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - IN_REVIEW
+            - APPROVED
+            - REJECTED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/ProductionVersionData'
+        required:
+        - id
+        - kind
+        - project_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: FEEDBACK
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            type: string
+            format: uuid
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - RECORDED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/ProductionFeedbackData'
+        required:
+        - id
+        - kind
+        - project_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: GENERATION
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            type: string
+            format: uuid
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - QUEUED
+            - PENDING
+            - SUCCEEDED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/ProductionGenerationData'
+        required:
+        - id
+        - kind
+        - project_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: DIGITAL_ASSET
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            type: string
+            format: uuid
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - READY
+            - DELETE_REQUIRED
+            - DELETING
+            - DELETED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/ProductionDigitalAssetData'
+        required:
+        - id
+        - kind
+        - project_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+    ProductionProjectData:
+      type: object
+      additionalProperties: false
+      properties:
+        line_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        buyer_party_id:
+          type: string
+          format: uuid
+        merchant_party_id:
+          type: string
+          format: uuid
+        producer_party_id:
+          type: string
+          format: uuid
+        script_version_id:
+          type: string
+          format: uuid
+        license_project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        assignee_account_id:
+          type: string
+          format: uuid
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 100
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 100
+        consent_ids:
+          type: array
+          maxItems: 20
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        evidence_asset_id:
+          type: string
+          format: uuid
+        specification:
+          $ref: '#/components/schemas/TradeSpecification'
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 100000
+        contract_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        current:
+          type: object
+          additionalProperties: false
+          properties:
+            SCRIPT:
+              type: string
+              format: uuid
+            SAMPLE:
+              type: string
+              format: uuid
+            ROUGH_CUT:
+              type: string
+              format: uuid
+            FINAL:
+              type: string
+              format: uuid
+          required: []
+        accepted:
+          type: object
+          additionalProperties: false
+          properties:
+            SCRIPT:
+              type: string
+              format: uuid
+            SAMPLE:
+              type: string
+              format: uuid
+            ROUGH_CUT:
+              type: string
+              format: uuid
+            FINAL:
+              type: string
+              format: uuid
+          required: []
+        revisions:
+          type: object
+          additionalProperties: false
+          properties:
+            SCRIPT:
+              type: integer
+              minimum: 0
+              maximum: 4294967294
+            SAMPLE:
+              type: integer
+              minimum: 0
+              maximum: 4294967294
+            ROUGH_CUT:
+              type: integer
+              minimum: 0
+              maximum: 4294967294
+            FINAL:
+              type: integer
+              minimum: 0
+              maximum: 4294967294
+          required: []
+        change_requests:
+          type: integer
+          minimum: 0
+          maximum: 4294967294
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              verification:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    contract_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    identity_verified:
+                      const: true
+                    signatures_verified:
+                      const: true
+                    rights_verified:
+                      const: true
+                  required:
+                  - contract_sha256
+                  - identity_verified
+                  - signatures_verified
+                  - rights_verified
+                - oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      script_reviewed:
+                        const: true
+                    required:
+                    - script_reviewed
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      script_reviewed:
+                        const: true
+                      specification_reviewed:
+                        const: true
+                      audio_reviewed:
+                        const: true
+                      branding_reviewed:
+                        const: true
+                    required:
+                    - script_reviewed
+                    - specification_reviewed
+                    - audio_reviewed
+                    - branding_reviewed
+                - type: 'null'
+              account_id:
+                type: string
+                format: uuid
+              method:
+                const: EXTERNAL_MANUAL_REVIEW
+            required:
+            - decision
+            - reason
+            - verification
+            - account_id
+            - method
+          - type: 'null'
+        assignment_reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - line_id
+      - buyer_party_id
+      - merchant_party_id
+      - producer_party_id
+      - script_version_id
+      - license_project_id
+      - assignee_account_id
+      - purpose
+      - territory
+      - consent_ids
+      - evidence_asset_id
+      - specification
+      - quantity
+      - contract_sha256
+      - current
+      - accepted
+      - revisions
+      - change_requests
+      - review
+    ProductionFileData:
+      type: object
+      additionalProperties: false
+      properties:
+        object_key:
+          type: string
+          minLength: 1
+          maxLength: 512
+        media_type:
+          type: string
+          enum:
+          - text/plain
+          - video/mp4
+          - audio/mpeg
+          - image/png
+          - application/pdf
+        byte_size:
+          type: integer
+          minimum: 1
+          maximum: 52428800
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - object_key
+      - media_type
+      - byte_size
+      - content_sha256
+    ProductionVersionData:
+      type: object
+      additionalProperties: false
+      properties:
+        stage:
+          type: string
+          enum:
+          - SCRIPT
+          - SAMPLE
+          - ROUGH_CUT
+          - FINAL
+        revision:
+          type: integer
+          minimum: 1
+          maximum: 100000
+        file_id:
+          type: string
+          format: uuid
+        preview_file_id:
+          type: string
+          format: uuid
+        basis_version_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              verification:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    contract_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    identity_verified:
+                      const: true
+                    signatures_verified:
+                      const: true
+                    rights_verified:
+                      const: true
+                  required:
+                  - contract_sha256
+                  - identity_verified
+                  - signatures_verified
+                  - rights_verified
+                - oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      script_reviewed:
+                        const: true
+                    required:
+                    - script_reviewed
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      script_reviewed:
+                        const: true
+                      specification_reviewed:
+                        const: true
+                      audio_reviewed:
+                        const: true
+                      branding_reviewed:
+                        const: true
+                    required:
+                    - script_reviewed
+                    - specification_reviewed
+                    - audio_reviewed
+                    - branding_reviewed
+                - type: 'null'
+              account_id:
+                type: string
+                format: uuid
+              method:
+                const: EXTERNAL_MANUAL_REVIEW
+            required:
+            - decision
+            - reason
+            - verification
+            - account_id
+            - method
+          - type: 'null'
+        last_feedback_id:
+          type: string
+          format: uuid
+      required:
+      - stage
+      - revision
+      - file_id
+      - preview_file_id
+      - basis_version_id
+      - note
+      - review
+    ProductionFeedbackData:
+      type: object
+      additionalProperties: false
+      properties:
+        version_id:
+          type: string
+          format: uuid
+        stage:
+          type: string
+          enum:
+          - SCRIPT
+          - SAMPLE
+          - ROUGH_CUT
+          - FINAL
+        decision:
+          type: string
+          enum:
+          - ACCEPT
+          - REQUEST_CHANGES
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        checklist:
+          anyOf:
+          - oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                script_reviewed:
+                  const: true
+              required:
+              - script_reviewed
+            - type: object
+              additionalProperties: false
+              properties:
+                script_reviewed:
+                  const: true
+                specification_reviewed:
+                  const: true
+                audio_reviewed:
+                  const: true
+                branding_reviewed:
+                  const: true
+              required:
+              - script_reviewed
+              - specification_reviewed
+              - audio_reviewed
+              - branding_reviewed
+          - type: 'null'
+      required:
+      - version_id
+      - stage
+      - decision
+      - note
+      - checklist
+    ProductionGenerationData:
+      type: object
+      additionalProperties: false
+      properties:
+        operation:
+          type: string
+          enum:
+          - CREATE_LONG_LIVED
+          - RENDER
+          - DELETE_LONG_LIVED
+        avatar_id:
+          type: string
+          format: uuid
+        asset_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        consent_id:
+          type: string
+          format: uuid
+        provider_code:
+          type: string
+          minLength: 1
+          maxLength: 128
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        config_revision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        script_version_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        upstream_task_id:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        job_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        result:
+          anyOf:
+          - oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                asset_id:
+                  type: string
+                  format: uuid
+                asset_type:
+                  const: LONG_LIVED_AVATAR
+              required:
+              - asset_id
+              - asset_type
+            - type: object
+              additionalProperties: false
+              properties:
+                deleted:
+                  const: true
+              required:
+              - deleted
+            - type: object
+              additionalProperties: false
+              properties:
+                result_ref:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                delivery_state:
+                  const: AWAITING_PRIVATE_IMPORT_AND_REVIEW
+              required:
+              - result_ref
+              - delivery_state
+          - type: 'null'
+      required:
+      - operation
+      - avatar_id
+      - asset_id
+      - consent_id
+      - provider_code
+      - environment
+      - config_revision
+      - script_version_id
+      - upstream_task_id
+      - job_id
+      - result
+    ProductionDigitalAssetData:
+      type: object
+      additionalProperties: false
+      properties:
+        avatar_id:
+          type: string
+          format: uuid
+        consent_id:
+          type: string
+          format: uuid
+        provider_code:
+          type: string
+          minLength: 1
+          maxLength: 128
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        config_revision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        upstream_asset_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+        asset_type:
+          const: LONG_LIVED_AVATAR
+      required:
+      - avatar_id
+      - consent_id
+      - provider_code
+      - environment
+      - config_revision
+      - upstream_asset_ref
+      - asset_type
+    ProductionRecordResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ProductionRecord'
+      required:
+      - meta
+      - data
+    ProductionListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/ProductionRecord'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    ProductionReadinessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            provider_code:
+              type: string
+              minLength: 1
+              maxLength: 128
+            environment:
+              type: string
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            config_revision:
+              type: string
+              minLength: 1
+              maxLength: 128
+            current_status:
+              type: string
+              enum:
+              - NOT_ENABLED
+              - SERVICE_READY
+            reason_code:
+              anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 128
+              - type: 'null'
+          required:
+          - provider_code
+          - environment
+          - config_revision
+          - current_status
+          - reason_code
+      required:
+      - meta
+      - data
+    ProductionJobResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            record_id:
+              type: string
+              format: uuid
+            job_id:
+              type: string
+              format: uuid
+            current_status:
+              type: string
+              enum:
+              - PENDING
+              - RUNNING
+              - RETRY
+              - FAILED
+              - BLOCKED
+              - SUCCEEDED
+            attempts:
+              type: integer
+              minimum: 0
+              maximum: 4294967294
+            last_error:
+              anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 80
+              - type: 'null'
+          required:
+          - record_id
+          - job_id
+          - current_status
+          - attempts
+          - last_error
+      required:
+      - meta
+      - data
+    ProductionProjectRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        script_version_id:
+          type: string
+          format: uuid
+        license_project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        assignee_account_id:
+          type: string
+          format: uuid
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 100
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 100
+        consent_ids:
+          type: array
+          maxItems: 20
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - order_id
+      - line_id
+      - script_version_id
+      - license_project_id
+      - assignee_account_id
+      - purpose
+      - territory
+      - consent_ids
+      - evidence_asset_id
+    ProductionReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        verification:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              contract_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              identity_verified:
+                const: true
+              signatures_verified:
+                const: true
+              rights_verified:
+                const: true
+            required:
+            - contract_sha256
+            - identity_verified
+            - signatures_verified
+            - rights_verified
+          - oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                script_reviewed:
+                  const: true
+              required:
+              - script_reviewed
+            - type: object
+              additionalProperties: false
+              properties:
+                script_reviewed:
+                  const: true
+                specification_reviewed:
+                  const: true
+                audio_reviewed:
+                  const: true
+                branding_reviewed:
+                  const: true
+              required:
+              - script_reviewed
+              - specification_reviewed
+              - audio_reviewed
+              - branding_reviewed
+          - type: 'null'
+      required:
+      - decision
+      - reason
+      - verification
+    ProductionAssignmentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        assignee_account_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - assignee_account_id
+      - reason
+    ProductionVersionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        stage:
+          type: string
+          enum:
+          - SCRIPT
+          - SAMPLE
+          - ROUGH_CUT
+          - FINAL
+        file_id:
+          type: string
+          format: uuid
+        preview_file_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - stage
+      - file_id
+      - preview_file_id
+      - note
+    ProductionFeedbackRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+          - ACCEPT
+          - REQUEST_CHANGES
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        checklist:
+          anyOf:
+          - oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                script_reviewed:
+                  const: true
+              required:
+              - script_reviewed
+            - type: object
+              additionalProperties: false
+              properties:
+                script_reviewed:
+                  const: true
+                specification_reviewed:
+                  const: true
+                audio_reviewed:
+                  const: true
+                branding_reviewed:
+                  const: true
+              required:
+              - script_reviewed
+              - specification_reviewed
+              - audio_reviewed
+              - branding_reviewed
+          - type: 'null'
+      required:
+      - decision
+      - note
+      - checklist
+    ProductionGenerationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        operation:
+          type: string
+          enum:
+          - CREATE_LONG_LIVED
+          - RENDER
+          - DELETE_LONG_LIVED
+        avatar_id:
+          type: string
+          format: uuid
+        asset_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        consent_id:
+          type: string
+          format: uuid
+      required:
+      - operation
+      - avatar_id
+      - asset_id
+      - consent_id
+    ProductionRetryRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - reason_ref
     TradeSpecification:
       type: object
       additionalProperties: false
