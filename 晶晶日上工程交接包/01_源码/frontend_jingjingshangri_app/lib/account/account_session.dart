@@ -21,6 +21,23 @@ class AccountSession extends ChangeNotifier {
   bool supplyAccessDenied = false;
   bool licensingAccessDenied = false;
   bool tradeAccessDenied = false;
+  bool productionAccessDenied = false;
+  List<Map<String, dynamic>> get productionPending =>
+      api.productionPending(token: _token, party: partyId);
+  void denyProduction() {
+    _epoch++;
+    api.clearSupplyOperations();
+    productionAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryProductionAccess() async {
+    await loadParties();
+    await refreshParty();
+    productionAccessDenied = false;
+    notifyListeners();
+  }
+
   List<Map<String, dynamic>> get tradePending =>
       api.tradePending(token: _token, party: partyId);
   void denyTrade() {
@@ -125,6 +142,7 @@ class AccountSession extends ChangeNotifier {
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
+    productionAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -164,6 +182,11 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/production/') &&
+          started == _epoch) {
+        denyProduction();
+      }
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/trade/') &&
           started == _epoch) {
@@ -219,18 +242,25 @@ class AccountSession extends ChangeNotifier {
           actingParty: actingParty,
           validate: validate);
   Future<Uint8List> readBytes(String path,
-      {required String actingParty}) async {
+      {required String actingParty, Map<String, dynamic>? query}) async {
     final started = _epoch;
     if (_token == null) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
     try {
-      final bytes =
-          await api.readBytes(path, token: _token!, party: actingParty);
+      final bytes = await api.readBytes(path,
+          token: _token!, party: actingParty, query: query);
       _check(started);
       return bytes;
     } on AccountError catch (e) {
-      if (e.status == 403 && started == _epoch) denySupply();
+      if (started == _epoch) {
+        if (path.startsWith('/api/v1/production/') &&
+            [403, 404].contains(e.status)) {
+          denyProduction();
+        } else if (e.status == 403) {
+          denySupply();
+        }
+      }
       if (e.status == 401 && started == _epoch) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
@@ -279,6 +309,7 @@ class AccountSession extends ChangeNotifier {
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
+    productionAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();

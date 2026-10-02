@@ -250,7 +250,7 @@ void main() {
         existing);
     expect(adapter.requests.last.data['allocations'][0]['amount_minor'], 28001);
   });
-  test('Apple仅全额退款，样片尾款节点不开放，商家只能读其订单', () async {
+  test('Apple仅全额退款，原样片节点交服务器核验，商家只能读其订单', () async {
     final api = TradeApi(await buyerSession(FakeAccountAdapter()));
     final p =
         TradeRecord.parse(tradeData('PAYMENT', provider: 'APPLE'), personId);
@@ -264,7 +264,9 @@ void main() {
             []),
         throwsA(isA<AccountError>()));
     final o = TradeRecord.parse(tradeData('ORDER'), personId);
-    expect(() => api.payment(o, 'sample'), throwsA(isA<AccountError>()));
+    // PR16 allows the original acceptance installment; an unready server
+    // response still cannot be promoted to a successful payment record.
+    await expectLater(api.payment(o, 'sample'), throwsA(isA<AccountError>()));
     final s = await buyerSession(FakeAccountAdapter());
     s.select(identity(orgId));
     expect(
