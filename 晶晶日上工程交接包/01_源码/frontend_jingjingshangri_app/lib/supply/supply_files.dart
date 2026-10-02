@@ -3,6 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/app_visual.dart';
+import '../account/account_theme.dart';
 import 'supply_api.dart';
 import 'supply_models.dart';
 import 'supply_widgets.dart';
@@ -208,30 +210,45 @@ class _SupplyFilesState extends State<SupplyFiles> {
               ]),
             ])),
       if (widget.onChanged != null) ...[
-        supplyNote(
-            '支持 PDF、TXT、JPG、PNG、WAV、MP3、MP4、BIN。单个文件不超过 8 MiB，仅当前投稿身份可管理。'),
         if (pending != null)
           supplyNote(
               blocked
                   ? '上次上传需平台核实存储结果；已暂停继续上传，请联系平台处理。'
                   : '有一份上传的结果未确认。恢复原文件后会引用到本栏，请核对材料对应关系。',
               error: true),
-        OutlinedButton.icon(
-            onPressed: _busy ||
-                    !widget.enabled ||
-                    blocked ||
-                    (pending != null &&
-                        pending['query']['purpose'] != widget.purpose)
-                ? null
-                : () => _upload(retry: pending != null),
-            icon: const Icon(Icons.upload_file_outlined),
-            label: Text(_busy
-                ? '正在处理文件…'
-                : pending != null
-                    ? '恢复原文件并核对'
-                    : widget.single && widget.ids.isNotEmpty
-                        ? '更换稿件'
-                        : '选择并上传文件')),
+        DashedUpload(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+              Row(children: [
+                const Icon(Icons.description_outlined,
+                    size: 32, color: AccountTheme.accent),
+                const SizedBox(width: 12),
+                Expanded(
+                    child: OutlinedButton.icon(
+                        onPressed: _busy ||
+                                !widget.enabled ||
+                                blocked ||
+                                (pending != null &&
+                                    pending['query']['purpose'] !=
+                                        widget.purpose)
+                            ? null
+                            : () => _upload(retry: pending != null),
+                        icon: const Icon(Icons.upload_file_outlined),
+                        label: Text(_busy
+                            ? '正在处理文件…'
+                            : pending != null
+                                ? '恢复原文件并核对'
+                                : widget.single && widget.ids.isNotEmpty
+                                    ? '更换稿件'
+                                    : '选择并上传文件'))),
+              ]),
+              const SizedBox(height: 10),
+              const Text(
+                  'PDF、TXT、JPG、PNG、WAV、MP3、MP4、BIN · 每个不超过 8 MiB · 当前身份私有',
+                  style: TextStyle(
+                      fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+            ])),
       ],
       if (_notice != null) supplyNote(_notice!),
     ]);

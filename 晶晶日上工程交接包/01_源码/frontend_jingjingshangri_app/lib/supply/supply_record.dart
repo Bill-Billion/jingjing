@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
+import '../account/app_visual.dart';
 import 'supply_api.dart';
 import 'supply_files.dart';
 import 'supply_models.dart';
@@ -86,15 +88,16 @@ class _RecordState extends State<_Record> {
                                 : '撤回记录将保留。后续修改需另存新修订。'),
                             if (action == 'WITHDRAW') ...[
                               const SizedBox(height: 12),
-                              TextField(
-                                  key: const Key('withdraw-reason'),
-                                  controller: reason,
-                                  maxLength: 1000,
-                                  minLines: 2,
-                                  maxLines: 4,
-                                  decoration: InputDecoration(
-                                      labelText: '撤回理由 *',
-                                      errorText: validation))
+                              appField(
+                                  '撤回理由 *',
+                                  TextField(
+                                      key: const Key('withdraw-reason'),
+                                      controller: reason,
+                                      maxLength: 1000,
+                                      minLines: 2,
+                                      maxLines: 4,
+                                      decoration: InputDecoration(
+                                          errorText: validation)))
                             ]
                           ]),
                       actions: [
@@ -179,23 +182,41 @@ class _RecordState extends State<_Record> {
               child: const Text('核对原操作结果'))
         ]),
       if (r != null) ...[
-        supplyCard(
-            work ? content['title'] as String : data['display_name'] as String,
-            [
-              supplyStatus(r['current_status'] as String),
-              const SizedBox(height: 16),
-              supplyFact('资料版本', '第 ${r['revision']} 版'),
-              supplyFact('记录编号', r['id']),
-              supplyFact('当前所属身份',
-                  widget.session.party?['display_name'] ?? r['owner_party_id']),
-              if (work) ...[
-                supplyFact('作品编号', r['stream_ref']),
-                supplyFact(
-                    '作品类型', content['kind'] == 'ORIGINAL' ? '原作' : '项目改编'),
-                supplyFact('提交审核时间', version['submitted_at'])
-              ] else
-                supplyFact('作者介绍', data['description'])
-            ]),
+        Card(
+            child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                          work
+                              ? content['title'] as String
+                              : data['display_name'] as String,
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 12),
+                      Wrap(
+                          spacing: 12,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                    color: AccountTheme.canvas,
+                                    borderRadius: BorderRadius.circular(6)),
+                                child: Text('修订 ${r['revision']}',
+                                    style: const TextStyle(fontSize: 14))),
+                            supplyStatus(r['current_status'] as String),
+                          ]),
+                      const SizedBox(height: 16),
+                      if (work)
+                        supplyNote(version['current_status'] == 'DRAFT'
+                            ? '当前为草稿，尚未提交审核。可以完善后提交，或基于本稿新增修订。'
+                            : '此版本已经保存；更新内容需要新增修订。'),
+                      if (!work) supplyFact('作者介绍', data['description']),
+                    ]))),
         if (!work) ...[
           supplyCard('申请证明',
               [files(data['evidence_asset_ids'] as List, 'RIGHTS_EVIDENCE')]),
@@ -228,11 +249,23 @@ class _RecordState extends State<_Record> {
               const Divider()
             ]
           ]),
-          supplyCard('独立双审事实', [
+          supplyCard('审核状态', [
             for (final channel in ['RIGHTS', 'CONTENT']) ...[
-              Text(channel == 'RIGHTS' ? '权利审核' : '内容审核',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700)),
+              Row(children: [
+                CircleAvatar(
+                    radius: 20,
+                    backgroundColor: AccountTheme.canvas,
+                    child: Icon(
+                        channel == 'RIGHTS'
+                            ? Icons.verified_user_outlined
+                            : Icons.description_outlined,
+                        color: AccountTheme.muted)),
+                const SizedBox(width: 12),
+                Expanded(
+                    child: Text(channel == 'RIGHTS' ? '权利审核' : '内容审核',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700))),
+              ]),
               const SizedBox(height: 8),
               if (!(version['reviews'] as List)
                   .any((v) => v['channel'] == channel))
@@ -281,6 +314,22 @@ class _RecordState extends State<_Record> {
                     busy || pending != null ? null : () => act('WITHDRAW'),
                 child: const Text('撤回此版')),
         ],
+        Card(
+            child: ExpansionTile(
+                title: const Text('版本资料'),
+                childrenPadding: const EdgeInsets.all(16),
+                children: [
+              supplyFact('资料版本', '第 ${r['revision']} 版'),
+              supplyFact('记录编号', r['id']),
+              supplyFact('当前所属身份',
+                  widget.session.party?['display_name'] ?? r['owner_party_id']),
+              if (work) ...[
+                supplyFact('作品编号', r['stream_ref']),
+                supplyFact(
+                    '作品类型', content['kind'] == 'ORIGINAL' ? '原作' : '项目改编'),
+                supplyFact('提交审核时间', version['submitted_at']),
+              ],
+            ])),
       ],
     ]);
   }

@@ -58,7 +58,7 @@ function ruleContent(value: unknown): value is RuleContent {
     value.format_version === 'rule-content-v1' && string(value.id) && string(value.rule_key, 100) &&
     string(value.version) && textObject(value.terms) && hash(value.content_sha256)
 }
-function snapshotContent(value: unknown): value is SnapshotContent {
+export function snapshotContent(value: unknown): value is SnapshotContent {
   if (!object(value) || !exact(value, ['format_version', 'id', 'contract_version_id', 'party_ids', 'created_at', 'rule_contents', 'commitments', 'object_version', 'current_status', 'signing_method', 'content_sha256'])) return false
   const rules = value.rule_contents, parties = value.party_ids
   return value.format_version === 'contract-content-v1' && string(value.id) && string(value.contract_version_id) &&

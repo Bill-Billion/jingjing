@@ -203,6 +203,7 @@ void main() {
             supplyReply(r, adapter, profileStatus: 'PENDING_REVIEW'));
     final session = (await tester.runAsync(() => contractSession(adapter)))!;
     await pump(tester, session, const SupplyPage());
+    await reveal(tester, find.widgetWithText(FilledButton, '投稿原作'));
     final button =
         tester.widget<FilledButton>(find.widgetWithText(FilledButton, '投稿原作'));
     expect(button.onPressed, isNull);

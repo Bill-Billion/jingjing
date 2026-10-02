@@ -10,7 +10,7 @@ String shortSupplyId(String id) => id.length > 16
     : id;
 Widget supplyCard(String title, List<Widget> children) => Card(
     child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text(title,
@@ -23,19 +23,33 @@ Widget supplyNote(String text, {bool error = false}) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
     child: Text(text,
         style: TextStyle(
+            fontSize: 14,
             height: 1.5,
             color: error ? AccountTheme.danger : AccountTheme.muted)));
 Widget supplyFact(String label, Object? value) => Padding(
     padding: const EdgeInsets.only(bottom: 14),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label,
-          style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-      const SizedBox(height: 5),
-      SelectableText('${value ?? '—'}', style: const TextStyle(height: 1.5))
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SizedBox(
+          width: 96,
+          child: Text(label,
+              style: const TextStyle(fontSize: 14, color: AccountTheme.muted))),
+      const SizedBox(width: 8),
+      Expanded(
+          child: SelectableText('${value ?? '—'}',
+              style: const TextStyle(fontSize: 14, height: 1.5)))
     ]));
-Widget supplyStatus(String status) => Text(supplyStatuses[status] ?? status,
-    style: const TextStyle(
-        fontWeight: FontWeight.w600, color: AccountTheme.accent));
+Widget supplyStatus(String status) => Align(
+    alignment: Alignment.centerLeft,
+    child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+            color: AccountTheme.accent.withValues(alpha: .08),
+            borderRadius: BorderRadius.circular(6)),
+        child: Text(supplyStatuses[status] ?? status,
+            style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AccountTheme.accent))));
 Widget supplyScaffold(BuildContext context, String title, List<Widget> children,
         {Widget? action}) =>
     Scaffold(

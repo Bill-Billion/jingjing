@@ -19,6 +19,21 @@ class AccountSession extends ChangeNotifier {
   int _epoch = 0;
   int get epoch => _epoch;
   bool supplyAccessDenied = false;
+  bool licensingAccessDenied = false;
+  void denyLicensing() {
+    _epoch++;
+    api.clearSupplyOperations();
+    licensingAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryLicensingAccess() async {
+    await loadParties();
+    await refreshParty();
+    licensingAccessDenied = false;
+    notifyListeners();
+  }
+
   void denySupply() {
     _epoch++;
     api.clearSupplyOperations();
@@ -91,6 +106,7 @@ class AccountSession extends ChangeNotifier {
   void _clear() {
     api.clearSupplyOperations();
     supplyAccessDenied = false;
+    licensingAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -134,6 +150,11 @@ class AccountSession extends ChangeNotifier {
           path.startsWith('/api/v1/supply/') &&
           started == _epoch) {
         denySupply();
+      }
+      if (error.status == 403 &&
+          path.startsWith('/api/v1/licensing/') &&
+          started == _epoch) {
+        denyLicensing();
       }
       if (error.status == 401 && started == _epoch) {
         _clear();
@@ -233,6 +254,7 @@ class AccountSession extends ChangeNotifier {
     if (value['party']['id'] == partyId) return;
     api.clearSupplyOperations();
     supplyAccessDenied = false;
+    licensingAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();

@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/app_visual.dart';
 import '../account/account_session.dart';
 import 'supply_api.dart';
 import 'supply_files.dart';
 import 'supply_models.dart';
 import 'supply_widgets.dart';
+import '../licensing/license_api.dart';
 
 class SupplyForm extends StatelessWidget {
-  const SupplyForm({super.key, required this.work, this.previousId});
+  const SupplyForm(
+      {super.key, required this.work, this.previousId, this.bindingId});
   final bool work;
-  final String? previousId;
+  final String? previousId, bindingId;
   @override
   Widget build(BuildContext context) => SupplyGate(
       returnRoute:
-          '${work ? '/supply/work/new' : '/supply/profile'}${previousId == null ? '' : '?previousId=$previousId'}',
-      builder: (s) =>
-          _SupplyFormBody(session: s, work: work, previousId: previousId));
+          '${work ? '/supply/work/new' : '/supply/profile'}${previousId != null ? '?previousId=$previousId' : bindingId != null ? '?bindingId=$bindingId' : ''}',
+      builder: (s) => _SupplyFormBody(
+          session: s,
+          work: work,
+          previousId: previousId,
+          bindingId: bindingId));
 }
 
 class _Credit {
@@ -30,10 +36,13 @@ class _Credit {
 
 class _SupplyFormBody extends StatefulWidget {
   const _SupplyFormBody(
-      {required this.session, required this.work, this.previousId});
+      {required this.session,
+      required this.work,
+      this.previousId,
+      this.bindingId});
   final AccountSession session;
   final bool work;
-  final String? previousId;
+  final String? previousId, bindingId;
   @override
   State<_SupplyFormBody> createState() => _SupplyFormBodyState();
 }
@@ -44,7 +53,7 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
   final form = GlobalKey<FormState>();
   List<String> evidence = [], manuscript = [];
   final credits = <_Credit>[];
-  Map<String, dynamic>? previous;
+  Map<String, dynamic>? previous, adaptation;
   String? error, receiptId;
   bool loaded = false;
   bool loading = true, busy = false, approved = false;
@@ -111,14 +120,53 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
         source = profile;
       }
       if (!mounted || ticket != generation) return;
+      adaptation = null;
       if (widget.work &&
-          source != null &&
-          source['data']['version']['content']['kind'] != 'ORIGINAL') {
-        throw const AccountError(409, 'PROJECT_LICENSE_NOT_READY');
+          (widget.bindingId != null ||
+              source?['data']['version']['content']['kind'] ==
+                  'PROJECT_ADAPTATION')) {
+        final licensing = LicenseApi(widget.session);
+        final sourceContent = source?['data']['version']['content'];
+        final binding = widget.bindingId != null
+            ? await licensing.record(widget.bindingId!)
+            : (await licensing.all('BINDING'))
+                .where((v) =>
+                    v.data['project_id'] == sourceContent['project_id'] &&
+                    v.data['work_version_id'] ==
+                        sourceContent['source_version_id'])
+                .firstOrNull;
+        if (binding == null ||
+            binding.kind != 'BINDING' ||
+            binding.owner != widget.session.partyId ||
+            binding.status != 'ACTIVE' ||
+            binding.parent == null) {
+          throw const AccountError(409, 'PROJECT_LICENSE_NOT_READY');
+        }
+        final grant = await licensing.record(binding.parent!),
+            project = await licensing.record(binding.data['project_id']);
+        if (grant.kind != 'GRANT' ||
+            project.kind != 'PROJECT' ||
+            grant.status != 'ACTIVE' ||
+            !grant.terms!.matches(project) ||
+            !(grant.terms!.data['rights'] as List).contains('ADAPT') ||
+            grant.data['work_version_id'] != binding.data['work_version_id']) {
+          throw const AccountError(409, 'PROJECT_LICENSE_NOT_READY');
+        }
+        adaptation = {
+          'project_id': binding.data['project_id'],
+          'source_version_id': binding.data['work_version_id']
+        };
       }
+      if (!mounted || ticket != generation) return;
       previous = source;
       approved = profile?['current_status'] == 'APPROVED';
       final saved = pending?['body'];
+      if (saved is Map && saved['kind'] == 'PROJECT_ADAPTATION') {
+        adaptation = {
+          'source_version_id': saved['source_version_id'],
+          'project_id': saved['project_id']
+        };
+      }
       if (saved is Map) {
         populate(Map<String, dynamic>.from(saved));
       } else if (source != null) {
@@ -211,9 +259,9 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
       'work_id': previous?['stream_ref'],
       'previous_version_id': previous?['id'],
       'title': title.text.trim(),
-      'kind': 'ORIGINAL',
-      'source_version_id': null,
-      'project_id': null,
+      'kind': adaptation == null ? 'ORIGINAL' : 'PROJECT_ADAPTATION',
+      'source_version_id': adaptation?['source_version_id'],
+      'project_id': adaptation?['project_id'],
       'content_asset_id': manuscript.single,
       'evidence_ids': evidence,
       'credits': [
@@ -279,7 +327,9 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
     return supplyScaffold(
         context,
         widget.work
-            ? (previous == null ? '投稿原作' : '保存作品新修订')
+            ? (previous == null
+                ? (adaptation == null ? '投稿原作' : '投稿项目改稿')
+                : '保存作品新修订')
             : (previous == null ? '作者申请' : '补正与更新资料'),
         [
           Card(
@@ -344,36 +394,50 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
                               '第 ${previous!['revision']} 版 · ${shortSupplyId(previous!['id'] as String)}'),
                           supplyNote('本次保存为新的版本，旧版资料保留。')
                         ]),
-                      supplyCard(widget.work ? '作品资料' : '申请资料', [
-                        TextFormField(
-                            key: const Key('supply-title'),
-                            controller: title,
-                            onChanged: (_) => setState(() {}),
-                            enabled: !locked,
-                            maxLength: widget.work ? 200 : 120,
-                            validator: (v) =>
-                                requiredText(v, widget.work ? 200 : 120),
-                            decoration: InputDecoration(
-                                labelText:
-                                    widget.work ? '作品标题 *' : '作者展示名称 *')),
-                        const SizedBox(height: 14),
-                        if (!widget.work)
-                          TextFormField(
-                              key: const Key('supply-description'),
-                              controller: description,
-                              onChanged: (_) => setState(() {}),
-                              enabled: !locked,
-                              maxLength: 2000,
-                              minLines: 4,
-                              maxLines: 8,
-                              validator: (v) => requiredText(v, 2000),
-                              decoration:
-                                  const InputDecoration(labelText: '作者介绍 *')),
-                        if (widget.work) ...[
-                          supplyFact('作品类型', '原作'),
-                          supplyNote('当前支持原作投稿。项目改编需接入项目许可后开放。')
-                        ],
+                      supplyCard(widget.work ? '作品标题 *' : '作者展示名称 *', [
+                        Semantics(
+                            label: widget.work ? '作品标题 *' : '作者展示名称 *',
+                            child: TextFormField(
+                                key: const Key('supply-title'),
+                                controller: title,
+                                onChanged: (_) => setState(() {}),
+                                enabled: !locked,
+                                maxLength: widget.work ? 200 : 120,
+                                validator: (v) =>
+                                    requiredText(v, widget.work ? 200 : 120),
+                                decoration: InputDecoration(
+                                    hintText:
+                                        widget.work ? '请填写作品标题' : '请填写展示名称'))),
                       ]),
+                      if (!widget.work)
+                        supplyCard('作者介绍 *', [
+                          Semantics(
+                              label: '作者介绍 *',
+                              child: TextFormField(
+                                  key: const Key('supply-description'),
+                                  controller: description,
+                                  onChanged: (_) => setState(() {}),
+                                  enabled: !locked,
+                                  maxLength: 2000,
+                                  minLines: 4,
+                                  maxLines: 8,
+                                  validator: (v) => requiredText(v, 2000),
+                                  decoration: const InputDecoration(
+                                      hintText: '填写作者或机构的创作介绍'))),
+                        ]),
+                      if (widget.work)
+                        supplyCard('作品类型', [
+                          appNotice(adaptation == null ? '原作' : '项目改稿',
+                              icon: Icons.description_outlined),
+                          if (adaptation != null) ...[
+                            supplyFact(
+                                '来源作品版本', adaptation!['source_version_id']),
+                            supplyFact('用途项目', adaptation!['project_id']),
+                            supplyNote(
+                                '来源和项目来自已绑定许可，保存时再次由服务器核验。作者、权利人及代理仍须按实际关系填写并举证。'),
+                          ] else
+                            supplyNote('原作与项目改稿分别保存。改稿请从有效许可的绑定记录进入。'),
+                        ]),
                       if (widget.work)
                         supplyCard('私有稿件 *', [
                           files(manuscript, (v) => manuscript = v, single: true)
@@ -381,73 +445,92 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
                       supplyCard(widget.work ? '作品权利证明 *' : '申请证明材料 *',
                           [files(evidence, (v) => evidence = v)]),
                       if (widget.work)
-                        supplyCard('作者、权利人与代理', [
-                          supplyNote(
-                              '每个主体按实际关系分别填写并举证。作者不自动视为权利人；至少明确一位权利人。主体编号由对方准确提供。'),
-                          for (final c in credits)
-                            Container(
-                                key: ObjectKey(c),
-                                margin: const EdgeInsets.only(bottom: 20),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: const Color(0xFFE2E3DB)),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Row(children: [
-                                        Expanded(
-                                            child: Text(creditRoles[c.role]!,
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w700))),
-                                        IconButton(
-                                            tooltip: '移除这一行',
-                                            onPressed: locked
-                                                ? null
-                                                : () => setState(() {
-                                                      credits.remove(c);
-                                                      c.dispose();
-                                                    }),
-                                            icon: const Icon(Icons.close,
-                                                size: 20))
-                                      ]),
-                                      TextFormField(
-                                          controller: c.party,
-                                          onChanged: (_) => setState(() {}),
-                                          enabled: !locked,
-                                          autocorrect: false,
-                                          enableSuggestions: false,
-                                          validator: (v) => supplyId(v?.trim())
-                                              ? null
-                                              : '请填完整的小写主体编号',
-                                          decoration: const InputDecoration(
-                                              labelText: '主体编号 *')),
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: TextButton(
-                                              onPressed: locked
-                                                  ? null
-                                                  : () => setState(() => c.party
-                                                      .text = api.owner()),
-                                              child: const Text('使用当前身份'))),
-                                      const Text('此主体此角色的证明 *'),
-                                      const SizedBox(height: 8),
-                                      files(c.evidence, (v) => c.evidence = v),
-                                    ])),
-                          Wrap(spacing: 8, runSpacing: 8, children: [
-                            for (final role in creditRoles.keys)
-                              OutlinedButton.icon(
-                                  onPressed: locked || credits.length >= 30
-                                      ? null
-                                      : () => setState(
-                                          () => credits.add(_Credit(role))),
-                                  icon: const Icon(Icons.add, size: 18),
-                                  label: Text('添加${creditRoles[role]}'))
-                          ]),
-                        ]),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Padding(
+                                  padding: EdgeInsets.only(bottom: 12),
+                                  child: Text('作者、权利人与代理',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700))),
+                              supplyNote(
+                                  '每个主体按实际关系分别填写并举证。作者不自动视为权利人；至少明确一位权利人。主体编号由对方准确提供。'),
+                              for (final c in credits)
+                                Container(
+                                    key: ObjectKey(c),
+                                    margin: const EdgeInsets.only(bottom: 20),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: const Color(0xFFE2E3DB)),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Row(children: [
+                                            Expanded(
+                                                child: Text(
+                                                    creditRoles[c.role]!,
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700))),
+                                            IconButton(
+                                                tooltip: '移除这一行',
+                                                onPressed: locked
+                                                    ? null
+                                                    : () => setState(() {
+                                                          credits.remove(c);
+                                                          c.dispose();
+                                                        }),
+                                                icon: const Icon(Icons.close,
+                                                    size: 20))
+                                          ]),
+                                          appField(
+                                              '主体编号 *',
+                                              TextFormField(
+                                                  controller: c.party,
+                                                  onChanged: (_) =>
+                                                      setState(() {}),
+                                                  enabled: !locked,
+                                                  autocorrect: false,
+                                                  enableSuggestions: false,
+                                                  validator: (v) =>
+                                                      supplyId(v?.trim())
+                                                          ? null
+                                                          : '请填完整的小写主体编号',
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          hintText:
+                                                              '粘贴完整主体编号'))),
+                                          Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: TextButton(
+                                                  onPressed: locked
+                                                      ? null
+                                                      : () => setState(() => c
+                                                          .party
+                                                          .text = api.owner()),
+                                                  child: const Text('使用当前身份'))),
+                                          const Text('此主体此角色的证明 *'),
+                                          const SizedBox(height: 8),
+                                          files(c.evidence,
+                                              (v) => c.evidence = v),
+                                        ])),
+                              Wrap(spacing: 8, runSpacing: 8, children: [
+                                for (final role in creditRoles.keys)
+                                  OutlinedButton.icon(
+                                      onPressed: locked || credits.length >= 30
+                                          ? null
+                                          : () => setState(
+                                              () => credits.add(_Credit(role))),
+                                      icon: const Icon(Icons.add, size: 18),
+                                      label: Text('添加${creditRoles[role]}'))
+                              ]),
+                            ]),
                       if (widget.work && !approved)
                         supplyNote('当前作者申请尚未通过，暂不能保存作品。', error: true),
                       if (widget.work)

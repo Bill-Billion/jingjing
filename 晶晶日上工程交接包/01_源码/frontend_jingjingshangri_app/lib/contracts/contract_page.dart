@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../account/app_visual.dart';
+import '../supply/supply_widgets.dart';
 import 'contract_api.dart';
 import 'contract_reader.dart';
 import 'contract_text.dart';
@@ -54,7 +56,7 @@ class _ContractPageState extends State<ContractPage> {
 
   Widget _card(String title, List<Widget> children, {IconData? icon}) => Card(
           child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
@@ -71,14 +73,7 @@ class _ContractPageState extends State<ContractPage> {
           ...children,
         ]),
       ));
-  Widget _fact(String label, dynamic value) => Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label,
-            style: const TextStyle(color: AccountTheme.muted, fontSize: 13)),
-        const SizedBox(height: 5),
-        SelectableText('$value', style: const TextStyle(height: 1.5)),
-      ]));
+  Widget _fact(String label, dynamic value) => supplyFact(label, value);
   Widget _notice(String message, {bool error = false}) => Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Text(message,
@@ -143,17 +138,18 @@ class _ContractPageState extends State<ContractPage> {
                                         '当前办事身份',
                                         session.party?['display_name'] ??
                                             session.partyId),
-                                    TextField(
-                                        key: const Key('contract-number'),
-                                        controller: _number,
-                                        autocorrect: false,
-                                        enableSuggestions: false,
-                                        decoration: const InputDecoration(
-                                            labelText: '合同编号',
-                                            hintText: '粘贴完整合同编号'),
-                                        onChanged: (_) => reader.clear(),
-                                        onSubmitted: (_) =>
-                                            reader.open(_number.text)),
+                                    appField(
+                                        '合同编号',
+                                        TextField(
+                                            key: const Key('contract-number'),
+                                            controller: _number,
+                                            autocorrect: false,
+                                            enableSuggestions: false,
+                                            decoration: const InputDecoration(
+                                                hintText: '粘贴完整合同编号'),
+                                            onChanged: (_) => reader.clear(),
+                                            onSubmitted: (_) =>
+                                                reader.open(_number.text))),
                                     const SizedBox(height: 12),
                                     FilledButton.icon(
                                         key: const Key('read-contract'),
@@ -178,27 +174,11 @@ class _ContractPageState extends State<ContractPage> {
                                   if (reader.error != null)
                                     _notice(reader.error!, error: true),
                                   if (snapshot != null) ...[
-                                    Container(
-                                        margin:
-                                            const EdgeInsets.only(bottom: 16),
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                            color: const Color(0xFFF2E8DA),
-                                            borderRadius:
-                                                BorderRadius.circular(12)),
-                                        child: const Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Icon(Icons.lock_outline,
-                                                  color: AccountTheme.accent),
-                                              SizedBox(width: 12),
-                                              Expanded(
-                                                  child: Text(
-                                                      '合同内容已保存，尚未签署\n阅读不代表已付款或已取得使用许可。',
-                                                      style: TextStyle(
-                                                          height: 1.6)))
-                                            ])),
+                                    const ManuscriptHero(
+                                        title: '合同内容已保存',
+                                        subtitle:
+                                            '保存时尚未签署，留存原约定。\n实际签署与付款须另行核验。'),
+                                    const SizedBox(height: 16),
                                     _card(
                                         '合同信息',
                                         [
@@ -288,20 +268,27 @@ class _ContractPageState extends State<ContractPage> {
                                         [
                                           _notice(
                                               '这里仅检查服务条件。结果不代表获得付款、签署或使用许可。'),
-                                          DropdownButtonFormField<String>(
-                                              initialValue: reader.action,
-                                              decoration: const InputDecoration(
-                                                  labelText: '要检查的服务'),
-                                              items: contractActions.entries
-                                                  .map((e) => DropdownMenuItem(
-                                                      value: e.key,
-                                                      child: Text(e.value)))
-                                                  .toList(),
-                                              onChanged: (value) {
-                                                if (value != null) {
-                                                  reader.changeAction(value);
-                                                }
-                                              }),
+                                          appField(
+                                              '要检查的服务',
+                                              DropdownButtonFormField<String>(
+                                                  isExpanded: true,
+                                                  itemHeight: null,
+                                                  initialValue: reader.action,
+                                                  decoration:
+                                                      const InputDecoration(),
+                                                  items: contractActions.entries
+                                                      .map((e) =>
+                                                          DropdownMenuItem(
+                                                              value: e.key,
+                                                              child: Text(
+                                                                  e.value)))
+                                                      .toList(),
+                                                  onChanged: (value) {
+                                                    if (value != null) {
+                                                      reader
+                                                          .changeAction(value);
+                                                    }
+                                                  })),
                                           const SizedBox(height: 12),
                                           OutlinedButton.icon(
                                               onPressed: reader.readinessLoading

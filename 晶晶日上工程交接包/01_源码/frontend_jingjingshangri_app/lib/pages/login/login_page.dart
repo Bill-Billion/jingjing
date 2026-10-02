@@ -10,7 +10,7 @@ import '../../widgets/primary_button.dart';
 
 /// 手机号 + 验证码登录。
 /// - 登录成功清除旧业务路由，进入新版“我的”；
-/// - 供给深链接只恢复目标读取，不继续此前的写入或旧业务；
+/// - 供给及许可深链接只恢复目标读取，不继续此前的写入或旧业务；
 /// - 只使用账号服务实际发送的验证码；未启用时明确显示失败。
 class LoginPage extends StatefulWidget {
   /// 来源场景说明，如「下单前请先登录」
@@ -86,6 +86,14 @@ class _LoginPageState extends State<LoginPage> {
 
   bool get _phoneValid =>
       RegExp(r'^1[3-9]\d{9}$').hasMatch(_phoneCtrl.text.trim());
+
+  bool get _canLogin =>
+      _pendingLogin ||
+      (_phoneValid &&
+          _challengeId != null &&
+          _challengePhone == _phoneCtrl.text.trim() &&
+          RegExp(r'^\d{6}$').hasMatch(_codeCtrl.text.trim()) &&
+          _agreed);
 
   void _toast(String msg) {
     if (!mounted) return;
@@ -166,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
       _toast('请输入 6 位验证码');
       return;
     }
-    if (!_agreed) {
+    if (!_agreed && !_pendingLogin) {
       _toast('请先阅读并同意用户协议与隐私政策');
       return;
     }
@@ -194,13 +202,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _enterAfterLogin() async {
-    // Resume only an explicit supply read/form route with fresh session reads.
+    // Resume only an explicit current read/form route with fresh session reads.
     // No old private route or pending action survives login.
     final route = Uri.tryParse(widget.returnRoute ?? '');
     final destination = route != null &&
             !route.hasAuthority &&
-            ['/supply', '/supply/profile', '/supply/work/new', '/supply/record']
-                .contains(route.path)
+            !route.hasScheme &&
+            [
+              '/supply',
+              '/supply/profile',
+              '/supply/work/new',
+              '/supply/record',
+              '/enter',
+              '/licensing',
+              '/licensing/catalog',
+              '/licensing/record',
+              '/licensing/reading',
+              '/licensing/evidence',
+              '/licensing/project/new',
+              '/licensing/bind',
+              '/orders',
+              '/my-projects'
+            ].contains(route.path)
         ? route.toString()
         : '/my';
     if (destination != '/my') {
@@ -231,134 +254,163 @@ class _LoginPageState extends State<LoginPage> {
         }
       })),
       body: SafeArea(
-          child: Center(
+          child: Align(
+              alignment: Alignment.topCenter,
               child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-        child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 440),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(Icons.wb_sunny_outlined,
-                      color: AccountTheme.accent, size: 48),
-                  const SizedBox(height: 16),
-                  const Text('晶晶日上',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 4)),
-                  const SizedBox(height: 32),
-                  const Text('手机号登录',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 8),
-                  Text(widget.reason ?? '欢迎回来，验证手机号后继续。',
-                      style: const TextStyle(
-                          color: AccountTheme.muted, height: 1.6)),
-                  const SizedBox(height: 24),
-                  TextField(
-                    enabled:
-                        !_sending && !busy && !_pendingSms && !_pendingLogin,
-                    controller: _phoneCtrl,
-                    focusNode: _phoneFocus,
-                    keyboardType: TextInputType.phone,
-                    maxLength: 11,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                        labelText: '手机号',
-                        hintText: '请输入 11 位手机号',
-                        counterText: '',
-                        prefixIcon: Icon(Icons.phone_iphone_outlined)),
-                    onChanged: (_) => setState(() {
-                      if (_challengePhone != _phoneCtrl.text.trim()) {
-                        _challengeId = null;
-                        _timer?.cancel();
-                        _countdown = 0;
-                        _codeCtrl.clear();
-                      }
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(children: [
-                    Expanded(
-                        child: TextField(
-                      enabled: !_sending && !busy && !_pendingLogin,
-                      controller: _codeCtrl,
-                      focusNode: _codeFocus,
-                      keyboardType: TextInputType.number,
-                      maxLength: 6,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                          labelText: '验证码',
-                          hintText: '6 位验证码',
-                          counterText: ''),
-                    )),
-                    const SizedBox(width: 12),
-                    OutlinedButton(
-                        onPressed: _countdown > 0 ||
-                                _sending ||
-                                busy ||
-                                _pendingLogin ||
-                                !_phoneValid
-                            ? null
-                            : _sendCode,
-                        child: Text(_sending
-                            ? '发送中…'
-                            : _countdown > 0
-                                ? '${_countdown}s 后重发'
-                                : '获取验证码')),
-                  ]),
-                  if (_errorText != null)
-                    Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Text(_errorText!,
-                            style: const TextStyle(
-                                color: AccountTheme.danger, height: 1.5))),
-                  const SizedBox(height: 20),
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: IconButton(
-                            tooltip: '同意用户协议与隐私政策',
-                            onPressed: () => setState(() => _agreed = !_agreed),
-                            icon: Icon(
-                                _agreed
-                                    ? Icons.check_circle_rounded
-                                    : Icons.radio_button_unchecked_rounded,
-                                color: _agreed
-                                    ? AccountTheme.accent
-                                    : AccountTheme.muted))),
-                    Expanded(
-                        child: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                          const Text('我已阅读并同意', style: TextStyle(fontSize: 13)),
-                          TextButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/agreement'),
-                              child: const Text('《用户协议》')),
-                          const Text('和', style: TextStyle(fontSize: 13)),
-                          TextButton(
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, '/privacy'),
-                              child: const Text('《隐私政策》')),
+                padding: const EdgeInsets.fromLTRB(16, 40, 16, 32),
+                child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 440),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text('晶晶日上',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 4)),
+                          const SizedBox(height: 16),
+                          Text(widget.reason ?? '使用本人手机号登录，随后选择操作身份',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AccountTheme.muted,
+                                  height: 1.6)),
+                          const SizedBox(height: 32),
+                          const Text('手机号',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          Semantics(
+                              label: '手机号',
+                              child: TextField(
+                                enabled: !_sending &&
+                                    !busy &&
+                                    !_pendingSms &&
+                                    !_pendingLogin,
+                                controller: _phoneCtrl,
+                                focusNode: _phoneFocus,
+                                keyboardType: TextInputType.phone,
+                                maxLength: 11,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: const InputDecoration(
+                                    hintText: '请输入 11 位手机号',
+                                    counterText: '',
+                                    prefixIcon:
+                                        Icon(Icons.phone_iphone_outlined)),
+                                onChanged: (_) => setState(() {
+                                  if (_challengePhone !=
+                                      _phoneCtrl.text.trim()) {
+                                    _challengeId = null;
+                                    _timer?.cancel();
+                                    _countdown = 0;
+                                    _codeCtrl.clear();
+                                  }
+                                }),
+                              )),
+                          const SizedBox(height: 24),
+                          const Text('验证码',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          Row(children: [
+                            Expanded(
+                                child: Semantics(
+                                    label: '验证码',
+                                    child: TextField(
+                                      enabled:
+                                          !_sending && !busy && !_pendingLogin,
+                                      controller: _codeCtrl,
+                                      focusNode: _codeFocus,
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (_) => setState(() {}),
+                                      maxLength: 6,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                      decoration: const InputDecoration(
+                                          prefixIcon: Icon(
+                                              Icons.verified_user_outlined),
+                                          hintText: '6 位验证码',
+                                          counterText: ''),
+                                    ))),
+                            const SizedBox(width: 12),
+                            OutlinedButton(
+                                onPressed: _countdown > 0 ||
+                                        _sending ||
+                                        busy ||
+                                        _pendingLogin ||
+                                        !_phoneValid
+                                    ? null
+                                    : _sendCode,
+                                child: Text(_sending
+                                    ? '发送中…'
+                                    : _countdown > 0
+                                        ? '${_countdown}s 后重发'
+                                        : '获取验证码')),
+                          ]),
+                          if (_errorText != null)
+                            Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text(_errorText!,
+                                    style: const TextStyle(
+                                        color: AccountTheme.danger,
+                                        height: 1.5))),
+                          const SizedBox(height: 20),
+                          Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                    width: 44,
+                                    height: 44,
+                                    child: IconButton(
+                                        tooltip: '同意用户协议与隐私政策',
+                                        onPressed: () =>
+                                            setState(() => _agreed = !_agreed),
+                                        icon: Icon(
+                                            _agreed
+                                                ? Icons.check_circle_rounded
+                                                : Icons
+                                                    .radio_button_unchecked_rounded,
+                                            color: _agreed
+                                                ? AccountTheme.accent
+                                                : AccountTheme.muted))),
+                                Expanded(
+                                    child: Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        children: [
+                                      const Text('我已阅读并同意',
+                                          style: TextStyle(fontSize: 13)),
+                                      TextButton(
+                                          onPressed: () => Navigator.pushNamed(
+                                              context, '/agreement'),
+                                          child: const Text('《用户协议》')),
+                                      const Text('和',
+                                          style: TextStyle(fontSize: 13)),
+                                      TextButton(
+                                          onPressed: () => Navigator.pushNamed(
+                                              context, '/privacy'),
+                                          child: const Text('《隐私政策》')),
+                                    ])),
+                              ]),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                              onPressed: busy || _sending || !_canLogin
+                                  ? null
+                                  : _login,
+                              child: Text(busy ? '正在登录…' : '登录 / 注册')),
+                          const SizedBox(height: 14),
+                          const Text('未注册的手机号验证通过后将自动注册',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: AccountTheme.muted,
+                                  fontSize: 13,
+                                  height: 1.6)),
                         ])),
-                  ]),
-                  const SizedBox(height: 20),
-                  FilledButton(
-                      onPressed: busy || _sending ? null : _login,
-                      child: Text(busy ? '正在登录…' : '登录 / 注册')),
-                  const SizedBox(height: 14),
-                  const Text('未注册的手机号验证通过后将自动注册',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: AccountTheme.muted,
-                          fontSize: 13,
-                          height: 1.6)),
-                ])),
-      ))),
+              ))),
     ));
   }
 }

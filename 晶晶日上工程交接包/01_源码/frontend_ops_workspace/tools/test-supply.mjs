@@ -35,7 +35,7 @@ try {
   }
   const profileWrite = () => ({ path: '/supply/profiles', kind: 'PROFILE', label: '提交申请', body: { display_name: '真实输入', description: '权利来源说明', evidence_asset_ids: [id(3)], previous_profile_id: null } })
   test('安全登录返回覆盖本批各路由，拒绝外站和伪编号', async () => {
-    for (const path of ['/supply/profiles', `/supply/profiles/${id(11)}`, '/supply/works', '/supply/works/new', `/supply/works/${id(20)}`, `/supply/works/${id(20)}/revision`, '/supply/reviews/profile', `/supply/reviews/rights/${id(20)}`, '/supply/reviews/content']) assert.equal(loginRedirect(path), path)
+    for (const path of ['/supply/profiles', `/supply/profiles/${id(11)}`, '/supply/works', '/supply/works/new', `/supply/adaptations/${id(15)}/new`, `/supply/works/${id(20)}`, `/supply/works/${id(20)}/revision`, '/supply/reviews/profile', `/supply/reviews/rights/${id(20)}`, '/supply/reviews/content']) assert.equal(loginRedirect(path), path)
     for (const path of ['//host/supply/works', '/supply/works/new?role=OWNER', '/supply/works/../new', '/supply/works/' + '-'.repeat(36), '/supply/reviews/admin', '/supply/works\n', ['/supply/works']]) assert.equal(loginRedirect(path), '/workspace')
   })
   test('负责人列表准确带身份头，审核列表不带身份且只用kind/cursor/limit', async () => {
@@ -184,13 +184,15 @@ try {
     const entries = [
       ['/workspace','账号与机构'], ['/contracts','合同与规则'],
       ['/supply/profiles','供给申请'], ['/supply/works','我的作品'],
-      ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'],
+      ['/licensing/catalog','选剧本'], ['/licensing/products','许可商品'], ['/licensing/reservations','许可办理'], ['/licensing/projects','项目与绑定'], ['/licensing/readings','受控阅稿'],
+      ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'], ['/licensing/reviews/products','许可核验'],
     ]
     for (const [view,path,current] of [
       ['ContractsView','/contracts','/contracts'],
       ['WorkspaceView','/workspace','/workspace'],
       ['SupplyView','/supply/profiles','/supply/profiles'],
       ['SupplyView','/supply/works/new','/supply/works'],
+      ['SupplyView',`/supply/adaptations/${id(15)}/new`,'/supply/works'],
       ['SupplyView',`/supply/works/${id(20)}/revision`,'/supply/works'],
       ['SupplyView',`/supply/reviews/profile/${id(11)}`,'/supply/reviews/profile'],
       ['SupplyView',`/supply/reviews/content/${id(20)}`,'/supply/reviews/rights'],
@@ -223,7 +225,14 @@ try {
     const render=component=>renderToString(createSSRApp({render:()=>component}))
     const record=submitted(),snapshot=structuredClone(record)
     for(const contentFirst of [false,true]){
-      const html=await render(h(Panel,{record,assets:{},contentFirst})),visible=html.replace(/<[^>]*>/g,'')
+      const html=await render(h(Panel,{record,assets:{},contentFirst}))
+      const identifiers=html.match(/<details\b([^>]*)>([\s\S]*?)<\/details>/)
+      assert.ok(identifiers,'完整编号应可由用户主动展开')
+      assert.doesNotMatch(identifiers[1],/\bopen(?:\s|=|$)/,'完整编号默认折叠')
+      assert.ok(identifiers[2].includes('查看完整记录与身份编号'))
+      for(const value of [record.id,record.stream_ref,record.created_by,record.owner_party_id])assert.ok(identifiers[2].includes(value))
+      // SSR includes closed details in the markup; only its summary is visible.
+      const visible=html.replace(/<details\b[^>]*>[\s\S]*?<summary\b[^>]*>([\s\S]*?)<\/summary>[\s\S]*?<\/details>/g,'$1').replace(/<[^>]*>/g,'')
       assert.equal(html.indexOf('当前版本正文')<html.indexOf('作者、权利人和代理'),contentFirst)
       assert.ok(html.indexOf('记录编号')<html.indexOf('当前版本正文'))
       for(const value of [record.id,record.stream_ref,record.created_by,id(2),id(3)]){assert.ok(html.includes(`title="${value}"`));assert.ok(visible.includes(api.shortSupplyId(value)));assert.equal(visible.includes(value),false)}

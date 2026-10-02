@@ -6,6 +6,8 @@ import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
 import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
+import 'licensing/license_pages.dart';
+import 'licensing/license_forms.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -54,8 +56,10 @@ class JingjingShangriApp extends StatelessWidget {
         '/supply' => const SupplyPage(),
         '/supply/profile' => SupplyForm(
             work: false, previousId: uri.queryParameters['previousId']),
-        '/supply/work/new' =>
-          SupplyForm(work: true, previousId: uri.queryParameters['previousId']),
+        '/supply/work/new' => SupplyForm(
+            work: true,
+            previousId: uri.queryParameters['previousId'],
+            bindingId: uri.queryParameters['bindingId']),
         '/supply/record' =>
           SupplyRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
         '/settings' => const AppHelpPage(),
@@ -75,10 +79,19 @@ class JingjingShangriApp extends StatelessWidget {
             description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),
         '/humans' || '/human-detail' => const AppUnavailablePage(
             title: '艺人发现', description: '公开人物目录暂未开放。作者及数字人私有材料不会作为公开推荐展示。'),
-        '/orders' => const AppUnavailablePage(
-            title: '订单与许可', description: '订单与使用许可暂未开放。作品审核通过不代表已购买、获准使用或可以销售。'),
-        '/my-projects' => const AppUnavailablePage(
-            title: '我的项目', description: '本人参与的项目与发行进度页面暂未开放。你可以先整理作品与权利材料。'),
+        '/orders' || '/licensing' => LicenseRecordsPage(
+            kind: uri.queryParameters['kind'] ?? 'RESERVATION'),
+        '/my-projects' => const LicenseRecordsPage(kind: 'PROJECT'),
+        '/licensing/catalog' => const LicenseCatalog(),
+        '/licensing/record' =>
+          LicenseRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/licensing/evidence' => LicenseEvidenceForm(
+            reservationId: uri.queryParameters['reservationId'] ?? ''),
+        '/licensing/project/new' => const LicenseProjectForm(),
+        '/licensing/bind' =>
+          LicenseBindingForm(grantId: uri.queryParameters['grantId'] ?? ''),
+        '/licensing/reading' =>
+          LicenseReaderPage(recordId: uri.queryParameters['recordId'] ?? ''),
         '/messages' || '/chat' => const AppUnavailablePage(
             title: '业务通知与留言', description: '订单和项目内的通知、留言暂未开放。这里不会提供通用私信聊天。'),
         '/ai-create' || '/my-works' => const AppUnavailablePage(
@@ -95,6 +108,9 @@ class JingjingShangriApp extends StatelessWidget {
             title: '反馈与售后', description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),
         _ => const AppUnknownPage(),
       };
+    }
+    if (page is AppShell) {
+      return AppShellRoute(settings: settings, shell: page);
     }
     return MaterialPageRoute<dynamic>(settings: settings, builder: (_) => page);
   }

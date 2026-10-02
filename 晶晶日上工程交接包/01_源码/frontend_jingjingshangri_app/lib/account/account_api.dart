@@ -22,7 +22,10 @@ class AccountApi {
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/');
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/licensing/');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -53,7 +56,8 @@ class AccountApi {
     void Function(Map<String, dynamic>)? validate,
   }) {
     final writing = method != 'GET';
-    final supply = path.startsWith('/api/v1/supply/');
+    final supply = path.startsWith('/api/v1/supply/') ||
+        path.startsWith('/api/v1/licensing/');
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null
