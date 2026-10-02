@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { TextValue } from '@/api/modules/contracts'
-defineProps<{ value: TextValue; label?: string; nested?: boolean }>()
+defineProps<{ value: TextValue; label?: string; nested?: boolean; fieldLabels?: Readonly<Record<string, string>> }>()
 </script>
 
 <template>
   <div :class="nested ? 'text-node' : 'contract-text'" :tabindex="nested ? undefined : 0" :aria-label="label">
-    <ol v-if="Array.isArray(value)" class="text-list"><li v-for="(item, index) in value" :key="index"><ContractText :value="item" nested /></li></ol>
-    <dl v-else-if="value !== null && typeof value === 'object'" class="text-fields"><div v-for="(item, key) in value" :key="key"><dt>{{ key }}</dt><dd><ContractText :value="item" nested /></dd></div></dl>
+    <ol v-if="Array.isArray(value)" class="text-list"><li v-for="(item, index) in value" :key="index"><ContractText :value="item" :field-labels="fieldLabels" nested /></li></ol>
+    <dl v-else-if="value !== null && typeof value === 'object'" class="text-fields"><div v-for="(item, key) in value" :key="key"><dt>{{ fieldLabels?.[String(key)] || key }}</dt><dd><ContractText :value="item" :field-labels="fieldLabels" nested /></dd></div></dl>
     <pre v-else class="text-value">{{ value === null ? 'null' : String(value) }}</pre>
     <span v-if="Array.isArray(value) && value.length === 0" class="empty-value">[]</span>
     <span v-else-if="value !== null && typeof value === 'object' && Object.keys(value).length === 0" class="empty-value">{}</span>

@@ -447,6 +447,9 @@ String licenseMoney(Map<String, dynamic> money, {int? amount}) {
 String licenseError(Object error, {bool writing = false}) {
   if (error is! AccountError) return '处理未完成，请重新读取当前记录。';
   if (error.code == 'CONTEXT_CHANGED') return '办事身份已变化，旧内容已清空。';
+  if (error.code == 'LICENSE_PAYMENT_NOT_READY') {
+    return '原许可约定的生效付款金额尚未核实，请到订单与付款核对。付款不替代签署、身份及权属核验。';
+  }
   if (error.code == 'PENDING_OPERATION_CHANGED') {
     return '上次结果尚未确认，请先恢复原操作，不能更换内容。';
   }

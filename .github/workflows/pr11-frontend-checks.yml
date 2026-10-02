@@ -1,4 +1,4 @@
-name: App 与网页账号、合同、作品及许可页面检查
+name: App 与网页账号、合同、作品、许可及交易页面检查
 
 on:
   push:
@@ -11,6 +11,9 @@ on:
       - 'scripts/pr13-ui-test-server.cjs'
       - 'scripts/pr14-ui-test-server.cjs'
       - 'scripts/pr14-ui-browser-check.mjs'
+      - 'scripts/pr15-ui-test-server.cjs'
+      - 'scripts/pr15-ui-browser-check.mjs'
+      - 'scripts/pr15-app-browser-check.mjs'
   pull_request:
     branches: [integration, main, 'core/**']
     paths:
@@ -21,6 +24,9 @@ on:
       - 'scripts/pr13-ui-test-server.cjs'
       - 'scripts/pr14-ui-test-server.cjs'
       - 'scripts/pr14-ui-browser-check.mjs'
+      - 'scripts/pr15-ui-test-server.cjs'
+      - 'scripts/pr15-ui-browser-check.mjs'
+      - 'scripts/pr15-app-browser-check.mjs'
   workflow_dispatch:
 
 permissions:
@@ -51,6 +57,7 @@ jobs:
       - run: npm run test:contracts
       - run: npm run test:supply
       - run: npm run test:licensing
+      - run: npm run test:trade
       - run: npm run build
       - name: 安装浏览器及隔离接口测试依赖
         run: |
@@ -102,12 +109,32 @@ jobs:
           test -f "$PR14_UI_STATE_FILE"
           export CHROME_PATH="$(node -e 'const {createRequire}=require("node:module"); const r=createRequire(process.cwd()+"/晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json"); console.log(r("playwright-core").chromium.executablePath())')"
           node scripts/pr14-ui-browser-check.mjs
+      - name: 用真实交易接口检查报价、付款、退款与历史依据页面
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+          PR15_WEB_URL: http://127.0.0.1:5203
+          VITE_BACKEND_ORIGIN: http://127.0.0.1:3262
+        run: |
+          node scripts/pr15-ui-test-server.cjs --test-only > .local/pr15-api.log 2>&1 &
+          api_pid=$!
+          npm --prefix 晶晶日上工程交接包/01_源码/frontend_ops_workspace run dev -- --host 127.0.0.1 --port 5203 --strictPort > .local/pr15-vite.log 2>&1 &
+          vite_pid=$!
+          trap 'kill "$api_pid" "$vite_pid" 2>/dev/null || true; wait "$api_pid" "$vite_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if test -f .local/pr15-ui-runtime.json && curl --fail --silent http://127.0.0.1:5203/ > /dev/null; then break; fi
+            sleep 1
+          done
+          test -f .local/pr15-ui-runtime.json
+          export CHROME_PATH="$(node -e 'const {createRequire}=require("node:module"); const r=createRequire(process.cwd()+"/晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json"); console.log(r("playwright-core").chromium.executablePath())')"
+          node scripts/pr15-ui-browser-check.mjs
       - name: 清理本次测试数据库
         if: always()
         working-directory: ${{ github.workspace }}
         run: node scripts/ci-mysql.cjs stop
   app:
-    name: App 账号合同作品许可测试与网页构建
+    name: App 账号合同作品许可交易测试与网页构建
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     defaults:
@@ -126,7 +153,7 @@ jobs:
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
           flutter/bin/flutter config --no-analytics
       - run: flutter pub get --enforce-lockfile
-      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/navigation lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/navigation
-      - run: flutter test test/account test/contracts test/supply test/licensing test/navigation test/interaction_flows_test.dart test/widget_test.dart
+      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/trade lib/navigation lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/navigation
+      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/navigation test/interaction_flows_test.dart test/widget_test.dart
       - name: 检查完整 App 可以生成网页发布文件
         run: flutter build web --no-pub

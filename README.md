@@ -6,9 +6,11 @@
 
 第13份对应的作者与作品资料页面已完成本地开发与联调：App与网页可申请作者资格、上传私有正文和证明、保存作品及新修订、提交与带理由撤回；网页分别审核供给资格、权属和内容。沿用暖白App和浅色深绿工作台，保留旧稿和旧意见，新稿不继承批准。[本批交付与截图](docs/ux/pr13-ui/README.md) · [界面验收](design-qa.md) · [本轮任务记录](docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md)。Vue供给18组、Flutter供给21项、后端供给35项及实际接口检查通过。前端提交`81a9727`与原后端统一通过[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)交付；最终交付版本`7abafab`的8项远端检查全部通过，用户已于2026-09-30将第13份合入`integration/90cb6a9`；尚未部署。正式存储和原生安装包仍待验收。
 
-第14份对应的选本、许可办理、项目绑定和受控阅读前端已在 `ux/pr14-pages` 本地完成：App接目录、预留、历史合同、私有材料、许可与项目；网页增加商品审核、外部证据核验、发放与暂停、指定阅稿授权，两端可从有效绑定提交项目改稿。继续采用暖白App和浅色深绿工作台，新旧入口共用稳定导航。[本批交付与预览](docs/ux/pr14-ui/README.md) · [固定页面方案](docs/ux/pr14-ui/page-plan.md) · [验证记录](docs/ux/pr14-ui/ui-checks.md)。当前明确引入第14份后端 `ce576af`，本阶段功能、原图册样式和底部切换已按用户授权追加到[原第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)，待审阅合入，未部署；最新远端检查以申请当前版本为准。[本轮交付与审查](docs/ux/pr14-ui/delivery-review-20261002.md)。第15–17份分支保持原状，真机测试已按用户要求取消。
+第14份选本、许可办理、项目绑定和受控阅读已合入共同版本 `integration/5974f3f`，最终8项远端检查通过，尚未部署。App接目录、预留、历史合同、私有材料、许可与项目；网页增加商品审核、外部证据核验、发放与暂停、指定阅稿授权，两端可从有效绑定提交项目改稿。继续采用暖白App和浅色深绿工作台，新旧入口共用稳定导航。[本批交付与预览](docs/ux/pr14-ui/README.md) · [固定页面方案](docs/ux/pr14-ui/page-plan.md) · [验证记录](docs/ux/pr14-ui/ui-checks.md) · [原第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)。真机测试已按用户要求取消。
 
-所有页面的视觉基准固定为已确认原图册 `acd5f99`，按manifest最终修订图核对结构、字体、间距、控件和导航。[全页面实现标准](docs/ux/gallery-implementation-standard.md) · [已开发页面与原图对应](docs/ux/gallery-page-map.md) · [共用视觉参数](docs/ux/gallery-visual-system.json)。第11–14份已开发两端已按该基准统一布局和控件，[逐页实拍与适配说明](docs/ux/pr14-ui/style-qa.md)单独留档；尚未开放业务随后续阶段接入，不把172张参考图写成172个业务页面已完成。
+第15份对应前端已在本地 `ux/pr15-pages` 完成：原图册7张App、11张网页最终图已有设计，按图接入商家规格与报价、买方确认、保存订单合同、付款核对、逐项退款、独立审核和历史依据。App125项、网页74项、实际浏览器App8组/网页11组通过；两端静态检查及构建通过。[本批页面与审查路径](docs/ux/pr15-ui/README.md) · [图册对照](docs/ux/pr15-ui/design-qa.md) · [实际检查](docs/ux/pr15-ui/ui-checks.md) · [原第15份申请](https://github.com/Bill-Billion/jingjing/pull/15)。用户已授权将功能 `f0441b3` 及本批文档统一追加到原第15份；[本轮交付与审查](docs/ux/pr15-ui/delivery-review-20261002.md)记录范围，本次远端版本与检查以申请页为准，未合并或部署。真实SDK与正式支付另行验收，制作与交付验收留给第16份，第16–17份分支未修改。
+
+所有页面的视觉基准固定为已确认原图册 `acd5f99`，按manifest最终修订图核对结构、字体、间距、控件和导航。[全页面实现标准](docs/ux/gallery-implementation-standard.md) · [已开发页面与原图对应](docs/ux/gallery-page-map.md) · [共用视觉参数](docs/ux/gallery-visual-system.json)。第11–14份及本批第15份已开发两端均按该基准统一布局和控件，[逐页实拍与适配说明](docs/ux/pr14-ui/style-qa.md)单独留档；尚未开放业务随后续阶段接入，不把172张参考图写成172个业务页面已完成。
 
 日常只需先看这三份：
 
@@ -18,7 +20,7 @@
 
 页面整合遵守[导航与新版页面验收](docs/ux/navigation-acceptance.md)：网页工作区保持同一套菜单，App顶层固定首页、入戏、培育、成角、我的；正式入口不跳回旧版。尚未开放的业务按阶段接入，最终所有页面按最新规划和已确认图册替换，菜单和路由检查属于每批验收的一部分。
 
-2026-09-30现场审查发现的菜单消失与APP旧版绕行已在当前工作分支本地修复，并完成[逐项点击与截图](docs/ux/pr13-ui/README.md#现场导航问题与修复2026-09-30)；这批新增修改已按用户授权追加到[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)，最终版本已随第13份进入共同版本`integration/90cb6a9`，8项远端检查全部通过。第14份页面当前已本地接入；第15–17份业务页面按各自阶段接入真实接口。
+2026-09-30现场审查发现的菜单消失与APP旧版绕行已在当前工作分支本地修复，并完成[逐项点击与截图](docs/ux/pr13-ui/README.md#现场导航问题与修复2026-09-30)；这批新增修改已按用户授权追加到[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)，最终版本已随第13份进入共同版本`integration/90cb6a9`，8项远端检查全部通过。第14份已进入共同版本；第15份页面已本地完成，后续业务仍按各自阶段接入真实接口。
 
 交给Codex执行时，从 [开工说明](docs/START_HERE.md) 和 [项目指令](AGENTS.md) 开始。两个Codex也必须用直白中文汇报，不能让人先翻译缩写才能看懂分工。
 

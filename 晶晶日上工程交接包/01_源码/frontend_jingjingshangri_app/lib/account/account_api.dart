@@ -25,7 +25,8 @@ class AccountApi {
         (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/') ||
         (jsonDecode(key) as List)[3]
             .toString()
-            .startsWith('/api/v1/licensing/');
+            .startsWith('/api/v1/licensing/') ||
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -38,6 +39,15 @@ class AccountApi {
   Map<String, dynamic>? pending(String method, String path,
           {String? token, String? party}) =>
       _pending[_scope(method, path, token, party)];
+  List<Map<String, dynamic>> tradePending({String? token, String? party}) => [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/trade/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _running = <String, Future<Map<String, dynamic>>>{};
   final _random = Random.secure();
 
@@ -57,7 +67,8 @@ class AccountApi {
   }) {
     final writing = method != 'GET';
     final supply = path.startsWith('/api/v1/supply/') ||
-        path.startsWith('/api/v1/licensing/');
+        path.startsWith('/api/v1/licensing/') ||
+        path.startsWith('/api/v1/trade/');
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null
@@ -95,6 +106,7 @@ class AccountApi {
       return _running[fingerprint]!;
     }
     final key = writing ? _keys.putIfAbsent(fingerprint, _newKey) : null;
+    String? resultId = unresolved?['resultId'];
     final future = _send(method, path,
             token: token,
             party: party,
@@ -105,6 +117,7 @@ class AccountApi {
             bytes: bytes)
         .then((data) {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      if (data['id'] is String) resultId = data['id'];
       validate?.call(data);
       return data;
     }).then((data) {
@@ -124,6 +137,7 @@ class AccountApi {
             'bytes': bytes,
             'query': query,
             'code': error.code,
+            'resultId': error.resultId ?? resultId,
           };
         } else {
           _keys.remove(fingerprint);
@@ -184,6 +198,11 @@ class AccountApi {
       final retrySeconds =
           int.tryParse(response.headers.value('retry-after') ?? '');
       throw AccountError(status, code,
+          resultId: error is Map &&
+                  error['details'] is Map &&
+                  error['details']['record_id'] is String
+              ? error['details']['record_id'] as String
+              : null,
           retryAt: status == 429 && retrySeconds != null && retrySeconds >= 0
               ? DateTime.now().add(Duration(seconds: retrySeconds))
               : null,
@@ -244,11 +263,12 @@ class AccountApi {
 
 class AccountError implements Exception {
   const AccountError(this.status, this.code,
-      {this.uncertain = false, this.retryAt});
+      {this.uncertain = false, this.retryAt, this.resultId});
   final int status;
   final String code;
   final bool uncertain;
   final DateTime? retryAt;
+  final String? resultId;
   String get message {
     switch (code) {
       case 'ACCOUNT_API_NOT_CONFIGURED':

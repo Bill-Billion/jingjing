@@ -4,8 +4,13 @@ import '../account/account_theme.dart';
 /// Business-defined JSON is rendered recursively as inert, wrapping text.
 /// Strings retain paragraphs; booleans, zero and null retain their exact value.
 class ContractText extends StatelessWidget {
-  const ContractText({super.key, required this.value});
+  const ContractText(
+      {super.key, required this.value, this.fieldLabels = const {}});
   final dynamic value;
+
+  /// Optional display labels for known fields. Keys and stored values remain
+  /// unchanged; callers without labels retain the existing rendering.
+  final Map<String, String> fieldLabels;
   @override
   Widget build(BuildContext context) {
     final data = value;
@@ -18,13 +23,14 @@ class ContractText extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SelectableText('${entry.key}',
+                  SelectableText(fieldLabels['${entry.key}'] ?? '${entry.key}',
                       style: const TextStyle(
                           fontWeight: FontWeight.w600, height: 1.6)),
                   const SizedBox(height: 6),
                   Padding(
                       padding: const EdgeInsets.only(left: 12),
-                      child: ContractText(value: entry.value)),
+                      child: ContractText(
+                          value: entry.value, fieldLabels: fieldLabels)),
                 ]),
           ),
       ]);
@@ -41,7 +47,9 @@ class ContractText extends StatelessWidget {
                     style: const TextStyle(
                         color: AccountTheme.muted, height: 1.65)),
                 const SizedBox(width: 10),
-                Expanded(child: ContractText(value: data[i])),
+                Expanded(
+                    child:
+                        ContractText(value: data[i], fieldLabels: fieldLabels)),
               ])),
       ]);
     }

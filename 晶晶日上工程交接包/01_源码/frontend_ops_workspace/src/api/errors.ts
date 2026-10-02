@@ -14,6 +14,11 @@
 
 /** 已知错误码的说明。键是后端返回的 error.code。 */
 const CODE_MESSAGES: Record<string, string> = {
+  LICENSE_PAYMENT_NOT_READY: '关联订单尚未达到原许可条款要求的已核实付款金额，或存在退款限制；请核对原订单与付款记录。',
+  TRADE_PARTY_FORBIDDEN: '请使用本交易买卖方的有效负责人身份。',
+  TRADE_REVIEW_FORBIDDEN: '当前账号没有独立交易审核权限。',
+  TRADE_REFUND_FORBIDDEN: '当前账号没有本项退款复核或执行权限。',
+  TRADE_NOT_FOUND: '记录不存在，或当前身份无权查看。',
   LICENSE_PARTY_FORBIDDEN: '当前身份不能办理许可，请使用有效负责人身份。',
   LICENSE_REVIEW_FORBIDDEN: '当前账号尚未取得独立许可核验权限。',
   LICENSE_NOT_FOUND: '许可记录不存在，或当前身份无权查看。',

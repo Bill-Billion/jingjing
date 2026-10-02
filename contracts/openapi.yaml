@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.5.0-rc.1
+  version: 0.6.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers and front-end integration remain unverified.
 servers:
 - url: http://127.0.0.1:3000
@@ -2703,6 +2703,817 @@ paths:
         payment. Scope and expiry must be checked; no implicit distribution or generation.
         Shared review pending.
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/trade/specifications:
+    post:
+      operationId: createTradeSpecification
+      summary: 提交明确价格和交付内容的商品版本
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeSpecRequest'
+  /api/v1/trade/quotes:
+    post:
+      operationId: createTradeQuote
+      summary: 提交订单报价与付款计划
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeQuoteRequest'
+  /api/v1/trade/records/{record_id}/reviews:
+    post:
+      operationId: reviewTradeRecord
+      summary: 独立审核商品报价退款或旧单材料
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeReviewRequest'
+  /api/v1/trade/quotes/{record_id}/acceptance:
+    post:
+      operationId: acceptTradeQuote
+      summary: 确认当前报价并封存订单承诺
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeAcceptRequest'
+  /api/v1/trade/orders/{record_id}/cancellation:
+    post:
+      operationId: cancelTradeOrder
+      summary: 取消尚未支付且没有结果未知付款的订单
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeReasonRequest'
+  /api/v1/trade/payments:
+    post:
+      operationId: startTradePayment
+      summary: 为约定付款节点创建支付凭证
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradePaymentRequest'
+  /api/v1/trade/payments/{record_id}/reconciliation:
+    post:
+      operationId: reconcileTradePayment
+      summary: 向支付服务核对本人的指定付款
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeReconcileRequest'
+  /api/v1/trade/refunds:
+    post:
+      operationId: requestTradeRefund
+      summary: 按已付明细申请退款
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeRefundRequest'
+  /api/v1/trade/refunds/{record_id}/execution:
+    post:
+      operationId: executeTradeRefund
+      summary: 执行已经独立审核的退款
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeEmptyRequest'
+  /api/v1/trade/refunds/{record_id}/reconciliation:
+    post:
+      operationId: reconcileTradeRefund
+      summary: 核实指定退款的真实结果
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeEmptyRequest'
+  /api/v1/trade/legacy-orders:
+    post:
+      operationId: importTradeLegacyOrder
+      summary: 保存旧订单承诺与原始金额供核对
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeLegacyRequest'
+  /api/v1/trade/records:
+    get:
+      operationId: listTradeRecords
+      summary: 查看有权限的订单及支付记录
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Owner view; omit only for authorized reviewer.
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - SPEC
+          - QUOTE
+          - ORDER
+          - PAYMENT
+          - REFUND
+          - LEGACY
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/trade/records/{record_id}:
+    get:
+      operationId: getTradeRecord
+      summary: 查看订单记录与原始承诺
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Owner view; omit only for authorized reviewer.
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/trade/legacy-orders/{record_id}/evidence/{asset_id}/content:
+    get:
+      operationId: downloadTradeEvidence
+      summary: 审核人员读取本旧单对应的私有材料
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/trade/notifications/apple:
+    post:
+      operationId: receiveAppleTradeNotification
+      summary: 核验Apple签名交易通知
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeNotificationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      security: []
+      x-provider-signature-required: true
+      description: Provider-signed event only. Payment/transaction identity and durable
+        receipts make repeat events safe. No user supplied paid state.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TradeAppleNotificationRequest'
+  /api/v1/trade/notifications/alipay:
+    post:
+      operationId: receiveAlipayTradeNotification
+      summary: 核验支付宝RSA2付款通知
+      tags:
+      - trade
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Committed result. Provider configuration and frontend integration
+            still require separate verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            text/plain:
+              schema:
+                type: string
+                const: success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      security: []
+      x-provider-signature-required: true
+      description: Provider-signed event only. Payment/transaction identity and durable
+        receipts make repeat events safe. No user supplied paid state.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - sign
+              - sign_type
+              - app_id
+              - seller_id
+              - out_trade_no
+              - trade_no
+              - trade_status
+              - total_amount
+              properties:
+                sign_type:
+                  const: RSA2
+              additionalProperties:
+                type: string
 components:
   securitySchemes:
     bearerAuth:
@@ -2933,6 +3744,1783 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    TradeSpecification:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        service_tier:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sample_seconds:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        final_seconds:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        revision_limit:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        deliverables:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - version
+      - service_tier
+      - sample_seconds
+      - final_seconds
+      - revision_limit
+      - deliverables
+      - terms
+    TradeRecord:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: SPEC
+          buyer_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          merchant_party_id:
+            type: string
+            format: uuid
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - IN_REVIEW
+            - PUBLISHED
+            - REJECTED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/TradeSpecData'
+        required:
+        - id
+        - kind
+        - buyer_party_id
+        - merchant_party_id
+        - parent_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: QUOTE
+          buyer_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          merchant_party_id:
+            type: string
+            format: uuid
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - IN_REVIEW
+            - APPROVED
+            - REJECTED
+            - ACCEPTED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/TradeQuoteData'
+        required:
+        - id
+        - kind
+        - buyer_party_id
+        - merchant_party_id
+        - parent_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: ORDER
+          buyer_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          merchant_party_id:
+            type: string
+            format: uuid
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - OPEN
+            - PARTIALLY_PAID
+            - PAID
+            - PARTIALLY_REFUNDED
+            - REFUNDED
+            - PAYMENT_REVIEW_REQUIRED
+            - CANCELLED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/TradeOrderData'
+        required:
+        - id
+        - kind
+        - buyer_party_id
+        - merchant_party_id
+        - parent_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: PAYMENT
+          buyer_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          merchant_party_id:
+            type: string
+            format: uuid
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - CREATED
+            - SUBMITTING
+            - PENDING
+            - UNKNOWN
+            - CLOSED
+            - SUCCEEDED
+            - REFUNDED
+            - REVIEW_REQUIRED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/TradePaymentData'
+        required:
+        - id
+        - kind
+        - buyer_party_id
+        - merchant_party_id
+        - parent_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: REFUND
+          buyer_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          merchant_party_id:
+            type: string
+            format: uuid
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - REQUESTED
+            - APPROVED
+            - REJECTED
+            - SUBMITTING
+            - PENDING
+            - UNKNOWN
+            - AWAITING_APPLE_REQUEST
+            - SUCCEEDED
+            - FAILED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/TradeRefundData'
+        required:
+        - id
+        - kind
+        - buyer_party_id
+        - merchant_party_id
+        - parent_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: LEGACY
+          buyer_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          merchant_party_id:
+            type: string
+            format: uuid
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          current_status:
+            type: string
+            enum:
+            - NEEDS_REVIEW
+            - VERIFIED_REFERENCE_ONLY
+            - REJECTED
+          object_version:
+            type: integer
+            minimum: 1
+            maximum: 100000
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/TradeLegacyData'
+        required:
+        - id
+        - kind
+        - buyer_party_id
+        - merchant_party_id
+        - parent_id
+        - order_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+    TradeSpecData:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        provider_party_id:
+          type: string
+          format: uuid
+        line_kind:
+          type: string
+          enum:
+          - LICENSE
+          - PRODUCTION
+          - OTHER
+        unit_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        currency:
+          const: CNY
+        specification:
+          $ref: '#/components/schemas/TradeSpecification'
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - reason
+            - account_id
+          - type: 'null'
+      required:
+      - title
+      - provider_party_id
+      - line_kind
+      - unit_minor
+      - currency
+      - specification
+      - review
+    TradeQuoteData:
+      type: object
+      additionalProperties: false
+      properties:
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              title:
+                type: string
+                minLength: 1
+                maxLength: 200
+              provider_party_id:
+                type: string
+                format: uuid
+              line_kind:
+                type: string
+                enum:
+                - LICENSE
+                - PRODUCTION
+                - OTHER
+              unit_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+              currency:
+                const: CNY
+              specification:
+                $ref: '#/components/schemas/TradeSpecification'
+              review:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    decision:
+                      type: string
+                      enum:
+                      - APPROVED
+                      - REJECTED
+                    reason:
+                      type: string
+                      minLength: 1
+                      maxLength: 2000
+                    account_id:
+                      type: string
+                      format: uuid
+                  required:
+                  - decision
+                  - reason
+                  - account_id
+                - type: 'null'
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              spec_id:
+                type: string
+                format: uuid
+              spec_version:
+                type: integer
+                minimum: 1
+                maximum: 100000
+              quantity:
+                type: integer
+                minimum: 1
+                maximum: 10000
+              total_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+            required:
+            - title
+            - provider_party_id
+            - line_kind
+            - unit_minor
+            - currency
+            - specification
+            - review
+            - line_id
+            - spec_id
+            - spec_version
+            - quantity
+            - total_minor
+        installments:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 128
+              trigger:
+                type: string
+                enum:
+                - ORDER_ACCEPTED
+                - SAMPLE_ACCEPTED
+                - FINAL_ACCEPTED
+              allocations:
+                type: array
+                minItems: 1
+                maxItems: 30
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    line_id:
+                      type: string
+                      minLength: 1
+                      maxLength: 128
+                    amount_minor:
+                      type: integer
+                      minimum: 1
+                      maximum: 900000000000
+                  required:
+                  - line_id
+                  - amount_minor
+              apple_product_id:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 128
+                - type: 'null'
+            required:
+            - key
+            - trigger
+            - allocations
+            - apple_product_id
+        total_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        currency:
+          const: CNY
+        channel:
+          type: string
+          enum:
+          - ALIPAY
+          - APPLE
+        transaction_model:
+          type: string
+          enum:
+          - DIRECT_SUPPLIER
+          - PLATFORM_PRINCIPAL
+        rule_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        payment_window_minutes:
+          type: integer
+          minimum: 1
+          maximum: 10080
+        license_reservation_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - reason
+            - account_id
+          - type: 'null'
+        order_id:
+          type: string
+          format: uuid
+      required:
+      - lines
+      - installments
+      - total_minor
+      - currency
+      - channel
+      - transaction_model
+      - rule_id
+      - expires_at
+      - payment_window_minutes
+      - license_reservation_id
+      - review
+    TradeOrderData:
+      type: object
+      additionalProperties: false
+      properties:
+        quote:
+          type: object
+          additionalProperties: false
+          properties:
+            lines:
+              type: array
+              minItems: 1
+              maxItems: 30
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  title:
+                    type: string
+                    minLength: 1
+                    maxLength: 200
+                  provider_party_id:
+                    type: string
+                    format: uuid
+                  line_kind:
+                    type: string
+                    enum:
+                    - LICENSE
+                    - PRODUCTION
+                    - OTHER
+                  unit_minor:
+                    type: integer
+                    minimum: 1
+                    maximum: 900000000000
+                  currency:
+                    const: CNY
+                  specification:
+                    $ref: '#/components/schemas/TradeSpecification'
+                  review:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        decision:
+                          type: string
+                          enum:
+                          - APPROVED
+                          - REJECTED
+                        reason:
+                          type: string
+                          minLength: 1
+                          maxLength: 2000
+                        account_id:
+                          type: string
+                          format: uuid
+                      required:
+                      - decision
+                      - reason
+                      - account_id
+                    - type: 'null'
+                  line_id:
+                    type: string
+                    minLength: 1
+                    maxLength: 128
+                  spec_id:
+                    type: string
+                    format: uuid
+                  spec_version:
+                    type: integer
+                    minimum: 1
+                    maximum: 100000
+                  quantity:
+                    type: integer
+                    minimum: 1
+                    maximum: 10000
+                  total_minor:
+                    type: integer
+                    minimum: 1
+                    maximum: 900000000000
+                required:
+                - title
+                - provider_party_id
+                - line_kind
+                - unit_minor
+                - currency
+                - specification
+                - review
+                - line_id
+                - spec_id
+                - spec_version
+                - quantity
+                - total_minor
+            installments:
+              type: array
+              minItems: 1
+              maxItems: 20
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  key:
+                    type: string
+                    minLength: 1
+                    maxLength: 128
+                  trigger:
+                    type: string
+                    enum:
+                    - ORDER_ACCEPTED
+                    - SAMPLE_ACCEPTED
+                    - FINAL_ACCEPTED
+                  allocations:
+                    type: array
+                    minItems: 1
+                    maxItems: 30
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        line_id:
+                          type: string
+                          minLength: 1
+                          maxLength: 128
+                        amount_minor:
+                          type: integer
+                          minimum: 1
+                          maximum: 900000000000
+                      required:
+                      - line_id
+                      - amount_minor
+                  apple_product_id:
+                    anyOf:
+                    - type: string
+                      minLength: 1
+                      maxLength: 128
+                    - type: 'null'
+                required:
+                - key
+                - trigger
+                - allocations
+                - apple_product_id
+            total_minor:
+              type: integer
+              minimum: 1
+              maximum: 900000000000
+            currency:
+              const: CNY
+            channel:
+              type: string
+              enum:
+              - ALIPAY
+              - APPLE
+            transaction_model:
+              type: string
+              enum:
+              - DIRECT_SUPPLIER
+              - PLATFORM_PRINCIPAL
+            rule_id:
+              type: string
+              format: uuid
+            expires_at:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            payment_window_minutes:
+              type: integer
+              minimum: 1
+              maximum: 10080
+            license_reservation_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    type: string
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  account_id:
+                    type: string
+                    format: uuid
+                required:
+                - decision
+                - reason
+                - account_id
+              - type: 'null'
+          required:
+          - lines
+          - installments
+          - total_minor
+          - currency
+          - channel
+          - transaction_model
+          - rule_id
+          - expires_at
+          - payment_window_minutes
+          - license_reservation_id
+          - review
+        contract:
+          $ref: '#/components/schemas/UnsignedSnapshotContent'
+        buyer_acknowledged_by:
+          type: string
+          format: uuid
+        financial:
+          type: object
+          additionalProperties: false
+          properties:
+            received_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            refunded_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            net_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+          required:
+          - received_minor
+          - refunded_minor
+          - net_minor
+        cancel_reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - quote
+      - contract
+      - buyer_acknowledged_by
+      - financial
+    TradePaymentData:
+      type: object
+      additionalProperties: false
+      properties:
+        provider:
+          type: string
+          enum:
+          - ALIPAY
+          - APPLE
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        app_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+        merchant_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+        currency:
+          const: CNY
+        amount_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        config_revision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        allocations:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+            required:
+            - line_id
+            - amount_minor
+        installment_key:
+          type: string
+          minLength: 1
+          maxLength: 128
+        apple_product_id:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        payment_window_minutes:
+          type: integer
+          minimum: 1
+          maximum: 10080
+        expires_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        checkout:
+          anyOf:
+          - oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                kind:
+                  const: ALIPAY_APP
+                order_string:
+                  type: string
+                  minLength: 1
+                  maxLength: 16000
+              required:
+              - kind
+              - order_string
+            - type: object
+              additionalProperties: false
+              properties:
+                kind:
+                  const: APPLE_STOREKIT2
+                product_id:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                app_account_token:
+                  type: string
+                  format: uuid
+              required:
+              - kind
+              - product_id
+              - app_account_token
+          - type: 'null'
+        transaction_id:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        proof:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              provider:
+                type: string
+                enum:
+                - ALIPAY
+                - APPLE
+              environment:
+                type: string
+                enum:
+                - SANDBOX
+                - PRODUCTION
+              app_id:
+                type: string
+                minLength: 1
+                maxLength: 200
+              merchant_id:
+                type: string
+                minLength: 1
+                maxLength: 200
+              currency:
+                const: CNY
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+              payment_id:
+                type: string
+                format: uuid
+              transaction_id:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 128
+                - type: 'null'
+              status:
+                type: string
+                enum:
+                - PENDING
+                - SUCCEEDED
+                - CLOSED
+                - REFUNDED
+                - REVIEW_REQUIRED
+              product_id:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 128
+                - type: 'null'
+              app_account_token:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - provider
+            - environment
+            - app_id
+            - merchant_id
+            - currency
+            - amount_minor
+            - payment_id
+            - transaction_id
+            - status
+            - product_id
+            - app_account_token
+          - type: 'null'
+      required:
+      - provider
+      - environment
+      - app_id
+      - merchant_id
+      - currency
+      - amount_minor
+      - config_revision
+      - allocations
+      - installment_key
+      - apple_product_id
+      - title
+      - payment_window_minutes
+      - expires_at
+      - checkout
+      - transaction_id
+      - proof
+    TradeRefundData:
+      type: object
+      additionalProperties: false
+      properties:
+        provider:
+          type: string
+          enum:
+          - ALIPAY
+          - APPLE
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        app_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+        merchant_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+        currency:
+          const: CNY
+        amount_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        payment_id:
+          type: string
+          format: uuid
+        allocations:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+            required:
+            - line_id
+            - amount_minor
+        transaction_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        apple_product_id:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - reason
+            - account_id
+          - type: 'null'
+        proof:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              provider:
+                type: string
+                enum:
+                - ALIPAY
+                - APPLE
+              environment:
+                type: string
+                enum:
+                - SANDBOX
+                - PRODUCTION
+              app_id:
+                type: string
+                minLength: 1
+                maxLength: 200
+              merchant_id:
+                type: string
+                minLength: 1
+                maxLength: 200
+              currency:
+                const: CNY
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+              payment_id:
+                type: string
+                format: uuid
+              transaction_id:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 128
+                - type: 'null'
+              status:
+                type: string
+                enum:
+                - PENDING
+                - SUCCEEDED
+                - CLOSED
+                - REFUNDED
+                - REVIEW_REQUIRED
+              product_id:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 128
+                - type: 'null'
+              app_account_token:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - provider
+            - environment
+            - app_id
+            - merchant_id
+            - currency
+            - amount_minor
+            - payment_id
+            - transaction_id
+            - status
+            - product_id
+            - app_account_token
+          - type: object
+            additionalProperties: false
+            properties:
+              provider:
+                type: string
+                enum:
+                - ALIPAY
+                - APPLE
+              environment:
+                type: string
+                enum:
+                - SANDBOX
+                - PRODUCTION
+              app_id:
+                type: string
+                minLength: 1
+                maxLength: 200
+              merchant_id:
+                type: string
+                minLength: 1
+                maxLength: 200
+              currency:
+                const: CNY
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+              payment_id:
+                type: string
+                format: uuid
+              refund_id:
+                type: string
+                format: uuid
+              transaction_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              status:
+                type: string
+                enum:
+                - PENDING
+                - SUCCEEDED
+            required:
+            - provider
+            - environment
+            - app_id
+            - merchant_id
+            - currency
+            - amount_minor
+            - payment_id
+            - refund_id
+            - transaction_id
+            - status
+      required:
+      - provider
+      - environment
+      - app_id
+      - merchant_id
+      - currency
+      - amount_minor
+      - payment_id
+      - allocations
+      - transaction_id
+      - apple_product_id
+      - reason
+      - review
+    TradeLegacyData:
+      type: object
+      additionalProperties: false
+      properties:
+        source_system:
+          type: string
+          minLength: 1
+          maxLength: 128
+        source_order_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        original_lines:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              reported_status:
+                type: string
+                enum:
+                - REPORTED_PAID
+                - REPORTED_UNPAID
+                - UNKNOWN
+            required:
+            - line_id
+            - amount_minor
+            - reported_status
+        original_terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        evidence_asset_id:
+          type: string
+          format: uuid
+        currency:
+          const: CNY
+        payment_verified:
+          const: false
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - reason
+            - account_id
+          - type: 'null'
+      required:
+      - source_system
+      - source_order_id
+      - original_lines
+      - original_terms
+      - evidence_asset_id
+      - currency
+      - payment_verified
+      - review
+    TradeRecordResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/TradeRecord'
+      required:
+      - meta
+      - data
+    TradeListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/TradeRecord'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    TradeNotificationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        accepted:
+          const: true
+      required:
+      - accepted
+    TradeSpecRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        provider_party_id:
+          type: string
+          format: uuid
+        line_kind:
+          type: string
+          enum:
+          - LICENSE
+          - PRODUCTION
+          - OTHER
+        unit_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        currency:
+          const: CNY
+        specification:
+          $ref: '#/components/schemas/TradeSpecification'
+        previous_spec_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+      required:
+      - title
+      - provider_party_id
+      - line_kind
+      - unit_minor
+      - currency
+      - specification
+      - previous_spec_id
+    TradeQuoteRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        buyer_party_id:
+          type: string
+          format: uuid
+        installments:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 128
+              trigger:
+                type: string
+                enum:
+                - ORDER_ACCEPTED
+                - SAMPLE_ACCEPTED
+                - FINAL_ACCEPTED
+              allocations:
+                type: array
+                minItems: 1
+                maxItems: 30
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    line_id:
+                      type: string
+                      minLength: 1
+                      maxLength: 128
+                    amount_minor:
+                      type: integer
+                      minimum: 1
+                      maximum: 900000000000
+                  required:
+                  - line_id
+                  - amount_minor
+              apple_product_id:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 128
+                - type: 'null'
+            required:
+            - key
+            - trigger
+            - allocations
+            - apple_product_id
+        channel:
+          type: string
+          enum:
+          - ALIPAY
+          - APPLE
+        transaction_model:
+          type: string
+          enum:
+          - DIRECT_SUPPLIER
+          - PLATFORM_PRINCIPAL
+        rule_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        payment_window_minutes:
+          type: integer
+          minimum: 1
+          maximum: 10080
+        license_reservation_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              spec_id:
+                type: string
+                format: uuid
+              quantity:
+                type: integer
+                minimum: 1
+                maximum: 10000
+            required:
+            - line_id
+            - spec_id
+            - quantity
+      required:
+      - buyer_party_id
+      - installments
+      - channel
+      - transaction_model
+      - rule_id
+      - expires_at
+      - payment_window_minutes
+      - license_reservation_id
+      - lines
+    TradeReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+    TradeAcceptRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        quote_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - quote_sha256
+    TradeReasonRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    TradePaymentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        installment_key:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - order_id
+      - installment_key
+    TradeReconcileRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        transaction_id:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+      required:
+      - transaction_id
+    TradeRefundRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        allocations:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+            required:
+            - line_id
+            - amount_minor
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - payment_id
+      - allocations
+      - reason
+    TradeEmptyRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    TradeLegacyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        buyer_party_id:
+          type: string
+          format: uuid
+        merchant_party_id:
+          type: string
+          format: uuid
+        source_system:
+          type: string
+          minLength: 1
+          maxLength: 128
+        source_order_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        original_lines:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              reported_status:
+                type: string
+                enum:
+                - REPORTED_PAID
+                - REPORTED_UNPAID
+                - UNKNOWN
+            required:
+            - line_id
+            - amount_minor
+            - reported_status
+        original_terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - buyer_party_id
+      - merchant_party_id
+      - source_system
+      - source_order_id
+      - original_lines
+      - original_terms
+      - evidence_asset_id
+    TradeAppleNotificationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        signedPayload:
+          type: string
+          minLength: 1
+          maxLength: 64000
+      required:
+      - signedPayload
     LicenseTerms:
       type: object
       additionalProperties: false

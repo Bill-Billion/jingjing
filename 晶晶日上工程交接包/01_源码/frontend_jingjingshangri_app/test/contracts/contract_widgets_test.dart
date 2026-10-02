@@ -35,6 +35,40 @@ void main() {
     expect(find.text(html), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('可选字段中文名递归到数组，保留原值且默认调用仍显示原字段', (tester) async {
+    final original = {
+      'quote': [
+        {
+          'title': '原服务',
+          'amount': 0,
+          'flag': false,
+          'empty': null,
+          'unknown': '保留原文'
+        }
+      ]
+    };
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: SingleChildScrollView(
+                child: ContractText(
+      value: original,
+      fieldLabels: const {'quote': '成交报价', 'title': '服务名称'},
+    )))));
+    expect(find.text('成交报价'), findsOneWidget);
+    expect(find.text('服务名称'), findsOneWidget);
+    expect(find.text('原服务'), findsOneWidget);
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('false'), findsOneWidget);
+    expect(find.text('null'), findsOneWidget);
+    expect(find.text('unknown'), findsOneWidget);
+    expect((original['quote'] as List).first['title'], '原服务');
+    await tester.pumpWidget(
+        MaterialApp(home: Scaffold(body: ContractText(value: original))));
+    expect(find.text('quote'), findsOneWidget);
+    expect(find.text('title'), findsOneWidget);
+    expect(find.text('成交报价'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('限流按服务端秒数禁用读取按钮，不展示之前的合同', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {
