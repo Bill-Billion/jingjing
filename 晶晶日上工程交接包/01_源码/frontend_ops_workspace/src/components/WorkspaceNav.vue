@@ -15,9 +15,15 @@ const links = [
   { to: '/licensing/readings', label: '受控阅稿', icon: View },
   { to: '/trade/specifications', label: '商品规格', icon: Collection },
   { to: '/trade/quotes', label: '报价订单', icon: Document },
+  { to: '/gigs/catalogue', label: '商单需求与提案', icon: Collection },
+  { to: '/gigs/relations', label: '直接 MCN 合作', icon: OfficeBuilding },
+  { to: '/gigs/commissions', label: '佣金计提', icon: Tickets },
+  { to: '/gigs/rankings', label: '商单榜单', icon: View },
   { to: '/trade/payments', label: '付款退款', icon: Tickets },
 ]
 const reviews = [
+  { to: '/gigs/reviews/requests', label: '商单与提案核验' },
+  { to: '/gigs/reviews/rules', label: '商单规则核验' },
   { to: '/supply/reviews/profile', label: '供给审核' },
   { to: '/supply/reviews/rights', label: '作品审核' },
   { to: '/licensing/reviews/products', label: '许可核验' },
@@ -26,6 +32,10 @@ const reviews = [
   { to: '/trade/reviews/refunds', label: '退款与旧单核对' },
 ]
 function active(target: string) {
+  if (target === '/gigs/catalogue') return /^\/gigs\/(catalogue|requests|offers)(\/|$)/.test(route.path)
+  if (target === '/gigs/reviews/requests') return /^\/gigs\/reviews\/(requests|offers)(\/|$)/.test(route.path)
+  if (target === '/gigs/reviews/rules') return /^\/gigs\/(rules|reviews\/rules)(\/|$)/.test(route.path)
+  if (target === '/trade/quotes' && route.path.startsWith('/trade/offers/')) return true
   if (target === '/trade/quotes') return /^\/trade\/(quotes|orders)(\/|$)/.test(route.path)
   if (target === '/trade/payments') return /^\/trade\/(payments|refunds|legacy)(\/|$)/.test(route.path)
   if (target === '/trade/reviews/refunds') return /^\/trade\/reviews\/(refunds|legacy)(\/|$)/.test(route.path)

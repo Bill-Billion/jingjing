@@ -260,7 +260,7 @@ void main() {
     await tester.tap(find.byTooltip('通知'));
     await frames(tester);
     expect(find.byType(NavigationBar), findsNothing);
-    expect(find.text('暂未开放'), findsOneWidget);
+    expect(find.text('先确认办事身份'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     await frames(tester);
     expectFiveTabs();
@@ -308,7 +308,6 @@ void main() {
     const tabAliases = <String, int>{
       '/theater': 1,
       '/launch': 1,
-      '/mcn': 2,
       '/role-market': 3,
       '/projects': 3,
       '/profile': 4,
@@ -328,6 +327,13 @@ void main() {
       nav.pop();
       await frames(tester);
     }
+    nav.pushNamed('/mcn');
+    await frames(tester);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.text('先确认办事身份'), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await frames(tester);
+    expectFiveTabs();
     for (final route in ['/wallet', '/my-humans', '/my-works', '/chat']) {
       nav.pushNamed(route);
       await frames(tester);

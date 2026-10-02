@@ -185,8 +185,8 @@ try {
       ['/workspace','账号与机构'], ['/contracts','合同与规则'],
       ['/supply/profiles','供给申请'], ['/supply/works','我的作品'],
       ['/licensing/catalog','选剧本'], ['/licensing/products','许可商品'], ['/licensing/reservations','许可办理'], ['/licensing/projects','项目与绑定'], ['/licensing/readings','受控阅稿'],
-      ['/trade/specifications','商品规格'], ['/trade/quotes','报价订单'], ['/trade/payments','付款退款'],
-      ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'], ['/licensing/reviews/products','许可核验'],
+      ['/trade/specifications','商品规格'], ['/trade/quotes','报价订单'], ['/gigs/catalogue','商单需求与提案'], ['/gigs/relations','直接 MCN 合作'], ['/gigs/commissions','佣金计提'], ['/gigs/rankings','商单榜单'], ['/trade/payments','付款退款'],
+      ['/gigs/reviews/requests','商单与提案核验'], ['/gigs/reviews/rules','商单规则核验'], ['/supply/reviews/profile','供给审核'], ['/supply/reviews/rights','作品审核'], ['/licensing/reviews/products','许可核验'],
       ['/trade/reviews/specifications','规格审核'], ['/trade/reviews/quotes','报价审核'], ['/trade/reviews/refunds','退款与旧单核对'],
     ]
     for (const [view,path,current] of [

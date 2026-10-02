@@ -9,6 +9,8 @@ import 'trade_api.dart';
 import 'trade_models.dart';
 import 'trade_widgets.dart';
 import 'trade_refund_form.dart';
+import '../gigs/gig_models.dart';
+import '../gigs/gig_widgets.dart';
 
 // Gallery: APP-13-01-v2. This route remains a return-based child of the five-tab shell.
 class TradeRecordsPage extends StatelessWidget {
@@ -334,6 +336,24 @@ class _TradeDetailState extends State<_TradeDetail> {
             r.status == 'APPROVED'
                 ? '买方确认后形成订单，付款和签署另行办理。'
                 : '仅独立审核通过且在有效期内的指定买方可以确认。'),
+      if (d['commercial'] != null)
+        supplyCard('原商业接单约定', [
+          tradeFact('约定编号', d['commercial']['offer_id']),
+          gigScopeFacts(gigMap(d['commercial']['scope'])),
+          gigCommissionFacts(gigMap(d['commercial']['commission'])),
+          tradeFact(
+              '公开入榜', d['commercial']['ranking_opt_in'] ? '明确选择参与' : '不参与'),
+          ExpansionTile(
+              title: const Text('完整商业原约定'),
+              children: [gigParagraph(d['commercial']['terms'])]),
+          tradeButton(
+              '查看商业接单约定',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(context,
+                      '/gigs/record?recordId=${d['commercial']['offer_id']}'),
+              outline: true),
+        ]),
       supplyCard('交易双方', [
         tradeFact('提供方', shortSupplyId(r.merchant)),
         tradeFact('买方', r.buyer == null ? '—' : shortSupplyId(r.buyer!)),
@@ -411,6 +431,24 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       supplyCard('订单 ${shortSupplyId(r.id)}',
           [tradeStatus(r), appNotice('款项收齐不等于制作完成。样片、成片和验收将在后续开放。')]),
+      if (r.quote['commercial'] != null)
+        supplyCard('关联商业约定', [
+          tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
+          tradeButton(
+              '查看商业接单约定',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(context,
+                      '/gigs/record?recordId=${r.quote['commercial']['offer_id']}'),
+              outline: true),
+          tradeButton(
+              '查看佣金核算',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(
+                      context, '/gigs/records?kind=COMMISSION'),
+              outline: true),
+        ]),
       supplyCard('订单付款', [
         tradeFact('应付总额', tradeMoney(r.amount)),
         const Divider(),
