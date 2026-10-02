@@ -76,6 +76,6 @@ PR15_WEB_URL=http://127.0.0.1:5204 node scripts/pr15-ui-browser-check.mjs
 PR15_APP_URL=http://127.0.0.1:8772 node scripts/pr15-app-browser-check.mjs
 ```
 
-`CHROME_PATH`可指定已有Chromium。`--only-login-return`和App的`--only-display`可分别复核登录返回和只读页面，不另计完整流程组数。GitHub原网页和App检查工作流已加入交易检查及管理网页真实流程；本次尚未上传，未宣称这些新增远端检查已运行。
+`CHROME_PATH`可指定已有Chromium。`--only-login-return`和App的`--only-display`可分别复核登录返回和只读页面，不另计完整流程组数。GitHub原网页和App检查工作流已加入交易检查及管理网页真实流程；本次集中交付已获用户授权，新增远端检查实际结果以[PR15](https://github.com/Bill-Billion/jingjing/pull/15)当前版本为准，不沿用上传前结果。
 
 对启动器发送SIGTERM/SIGINT会关闭本轮端口、删除其随机库及状态；不能停止共享MySQL或强杀后删除其他任务状态。截图和报告只包含合成记录，真实SDK、真机和生产环境未验证。
