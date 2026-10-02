@@ -249,7 +249,7 @@ class _LicenseListState extends State<_LicenseList> {
             ? '登记明确的用途，绑定许可后才能按范围使用。这里不代表制作项目已开工。'
             : _kind == 'READING'
                 ? '只展示当前身份的阅稿记录。指定账号获批且未到期后可受控阅读。'
-                : '这里保存许可办理与历史记录，制作订单将在后续开放。'),
+                : '这里保存剧本许可办理与历史记录。报价、付款和退款请前往订单与付款。'),
         const Text('查看记录',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
@@ -632,6 +632,15 @@ class _LicenseDetailState extends State<_LicenseDetail> {
             if (d['price'] != null)
               licenseAmount(Map<String, dynamic>.from(d['price']),
                   due: d['payment_due_minor']),
+            if (r.kind == 'RESERVATION' || r.kind == 'GRANT')
+              supplyCard('订单与财务条件', [
+                appNotice('许可按原条款约定的生效付款金额核对。付款不代替签署、身份与权属核验；退款核实后，后续使用可能受限。'),
+                OutlinedButton(
+                    onPressed: _busy
+                        ? null
+                        : () => Navigator.pushNamed(context, '/orders'),
+                    child: const Text('查看订单与付款')),
+              ]),
             if (r.terms != null)
               r.kind == 'GRANT'
                   ? licenseGrantTerms(r.terms!)

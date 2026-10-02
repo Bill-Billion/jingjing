@@ -205,7 +205,7 @@ class _AppShellState extends State<AppShell> {
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               for (final item in [
                 ('数字人资料', Icons.face_outlined, '/my-humans'),
-                ('订单与许可', Icons.receipt_long_outlined, '/orders'),
+                ('订单与付款', Icons.receipt_long_outlined, '/orders'),
                 ('我的项目', Icons.folder_open_outlined, '/my-projects'),
                 ('我的结算', Icons.account_balance_outlined, '/wallet'),
               ])
@@ -298,6 +298,12 @@ class _AppShellState extends State<AppShell> {
         _entry('业务通知', '查看与你相关的业务动态 · 暂未开放', Icons.notifications_outlined,
             () => _open('/messages')),
         _menuGrid(),
+        _heading('订单与付款'),
+        _entry('订单、报价与旧记录', '核对原报价、付款节点与退款状态。', Icons.receipt_long_outlined,
+            () => _open('/orders')),
+        _heading('剧本许可'),
+        _entry('我的许可办理', '签署、身份、权属核验与许可生效条件。', Icons.verified_outlined,
+            () => _open('/licensing')),
         _heading('创作与供给'),
         _entry('作者与作品', '申请作者资格，管理供给与作品资料。', Icons.edit_note_outlined,
             () => _open('/supply')),
@@ -313,7 +319,11 @@ class _AppShellState extends State<AppShell> {
   Widget _section(int index, AccountSession session) {
     final identityName = session.party?['display_name'] as String?;
     final children = switch (index) {
-      1 => [const LicenseCatalog(embedded: true)],
+      1 => [
+          _entry('查看已有报价', '私人定制：确认服务方已审核报价，付款与签署另行办理。',
+              Icons.receipt_long_outlined, () => _open('/orders?kind=QUOTE')),
+          const LicenseCatalog(embedded: true)
+        ],
       2 => _business('让创作连接真实需求', '培育承接商业委托：发布品牌需求、确认接单约定，并按用途完成交付。'),
       3 => _business('在故事里找到你的角色', '成角承接公开项目与发行：了解招募、参与项目，并逐项确认授权与发行条件。'),
       4 => _mine(session),

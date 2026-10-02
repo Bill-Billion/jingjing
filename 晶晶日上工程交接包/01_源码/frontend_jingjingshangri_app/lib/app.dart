@@ -8,6 +8,8 @@ import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
 import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
+import 'licensing/license_models.dart';
+import 'trade/trade_pages.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -79,7 +81,17 @@ class JingjingShangriApp extends StatelessWidget {
             description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),
         '/humans' || '/human-detail' => const AppUnavailablePage(
             title: '艺人发现', description: '公开人物目录暂未开放。作者及数字人私有材料不会作为公开推荐展示。'),
-        '/orders' || '/licensing' => LicenseRecordsPage(
+        '/orders' => licenseKinds.containsKey(uri.queryParameters['kind'])
+            ? LicenseRecordsPage(kind: uri.queryParameters['kind']!)
+            : TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
+        '/trade' =>
+          TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
+        '/trade/record' => TradeRecordPage(
+            recordId: uri.queryParameters['recordId'] ?? '',
+            section: uri.queryParameters['section']),
+        '/trade/refund' =>
+          TradeRefundPage(paymentId: uri.queryParameters['paymentId'] ?? ''),
+        '/licensing' => LicenseRecordsPage(
             kind: uri.queryParameters['kind'] ?? 'RESERVATION'),
         '/my-projects' => const LicenseRecordsPage(kind: 'PROJECT'),
         '/licensing/catalog' => const LicenseCatalog(),

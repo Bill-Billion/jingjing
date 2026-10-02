@@ -20,6 +20,23 @@ class AccountSession extends ChangeNotifier {
   int get epoch => _epoch;
   bool supplyAccessDenied = false;
   bool licensingAccessDenied = false;
+  bool tradeAccessDenied = false;
+  List<Map<String, dynamic>> get tradePending =>
+      api.tradePending(token: _token, party: partyId);
+  void denyTrade() {
+    _epoch++;
+    api.clearSupplyOperations();
+    tradeAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryTradeAccess() async {
+    await loadParties();
+    await refreshParty();
+    tradeAccessDenied = false;
+    notifyListeners();
+  }
+
   void denyLicensing() {
     _epoch++;
     api.clearSupplyOperations();
@@ -107,6 +124,7 @@ class AccountSession extends ChangeNotifier {
     api.clearSupplyOperations();
     supplyAccessDenied = false;
     licensingAccessDenied = false;
+    tradeAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -146,6 +164,11 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/trade/') &&
+          started == _epoch) {
+        denyTrade();
+      }
       if (error.status == 403 &&
           path.startsWith('/api/v1/supply/') &&
           started == _epoch) {
@@ -255,6 +278,7 @@ class AccountSession extends ChangeNotifier {
     api.clearSupplyOperations();
     supplyAccessDenied = false;
     licensingAccessDenied = false;
+    tradeAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();

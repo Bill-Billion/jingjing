@@ -222,6 +222,9 @@ class _LoginPageState extends State<LoginPage> {
               '/licensing/project/new',
               '/licensing/bind',
               '/orders',
+              '/trade',
+              '/trade/record',
+              '/trade/refund',
               '/my-projects'
             ].contains(route.path)
         ? route.toString()
