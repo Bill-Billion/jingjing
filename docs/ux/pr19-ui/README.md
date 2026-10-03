@@ -11,3 +11,5 @@ App212项、网页修复前151项及修复后财务22项通过；两端发布构
 [页面方案](page-plan.md) · [27图与实拍](design-qa.md) · [检查与适用范围](ui-checks.md) · [结构化汇总](evidence/verification-summary.json)
 
 本地审查：[App](http://127.0.0.1:8777/mobile-preview.html) · [网页](http://127.0.0.1:5209/finance/agreements)。私有数据需正常短信身份；角色及验证码只在本机0600状态文件 `.local/pr19-ui-runtime.json`。重启生成新UUID，旧截图编号不是长期业务地址。全部凭据/传输为合成，未真实转账；真机取消。余额投影后台修复仍待Core实际审阅，不代替原后端和共享规则审阅。
+
+首次远端CI的存储环境问题已补齐，[原因及复验](ci-fixes.md)。最新CI以原PR为准。
