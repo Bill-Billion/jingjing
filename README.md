@@ -9,7 +9,7 @@
 第一阶段已合入integration；后续阶段仍按申请逐项审阅。当前本侧推进到第十阶段结算，完整后端分支为 `core/stage-10-settlement`，已经整合商单、制作和项目发行。先看[最新进展与下一步分工](docs/status/MAINLINE_PROGRESS.md)和[结算页面调用说明](docs/collaboration/STAGE_10_API.md)。后端自验不等于页面联调、审阅合并或正式上线。
 
 <!-- pr16-17-current -->
-2026-10-03：第16份制作/逐版审阅/交付前端已在独立`ux/pr16-pages`完成并保存`5a294b0`；第17份商单、本人接单、直接MCN、退款佣金与榜单已在`ux/pr17-pages`完成，功能`8414729`。两端沿用已确认图册，真实浏览器完整流程通过。[本批页面与审查](docs/ux/pr17-ui/README.md) · [两份交付边界与预览](docs/ux/pr17-ui/pr16-17-delivery.md) · [21张原图映射](docs/ux/pr17-ui/design-qa.md) · [真实检查](docs/ux/pr17-ui/ui-checks.md)。两批当前只本地保存，未上传原申请、合并或部署；仍是独立服务器版本，正式外部服务未验收，真机保持取消。
+2026-10-03：第16份制作/逐版审阅/交付前端已在独立`ux/pr16-pages`完成并保存`5a294b0`；第17份商单、本人接单、直接MCN、退款佣金与榜单已在`ux/pr17-pages`完成，功能`8414729`。两端沿用已确认图册，真实浏览器完整流程通过。[本批页面与审查](docs/ux/pr17-ui/README.md) · [两份交付边界与预览](docs/ux/pr17-ui/pr16-17-delivery.md) · [21张原图映射](docs/ux/pr17-ui/design-qa.md) · [真实检查](docs/ux/pr17-ui/ui-checks.md)。两批已分别追加到原PR16和PR17，前端代码检查通过，未合并或部署；仍是独立服务器版本，正式外部服务未验收，真机保持取消。
 <!-- /pr16-17-current -->
 
 第11份账号与机构、第12份合同与历史规则页面已进入共同版本，第12份的8项远端检查均通过。[第一批页面](docs/ux/pr12-ui/README.md) · [第一批界面验收](docs/ux/pr12-ui/design-qa.md)。页面通过测试与正式外部服务开通分别记录。

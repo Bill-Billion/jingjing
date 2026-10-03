@@ -14,6 +14,24 @@
 
 /** 已知错误码的说明。键是后端返回的 error.code。 */
 const CODE_MESSAGES: Record<string, string> = {
+  FINANCE_REVIEW_FORBIDDEN: '当前账号没有独立财务核验权限；参与方也不能自审。',
+  FINANCE_PARTY_FORBIDDEN: '当前主体没有此财务事项的办理权限。',
+  FINANCE_NOT_FOUND: '找不到该财务记录，或当前身份不可读取。',
+  FINANCE_AGREEMENT_NOT_APPROVED: '结算约定尚未通过独立复核。',
+  FINANCE_CONFIRMATIONS_REQUIRED: '约定各方尚未完成准确版本确认。',
+  FINANCE_DISPUTED: '本约定有待处理异议，暂停新付款；请先独立处理异议。',
+  RETAINED_INCOME_NOT_PAYOUT: '商家保留金额不能再次申请转给自己。',
+  SETTLEMENT_DATE_NOT_REACHED: '尚未达到约定的可结算时间。',
+  CUSTOMER_PAYMENT_REVIEW_REQUIRED: '客户原付款尚待核实。',
+  REVENUE_NOT_RECEIVED: '渠道应收尚未实际到账；请先登记并核实真实到账。',
+  FINANCE_DELIVERY_NOT_ACCEPTED: '原制作交付尚未完成实际验收。',
+  CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED: '当前事实需要重新生成结算单、独立复核并完成各方确认。',
+  SHARES_NOT_BALANCED: '每项分配比例须准确合计为 100%。',
+  ADJUSTMENT_NOT_BALANCED: '调整金额之和须为零。',
+  INVALID_FINANCE_RULE: '结算规则不完整，请明确逐项分配、条件与条款。',
+  INSUFFICIENT_BALANCE: '可申请额度不足；已有申请及批准会占用额度，并不代表实付。',
+  PAYOUT_PROVIDER_NOT_VERIFIED: '自动出款尚未实现且渠道未核实；当前只能记录真实人工付款。',
+
   GIG_PARTY_FORBIDDEN: '请使用本商业合作参与方的有效负责人身份。',
   GIG_REVIEW_FORBIDDEN: '当前账号没有独立商单审核或榜单生成权限。',
   GIG_NOT_FOUND: '商业记录不存在，或当前身份无权读取。',
