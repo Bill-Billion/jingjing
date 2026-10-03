@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-02",
+  "updated_on": "2026-10-03",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -1134,12 +1134,12 @@
     },
     {
       "id": "CORE-S3-002",
-      "title": "ProductionTask、数字人Adapter、版本反馈和验收",
+      "title": "制作任务、版本反馈和验收",
       "stage": 3,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-7-production-acceptance",
       "work_refs": [
         "WORK-09"
       ],
@@ -1174,9 +1174,15 @@
         "rights/licenses"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S3-002-stage7-20260925.md",
+        "docs/tasks/records/CORE-S3-002-stage7-evidence.json"
+      ],
+      "blockers": [
+        "具体数字人供应商及产品未确定，网络适配、真实生成质量与供应商残留资产清理验收未完成"
+      ],
+      "current_increment": "第七阶段后端已交付第16份申请，311通过/1缺样本跳过，待实际审阅；具体数字人供应商接口仍未实现"
     },
     {
       "id": "UX-S3-001",
@@ -1245,9 +1251,9 @@
       "title": "商单、直接MCN合作、单笔佣金、三榜事实",
       "stage": 4,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-8-gigs-mcn",
       "work_refs": [
         "WORK-10"
       ],
@@ -1278,18 +1284,22 @@
         "settlement"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S4-001-stage8-20260928.md",
+        "docs/tasks/records/CORE-S4-001-stage8-evidence.json"
+      ],
+      "blockers": [],
+      "current_increment": "第八阶段后端已交付第17份申请；本机及GitHub全套313通过/1缺样本跳过，商单23通过，七组HTTP格式通过；待实际审阅，未合并或启用"
     },
     {
       "id": "CORE-S4-002",
       "title": "项目、角色报名邀约筛选、多方确认及发行台账",
       "stage": 4,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-9-projects-release",
       "work_refs": [
         "WORK-11"
       ],
@@ -1311,7 +1321,10 @@
         "CORE-S2-002"
       ],
       "deliverables": [
-        "projects/release模块"
+        "docs/collaboration/STAGE_9_API.md",
+        "docs/collaboration/STAGE_9_HANDOFF.md",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects"
       ],
       "acceptance": "无通用竞拍；许可用途和多方确认满足再送审；内部通过不标外部已发行",
       "shared_boundaries": [
@@ -1319,9 +1332,15 @@
         "schema/migration"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S4-002-stage9-20260929.md",
+        "docs/tasks/records/CORE-S4-002-stage9-evidence.json"
+      ],
+      "blockers": [
+        "真实外部渠道、真实合同审核与前端联调未验收；不影响隔离后端交付"
+      ],
+      "current_increment": "第九阶段已交付第18份申请；本机及GitHub专项25项和全套336通过/1跳过，八组实际HTTP格式通过；未审阅、未合并、未启用真实业务"
     },
     {
       "id": "UX-S4-001",
@@ -1374,9 +1393,9 @@
       "title": "应付/出款/发行收入/结算/调整/对账与争议",
       "stage": 5,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-10-settlement",
       "work_refs": [
         "WORK-12"
       ],
@@ -1401,9 +1420,10 @@
         "CORE-S4-002"
       ],
       "deliverables": [
-        "settlement模块",
-        "对账与调整",
-        "线下付款证据流程"
+        "docs/collaboration/STAGE_10_API.md",
+        "docs/collaboration/STAGE_10_HANDOFF.md",
+        "contracts/openapi.yaml",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/settlement"
       ],
       "acceptance": "三类钱独立可追溯；可真实线下付款附凭证，自动出款未验收不得报成功；冲正不改历史",
       "shared_boundaries": [
@@ -1412,9 +1432,15 @@
         "schema/migration"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S5-001-stage10-20260929.md",
+        "docs/tasks/records/CORE-S5-001-stage10-evidence.json"
+      ],
+      "blockers": [
+        "真实财务审核人员、合同和银行凭据未验收；自动出款未实现；不影响隔离后端交付"
+      ],
+      "current_increment": "第十阶段已交付第19份申请；本机及GitHub专项26项、全套385通过/1缺旧库样本跳过、十组实际HTTP格式通过；未审阅未合并未启用真实业务"
     },
     {
       "id": "CORE-S5-002",
@@ -1829,18 +1855,237 @@
       "updated_on": "2026-10-02",
       "current_increment": "已本地完成App与网页报价、保存订单合同、付款核对、逐项退款、独立审核及历史材料页面，采用18张原图最终视图。功能提交f0441b3；App125项、网页74项、真实浏览器App8组/网页11组通过，相关后端13/25/27项通过；未知结果保留原请求，版本冲突重新确认，导航和窄屏正常。仅本机隔离测试，用户已授权集中追加原PR15，远端版本和本次检查以申请当前结果为准，未合并或部署；真实SDK及正式支付待独立验收，真机仍取消，PR16–17未修改。",
       "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
+    },
+    {
+      "id": "UX-PR17-COMMERCIAL-PAGES-20261003",
+      "title": "商单、直接MCN合作、佣金明细与榜单页面",
+      "stage": 4,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr17-pages",
+      "work_refs": [
+        "WORK-10"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "REQ-020",
+        "REQ-023",
+        "REQ-024",
+        "REQ-031",
+        "REQ-034",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR15-ORDER-PAGES-20261002"
+      ],
+      "deliverables": [
+        "App商单发布、接单约定、MCN与榜单",
+        "网页商单与规则审核、直接合作、佣金和榜单工作台",
+        "原图册映射和隔离真实接口浏览器验证"
+      ],
+      "acceptance": "遵循原PR17接口，接单与买方确认后按原报价入订单；MCN本人确认，只处理直接合作；佣金依据实际净收退款，核算不冒充转账；测试交易不入正式榜；未知请求可恢复，隐私权限和导航稳定，页面对齐原图册。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR17-COMMERCIAL-PAGES-20261003.md",
+        "docs/ux/pr17-ui/README.md",
+        "docs/ux/pr17-ui/ui-checks.md",
+        "docs/ux/pr17-ui/design-qa.md",
+        "docs/ux/pr17-ui/evidence/verification-summary.json"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "App与网页商单、本人接单、直接MCN、净收退款佣金和UTC榜单已按21张原图本地完成。功能8414729；App141/网页91、浏览器7/9组、后端23/25/27通过。独立分支不含PR16制作模块，未上传、合并或部署；正式服务与原生设备未验收。",
+      "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
+    },
+    {
+      "id": "UX-PR16-PRODUCTION-PAGES-20261003",
+      "title": "制作项目、分阶段审片与受控交付页面",
+      "stage": 3,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr16-pages",
+      "work_refs": [
+        "WORK-07"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-004",
+        "REQ-005",
+        "REQ-009",
+        "REQ-018",
+        "REQ-021",
+        "REQ-024",
+        "REQ-034",
+        "REQ-053",
+        "REQ-054",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR15-ORDER-PAGES-20261002"
+      ],
+      "deliverables": [
+        "App剧本确认、样片审阅、逐版反馈与交付作品",
+        "网页项目、负责人、文件、版本、独立核验与生成状态",
+        "原图册映射和隔离真实接口浏览器验证"
+      ],
+      "acceptance": "按原PR16接口办理，审核与客户验收分开，版本反馈与付款依据由服务器核对，私有文件按权利与付款读取，生成默认未启用，未知写入保留原请求，稳定导航及原图册版式。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR16-PRODUCTION-PAGES-20261003.md",
+        "docs/ux/pr16-ui/README.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "App146项、网页91项、浏览器App7/网页10组及PR15回归11组通过；原15张图册映射齐备，本地保存待审，未上传原PR16或合入，真实供应商/原生设备未验收。"
+    },
+    {
+      "id": "UX-PR18-PROJECTS-PAGES-20261003",
+      "title": "项目选角、多方会签与发行页面",
+      "stage": 4,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr18-pages",
+      "work_refs": [
+        "WORK-11"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-014",
+        "REQ-015",
+        "REQ-023",
+        "REQ-024",
+        "REQ-025",
+        "REQ-026",
+        "REQ-028",
+        "REQ-029",
+        "REQ-030",
+        "REQ-031",
+        "REQ-032",
+        "REQ-034",
+        "REQ-035",
+        "REQ-036",
+        "REQ-038",
+        "REQ-042",
+        "REQ-043",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "UX-PR16-PRODUCTION-PAGES-20261003"
+      ],
+      "deliverables": [
+        "App成角、报名邀请、本人入组、项目会签与发行记录",
+        "网页角色、六层权利、独立核验、成片会签与渠道档案",
+        "25张固定原图映射、真实接口浏览器验收与稳定导航"
+      ],
+      "acceptance": "按PR18真实接口区分报名筛选入组、六层授权、逐版多方确认和真实外部结果；未知请求可核对恢复，身份权限清除私有缓存，固定导航和原图风格。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR18-PROJECTS-PAGES-20261003.md",
+        "docs/ux/pr18-ui/README.md",
+        "docs/ux/pr18-ui/design-qa.md",
+        "docs/ux/pr18-ui/ui-checks.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "本批前端已追加原PR18（core/stage-9-projects-release）；所列本机验证通过，远端CI以原PR为准，未合并或部署。"
+    },
+    {
+      "id": "UX-PR19-FINANCE-PAGES-20261003",
+      "title": "结算约定、实付与发行收入页面",
+      "stage": 5,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr19-finance-privacy",
+      "work_refs": [
+        "WORK-12"
+      ],
+      "req_refs": [
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-010",
+        "REQ-011",
+        "REQ-012",
+        "REQ-013",
+        "REQ-014",
+        "REQ-015",
+        "REQ-018",
+        "REQ-019",
+        "REQ-030",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-037",
+        "REQ-039",
+        "REQ-041",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-057",
+        "REQ-058"
+      ],
+      "dependencies": [
+        "UX-PR17-COMMERCIAL-PAGES-20261003",
+        "UX-PR18-PROJECTS-PAGES-20261003"
+      ],
+      "deliverables": [
+        "App本人约定、准确结算、申请金额与异议",
+        "网页约定、账单、真实收款、实付凭据、调整异议与对账",
+        "27张原图映射、参与方金额隔离及实际浏览器验收"
+      ],
+      "acceptance": "不混淆应收实收、批准与已付；准确版本会签、真实凭据、参与方数据隔离、未知请求和稳定导航有实际验证；无自动出款或全局钱包。",
+      "shared_boundaries": [
+        "auth/permission",
+        "settlement"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASSED",
+      "evidence": [
+        "docs/tasks/records/UX-PR19-FINANCE-PAGES-20261003.md",
+        "docs/ux/pr19-ui/README.md",
+        "docs/ux/pr19-ui/evidence/verification-summary.json",
+        "docs/ux/pr19-ui/design-qa.md",
+        "docs/ux/pr19-ui/ui-checks.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "本批前端已追加原PR19（core/stage-10-settlement）；所列本机验证通过，远端CI以原PR为准，未合并或部署。"
     }
   ],
   "delivery_policy": {
     "mode": "STAGED_LOCAL_FIRST",
     "effective_on": "2026-09-22",
     "guide": "docs/collaboration/STAGED_DELIVERY.md",
-    "remote_sync": "PR13_MERGED_PR14_FRONTEND_LOCAL",
+    "remote_sync": "STAGE_10_PUBLISHED_WAITING_REVIEW",
     "open_pull_requests": [
+      11,
+      12,
+      13,
       14,
       15,
       16,
-      17
+      17,
+      18,
+      19
     ],
     "previous_merged_pull_requests": [
       4,
@@ -1861,18 +2106,22 @@
     ],
     "note": "原任务IN_REVIEW仅表示已有成果仍需审查，不代表GitHub仍有开放申请；每个小任务不再自动推送。",
     "current_stage": {
-      "name": "选剧本、办理许可、绑定项目和受控阅读前端",
-      "branch": "ux/pr14-pages",
-      "status": "LOCAL_READY_FOR_REVIEW",
-      "owner": "用户授权的本次前端任务 / Codex",
-      "guide": "docs/tasks/records/UX-PR14-LICENSING-PAGES-20260930.md",
-      "base_commit": "90cb6a9e2a1412e2cba70becd29a455c53a6d82f",
-      "pending_dependency": "原第14份后端ce576af已明确引入本地；阶段合并仍需正式审阅，尚未追加上传前端。",
-      "updated_on": "2026-09-30",
-      "delivery_branch": "core/stage-5-script-licensing",
-      "pull_request": 14,
-      "source_commit": "0536ac8",
-      "remote_checks": "NOT_PUSHED"
+      "name": "把应付、实际付款和发行收入核对清楚",
+      "branch": "core/stage-10-settlement",
+      "status": "IN_REVIEW",
+      "owner": "chengcongcong222",
+      "guide": "docs/collaboration/STAGE_10_FINANCE.md",
+      "base_commit": "7d139ff3f60171c9cf2b1d25555073884b02cd2e",
+      "pending_dependency": "Stage 8 9852d8a and Stage 9 0a51e9e merged locally; PRs 11–18 still require actual review, not merged into integration",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/19"
+    },
+    "pending_previous_stage": {
+      "name": "商单、制作及项目发行",
+      "pull_requests": [
+        17,
+        18
+      ],
+      "status": "OPEN_NO_REVIEW"
     }
   }
 }

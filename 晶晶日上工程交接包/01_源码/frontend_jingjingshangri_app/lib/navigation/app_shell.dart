@@ -7,6 +7,8 @@ import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import 'package:flutter/services.dart';
 import '../licensing/license_pages.dart';
+import '../gigs/gig_pages.dart';
+import '../projects/project_pages.dart';
 
 /// Keep the current tab address without replacing the mounted shell. Child
 /// routes still use ordinary Material routes and return to this updated address.
@@ -171,16 +173,8 @@ class _AppShellState extends State<AppShell> {
         _entry('数字人资料', '管理本人的脸部、声音与用途授权 · 暂未开放', Icons.face_outlined,
             () => _open('/my-humans')),
         ..._currentTools(),
-        appNotice('艺人发现暂未开放。当前没有可展示的公开人物目录。', icon: Icons.people_outline),
-      ];
-
-  List<Widget> _business(String subtitle, String description) => [
-        supplyBusinessIntro(subtitle, description),
-        _entry('业务通知', '查看与你相关的业务动态 · 暂未开放', Icons.notifications_outlined,
-            () => _open('/messages')),
-        appNotice('这部分业务仍在准备。可以先整理作者与作品资料，或查看已有合同。',
-            icon: Icons.hourglass_empty),
-        ..._currentTools(),
+        _entry('发现与片场榜单', '公开目录筹备中；按真实快照查看榜单。', Icons.people_outline,
+            () => _open('/discover')),
       ];
 
   Widget supplyBusinessIntro(String title, String description) => Padding(
@@ -295,15 +289,36 @@ class _AppShellState extends State<AppShell> {
         ],
         _entry('账号与机构', '管理账号、机构、邀请和办事身份。', Icons.manage_accounts_outlined,
             () => _open('/account')),
-        _entry('业务通知', '查看与你相关的业务动态 · 暂未开放', Icons.notifications_outlined,
+        _entry('商单通知', '查看商单暂停与直接合作结束记录', Icons.notifications_outlined,
             () => _open('/messages')),
         _menuGrid(),
+        _heading('商单与直接合作'),
+        _entry('我的商单与接单约定', '查看当前身份的需求、约定与审核状态。', Icons.work_outline,
+            () => _open('/gigs/records?kind=GIG')),
+        _entry('MCN 直接合作', '本人确认、拒绝或结束双方直接合作。', Icons.handshake_outlined,
+            () => _open('/mcn')),
+        _entry('佣金核算', '按真实净额计提；没有出款与提现接入。', Icons.account_balance_outlined,
+            () => _open('/gigs/records?kind=COMMISSION')),
         _heading('订单与付款'),
+        _entry('我的结算', '先选约定，核对本人金额、确认、付款申请与真实实付。',
+            Icons.account_balance_wallet_outlined, () => _open('/finance')),
+        _entry('结算业务通知', '仅当前身份获准参与的结算业务。', Icons.notifications_outlined,
+            () => _open('/finance/notifications')),
         _entry('订单、报价与旧记录', '核对原报价、付款节点与退款状态。', Icons.receipt_long_outlined,
             () => _open('/orders')),
+        _heading('公开项目与发行'),
+        _entry('我的参与项目', '回应邀请、本人入组、逐版确认与发行进度。', Icons.folder_open_outlined,
+            () => _open('/my-projects')),
+        _heading('制作与交付'),
+        _entry('参与制作项目', '审阅具体版本、提交本版意见与查看修改记录。', Icons.movie_outlined,
+            () => _open('/production')),
+        _entry('我的交付作品', '当前最终成片、验收付款与受控下载。', Icons.lock_outline,
+            () => _open('/production/works')),
         _heading('剧本许可'),
         _entry('我的许可办理', '签署、身份、权属核验与许可生效条件。', Icons.verified_outlined,
             () => _open('/licensing')),
+        _entry('我的许可项目', '查看公开项目与许可绑定。', Icons.folder_open_outlined,
+            () => _open('/licensing?kind=PROJECT')),
         _heading('创作与供给'),
         _entry('作者与作品', '申请作者资格，管理供给与作品资料。', Icons.edit_note_outlined,
             () => _open('/supply')),
@@ -324,8 +339,8 @@ class _AppShellState extends State<AppShell> {
               Icons.receipt_long_outlined, () => _open('/orders?kind=QUOTE')),
           const LicenseCatalog(embedded: true)
         ],
-      2 => _business('让创作连接真实需求', '培育承接商业委托：发布品牌需求、确认接单约定，并按用途完成交付。'),
-      3 => _business('在故事里找到你的角色', '成角承接公开项目与发行：了解招募、参与项目，并逐项确认授权与发行条件。'),
+      2 => [const GigCataloguePage(embedded: true)],
+      3 => [const ProjectsCataloguePage(embedded: true)],
       4 => _mine(session),
       _ => _home(session),
     };

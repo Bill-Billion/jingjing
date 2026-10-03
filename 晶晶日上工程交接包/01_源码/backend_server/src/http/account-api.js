@@ -10,7 +10,7 @@ const {createSupplyRouter}=require('./supply-routes');
 const {createLicensingRouter}=require('./licensing-routes');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory,productionProviderFactory}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
@@ -33,6 +33,8 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/supply',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/finance',express.json({limit:'128kb',strict:true}));
+ app.use('/api/v1/projects',express.json({limit:'128kb',strict:true}));
  app.use(express.json({limit:'16kb',strict:true}));
  app.use(createOperationsRouter({databaseReady:mysqlReady(db)}));
  const meta=req=>({request_id:req.requestId,actor:req.account?{account_id:req.account.id}:null,acting_party:req.actingParty||null});
@@ -127,6 +129,10 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
+ app.use('/api/v1/finance',require('./settlement-routes').createSettlementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/projects',require('./projects-routes').createProjectsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/production',require('./production-routes').createProductionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,providerFactory:productionProviderFactory}));
+ app.use('/api/v1/gigs',require('./gigs-routes').createGigsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
