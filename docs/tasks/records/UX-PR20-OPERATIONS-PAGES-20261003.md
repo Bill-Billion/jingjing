@@ -1,3 +1,5 @@
+> 2026-10-03远端同步：本批前端、原图映射和验收记录已追加至 [PR20](https://github.com/Bill-Billion/jingjing/pull/20) 的 `core/stage-11-operations` 分支；本机检查结果保留，远端CI以该PR的Checks为准。未合并或部署。下文“本地完成／未上传”属于此次同步前的验收记录。
+
 # 业务通知、对象留言、审计与报表前端
 
 原PR20后端57ca281，App a50b047、Web076e864及19完整财务本地整合；继续159接口/271格式与本人结算隔离。App230/Web174、后端operations18/finance27、真实App9/Web21组均通过；70张去重实拍和原8图映射已完成。

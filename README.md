@@ -1,3 +1,5 @@
+> 2026-10-03远端同步：本批前端、原图映射和验收记录已追加至 [PR20](https://github.com/Bill-Billion/jingjing/pull/20) 的 `core/stage-11-operations` 分支；本机检查结果保留，远端CI以该PR的Checks为准。未合并或部署。下文“本地完成／未上传”属于此次同步前的验收记录。
+
 > 2026-10-03：PR16、PR17前端已分别提交原PR并通过代码检查。PR18选角发行、PR19结算、PR20业务通知留言报表两端本地完成；20真实App9/网页21组、70张实拍通过。PR21整体验收收尾中，18–21本批前端未上传、合并或部署。 [本批交付](docs/ux/pr20-ui/README.md)。
 
 > 2026-10-03上传状态：本批已追加至 [PR17](https://github.com/Bill-Billion/jingjing/pull/17)，已核实远端包含 `348a83f`。本机验收结果保持，GitHub检查以该申请Checks为准；未合并或部署。下文保留本地验收时的记录。
