@@ -25,8 +25,13 @@ const links = [
   { to: '/projects/plans', label: '项目会签', icon: Document },
   { to: '/projects/releases', label: '项目发行', icon: Collection },
   { to: '/projects/channels', label: '渠道档案', icon: OfficeBuilding },
+  { to: '/finance/agreements', label: '结算约定与余额', icon: Document },
+  { to: '/finance/payouts', label: '财务付款', icon: Tickets },
+  { to: '/finance/income', label: '渠道收入与对账', icon: Collection },
+  { to: '/finance/disputes', label: '争议与账务调整', icon: Reading },
 ]
 const reviews = [
+  { to: '/finance/reviews/agreements', label: '独立财务核验' },
   { to: '/gigs/reviews/requests', label: '商单与提案核验' },
   { to: '/gigs/reviews/rules', label: '商单规则核验' },
   { to: '/supply/reviews/profile', label: '供给审核' },
@@ -39,6 +44,9 @@ const reviews = [
   { to: '/projects/reviews/plans', label: '项目独立核验' },
 ]
 function active(target: string) {
+  if (target === '/finance/reviews/agreements') return route.path.startsWith('/finance/reviews/')
+  const financeGroup = /(?:\/payouts(?:\/|$)|\/readiness$)/.test(route.path) ? '/finance/payouts' : /(?:\/income$|\/statements(?:\/|$)|\/reconciliations\/)/.test(route.path) ? '/finance/income' : /(?:\/disputes(?:\/|$)|\/adjustments\/)/.test(route.path) ? '/finance/disputes' : '/finance/agreements'
+  if (target.startsWith('/finance/') && !target.includes('/reviews/')) return route.path.startsWith('/finance/')&&!route.path.startsWith('/finance/reviews/')&&financeGroup===target
   if (target === '/gigs/catalogue') return /^\/gigs\/(catalogue|requests|offers)(\/|$)/.test(route.path)
   if (target === '/gigs/reviews/requests') return /^\/gigs\/reviews\/(requests|offers)(\/|$)/.test(route.path)
   if (target === '/gigs/reviews/rules') return /^\/gigs\/(rules|reviews\/rules)(\/|$)/.test(route.path)
