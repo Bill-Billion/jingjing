@@ -1,3 +1,5 @@
+> 2026-10-03远端同步：本批前端、原图映射和验收记录已追加至 [PR18](https://github.com/Bill-Billion/jingjing/pull/18) 的 `core/stage-9-projects-release` 分支；本机检查结果保留，远端CI以该PR的Checks为准。未合并或部署。下文“本地完成／未上传”属于此次同步前的验收记录。
+
 > 2026-10-03：PR18项目页面本地完成，25原图/46实拍，App169与Web113项及真实浏览器9/13组全通过；渠道权限误判已修。未上传PR18、合并或部署。[证据](../ux/pr18-ui/ui-checks.md)。
 
 > 2026-10-03上传状态：本批已追加至 [PR16](https://github.com/Bill-Billion/jingjing/pull/16)，已核实远端包含 `5a294b0`。本机验收结果保持，GitHub检查以该申请Checks为准；未合并或部署。下文保留本地验收时的记录。
