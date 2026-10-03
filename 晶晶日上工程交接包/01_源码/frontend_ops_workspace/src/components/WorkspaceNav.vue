@@ -29,8 +29,12 @@ const links = [
   { to: '/finance/payouts', label: '财务付款', icon: Tickets },
   { to: '/finance/income', label: '渠道收入与对账', icon: Collection },
   { to: '/finance/disputes', label: '争议与账务调整', icon: Reading },
+  { to: '/operations/notifications', label: '业务通知与留言', icon: Document },
+  { to: '/operations/reports', label: '经营报表', icon: Collection },
 ]
 const reviews = [
+  { to: '/operations/moderation', label: '留言独立管理' },
+  { to: '/operations/audit', label: '操作审计' },
   { to: '/finance/reviews/agreements', label: '独立财务核验' },
   { to: '/gigs/reviews/requests', label: '商单与提案核验' },
   { to: '/gigs/reviews/rules', label: '商单规则核验' },
@@ -44,6 +48,9 @@ const reviews = [
   { to: '/projects/reviews/plans', label: '项目独立核验' },
 ]
 function active(target: string) {
+  if (target === '/operations/notifications') return /^\/operations\/(?:notifications|(?:operator\/)?objects)(\/|$)/.test(route.path)
+  if (target === '/operations/reports') return /^\/operations\/(?:operator\/)?reports(\/|$)/.test(route.path)
+
   if (target === '/finance/reviews/agreements') return route.path.startsWith('/finance/reviews/')
   const financeGroup = /(?:\/payouts(?:\/|$)|\/readiness$)/.test(route.path) ? '/finance/payouts' : /(?:\/income$|\/statements(?:\/|$)|\/reconciliations\/)/.test(route.path) ? '/finance/income' : /(?:\/disputes(?:\/|$)|\/adjustments\/)/.test(route.path) ? '/finance/disputes' : '/finance/agreements'
   if (target.startsWith('/finance/') && !target.includes('/reviews/')) return route.path.startsWith('/finance/')&&!route.path.startsWith('/finance/reviews/')&&financeGroup===target

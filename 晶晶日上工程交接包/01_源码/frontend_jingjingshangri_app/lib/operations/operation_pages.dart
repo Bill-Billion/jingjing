@@ -476,15 +476,17 @@ class _CommentsState extends State<_Comments> {
                       labelText: '留言说明', hintText: '输入与本对象有关的说明'),
                   onChanged: (_) => setState(() {}))),
           const SizedBox(width: 12),
-          SizedBox(
-              width: 76,
+          ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 76),
               child: FilledButton(
+                  style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12)),
                   onPressed: source == null ||
                           locked ||
                           !operationText(body.text, 4000)
                       ? null
                       : send,
-                  child: const Text('发送')))
+                  child: const Text('发送', maxLines: 1, softWrap: false)))
         ])
       ]);
   @override
