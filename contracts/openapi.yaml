@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.7.0-rc.1
+  version: 0.9.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers and front-end integration remain unverified.
 servers:
 - url: http://127.0.0.1:3000
@@ -4315,6 +4315,1098 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProductionRetryRequest'
+  /api/v1/projects/projects:
+    post:
+      operationId: createProjectOperation
+      summary: 创建公开用途项目
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateRequest'
+    get:
+      operationId: listManagedProjects
+      summary: 查看本人参与或获准审核的项目
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/projects/{record_id}/roles:
+    post:
+      operationId: roleProjectOperation
+      summary: 设置角色名额和价格
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRoleRequest'
+  /api/v1/projects/roles/{record_id}/invitations:
+    post:
+      operationId: inviteProjectOperation
+      summary: 发出角色邀请
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInviteRequest'
+  /api/v1/projects/roles/{record_id}/applications:
+    post:
+      operationId: applyProjectOperation
+      summary: 提交角色报名
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectApplyRequest'
+  /api/v1/projects/candidates/{record_id}/responses:
+    post:
+      operationId: respondProjectOperation
+      summary: 本人回应邀请
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRespondRequest'
+  /api/v1/projects/candidates/{record_id}/decisions:
+    post:
+      operationId: decideProjectOperation
+      summary: 筛选或本人确认入组
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectDecideRequest'
+  /api/v1/projects/projects/{record_id}/plans:
+    post:
+      operationId: planProjectOperation
+      summary: 提交人员权利和资金方案
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectPlanRequest'
+  /api/v1/projects/projects/{record_id}/start:
+    post:
+      operationId: startProjectOperation
+      summary: 确认开工
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectStartRequest'
+  /api/v1/projects/projects/{record_id}/editions:
+    post:
+      operationId: editionProjectOperation
+      summary: 提交成片与材料版本
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectEditionRequest'
+  /api/v1/projects/records/{record_id}/confirmations:
+    post:
+      operationId: confirmProjectOperation
+      summary: 按指定顺序确认准确版本
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectConfirmRequest'
+    get:
+      operationId: listProjectConfirmations
+      summary: 查看当前版本确认情况
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectConfirmationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/projects/{record_id}/cancellation:
+    post:
+      operationId: cancelProjectOperation
+      summary: 取消项目并保留历史
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCancelRequest'
+  /api/v1/projects/channels:
+    post:
+      operationId: channelProjectOperation
+      summary: 提交发行渠道资料
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectChannelRequest'
+  /api/v1/projects/records/{record_id}/reviews:
+    post:
+      operationId: reviewProjectOperation
+      summary: 独立人工复核材料
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectReviewRequest'
+  /api/v1/projects/projects/{record_id}/releases:
+    post:
+      operationId: submitReleaseProjectOperation
+      summary: 申请发行或补件重提
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectSubmitreleaseRequest'
+  /api/v1/projects/releases/{record_id}/external-events:
+    post:
+      operationId: reportExternalProjectOperation
+      summary: 登记外部渠道结果凭据
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectReportexternalRequest'
+  /api/v1/projects/catalogue:
+    get:
+      operationId: listProjectCatalogue
+      summary: 查看可报名项目和已核验渠道
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCatalogueResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/records/{record_id}:
+    get:
+      operationId: getProjectRecord
+      summary: 读取获准查看的项目记录
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/projects/{project_id}/records:
+    get:
+      operationId: listProjectRecords
+      summary: 查看项目内获准查看的记录
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: kind
+        in: query
+        required: true
+        schema:
+          enum:
+          - ROLE
+          - CANDIDATE
+          - PLAN
+          - EDITION
+          - RELEASE
+          - EXTERNAL_EVENT
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/projects/{record_id}/readiness:
+    get:
+      operationId: getProjectReadiness
+      summary: 检查人员授权和开工条件
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectReadinessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/records/{record_id}/evidence/{asset_id}:
+    get:
+      operationId: downloadProjectEvidence
+      summary: 按当前权限读取私有证明材料
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -4545,6 +5637,1550 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ProjectProjectRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: PROJECT
+        project_id:
+          type: 'null'
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - PREPARING
+          - STARTED
+          - CANCELLED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            title:
+              type: string
+              maxLength: 8000
+            scope:
+              type: object
+              additionalProperties: false
+              properties:
+                language:
+                  type: string
+                  maxLength: 8000
+                purpose:
+                  type: string
+                  maxLength: 8000
+                territory:
+                  type: string
+                  maxLength: 8000
+                valid_until:
+                  type: string
+                  format: date-time
+                  pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+              required:
+              - language
+              - purpose
+              - territory
+              - valid_until
+            current_plan_id:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+            current_edition_id:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+            cancel_reason:
+              anyOf:
+              - type: 'null'
+              - type: string
+                maxLength: 8000
+          required:
+          - title
+          - scope
+          - current_plan_id
+          - current_edition_id
+          - cancel_reason
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectRoleRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: ROLE
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - OPEN
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            title:
+              type: string
+              maxLength: 8000
+            capacity:
+              type: integer
+            pricing:
+              enum:
+              - FIXED
+              - QUOTE
+            amount_minor:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 900000000000
+              - type: 'null'
+            terms:
+              type: string
+              maxLength: 8000
+          required:
+          - title
+          - capacity
+          - pricing
+          - amount_minor
+          - terms
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectCandidateRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: CANDIDATE
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - INVITED
+          - APPLIED
+          - DECLINED
+          - SELECTED
+          - CONFIRMED
+          - REJECTED
+          - WITHDRAWN
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            role_id:
+              type: string
+              format: uuid
+            avatar_id:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+            consent_id:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+            amount_minor:
+              anyOf:
+              - type: 'null'
+              - type: integer
+            note:
+              anyOf:
+              - type: 'null'
+              - type: string
+                maxLength: 8000
+            terms:
+              type: string
+              maxLength: 8000
+            final_confirmed_by:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+          required:
+          - role_id
+          - avatar_id
+          - consent_id
+          - amount_minor
+          - note
+          - terms
+          - final_confirmed_by
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectPlanRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: PLAN
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - CHANGES_REQUESTED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            production_project_id:
+              type: string
+              format: uuid
+            rights:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  evidence_asset_id:
+                    type: string
+                    format: uuid
+                  holder_party_id:
+                    type: string
+                    format: uuid
+                  layer:
+                    type: string
+                    maxLength: 8000
+                  purpose:
+                    type: string
+                    maxLength: 8000
+                  terms:
+                    type: string
+                    maxLength: 8000
+                  territory:
+                    type: string
+                    maxLength: 8000
+                  valid_until:
+                    type: string
+                    format: date-time
+                    pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                required:
+                - evidence_asset_id
+                - holder_party_id
+                - layer
+                - purpose
+                - terms
+                - territory
+                - valid_until
+            confirmers:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  after_party_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  party_id:
+                    type: string
+                    format: uuid
+                  responsibility:
+                    type: string
+                    maxLength: 8000
+                required:
+                - after_party_ids
+                - party_id
+                - responsibility
+            funding:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  candidate_id:
+                    type: string
+                    format: uuid
+                  order_id:
+                    type: string
+                    format: uuid
+                  line_id:
+                    type: string
+                    maxLength: 8000
+                required:
+                - candidate_id
+                - order_id
+                - line_id
+            terms:
+              type: string
+              maxLength: 8000
+            roster_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - CHANGES_REQUESTED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  verification:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      identity_verified:
+                        type: boolean
+                      signatures_verified:
+                        type: boolean
+                      rights_verified:
+                        type: boolean
+                      production_verified:
+                        type: boolean
+                    required: []
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: MANUAL_EVIDENCE_REVIEW
+                required:
+                - decision
+                - reason
+                - verification
+                - reviewer_account_id
+                - method
+              - type: 'null'
+          required:
+          - production_project_id
+          - rights
+          - confirmers
+          - funding
+          - terms
+          - roster_sha256
+          - review
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectEditionRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: EDITION
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - CHANGES_REQUESTED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            plan_id:
+              type: string
+              format: uuid
+            final_version_id:
+              type: string
+              format: uuid
+            final_content_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            material_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+            confirmers:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  party_id:
+                    type: string
+                    format: uuid
+                  responsibility:
+                    type: string
+                    maxLength: 8000
+                  after_party_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                required:
+                - party_id
+                - responsibility
+                - after_party_ids
+            note:
+              type: string
+              maxLength: 8000
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - CHANGES_REQUESTED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  verification:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      rights_verified:
+                        type: boolean
+                      content_verified:
+                        type: boolean
+                      credits_verified:
+                        type: boolean
+                      materials_verified:
+                        type: boolean
+                    required: []
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: MANUAL_EVIDENCE_REVIEW
+                required:
+                - decision
+                - reason
+                - verification
+                - reviewer_account_id
+                - method
+              - type: 'null'
+          required:
+          - plan_id
+          - final_version_id
+          - final_content_sha256
+          - material_asset_ids
+          - confirmers
+          - note
+          - review
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectChannelRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: CHANNEL
+        project_id:
+          type: 'null'
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - CHANGES_REQUESTED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            name:
+              type: string
+              maxLength: 8000
+            channel_reference:
+              type: string
+              maxLength: 8000
+            submission_requirements:
+              type: string
+              maxLength: 8000
+            evidence_asset_id:
+              type: string
+              format: uuid
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - CHANGES_REQUESTED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  verification:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      channel_verified:
+                        type: boolean
+                      requirements_verified:
+                        type: boolean
+                    required: []
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: MANUAL_EVIDENCE_REVIEW
+                required:
+                - decision
+                - reason
+                - verification
+                - reviewer_account_id
+                - method
+              - type: 'null'
+          required:
+          - name
+          - channel_reference
+          - submission_requirements
+          - evidence_asset_id
+          - review
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectReleaseRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RELEASE
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - INTERNAL_PENDING
+          - READY_TO_SUBMIT
+          - CHANGES_REQUESTED
+          - REJECTED
+          - EXTERNAL_SUBMITTED
+          - EXTERNAL_CHANGES_REQUESTED
+          - EXTERNAL_REJECTED
+          - EXTERNAL_PUBLISHED
+          - EXTERNAL_WITHDRAWN
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            edition_id:
+              type: string
+              format: uuid
+            channel_id:
+              type: string
+              format: uuid
+            prior_release_id:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+            material_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+            note:
+              type: string
+              maxLength: 8000
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - CHANGES_REQUESTED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  verification:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      rights_verified:
+                        type: boolean
+                      materials_verified:
+                        type: boolean
+                      channel_verified:
+                        type: boolean
+                    required: []
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: MANUAL_EVIDENCE_REVIEW
+                required:
+                - decision
+                - reason
+                - verification
+                - reviewer_account_id
+                - method
+              - type: 'null'
+            last_external_event_id:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+          required:
+          - edition_id
+          - channel_id
+          - prior_release_id
+          - material_asset_ids
+          - note
+          - review
+          - last_external_event_id
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectExternalEventRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: EXTERNAL_EVENT
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - CHANGES_REQUESTED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            release_id:
+              type: string
+              format: uuid
+            outcome:
+              type: string
+              maxLength: 8000
+            external_reference:
+              type: string
+              maxLength: 8000
+            occurred_at:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            evidence_asset_id:
+              type: string
+              format: uuid
+            note:
+              type: string
+              maxLength: 8000
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - CHANGES_REQUESTED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  verification:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      source_verified:
+                        type: boolean
+                      reference_verified:
+                        type: boolean
+                      outcome_verified:
+                        type: boolean
+                    required: []
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: MANUAL_EVIDENCE_REVIEW
+                required:
+                - decision
+                - reason
+                - verification
+                - reviewer_account_id
+                - method
+              - type: 'null'
+            provenance:
+              type: string
+              maxLength: 8000
+          required:
+          - release_id
+          - outcome
+          - external_reference
+          - occurred_at
+          - evidence_asset_id
+          - note
+          - review
+          - provenance
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProjectRecord:
+      oneOf:
+      - $ref: '#/components/schemas/ProjectProjectRecord'
+      - $ref: '#/components/schemas/ProjectRoleRecord'
+      - $ref: '#/components/schemas/ProjectCandidateRecord'
+      - $ref: '#/components/schemas/ProjectPlanRecord'
+      - $ref: '#/components/schemas/ProjectEditionRecord'
+      - $ref: '#/components/schemas/ProjectChannelRecord'
+      - $ref: '#/components/schemas/ProjectReleaseRecord'
+      - $ref: '#/components/schemas/ProjectExternalEventRecord'
+    ProjectRecordResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ProjectRecord'
+      required:
+      - meta
+      - data
+    ProjectListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/ProjectRecord'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    ProjectCatalogueResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  kind:
+                    type: string
+                    maxLength: 8000
+                  title:
+                    type: string
+                    maxLength: 8000
+                  scope:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        purpose:
+                          type: string
+                          maxLength: 8000
+                        language:
+                          type: string
+                          maxLength: 8000
+                        territory:
+                          type: string
+                          maxLength: 8000
+                        valid_until:
+                          type: string
+                          format: date-time
+                          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                      required:
+                      - purpose
+                      - language
+                      - territory
+                      - valid_until
+                    - type: 'null'
+                  channel_reference:
+                    anyOf:
+                    - type: 'null'
+                    - type: string
+                      maxLength: 8000
+                  roles:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        object_version:
+                          type: integer
+                        terms:
+                          type: string
+                          maxLength: 8000
+                        title:
+                          type: string
+                          maxLength: 8000
+                        pricing:
+                          enum:
+                          - FIXED
+                          - QUOTE
+                        capacity:
+                          type: integer
+                        amount_minor:
+                          anyOf:
+                          - type: integer
+                            minimum: 0
+                            maximum: 900000000000
+                          - type: 'null'
+                      required:
+                      - id
+                      - object_version
+                      - terms
+                      - title
+                      - pricing
+                      - capacity
+                      - amount_minor
+                required:
+                - id
+                - kind
+                - title
+                - scope
+                - channel_reference
+                - roles
+          required:
+          - items
+      required:
+      - meta
+      - data
+    ProjectConfirmationsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  party_id:
+                    type: string
+                    format: uuid
+                  account_id:
+                    type: string
+                    format: uuid
+                  content_sha256:
+                    type: string
+                    pattern: ^[0-9a-f]{64}$
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  reason:
+                    type: string
+                    maxLength: 8000
+                required:
+                - party_id
+                - account_id
+                - content_sha256
+                - decision
+                - reason
+          required:
+          - items
+      required:
+      - meta
+      - data
+    ProjectReadinessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            current_status:
+              enum:
+              - AVAILABLE
+              - BLOCKED
+            reason_code:
+              anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 128
+              - type: 'null'
+          required:
+          - current_status
+          - reason_code
+      required:
+      - meta
+      - data
+    ProjectScope:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          enum:
+          - PUBLIC_SHARE
+          - RELEASE
+        territory:
+          type: string
+          pattern: ^[A-Z]{2}$
+        language:
+          type: string
+          pattern: ^[a-z]{2}$
+        valid_until:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+      required:
+      - purpose
+      - territory
+      - language
+      - valid_until
+    ProjectRight:
+      type: object
+      additionalProperties: false
+      properties:
+        layer:
+          enum:
+          - FACE_VOICE
+          - ORIGINAL
+          - SCRIPT
+          - MUSIC
+          - ADAPTATION
+          - FINAL
+        holder_party_id:
+          type: string
+          format: uuid
+        evidence_asset_id:
+          type: string
+          format: uuid
+        purpose:
+          enum:
+          - PUBLIC_SHARE
+          - RELEASE
+        territory:
+          type: string
+          pattern: ^[A-Z]{2}$
+        valid_until:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - layer
+      - holder_party_id
+      - evidence_asset_id
+      - purpose
+      - territory
+      - valid_until
+      - terms
+    ProjectConfirmer:
+      type: object
+      additionalProperties: false
+      properties:
+        party_id:
+          type: string
+          format: uuid
+        responsibility:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        after_party_ids:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+      required:
+      - party_id
+      - responsibility
+      - after_party_ids
+    ProjectFunding:
+      type: object
+      additionalProperties: false
+      properties:
+        candidate_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        line_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - candidate_id
+      - order_id
+      - line_id
+    ProjectCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        scope:
+          $ref: '#/components/schemas/ProjectScope'
+      required:
+      - title
+      - scope
+    ProjectRoleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        capacity:
+          type: integer
+          minimum: 1
+          maximum: 100
+        pricing:
+          enum:
+          - FIXED
+          - QUOTE
+        amount_minor:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 900000000000
+          - type: 'null'
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - title
+      - capacity
+      - pricing
+      - amount_minor
+      - terms
+    ProjectInviteRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        invitee_party_id:
+          type: string
+          format: uuid
+      required:
+      - invitee_party_id
+    ProjectApplyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        avatar_id:
+          type: string
+          format: uuid
+        consent_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - avatar_id
+      - consent_id
+      - amount_minor
+      - note
+    ProjectRespondRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - ACCEPT
+          - DECLINE
+        avatar_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        consent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        amount_minor:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 900000000000
+          - type: 'null'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - avatar_id
+      - consent_id
+      - amount_minor
+      - note
+    ProjectDecideRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - SELECT
+          - REJECT
+          - CONFIRM
+          - WITHDRAW
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - content_sha256
+      - reason
+    ProjectPlanRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        production_project_id:
+          type: string
+          format: uuid
+        rights:
+          type: array
+          maxItems: 6
+          items:
+            $ref: '#/components/schemas/ProjectRight'
+          minItems: 6
+        confirmers:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/ProjectConfirmer'
+          minItems: 1
+        funding:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/ProjectFunding'
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - production_project_id
+      - rights
+      - confirmers
+      - funding
+      - terms
+    ProjectStartRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    ProjectEditionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        final_version_id:
+          type: string
+          format: uuid
+        material_asset_ids:
+          type: array
+          maxItems: 30
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - final_version_id
+      - material_asset_ids
+      - note
+    ProjectConfirmRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - content_sha256
+      - decision
+      - reason
+    ProjectCancelRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    ProjectChannelRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        channel_reference:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        submission_requirements:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - name
+      - channel_reference
+      - submission_requirements
+      - evidence_asset_id
+    ProjectReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - CHANGES_REQUESTED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        verification:
+          type: object
+          additionalProperties: false
+          properties:
+            identity_verified:
+              type: boolean
+            signatures_verified:
+              type: boolean
+            rights_verified:
+              type: boolean
+            production_verified:
+              type: boolean
+            content_verified:
+              type: boolean
+            credits_verified:
+              type: boolean
+            materials_verified:
+              type: boolean
+            channel_verified:
+              type: boolean
+            requirements_verified:
+              type: boolean
+            source_verified:
+              type: boolean
+            reference_verified:
+              type: boolean
+            outcome_verified:
+              type: boolean
+          required: []
+      required:
+      - decision
+      - reason
+      - verification
+    ProjectSubmitreleaseRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        channel_id:
+          type: string
+          format: uuid
+        prior_release_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        material_asset_ids:
+          type: array
+          maxItems: 30
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - channel_id
+      - prior_release_id
+      - material_asset_ids
+      - note
+    ProjectReportexternalRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        outcome:
+          enum:
+          - SUBMITTED
+          - CHANGES_REQUESTED
+          - REJECTED
+          - PUBLISHED
+          - WITHDRAWN
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        occurred_at:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        evidence_asset_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - outcome
+      - external_reference
+      - occurred_at
+      - evidence_asset_id
+      - note
     ProductionRecord:
       oneOf:
       - type: object
