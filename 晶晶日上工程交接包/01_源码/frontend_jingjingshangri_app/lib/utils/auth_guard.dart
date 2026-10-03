@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/user_provider.dart';
+import '../account/account_session.dart';
 import '../pages/login/login_page.dart';
 import 'motion.dart';
 
@@ -14,6 +15,11 @@ class AuthGuard {
     VoidCallback? onLoggedIn,
     String? reason,
   }) async {
+    final account = context.read<AccountSession?>();
+    if ((account?.isLoggedIn ?? false)) {
+      _unavailable(context);
+      return false;
+    }
     final up = context.read<UserProvider>();
     if (up.isLoggedIn) {
       onLoggedIn?.call();
@@ -22,10 +28,23 @@ class AuthGuard {
     if (!context.mounted) return false;
     final ok = await Navigator.of(context, rootNavigator: true)
         .push<bool>(Motion.modalRoute(LoginPage(reason: reason)));
-    if (ok == true) {
+    if (!context.mounted) return false;
+    if ((account?.isLoggedIn ?? false)) {
+      _unavailable(context);
+      return false;
+    }
+    if (ok == true && up.isLoggedIn) {
       onLoggedIn?.call();
       return true;
     }
     return false;
+  }
+
+  static void _unavailable(BuildContext context) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(const SnackBar(
+        content: Text('你已登录新账号。此旧版业务尚未接入，请到“我的 → 账号与机构”管理账号。'),
+      ));
   }
 }

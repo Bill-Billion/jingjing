@@ -7546,7 +7546,7 @@ components:
         Cache-Control:
           $ref: '#/components/headers/NoStore'
         Retry-After:
-          description: Optional bounded wait hint in seconds; does not authorize blind retry of a mutation.
+          description: Account API returns the remaining limiter or SMS cooldown wait in seconds. Wait before replaying the original request with its original idempotency key, body and If-Match.
           schema:
             type: integer
             minimum: 0
@@ -15967,6 +15967,7 @@ components:
           maxLength: 500
         retryable:
           type: boolean
+          description: Whether the original request may be replayed under the operation's retry rules. Preserve its idempotency key, body and If-Match; RATE_LIMITED also requires waiting for Retry-After. False does not prove that a write failed or authorize a new request after an unknown outcome. See PROTOCOL.md for account API error handling.
         details:
           type: array
           items:
@@ -16015,6 +16016,19 @@ components:
           uniqueItems: true
           description: Server-authorized action identifiers for this actor, party, object and current state. Never
             a client authorization source.
+      allOf:
+      - properties:
+          allowed_actions:
+            items:
+              enum: [READ_ACCOUNT, LIST_PARTIES, CREATE_ORGANIZATION]
+      - if:
+          properties:
+            current_status:
+              enum: [SUSPENDED, DELETION_PENDING]
+        then:
+          properties:
+            allowed_actions:
+              maxItems: 0
     CapabilityGrant:
       type: object
       additionalProperties: false
@@ -16076,6 +16090,28 @@ components:
           items:
             $ref: '#/components/schemas/CapabilityGrant'
         allowed_actions: *id010
+      allOf:
+      - properties:
+          allowed_actions:
+            items:
+              enum: [READ_PARTY, REQUEST_CAPABILITY, MANAGE_MEMBERS]
+      - if:
+          properties:
+            kind:
+              const: PERSON
+        then:
+          properties:
+            allowed_actions:
+              items:
+                enum: [READ_PARTY, REQUEST_CAPABILITY]
+      - if:
+          properties:
+            current_status:
+              enum: [SUSPENDED, CLOSED]
+        then:
+          properties:
+            allowed_actions:
+              maxItems: 0
       description: Party is a signing/business subject, not an account or avatar. One organization may hold multiple
         capabilities; a person may be an author.
     Membership:

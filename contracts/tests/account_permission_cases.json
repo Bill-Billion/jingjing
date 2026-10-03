@@ -1,0 +1,118 @@
+{
+  "description": "Account and party action names and disabled-state boundaries. These schema tests do not replace runtime authorization tests.",
+  "cases": [
+    {
+      "name": "legacy account action name rejected",
+      "fixture": "AccountResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "account.read"
+      ]
+    },
+    {
+      "name": "lowercase account action rejected",
+      "fixture": "AccountResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "read_account"
+      ]
+    },
+    {
+      "name": "party action cannot appear on account",
+      "fixture": "AccountResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "READ_PARTY"
+      ]
+    },
+    {
+      "name": "suspended account cannot grant actions",
+      "fixture": "AccountResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "SUSPENDED"
+    },
+    {
+      "name": "account pending deletion cannot grant actions",
+      "fixture": "AccountResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "DELETION_PENDING"
+    },
+    {
+      "name": "legacy party action name rejected",
+      "fixture": "PartyResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "party.read"
+      ]
+    },
+    {
+      "name": "lowercase party action rejected",
+      "fixture": "PartyResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "read_party"
+      ]
+    },
+    {
+      "name": "account action cannot appear on party",
+      "fixture": "PartyResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "READ_ACCOUNT"
+      ]
+    },
+    {
+      "name": "personal party cannot manage organization members",
+      "fixture": "PartyResponse",
+      "mutate_path": [
+        "data",
+        "allowed_actions"
+      ],
+      "replace_with": [
+        "MANAGE_MEMBERS"
+      ]
+    },
+    {
+      "name": "suspended party cannot grant actions",
+      "fixture": "PartyResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "SUSPENDED"
+    },
+    {
+      "name": "closed party cannot grant actions",
+      "fixture": "PartyResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "CLOSED"
+    }
+  ]
+}

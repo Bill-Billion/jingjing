@@ -71,7 +71,9 @@
             "current_status": "ACTIVE",
             "object_version": 1,
             "allowed_actions": [
-              "account.read"
+              "READ_ACCOUNT",
+              "LIST_PARTIES",
+              "CREATE_ORGANIZATION"
             ]
           }
         }
@@ -94,7 +96,9 @@
           "current_status": "ACTIVE",
           "object_version": 1,
           "allowed_actions": [
-            "account.read"
+            "READ_ACCOUNT",
+            "LIST_PARTIES",
+            "CREATE_ORGANIZATION"
           ]
         }
       }
@@ -123,14 +127,12 @@
                   {
                     "code": "AUTHOR",
                     "current_status": "ACTIVE",
-                    "allowed_actions": [
-                      "works.submit"
-                    ]
+                    "allowed_actions": []
                   }
                 ],
                 "allowed_actions": [
-                  "party.read",
-                  "party.profile.update"
+                  "READ_PARTY",
+                  "REQUEST_CAPABILITY"
                 ]
               },
               "membership": {
@@ -139,12 +141,10 @@
                 "party_id": "party_test",
                 "current_status": "ACTIVE",
                 "roles": [
-                  "owner"
+                  "OWNER"
                 ],
                 "object_version": 1,
-                "allowed_actions": [
-                  "party.read"
-                ]
+                "allowed_actions": []
               }
             }
           ],
@@ -173,17 +173,51 @@
             {
               "code": "AUTHOR",
               "current_status": "ACTIVE",
-              "allowed_actions": [
-                "works.submit"
-              ]
+              "allowed_actions": []
             }
           ],
           "allowed_actions": [
-            "party.read",
-            "party.profile.update"
+            "READ_PARTY",
+            "REQUEST_CAPABILITY"
           ]
         }
       }
+    },
+    {
+      "name": "Organization owner actions",
+      "schema": "PartyAccess",
+      "value": {
+        "party": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"PENDING_REVIEW","object_version":1,"capabilities":[],"allowed_actions":["READ_PARTY","REQUEST_CAPABILITY","MANAGE_MEMBERS"]},
+        "membership": {"id":"member_owner","account_id":"acc_test","party_id":"org_test","current_status":"ACTIVE","roles":["OWNER"],"object_version":1,"allowed_actions":[]}
+      }
+    },
+    {
+      "name": "Organization member actions",
+      "schema": "PartyAccess",
+      "value": {
+        "party": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"ACTIVE","object_version":1,"capabilities":[],"allowed_actions":["READ_PARTY"]},
+        "membership": {"id":"member_test","account_id":"acc_test","party_id":"org_test","current_status":"ACTIVE","roles":["MEMBER"],"object_version":1,"allowed_actions":[]}
+      }
+    },
+    {
+      "name": "Suspended account has no actions",
+      "schema": "Account",
+      "value": {"id":"acc_test","display_name":"Test account","current_status":"SUSPENDED","object_version":1,"allowed_actions":[]}
+    },
+    {
+      "name": "Account pending deletion has no actions",
+      "schema": "Account",
+      "value": {"id":"acc_test","display_name":"Test account","current_status":"DELETION_PENDING","object_version":1,"allowed_actions":[]}
+    },
+    {
+      "name": "Suspended party has no actions",
+      "schema": "Party",
+      "value": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"SUSPENDED","object_version":1,"capabilities":[],"allowed_actions":[]}
+    },
+    {
+      "name": "Closed party has no actions",
+      "schema": "Party",
+      "value": {"id":"org_test","kind":"ORGANIZATION","display_name":"Test organization","current_status":"CLOSED","object_version":1,"capabilities":[],"allowed_actions":[]}
     },
     {
       "name": "IdentityVerificationResponse",

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jingjingshangri_app/theme/app_theme.dart';
+import 'package:jingjingshangri_app/account/account_session.dart';
 import 'package:jingjingshangri_app/services/api_service.dart';
 import 'package:jingjingshangri_app/services/app_mode.dart';
 import 'package:jingjingshangri_app/services/user_provider.dart';
@@ -34,7 +35,12 @@ Future<UserProvider> _loggedUser() async {
   final up = UserProvider();
   await up.saveLogin({
     'token': 'demo-token',
-    'user': {'id': 1, 'nickname': '林晚晴', 'phone': '138****6688', 'role': 'user'},
+    'user': {
+      'id': 1,
+      'nickname': '林晚晴',
+      'phone': '138****6688',
+      'role': 'user'
+    },
   });
   return up;
 }
@@ -44,8 +50,11 @@ Future<void> _pump(WidgetTester t, Widget home, {UserProvider? up}) async {
   t.view.devicePixelRatio = 1.0;
   addTearDown(t.view.reset);
   await t.pumpWidget(
-    ChangeNotifierProvider<UserProvider>.value(
-      value: up ?? UserProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>.value(value: up ?? UserProvider()),
+        ChangeNotifierProvider(create: (_) => AccountSession()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
@@ -62,35 +71,23 @@ void main() {
   setUpAll(_bootDemo);
 
   group('买家流', () {
-    testWidgets('B1 手机号验证码登录：未勾协议被拦→勾选→登录进主导航', (t) async {
+    testWidgets('B1 未配置新账号服务时不能通过旧演示验证码登录', (t) async {
       await _pump(t, const LoginPage());
-      // 输入合法手机号
       await t.enterText(find.byType(TextField).first, '13800001111');
-      await t.pump(); // 等 onChanged 重建，使获取验证码按钮变为可用
-      // 获取验证码 → 出现 60s 倒计时反馈
+      await t.pump();
       await t.tap(find.text('获取验证码'));
       await t.pump(const Duration(milliseconds: 300));
-      expect(find.textContaining('后重发'), findsWidgets);
-      // 输入 6 位验证码
+      expect(find.textContaining('账号服务地址尚未配置'), findsOneWidget);
+      expect(find.textContaining('后重发'), findsNothing);
       await t.enterText(find.byType(TextField).last, '123456');
-      // 未勾协议点登录 → 被拦截并提示，仍在登录页
-      await t.tap(find.text('登录 / 注册'));
-      await t.pump(const Duration(milliseconds: 200));
-      expect(find.text('请先阅读并同意用户协议与隐私政策'), findsOneWidget);
-      expect(find.byType(MainScaffold), findsNothing);
-      // 勾选协议（点左侧圆形勾选图标；点《用户协议》文字只弹说明、不会勾选）
-      await t.tap(find.byIcon(Icons.radio_button_unchecked_rounded));
       await t.pump();
-      expect(find.byIcon(Icons.check_circle_rounded), findsWidgets);
-      // 再次登录 → 成功态 650ms 后进入主导航
-      await t.tap(find.text('登录 / 注册'));
-      await t.pump(); // 跑完登录异步链
-      await t.pump(const Duration(milliseconds: 700)); // 越过 650ms 成功停留
-      await t.pump(); // 构建新路由
-      expect(find.byType(MainScaffold), findsOneWidget);
-      expect(find.text('首页'), findsOneWidget);
-      // 走完 PrimaryButton 成功态 900ms 回调定时器，避免悬挂
-      await t.pump(const Duration(seconds: 1));
+      expect(
+          t
+              .widget<FilledButton>(
+                  find.widgetWithText(FilledButton, '登录 / 注册'))
+              .onPressed,
+          isNull);
+      expect(find.byType(MainScaffold), findsNothing);
     });
 
     testWidgets('B2 艺人广场→数字人详情→祝福视频下单页跳转', (t) async {
@@ -101,10 +98,12 @@ void main() {
       final name = '${first['name']}';
       expect(find.text(name), findsWidgets);
       // 点包含名字的整张艺人玻璃卡（V15.5 卡片由 InkWell 改为 GlassCard）
-      final card = find.ancestor(
-        of: find.text(name).first,
-        matching: find.byType(GlassCard),
-      ).first;
+      final card = find
+          .ancestor(
+            of: find.text(name).first,
+            matching: find.byType(GlassCard),
+          )
+          .first;
       await t.ensureVisible(card);
       await t.tap(card);
       await t.pump(const Duration(milliseconds: 400));
@@ -180,7 +179,8 @@ void main() {
 
     testWidgets('A4 数字人使用报告渲染累计收入', (t) async {
       final up = await _loggedUser();
-      await _pump(t, const UsageReportPage(humanId: 1, humanName: '林沐雪'), up: up);
+      await _pump(t, const UsageReportPage(humanId: 1, humanName: '林沐雪'),
+          up: up);
       expect(find.textContaining('累计收入'), findsWidgets);
     });
   });
