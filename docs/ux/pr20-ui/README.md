@@ -11,3 +11,5 @@ App230项、网页174项及修复后专项18/17项通过；真实App9组、网�
 [页面方案](page-plan.md) · [8图与实拍](design-qa.md) · [检查适用范围](ui-checks.md) · [结构化汇总](evidence/verification-summary.json)
 
 本地审查：[App](http://127.0.0.1:8779/mobile-preview.html) · [网页](http://127.0.0.1:5211/operations/notifications)。正常短信登录及角色只存本机0600状态文件 `.local/pr20-ui-runtime.json`；重启产生新编号。所有数据、凭据与付款为合成，真机已取消；不表示正式发布批准。
+
+首次远端CI的浏览器存储差异已补齐，[原因及复验](ci-fixes.md)。最新CI以原PR为准。
