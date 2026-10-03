@@ -86,11 +86,11 @@ function createJobRepository(db) {
         WHERE ${leaseWhere}`, [status, resultRef, code, backoffMs(job.attempts) * 1000, ...leaseValues(job)]);
       fenced(result);
     },
-    async manualRetry(id, { actor_ref, reason_ref, additional_attempts }) {
+    async manualRetry(id, { actor_ref, reason_ref, additional_attempts }, transaction) {
       text(actor_ref, 191, 'ACTOR_REF'); text(reason_ref, 512, 'REASON_REF');
       integer(additional_attempts, 1, 100, 'ADDITIONAL_ATTEMPTS');
       // Internal trusted operator capability; callers must authorize outside infrastructure.
-      return db.withTransaction(async (tx) => {
+      const run = async (tx) => {
         const [[row]] = await tx.execute('SELECT * FROM platform_jobs WHERE id=? FOR UPDATE', [id]);
         if (!row || !['FAILED','BLOCKED'].includes(row.status)) throw error('JOB_NOT_RETRYABLE');
         const limit = integer(Math.max(row.max_attempts, row.attempts + additional_attempts), 1, 1000, 'MAX_ATTEMPTS');
@@ -98,7 +98,8 @@ function createJobRepository(db) {
           (id,job_id,actor_ref,reason_ref,previous_status,previous_error,attempts_before,max_attempts_before) VALUES (?,?,?,?,?,?,?,?)`,
         [randomUUID(), id, actor_ref, reason_ref, row.status, row.last_error, row.attempts, row.max_attempts]);
         await tx.execute(`UPDATE platform_jobs SET status='RETRY',max_attempts=?,next_run_at=CURRENT_TIMESTAMP(6) WHERE id=?`, [limit, id]);
-      });
+      };
+      return transaction ? run(transaction) : db.withTransaction(run);
     },
     async publish(tx, eventKey, input) {
       if (!tx) throw error('OUTBOX_REQUIRES_TRANSACTION');

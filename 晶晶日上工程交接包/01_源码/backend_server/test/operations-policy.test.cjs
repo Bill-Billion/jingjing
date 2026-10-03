@@ -1,0 +1,5 @@
+ 'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),P=require('../src/modules/operations/policy');
+test('report periods are explicit, valid and bounded',()=>{const r={kind:'CASH',environment:'PRODUCTION',period_start:'2026-01-01T00:00:00.000Z',period_end:'2027-01-01T00:00:00.000Z'};assert.equal(P.request(r).metric_version,'1');for(const x of [{environment:'DEMO'},{kind:'PROFIT'},{period_end:r.period_start},{period_start:'2026-02-31T00:00:00.000Z'},{period_end:'2029-01-01T00:00:00.000Z'}])assert.throws(()=>P.request({...r,...x}));});
+test('CSV quotes and disables spreadsheet formulas including whitespace prefix',()=>{for(const s of ['=1+1',' +SUM(A1)','-1','@cmd','\ttext','\ntext'])assert.ok(P.csvCell(s).startsWith('"\''));assert.equal(P.csvCell('hello,"x"'),'"hello,""x"""');});
+test('cursor and size reject zero limit, fractional, unsafe and negative values',()=>{for(const [a,n] of [[-1,1],[0,0],[0,101],[0,1.5],[2**53,1]])assert.throws(()=>P.page(a,n));});
