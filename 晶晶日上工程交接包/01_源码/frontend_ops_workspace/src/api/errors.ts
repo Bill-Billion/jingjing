@@ -70,7 +70,6 @@ const CODE_MESSAGES: Record<string, string> = {
   PROVIDER_NOT_CONFIGURED: '实际服务尚未配置，本次不能执行。',
   PROVIDER_NOT_VERIFIED: '实际服务尚未完成核验，本次不能执行。',
   GENERATION_OUTCOME_UNKNOWN: '原外部生成结果尚未确认，请查询实际任务并独立恢复原请求。',
-  PRIVATE_CONTENT_MISMATCH: '私有文件的大小或内容指纹未能核对，不能使用该内容。',
 
   LICENSE_PAYMENT_NOT_READY: '关联订单尚未达到原许可条款要求的已核实付款金额，或存在退款限制；请核对原订单与付款记录。',
   TRADE_PARTY_FORBIDDEN: '请使用本交易买卖方的有效负责人身份。',
