@@ -1,0 +1,147 @@
+PR13 Flutter verification — sanitized local output
+Absolute workspace paths replaced with <APP_DIR>; no API control state or credentials included.
+The 58-test and 40-test runs overlap and must not be added together.
+
+=== 目标回归首轮：58项（当时尚未加入8项页面测试） ===
+$ flutter test test/account test/contracts test/supply test/interaction_flows_test.dart test/widget_test.dart
+00:00 +0: loading <APP_DIR>/test/account/account_api_test.dart
+00:00 +0: <APP_DIR>/test/account/account_api_test.dart: 未知结果复用原键、原版本和身份；成功后同内容的新操作使用新键
+00:00 +1: <APP_DIR>/test/account/account_api_test.dart: 连续重复提交共享正在进行的请求
+00:00 +2: <APP_DIR>/test/account/account_api_test.dart: 处理中409仍复用原键并禁止修改未确认内容
+00:00 +3: <APP_DIR>/test/account/account_api_test.dart: 不可恢复的短信挑战清除旧键，重新获取使用新键
+00:00 +4: <APP_DIR>/test/account/account_api_test.dart: 不同账号或版本不会复用另一人的操作键
+00:00 +5: <APP_DIR>/test/account/account_api_test.dart: 未配置不访问旧生产域名，不返回演示数据
+00:00 +6: <APP_DIR>/test/account/account_api_test.dart: 旧身份请求晚返回不能覆盖已选择的新身份
+00:00 +7: <APP_DIR>/test/account/account_api_test.dart: 同账号并行刷新以最后发起的结果为准，末页不会再取首页
+00:00 +8: <APP_DIR>/test/account/account_api_test.dart: 分页拼接会去重
+00:00 +9: <APP_DIR>/test/account/account_api_test.dart: 401会清空账号、身份和私有回执
+00:00 +10: <APP_DIR>/test/account/account_api_test.dart: 断网退出立即清空本机，恢复网络重试服务器退出复用键
+00:00 +11: <APP_DIR>/test/account/account_api_test.dart: 错误提示区分权限、过期版本、限流和服务未启用
+00:01 +12: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:01 +13: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +14: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +15: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +16: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +17: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +18: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +19: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +20: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +21: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +22: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +23: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +24: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +25: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +26: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +27: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +28: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +29: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +30: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +31: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +32: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +33: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +34: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:02 +35: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:02 +36: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:02 +37: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:02 +38: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:03 +39: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:03 +40: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:03 +41: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:03 +41: <APP_DIR>/test/account/account_widgets_test.dart: 我的入口显示新账号、待审核机构及全部五类能力
+[PERF     0ms] profile postFrame logged=false
+00:03 +42: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:03 +43: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:04 +44: <APP_DIR>/test/contracts/contract_reader_test.dart: 仅按服务端Retry-After等待，期间不发新请求，未给等待头不编造秒数
+00:04 +45: <APP_DIR>/test/interaction_flows_test.dart: 买家流 B1 未配置新账号服务时不能通过旧演示验证码登录
+00:04 +46: <APP_DIR>/test/interaction_flows_test.dart: 买家流 B1 未配置新账号服务时不能通过旧演示验证码登录
+00:04 +47: <APP_DIR>/test/widget_test.dart: 登录页可正常构建（smoke）
+00:04 +48: <APP_DIR>/test/widget_test.dart: 登录页可正常构建（smoke）
+00:04 +48: <APP_DIR>/test/account/account_widgets_test.dart: 新账号命名路由不能构造旧钱包页面
+[PERF  1031ms] profile postFrame logged=false
+00:04 +49: <APP_DIR>/test/widget_test.dart: 登录页可正常构建（smoke）
+00:04 +50: <APP_DIR>/test/interaction_flows_test.dart: 买家流 B2 艺人广场→数字人详情→祝福视频下单页跳转
+00:04 +50: <APP_DIR>/test/account/account_widgets_test.dart: 新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录
+[PERF  1233ms] profile postFrame logged=false
+00:04 +51: <APP_DIR>/test/account/account_widgets_test.dart: 新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录
+[PERF  1313ms] tab tap i=0 from=4
+[PERF  1349ms] tab tap i=4 from=0
+[PERF  1443ms] home initState
+00:04 +52: <APP_DIR>/test/account/account_widgets_test.dart: 新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录
+00:04 +53: <APP_DIR>/test/account/account_widgets_test.dart: 新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录
+[PERF  1557ms] home projects meaningful frame  n=3
+[PERF  1557ms] home artists meaningful frame  n=7
+00:05 +54: <APP_DIR>/test/interaction_flows_test.dart: 艺人流 A2 本地落盘数字人在「我的数字人」可见
+00:05 +55: <APP_DIR>/test/interaction_flows_test.dart: 艺人流 A3 钱包与使用报告（元口径）正常渲染不崩
+00:05 +56: <APP_DIR>/test/interaction_flows_test.dart: 艺人流 A4 数字人使用报告渲染累计收入
+00:05 +57: <APP_DIR>/test/interaction_flows_test.dart: MCN 流 M1 身份认证选 MCN → 仅 H5 引导，C 端不受理机构表单
+00:05 +58: <APP_DIR>/test/interaction_flows_test.dart: (tearDownAll)
+00:05 +58: All tests passed!
+
+=== 最终供给与账号：40项，与首轮重叠，不累加 ===
+$ flutter test test/supply test/account
+00:00 +0: loading <APP_DIR>/test/supply/supply_widgets_test.dart
+00:00 +0: <APP_DIR>/test/supply/supply_api_test.dart: 严格校验返回字段、所有权、内外状态及独立权利人；读取允许历史零证明
+00:00 +1: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +2: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +3: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +4: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +5: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +6: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +7: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +8: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +9: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +10: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +11: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +12: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +13: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +14: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +15: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +16: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +17: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +18: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +19: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +20: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +21: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +22: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +23: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +24: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:00 +25: <APP_DIR>/test/account/account_widgets_test.dart: 短信503不启动发送成功倒计时，也不进入演示登录
+00:01 +26: <APP_DIR>/test/supply/supply_widgets_test.dart: 原作表单不默认权利人，使用当前身份只填主动添加的角色
+00:01 +27: <APP_DIR>/test/account/account_widgets_test.dart: 手机号变化使原验证码失效，未获挑战不能登录
+00:01 +28: <APP_DIR>/test/account/account_widgets_test.dart: 手机号变化使原验证码失效，未获挑战不能登录
+00:01 +29: <APP_DIR>/test/supply/supply_widgets_test.dart: 新修订使用读到的最新关联，保存草稿后GET核对，绝不顺带提交审核
+00:01 +30: <APP_DIR>/test/account/account_widgets_test.dart: 真实登录进入独立账号页并清空旧路由，旧交易和会话不继续
+00:01 +31: <APP_DIR>/test/supply/supply_widgets_test.dart: 412重新读取并要求重新确认，撤回理由输入可正常销毁
+00:01 +31: <APP_DIR>/test/account/account_widgets_test.dart: 我的入口显示新账号、待审核机构及全部五类能力
+[PERF     0ms] profile postFrame logged=false
+00:02 +32: <APP_DIR>/test/supply/supply_widgets_test.dart: 412重新读取并要求重新确认，撤回理由输入可正常销毁
+00:02 +33: <APP_DIR>/test/account/account_widgets_test.dart: 未确认机构创建锁住原内容，关闭重开仍能重试原键
+00:02 +34: <APP_DIR>/test/account/account_widgets_test.dart: 未确认机构创建锁住原内容，关闭重开仍能重试原键
+00:02 +35: <APP_DIR>/test/supply/supply_widgets_test.dart: 作品深链接登录后恢复指定只读版本并清除旧路由
+00:02 +36: <APP_DIR>/test/supply/supply_widgets_test.dart: 作品深链接登录后恢复指定只读版本并清除旧路由
+00:02 +37: <APP_DIR>/test/account/account_widgets_test.dart: 能力申请未知后刷新出现待审，仍可重试原申请再开放其他能力
+00:02 +38: <APP_DIR>/test/account/account_widgets_test.dart: 新账号命名路由不能构造旧钱包页面
+[PERF  1176ms] profile postFrame logged=false
+00:03 +39: <APP_DIR>/test/account/account_widgets_test.dart: 新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录
+[PERF  1379ms] profile postFrame logged=false
+[PERF  1464ms] tab tap i=0 from=4
+[PERF  1498ms] tab tap i=4 from=0
+[PERF  1563ms] home initState
+[PERF  1675ms] home projects meaningful frame  n=3
+[PERF  1675ms] home artists meaningful frame  n=7
+00:03 +40: All tests passed!
+
+=== 最终受影响模块静态检查 ===
+$ dart analyze lib/account lib/contracts lib/supply test/account test/contracts test/supply lib/app.dart lib/pages/login/login_page.dart
+Analyzing account, contracts, supply, account, contracts, supply, app.dart, login_page.dart...
+No issues found!
+
+=== 最终Web构建 ===
+$ flutter build web --dart-define=JX_ACCOUNT_API_URL=http://127.0.0.1:3232
+Compiling lib/main.dart for the Web...
+Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
+Use --no-wasm-dry-run to disable these warnings.
+Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 1472 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 31472 bytes (98.1% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib/main.dart for the Web...                             29.4s
+✓ Built build/web

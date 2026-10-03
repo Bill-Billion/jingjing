@@ -56,13 +56,13 @@ const code = computed(() => props.error?.code || (props.error ? `HTTP ${props.er
   gap: 4px 14px;
   margin: 5px 0 0;
   font-family: var(--ops-mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
 .code {
   color: var(--ops-danger);
-  opacity: 0.75;
+  overflow-wrap: anywhere;
 }
 
 .rid {

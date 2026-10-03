@@ -99,8 +99,18 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
  await t.test('settlement review and every party confirmation precede available balance',async()=>{
   settlement=ft(await fp('/agreements/'+g.id+'/settlements',g,{period_reference:'initial',note:'synthetic'}));const before=await balances(g);assert.equal(before.items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);
   settlement=ft(await freview(settlement));for(const p of [producer,buyer])ft(await fconfirm(settlement,p));assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);
-  ft(await fconfirm(settlement,outsider));savedSettlement=JSON.stringify((await fr(settlement)).data);
+  const confirmationKey=key(),confirmationBody={content_sha256:settlement.content_sha256,decision:'APPROVED',reason:'synthetic exact own-balance confirmation'};
+  for(let attempt=0;attempt<2;attempt++){const result=ft(await fp('/records/'+settlement.id+'/confirmations',settlement,confirmationBody,outsider,outsider.personal_party_id,{'Idempotency-Key':confirmationKey}));assert.deepEqual(result.data.balances.map(x=>x.party_id),[outsider.personal_party_id]);assert.equal(result.content_sha256,settlement.content_sha256);}
+  savedSettlement=JSON.stringify((await fr(settlement)).data);
   const after=await balances(g);assert.equal(after.received_minor,10000);assert.equal(after.items.find(x=>x.party_id===outsider.personal_party_id).available_minor,1500);assert.equal(after.items.find(x=>x.party_id===producer.personal_party_id).available_minor,0);
+ });
+ await t.test('settlement detail and list isolate participant balances while payer and reviewer retain original snapshot',async()=>{
+  const full=await fr(settlement),own=await fr(settlement,outsider),review=await fr(settlement,reviewer,null);
+  assert.ok(full.data.balances.length>1);assert.deepEqual(review.data.balances,full.data.balances);assert.deepEqual(own.data.balances,full.data.balances.filter(x=>x.party_id===outsider.personal_party_id));
+  assert.equal(own.content_sha256,full.content_sha256);assert.equal(own.object_version,full.object_version);
+  const listed=ft(await fc('GET','/agreements/'+g.id+'/records?kind=SETTLEMENT&limit=100',outsider),'FinanceListResponse');
+  assert.ok(listed.items.length);for(const row of listed.items)assert.deepEqual(row.data.balances.map(x=>x.party_id),[outsider.personal_party_id]);
+  assert.equal(JSON.stringify((await fr(settlement)).data),savedSettlement);
  });
  await t.test('concurrent withdrawals reserve available amount once and exact retries reuse request',async()=>{
   const op=key(),url='/agreements/'+g.id+'/payouts',body=payoutBody(1000);const all=await Promise.all([fp(url,g,body,outsider),fp(url,g,body,outsider)]);assert.deepEqual(all.map(x=>x.status).sort(),[200,409]);payout=ft(all.find(x=>x.status===200));

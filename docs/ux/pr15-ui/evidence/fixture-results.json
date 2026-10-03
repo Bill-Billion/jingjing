@@ -1,0 +1,25 @@
+{
+  "test_only": true,
+  "synthetic_only": true,
+  "external_transport_limits": [
+    "合成金额、时长和条款只用于本次隔离测试，不能成为商业默认值。",
+    "支付宝RSA2使用临时合成密钥；传输只在本机，未调用支付宝网关。",
+    "Apple JWS使用本次临时EC密钥与注入测试验证器；未验证Apple官方证书链或真实StoreKit。",
+    "付款达到许可门槛仍需独立签署、身份、权属证据核验；本次全部为合成资料。"
+  ],
+  "startup_verification": {
+    "passed": 8,
+    "checks": [
+      "Five actual synthetic SMS/account logins; organization invitation accepted; OWNER and MEMBER remain distinct; independent review/refund grants",
+      "Actual provider readiness/history in isolated MySQL; real Alipay RSA2 signing/checker; locally signed and verified EC JWS through existing provider injection",
+      "Published/awaiting-review versioned specs and approved/pending quotes; OPEN/PAID/partial-refund orders; PENDING/UNKNOWN/SUCCEEDED payments; REQUESTED/APPROVED/completed refunds; Apple awaiting-user-request remains unrefunded",
+      "Unknown dispatch replay returns original payment; cancellation refused; not-ready preparation creates no record; final-acceptance milestone cannot be asserted by UI",
+      "Original legacy 99/4901 amounts retained; creator cannot self-review; independent approval is reference-only; private attachment byte size/hash/download match and MEMBER receives 403",
+      "True private work and dual review → listed license → held reservation → linked trade quote/order; activation blocked before payment, opens at original 10000/25000 threshold with separate approved synthetic evidence; project binding succeeds while order remains partially paid",
+      "OWNER versus MEMBER and backend review/refund permissions enforced; refund list/detail independently require TRADE_REVIEW/TRADE_REFUND; stale version and mismatched amount refused; allowed CORS preflight succeeds, foreign origin denied; real notification routes reject altered RSA2 and invalid JWS",
+      "Private control rejects anonymous and any Origin; storage 503 recovers with unchanged private bytes; independent review/refund revocations return actual 403; provider query timeout returns actual 503 then original payment reconciles"
+    ]
+  },
+  "cleanup_evidence": "fixture-cleanup-results.json",
+  "note": "启动检查使用实际账号HTTP与随机MySQL，外部短信、存储和付款传输合成；此前已实际停服检查清理，再重启用于页面审查。"
+}

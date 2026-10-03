@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-09-29",
+  "updated_on": "2026-10-03",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -1635,6 +1635,492 @@
       "test_status": "NOT_RUN",
       "evidence": [],
       "blockers": []
+    },
+    {
+      "id": "UX-PR12-CONTRACT-UI-20260929",
+      "title": "合同规则页面和暖白界面基础",
+      "stage": 1,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "DONE",
+      "branch": "ux/pr12-delivery",
+      "work_refs": [],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-018",
+        "REQ-021",
+        "REQ-033",
+        "REQ-034",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-060"
+      ],
+      "dependencies": [],
+      "deliverables": [
+        "App与网页合同及历史规则阅读",
+        "必要外部服务状态与异常处理",
+        "暖白App和浅色网页基础样式",
+        "接口测试与实际界面验收"
+      ],
+      "acceptance": "只消费第12份三个只读接口；权限变动清除敏感内容；历史规则不误读最新版本；未启用不假成功；对照图册检查界面",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR12-CONTRACT-UI-20260929.md",
+        "docs/ux/pr12-ui/README.md",
+        "docs/ux/pr12-ui/design-qa.md",
+        "docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md"
+      ],
+      "blockers": [
+        "原生包与正式外部服务仍按后续发布阶段验收。"
+      ],
+      "current_increment": "已于2026-09-29通过第12份申请进入integration/e58c7fc；8项远端检查通过，未部署。"
+    },
+    {
+      "id": "UX-PR13-SUPPLY-PAGES-20260929",
+      "title": "作者申请、作品资料与独立审核页面",
+      "stage": 2,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "DONE",
+      "branch": "ux/pr13-pages",
+      "work_refs": [
+        "WORK-03",
+        "WORK-04"
+      ],
+      "req_refs": [
+        "REQ-014",
+        "REQ-022",
+        "REQ-046",
+        "REQ-047",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR12-CONTRACT-UI-20260929"
+      ],
+      "deliverables": [
+        "App作者申请、作品投稿及修订资料",
+        "网页供给申请、作品管理和独立双审",
+        "私有材料上传下载与异常处理",
+        "暖白界面验收、测试和交付说明"
+      ],
+      "acceptance": "按第13份真实接口提交、补材料、保留作品历史；权属与内容分开审核；权限或身份变化清除私有内容；重试保留原操作；图册与实际页面一致",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md",
+        "docs/ux/pr13-ui/README.md",
+        "docs/ux/pr13-ui/ui-checks.md",
+        "docs/ux/pr13-ui/api-review.md",
+        "design-qa.md",
+        "docs/ux/pr13-ui/evidence/runtime-checks.json",
+        "docs/ux/pr13-ui/merge-review.md",
+        "docs/ux/navigation-acceptance.md"
+      ],
+      "blockers": [
+        "正式短信、持久存储、原生包及真实权利材料仍按发布阶段验收，不阻止本批代码交付完成。"
+      ],
+      "updated_on": "2026-09-30",
+      "current_increment": "2026-09-30已随第13份合入integration/90cb6a9；最终7abafab的8项远端检查通过。所需第四阶段后端接口已同时合入，不再等待更宽后端任务整体关闭；数字人同意等后续页面未完成，尚未部署。"
+    },
+    {
+      "id": "UX-PR14-LICENSING-PAGES-20260930",
+      "title": "选剧本、办理许可、绑定项目和受控阅读页面",
+      "stage": 2,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "DONE",
+      "branch": "ux/pr14-pages",
+      "work_refs": [
+        "WORK-04"
+      ],
+      "req_refs": [
+        "REQ-014",
+        "REQ-021",
+        "REQ-022",
+        "REQ-024",
+        "REQ-028",
+        "REQ-034",
+        "REQ-036",
+        "REQ-041",
+        "REQ-042",
+        "REQ-048",
+        "REQ-049",
+        "REQ-050",
+        "REQ-051",
+        "REQ-052",
+        "REQ-053",
+        "REQ-054",
+        "REQ-055",
+        "REQ-056",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR13-SUPPLY-PAGES-20260929"
+      ],
+      "deliverables": [
+        "App选本、许可办理、项目绑定及受控阅读",
+        "网页许可商品、证据核验、许可与阅稿管理",
+        "统一新版导航、接口检查和实际界面验收"
+      ],
+      "acceptance": "消费第14份真实接口；独立核验后才取得许可；保留历史合同和价格；项目用途、期限和额度按服务端核对；全文只展示有水印纯文本；身份变化清理私有内容；所有入口和返回路径正常。当前已开发页面按原图册最终修订图实现结构与控件，逐页映射及多视口实拍留证。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR14-LICENSING-PAGES-20260930.md",
+        "docs/ux/pr14-ui/README.md",
+        "docs/ux/pr14-ui/page-plan.md",
+        "docs/ux/pr14-ui/ui-checks.md",
+        "docs/ux/pr14-ui/api-review.md",
+        "docs/ux/pr14-ui/design-qa.md",
+        "docs/ux/pr14-ui/evidence/app-runtime.json",
+        "docs/ux/pr14-ui/evidence/web-runtime.json",
+        "docs/ux/gallery-implementation-standard.md",
+        "docs/ux/gallery-page-map.md",
+        "docs/ux/pr14-ui/style-qa.md",
+        "docs/ux/pr14-ui/evidence/style-coverage.json",
+        "docs/ux/pr14-ui/evidence/style-app-runtime.json",
+        "docs/ux/pr14-ui/evidence/style-web-runtime.json",
+        "docs/ux/pr14-ui/iphone-check-20261001.md",
+        "docs/ux/pr14-ui/evidence/iphone-readiness-20261001.json",
+        "docs/ux/pr14-ui/iphone-check-20261002.md",
+        "docs/ux/pr14-ui/evidence/iphone-readiness-20261002.json",
+        "docs/ux/pr14-ui/evidence/iphone-cleanup-20261002.json",
+        "docs/ux/pr14-ui/tab-navigation-20261002.md",
+        "docs/ux/pr14-ui/evidence/tab-navigation-runtime-20261002.json",
+        "docs/ux/pr14-ui/delivery-review-20261002.md",
+        "docs/ux/pr14-ui/evidence/delivery-web-runtime-20261002.json",
+        "docs/ux/pr14-ui/evidence/delivery-pending-navigation-runtime-20261002.json",
+        "docs/ux/pr14-ui/evidence/delivery-final-viewport-runtime-20261002.json"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-02",
+      "current_increment": "第14份最终上传版本d07cea0的8项远端检查通过，GitHub已确认合入integration/5974f3f，未部署。原生界面验收仍按用户要求取消；正式供应商另行验收。",
+      "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
+    },
+    {
+      "id": "UX-PR15-ORDER-PAGES-20261002",
+      "title": "报价确认、订单、付款核对和退款页面",
+      "stage": 3,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "DONE",
+      "branch": "ux/pr15-pages",
+      "work_refs": [
+        "WORK-07",
+        "WORK-12"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-009",
+        "REQ-016",
+        "REQ-018",
+        "REQ-019",
+        "REQ-021",
+        "REQ-024",
+        "REQ-030",
+        "REQ-034",
+        "REQ-040",
+        "REQ-042",
+        "REQ-043",
+        "REQ-053",
+        "REQ-054",
+        "REQ-057",
+        "REQ-058",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR14-LICENSING-PAGES-20260930"
+      ],
+      "deliverables": [
+        "App报价、合同、订单、付款记录和退款办理页面",
+        "网页商品规格、报价、订单、付款退款、独立审核和历史单依据",
+        "原图册映射、稳定菜单及真实接口浏览器验收"
+      ],
+      "acceptance": "采用原PR15接口和18张已确认最终参考图；报价确认封存原承诺，合同保存不当签署；所有金额按人民币分精确显示；付款/退款结果以服务器核验为准；结果未知保留原请求，版本变化重新确认；私有内容和附件按真实权限读取；两端入口、返回及手机/桌面布局正常。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR15-ORDER-PAGES-20261002.md",
+        "docs/ux/pr15-ui/README.md",
+        "docs/ux/pr15-ui/page-plan.md",
+        "docs/ux/pr15-ui/page-plan.json",
+        "docs/ux/pr15-ui/design-qa.md",
+        "docs/ux/pr15-ui/ui-checks.md",
+        "docs/ux/pr15-ui/evidence/verification-summary.json",
+        "docs/ux/pr15-ui/delivery-review-20261002.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-02",
+      "current_increment": "已本地完成App与网页报价、保存订单合同、付款核对、逐项退款、独立审核及历史材料页面，采用18张原图最终视图。功能提交f0441b3；App125项、网页74项、真实浏览器App8组/网页11组通过，相关后端13/25/27项通过；未知结果保留原请求，版本冲突重新确认，导航和窄屏正常。仅本机隔离测试，用户已授权集中追加原PR15，远端版本和本次检查以申请当前结果为准，未合并或部署；真实SDK及正式支付待独立验收，真机仍取消，PR16–17未修改。",
+      "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
+    },
+    {
+      "id": "UX-PR17-COMMERCIAL-PAGES-20261003",
+      "title": "商单、直接MCN合作、佣金明细与榜单页面",
+      "stage": 4,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr17-pages",
+      "work_refs": [
+        "WORK-10"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "REQ-020",
+        "REQ-023",
+        "REQ-024",
+        "REQ-031",
+        "REQ-034",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR15-ORDER-PAGES-20261002"
+      ],
+      "deliverables": [
+        "App商单发布、接单约定、MCN与榜单",
+        "网页商单与规则审核、直接合作、佣金和榜单工作台",
+        "原图册映射和隔离真实接口浏览器验证"
+      ],
+      "acceptance": "遵循原PR17接口，接单与买方确认后按原报价入订单；MCN本人确认，只处理直接合作；佣金依据实际净收退款，核算不冒充转账；测试交易不入正式榜；未知请求可恢复，隐私权限和导航稳定，页面对齐原图册。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR17-COMMERCIAL-PAGES-20261003.md",
+        "docs/ux/pr17-ui/README.md",
+        "docs/ux/pr17-ui/ui-checks.md",
+        "docs/ux/pr17-ui/design-qa.md",
+        "docs/ux/pr17-ui/evidence/verification-summary.json"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "App与网页商单、本人接单、直接MCN、净收退款佣金和UTC榜单已按21张原图本地完成。功能8414729；App141/网页91、浏览器7/9组、后端23/25/27通过。独立分支不含PR16制作模块，未上传、合并或部署；正式服务与原生设备未验收。",
+      "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
+    },
+    {
+      "id": "UX-PR16-PRODUCTION-PAGES-20261003",
+      "title": "制作项目、分阶段审片与受控交付页面",
+      "stage": 3,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr16-pages",
+      "work_refs": [
+        "WORK-07"
+      ],
+      "req_refs": [
+        "REQ-001",
+        "REQ-004",
+        "REQ-005",
+        "REQ-009",
+        "REQ-018",
+        "REQ-021",
+        "REQ-024",
+        "REQ-034",
+        "REQ-053",
+        "REQ-054",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR15-ORDER-PAGES-20261002"
+      ],
+      "deliverables": [
+        "App剧本确认、样片审阅、逐版反馈与交付作品",
+        "网页项目、负责人、文件、版本、独立核验与生成状态",
+        "原图册映射和隔离真实接口浏览器验证"
+      ],
+      "acceptance": "按原PR16接口办理，审核与客户验收分开，版本反馈与付款依据由服务器核对，私有文件按权利与付款读取，生成默认未启用，未知写入保留原请求，稳定导航及原图册版式。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR16-PRODUCTION-PAGES-20261003.md",
+        "docs/ux/pr16-ui/README.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "App146项、网页91项、浏览器App7/网页10组及PR15回归11组通过；原15张图册映射齐备，本地保存待审，未上传原PR16或合入，真实供应商/原生设备未验收。"
+    },
+    {
+      "id": "UX-PR18-PROJECTS-PAGES-20261003",
+      "title": "项目选角、多方会签与发行页面",
+      "stage": 4,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr18-pages",
+      "work_refs": [
+        "WORK-11"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-014",
+        "REQ-015",
+        "REQ-023",
+        "REQ-024",
+        "REQ-025",
+        "REQ-026",
+        "REQ-028",
+        "REQ-029",
+        "REQ-030",
+        "REQ-031",
+        "REQ-032",
+        "REQ-034",
+        "REQ-035",
+        "REQ-036",
+        "REQ-038",
+        "REQ-042",
+        "REQ-043",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "UX-PR16-PRODUCTION-PAGES-20261003"
+      ],
+      "deliverables": [
+        "App成角、报名邀请、本人入组、项目会签与发行记录",
+        "网页角色、六层权利、独立核验、成片会签与渠道档案",
+        "25张固定原图映射、真实接口浏览器验收与稳定导航"
+      ],
+      "acceptance": "按PR18真实接口区分报名筛选入组、六层授权、逐版多方确认和真实外部结果；未知请求可核对恢复，身份权限清除私有缓存，固定导航和原图风格。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/tasks/records/UX-PR18-PROJECTS-PAGES-20261003.md",
+        "docs/ux/pr18-ui/README.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "正在实现App、网页和隔离真实接口种子；未宣称测试通过，未上传或合入。"
+    },
+    {
+      "id": "UX-PR19-FINANCE-PAGES-20261003",
+      "title": "结算约定、实付与发行收入页面",
+      "stage": 5,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr19-finance-privacy",
+      "work_refs": [
+        "WORK-12"
+      ],
+      "req_refs": [
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-008",
+        "REQ-010",
+        "REQ-011",
+        "REQ-012",
+        "REQ-013",
+        "REQ-014",
+        "REQ-015",
+        "REQ-018",
+        "REQ-019",
+        "REQ-030",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-037",
+        "REQ-039",
+        "REQ-041",
+        "REQ-042",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-057",
+        "REQ-058"
+      ],
+      "dependencies": [
+        "UX-PR17-COMMERCIAL-PAGES-20261003",
+        "UX-PR18-PROJECTS-PAGES-20261003"
+      ],
+      "deliverables": [
+        "App本人约定、准确结算、申请金额与异议",
+        "网页约定、账单、真实收款、实付凭据、调整异议与对账",
+        "27张原图映射、参与方金额隔离及实际浏览器验收"
+      ],
+      "acceptance": "不混淆应收实收、批准与已付；准确版本会签、真实凭据、参与方数据隔离、未知请求和稳定导航有实际验证；无自动出款或全局钱包。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/tasks/records/UX-PR19-FINANCE-PAGES-20261003.md",
+        "docs/ux/pr19-ui/README.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "本人余额隔离后台补丁27项真实检查通过；前端正在按原图实现，未验收上传或合入。"
+    },
+    {
+      "id": "UX-PR20-OPERATIONS-PAGES-20261003",
+      "title": "业务通知、对象留言、审计与报表页面",
+      "stage": 5,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr20-operations-pages",
+      "work_refs": [
+        "WORK-13"
+      ],
+      "req_refs": [
+        "REQ-009",
+        "REQ-012",
+        "REQ-019",
+        "REQ-030",
+        "REQ-043",
+        "REQ-044",
+        "REQ-045",
+        "REQ-059"
+      ],
+      "dependencies": [
+        "UX-PR19-FINANCE-PAGES-20261003"
+      ],
+      "deliverables": [
+        "App通知列表、详情及现有订单制作项目留言入口",
+        "网页通知、对象留言、独立管理、只读审计和真实队列报告CSV",
+        "8张原图映射与实际身份、失权、未知请求、CSV安全验证"
+      ],
+      "acceptance": "只显示实际业务对象、隐去撤回隐藏正文；通知身份隔离，报表队列与现金口径明确，源权限撤销拒整份下载，原请求恢复和稳定导航有实际检查。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/tasks/records/UX-PR20-OPERATIONS-PAGES-20261003.md",
+        "docs/ux/pr20-ui/README.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "原operations18项真实测试及夹具9组自验已通过；前端正在开发，未上传、合并或部署。"
     }
   ],
   "delivery_policy": {
@@ -1655,7 +2141,10 @@
     ],
     "previous_merged_pull_requests": [
       4,
-      10
+      10,
+      11,
+      12,
+      13
     ],
     "previous_closed_unmerged_pull_requests": [
       1,

@@ -1,0 +1,41 @@
+PR13 Flutter current-identity form QA fix
+Existing 21 supply tests rerun; these overlap with earlier runs.
+Workspace paths replaced with <APP_DIR>; no runtime credentials included.
+
+$ dart analyze lib/supply test/supply
+Analyzing supply, supply...
+No issues found!
+
+$ flutter test test/supply
+00:00 +0: loading <APP_DIR>/test/supply/supply_widgets_test.dart
+00:00 +0: <APP_DIR>/test/supply/supply_api_test.dart: 严格校验返回字段、所有权、内外状态及独立权利人；读取允许历史零证明
+00:00 +1: <APP_DIR>/test/supply/supply_api_test.dart: 最高revision来自完整分页，不取id列表首行；每页带身份头
+00:00 +2: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +3: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +4: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +5: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +6: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +7: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +8: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +9: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +10: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +11: <APP_DIR>/test/supply/supply_widgets_test.dart: 成员门禁不读取私有资料，切换负责人后才加载
+00:00 +12: <APP_DIR>/test/supply/supply_widgets_test.dart: 申请历史读取失败时禁用新建，不猜测previous null
+00:00 +13: <APP_DIR>/test/supply/supply_widgets_test.dart: 首次原作显示空权利人关系，必填不齐禁用保存且不代填身份或证明
+00:01 +14: <APP_DIR>/test/supply/supply_widgets_test.dart: 首次作者申请缺展示名介绍或证明时禁用提交并说明原因
+00:01 +15: <APP_DIR>/test/supply/supply_widgets_test.dart: 完整作者申请在清空及补齐必填内容时实时切换提交状态
+00:01 +16: <APP_DIR>/test/supply/supply_widgets_test.dart: 最新申请待审时作品投稿禁用，即使历史申请曾通过
+00:01 +17: <APP_DIR>/test/supply/supply_widgets_test.dart: 新修订使用读到的最新关联，保存草稿后GET核对，绝不顺带提交审核
+00:01 +18: <APP_DIR>/test/supply/supply_widgets_test.dart: 412重新读取并要求重新确认，撤回理由输入可正常销毁
+00:02 +19: <APP_DIR>/test/supply/supply_widgets_test.dart: 换合同式的版本路由更换与身份切换都丢弃迟到资料
+00:02 +20: <APP_DIR>/test/supply/supply_widgets_test.dart: 作品深链接登录后恢复指定只读版本并清除旧路由
+00:02 +21: All tests passed!
+
+$ flutter build web --dart-define=JX_ACCOUNT_API_URL=http://127.0.0.1:3232
+Compiling lib/main.dart for the Web...
+Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
+Use --no-wasm-dry-run to disable these warnings.
+Font asset "CupertinoIcons.ttf" was tree-shaken, reducing it from 257628 to 1472 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 31472 bytes (98.1% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib/main.dart for the Web...                             26.2s
+✓ Built build/web

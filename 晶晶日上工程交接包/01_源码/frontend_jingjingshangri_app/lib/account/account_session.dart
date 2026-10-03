@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'account_api.dart';
 
@@ -18,6 +19,147 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  bool operationsAccessDenied = false;
+  final operationsTargets = <String, Map<String, String>>{};
+  List<Map<String, dynamic>> get operationsPending =>
+      api.operationsPending(token: _token, party: partyId);
+  void denyOperations() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    operationsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryOperationsAccess() async {
+    await loadParties();
+    await refreshParty();
+    operationsAccessDenied = false;
+    notifyListeners();
+  }
+
+  bool financeAccessDenied = false;
+  List<Map<String, dynamic>> get financePending =>
+      api.financePending(token: _token, party: partyId);
+  void denyFinance() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    financeAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryFinanceAccess() async {
+    await loadParties();
+    await refreshParty();
+    financeAccessDenied = false;
+    notifyListeners();
+  }
+
+  bool supplyAccessDenied = false;
+  bool licensingAccessDenied = false;
+  bool tradeAccessDenied = false;
+  bool productionAccessDenied = false;
+  bool projectsAccessDenied = false;
+  List<Map<String, dynamic>> get projectsPending =>
+      api.projectsPending(token: _token, party: partyId);
+  void denyProjects() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    projectsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryProjectsAccess() async {
+    await loadParties();
+    await refreshParty();
+    projectsAccessDenied = false;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> get productionPending =>
+      api.productionPending(token: _token, party: partyId);
+  void denyProduction() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    productionAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryProductionAccess() async {
+    await loadParties();
+    await refreshParty();
+    productionAccessDenied = false;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> get tradePending =>
+      api.tradePending(token: _token, party: partyId);
+  bool gigsAccessDenied = false;
+  List<Map<String, dynamic>> get gigsPending =>
+      api.gigsPending(token: _token, party: partyId);
+  void denyGigs() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    gigsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryGigsAccess() async {
+    await loadParties();
+    await refreshParty();
+    gigsAccessDenied = false;
+    notifyListeners();
+  }
+
+  void denyTrade() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    tradeAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryTradeAccess() async {
+    await loadParties();
+    await refreshParty();
+    tradeAccessDenied = false;
+    notifyListeners();
+  }
+
+  void denyLicensing() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    licensingAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryLicensingAccess() async {
+    await loadParties();
+    await refreshParty();
+    licensingAccessDenied = false;
+    notifyListeners();
+  }
+
+  void denySupply() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    supplyAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retrySupplyAccess() async {
+    await loadParties();
+    await refreshParty();
+    supplyAccessDenied = false;
+    notifyListeners();
+  }
+
   bool get isLoggedIn => _token != null;
   String? get partyId => selected?['party']?['id'] as String?;
   Map<String, dynamic>? get party =>
@@ -74,7 +216,17 @@ class AccountSession extends ChangeNotifier {
   }
 
   void _clear() {
+    api.clearSupplyOperations();
+    supplyAccessDenied = false;
+    licensingAccessDenied = false;
+    tradeAccessDenied = false;
+    gigsAccessDenied = false;
+    productionAccessDenied = false;
+    projectsAccessDenied = false;
+    financeAccessDenied = false;
+    operationsAccessDenied = false;
     _epoch++;
+    operationsTargets.clear();
     _token = null;
     account = null;
     selected = null;
@@ -94,6 +246,8 @@ class AccountSession extends ChangeNotifier {
     Map<String, dynamic>? query,
     String? actingParty,
     int? version,
+    Uint8List? bytes,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
     if (_token == null) {
@@ -105,10 +259,54 @@ class AccountSession extends ChangeNotifier {
           party: actingParty,
           body: body,
           query: query,
-          version: version);
+          version: version,
+          bytes: bytes,
+          validate: validate);
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/operations/') &&
+          started == _epoch) {
+        denyOperations();
+      }
+
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/finance/') &&
+          started == _epoch) {
+        denyFinance();
+      }
+
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/projects/') &&
+          started == _epoch) {
+        denyProjects();
+      }
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/production/') &&
+          started == _epoch) {
+        denyProduction();
+      }
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/trade/') &&
+          started == _epoch) {
+        denyTrade();
+      }
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/gigs/') &&
+          started == _epoch) {
+        denyGigs();
+      }
+      if (error.status == 403 &&
+          path.startsWith('/api/v1/supply/') &&
+          started == _epoch) {
+        denySupply();
+      }
+      if (error.status == 403 &&
+          path.startsWith('/api/v1/licensing/') &&
+          started == _epoch) {
+        denyLicensing();
+      }
       if (error.status == 401 && started == _epoch) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
@@ -131,9 +329,60 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     Map<String, dynamic>? body,
     int? version,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) =>
       _request(method, path,
-          actingParty: actingParty, body: body ?? {}, version: version);
+          actingParty: actingParty,
+          body: body ?? {},
+          version: version,
+          validate: validate);
+
+  Future<Map<String, dynamic>> upload(String path, Uint8List bytes,
+          {required String actingParty,
+          required Map<String, dynamic> query,
+          required void Function(Map<String, dynamic>) validate}) =>
+      _request('POST', path,
+          bytes: bytes,
+          query: query,
+          actingParty: actingParty,
+          validate: validate);
+  Future<Uint8List> readBytes(String path,
+      {String? actingParty, Map<String, dynamic>? query}) async {
+    final started = _epoch;
+    if (_token == null) {
+      throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
+    }
+    try {
+      final bytes = await api.readBytes(path,
+          token: _token!, party: actingParty, query: query);
+      _check(started);
+      return bytes;
+    } on AccountError catch (e) {
+      if (started == _epoch) {
+        if (path.startsWith('/api/v1/finance/') &&
+            [403, 404].contains(e.status)) {
+          denyFinance();
+        } else if (path.startsWith('/api/v1/gigs/') &&
+            [403, 404].contains(e.status)) {
+          denyGigs();
+        } else if (path.startsWith('/api/v1/projects/') &&
+            [403, 404].contains(e.status)) {
+          denyProjects();
+        } else if (path.startsWith('/api/v1/production/') &&
+            [403, 404].contains(e.status)) {
+          denyProduction();
+        } else if (e.status == 403) {
+          denySupply();
+        }
+      }
+      if (e.status == 401 && started == _epoch) {
+        _clear();
+        authNotice = '登录已失效，请重新验证手机号。';
+        notifyListeners();
+      }
+      rethrow;
+    }
+  }
 
   Future<void> loadParties({bool more = false}) async {
     if (more && partiesCursor == null) return;
@@ -155,14 +404,33 @@ class AccountSession extends ChangeNotifier {
     // Keep a selected identity even if it is on another page. Its permissions
     // are re-read separately; an actual 403/404 clears the selection below.
     final match = parties.where((row) => row['party']['id'] == partyId);
-    if (match.isNotEmpty) selected = match.first;
+    if (match.isNotEmpty) {
+      final wasOwner = isOwner;
+      selected = match.first;
+      if ((wasOwner && !isOwner) ||
+          ['SUSPENDED', 'CLOSED'].contains(party?['current_status'])) {
+        api.clearSupplyOperations();
+        _epoch++;
+        operationsTargets.clear();
+      }
+    }
     if (selected == null && parties.isNotEmpty) selected = parties.first;
     notifyListeners();
   }
 
   void select(Map<String, dynamic> value) {
     if (value['party']['id'] == partyId) return;
+    api.clearSupplyOperations();
+    supplyAccessDenied = false;
+    licensingAccessDenied = false;
+    tradeAccessDenied = false;
+    gigsAccessDenied = false;
+    productionAccessDenied = false;
+    projectsAccessDenied = false;
+    financeAccessDenied = false;
+    operationsAccessDenied = false;
     _epoch++;
+    operationsTargets.clear();
     selected = value;
     notifyListeners();
   }
@@ -173,12 +441,19 @@ class AccountSession extends ChangeNotifier {
     try {
       final result = await read('/api/v1/parties/$id', actingParty: id);
       selected = {...selected!, 'party': result};
+      if (['SUSPENDED', 'CLOSED'].contains(result['current_status'])) {
+        api.clearSupplyOperations();
+        _epoch++;
+        operationsTargets.clear();
+      }
       parties =
           parties.map((p) => p['party']['id'] == id ? selected! : p).toList();
       notifyListeners();
     } on AccountError catch (error) {
       if ([403, 404].contains(error.status) && partyId == id) {
+        api.clearSupplyOperations();
         _epoch++;
+        operationsTargets.clear();
         selected = null;
         parties = parties.where((p) => p['party']['id'] != id).toList();
         notifyListeners();

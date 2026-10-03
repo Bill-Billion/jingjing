@@ -35,7 +35,12 @@ Future<UserProvider> _loggedUser() async {
   final up = UserProvider();
   await up.saveLogin({
     'token': 'demo-token',
-    'user': {'id': 1, 'nickname': '林晚晴', 'phone': '138****6688', 'role': 'user'},
+    'user': {
+      'id': 1,
+      'nickname': '林晚晴',
+      'phone': '138****6688',
+      'role': 'user'
+    },
   });
   return up;
 }
@@ -75,9 +80,13 @@ void main() {
       expect(find.textContaining('账号服务地址尚未配置'), findsOneWidget);
       expect(find.textContaining('后重发'), findsNothing);
       await t.enterText(find.byType(TextField).last, '123456');
-      await t.tap(find.text('登录 / 注册'));
-      await t.pump(const Duration(milliseconds: 200));
-      expect(find.text('请先为当前手机号获取验证码'), findsOneWidget);
+      await t.pump();
+      expect(
+          t
+              .widget<FilledButton>(
+                  find.widgetWithText(FilledButton, '登录 / 注册'))
+              .onPressed,
+          isNull);
       expect(find.byType(MainScaffold), findsNothing);
     });
 
@@ -89,10 +98,12 @@ void main() {
       final name = '${first['name']}';
       expect(find.text(name), findsWidgets);
       // 点包含名字的整张艺人玻璃卡（V15.5 卡片由 InkWell 改为 GlassCard）
-      final card = find.ancestor(
-        of: find.text(name).first,
-        matching: find.byType(GlassCard),
-      ).first;
+      final card = find
+          .ancestor(
+            of: find.text(name).first,
+            matching: find.byType(GlassCard),
+          )
+          .first;
       await t.ensureVisible(card);
       await t.tap(card);
       await t.pump(const Duration(milliseconds: 400));
@@ -168,7 +179,8 @@ void main() {
 
     testWidgets('A4 数字人使用报告渲染累计收入', (t) async {
       final up = await _loggedUser();
-      await _pump(t, const UsageReportPage(humanId: 1, humanName: '林沐雪'), up: up);
+      await _pump(t, const UsageReportPage(humanId: 1, humanName: '林沐雪'),
+          up: up);
       expect(find.textContaining('累计收入'), findsWidgets);
     });
   });

@@ -26,10 +26,19 @@ Future<void> pump(WidgetTester tester, AccountSession session, Widget child,
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  await tester.pumpWidget(MultiProvider(providers: [
-    ChangeNotifierProvider.value(value: session),
-    ChangeNotifierProvider.value(value: legacy ?? UserProvider()),
-  ], child: MaterialApp(theme: AppTheme.darkTheme, home: child)));
+  await tester.pumpWidget(MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: session),
+        ChangeNotifierProvider.value(value: legacy ?? UserProvider()),
+      ],
+      child: MaterialApp(theme: AppTheme.darkTheme, home: child, routes: {
+        '/account': (_) => const AccountPage(),
+        '/home': (_) => const MainScaffold(),
+        '/enter': (_) => const MainScaffold(initialTab: 1),
+        '/cultivate': (_) => const MainScaffold(initialTab: 2),
+        '/roles': (_) => const MainScaffold(initialTab: 3),
+        '/my': (_) => const MainScaffold(initialTab: 4),
+      })));
   await frames(tester);
 }
 
@@ -69,15 +78,51 @@ void main() {
     expect(find.textContaining('后重发'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, '13800000001');
     await tester.pump();
-    await tester.tap(find.text('登录 / 注册'));
-    await frames(tester);
-    expect(find.text('请先为当前手机号获取验证码'), findsOneWidget);
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .onPressed,
+        isNull);
     expect(adapter.requests.where((r) => r.path.endsWith('/auth/sessions')),
         isEmpty);
     await close(tester);
   });
 
-  testWidgets('正式登录返回旧守卫后不继续旧交易，账号不写入旧用户态', (tester) async {
+  testWidgets('未知登录恢复原请求时仍可重试，不因新页面默认未勾选而锁死', (tester) async {
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(
+        handler: (r) => r.path.endsWith('/auth/sessions')
+            ? envelope({'code': 'TEMPORARY_FAILURE'}, status: 503, error: true)
+            : adapter.defaultReply(r));
+    final session = AccountSession(api: adapter.createApi());
+    await tester.runAsync(() async {
+      try {
+        await session.login('13800000000', invitationId, '123456');
+      } catch (_) {}
+    });
+    await pump(tester, session, const LoginPage());
+    final button = tester
+        .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'));
+    expect(button.onPressed, isNotNull);
+    expect(
+        tester
+            .widgetList<TextField>(find.byType(TextField))
+            .every((field) => field.enabled == false),
+        isTrue);
+    await tester.tap(find.text('登录 / 注册'));
+    await frames(tester);
+    final requests = adapter.requests
+        .where((r) => r.path.endsWith('/auth/sessions'))
+        .toList();
+    expect(requests, hasLength(2));
+    expect(requests.last.data, requests.first.data);
+    expect(requests.last.headers['Idempotency-Key'],
+        requests.first.headers['Idempotency-Key']);
+    expect(session.isLoggedIn, isFalse);
+    await close(tester);
+  });
+
+  testWidgets('真实登录进入新版我的并清空旧路由，旧交易和会话不继续', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     final legacy = UserProvider();
@@ -100,9 +145,25 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('获取验证码'));
     await frames(tester);
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .onPressed,
+        isNull);
     await tester.enterText(find.byType(TextField).last, '123456');
+    await tester.pump();
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .onPressed,
+        isNull);
     await tester.tap(find.byIcon(Icons.radio_button_unchecked_rounded));
     await tester.pump();
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .onPressed,
+        isNotNull);
     await tester.tap(find.text('登录 / 注册'));
     await frames(tester);
     expect(session.isLoggedIn, isTrue);
@@ -110,6 +171,10 @@ void main() {
     expect(continued, isFalse);
     expect(find.byType(LoginPage), findsNothing);
     expect(find.byType(MainScaffold), findsOneWidget);
+    expect(find.byType(AccountPage), findsNothing);
+    expect(
+        ModalRoute.of(tester.element(find.byType(MainScaffold)))?.settings.name,
+        '/my');
     expect(find.text('旧业务入口'), findsNothing); // Old private routes are removed.
     expect(find.text('账号与机构'), findsOneWidget);
     expect(continued, isFalse);
@@ -127,6 +192,11 @@ void main() {
     expect(find.text('账号与机构'), findsOneWidget);
     expect(find.text(accountId), findsOneWidget);
     expect(find.text('测试账号'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('角色').first, 200,
+        scrollable: find.byType(Scrollable).first);
+    await frames(tester);
+    expect(find.text('负责人'), findsWidgets);
+    expect(find.text('普通成员'), findsNothing);
     await tester.scrollUntilVisible(find.text('申请能力'), 400,
         scrollable: find.byType(Scrollable).first);
     await frames(tester);
@@ -218,6 +288,86 @@ void main() {
     await close(tester);
   });
 
+  testWidgets('邀请弹窗白底，账号或截止时间未填完整时灰置且不发送', (tester) async {
+    final adapter = FakeAccountAdapter();
+    final session = AccountSession(api: adapter.createApi());
+    await tester
+        .runAsync(() => session.login('13800000000', invitationId, '123456'));
+    await pump(tester, session, const AccountPage());
+    await tester.scrollUntilVisible(find.text('填写账号编号和截止时间'), 400,
+        scrollable: find.byType(Scrollable).first);
+    await frames(tester);
+    await tester.ensureVisible(find.text('填写账号编号和截止时间'));
+    await tester.pump();
+    await tester.tap(find.text('填写账号编号和截止时间'));
+    await frames(tester);
+    final context = tester.element(find.byType(AlertDialog));
+    expect(Theme.of(context).dialogTheme.backgroundColor, Colors.white);
+    FilledButton send() =>
+        tester.widget<FilledButton>(find.widgetWithText(FilledButton, '发送邀请'));
+    expect(send().onPressed, isNull);
+    await tester.enterText(find.byType(TextField), '不是账号编号');
+    await tester.pump();
+    expect(send().onPressed, isNull);
+    await tester.enterText(find.byType(TextField), accountId);
+    await tester.pump();
+    expect(send().onPressed, isNull);
+    expect(
+        adapter.requests.where((r) =>
+            r.path == '/api/v1/parties/$orgId/invitations' &&
+            r.method == 'POST'),
+        isEmpty);
+    await close(tester);
+  });
+
+  testWidgets('未知邀请恢复原内容，即使原截止时间已过仍能原键重试', (tester) async {
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(
+        handler: (r) =>
+            r.path == '/api/v1/parties/$orgId/invitations' && r.method == 'POST'
+                ? envelope({'code': 'COMMIT_OUTCOME_UNKNOWN'},
+                    status: 503, error: true)
+                : adapter.defaultReply(r));
+    final session = AccountSession(api: adapter.createApi());
+    await tester.runAsync(() async {
+      await session.login('13800000000', invitationId, '123456');
+      try {
+        await session.write('POST', '/api/v1/parties/$orgId/invitations',
+            actingParty: orgId,
+            body: {
+              'invitee_account_id': accountId,
+              'expires_at': '2020-01-01T00:00:00.000Z'
+            });
+      } catch (_) {}
+    });
+    await pump(tester, session, const AccountPage());
+    await tester.scrollUntilVisible(find.text('填写账号编号和截止时间'), 400,
+        scrollable: find.byType(Scrollable).first);
+    await frames(tester);
+    await tester.ensureVisible(find.text('填写账号编号和截止时间'));
+    await tester.pump();
+    await tester.tap(find.text('填写账号编号和截止时间'));
+    await frames(tester);
+    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '重试原操作'))
+            .onPressed,
+        isNotNull);
+    await tester.tap(find.text('重试原操作'));
+    await frames(tester);
+    final requests = adapter.requests
+        .where((r) =>
+            r.path == '/api/v1/parties/$orgId/invitations' &&
+            r.method == 'POST')
+        .toList();
+    expect(requests, hasLength(2));
+    expect(requests.last.data, requests.first.data);
+    expect(requests.last.headers['Idempotency-Key'],
+        requests.first.headers['Idempotency-Key']);
+    await close(tester);
+  });
+
   testWidgets('能力申请未知后刷新出现待审，仍可重试原申请再开放其他能力', (tester) async {
     var writes = 0;
     late FakeAccountAdapter adapter;
@@ -247,7 +397,7 @@ void main() {
     await tester
         .runAsync(() => session.login('13800000000', invitationId, '123456'));
     await pump(tester, session, const AccountPage());
-    await tester.scrollUntilVisible(find.text('申请').first, 400,
+    await tester.scrollUntilVisible(find.text('申请能力'), 400,
         scrollable: find.byType(Scrollable).first);
     await frames(tester);
     await tester.tap(find.text('申请').first);
@@ -284,11 +434,12 @@ void main() {
     nav.pushNamed('/wallet');
     await frames(tester);
     expect(find.byType(WalletPage), findsNothing);
-    expect(find.text('功能接入中'), findsOneWidget);
+    expect(find.text('先确认办事身份'), findsOneWidget);
+    expect(find.text('我的结算'), findsOneWidget);
     await close(tester);
   });
 
-  testWidgets('新账号主导航屏蔽尚未接入的旧页面，退出清空并显示登录', (tester) async {
+  testWidgets('新账号主导航展示规划入口，退出清空并显示登录', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     await tester
@@ -296,8 +447,14 @@ void main() {
     await pump(tester, session, const MainScaffold(initialTab: 4));
     await tester.tap(find.text('首页').last);
     await frames(tester);
-    expect(find.text('这部分业务还在接入新账号'), findsOneWidget);
-    await tester.tap(find.text('前往我的账号'));
+    expect(find.text('让故事与你有关'), findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(NavigationBar), matching: find.text('入戏')),
+        findsOneWidget);
+    await tester.tap(find.byKey(const Key('app-tab-4')));
+    await frames(tester);
+    await tester.tap(find.text('账号与机构'));
     await frames(tester);
     await tester.tap(find.text('退出登录'));
     await frames(tester);
