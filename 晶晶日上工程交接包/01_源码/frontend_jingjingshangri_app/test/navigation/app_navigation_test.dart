@@ -340,8 +340,15 @@ void main() {
       nav.pop();
       await frames(tester);
     }
-    expect(adapter.requests.where((r) => r.path.startsWith('/api/')),
-        hasLength(1)); // Only the explicit new-account login was sent.
+    expect(
+        adapter.requests
+            .where((r) => r.path.startsWith('/api/'))
+            .map((r) => r.path),
+        [
+          '/api/v1/auth/sessions',
+          '/api/v1/projects/catalogue',
+          '/api/v1/projects/catalogue'
+        ]); // Each project alias reads the current public directory.
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

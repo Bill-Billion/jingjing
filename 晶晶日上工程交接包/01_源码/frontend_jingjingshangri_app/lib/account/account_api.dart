@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -29,7 +30,8 @@ class AccountApi {
         (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/') ||
         (jsonDecode(key) as List)[3]
             .toString()
-            .startsWith('/api/v1/production/');
+            .startsWith('/api/v1/production/') ||
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/projects/');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -63,6 +65,16 @@ class AccountApi {
                   .startsWith('/api/v1/production/'))
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
+  List<Map<String, dynamic>> projectsPending({String? token, String? party}) =>
+      [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/projects/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _random = Random.secure();
 
   String _newKey() =>
@@ -77,13 +89,14 @@ class AccountApi {
     Map<String, dynamic>? query,
     int? version,
     Uint8List? bytes,
-    void Function(Map<String, dynamic>)? validate,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
     final writing = method != 'GET';
     final supply = path.startsWith('/api/v1/supply/') ||
         path.startsWith('/api/v1/licensing/') ||
         path.startsWith('/api/v1/trade/') ||
-        path.startsWith('/api/v1/production/');
+        path.startsWith('/api/v1/production/') ||
+        path.startsWith('/api/v1/projects/');
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null
@@ -130,10 +143,11 @@ class AccountApi {
             version: version,
             key: key,
             bytes: bytes)
-        .then((data) {
+        .then((data) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (data['id'] is String) resultId = data['id'];
-      validate?.call(data);
+      await validate?.call(data);
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       return data;
     }).then((data) {
       if (writing) {

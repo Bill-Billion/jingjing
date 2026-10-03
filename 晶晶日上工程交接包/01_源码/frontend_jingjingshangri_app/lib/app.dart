@@ -11,6 +11,8 @@ import 'licensing/license_forms.dart';
 import 'licensing/license_models.dart';
 import 'trade/trade_pages.dart';
 import 'production/production_pages.dart';
+import 'projects/project_pages.dart';
+import 'projects/project_forms.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -94,7 +96,24 @@ class JingjingShangriApp extends StatelessWidget {
           TradeRefundPage(paymentId: uri.queryParameters['paymentId'] ?? ''),
         '/licensing' => LicenseRecordsPage(
             kind: uri.queryParameters['kind'] ?? 'RESERVATION'),
-        '/my-projects' ||
+        '/my-projects' => const ProjectsListPage(),
+        '/projects/list' => const ProjectsListPage(),
+        '/projects/role' =>
+          ProjectsCataloguePage(roleId: uri.queryParameters['roleId'] ?? ''),
+        '/projects/project' =>
+          ProjectRecordPage(recordId: uri.queryParameters['projectId'] ?? ''),
+        '/projects/record' =>
+          ProjectRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/projects/apply' => ProjectFormPage(
+            mode: 'APPLY', id: uri.queryParameters['roleId'] ?? ''),
+        '/projects/invitation' => ProjectFormPage(
+            mode: 'INVITATION', id: uri.queryParameters['candidateId'] ?? ''),
+        '/projects/release/new' => ProjectFormPage(
+            mode: 'RELEASE',
+            id: uri.queryParameters['projectId'] ?? '',
+            priorId: uri.queryParameters['priorId']),
+        '/projects/external/new' => ProjectFormPage(
+            mode: 'EXTERNAL', id: uri.queryParameters['releaseId'] ?? ''),
         '/production' =>
           ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
         '/production/project' => ProductionProjectPage(

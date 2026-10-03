@@ -7,6 +7,7 @@ import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import 'package:flutter/services.dart';
 import '../licensing/license_pages.dart';
+import '../projects/project_pages.dart';
 
 /// Keep the current tab address without replacing the mounted shell. Child
 /// routes still use ordinary Material routes and return to this updated address.
@@ -301,6 +302,9 @@ class _AppShellState extends State<AppShell> {
         _heading('订单与付款'),
         _entry('订单、报价与旧记录', '核对原报价、付款节点与退款状态。', Icons.receipt_long_outlined,
             () => _open('/orders')),
+        _heading('公开项目与发行'),
+        _entry('我的参与项目', '回应邀请、本人入组、逐版确认与发行进度。', Icons.folder_open_outlined,
+            () => _open('/my-projects')),
         _heading('制作与交付'),
         _entry('参与制作项目', '审阅具体版本、提交本版意见与查看修改记录。', Icons.movie_outlined,
             () => _open('/production')),
@@ -332,7 +336,7 @@ class _AppShellState extends State<AppShell> {
           const LicenseCatalog(embedded: true)
         ],
       2 => _business('让创作连接真实需求', '培育承接商业委托：发布品牌需求、确认接单约定，并按用途完成交付。'),
-      3 => _business('在故事里找到你的角色', '成角承接公开项目与发行：了解招募、参与项目，并逐项确认授权与发行条件。'),
+      3 => [const ProjectsCataloguePage(embedded: true)],
       4 => _mine(session),
       _ => _home(session),
     };

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'account_api.dart';
 
@@ -22,6 +23,23 @@ class AccountSession extends ChangeNotifier {
   bool licensingAccessDenied = false;
   bool tradeAccessDenied = false;
   bool productionAccessDenied = false;
+  bool projectsAccessDenied = false;
+  List<Map<String, dynamic>> get projectsPending =>
+      api.projectsPending(token: _token, party: partyId);
+  void denyProjects() {
+    _epoch++;
+    api.clearSupplyOperations();
+    projectsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryProjectsAccess() async {
+    await loadParties();
+    await refreshParty();
+    projectsAccessDenied = false;
+    notifyListeners();
+  }
+
   List<Map<String, dynamic>> get productionPending =>
       api.productionPending(token: _token, party: partyId);
   void denyProduction() {
@@ -143,6 +161,7 @@ class AccountSession extends ChangeNotifier {
     licensingAccessDenied = false;
     tradeAccessDenied = false;
     productionAccessDenied = false;
+    projectsAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -164,7 +183,7 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     int? version,
     Uint8List? bytes,
-    void Function(Map<String, dynamic>)? validate,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
     if (_token == null) {
@@ -182,6 +201,11 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/projects/') &&
+          started == _epoch) {
+        denyProjects();
+      }
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/production/') &&
           started == _epoch) {
@@ -224,7 +248,7 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     Map<String, dynamic>? body,
     int? version,
-    void Function(Map<String, dynamic>)? validate,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) =>
       _request(method, path,
           actingParty: actingParty,
@@ -254,7 +278,10 @@ class AccountSession extends ChangeNotifier {
       return bytes;
     } on AccountError catch (e) {
       if (started == _epoch) {
-        if (path.startsWith('/api/v1/production/') &&
+        if (path.startsWith('/api/v1/projects/') &&
+            [403, 404].contains(e.status)) {
+          denyProjects();
+        } else if (path.startsWith('/api/v1/production/') &&
             [403, 404].contains(e.status)) {
           denyProduction();
         } else if (e.status == 403) {
@@ -310,6 +337,7 @@ class AccountSession extends ChangeNotifier {
     licensingAccessDenied = false;
     tradeAccessDenied = false;
     productionAccessDenied = false;
+    projectsAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();
