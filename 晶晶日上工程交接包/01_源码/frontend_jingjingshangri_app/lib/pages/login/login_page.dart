@@ -257,6 +257,15 @@ class _LoginPageState extends State<LoginPage> {
               '/production/version',
               '/production/feedback',
               '/production/works',
+              '/finance',
+              '/wallet',
+              '/finance/agreement',
+              '/finance/records',
+              '/finance/record',
+              '/finance/entries',
+              '/finance/payout/new',
+              '/finance/dispute/new',
+              '/finance/notifications',
               '/production/work'
             ].contains(route.path)
         ? route.toString()

@@ -15,6 +15,8 @@ import 'gigs/gig_forms.dart';
 import 'production/production_pages.dart';
 import 'projects/project_pages.dart';
 import 'projects/project_forms.dart';
+import 'finance/finance_pages.dart';
+import 'finance/finance_forms.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -77,9 +79,24 @@ class JingjingShangriApp extends StatelessWidget {
             title: '隐私政策',
             body: LegalDocs.privacyPolicy,
             updatedAt: LegalDocs.privacyUpdated),
-        '/wallet' || '/usage-report' => const AppUnavailablePage(
-            title: '我的结算',
-            description: '出款、提现与税务办理暂未开放。商单佣金核算可从我的业务查看；核算金额不代表到账或可提现余额。'),
+        '/wallet' ||
+        '/usage-report' ||
+        '/finance' =>
+          FinanceAgreementsPage(sourceId: uri.queryParameters['sourceId']),
+        '/finance/agreement' => FinanceOverviewPage(
+            agreementId: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/records' => FinanceRecordsPage(
+            agreementId: uri.queryParameters['agreementId'] ?? '',
+            kind: uri.queryParameters['kind'] ?? 'SETTLEMENT'),
+        '/finance/record' =>
+          FinanceRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/finance/entries' => FinanceEntriesPage(
+            agreementId: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/payout/new' => FinanceFormPage(
+            mode: 'PAYOUT', id: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/dispute/new' => FinanceFormPage(
+            mode: 'DISPUTE', id: uri.queryParameters['recordId'] ?? ''),
+        '/finance/notifications' => const FinanceNotificationsPage(),
         '/identity' || '/my-humans' => const AppUnavailablePage(
             title: '数字人资料',
             description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),

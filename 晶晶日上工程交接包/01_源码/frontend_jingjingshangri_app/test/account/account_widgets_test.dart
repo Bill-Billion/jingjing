@@ -434,7 +434,7 @@ void main() {
     nav.pushNamed('/wallet');
     await frames(tester);
     expect(find.byType(WalletPage), findsNothing);
-    expect(find.text('暂未开放'), findsOneWidget);
+    expect(find.text('先确认办事身份'), findsOneWidget);
     expect(find.text('我的结算'), findsOneWidget);
     await close(tester);
   });

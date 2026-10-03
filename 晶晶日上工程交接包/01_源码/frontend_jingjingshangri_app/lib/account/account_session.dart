@@ -19,6 +19,23 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  bool financeAccessDenied = false;
+  List<Map<String, dynamic>> get financePending =>
+      api.financePending(token: _token, party: partyId);
+  void denyFinance() {
+    _epoch++;
+    api.clearSupplyOperations();
+    financeAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryFinanceAccess() async {
+    await loadParties();
+    await refreshParty();
+    financeAccessDenied = false;
+    notifyListeners();
+  }
+
   bool supplyAccessDenied = false;
   bool licensingAccessDenied = false;
   bool tradeAccessDenied = false;
@@ -180,6 +197,7 @@ class AccountSession extends ChangeNotifier {
     gigsAccessDenied = false;
     productionAccessDenied = false;
     projectsAccessDenied = false;
+    financeAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -219,6 +237,12 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/finance/') &&
+          started == _epoch) {
+        denyFinance();
+      }
+
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/projects/') &&
           started == _epoch) {
@@ -301,7 +325,10 @@ class AccountSession extends ChangeNotifier {
       return bytes;
     } on AccountError catch (e) {
       if (started == _epoch) {
-        if (path.startsWith('/api/v1/gigs/') &&
+        if (path.startsWith('/api/v1/finance/') &&
+            [403, 404].contains(e.status)) {
+          denyFinance();
+        } else if (path.startsWith('/api/v1/gigs/') &&
             [403, 404].contains(e.status)) {
           denyGigs();
         } else if (path.startsWith('/api/v1/projects/') &&
@@ -365,6 +392,7 @@ class AccountSession extends ChangeNotifier {
     gigsAccessDenied = false;
     productionAccessDenied = false;
     projectsAccessDenied = false;
+    financeAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();

@@ -32,7 +32,10 @@ class AccountApi {
         (jsonDecode(key) as List)[3]
             .toString()
             .startsWith('/api/v1/production/') ||
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/projects/');
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/projects/') ||
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/finance/');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -85,6 +88,15 @@ class AccountApi {
                   .startsWith('/api/v1/projects/'))
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
+  List<Map<String, dynamic>> financePending({String? token, String? party}) => [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/finance/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _random = Random.secure();
 
   String _newKey() =>
@@ -107,7 +119,8 @@ class AccountApi {
         path.startsWith('/api/v1/trade/') ||
         path.startsWith('/api/v1/gigs/') ||
         path.startsWith('/api/v1/production/') ||
-        path.startsWith('/api/v1/projects/');
+        path.startsWith('/api/v1/projects/') ||
+        path.startsWith('/api/v1/finance/');
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null

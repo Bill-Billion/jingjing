@@ -504,6 +504,16 @@ class _TradeDetailState extends State<_TradeDetail> {
               outline: true)
         ]),
       supplyCard('订单付款', [
+        tradeButton(
+            '查看本订单结算约定',
+            locked
+                ? null
+                : () =>
+                    Navigator.pushNamed(context, '/finance?sourceId=${r.id}')
+                        .then((_) {
+                      if (mounted) load();
+                    }),
+            outline: true),
         tradeFact('应付总额', tradeMoney(r.amount)),
         const Divider(),
         tradeFact('已核实收款', tradeMoney(f['received_minor']), accent: true),

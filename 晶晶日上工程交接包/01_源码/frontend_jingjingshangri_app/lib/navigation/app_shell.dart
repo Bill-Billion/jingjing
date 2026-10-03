@@ -177,15 +177,6 @@ class _AppShellState extends State<AppShell> {
             () => _open('/discover')),
       ];
 
-  List<Widget> _business(String subtitle, String description) => [
-        supplyBusinessIntro(subtitle, description),
-        _entry('商单通知', '查看商单暂停与直接合作结束记录', Icons.notifications_outlined,
-            () => _open('/messages')),
-        appNotice('这部分业务仍在准备。可以先整理作者与作品资料，或查看已有合同。',
-            icon: Icons.hourglass_empty),
-        ..._currentTools(),
-      ];
-
   Widget supplyBusinessIntro(String title, String description) => Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -309,6 +300,10 @@ class _AppShellState extends State<AppShell> {
         _entry('佣金核算', '按真实净额计提；没有出款与提现接入。', Icons.account_balance_outlined,
             () => _open('/gigs/records?kind=COMMISSION')),
         _heading('订单与付款'),
+        _entry('我的结算', '先选约定，核对本人金额、确认、付款申请与真实实付。',
+            Icons.account_balance_wallet_outlined, () => _open('/finance')),
+        _entry('结算业务通知', '仅当前身份获准参与的结算业务。', Icons.notifications_outlined,
+            () => _open('/finance/notifications')),
         _entry('订单、报价与旧记录', '核对原报价、付款节点与退款状态。', Icons.receipt_long_outlined,
             () => _open('/orders')),
         _heading('公开项目与发行'),
