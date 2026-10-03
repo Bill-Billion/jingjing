@@ -38,3 +38,5 @@ PR16_APP_URL=http://127.0.0.1:8773 node scripts/pr16-app-browser-check.mjs
 ```
 
 现有GitHub工作流加入制作专项及网页真实流程，尚未上传运行。本机已通过不替代远端检查。启动器收到SIGTERM会清理其状态、端口、私有临时视频与随机库；不能停止共享MySQL。
+
+2026-10-03 GitHub CI补正：实际日志确认Ubuntu runner没有ffmpeg，导致合成可播放视频准备失败。仅在一次性CI runner安装该测试工具；本机不安装新依赖。追加启动失败日志后定位并修正，后续Checks仍须实际通过才计入。

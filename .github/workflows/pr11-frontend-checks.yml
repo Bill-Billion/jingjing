@@ -69,6 +69,8 @@ jobs:
       - name: 安装浏览器及隔离接口测试依赖
         run: |
           npx playwright-core install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ffmpeg
           npm --prefix ../backend_server ci --no-audit --no-fund
       - name: 启动一次性测试数据库
         working-directory: ${{ github.workspace }}
