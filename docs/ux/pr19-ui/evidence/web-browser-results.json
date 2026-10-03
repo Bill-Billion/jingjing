@@ -1,0 +1,791 @@
+{
+  "synthetic_only": true,
+  "native_device": "CANCELLED_BY_USER_NOT_VERIFIED",
+  "source": "Normal SMS / OWNER and independent review browser UI → isolated real HTTP/MySQL",
+  "web_build": {
+    "index_sha256": "8bebcb1ffd716b1ecb71f0ac9fcc569d485640d6d951277841c08062a6f35151",
+    "entry_path": "/assets/index-3ILzwlZf.js",
+    "entry_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b"
+  },
+  "fixture": {
+    "pid": 19732,
+    "schema": "jx_test_19732_2ef331f99023",
+    "apiUrl": "http://127.0.0.1:3342"
+  },
+  "resumed_passes": 3,
+  "resume_history": [
+    0,
+    1,
+    3
+  ],
+  "complete": true,
+  "error": null,
+  "refs": {
+    "agreement": {
+      "id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "kind": "AGREEMENT",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "settlement": {
+      "id": "2018d951-c76f-4410-abbc-51ee0e38cdab",
+      "kind": "SETTLEMENT",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "payout": {
+      "id": "e0e642d6-b7d6-4069-9591-ac7ee0d8500b",
+      "kind": "PAYOUT",
+      "status": "PAID",
+      "object_version": 3
+    },
+    "paidEvidence": {
+      "id": "1693107c-0a50-4569-810f-3c05c47ec708",
+      "kind": "PAYOUT_EVIDENCE",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "failedEvidence": {
+      "id": "7d1949a6-1dc2-451f-b3a1-d07afec1c912",
+      "kind": "PAYOUT_EVIDENCE",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "returnedEvidence": {
+      "id": "604199fe-bb5b-442c-a7f1-5454d178272c",
+      "kind": "PAYOUT_EVIDENCE",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "statement": {
+      "id": "edefd935-ab00-4241-aa71-4dbe69b74e1f",
+      "kind": "STATEMENT",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "receipt": {
+      "id": "904cc4e6-c3bd-4c2f-8942-d22eaace9827",
+      "kind": "RECEIPT",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "reconciliation": {
+      "id": "15b35dd9-93d0-41b8-a415-4f34aca36af1",
+      "kind": "RECONCILIATION",
+      "status": "MATCHED",
+      "object_version": 1
+    },
+    "dispute": {
+      "id": "8a2f01c6-05bf-4aa3-9849-ec6a4b728c98",
+      "kind": "DISPUTE",
+      "status": "RESOLVED",
+      "object_version": 3
+    },
+    "response": {
+      "id": "82faae83-0f27-422f-a0f0-cdc3fa21cc04",
+      "kind": "RESPONSE",
+      "status": "RECORDED",
+      "object_version": 1
+    },
+    "adjustment": {
+      "id": "a499999c-574a-419d-b626-252a307c7518",
+      "kind": "ADJUSTMENT",
+      "status": "APPROVED",
+      "object_version": 2
+    },
+    "raceWinner": {
+      "id": "8adc6ee5-ccdb-4a9c-ba5b-05982674fd35",
+      "kind": "PAYOUT",
+      "status": "APPROVED",
+      "object_version": 2
+    }
+  },
+  "results": [
+    {
+      "label": "正常短信机构OWNER按真实订单建立明确分配与完整约定",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 1550
+    },
+    {
+      "label": "独立账号真实读取证明并核验，503后以原key/version恢复审核",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 917
+    },
+    {
+      "label": "相关各方准确确认约定，GET验证本人原指纹与决定",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 2262
+    },
+    {
+      "label": "客户实收与合作方本人余额分开，完整方与投影可见范围准确",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 909
+    },
+    {
+      "label": "按真实核实事实生成期间冻结结算单，标签不回填历史",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 552
+    },
+    {
+      "label": "独立审核冻结结算，本人503未知以GET准确确认恢复",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 3291
+    },
+    {
+      "label": "本人收款资料实际上传，明确1001分申请只记REQUESTED",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 755
+    },
+    {
+      "label": "批准申请仍未实付，原全额凭据待审后才成为PAID",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 2905
+    },
+    {
+      "label": "失败与全额退回追加真实外部凭据，保留原付款历史",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 3294
+    },
+    {
+      "label": "发行未到账、部分、实收和冲减追回分别来自真实余额",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 2302
+    },
+    {
+      "label": "明确毛收入退款费用税费登记净应收，核验不冒称实收",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 1685
+    },
+    {
+      "label": "实际部分到账另登记核实，未审报告不增加实收",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 2162
+    },
+    {
+      "label": "同环境支付账单核对MATCHED，比较不新增收退款",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 1397
+    },
+    {
+      "label": "本人异议真实提交并追加双方说明，不自动退款或删除历史",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 1360
+    },
+    {
+      "label": "争议独立要求补救，付款暂停且不伪造退款",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 919
+    },
+    {
+      "label": "明确零和调整由独立核验追加，补救引用批准事实",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 2341
+    },
+    {
+      "label": "单约定外部服务状态真实NOT_IMPLEMENTED，无自动出款",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 462
+    },
+    {
+      "label": "两位独立正常会话形成真实412，重读并清空旧决定",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 1881
+    },
+    {
+      "label": "真实私有证明损坏或存储失效会拒绝，恢复后按权限读取",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 647
+    },
+    {
+      "label": "独立审核撤权及退出清除Blob和私有数据，外部及同机构非OWNER实拒绝",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 2473
+    },
+    {
+      "label": "共享菜单与旧业务入口保持，390和320宽真实余额无横向溢出",
+      "result": "PASS",
+      "build_sha256": "2c7e752c4d5d495ce1f0c8d1d101a2202083b5083a1d1b7cd9244c16eaddca4b",
+      "elapsed_ms": 3420
+    }
+  ],
+  "verification": [
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "asset_id": "f9145d4b-56ea-49cb-a596-bdb54a41a568",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "unknown review replay retains exact key/version/body and no acting party",
+      "record_id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "request_key": "a39fb641-a92e-46c9-b21d-cf8d5cdb6f84",
+      "version": "\"1\""
+    },
+    {
+      "check": "actual GET exact party/hash/decision/reason confirmation",
+      "record_id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "party_id": "b177587e-1ccc-4699-b0ea-d164b820cc0f",
+      "hash": "069fb567caa5eb1d56c58680c81792d9f4d53a253e33b8010dcee218dd516f96"
+    },
+    {
+      "check": "actual GET exact party/hash/decision/reason confirmation",
+      "record_id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "party_id": "920d095a-71ec-4fce-a936-c9be9dca797a",
+      "hash": "069fb567caa5eb1d56c58680c81792d9f4d53a253e33b8010dcee218dd516f96"
+    },
+    {
+      "check": "actual GET exact party/hash/decision/reason confirmation",
+      "record_id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "party_id": "62a80c5e-8676-44c4-8841-6b9f4394870f",
+      "hash": "069fb567caa5eb1d56c58680c81792d9f4d53a253e33b8010dcee218dd516f96"
+    },
+    {
+      "check": "payer full vs recipient-only balance, customer cash not partner payment",
+      "agreement_id": "322ec6a2-f4fc-42e7-a556-a5cb5df9f1e8",
+      "payer_rows": 3,
+      "recipient_rows": 1,
+      "customer_received_minor": 10000,
+      "recipient_paid_minor": 0
+    },
+    {
+      "check": "actual GET exact party/hash/decision/reason confirmation",
+      "record_id": "2018d951-c76f-4410-abbc-51ee0e38cdab",
+      "party_id": "b177587e-1ccc-4699-b0ea-d164b820cc0f",
+      "hash": "9b3a01889651c2c77269c907162a7a0a7ce28d8ecc6b394e17ce217e3fd4a366"
+    },
+    {
+      "check": "actual GET exact party/hash/decision/reason confirmation",
+      "record_id": "2018d951-c76f-4410-abbc-51ee0e38cdab",
+      "party_id": "920d095a-71ec-4fce-a936-c9be9dca797a",
+      "hash": "9b3a01889651c2c77269c907162a7a0a7ce28d8ecc6b394e17ce217e3fd4a366"
+    },
+    {
+      "check": "unknown confirmation resolved by actual GET; original request preserved without new submission",
+      "record_id": "2018d951-c76f-4410-abbc-51ee0e38cdab",
+      "key": "b92a711c-42c3-4dd8-bf0b-fbd2b0258d97",
+      "version": "\"2\""
+    },
+    {
+      "check": "actual GET exact party/hash/decision/reason confirmation",
+      "record_id": "2018d951-c76f-4410-abbc-51ee0e38cdab",
+      "party_id": "62a80c5e-8676-44c4-8841-6b9f4394870f",
+      "hash": "9b3a01889651c2c77269c907162a7a0a7ce28d8ecc6b394e17ce217e3fd4a366"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "e0e642d6-b7d6-4069-9591-ac7ee0d8500b",
+      "asset_id": "ccc25dc0-a7de-43b9-917c-0d8c2538b14f",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "1693107c-0a50-4569-810f-3c05c47ec708",
+      "asset_id": "eb959765-2151-4223-802d-5d8aec0df6b9",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "7d1949a6-1dc2-451f-b3a1-d07afec1c912",
+      "asset_id": "3c6dcaf8-586f-4cb6-9f73-a9e43d13ebdd",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "604199fe-bb5b-442c-a7f1-5454d178272c",
+      "asset_id": "3efcd4c0-1d39-48c0-93db-24534533d663",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "FAILED and RETURNED require actual independently reviewed evidence; old PAID entry preserved",
+      "failed_id": "5727370e-ebca-4112-8678-2e449cce122a",
+      "returned_id": "9c912d09-3c4c-4b9e-acbb-91e15385b120"
+    },
+    {
+      "check": "real release receivable/cash/recovery distinct",
+      "agreement_id": "b8ada295-3fcf-4721-aec4-29170bb66202",
+      "received_minor": 0,
+      "receivable_minor": 80000,
+      "recovery_due_minor": 0
+    },
+    {
+      "check": "real release receivable/cash/recovery distinct",
+      "agreement_id": "900cb942-0293-429b-8893-e24b171db935",
+      "received_minor": 30000,
+      "receivable_minor": 50000,
+      "recovery_due_minor": 0
+    },
+    {
+      "check": "real release receivable/cash/recovery distinct",
+      "agreement_id": "0ed52dc7-07ff-49db-8e4a-72cd36e95d94",
+      "received_minor": 80000,
+      "receivable_minor": 0,
+      "recovery_due_minor": 0
+    },
+    {
+      "check": "real release receivable/cash/recovery distinct",
+      "agreement_id": "4765c0bf-c5a4-41bb-b046-adf4a6160f93",
+      "received_minor": 80000,
+      "receivable_minor": -10000,
+      "recovery_due_minor": 1000
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "edefd935-ab00-4241-aa71-4dbe69b74e1f",
+      "asset_id": "18d40e74-549a-41d9-af48-76ad16e31b1f",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "904cc4e6-c3bd-4c2f-8942-d22eaace9827",
+      "asset_id": "0a4ba967-7fbb-4c23-8769-64da586ac7a3",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "8a2f01c6-05bf-4aa3-9849-ec6a4b728c98",
+      "asset_id": "eb0a7407-7940-4902-b3ed-f4b2524cadfb",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "a499999c-574a-419d-b626-252a307c7518",
+      "asset_id": "5691bb80-e70b-4115-bb44-7c83bbfe093e",
+      "byte_size": 106,
+      "sha256": "910a49d259be7220d129ebb24d1cebe5351fed7556427f929127114667fe7063"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "8adc6ee5-ccdb-4a9c-ba5b-05982674fd35",
+      "asset_id": "ef79eb8f-9f4f-4fc4-b4cb-5695df4d987b",
+      "byte_size": 88,
+      "sha256": "ce9c44c495dd59704866ae9ec4a5dedfc45a7e39dfea0a9383c3900010fc870f"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "8adc6ee5-ccdb-4a9c-ba5b-05982674fd35",
+      "asset_id": "ef79eb8f-9f4f-4fc4-b4cb-5695df4d987b",
+      "byte_size": 88,
+      "sha256": "ce9c44c495dd59704866ae9ec4a5dedfc45a7e39dfea0a9383c3900010fc870f"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "5b9033ce-df3f-4ece-8f2f-1494826d06de",
+      "asset_id": "742e6ddd-9044-42ca-9c96-5b3432aedec6",
+      "byte_size": 89,
+      "sha256": "020ef5f6ed0ac1a8f08bd4f58e316758551ab1210c40b669ae9475de8735fc3f"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "5b9033ce-df3f-4ece-8f2f-1494826d06de",
+      "asset_id": "742e6ddd-9044-42ca-9c96-5b3432aedec6",
+      "byte_size": 89,
+      "sha256": "020ef5f6ed0ac1a8f08bd4f58e316758551ab1210c40b669ae9475de8735fc3f"
+    },
+    {
+      "check": "protected evidence bytes read via actual UI",
+      "record_id": "5b9033ce-df3f-4ece-8f2f-1494826d06de",
+      "asset_id": "742e6ddd-9044-42ca-9c96-5b3432aedec6",
+      "byte_size": 89,
+      "sha256": "020ef5f6ed0ac1a8f08bd4f58e316758551ab1210c40b669ae9475de8735fc3f"
+    }
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    {
+      "file": "screenshots/pr19-web-agreement-new-desktop.png",
+      "gallery": "WEB-27-01",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-agreement-desktop.png",
+      "gallery": "WEB-27-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-confirm-agreement-payer-desktop.png",
+      "gallery": "WEB-27-03-v3",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-confirm-agreement-customer-desktop.png",
+      "gallery": "WEB-27-03-v3",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-confirm-agreement-recipient-desktop.png",
+      "gallery": "WEB-27-03-v3",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-recipient-balances-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-settlement-new-desktop.png",
+      "gallery": "WEB-28-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-settlement-desktop.png",
+      "gallery": "WEB-28-03-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-confirm-settlement-payer-desktop.png",
+      "gallery": "WEB-28-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-confirm-settlement-customer-desktop.png",
+      "gallery": "WEB-28-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-confirm-settlement-recipient-desktop.png",
+      "gallery": "WEB-28-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-payout-new-desktop.png",
+      "gallery": "WEB-29-01-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-payout-desktop.png",
+      "gallery": "WEB-29-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-payment-paid-form-desktop.png",
+      "gallery": "WEB-29-03-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-paidEvidence-desktop.png",
+      "gallery": "WEB-29-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-payment-failed-form-desktop.png",
+      "gallery": "WEB-29-03-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-failedEvidence-desktop.png",
+      "gallery": "WEB-29-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-payment-returned-form-desktop.png",
+      "gallery": "WEB-29-03-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-returnedEvidence-desktop.png",
+      "gallery": "WEB-29-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-webRevenueUnreceived-balances-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-webRevenuePartial-balances-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-webRevenuePaid-balances-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-webRevenueCorrected-balances-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-statement-new-desktop.png",
+      "gallery": "WEB-30-01-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-statement-desktop.png",
+      "gallery": "WEB-30-03",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-receipt-new-desktop.png",
+      "gallery": "WEB-30-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-receipt-desktop.png",
+      "gallery": "WEB-30-03",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-reconciliation-new-desktop.png",
+      "gallery": "WEB-30-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-dispute-new-desktop.png",
+      "gallery": "WEB-31-01-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-dispute-response-desktop.png",
+      "gallery": "WEB-31-01-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-dispute-action-required-desktop.png",
+      "gallery": "WEB-31-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-adjustment-new-desktop.png",
+      "gallery": "WEB-31-03",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-adjustment-desktop.png",
+      "gallery": "WEB-31-04-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-dispute-remedy-desktop.png",
+      "gallery": "WEB-31-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-readiness-desktop.png",
+      "gallery": "WEB-35-01-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-review-raceWinner-desktop.png",
+      "gallery": "WEB-29-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-version-conflict-desktop.png",
+      "gallery": "WEB-29-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-proof-recovered-desktop.png",
+      "gallery": "WEB-27-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-reviewer-revoked-desktop.png",
+      "gallery": "WEB-27-02-v2",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-outsider-denied-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-member-denied-desktop.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-balance-390-narrow.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "file": "screenshots/pr19-web-balance-320-narrow.png",
+      "gallery": "WEB-28-01-v4",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      }
+    }
+  ],
+  "gallery_coverage": [
+    "WEB-27-01",
+    "WEB-27-02-v2",
+    "WEB-27-03-v3",
+    "WEB-28-01-v4",
+    "WEB-28-02-v2",
+    "WEB-28-03-v2",
+    "WEB-28-04-v2",
+    "WEB-29-01-v2",
+    "WEB-29-02-v2",
+    "WEB-29-03-v2",
+    "WEB-29-04-v2",
+    "WEB-30-01-v2",
+    "WEB-30-03",
+    "WEB-30-02-v2",
+    "WEB-30-04-v2",
+    "WEB-31-01-v2",
+    "WEB-31-02-v2",
+    "WEB-31-03",
+    "WEB-31-04-v2",
+    "WEB-35-01-v2"
+  ],
+  "total": 21,
+  "passed": 21
+}
