@@ -35,6 +35,7 @@ export const KNOWN_ACTIONS = {
   LIST_PARTIES: '查看我的身份',
   CREATE_ORGANIZATION: '创建机构',
   PRODUCTION_REVIEW: '独立制作核验',
+  PROJECT_REVIEW: '独立项目与发行核验',
 
   // 主体级（GET /api/v1/me/parties 返回的 party.allowed_actions）
   READ_PARTY: '查看主体',
