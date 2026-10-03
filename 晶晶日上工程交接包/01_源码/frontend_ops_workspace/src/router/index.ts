@@ -3,6 +3,7 @@ import { useSessionStore } from '@/stores/session'
 import { tradeRoutes } from './tradeRoutes'
 import { gigsRoutes } from './gigsRoutes'
 import { productionRoutes } from './productionRoutes'
+import { projectsRoutes } from './projectsRoutes'
 
 /**
  * 路由表。
@@ -53,6 +54,7 @@ const router = createRouter({
     ...tradeRoutes,
     ...gigsRoutes,
     ...productionRoutes,
+    ...projectsRoutes,
     // 开发自检页：整个路由项在构建时按 import.meta.env.DEV 决定要不要加。
     // 用 import.meta.env.DEV 而不是路由守卫里判断，是为了让生产构建干脆
     // 不产生这条路由、也不打包这个页面，而不是"能访问但被拦下"。

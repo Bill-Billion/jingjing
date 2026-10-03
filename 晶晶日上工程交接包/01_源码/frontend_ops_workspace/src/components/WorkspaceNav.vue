@@ -21,6 +21,10 @@ const links = [
   { to: '/gigs/rankings', label: '商单榜单', icon: View },
   { to: '/trade/payments', label: '付款退款', icon: Tickets },
   { to: '/production/projects', label: '制作项目', icon: FolderOpened },
+  { to: '/projects/projects', label: '项目选角', icon: User },
+  { to: '/projects/plans', label: '项目会签', icon: Document },
+  { to: '/projects/releases', label: '项目发行', icon: Collection },
+  { to: '/projects/channels', label: '渠道档案', icon: OfficeBuilding },
 ]
 const reviews = [
   { to: '/gigs/reviews/requests', label: '商单与提案核验' },
@@ -32,12 +36,19 @@ const reviews = [
   { to: '/trade/reviews/quotes', label: '报价审核' },
   { to: '/trade/reviews/refunds', label: '退款与旧单核对' },
   { to: '/production/reviews/projects', label: '制作独立核验' },
+  { to: '/projects/reviews/plans', label: '项目独立核验' },
 ]
 function active(target: string) {
   if (target === '/gigs/catalogue') return /^\/gigs\/(catalogue|requests|offers)(\/|$)/.test(route.path)
   if (target === '/gigs/reviews/requests') return /^\/gigs\/reviews\/(requests|offers)(\/|$)/.test(route.path)
   if (target === '/gigs/reviews/rules') return /^\/gigs\/(rules|reviews\/rules)(\/|$)/.test(route.path)
   if (target === '/trade/quotes' && route.path.startsWith('/trade/offers/')) return true
+  if (target === '/projects/reviews/plans') return route.path.startsWith('/projects/reviews/')
+  if (target === '/projects/plans') return /^\/projects\/(?:plans|projects\/[^/]+\/(?:plans|readiness))(\/|$)/.test(route.path)
+  if (target === '/projects/releases') return /^\/projects\/(?:releases|editions|projects\/[^/]+\/(?:editions|releases))(\/|$)/.test(route.path)
+  if (target === '/projects/channels') return route.path.startsWith('/projects/channels')
+  if (target === '/projects/projects') return route.path.startsWith('/projects/')&&!/^\/projects\/(?:reviews|plans|releases|editions|channels|projects\/[^/]+\/(?:plans|readiness|editions|releases))(\/|$)/.test(route.path)
+
   if (target === '/production/projects') return /^\/production\/(projects|orders|versions)(\/|$)/.test(route.path)
   if (target === '/production/reviews/projects') return route.path.startsWith('/production/reviews/')
   if (target === '/trade/quotes') return /^\/trade\/(quotes|orders)(\/|$)/.test(route.path)
