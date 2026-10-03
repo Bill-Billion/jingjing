@@ -1,0 +1,48 @@
+{
+  "format": "JX_RELEASE_REHEARSAL_V1",
+  "synthetic_only": true,
+  "production_access": false,
+  "paid_services": false,
+  "checks": [
+    {
+      "name": "legacy-retention",
+      "id": "677fd0fc8cc01f5a19ed2ae43e70b3e8e2a895359efa613f419743d31cd3ce32",
+      "result": "MATCHED",
+      "source_kind": "SYNTHETIC",
+      "tables": 2,
+      "rows": 2,
+      "current_status": "RETAINED_REVIEW_REQUIRED",
+      "verified_payments": 0,
+      "converted_accounts": 0,
+      "activated_licenses": 0
+    },
+    {
+      "name": "database-restore",
+      "result": "MATCHED",
+      "tables": 78,
+      "rows": 180,
+      "payload_sha256": "3a5258edcc3a33616f560d0077238d4c6e02afa9c404c80cfc069dde92575424",
+      "runtime_status": "QUARANTINED",
+      "comparison_excludes": [
+        "platform_schema_metadata.recovery_status"
+      ],
+      "external_objects_restored": false,
+      "duration_ms": 2979
+    },
+    {
+      "name": "release-check",
+      "result": "BLOCKS_UNVERIFIED",
+      "production_release": "NOT_APPROVED"
+    }
+  ],
+  "metrics": {
+    "requests": 160,
+    "concurrency": 8,
+    "duration_ms": 736,
+    "p50_ms": 36,
+    "p95_ms": 45,
+    "max_ms": 52,
+    "unexpected_responses": 0,
+    "meaning": "隔离环境有限并发观测，不是生产容量承诺"
+  }
+}
