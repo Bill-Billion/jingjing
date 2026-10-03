@@ -1,4 +1,4 @@
-name: App 与网页账号、合同、作品、许可及交易和商单页面检查
+name: App 与管理网页业务页面检查
 
 on:
   push:
@@ -20,6 +20,9 @@ on:
       - 'scripts/pr19-app-browser-check.mjs'
       - 'scripts/pr19-ui-browser-check.mjs'
       - 'scripts/pr19-ui-test-server.cjs'
+      - 'scripts/pr20-app-browser-check.mjs'
+      - 'scripts/pr20-ui-browser-check.mjs'
+      - 'scripts/pr20-ui-test-server.cjs'
       - 'scripts/pr18-app-browser-check.mjs'
       - 'scripts/pr18-ui-browser-check.mjs'
       - 'scripts/pr18-ui-test-server.cjs'
@@ -45,6 +48,9 @@ on:
       - 'scripts/pr19-app-browser-check.mjs'
       - 'scripts/pr19-ui-browser-check.mjs'
       - 'scripts/pr19-ui-test-server.cjs'
+      - 'scripts/pr20-app-browser-check.mjs'
+      - 'scripts/pr20-ui-browser-check.mjs'
+      - 'scripts/pr20-ui-test-server.cjs'
       - 'scripts/pr18-app-browser-check.mjs'
       - 'scripts/pr18-ui-browser-check.mjs'
       - 'scripts/pr18-ui-test-server.cjs'
@@ -86,6 +92,7 @@ jobs:
       - run: npm run test:production
       - run: npm run test:projects
       - run: npm run test:finance
+      - run: npm run test:operations
       - run: npm run build
       - name: 安装浏览器及隔离接口测试依赖
         run: |
@@ -251,6 +258,30 @@ jobs:
           fi
           export CHROME_PATH="$(node -e 'const {createRequire}=require("node:module"); const r=createRequire(process.cwd()+"/晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json"); console.log(r("playwright-core").chromium.executablePath())')"
           node scripts/pr19-ui-browser-check.mjs
+      - name: 用真实通知、留言、审计和报表接口检查网页
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+          PR20_WEB_URL: http://127.0.0.1:5211
+          VITE_BACKEND_ORIGIN: http://127.0.0.1:3362
+        run: |
+          node scripts/pr20-ui-test-server.cjs --test-only > .local/pr20-api.log 2>&1 &
+          api_pid=$!
+          npm --prefix 晶晶日上工程交接包/01_源码/frontend_ops_workspace run dev -- --host 127.0.0.1 --port 5211 --strictPort > .local/pr20-vite.log 2>&1 &
+          vite_pid=$!
+          trap 'kill "$api_pid" "$vite_pid" 2>/dev/null || true; wait "$api_pid" "$vite_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if test -f .local/pr20-ui-runtime.json && curl --fail --silent http://127.0.0.1:5211/ > /dev/null; then break; fi
+            sleep 1
+          done
+          if ! test -f .local/pr20-ui-runtime.json; then
+            cat .local/pr20-api.log
+            cat .local/pr20-vite.log
+            exit 1
+          fi
+          export CHROME_PATH="$(node -e 'const {createRequire}=require("node:module"); const r=createRequire(process.cwd()+"/晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json"); console.log(r("playwright-core").chromium.executablePath())')"
+          node scripts/pr20-ui-browser-check.mjs
       - name: 清理本次测试数据库
         if: always()
         working-directory: ${{ github.workspace }}
@@ -275,7 +306,7 @@ jobs:
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
           flutter/bin/flutter config --no-analytics
       - run: flutter pub get --enforce-lockfile
-      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/navigation lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/navigation
-      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/navigation test/interaction_flows_test.dart test/widget_test.dart
+      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation
+      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/interaction_flows_test.dart test/widget_test.dart
       - name: 检查完整 App 可以生成网页发布文件
         run: flutter build web --no-pub
