@@ -16,8 +16,12 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const backend = path.resolve(__dirname, '../晶晶日上工程交接包/01_源码/backend_server');
 const envFile = process.env.JX_MYSQL_TEST_ENV_FILE || '/Users/yanghaoran/Code/jingjing-ux/.local/mysql/runtime/test-env.json';
-const statePath = path.resolve(__dirname, '../.local/pr20-ui-runtime.json');
-const apiUrl = 'http://127.0.0.1:3362', controlUrl = 'http://127.0.0.1:3363';
+// PR21 final candidate can run independently without replacing PR20 review data.
+const statePath = path.resolve(process.env.PR20_UI_STATE_FILE || path.resolve(__dirname, '../.local/pr20-ui-runtime.json'));
+const apiPort = Number(process.env.PR20_UI_API_PORT || 3362), controlPort = Number(process.env.PR20_UI_CONTROL_PORT || 3363);
+for (const port of [apiPort, controlPort]) assert(Number.isInteger(port) && port >= 1024 && port <= 65535, 'Invalid isolated UI port');
+assert.notEqual(apiPort, controlPort);
+const apiUrl = `http://127.0.0.1:${apiPort}`, controlUrl = `http://127.0.0.1:${controlPort}`;
 const schema = `jx_test_${process.pid}_${crypto.randomBytes(6).toString('hex')}`, controlToken = crypto.randomBytes(32).toString('hex');
 const phones = { payer: '13900009801', recipient: '13900009802', independentReviewer: '13900009803', outsider: '13900009804', member: '13900009805', channelRegistrar: '13900009806', customer: '13900009807' };
 const people = {}, records = {}, assets = {}, media = {}, creation = {}, scenarios = {}, checks = [], recovery = [];
@@ -215,7 +219,7 @@ async function main() {
     }
     app(req, res);
   });
-  await listen(apiServer, 3362);
+  await listen(apiServer, apiPort);
   phase = 'normal SMS identities and OWNER/MEMBER membership';
   for (const [name, phone] of Object.entries(phones)) {
     const c = await call('POST', '/auth/sms-challenges', { body: { phone, purpose: 'LOGIN' } });
@@ -431,7 +435,7 @@ async function main() {
       else{res.writeHead(404);res.end('{"error":"NOT_FOUND"}');return;}
       if(stateOwned&&req.method==='POST')await saveState();res.end(JSON.stringify(out));
     }catch{res.writeHead(400);res.end('{"error":"INVALID_TEST_CONTROL"}');}
-  });await listen(controlServer,3363);
+  });await listen(controlServer,controlPort);
   workerTimer=setInterval(()=>{if(workerEnabled&&!workerBusy)runWorker().catch(()=>{workerEnabled=false;});},400);workerTimer.unref();
   const control=async route=>{const r=await fetch(controlUrl+route,{method:'POST',headers:{Authorization:`Bearer ${controlToken}`}});assert.equal(r.status,200);return r.json();};
   assert.equal((await fetch(controlUrl+'/state')).status,403);assert.equal((await fetch(controlUrl+'/state',{headers:{Authorization:`Bearer ${controlToken}`,Origin:origins[0]}})).status,403);
