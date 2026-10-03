@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useSessionStore } from '@/stores/session'
 import { tradeRoutes } from './tradeRoutes'
+import { gigsRoutes } from './gigsRoutes'
 
 /**
  * 路由表。
@@ -49,6 +50,7 @@ const router = createRouter({
     { path: '/licensing/reviews/:section(products|evidence|readings|activation|grants|projects|bindings)/:recordId?', name: 'license-review', component: () => import('@/views/LicensingView.vue'), meta: { title: '独立许可核验' } },
     { path: '/licensing/:section(catalog|products|reservations|evidence|grants|projects|bindings|readings)/:recordId?', name: 'licensing', component: () => import('@/views/LicensingView.vue'), meta: { title: '剧本许可与项目' } },
     ...tradeRoutes,
+    ...gigsRoutes,
     // 开发自检页：整个路由项在构建时按 import.meta.env.DEV 决定要不要加。
     // 用 import.meta.env.DEV 而不是路由守卫里判断，是为了让生产构建干脆
     // 不产生这条路由、也不打包这个页面，而不是"能访问但被拦下"。

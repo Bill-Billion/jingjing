@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.6.0-rc.1
+  version: 0.8.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers and front-end integration remain unverified.
 servers:
 - url: http://127.0.0.1:3000
@@ -11,6 +11,7 @@ servers:
 security:
 - bearerAuth: []
 tags:
+- name: gigs
 - name: supply
 - name: session
 - name: party
@@ -3514,6 +3515,812 @@ paths:
                   const: RSA2
               additionalProperties:
                 type: string
+  /api/v1/gigs/rules:
+    post:
+      operationId: createGigRule
+      summary: 提交商单和榜单规则
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigRuleRequest'
+  /api/v1/gigs/rules/{record_id}/retirement:
+    post:
+      operationId: retireGigRule
+      summary: 停止新业务使用旧规则
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigReasonRequest'
+  /api/v1/gigs/records/{record_id}/reviews:
+    post:
+      operationId: reviewGigRecord
+      summary: 独立审核规则、商单或接单约定
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigReviewRequest'
+  /api/v1/gigs/relations:
+    post:
+      operationId: createGigRelation
+      summary: 邀请直接MCN合作
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigRelationRequest'
+  /api/v1/gigs/relations/{record_id}/decision:
+    post:
+      operationId: decideGigRelation
+      summary: 本人确认或结束合作
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigRelationDecisionRequest'
+  /api/v1/gigs/requests:
+    post:
+      operationId: createGig
+      summary: 提交商业委托
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigCreateRequest'
+  /api/v1/gigs/requests/{record_id}/suspension:
+    post:
+      operationId: suspendGig
+      summary: 暂停违规商单并记录通知
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigReasonRequest'
+  /api/v1/gigs/offers:
+    post:
+      operationId: createGigOffer
+      summary: 提交接单约定和佣金依据
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigOfferRequest'
+  /api/v1/gigs/offers/{record_id}/acceptance:
+    post:
+      operationId: acceptGigOffer
+      summary: 买方确认准确版本的接单约定
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigOfferAcceptRequest'
+  /api/v1/gigs/commissions:
+    post:
+      operationId: calculateGigCommission
+      summary: 按核实的收退款计算待结算佣金
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigCommissionRequest'
+  /api/v1/gigs/rankings:
+    post:
+      operationId: createGigRanking
+      summary: 按明确日期生成可解释榜单快照
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GigRankingRequest'
+  /api/v1/gigs/records:
+    get:
+      operationId: listGigRecords
+      summary: 查询本人记录或授权审核记录
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: kind
+        in: query
+        required: true
+        schema:
+          enum:
+          - RULE
+          - RELATION
+          - GIG
+          - OFFER
+          - COMMISSION
+          - RANKING
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/gigs/records/{record_id}:
+    get:
+      operationId: getGigRecord
+      summary: 读取获准查看的记录
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/gigs/catalogue:
+    get:
+      operationId: listGigCatalogue
+      summary: 查看已审核且未暂停的商单摘要
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigCatalogueResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/gigs/notifications:
+    get:
+      operationId: listGigNotifications
+      summary: 查看商单和合作关系通知
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigNotificationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/gigs/rankings/{record_id}:
+    get:
+      operationId: getGigRanking
+      summary: 查看榜单及其计算规则
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRankingResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/gigs/commissions/{record_id}/entries:
+    get:
+      operationId: listGigCommissionEntries
+      summary: 核对每次佣金增减记录
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigEntriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/gigs/records/{record_id}/evidence/{asset_id}:
+    get:
+      operationId: downloadGigEvidence
+      summary: 按记录权限读取私有证明材料
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Checked result; commission is not money transferred.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -4214,6 +5021,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        commercial:
+          $ref: '#/components/schemas/GigCommercialSnapshot'
         lines:
           type: array
           minItems: 1
@@ -5240,6 +6049,11 @@ components:
       type: object
       additionalProperties: false
       properties:
+        commercial_offer_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
         buyer_party_id:
           type: string
           format: uuid
@@ -8640,3 +9454,1936 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           $ref: '#/components/schemas/UnsignedSnapshotContent'
+    GigRuleRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RULE
+        owner_party_id:
+          type: 'null'
+        counterparty_id:
+          type: 'null'
+        parent_id:
+          type: 'null'
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - EFFECTIVE
+          - REJECTED
+          - RETIRED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            rule:
+              type: object
+              additionalProperties: false
+              properties:
+                categories:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      allowed:
+                        type: boolean
+                      code:
+                        type: string
+                        maxLength: 8000
+                      required_proofs:
+                        type: array
+                        items:
+                          type: string
+                          maxLength: 8000
+                    required:
+                    - allowed
+                    - code
+                    - required_proofs
+                ranking:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    minimum_orders:
+                      type: integer
+                    net_minor_weight:
+                      type: integer
+                    newcomer_bonus:
+                      type: integer
+                    newcomer_days:
+                      type: integer
+                    order_weight:
+                      type: integer
+                    window_days:
+                      type: integer
+                  required:
+                  - minimum_orders
+                  - net_minor_weight
+                  - newcomer_bonus
+                  - newcomer_days
+                  - order_weight
+                  - window_days
+                terms:
+                  type: string
+                  maxLength: 8000
+                version:
+                  type: string
+                  maxLength: 8000
+              required:
+              - categories
+              - ranking
+              - terms
+              - version
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  checks:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        identity_verified:
+                          type: boolean
+                        authority_verified:
+                          type: boolean
+                        materials_reviewed:
+                          type: boolean
+                        content_reviewed:
+                          type: boolean
+                        marking_reviewed:
+                          type: boolean
+                      required:
+                      - identity_verified
+                      - authority_verified
+                      - materials_reviewed
+                      - content_reviewed
+                      - marking_reviewed
+                    - type: 'null'
+                  account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: EXTERNAL_MANUAL_REVIEW
+                required:
+                - decision
+                - reason
+                - checks
+                - account_id
+                - method
+              - type: 'null'
+            retirement:
+              type: object
+              additionalProperties: false
+              properties:
+                reason:
+                  type: string
+                  maxLength: 8000
+                account_id:
+                  type: string
+                  format: uuid
+              required:
+              - reason
+              - account_id
+          required:
+          - rule
+          - review
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    GigRelationRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RELATION
+        owner_party_id:
+          type: string
+          format: uuid
+        counterparty_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: 'null'
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - INVITED
+          - ACTIVE
+          - REJECTED
+          - ENDED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            scope:
+              type: string
+              maxLength: 8000
+            valid_from:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            valid_until:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            exclusive:
+              type: boolean
+            terms:
+              type: string
+              maxLength: 8000
+            commission:
+              type: object
+              additionalProperties: false
+              properties:
+                mcn_bps:
+                  type: integer
+                platform_bps:
+                  type: integer
+              required:
+              - mcn_bps
+              - platform_bps
+            evidence_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+            accepted_by:
+              anyOf:
+              - type: 'null'
+              - type: string
+                format: uuid
+            ended_reason:
+              anyOf:
+              - type: 'null'
+              - type: string
+                maxLength: 8000
+          required:
+          - scope
+          - valid_from
+          - valid_until
+          - exclusive
+          - terms
+          - commission
+          - evidence_asset_ids
+          - accepted_by
+          - ended_reason
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    GigGigRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: GIG
+        owner_party_id:
+          type: string
+          format: uuid
+        counterparty_id:
+          type: 'null'
+        parent_id:
+          type: 'null'
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - PUBLISHED
+          - REJECTED
+          - SUSPENDED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            title:
+              type: string
+              maxLength: 8000
+            brief:
+              type: string
+              maxLength: 8000
+            category:
+              type: string
+              maxLength: 8000
+            scope:
+              type: object
+              additionalProperties: false
+              properties:
+                purpose:
+                  type: string
+                  maxLength: 8000
+                territory:
+                  type: string
+                  maxLength: 8000
+                valid_until:
+                  type: string
+                  format: date-time
+                  pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+              required:
+              - purpose
+              - territory
+              - valid_until
+            rule_id:
+              type: string
+              format: uuid
+            rule_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            proofs:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    maxLength: 8000
+                  asset_id:
+                    type: string
+                    format: uuid
+                required:
+                - code
+                - asset_id
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  checks:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        identity_verified:
+                          type: boolean
+                        authority_verified:
+                          type: boolean
+                        materials_reviewed:
+                          type: boolean
+                        content_reviewed:
+                          type: boolean
+                        marking_reviewed:
+                          type: boolean
+                      required:
+                      - identity_verified
+                      - authority_verified
+                      - materials_reviewed
+                      - content_reviewed
+                      - marking_reviewed
+                    - type: 'null'
+                  account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: EXTERNAL_MANUAL_REVIEW
+                required:
+                - decision
+                - reason
+                - checks
+                - account_id
+                - method
+              - type: 'null'
+            suspension:
+              anyOf:
+              - type: 'null'
+              - type: object
+                additionalProperties: false
+                properties:
+                  reason:
+                    type: string
+                    maxLength: 8000
+                  account_id:
+                    type: string
+                    format: uuid
+                required:
+                - reason
+                - account_id
+          required:
+          - title
+          - brief
+          - category
+          - scope
+          - rule_id
+          - rule_sha256
+          - proofs
+          - review
+          - suspension
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    GigOfferRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: OFFER
+        owner_party_id:
+          type: string
+          format: uuid
+        counterparty_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+          - ACCEPTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            ranking_opt_in:
+              type: boolean
+            spec_id:
+              type: string
+              format: uuid
+            avatar_id:
+              type: string
+              format: uuid
+            consent_id:
+              type: string
+              format: uuid
+            relation:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  version:
+                    type: integer
+                  sha256:
+                    type: string
+                    pattern: ^[0-9a-f]{64}$
+                  mcn_party_id:
+                    type: string
+                    format: uuid
+                  terms:
+                    type: string
+                    maxLength: 8000
+                  valid_from:
+                    type: string
+                    format: date-time
+                    pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                  valid_until:
+                    type: string
+                    format: date-time
+                    pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                required:
+                - id
+                - version
+                - sha256
+                - mcn_party_id
+                - terms
+                - valid_from
+                - valid_until
+              - type: 'null'
+            commission:
+              type: object
+              additionalProperties: false
+              properties:
+                mcn_bps:
+                  type: integer
+                platform_bps:
+                  type: integer
+              required:
+              - mcn_bps
+              - platform_bps
+            terms:
+              type: string
+              maxLength: 8000
+            evidence_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  checks:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        identity_verified:
+                          type: boolean
+                        authority_verified:
+                          type: boolean
+                        materials_reviewed:
+                          type: boolean
+                        content_reviewed:
+                          type: boolean
+                        marking_reviewed:
+                          type: boolean
+                      required:
+                      - identity_verified
+                      - authority_verified
+                      - materials_reviewed
+                      - content_reviewed
+                      - marking_reviewed
+                    - type: 'null'
+                  account_id:
+                    type: string
+                    format: uuid
+                  method:
+                    const: EXTERNAL_MANUAL_REVIEW
+                required:
+                - decision
+                - reason
+                - checks
+                - account_id
+                - method
+              - type: 'null'
+            buyer_accepted_by:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - ranking_opt_in
+          - spec_id
+          - avatar_id
+          - consent_id
+          - relation
+          - commission
+          - terms
+          - evidence_asset_ids
+          - review
+          - buyer_accepted_by
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    GigCommissionRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: COMMISSION
+        owner_party_id:
+          type: string
+          format: uuid
+        counterparty_id:
+          type: string
+          format: uuid
+        parent_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - CALCULATED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            order_id:
+              type: string
+              format: uuid
+            contract_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            agreement:
+              $ref: '#/components/schemas/GigCommercialSnapshot'
+            relation:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  terms:
+                    type: string
+                    maxLength: 8000
+                  sha256:
+                    type: string
+                    pattern: ^[0-9a-f]{64}$
+                  version:
+                    type: integer
+                  valid_from:
+                    type: string
+                    format: date-time
+                    pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                  valid_until:
+                    type: string
+                    format: date-time
+                    pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                  mcn_party_id:
+                    type: string
+                    format: uuid
+                required:
+                - id
+                - terms
+                - sha256
+                - version
+                - valid_from
+                - valid_until
+                - mcn_party_id
+              - type: 'null'
+            facts:
+              type: object
+              additionalProperties: false
+              properties:
+                received_minor:
+                  type: integer
+                refunded_minor:
+                  type: integer
+                net_minor:
+                  type: integer
+                environment:
+                  anyOf:
+                  - type: 'null'
+                  - type: string
+                    maxLength: 8000
+                first_at:
+                  anyOf:
+                  - type: 'null'
+                  - type: integer
+                journal_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+              required:
+              - received_minor
+              - refunded_minor
+              - net_minor
+              - environment
+              - first_at
+              - journal_ids
+            amounts:
+              type: object
+              additionalProperties: false
+              properties:
+                net_minor:
+                  type: integer
+                supplier_minor:
+                  type: integer
+                platform_minor:
+                  type: integer
+                mcn_minor:
+                  type: integer
+              required:
+              - net_minor
+              - supplier_minor
+              - platform_minor
+              - mcn_minor
+            currency:
+              type: string
+              maxLength: 8000
+            paid_out_minor:
+              type: integer
+            meaning:
+              type: string
+              maxLength: 8000
+          required:
+          - order_id
+          - contract_sha256
+          - agreement
+          - relation
+          - facts
+          - amounts
+          - currency
+          - paid_out_minor
+          - meaning
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    GigRankingRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: RANKING
+        owner_party_id:
+          type: 'null'
+        counterparty_id:
+          type: 'null'
+        parent_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - PUBLISHED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            as_of:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            rule_id:
+              type: string
+              format: uuid
+            rule_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            rule:
+              type: object
+              additionalProperties: false
+              properties:
+                window_days:
+                  type: integer
+                order_weight:
+                  type: integer
+                newcomer_days:
+                  type: integer
+                minimum_orders:
+                  type: integer
+                newcomer_bonus:
+                  type: integer
+                net_minor_weight:
+                  type: integer
+              required:
+              - window_days
+              - order_weight
+              - newcomer_days
+              - minimum_orders
+              - newcomer_bonus
+              - net_minor_weight
+            source:
+              type: string
+              maxLength: 8000
+            facts:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  order_id:
+                    type: string
+                    format: uuid
+                  party_id:
+                    type: string
+                    format: uuid
+                  territory:
+                    type: string
+                    maxLength: 8000
+                  net_minor:
+                    type: integer
+                  environment:
+                    type: string
+                    maxLength: 8000
+                  at:
+                    type: integer
+                  first_at:
+                    type: integer
+                  journal_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                required:
+                - order_id
+                - party_id
+                - territory
+                - net_minor
+                - environment
+                - at
+                - first_at
+                - journal_ids
+            boards:
+              type: object
+              additionalProperties: false
+              properties:
+                hot:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      party_id:
+                        type: string
+                        format: uuid
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      current:
+                        type: integer
+                      previous:
+                        type: integer
+                      net:
+                        type: integer
+                      first:
+                        type: integer
+                      heat:
+                        type: string
+                        maxLength: 8000
+                      emerging:
+                        type: string
+                        maxLength: 8000
+                    required:
+                    - party_id
+                    - territory
+                    - current
+                    - previous
+                    - net
+                    - first
+                    - heat
+                    - emerging
+                emerging:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      party_id:
+                        type: string
+                        format: uuid
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      current:
+                        type: integer
+                      previous:
+                        type: integer
+                      net:
+                        type: integer
+                      first:
+                        type: integer
+                      heat:
+                        type: string
+                        maxLength: 8000
+                      emerging:
+                        type: string
+                        maxLength: 8000
+                    required:
+                    - party_id
+                    - territory
+                    - current
+                    - previous
+                    - net
+                    - first
+                    - heat
+                    - emerging
+                regional:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      party_id:
+                        type: string
+                        format: uuid
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      current:
+                        type: integer
+                      previous:
+                        type: integer
+                      net:
+                        type: integer
+                      first:
+                        type: integer
+                      heat:
+                        type: string
+                        maxLength: 8000
+                      emerging:
+                        type: string
+                        maxLength: 8000
+                    required:
+                    - party_id
+                    - territory
+                    - current
+                    - previous
+                    - net
+                    - first
+                    - heat
+                    - emerging
+              required:
+              - hot
+              - emerging
+              - regional
+            data_status:
+              type: string
+              maxLength: 8000
+          required:
+          - as_of
+          - rule_id
+          - rule_sha256
+          - rule
+          - source
+          - facts
+          - boards
+          - data_status
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    GigRecord:
+      oneOf:
+      - $ref: '#/components/schemas/GigRuleRecord'
+      - $ref: '#/components/schemas/GigRelationRecord'
+      - $ref: '#/components/schemas/GigGigRecord'
+      - $ref: '#/components/schemas/GigOfferRecord'
+      - $ref: '#/components/schemas/GigCommissionRecord'
+      - $ref: '#/components/schemas/GigRankingRecord'
+    GigRecordResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/GigRecord'
+      required:
+      - meta
+      - data
+    GigListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/GigRecord'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    GigCatalogueResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  title:
+                    type: string
+                    maxLength: 8000
+                  brief:
+                    type: string
+                    maxLength: 8000
+                  category:
+                    type: string
+                    maxLength: 8000
+                  scope:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      purpose:
+                        type: string
+                        maxLength: 8000
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      valid_until:
+                        type: string
+                        format: date-time
+                        pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+                    required:
+                    - purpose
+                    - territory
+                    - valid_until
+                  buyer_party_id:
+                    type: string
+                    format: uuid
+                required:
+                - id
+                - title
+                - brief
+                - category
+                - scope
+                - buyer_party_id
+            rules:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  rule:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      version:
+                        type: string
+                        minLength: 1
+                        maxLength: 128
+                      categories:
+                        type: array
+                        minItems: 1
+                        maxItems: 100
+                        items:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            code:
+                              type: string
+                              minLength: 1
+                              maxLength: 128
+                            allowed:
+                              type: boolean
+                            required_proofs:
+                              type: array
+                              maxItems: 100
+                              items:
+                                type: string
+                                minLength: 1
+                                maxLength: 128
+                          required:
+                          - code
+                          - allowed
+                          - required_proofs
+                      ranking:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          window_days:
+                            type: integer
+                            minimum: 1
+                            maximum: 366
+                          newcomer_days:
+                            type: integer
+                            minimum: 0
+                            maximum: 100000
+                          minimum_orders:
+                            type: integer
+                            minimum: 1
+                            maximum: 100000
+                          order_weight:
+                            type: integer
+                            minimum: 0
+                            maximum: 100000
+                          net_minor_weight:
+                            type: integer
+                            minimum: 0
+                            maximum: 100000
+                          newcomer_bonus:
+                            type: integer
+                            minimum: 0
+                            maximum: 100000
+                        required:
+                        - window_days
+                        - newcomer_days
+                        - minimum_orders
+                        - order_weight
+                        - net_minor_weight
+                        - newcomer_bonus
+                      terms:
+                        type: string
+                        minLength: 1
+                        maxLength: 8000
+                    required:
+                    - version
+                    - categories
+                    - ranking
+                    - terms
+                required:
+                - id
+                - rule
+          required:
+          - items
+          - rules
+      required:
+      - meta
+      - data
+    GigNotificationsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  record_id:
+                    type: string
+                    format: uuid
+                  event_code:
+                    type: string
+                    maxLength: 8000
+                required:
+                - id
+                - record_id
+                - event_code
+          required:
+          - items
+      required:
+      - meta
+      - data
+    GigRankingResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+              format: uuid
+            as_of:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            rule_id:
+              type: string
+              format: uuid
+            rule:
+              type: object
+              additionalProperties: false
+              properties:
+                window_days:
+                  type: integer
+                order_weight:
+                  type: integer
+                newcomer_days:
+                  type: integer
+                minimum_orders:
+                  type: integer
+                newcomer_bonus:
+                  type: integer
+                net_minor_weight:
+                  type: integer
+              required:
+              - window_days
+              - order_weight
+              - newcomer_days
+              - minimum_orders
+              - newcomer_bonus
+              - net_minor_weight
+            source:
+              type: string
+              maxLength: 8000
+            data_status:
+              type: string
+              maxLength: 8000
+            boards:
+              type: object
+              additionalProperties: false
+              properties:
+                hot:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      party_id:
+                        type: string
+                        format: uuid
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      orders:
+                        type: integer
+                      heat:
+                        type: string
+                        maxLength: 8000
+                      emerging:
+                        type: string
+                        maxLength: 8000
+                    required:
+                    - party_id
+                    - territory
+                    - orders
+                    - heat
+                    - emerging
+                emerging:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      party_id:
+                        type: string
+                        format: uuid
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      orders:
+                        type: integer
+                      heat:
+                        type: string
+                        maxLength: 8000
+                      emerging:
+                        type: string
+                        maxLength: 8000
+                    required:
+                    - party_id
+                    - territory
+                    - orders
+                    - heat
+                    - emerging
+                regional:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      party_id:
+                        type: string
+                        format: uuid
+                      territory:
+                        type: string
+                        maxLength: 8000
+                      orders:
+                        type: integer
+                      heat:
+                        type: string
+                        maxLength: 8000
+                      emerging:
+                        type: string
+                        maxLength: 8000
+                    required:
+                    - party_id
+                    - territory
+                    - orders
+                    - heat
+                    - emerging
+              required:
+              - hot
+              - emerging
+              - regional
+          required:
+          - id
+          - as_of
+          - rule_id
+          - rule
+          - source
+          - data_status
+          - boards
+      required:
+      - meta
+      - data
+    GigEntriesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  object_version:
+                    type: integer
+                  data:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      delta:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          mcn_minor:
+                            type: integer
+                          platform_minor:
+                            type: integer
+                          supplier_minor:
+                            type: integer
+                        required:
+                        - mcn_minor
+                        - platform_minor
+                        - supplier_minor
+                      facts:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          first_at:
+                            anyOf:
+                            - type: 'null'
+                            - type: integer
+                          net_minor:
+                            type: integer
+                          environment:
+                            anyOf:
+                            - type: 'null'
+                            - type: string
+                              maxLength: 8000
+                          journal_ids:
+                            type: array
+                            items:
+                              type: string
+                              format: uuid
+                          received_minor:
+                            type: integer
+                          refunded_minor:
+                            type: integer
+                        required:
+                        - first_at
+                        - net_minor
+                        - environment
+                        - journal_ids
+                        - received_minor
+                        - refunded_minor
+                      amounts:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          mcn_minor:
+                            type: integer
+                          net_minor:
+                            type: integer
+                          platform_minor:
+                            type: integer
+                          supplier_minor:
+                            type: integer
+                        required:
+                        - mcn_minor
+                        - net_minor
+                        - platform_minor
+                        - supplier_minor
+                    required:
+                    - delta
+                    - facts
+                    - amounts
+                required:
+                - id
+                - object_version
+                - data
+          required:
+          - items
+      required:
+      - meta
+      - data
+    GigCommissionTerms:
+      type: object
+      additionalProperties: false
+      properties:
+        platform_bps:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        mcn_bps:
+          type: integer
+          minimum: 0
+          maximum: 10000
+      required:
+      - platform_bps
+      - mcn_bps
+    GigScope:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          const: COMMERCIAL
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 128
+        valid_until:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+      required:
+      - purpose
+      - territory
+      - valid_until
+    GigRuleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule:
+          type: object
+          additionalProperties: false
+          properties:
+            version:
+              type: string
+              minLength: 1
+              maxLength: 128
+            categories:
+              type: array
+              minItems: 1
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    minLength: 1
+                    maxLength: 128
+                  allowed:
+                    type: boolean
+                  required_proofs:
+                    type: array
+                    maxItems: 100
+                    items:
+                      type: string
+                      minLength: 1
+                      maxLength: 128
+                required:
+                - code
+                - allowed
+                - required_proofs
+            ranking:
+              type: object
+              additionalProperties: false
+              properties:
+                window_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 366
+                newcomer_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                minimum_orders:
+                  type: integer
+                  minimum: 1
+                  maximum: 100000
+                order_weight:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                net_minor_weight:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                newcomer_bonus:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+              required:
+              - window_days
+              - newcomer_days
+              - minimum_orders
+              - order_weight
+              - net_minor_weight
+              - newcomer_bonus
+            terms:
+              type: string
+              minLength: 1
+              maxLength: 8000
+          required:
+          - version
+          - categories
+          - ranking
+          - terms
+      required:
+      - rule
+    GigReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        checks:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              identity_verified:
+                type: boolean
+              authority_verified:
+                type: boolean
+              materials_reviewed:
+                type: boolean
+              content_reviewed:
+                type: boolean
+              marking_reviewed:
+                type: boolean
+            required:
+            - identity_verified
+            - authority_verified
+            - materials_reviewed
+            - content_reviewed
+            - marking_reviewed
+          - type: 'null'
+      required:
+      - decision
+      - reason
+      - checks
+    GigReasonRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    GigRelationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        artist_party_id:
+          type: string
+          format: uuid
+        scope:
+          const: COMMERCIAL
+        valid_from:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        valid_until:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+        exclusive:
+          type: boolean
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        commission:
+          $ref: '#/components/schemas/GigCommissionTerms'
+        evidence_asset_ids:
+          type: array
+          maxItems: 30
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      required:
+      - artist_party_id
+      - scope
+      - valid_from
+      - valid_until
+      - exclusive
+      - terms
+      - commission
+      - evidence_asset_ids
+    GigRelationDecisionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - ACCEPT
+          - REJECT
+          - END
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+    GigCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        brief:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        category:
+          type: string
+          minLength: 1
+          maxLength: 128
+        scope:
+          $ref: '#/components/schemas/GigScope'
+        rule_id:
+          type: string
+          format: uuid
+        proofs:
+          type: array
+          maxItems: 30
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              code:
+                type: string
+                minLength: 1
+                maxLength: 128
+              asset_id:
+                type: string
+                format: uuid
+            required:
+            - code
+            - asset_id
+      required:
+      - title
+      - brief
+      - category
+      - scope
+      - rule_id
+      - proofs
+    GigOfferRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        gig_id:
+          type: string
+          format: uuid
+        spec_id:
+          type: string
+          format: uuid
+        avatar_id:
+          type: string
+          format: uuid
+        consent_id:
+          type: string
+          format: uuid
+        relation_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        commission:
+          $ref: '#/components/schemas/GigCommissionTerms'
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        ranking_opt_in:
+          type: boolean
+        evidence_asset_ids:
+          type: array
+          maxItems: 30
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      required:
+      - gig_id
+      - spec_id
+      - avatar_id
+      - consent_id
+      - relation_id
+      - commission
+      - terms
+      - ranking_opt_in
+      - evidence_asset_ids
+    GigOfferAcceptRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        offer_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+      required:
+      - offer_sha256
+    GigCommissionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+      required:
+      - order_id
+    GigRankingRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        as_of:
+          type: string
+          format: date-time
+          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+      required:
+      - rule_id
+      - as_of
+    GigCommercialSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        ranking_opt_in:
+          type: boolean
+        offer_id:
+          type: string
+          format: uuid
+        offer_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        gig_id:
+          type: string
+          format: uuid
+        scope:
+          type: object
+          additionalProperties: false
+          properties:
+            purpose:
+              type: string
+              maxLength: 8000
+            territory:
+              type: string
+              maxLength: 8000
+            valid_until:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+          required:
+          - purpose
+          - territory
+          - valid_until
+        category:
+          type: string
+          maxLength: 8000
+        terms:
+          type: string
+          maxLength: 8000
+        commission:
+          type: object
+          additionalProperties: false
+          properties:
+            mcn_bps:
+              type: integer
+            platform_bps:
+              type: integer
+          required:
+          - mcn_bps
+          - platform_bps
+        relation:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              terms:
+                type: string
+                maxLength: 8000
+              sha256:
+                type: string
+                pattern: ^[0-9a-f]{64}$
+              version:
+                type: integer
+              valid_from:
+                type: string
+                format: date-time
+                pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+              valid_until:
+                type: string
+                format: date-time
+                pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+              mcn_party_id:
+                type: string
+                format: uuid
+            required:
+            - id
+            - terms
+            - sha256
+            - version
+            - valid_from
+            - valid_until
+            - mcn_party_id
+          - type: 'null'
+        avatar_id:
+          type: string
+          format: uuid
+        consent_id:
+          type: string
+          format: uuid
+        rule_id:
+          type: string
+          format: uuid
+      required:
+      - ranking_opt_in
+      - offer_id
+      - offer_sha256
+      - gig_id
+      - scope
+      - category
+      - terms
+      - commission
+      - relation
+      - avatar_id
+      - consent_id
+      - rule_id

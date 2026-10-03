@@ -10,6 +10,8 @@ import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
 import 'licensing/license_models.dart';
 import 'trade/trade_pages.dart';
+import 'gigs/gig_pages.dart';
+import 'gigs/gig_forms.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -35,7 +37,6 @@ class JingjingShangriApp extends StatelessWidget {
         '/custom-request' =>
           const AppShell(initialTab: 1),
         '/cultivate' ||
-        '/mcn' ||
         '/endorsement' ||
         '/talent-academy' =>
           const AppShell(initialTab: 2),
@@ -75,12 +76,11 @@ class JingjingShangriApp extends StatelessWidget {
             updatedAt: LegalDocs.privacyUpdated),
         '/wallet' || '/usage-report' => const AppUnavailablePage(
             title: '我的结算',
-            description: '结算与收入查询暂未开放。收付款需要有真实记录与依据，账号资料不会显示为可提现余额。'),
+            description: '出款、提现与税务办理暂未开放。商单佣金核算可从我的业务查看；核算金额不代表到账或可提现余额。'),
         '/identity' || '/my-humans' => const AppUnavailablePage(
             title: '数字人资料',
             description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),
-        '/humans' || '/human-detail' => const AppUnavailablePage(
-            title: '艺人发现', description: '公开人物目录暂未开放。作者及数字人私有材料不会作为公开推荐展示。'),
+        '/discover' || '/humans' || '/human-detail' => const GigDiscoveryPage(),
         '/orders' => licenseKinds.containsKey(uri.queryParameters['kind'])
             ? LicenseRecordsPage(kind: uri.queryParameters['kind']!)
             : TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
@@ -104,8 +104,27 @@ class JingjingShangriApp extends StatelessWidget {
           LicenseBindingForm(grantId: uri.queryParameters['grantId'] ?? ''),
         '/licensing/reading' =>
           LicenseReaderPage(recordId: uri.queryParameters['recordId'] ?? ''),
-        '/messages' || '/chat' => const AppUnavailablePage(
-            title: '业务通知与留言', description: '订单和项目内的通知、留言暂未开放。这里不会提供通用私信聊天。'),
+        '/messages' || '/gigs/notifications' => const GigNotificationsPage(),
+        '/chat' => const AppUnavailablePage(
+            title: '业务留言', description: '当前不提供通用私信。商单暂停与直接合作结束可在商单通知查看。'),
+        '/gigs' => const GigCataloguePage(),
+        '/gigs/request' =>
+          GigPublicRequestPage(gigId: uri.queryParameters['gigId'] ?? ''),
+        '/gigs/requests/new' => const GigRequestForm(),
+        '/gigs/offers/new' =>
+          GigOfferForm(gigId: uri.queryParameters['gigId'] ?? ''),
+        '/gigs/relations/new' => const GigRelationForm(),
+        '/mcn' => const GigRecordsPage(kind: 'RELATION'),
+        '/gigs/records' => GigRecordsPage(
+            kind: uri.queryParameters['kind'] ?? 'GIG',
+            gigId: uri.queryParameters['gigId']),
+        '/gigs/record' =>
+          GigRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/ranking' ||
+        '/rankings' ||
+        '/leaderboard' ||
+        '/gigs/ranking' =>
+          GigRankingPage(recordId: uri.queryParameters['recordId']),
         '/ai-create' || '/my-works' => const AppUnavailablePage(
             title: '创作工具与历史作品',
             description: '创作任务与历史作品查询暂未开放。作者投稿作品请通过“作者与作品”管理。'),

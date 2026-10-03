@@ -23,6 +23,23 @@ class AccountSession extends ChangeNotifier {
   bool tradeAccessDenied = false;
   List<Map<String, dynamic>> get tradePending =>
       api.tradePending(token: _token, party: partyId);
+  bool gigsAccessDenied = false;
+  List<Map<String, dynamic>> get gigsPending =>
+      api.gigsPending(token: _token, party: partyId);
+  void denyGigs() {
+    _epoch++;
+    api.clearSupplyOperations();
+    gigsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryGigsAccess() async {
+    await loadParties();
+    await refreshParty();
+    gigsAccessDenied = false;
+    notifyListeners();
+  }
+
   void denyTrade() {
     _epoch++;
     api.clearSupplyOperations();
@@ -125,6 +142,7 @@ class AccountSession extends ChangeNotifier {
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
+    gigsAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -168,6 +186,11 @@ class AccountSession extends ChangeNotifier {
           path.startsWith('/api/v1/trade/') &&
           started == _epoch) {
         denyTrade();
+      }
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/gigs/') &&
+          started == _epoch) {
+        denyGigs();
       }
       if (error.status == 403 &&
           path.startsWith('/api/v1/supply/') &&
@@ -218,8 +241,7 @@ class AccountSession extends ChangeNotifier {
           query: query,
           actingParty: actingParty,
           validate: validate);
-  Future<Uint8List> readBytes(String path,
-      {required String actingParty}) async {
+  Future<Uint8List> readBytes(String path, {String? actingParty}) async {
     final started = _epoch;
     if (_token == null) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
@@ -230,7 +252,13 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return bytes;
     } on AccountError catch (e) {
-      if (e.status == 403 && started == _epoch) denySupply();
+      if ([403, 404].contains(e.status) && started == _epoch) {
+        if (path.startsWith('/api/v1/gigs/')) {
+          denyGigs();
+        } else if (e.status == 403) {
+          denySupply();
+        }
+      }
       if (e.status == 401 && started == _epoch) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
@@ -279,6 +307,7 @@ class AccountSession extends ChangeNotifier {
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
+    gigsAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();

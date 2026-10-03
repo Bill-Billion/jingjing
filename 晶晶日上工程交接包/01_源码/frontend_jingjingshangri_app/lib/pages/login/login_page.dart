@@ -225,7 +225,22 @@ class _LoginPageState extends State<LoginPage> {
               '/trade',
               '/trade/record',
               '/trade/refund',
-              '/my-projects'
+              '/my-projects',
+              '/cultivate',
+              '/mcn',
+              '/messages',
+              '/gigs',
+              '/gigs/request',
+              '/gigs/requests/new',
+              '/gigs/offers/new',
+              '/gigs/relations/new',
+              '/gigs/records',
+              '/gigs/record',
+              '/gigs/notifications',
+              '/gigs/ranking',
+              '/rankings',
+              '/ranking',
+              '/leaderboard'
             ].contains(route.path)
         ? route.toString()
         : '/my';

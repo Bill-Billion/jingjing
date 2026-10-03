@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-02",
+  "updated_on": "2026-10-03",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -1134,12 +1134,12 @@
     },
     {
       "id": "CORE-S3-002",
-      "title": "ProductionTask、数字人Adapter、版本反馈和验收",
+      "title": "制作任务、版本反馈和验收",
       "stage": 3,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-7-production-acceptance",
       "work_refs": [
         "WORK-09"
       ],
@@ -1174,9 +1174,15 @@
         "rights/licenses"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S3-002-stage7-20260925.md",
+        "docs/tasks/records/CORE-S3-002-stage7-evidence.json"
+      ],
+      "blockers": [
+        "具体数字人供应商及产品未确定，网络适配、真实生成质量与供应商残留资产清理验收未完成"
+      ],
+      "current_increment": "第七阶段后端已交付第16份申请，311通过/1缺样本跳过，待实际审阅；具体数字人供应商接口仍未实现；实现保留在第16份独立分支，本分支只同步进度记录"
     },
     {
       "id": "UX-S3-001",
@@ -1245,9 +1251,9 @@
       "title": "商单、直接MCN合作、单笔佣金、三榜事实",
       "stage": 4,
       "stream": "Core",
-      "owner": null,
-      "status": "PLANNED",
-      "branch": null,
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/stage-8-gigs-mcn",
       "work_refs": [
         "WORK-10"
       ],
@@ -1278,9 +1284,13 @@
         "settlement"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
-      "evidence": [],
-      "blockers": []
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-S4-001-stage8-20260928.md",
+        "docs/tasks/records/CORE-S4-001-stage8-evidence.json"
+      ],
+      "blockers": [],
+      "current_increment": "第八阶段后端已交付第17份申请；本机及GitHub全套313通过/1缺样本跳过，商单23通过，七组HTTP格式通过；待实际审阅，未合并或启用"
     },
     {
       "id": "CORE-S4-002",
@@ -1828,6 +1838,55 @@
       "blockers": [],
       "updated_on": "2026-10-02",
       "current_increment": "已本地完成App与网页报价、保存订单合同、付款核对、逐项退款、独立审核及历史材料页面，采用18张原图最终视图。功能提交f0441b3；App125项、网页74项、真实浏览器App8组/网页11组通过，相关后端13/25/27项通过；未知结果保留原请求，版本冲突重新确认，导航和窄屏正常。仅本机隔离测试，用户已授权集中追加原PR15，远端版本和本次检查以申请当前结果为准，未合并或部署；真实SDK及正式支付待独立验收，真机仍取消，PR16–17未修改。",
+      "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
+    },
+    {
+      "id": "UX-PR17-COMMERCIAL-PAGES-20261003",
+      "title": "商单、直接MCN合作、佣金明细与榜单页面",
+      "stage": 4,
+      "stream": "Experience",
+      "owner": "用户授权的本次前端任务 / Codex",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr17-pages",
+      "work_refs": [
+        "WORK-10"
+      ],
+      "req_refs": [
+        "REQ-007",
+        "REQ-009",
+        "REQ-016",
+        "REQ-017",
+        "REQ-018",
+        "REQ-020",
+        "REQ-023",
+        "REQ-024",
+        "REQ-031",
+        "REQ-034",
+        "REQ-059",
+        "REQ-060"
+      ],
+      "dependencies": [
+        "UX-PR15-ORDER-PAGES-20261002"
+      ],
+      "deliverables": [
+        "App商单发布、接单约定、MCN与榜单",
+        "网页商单与规则审核、直接合作、佣金和榜单工作台",
+        "原图册映射和隔离真实接口浏览器验证"
+      ],
+      "acceptance": "遵循原PR17接口，接单与买方确认后按原报价入订单；MCN本人确认，只处理直接合作；佣金依据实际净收退款，核算不冒充转账；测试交易不入正式榜；未知请求可恢复，隐私权限和导航稳定，页面对齐原图册。",
+      "shared_boundaries": [],
+      "review_status": "NOT_REQUIRED",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-PR17-COMMERCIAL-PAGES-20261003.md",
+        "docs/ux/pr17-ui/README.md",
+        "docs/ux/pr17-ui/ui-checks.md",
+        "docs/ux/pr17-ui/design-qa.md",
+        "docs/ux/pr17-ui/evidence/verification-summary.json"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-03",
+      "current_increment": "App与网页商单、本人接单、直接MCN、净收退款佣金和UTC榜单已按21张原图本地完成。功能8414729；App141/网页91、浏览器7/9组、后端23/25/27通过。独立分支不含PR16制作模块，未上传、合并或部署；正式服务与原生设备未验收。",
       "native_verification_status": "CANCELLED_BY_USER_NOT_VERIFIED"
     }
   ],

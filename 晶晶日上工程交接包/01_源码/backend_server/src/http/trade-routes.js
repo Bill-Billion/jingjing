@@ -14,7 +14,7 @@ function createTradeRouters({db,resolvePrincipal,env={},providersFactory,storage
  const reply=(req,res,data)=>res.status(200).set('Cache-Control','no-store').type('application/json').end(JSON.stringify({meta:{request_id:req.requestId,actor:{account_id:req.account.id},acting_party:req.actingParty||null},data}));
  function post(path,method,fields,{party=false,existing=false,target=repo}={}){router.post(path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);const input={...req.body,operation_key:ref(req.get('Idempotency-Key')),...(party?{party_id:acting(req)}:{}),...(req.params.record_id?{record_id:id(req.params.record_id)}:{}),...(existing?{expected_version:expected(req)}:{})};reply(req,res,await target[method](req,input));}));}
  post('/specifications','createSpec',['previous_spec_id','title','provider_party_id','line_kind','unit_minor','currency','specification'],{party:true});
- post('/quotes','quote',['buyer_party_id','lines','installments','channel','transaction_model','rule_id','expires_at','payment_window_minutes','license_reservation_id'],{party:true});
+ post('/quotes','quote',['buyer_party_id','lines','installments','channel','transaction_model','rule_id','expires_at','payment_window_minutes','license_reservation_id','commercial_offer_id'],{party:true});
  post('/records/:record_id/reviews','review',['decision','reason'],{existing:true});
  post('/quotes/:record_id/acceptance','accept',['quote_sha256'],{party:true,existing:true});
  post('/orders/:record_id/cancellation','cancel',['reason'],{party:true,existing:true});
