@@ -341,7 +341,7 @@ void main() {
               })
             : a.defaultReply(r));
     final s = (await tester.runAsync(() => buyerSession(a)))!;
-    await nav.openApp(tester, s, route: '/messages');
+    await nav.openApp(tester, s, route: '/gigs/notifications');
     expect(find.text('商单已暂停'), findsOneWidget);
     expect(find.textContaining('不是全平台通知中心'), findsOneWidget);
     expect(a.requests.last.headers['X-Acting-Party'], personId);

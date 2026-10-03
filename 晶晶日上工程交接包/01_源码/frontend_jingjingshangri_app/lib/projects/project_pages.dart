@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../operations/operation_widgets.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
@@ -64,12 +65,6 @@ class _CatalogueState extends State<_Catalogue> {
 
   List<Widget> get content => [
         if (widget.roleId == null) ...[
-          supplyCard('业务通知', [
-            supplyNote('项目通知与留言暂未开放。'),
-            tradeButton(
-                '查看当前能力', () => Navigator.pushNamed(context, '/messages'),
-                outline: true)
-          ]),
           projectHeading('让好角色找到合适的你'),
           projectParagraph('在这里发现公开创作项目，了解项目范围与角色需求，选择适合自己的机会。报名、筛选后仍需本人最终确认。')
         ],
@@ -463,7 +458,10 @@ class _RecordState extends State<_Record> {
                 outline: true)
           ])
         ],
-        supplyCard('项目留言', [supplyNote('项目内留言暂未开放，后续按具体项目权限办理。')])
+        supplyCard('项目留言', [
+          operationCommentLink(context, 'PROJECTS', p.id, '项目留言',
+              enabled: !locked, returned: load)
+        ])
       ];
   List<Widget> candidate(ProjectRecord r) => [
         tradeBanner(

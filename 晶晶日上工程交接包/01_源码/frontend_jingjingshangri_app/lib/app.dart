@@ -17,6 +17,7 @@ import 'projects/project_pages.dart';
 import 'projects/project_forms.dart';
 import 'finance/finance_pages.dart';
 import 'finance/finance_forms.dart';
+import 'operations/operation_pages.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -156,9 +157,16 @@ class JingjingShangriApp extends StatelessWidget {
           LicenseBindingForm(grantId: uri.queryParameters['grantId'] ?? ''),
         '/licensing/reading' =>
           LicenseReaderPage(recordId: uri.queryParameters['recordId'] ?? ''),
-        '/messages' || '/gigs/notifications' => const GigNotificationsPage(),
-        '/chat' => const AppUnavailablePage(
-            title: '业务留言', description: '当前不提供通用私信。商单暂停与直接合作结束可在商单通知查看。'),
+        '/messages' ||
+        '/operations/notifications' =>
+          const OperationsNotificationsPage(),
+        '/operations/notification' => OperationsNotificationsPage(
+            eventId: int.tryParse(uri.queryParameters['eventId'] ?? '') ?? 0),
+        '/operations/comments' => OperationsCommentsPage(
+            domain: uri.queryParameters['domain'] ?? '',
+            recordId: uri.queryParameters['recordId'] ?? ''),
+        '/chat' => const OperationsCommentsEntryPage(),
+        '/gigs/notifications' => const GigNotificationsPage(),
         '/gigs' => const GigCataloguePage(),
         '/gigs/request' =>
           GigPublicRequestPage(gigId: uri.queryParameters['gigId'] ?? ''),

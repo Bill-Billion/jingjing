@@ -19,11 +19,31 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  bool operationsAccessDenied = false;
+  final operationsTargets = <String, Map<String, String>>{};
+  List<Map<String, dynamic>> get operationsPending =>
+      api.operationsPending(token: _token, party: partyId);
+  void denyOperations() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    operationsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryOperationsAccess() async {
+    await loadParties();
+    await refreshParty();
+    operationsAccessDenied = false;
+    notifyListeners();
+  }
+
   bool financeAccessDenied = false;
   List<Map<String, dynamic>> get financePending =>
       api.financePending(token: _token, party: partyId);
   void denyFinance() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     financeAccessDenied = true;
     notifyListeners();
@@ -45,6 +65,7 @@ class AccountSession extends ChangeNotifier {
       api.projectsPending(token: _token, party: partyId);
   void denyProjects() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     projectsAccessDenied = true;
     notifyListeners();
@@ -61,6 +82,7 @@ class AccountSession extends ChangeNotifier {
       api.productionPending(token: _token, party: partyId);
   void denyProduction() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     productionAccessDenied = true;
     notifyListeners();
@@ -80,6 +102,7 @@ class AccountSession extends ChangeNotifier {
       api.gigsPending(token: _token, party: partyId);
   void denyGigs() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     gigsAccessDenied = true;
     notifyListeners();
@@ -94,6 +117,7 @@ class AccountSession extends ChangeNotifier {
 
   void denyTrade() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     tradeAccessDenied = true;
     notifyListeners();
@@ -108,6 +132,7 @@ class AccountSession extends ChangeNotifier {
 
   void denyLicensing() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     licensingAccessDenied = true;
     notifyListeners();
@@ -122,6 +147,7 @@ class AccountSession extends ChangeNotifier {
 
   void denySupply() {
     _epoch++;
+    operationsTargets.clear();
     api.clearSupplyOperations();
     supplyAccessDenied = true;
     notifyListeners();
@@ -198,7 +224,9 @@ class AccountSession extends ChangeNotifier {
     productionAccessDenied = false;
     projectsAccessDenied = false;
     financeAccessDenied = false;
+    operationsAccessDenied = false;
     _epoch++;
+    operationsTargets.clear();
     _token = null;
     account = null;
     selected = null;
@@ -237,6 +265,12 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/operations/') &&
+          started == _epoch) {
+        denyOperations();
+      }
+
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/finance/') &&
           started == _epoch) {
@@ -377,6 +411,7 @@ class AccountSession extends ChangeNotifier {
           ['SUSPENDED', 'CLOSED'].contains(party?['current_status'])) {
         api.clearSupplyOperations();
         _epoch++;
+        operationsTargets.clear();
       }
     }
     if (selected == null && parties.isNotEmpty) selected = parties.first;
@@ -393,7 +428,9 @@ class AccountSession extends ChangeNotifier {
     productionAccessDenied = false;
     projectsAccessDenied = false;
     financeAccessDenied = false;
+    operationsAccessDenied = false;
     _epoch++;
+    operationsTargets.clear();
     selected = value;
     notifyListeners();
   }
@@ -407,6 +444,7 @@ class AccountSession extends ChangeNotifier {
       if (['SUSPENDED', 'CLOSED'].contains(result['current_status'])) {
         api.clearSupplyOperations();
         _epoch++;
+        operationsTargets.clear();
       }
       parties =
           parties.map((p) => p['party']['id'] == id ? selected! : p).toList();
@@ -415,6 +453,7 @@ class AccountSession extends ChangeNotifier {
       if ([403, 404].contains(error.status) && partyId == id) {
         api.clearSupplyOperations();
         _epoch++;
+        operationsTargets.clear();
         selected = null;
         parties = parties.where((p) => p['party']['id'] != id).toList();
         notifyListeners();

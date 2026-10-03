@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../account/account_session.dart';
 import '../account/account_api.dart';
+import '../operations/operation_widgets.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
@@ -579,6 +580,10 @@ class _TradeDetailState extends State<_TradeDetail> {
                               ])),
           ],
         ]),
+      supplyCard('订单留言', [
+        operationCommentLink(context, 'TRADE', r.id, '订单留言',
+            enabled: !locked, returned: load)
+      ]),
       supplyCard('原付款与售后退款', [
         if (payments.isEmpty) supplyNote('尚无付款记录。'),
         for (final p in payments)

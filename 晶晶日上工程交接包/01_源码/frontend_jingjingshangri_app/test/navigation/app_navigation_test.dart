@@ -338,8 +338,9 @@ void main() {
       nav.pushNamed(route);
       await frames(tester);
       expect(
-          find.text(
-              ['/my-works', '/wallet'].contains(route) ? '先确认办事身份' : '暂未开放'),
+          find.text(['/my-works', '/wallet', '/chat'].contains(route)
+              ? '先确认办事身份'
+              : '暂未开放'),
           findsOneWidget,
           reason: route);
       expect(find.text('页面不存在'), findsNothing, reason: route);

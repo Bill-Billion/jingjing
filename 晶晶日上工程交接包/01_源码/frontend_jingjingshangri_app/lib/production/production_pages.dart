@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import '../account/account_api.dart';
+import '../operations/operation_widgets.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
@@ -370,6 +371,10 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                       tradeButton('查看此版本', busy ? null : () => openVersion(v),
                           outline: true)
                     ])
+            ]),
+            supplyCard('项目留言', [
+              operationCommentLink(context, 'PRODUCTION', p.id, '项目留言',
+                  enabled: !busy, returned: load)
             ]),
             supplyCard('生成服务', [
               appNotice(readiness?['current_status'] == 'SERVICE_READY'
@@ -886,6 +891,10 @@ class _VersionReviewState extends State<_VersionReview> {
                         const Divider()
                       ]
                     ]),
+                  supplyCard('版本留言', [
+                    operationCommentLink(context, 'PRODUCTION', v.id, '版本留言',
+                        enabled: !locked, returned: () => load(reset: true))
+                  ]),
                   tradeButton(
                       '查看原约定与付款',
                       locked
