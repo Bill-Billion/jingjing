@@ -1,138 +1,221 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'account/account_session.dart';
-import 'theme/app_theme.dart';
+import 'account/account_theme.dart';
 import 'account/account_page.dart';
+import 'contracts/contract_page.dart';
+import 'supply/supply_page.dart';
+import 'supply/supply_form.dart';
+import 'supply/supply_record.dart';
+import 'navigation/app_shell.dart';
+import 'licensing/license_pages.dart';
+import 'licensing/license_forms.dart';
+import 'licensing/license_models.dart';
+import 'trade/trade_pages.dart';
+import 'gigs/gig_pages.dart';
+import 'gigs/gig_forms.dart';
+import 'production/production_pages.dart';
+import 'projects/project_pages.dart';
+import 'projects/project_forms.dart';
+import 'finance/finance_pages.dart';
+import 'finance/finance_forms.dart';
 import 'utils/responsive.dart';
-import 'utils/motion.dart';
+import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
-import 'pages/wallet/wallet_page.dart';
-import 'pages/identity/identity_page.dart';
-import 'pages/orders/orders_page.dart';
-import 'pages/mcn/mcn_page.dart';
-import 'pages/theater/theater_page.dart';
-import 'pages/launch/launch_page.dart';
-import 'pages/audition/audition_page.dart';
-import 'pages/video_lib/video_lib_page.dart';
-import 'pages/role_market/role_market_page.dart';
-import 'pages/endorsement/endorsement_page.dart';
-import 'pages/profile/settings_page.dart';
-import 'pages/chat/chat_page.dart';
-import 'pages/usage_report/usage_report_page.dart';
-import 'pages/talent/academy_page.dart';
-import 'pages/after_sales/after_sales_page.dart';
-import 'pages/review/review_page.dart';
-import 'pages/sample_library/sample_library_page.dart';
-import 'pages/custom_request/custom_request_page.dart';
-import 'pages/video_order/video_order_page.dart';
-import 'pages/human_detail/human_detail_page.dart';
-import 'pages/project_detail/project_detail_page.dart';
-import 'pages/sample_order_detail/sample_order_detail_page.dart';
-import 'pages/humans/humans_page.dart';
-import 'pages/my_humans/my_humans_page.dart';
-import 'pages/ai_studio/ai_create_page.dart';
-import 'pages/ai_studio/my_works_page.dart';
-import 'pages/legal/legal_doc_page.dart';
 import 'pages/legal/legal_docs.dart';
 
 class JingjingShangriApp extends StatelessWidget {
   const JingjingShangriApp({super.key});
 
-  Route<dynamic>? _route(Widget page) =>
-      Motion.fadeSlideRoute(page);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '晶晶日上',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const SplashPage(),
-      // 限制系统字体放大倍数，避免小屏/折叠屏大字体撑破布局
-      builder: (context, child) =>
-          LimitedTextScale(child: child ?? const SizedBox.shrink()),
-      onGenerateRoute: (settings) {
-        if ((context.read<AccountSession?>()?.isLoggedIn ?? false) &&
-            !['/account', '/agreement', '/privacy'].contains(settings.name)) {
-          return _route(const _AccountBusinessUnavailable());
-        }
-        final args = settings.arguments;
-        switch (settings.name) {
-          case '/account': return _route(const AccountPage());
-          case '/wallet': return _route(const WalletPage());
-          case '/identity': return _route(const IdentityPage());
-          case '/orders': return _route(const OrdersPage());
-          case '/mcn': return _route(const McnPage());
-          case '/theater': return _route(const TheaterPage());
-          case '/launch': return _route(const LaunchPage());
-          case '/audition': return _route(const AuditionPage());
-          case '/video-lib': return _route(const VideoLibPage());
-          case '/role-market': return _route(const RoleMarketPage());
-          case '/endorsement': return _route(EndorsementPage(human: args is Map<String, dynamic> ? args : const {}));
-          case '/settings': return _route(const SettingsPage());
-          case '/chat': return _route(ChatPage(human: args is Map<String, dynamic> ? args : const {}));
-          case '/my-humans': return _route(const MyHumansPage());
-          case '/my-works': return _route(const MyWorksPage());
-          case '/ai-create': return _route(AiCreatePage(initialKind: args is String ? args : 'image'));
-          case '/usage-report': return _route(UsageReportPage(humanId: args is int ? args : 0));
-          case '/talent-academy': return _route(const TalentAcademyPage());
-          case '/after-sales': return _route(AfterSalesPage(orderNo: args is String ? args : ''));
-          case '/review': return _route(ReviewPage(orderNo: args is String ? args : ''));
-          case '/sample-library': return _route(SampleLibraryPage(orderId: args is int ? args : null));
-          case '/custom-request': return _route(const CustomRequestPage());
-          case '/video-order': return _route(VideoOrderPage(human: args is Map<String, dynamic> ? args : const {}));
-          case '/human-detail': return _route(HumanDetailPage(human: args is Map<String, dynamic> ? args : const {}));
-          case '/project-detail': return _route(ProjectDetailPage(project: args is Map<String, dynamic> ? args : const {}));
-          case '/sample-order-detail': return _route(SampleOrderDetailPage(orderId: args is int ? args : 0));
-          case '/humans': return _route(const HumansPage());
-          case '/agreement':
-            return _route(const LegalDocPage(
-                title: '用户协议', body: LegalDocs.userAgreement, updatedAt: LegalDocs.agreementUpdated));
-          case '/privacy':
-            return _route(const LegalDocPage(
-                title: '隐私政策', body: LegalDocs.privacyPolicy, updatedAt: LegalDocs.privacyUpdated));
-          default: return null;
-        }
-      },
-      // 未知路由兜底，避免遗漏命名路由导致红屏崩溃（转场同样走 Motion 统一风格）
-      onUnknownRoute: (settings) => Motion.fadeSlideRoute(
-        _UnknownRoutePage(name: settings.name ?? ''),
-      ),
-    );
+  Route<dynamic> _generate(RouteSettings settings) {
+    final uri = Uri.tryParse(settings.name ?? '/');
+    final path = uri?.path;
+    final args = settings.arguments;
+    Widget page;
+    // Named navigation is local. A foreign URL is not an authenticated deep link.
+    if (uri == null || uri.hasAuthority || uri.hasScheme) {
+      page = const AppUnknownPage();
+    } else {
+      page = switch (path) {
+        '/' || '/home' => const AppShell(),
+        '/enter' ||
+        '/theater' ||
+        '/launch' ||
+        '/custom-request' =>
+          const AppShell(initialTab: 1),
+        '/cultivate' ||
+        '/endorsement' ||
+        '/talent-academy' =>
+          const AppShell(initialTab: 2),
+        '/roles' ||
+        '/projects' ||
+        '/role-market' ||
+        '/project-detail' ||
+        '/audition' =>
+          const AppShell(initialTab: 3),
+        '/my' || '/profile' => const AppShell(initialTab: 4),
+        '/login' => LoginPage(returnRoute: uri.queryParameters['returnRoute']),
+        '/account' => const AccountPage(),
+        '/contract' => ContractPage(
+            snapshotId: uri.queryParameters['snapshotId'] ??
+                (args is Map && args['snapshotId'] is String
+                    ? args['snapshotId'] as String
+                    : args is String
+                        ? args
+                        : null)),
+        '/supply' => const SupplyPage(),
+        '/supply/profile' => SupplyForm(
+            work: false, previousId: uri.queryParameters['previousId']),
+        '/supply/work/new' => SupplyForm(
+            work: true,
+            previousId: uri.queryParameters['previousId'],
+            bindingId: uri.queryParameters['bindingId']),
+        '/supply/record' =>
+          SupplyRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/settings' => const AppHelpPage(),
+        '/agreement' => const AppLegalPage(
+            title: '用户协议',
+            body: LegalDocs.userAgreement,
+            updatedAt: LegalDocs.agreementUpdated),
+        '/privacy' => const AppLegalPage(
+            title: '隐私政策',
+            body: LegalDocs.privacyPolicy,
+            updatedAt: LegalDocs.privacyUpdated),
+        '/wallet' ||
+        '/usage-report' ||
+        '/finance' =>
+          FinanceAgreementsPage(sourceId: uri.queryParameters['sourceId']),
+        '/finance/agreement' => FinanceOverviewPage(
+            agreementId: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/records' => FinanceRecordsPage(
+            agreementId: uri.queryParameters['agreementId'] ?? '',
+            kind: uri.queryParameters['kind'] ?? 'SETTLEMENT'),
+        '/finance/record' =>
+          FinanceRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/finance/entries' => FinanceEntriesPage(
+            agreementId: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/payout/new' => FinanceFormPage(
+            mode: 'PAYOUT', id: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/dispute/new' => FinanceFormPage(
+            mode: 'DISPUTE', id: uri.queryParameters['recordId'] ?? ''),
+        '/finance/notifications' => const FinanceNotificationsPage(),
+        '/identity' || '/my-humans' => const AppUnavailablePage(
+            title: '数字人资料',
+            description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),
+        '/discover' || '/humans' || '/human-detail' => const GigDiscoveryPage(),
+        '/orders' => licenseKinds.containsKey(uri.queryParameters['kind'])
+            ? LicenseRecordsPage(kind: uri.queryParameters['kind']!)
+            : TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
+        '/trade' =>
+          TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
+        '/trade/record' => TradeRecordPage(
+            recordId: uri.queryParameters['recordId'] ?? '',
+            section: uri.queryParameters['section']),
+        '/trade/refund' =>
+          TradeRefundPage(paymentId: uri.queryParameters['paymentId'] ?? ''),
+        '/licensing' => LicenseRecordsPage(
+            kind: uri.queryParameters['kind'] ?? 'RESERVATION'),
+        '/my-projects' => const ProjectsListPage(),
+        '/projects/list' => const ProjectsListPage(),
+        '/projects/role' =>
+          ProjectsCataloguePage(roleId: uri.queryParameters['roleId'] ?? ''),
+        '/projects/project' =>
+          ProjectRecordPage(recordId: uri.queryParameters['projectId'] ?? ''),
+        '/projects/record' =>
+          ProjectRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/projects/apply' => ProjectFormPage(
+            mode: 'APPLY', id: uri.queryParameters['roleId'] ?? ''),
+        '/projects/invitation' => ProjectFormPage(
+            mode: 'INVITATION', id: uri.queryParameters['candidateId'] ?? ''),
+        '/projects/release/new' => ProjectFormPage(
+            mode: 'RELEASE',
+            id: uri.queryParameters['projectId'] ?? '',
+            priorId: uri.queryParameters['priorId']),
+        '/projects/external/new' => ProjectFormPage(
+            mode: 'EXTERNAL', id: uri.queryParameters['releaseId'] ?? ''),
+        '/production' =>
+          ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
+        '/production/project' => ProductionProjectPage(
+            projectId: uri.queryParameters['projectId'] ?? ''),
+        '/production/version' => ProductionVersionPage(
+            versionId: uri.queryParameters['versionId'] ?? ''),
+        '/production/feedback' => ProductionVersionPage(
+            versionId: uri.queryParameters['versionId'] ?? '',
+            feedback: true,
+            evidence: args is Map<String, dynamic> ? args : null),
+        '/my-works' ||
+        '/production/works' =>
+          const ProductionProjectsPage(works: true),
+        '/production/work' =>
+          ProductionWorkPage(projectId: uri.queryParameters['projectId'] ?? ''),
+        '/licensing/catalog' => const LicenseCatalog(),
+        '/licensing/record' =>
+          LicenseRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/licensing/evidence' => LicenseEvidenceForm(
+            reservationId: uri.queryParameters['reservationId'] ?? ''),
+        '/licensing/project/new' => const LicenseProjectForm(),
+        '/licensing/bind' =>
+          LicenseBindingForm(grantId: uri.queryParameters['grantId'] ?? ''),
+        '/licensing/reading' =>
+          LicenseReaderPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/messages' || '/gigs/notifications' => const GigNotificationsPage(),
+        '/chat' => const AppUnavailablePage(
+            title: '业务留言', description: '当前不提供通用私信。商单暂停与直接合作结束可在商单通知查看。'),
+        '/gigs' => const GigCataloguePage(),
+        '/gigs/request' =>
+          GigPublicRequestPage(gigId: uri.queryParameters['gigId'] ?? ''),
+        '/gigs/requests/new' => const GigRequestForm(),
+        '/gigs/offers/new' =>
+          GigOfferForm(gigId: uri.queryParameters['gigId'] ?? ''),
+        '/gigs/relations/new' => const GigRelationForm(),
+        '/mcn' => const GigRecordsPage(kind: 'RELATION'),
+        '/gigs/records' => GigRecordsPage(
+            kind: uri.queryParameters['kind'] ?? 'GIG',
+            gigId: uri.queryParameters['gigId']),
+        '/gigs/record' =>
+          GigRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/ranking' ||
+        '/rankings' ||
+        '/leaderboard' ||
+        '/gigs/ranking' =>
+          GigRankingPage(recordId: uri.queryParameters['recordId']),
+        '/ai-create' => const AppUnavailablePage(
+            title: '生成服务',
+            description:
+                '生成服务按具体制作项目核对本人同意、用途与原约定。未开通时不会创建演示任务或视频，请从“我的—制作与交付”查看项目。'),
+        '/video-lib' ||
+        '/video-order' ||
+        '/sample-library' ||
+        '/sample-order-detail' =>
+          ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
+        '/after-sales' || '/review' => const AppUnavailablePage(
+            title: '反馈与售后', description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),
+        _ => const AppUnknownPage(),
+      };
+    }
+    if (page is AppShell) {
+      return AppShellRoute(settings: settings, shell: page);
+    }
+    return MaterialPageRoute<dynamic>(settings: settings, builder: (_) => page);
   }
-}
-
-class _UnknownRoutePage extends StatelessWidget {
-  final String name;
-  const _UnknownRoutePage({required this.name});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.liquidBase,
-      appBar: AppBar(title: const Text('提示')),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.construction, size: 48, color: AppTheme.goldMain),
-            const SizedBox(height: 12),
-            Text('「$name」功能正在建设中', style: const TextStyle(color: AppTheme.textPrimary)),
-            const SizedBox(height: 8),
-            const Text('正式版将开放，当前为演示版本', style: TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AccountBusinessUnavailable extends StatelessWidget {
-  const _AccountBusinessUnavailable();
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('功能接入中')),
-    body: const Center(child: Padding(padding: EdgeInsets.all(24),
-      child: Text('此旧版业务尚未接入新账号，请返回“我的”管理账号与机构。', textAlign: TextAlign.center))),
-  );
+  Widget build(BuildContext context) => MaterialApp(
+        title: '晶晶日上',
+        debugShowCheckedModeBanner: false,
+        theme: AccountTheme.data,
+        builder: (context, child) =>
+            LimitedTextScale(child: child ?? const SizedBox.shrink()),
+        onGenerateRoute: _generate,
+        // One initial route prevents a delayed root bootstrap from replacing a
+        // private deep link. Every child provides its own safe root fallback.
+        onGenerateInitialRoutes: (name) => [
+          if (name == '/')
+            MaterialPageRoute<void>(
+                settings: const RouteSettings(name: '/'),
+                builder: (_) => const SplashPage())
+          else
+            _generate(RouteSettings(name: name)),
+        ],
+        onUnknownRoute: (_) =>
+            MaterialPageRoute<void>(builder: (_) => const AppUnknownPage()),
+      );
 }

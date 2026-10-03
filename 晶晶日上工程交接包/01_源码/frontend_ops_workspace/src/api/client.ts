@@ -33,6 +33,7 @@ export class ApiError extends Error {
   readonly retryable: boolean
   readonly requestId: string | null
   readonly details: unknown[]
+  readonly retryAfterAt: number | null
 
   constructor(init: {
     status: number
@@ -41,6 +42,7 @@ export class ApiError extends Error {
     retryable?: boolean
     requestId?: string | null
     details?: unknown[]
+    retryAfterAt?: number | null
   }) {
     super(init.message)
     this.name = 'ApiError'
@@ -49,6 +51,7 @@ export class ApiError extends Error {
     this.retryable = init.retryable ?? false
     this.requestId = init.requestId ?? null
     this.details = init.details ?? []
+    this.retryAfterAt = init.retryAfterAt ?? null
   }
 }
 
@@ -66,6 +69,7 @@ export function asApiError(e: unknown): ApiError {
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
   body?: unknown
+  rawBody?: Blob
   /** Bearer 令牌 */
   token?: string | null
   /** 主体级接口必须带，且必须与地址里的 party_id 一致 */
@@ -75,6 +79,7 @@ export interface RequestOptions {
   /** 修改已有对象时必带，值形如 "1" */
   ifMatch?: string | number
   signal?: AbortSignal
+  cache?: RequestCache
 }
 
 /** 生成一个请求编号（X-Request-Id），服务端会回显同一个值 */
@@ -101,13 +106,14 @@ export interface ApiResult<T> {
  * 失败一定抛 ApiError，绝不返回"看起来成功"的空结果。
  */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
-  const { method = 'GET', body, token, actingParty, idempotencyKey, ifMatch, signal } = options
+  const { method = 'GET', body, rawBody, token, actingParty, idempotencyKey, ifMatch, signal, cache } = options
 
   const headers: Record<string, string> = {
     Accept: 'application/json',
     'X-Request-Id': newRequestId(),
   }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (rawBody) headers['Content-Type'] = 'application/octet-stream'
+  else if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (token) headers['Authorization'] = `Bearer ${token}`
   if (actingParty) headers['X-Acting-Party'] = actingParty
   if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey
@@ -118,10 +124,11 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     response = await fetch(`${API_BASE}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: rawBody ?? (body !== undefined ? JSON.stringify(body) : undefined),
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000),
       // 会话令牌走 Bearer 头而不是 Cookie，这里不涉及凭据模式
       credentials: 'omit',
+      cache,
     })
   } catch (e) {
     // 连不上后端、被浏览器拦截、请求被取消——全部如实抛出，不假装成功
@@ -153,7 +160,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (!response.ok) {
     if (response.status === 401 && token) unauthorized?.(token)
     const errBody = (parsed as ErrBody | null)?.error
-    throw toApiError(response.status, errBody, echoRequestId, raw)
+    throw toApiError(response.status, errBody, echoRequestId, raw, retryAfterAt(response.headers.get('Retry-After')))
   }
 
   const ok = parsed as OkBody<T> | null
@@ -179,6 +186,7 @@ function toApiError(
   errBody: ErrorBody | undefined,
   echoRequestId: string | null,
   rawText: string,
+  retryAfterAt: number | null,
 ): ApiError {
   if (errBody && typeof errBody.code === 'string') {
     return new ApiError({
@@ -188,6 +196,7 @@ function toApiError(
       retryable: errBody.retryable,
       requestId: echoRequestId,
       details: errBody.details,
+      retryAfterAt,
     })
   }
   // 拿不到 {meta, error} 结构：可能是网关/代理返回的，如实说明
@@ -196,7 +205,15 @@ function toApiError(
     code: `HTTP_${status}`,
     message: `服务器返回 ${status}，但响应体不是约定的错误结构。原始内容前 200 字：${rawText.slice(0, 200)}`,
     requestId: echoRequestId,
+    retryAfterAt,
   })
+}
+
+function retryAfterAt(value: string | null): number | null {
+  if (!value) return null
+  const trimmed = value.trim()
+  const deadline = /^\d+$/.test(trimmed) ? Date.now() + Number(trimmed) * 1000 : Date.parse(trimmed)
+  return Number.isFinite(deadline) && deadline >= Date.now() ? deadline : null
 }
 
 /** 探针：GET /health 或 /ready。返回 true/false，不抛异常（探针失败是正常情况） */
@@ -216,4 +233,25 @@ export async function probe(path: '/health' | '/ready'): Promise<{ ok: boolean; 
   } catch (e) {
     return { ok: false, detail: e instanceof Error ? e.message : String(e) }
   }
+}
+
+/** Private attachment transport: bytes stay in memory; no URL from the server is trusted. */
+export async function requestBytes(path: string, options: RequestOptions): Promise<Blob> {
+  const headers: Record<string, string> = { Accept: 'application/octet-stream', 'X-Request-Id': newRequestId() }
+  if (options.token) headers.Authorization = `Bearer ${options.token}`
+  if (options.actingParty) headers['X-Acting-Party'] = options.actingParty
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}${path}`, { method: 'GET', headers, credentials: 'omit', cache: 'no-store', signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000) })
+  } catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
+  if (!response.ok) {
+    if (response.status === 401 && options.token) unauthorized?.(options.token)
+    const raw = await response.text()
+    let error: ErrorBody | undefined
+    try { error = JSON.parse(raw)?.error } catch { /* Non-JSON gateway error. */ }
+    throw toApiError(response.status, error, response.headers.get('X-Request-Id'), raw, retryAfterAt(response.headers.get('Retry-After')))
+  }
+  if (response.headers.get('Content-Type')?.split(';')[0] !== 'application/octet-stream') throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '材料返回格式不正确，未下载。' })
+  try { return await response.blob() }
+  catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
 }
