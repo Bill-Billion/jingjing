@@ -16,6 +16,7 @@ const links = [
   { to: '/trade/specifications', label: '商品规格', icon: Collection },
   { to: '/trade/quotes', label: '报价订单', icon: Document },
   { to: '/trade/payments', label: '付款退款', icon: Tickets },
+  { to: '/production/projects', label: '制作项目', icon: FolderOpened },
 ]
 const reviews = [
   { to: '/supply/reviews/profile', label: '供给审核' },
@@ -24,8 +25,11 @@ const reviews = [
   { to: '/trade/reviews/specifications', label: '规格审核' },
   { to: '/trade/reviews/quotes', label: '报价审核' },
   { to: '/trade/reviews/refunds', label: '退款与旧单核对' },
+  { to: '/production/reviews/projects', label: '制作独立核验' },
 ]
 function active(target: string) {
+  if (target === '/production/projects') return /^\/production\/(projects|orders|versions)(\/|$)/.test(route.path)
+  if (target === '/production/reviews/projects') return route.path.startsWith('/production/reviews/')
   if (target === '/trade/quotes') return /^\/trade\/(quotes|orders)(\/|$)/.test(route.path)
   if (target === '/trade/payments') return /^\/trade\/(payments|refunds|legacy)(\/|$)/.test(route.path)
   if (target === '/trade/reviews/refunds') return /^\/trade\/reviews\/(refunds|legacy)(\/|$)/.test(route.path)

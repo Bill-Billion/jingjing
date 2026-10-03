@@ -331,7 +331,9 @@ void main() {
     for (final route in ['/wallet', '/my-humans', '/my-works', '/chat']) {
       nav.pushNamed(route);
       await frames(tester);
-      expect(find.text('暂未开放'), findsOneWidget, reason: route);
+      expect(
+          find.text(route == '/my-works' ? '先确认办事身份' : '暂未开放'), findsOneWidget,
+          reason: route);
       expect(find.text('页面不存在'), findsNothing, reason: route);
       expect(find.byType(NavigationBar), findsNothing, reason: route);
       expect(tester.takeException(), isNull, reason: route);

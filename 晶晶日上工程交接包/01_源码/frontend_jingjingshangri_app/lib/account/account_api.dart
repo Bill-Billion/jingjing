@@ -26,7 +26,10 @@ class AccountApi {
         (jsonDecode(key) as List)[3]
             .toString()
             .startsWith('/api/v1/licensing/') ||
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/');
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/production/');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -49,6 +52,17 @@ class AccountApi {
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
   final _running = <String, Future<Map<String, dynamic>>>{};
+  List<Map<String, dynamic>> productionPending(
+          {String? token, String? party}) =>
+      [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/production/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _random = Random.secure();
 
   String _newKey() =>
@@ -68,7 +82,8 @@ class AccountApi {
     final writing = method != 'GET';
     final supply = path.startsWith('/api/v1/supply/') ||
         path.startsWith('/api/v1/licensing/') ||
-        path.startsWith('/api/v1/trade/');
+        path.startsWith('/api/v1/trade/') ||
+        path.startsWith('/api/v1/production/');
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null
@@ -221,7 +236,9 @@ class AccountApi {
   }
 
   Future<Uint8List> readBytes(String path,
-      {required String token, required String party}) async {
+      {required String token,
+      required String party,
+      Map<String, dynamic>? query}) async {
     final uri = Uri.tryParse(_dio.options.baseUrl);
     if (uri == null ||
         !uri.hasAuthority ||
@@ -230,6 +247,7 @@ class AccountApi {
     }
     try {
       final response = await _dio.get<List<int>>(path,
+          queryParameters: query,
           options: Options(
               responseType: ResponseType.bytes,
               followRedirects: false,

@@ -7,7 +7,7 @@ const handlers = require('./handlers');
 
 async function main() {
   // Fail visibly until a real domain handler exists; an idle empty process is not readiness evidence.
-  if (handlers.size === 0) throw Object.assign(new Error('No enabled domain handlers'), { code: 'WORKER_NOT_READY' });
+  if (handlers.size === 0 && process.env.PRODUCTION_WORKER_ENABLED !== 'true') throw Object.assign(new Error('No enabled domain handlers'), { code: 'WORKER_NOT_READY' });
   const db = await openDatabase();
   let worker, deadline;
   const stop = () => {
@@ -17,7 +17,9 @@ async function main() {
   try {
     const schema = await status(db);
     if (schema.migrations.some((m) => m.status !== 'APPLIED')) throw Object.assign(new Error('Migrations required'), { code: 'WORKER_SCHEMA_NOT_READY' });
-    worker = createWorker({ repository: createJobRepository(db), handlers, log: (record) => console.log(JSON.stringify(record)) });
+    const enabled = new Map(handlers);
+    if (process.env.PRODUCTION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/production/handlers').createProductionHandlers(db,{env:process.env})) enabled.set(name,handler);
+    worker = createWorker({ repository: createJobRepository(db), handlers:enabled, log: (record) => console.log(JSON.stringify(record)) });
     process.once('SIGINT', stop); process.once('SIGTERM', stop);
     await worker.run();
   } finally {

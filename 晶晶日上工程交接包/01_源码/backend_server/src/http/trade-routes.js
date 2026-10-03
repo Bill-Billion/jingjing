@@ -5,7 +5,7 @@ const {createTradeProviders}=require('../modules/trade/providers');
 const {createTradeService}=require('../modules/trade/service');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createTradeRouters({db,resolvePrincipal,env={},providersFactory,storageFactory}){
- const router=express.Router(),callbacks=express.Router(),repo=createTradeRepository(db,{resolvePrincipal});
+ const router=express.Router(),callbacks=express.Router(),repo=createTradeRepository(db,{resolvePrincipal,fulfillmentGate:require('../modules/production/payment-gate').productionPaymentGate});
  const caps=new WeakMap(),storage=storageFactory?storageFactory():require('../modules/providers/private-storage').createPrivateStorage({env,repository:require('../modules/providers/readiness').createReadinessRepository(db),authorize:async({operation,key,context})=>operation==='get'&&caps.get(context)===key});
  const service=createTradeService(repo,providersFactory?providersFactory(db,env):createTradeProviders(db,env));
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
