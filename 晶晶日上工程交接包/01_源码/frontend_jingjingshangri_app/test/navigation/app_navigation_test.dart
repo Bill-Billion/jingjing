@@ -337,15 +337,24 @@ void main() {
     for (final route in ['/wallet', '/my-humans', '/my-works', '/chat']) {
       nav.pushNamed(route);
       await frames(tester);
-      expect(find.text('暂未开放'), findsOneWidget, reason: route);
+      expect(
+          find.text(route == '/my-works' ? '先确认办事身份' : '暂未开放'), findsOneWidget,
+          reason: route);
       expect(find.text('页面不存在'), findsNothing, reason: route);
       expect(find.byType(NavigationBar), findsNothing, reason: route);
       expect(tester.takeException(), isNull, reason: route);
       nav.pop();
       await frames(tester);
     }
-    expect(adapter.requests.where((r) => r.path.startsWith('/api/')),
-        hasLength(1)); // Only the explicit new-account login was sent.
+    expect(
+        adapter.requests
+            .where((r) => r.path.startsWith('/api/'))
+            .map((r) => r.path),
+        [
+          '/api/v1/auth/sessions',
+          '/api/v1/projects/catalogue',
+          '/api/v1/projects/catalogue'
+        ]); // Each project alias reads the current public directory.
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

@@ -240,7 +240,24 @@ class _LoginPageState extends State<LoginPage> {
               '/gigs/ranking',
               '/rankings',
               '/ranking',
-              '/leaderboard'
+              '/leaderboard',
+              '/projects',
+              '/roles',
+              '/projects/list',
+              '/projects/role',
+              '/projects/project',
+              '/projects/record',
+              '/projects/apply',
+              '/projects/invitation',
+              '/projects/release/new',
+              '/projects/external/new',
+              '/my-works',
+              '/production',
+              '/production/project',
+              '/production/version',
+              '/production/feedback',
+              '/production/works',
+              '/production/work'
             ].contains(route.path)
         ? route.toString()
         : '/my';

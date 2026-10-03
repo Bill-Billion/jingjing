@@ -11,7 +11,7 @@ export const tradeContractLabels: Readonly<Record<string,string>> = {
 }
 export type TradeKind = typeof tradeKinds[number]
 export const lineKinds = { LICENSE:'许可', PRODUCTION:'制作', OTHER:'其他明确服务' } as const
-export const triggers = { ORDER_ACCEPTED:'确认订单', SAMPLE_ACCEPTED:'样片验收（暂未开放）', FINAL_ACCEPTED:'成片验收（暂未开放）' } as const
+export const triggers = { ORDER_ACCEPTED:'确认订单', SAMPLE_ACCEPTED:'当前样片版本验收', FINAL_ACCEPTED:'当前成片版本验收' } as const
 export interface Specification { version:string; service_tier:string; sample_seconds:number; final_seconds:number; revision_limit:number; deliverables:string[]; terms:string }
 export interface Review { decision:'APPROVED'|'REJECTED'; reason:string; account_id:string }
 export interface SpecData { title:string; provider_party_id:string; line_kind:keyof typeof lineKinds; unit_minor:number; currency:'CNY'; specification:Specification; review:Review|null }
