@@ -91,11 +91,15 @@ async function notificationPage(p,cursor,action){
  const d=await data(response);await response.finished()
  // A response alone does not prove Vue applied it. Require the actual rows and
  // pagination control to agree with that page; a missing page still fails.
- await p.waitForFunction(({ids,more})=>{
+ try{await p.waitForFunction(({ids,more})=>{
   const refresh=document.querySelector('[data-testid="ops-refresh"]')
   const next=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='继续读取更早事件')
   return refresh&&!refresh.disabled&&!!next===more&&ids.every(id=>document.querySelector('[data-testid="ops-open-event-'+id+'"]'))
  },{ids:d.items.map(x=>x.id),more:d.next_cursor!==null})
+ }catch(cause){
+  const observed=await p.evaluate(()=>({path:location.pathname,refreshDisabled:document.querySelector('[data-testid="ops-refresh"]')?.disabled,rows:[...document.querySelectorAll('[data-testid^="ops-open-event-"]')].map(n=>n.getAttribute('data-testid')),nextVisible:[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='继续读取更早事件'),alerts:[...document.querySelectorAll('[role="alert"]')].map(n=>n.textContent.trim())})).catch(()=>({unavailable:true}))
+  throw new Error('Notification page did not apply its response: '+JSON.stringify({expected:{ids:d.items.map(x=>x.id),next_cursor:d.next_cursor},observed,pageErrors})+'; '+cause.message)
+ }
  return d
 }
 async function allNotifications(a){
