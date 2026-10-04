@@ -1,3 +1,5 @@
+> 2026-10-05第三批主测：商单、选角、发行与异常恢复28组通过，两处材料重读状态已修复。仍本地、未更新安卓包；[当前计划](status/CORE_CURRENT.md)。实际工作树为 `worktrees/full-flow`，旧core入口仅同步进度。
+
 > 2026-10-04阶段补充交付：第19—21份完整应用检查通过，外部服务配置准备完毕。先看[最新进度](status/CORE_CURRENT.md)与[配置及补资料说明](operations/provider-config/README.md)。仍待实际审阅合并，真实服务没有启用。
 
 > 2026-10-03远端同步：本批前端、原图映射和验收记录已追加至 [PR21](https://github.com/Bill-Billion/jingjing/pull/21) 的 `core/stage-12-release-rehearsal` 分支；本机检查结果保留，远端CI以该PR的Checks为准。未合并或部署。下文“本地完成／未上传”属于此次同步前的验收记录。

@@ -50,7 +50,7 @@ function cleanup() {
       try { await connection.end(); } catch (e) { failures.push(e); }
     }
     files.clear(); sent.clear(); paymentQueries.clear(); refundQueries.clear();
-    try { if (mediaDir) await fs.rm(mediaDir, { recursive: true, force: true }); } catch (e) { failures.push(e); }
+    try { if (mediaDir) { assert.equal(path.dirname(path.resolve(mediaDir)), path.resolve(__dirname, '../.local')); assert(path.basename(mediaDir).startsWith('pr18-ui-media-')); await fs.rm(mediaDir, { recursive: true, force: true }); } } catch (e) { failures.push(e); }
     if (!failures.length && stateOwned) try { const saved = JSON.parse(await fs.readFile(statePath, 'utf8')); if (saved.controlToken === controlToken) await fs.unlink(statePath); }
     catch (e) { if (e.code !== 'ENOENT') failures.push(e); }
     if (failures.length) throw new AggregateError(failures, 'PR18_LOCAL_CLEANUP_FAILED');
@@ -126,7 +126,7 @@ async function makeMedia() {
   };
   await fs.mkdir(path.dirname(statePath), { recursive: true });
   mediaDir = await fs.mkdtemp(path.resolve(__dirname, '../.local/pr18-ui-media-')); await fs.chmod(mediaDir, 0o700);
-  const ffmpeg = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg']; let executable;
+  const ffmpeg = [process.env.JX_TEST_FFMPEG, '/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg'].filter(Boolean); let executable;
   for (const file of ffmpeg) { try { await fs.access(file); executable = file; break; } catch {} }
   assert(executable, 'Existing ffmpeg is required; no dependency is installed by this fixture.');
   for (const [name, rgb, label] of [['preview', [31, 77, 64], 'PREVIEW'], ['final', [125, 58, 31], 'FINAL FILE']]) {
@@ -463,6 +463,7 @@ async function main() {
       const u = new URL(req.url, controlUrl), get = k => u.searchParams.get(k); let out;
       if (req.method === 'GET' && u.pathname === '/code') { assert(Object.values(phones).includes(get('phone'))); const code = sent.get(get('phone')); res.writeHead(code ? 200 : 404); res.end(JSON.stringify({ code: code || null })); return; }
       else if (req.method === 'GET' && u.pathname === '/state') out = await snapshot();
+      else if (req.method === 'POST' && u.pathname === '/shutdown') { res.end(JSON.stringify({ stopping: true })); setImmediate(() => cleanup().then(() => process.exit(0), () => process.exit(1))); return; }
       else if (req.method === 'POST' && ['/storage', '/evidence'].includes(u.pathname)) { assert(['true', 'false'].includes(get('enabled'))); if (u.pathname === '/storage') storageAvailable = get('enabled') === 'true'; else evidenceIntact = get('enabled') === 'true'; out = { storageAvailable, evidenceIntact }; }
       else if (req.method === 'POST' && u.pathname === '/reviewer-permission') { assert.equal(get('action'), 'PROJECT_REVIEW'); assert(['true', 'false'].includes(get('enabled'))); await grant('reviewer', 'PROJECT_REVIEW', get('enabled') === 'true'); out = { action: 'PROJECT_REVIEW', enabled: grants.get('reviewer:PROJECT_REVIEW').enabled }; }
       else if (req.method === 'POST' && u.pathname === '/response-loss') { if (get('operation') === 'NONE') responseLoss = null; else { assert(Object.hasOwn(operations, get('operation'))); assert.equal(get('mode'), '503'); responseLoss = { operation: get('operation'), mode: '503' }; } out = { nextResponseLoss: responseLoss }; }
@@ -495,7 +496,7 @@ async function main() {
   checks.push('Actual successful candidate decision loses one reply as 503 after commit; same original key/body/version replays same record without duplicate or resubmit; changed key content rejects and stale version is 412; independent simultaneous decisions yield one 200/one 412; fresh App/Web race seeds remain APPLIED; configured loopback CORS accepted and foreign rejected');
   creation.common = { producerPartyId: producer.personalPartyId, assigneeAccountId: producer.accountId, avatarId: records.avatar.id, sponsorPartyId: sponsorOrganizationId, evidenceAssetId: assets.sponsorProof.id, channelId: records.approvedChannel.id,
     rightsLayers: ['FACE_VOICE', 'ORIGINAL', 'SCRIPT', 'MUSIC', 'ADAPTATION', 'FINAL'], sourceKind: 'ORIGINAL', licensingRequired: false, reason: '真实原创来源不需要伪造改编许可；原PRIVATE制作与公开同意分别保留' };
-  phase = 'private runtime state'; await saveState(); assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600);
+  phase = 'private runtime state'; await saveState(); if (process.platform !== 'win32') assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600); // Windows permissions are governed by NTFS ACLs.
   const sanitized = await snapshot(); assert.equal(JSON.stringify(sanitized).includes(controlToken), false); for (const p of Object.values(people)) assert.equal(JSON.stringify(sanitized).includes(p.token), false);
   console.log(`Isolated PR18 API ready: ${apiUrl}; control ${controlUrl}; PID ${process.pid}; schema ${schema}; ${checks.length} actual check groups; private runtime ${statePath}`);
 }

@@ -459,6 +459,7 @@ async function main() {
       }
       if (req.method === 'GET' && url.pathname === '/state') return reply(200, await snapshot());
       if (req.method !== 'POST') return reply(404, { error: 'LOCAL_CONTROL_NOT_FOUND' });
+      if (url.pathname === '/shutdown') { reply(200, { stopping: true }); setImmediate(() => cleanup().then(() => process.exit(0), () => process.exit(1))); return; }
       if (url.pathname === '/reviewer-permission') { const action = url.searchParams.get('action') || 'GIG_REVIEW'; assert(['GIG_REVIEW', 'TRADE_REVIEW', 'TRADE_REFUND', 'SUPPLY_REVIEW_CONSENT'].includes(action)); await grant('reviewer', action, boolean()); }
       else if (url.pathname === '/mcn-capability') await maintainCapability(boolean());
       else if (url.pathname === '/mcn-owner-membership') await maintainMcnOwner(boolean());
@@ -479,7 +480,7 @@ async function main() {
   const safeState = await fetch(controlUrl + '/state', { headers: { Authorization: `Bearer ${controlToken}` } }); const safe = await safeState.json();
   assert(!JSON.stringify(safe).includes(controlToken)); assert(!Object.values(people).some(p => JSON.stringify(safe).includes(p.token)));
   checks.push('Private control denies missing token and every Origin; sanitized live state contains no Bearer/control token; all 18 gigs HTTP operations exercised against MySQL');
-  await saveState(); assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600);
+  await saveState(); if (process.platform !== 'win32') assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600); // Windows permissions are governed by NTFS ACLs.
   console.log(`PR17_READY api=3302 control=3303 pid=${process.pid} checks=${checks.length} records=${(await snapshot()).allRecords.length} synthetic_only=true`);
 }
 startupPromise = main();

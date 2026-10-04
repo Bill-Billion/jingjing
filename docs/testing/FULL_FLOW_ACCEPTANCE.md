@@ -75,3 +75,23 @@
 本批最后一项已发现并修复网页和App的旧内容残留。9组实际流程通过；App制作/付款/账号相关72项通过，包含新增409/503拒绝后的两项回归；网页9个模块174项通过，类型检查通过。最终异步保护调整后另复测制作17项和全部9组浏览器流程，不能重复相加。
 
 证据在 `docs/testing/evidence/20261005/risks/`：`before-fix`为修复前失败，`results.json`与其余场景图为最终结果。App这里仍是自动控件测试，不是手机实测。本轮没有真实付款、退款、发短信或接通OSS。
+
+## 第三批：商单、选角和发行的独立模拟资料
+
+复用并核验已有商单与项目资料，新增 `scripts/full-flow-business.cjs` 统一操作入口。它们与前两批3362服务各自独立，不必先跑前两批；商单库和项目库也相互独立，不能把一组业务编号填到另一组。这里没有把公开发行权限补到前两批私人制作许可上。
+
+|要测试什么|资料中的角色与进度|本机地址|
+|---|---|---|
+|商单需求、提案、报价、直接MCN合作和佣金|买方`buyer`、供应方`seller`、MCN负责人`mcn`、独立审核`reviewer`、规则登记`ruleAuthor`、普通成员和无关用户；需求待审、提案待确认、合作邀请、历史佣金及数据不足榜单|业务3302，控制3303，网页5205|
+|选角、方案、成片与发行材料|发起机构`sponsor`、演员/制作方`producer`、审核`reviewer`、渠道登记`channelRegistrar`、成员和无关用户；待报名、被邀请、已获选、待会签、可开工、成片待确认、发行待内部审核、外部凭据待核验，以及撤回授权/退款阻断场景|业务3322，控制3323，网页5207|
+
+以下仍由开发者执行；普通用户不需要配置终端。先启动已有本机隔离MySQL并设置 `JX_MYSQL_TEST_ENV_FILE`。Windows设置 `JX_TEST_FFMPEG` 为已安装的FFmpeg完整路径，与前两批相同。真实密钥不需要加入这些配置。
+
+1. 商单：单独终端运行 `node scripts/full-flow-business.cjs gigs start --test-only`。项目：另一个终端运行 `node scripts/full-flow-business.cjs projects start --test-only`。按所测模块选择，可以只启动一组。
+2. 在网页工程另开终端：商单设置 `VITE_BACKEND_ORIGIN=http://127.0.0.1:3302`，运行 `node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5205 --strictPort`；项目将两处端口换为3322和5207。页面只监听本机，不是对手机开放的公网地址。
+3. `node scripts/full-flow-business.cjs gigs status` 或 `projects status` 查看本次角色号码、场景编号和限制。登录页先点击获取验证码，再运行 `node scripts/full-flow-business.cjs gigs code seller` 或 `projects code sponsor` 读取该角色的本地模拟码。验证码不是万能码，不向真实手机号发送短信。
+4. 自动正常流程：设置已有浏览器的 `CHROME_PATH`。商单运行 `node scripts/pr17-ui-browser-check.mjs`，项目运行 `node scripts/pr18-ui-browser-check.mjs`。设置 `JX_BROWSER_EVIDENCE_DIR` 到本次独立证据目录，避免覆盖旧记录；本轮分别用 `docs/testing/evidence/20261005/commercial-release/gigs` 和 `.../projects`。
+5. 六组异常检查需要两组服务与网页同时运行：`node scripts/full-flow-project-risks.mjs`。它使用保留的独立待审与受阻资料，模拟存储故障/材料变动/撤权后恢复，核对不会沿用旧已读和成功提示。正常流程脚本会消费场景，重复完整跑前须关闭并重建资料。
+6. 结束使用 `node scripts/full-flow-business.cjs gigs stop` 和 `projects stop`。工具核对本机端口、PID、随机库名后才请求关闭；等待相应 `.local/pr17-ui-runtime.json`、`pr18-ui-runtime.json` 消失，再关闭网页预览和自己的测试MySQL。不要把运行文件、控制凭证或模拟验证码加入Git，也不要用直接杀进程替代正常清理。
+
+本批最终28组实际网页检查、项目22项/商单18项网页回归、App相关53项通过；新版安卓未实测。这次只改网页的两处材料读取状态，不改后端规则或App业务代码。记录与失败/成功对照见[第三批任务证据](../tasks/records/CORE-full-flow-business-20261005.md)。

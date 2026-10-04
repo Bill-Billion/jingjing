@@ -13,7 +13,7 @@ const state = JSON.parse(await readFile(resolve(root, process.env.PR18_UI_STATE_
 assert.equal(state.testOnly, true)
 const base = process.env.PR18_WEB_URL || 'http://127.0.0.1:5207'
 for (const url of [state.apiUrl, state.controlUrl, base]) assert.equal(new URL(url).hostname, '127.0.0.1')
-const evidence = resolve(root, 'docs/ux/pr18-ui/evidence'), shots = resolve(evidence, 'screenshots')
+const evidence = resolve(root, process.env.JX_BROWSER_EVIDENCE_DIR || 'docs/ux/pr18-ui/evidence'), shots = resolve(evidence, 'screenshots')
 await mkdir(shots, { recursive: true })
 const resume = process.argv.includes('--resume')
 const previous = resume ? JSON.parse(await readFile(resolve(evidence, 'web-browser-results.json'), 'utf8')) : null

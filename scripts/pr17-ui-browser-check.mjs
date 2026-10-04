@@ -13,7 +13,7 @@ const state=JSON.parse(await readFile(resolve(root,process.env.PR17_UI_STATE_FIL
 assert.equal(state.testOnly,true)
 const base=process.env.PR17_WEB_URL||'http://127.0.0.1:5205'
 for(const url of [base,state.apiUrl,state.controlUrl])assert.equal(new URL(url).hostname,'127.0.0.1')
-const evidence=resolve(root,'docs/ux/pr17-ui/evidence'),shots=resolve(evidence,'screenshots')
+const evidence=resolve(root,process.env.JX_BROWSER_EVIDENCE_DIR||'docs/ux/pr17-ui/evidence'),shots=resolve(evidence,'screenshots')
 await mkdir(shots,{recursive:true})
 const results=[],pageErrors=[],screenshots=[],actors={},created={}
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true})
