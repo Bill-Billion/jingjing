@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../account/account_session.dart';
 import '../account/account_api.dart';
+import '../operations/operation_widgets.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
@@ -9,6 +10,10 @@ import 'trade_api.dart';
 import 'trade_models.dart';
 import 'trade_widgets.dart';
 import 'trade_refund_form.dart';
+import '../gigs/gig_models.dart';
+import '../gigs/gig_widgets.dart';
+import '../production/production_api.dart';
+import '../production/production_models.dart';
 
 // Gallery: APP-13-01-v2. This route remains a return-based child of the five-tab shell.
 class TradeRecordsPage extends StatelessWidget {
@@ -194,6 +199,8 @@ class _TradeDetailState extends State<_TradeDetail> {
   late final api = TradeApi(widget.session);
   TradeRecord? record;
   List<TradeRecord> payments = [], refunds = [];
+  List<ProductionRecord> projects = [];
+  String? productionNotice;
   String? error;
   bool busy = false;
   int ticket = 0;
@@ -217,6 +224,8 @@ class _TradeDetailState extends State<_TradeDetail> {
       record = null;
       payments = [];
       refunds = [];
+      projects = [];
+      productionNotice = null;
       error = null;
     });
     try {
@@ -226,6 +235,16 @@ class _TradeDetailState extends State<_TradeDetail> {
         ps =
             (await api.all('PAYMENT')).where((p) => p.orderId == r.id).toList();
         rs = (await api.all('REFUND')).where((p) => p.orderId == r.id).toList();
+        if (tradeRows(r.quote['lines'])
+            .any((l) => l['line_kind'] == 'PRODUCTION')) {
+          try {
+            projects = (await ProductionApi(widget.session).all())
+                .where((p) => p.orderId == r.id)
+                .toList();
+          } on AccountError catch (e) {
+            productionNotice = productionError(e);
+          }
+        }
       }
       if (!mounted || t != ticket) return;
       setState(() {
@@ -334,6 +353,24 @@ class _TradeDetailState extends State<_TradeDetail> {
             r.status == 'APPROVED'
                 ? '买方确认后形成订单，付款和签署另行办理。'
                 : '仅独立审核通过且在有效期内的指定买方可以确认。'),
+      if (d['commercial'] != null)
+        supplyCard('原商业接单约定', [
+          tradeFact('约定编号', d['commercial']['offer_id']),
+          gigScopeFacts(gigMap(d['commercial']['scope'])),
+          gigCommissionFacts(gigMap(d['commercial']['commission'])),
+          tradeFact(
+              '公开入榜', d['commercial']['ranking_opt_in'] ? '明确选择参与' : '不参与'),
+          ExpansionTile(
+              title: const Text('完整商业原约定'),
+              children: [gigParagraph(d['commercial']['terms'])]),
+          tradeButton(
+              '查看商业接单约定',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(context,
+                      '/gigs/record?recordId=${d['commercial']['offer_id']}'),
+              outline: true),
+        ]),
       supplyCard('交易双方', [
         tradeFact('提供方', shortSupplyId(r.merchant)),
         tradeFact('买方', r.buyer == null ? '—' : shortSupplyId(r.buyer!)),
@@ -410,8 +447,74 @@ class _TradeDetailState extends State<_TradeDetail> {
     final f = r.data['financial'];
     return [
       supplyCard('订单 ${shortSupplyId(r.id)}',
-          [tradeStatus(r), appNotice('款项收齐不等于制作完成。样片、成片和验收将在后续开放。')]),
+          [tradeStatus(r), appNotice('款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')]),
+      if (r.quote['commercial'] != null)
+        supplyCard('关联商业约定', [
+          tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
+          tradeButton(
+              '查看商业接单约定',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(context,
+                      '/gigs/record?recordId=${r.quote['commercial']['offer_id']}'),
+              outline: true),
+          tradeButton(
+              '查看佣金核算',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(
+                      context, '/gigs/records?kind=COMMISSION'),
+              outline: true)
+        ]),
+      if (tradeRows(r.quote['lines'])
+          .any((l) => l['line_kind'] == 'PRODUCTION'))
+        supplyCard('制作进度', [
+          if (productionNotice != null) appNotice(productionNotice!),
+          if (projects.isEmpty) appNotice('尚无可读取的关联制作项目。开工由商家按原订单与审核依据办理。'),
+          for (final p in projects) ...[
+            tradeFact('制作项目', shortSupplyId(p.id)),
+            for (final stage in productionStages.keys) ...[
+              tradeFact(
+                  productionStages[stage]!,
+                  p.data['current'][stage] == null
+                      ? '未开始'
+                      : p.data['current'][stage] == p.data['accepted'][stage]
+                          ? '当前版本已确认'
+                          : '当前版本待审阅'),
+              if (p.data['current'][stage] != null)
+                tradeButton(
+                    '查看当前${productionStages[stage]}',
+                    locked
+                        ? null
+                        : () => Navigator.pushNamed(context,
+                                    '/production/version?versionId=${p.data['current'][stage]}')
+                                .then((_) {
+                              if (mounted) load();
+                            }))
+            ]
+          ],
+          tradeButton(
+              '查看关联制作项目',
+              locked
+                  ? null
+                  : () => Navigator.pushNamed(
+                              context, '/production?orderId=${r.id}')
+                          .then((_) {
+                        if (mounted) load();
+                      }),
+              outline: true)
+        ]),
       supplyCard('订单付款', [
+        tradeButton(
+            '查看本订单结算约定',
+            locked
+                ? null
+                : () =>
+                    Navigator.pushNamed(context, '/finance?sourceId=${r.id}')
+                        .then((_) {
+                      if (mounted) load();
+                    }),
+            outline: true),
         tradeFact('应付总额', tradeMoney(r.amount)),
         const Divider(),
         tradeFact('已核实收款', tradeMoney(f['received_minor']), accent: true),
@@ -456,8 +559,12 @@ class _TradeDetailState extends State<_TradeDetail> {
                   outline: true)
             else
               tradeButton(
-                  i['trigger'] == 'ORDER_ACCEPTED' ? '建立付款记录' : '验收付款暂未开放',
-                  locked || i['trigger'] != 'ORDER_ACCEPTED'
+                  i['trigger'] == 'ORDER_ACCEPTED'
+                      ? '建立付款记录'
+                      : installmentReady(r, i['trigger'])
+                          ? '建立验收节点付款记录'
+                          : '等待当前版本验收',
+                  locked || !installmentReady(r, i['trigger'])
                       ? null
                       : () => mutate('建立指定节点付款记录', '/api/v1/trade/payments',
                               () => api.payment(r, i['key']),
@@ -473,6 +580,10 @@ class _TradeDetailState extends State<_TradeDetail> {
                               ])),
           ],
         ]),
+      supplyCard('订单留言', [
+        operationCommentLink(context, 'TRADE', r.id, '订单留言',
+            enabled: !locked, returned: load)
+      ]),
       supplyCard('原付款与售后退款', [
         if (payments.isEmpty) supplyNote('尚无付款记录。'),
         for (final p in payments)
@@ -504,6 +615,22 @@ class _TradeDetailState extends State<_TradeDetail> {
       if (r.data['cancel_reason'] != null)
         supplyCard('取消理由', [ContractText(value: r.data['cancel_reason'])]),
     ];
+  }
+
+  bool installmentReady(TradeRecord order, String trigger) {
+    if (trigger == 'ORDER_ACCEPTED') return true;
+    final stage =
+        {'SAMPLE_ACCEPTED': 'SAMPLE', 'FINAL_ACCEPTED': 'FINAL'}[trigger];
+    final lines = tradeRows(order.quote['lines'])
+        .where((l) => l['line_kind'] == 'PRODUCTION')
+        .toList();
+    return stage != null &&
+        lines.isNotEmpty &&
+        lines.every((line) => projects.any((p) =>
+            p.data['line_id'] == line['line_id'] &&
+            ['IN_PROGRESS', 'ACCEPTED'].contains(p.status) &&
+            p.data['current'][stage] != null &&
+            p.data['accepted'][stage] == p.data['current'][stage]));
   }
 
   List<Widget> contractView(TradeRecord r) {

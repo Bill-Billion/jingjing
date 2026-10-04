@@ -1,0 +1,30 @@
+▶ Real MySQL durable jobs, outbox and independent worker
+  ✔ same business intent is idempotent; conflicting intent is rejected, case remains distinct (660.525167ms)
+  ✔ business transaction and outbox both roll back; publish requires explicit transaction (626.066833ms)
+  ✔ parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op (695.154209ms)
+  ✔ conflicting outbox intent is visibly blocked and does not replace the original job (555.1455ms)
+  ✔ failure between job insertion and outbox acknowledgement rolls both back and can be replayed (574.270875ms)
+  ✔ concurrent workers claim one job once while its lease is valid (565.771458ms)
+  ✔ expired lease takeover fences old acknowledgement, heartbeat and provider-task updates (533.865291ms)
+  ✔ retry is delayed, capped and manually resumed without erasing attempt history (547.752375ms)
+  ✔ crashed job at its attempt limit becomes failed instead of disappearing or retrying forever (524.605667ms)
+  ✔ worker renews a long-running handler lease; other worker cannot take it over (1892.666375ms)
+  ✔ missing handlers and ambiguous handler errors block without fake success or immediate replay (618.498084ms)
+  ✔ active worker aborts after lease takeover and cannot overwrite its successor result (760.716916ms)
+  ✔ provider retry without a recovery adapter becomes blocked instead of executing again (605.76075ms)
+  ✔ unknown provider submission is reconciled by stable key, never blindly resubmitted (563.237541ms)
+  ✔ separate process crash preserves provider task ID and a new process recovers it (855.274875ms)
+  ✔ graceful stop signals a handler, leaves durable recovery and does not claim the next task (518.4605ms)
+✔ Real MySQL durable jobs, outbox and independent worker (13569.735292ms)
+✔ worker CLI fails visibly while domain adapters are not enabled (118.942ms)
+✔ worker intent requires explicit retry budget and bounded references (0.371167ms)
+✔ stopping during claim never starts the newly acquired handler (2.46225ms)
+✔ API and historical scheduler do not bootstrap timers or visual recovery (0.893209ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13705.6815
