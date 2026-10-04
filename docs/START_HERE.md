@@ -124,3 +124,55 @@
 当前依据是2026-09-21收到的R0.6方案，业务范围继承R0.3。第一版工程、会前材料、会后意见和后续需求都保留，原始材料在 [来源目录](sources/README.md)。旧报告“只整理、不开发”的限制已被用户后续开工要求替代。
 
 目前已开展基础代码建设，但还没有完成整个产品。历史材料检查见 [最初整理记录](tasks/records/CORE-S0-000.md)，各项实际代码和测试以当前进度列出的提交为准。
+
+
+---
+
+## 短信独立分支合入时的记录（2026-10-05，仅历史）
+
+> 2026-10-04短信阶段已集中上传至[第22份申请](https://github.com/Bill-Billion/jingjing/pull/22)，功能版本的后端、App及网页检查通过；未合并或部署。[当前计划和结果](status/CORE_CURRENT.md) · [不等OSS的后续安排](collaboration/NEXT_WITHOUT_OSS.md)。下文旧阶段状态按原日期保留。
+
+> 2026-10-02集中交付：用户要求先将本地第15份修改追加原申请；目标 `core/stage-6-orders-payments`，功能 `f0441b3` 与文档 `6daeee9` 均保留。远端上传版本及本次自动检查以[原PR15](https://github.com/Bill-Billion/jingjing/pull/15)当前版本为准，未合并或部署。原本机验证继续有效；真机取消，真实支付SDK/正式渠道未验证。第16–17份前端随后继续，原远端分支未改。以下保留此前本地阶段记录。
+
+> 2026-10-02当前结果：第14份已合入 `integration/5974f3f`；第15份前端已按18张最终参考图完成本地实现与验证，功能提交 `f0441b3`，App125项、网页74项、浏览器App8组/网页11组通过。尚未追加上传原第15份、合并或部署。先看[本批页面与审查路径](ux/pr15-ui/README.md)和[实际检查](ux/pr15-ui/ui-checks.md)。SDK、正式服务与真机状态单独记录；第16–17份未改。下方保留此前状态。
+
+> 2026-10-02当前交付：第14份后端与App/网页前端已统一追加到[原申请](https://github.com/Bill-Billion/jingjing/pull/14)，待本次版本检查和审阅合入，未部署；前置第11–13份已合入。先看[本轮交付与审查路径](ux/pr14-ui/delivery-review-20261002.md)，下方保留原交付记录。
+
+> 2026-09-30当前同步：第13份已合入 `integration/90cb6a9`；第14份选本、许可、项目绑定、受控阅读及绑定后改稿前端已在 `ux/pr14-pages` 本地完成，App91项、网页57项检查及构建通过。当前尚未追加上传、合并或部署，正式供应商和原生包后续验收。[交付与审查路径](ux/pr14-ui/README.md)。下方保留此前记录。
+
+> 当前同步（2026-09-30）：第11、12份已合入共同版本；第12份合并版本`e58c7fc`，8项远端检查通过。作者与作品资料前端已在`ux/pr13-pages`完成本地开发、测试、真实接口联调及图册验收；Vue供给18组、Flutter最终供给21项、后端供给35项通过。第13份待审后端`318f263`仅明确引入本地，后端源码和后续分支历史保留；用户已授权将前端`81a9727`与原后端统一通过[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)交付，最新上传版本与检查见申请页；当前待审、未合入或部署，正式存储与原生包仍待验收。[本轮交付](tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md)。下面保留当时记录，以此处当前状态为准。
+
+# 从这里开始
+
+第六阶段报价、订单与收付款后端已通过本机和GitHub检查，交付[第15份申请](https://github.com/Bill-Billion/jingjing/pull/15)待审；未合并、未上线。先看[当前进度](status/CORE_CURRENT.md)和[页面调用](collaboration/STAGE_6_API.md)，不要把后面的历史状态当当前结论。
+
+第五阶段许可与项目使用后端已通过本机和GitHub检查，交付[第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)待审；先看[当前进度](status/CORE_CURRENT.md)与[第五阶段调用说明](collaboration/STAGE_5_API.md)。历史条目中的“未接项目许可”不再代表本分支现状；前置申请仍需逐份审阅。
+
+## 以下保留此前交付记录
+
+第四阶段后端已通过本机及GitHub检查，交付[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)待审。审阅顺序第11→12→13份；未合并或上线。
+
+2026-09-25：第四阶段后端自验完成，集中交付准备中。先看[阶段交付](collaboration/STAGE_4_HANDOFF.md)、[页面调用](collaboration/STAGE_4_API.md)及[当前进度](status/CORE_CURRENT.md)。实际依赖已在本地明确引入，前置第11、12份仍须审阅。
+
+## 历史入口
+
+2026-09-25：当前从共同版本独立推进[第四阶段作品与材料](collaboration/STAGE_4_WORKS_EVIDENCE.md)，先完成内部规则，未接公开接口。第11、12份已上传待审，仍保留原分支；本分支未引入，旧状态不得当作当前事实。先看[当前进度](status/CORE_CURRENT.md)。
+
+## 以下保留历史入口
+
+**当前规则已更新（2026-09-22）：按[阶段计划](collaboration/STAGED_DELIVERY.md)集中推送和合并，不再逐任务上传。第4份申请此前已合并，其余8份关闭未合并；第9份不再是开放的合并入口。已有代码与历史证据保留，下面此前申请及上传记录不能当作当前操作指令。阶段流程和双方分工随第一阶段集中交付，实际上传状态见服务器当前进度，不代表队友已确认。**
+
+最新同步方式见[一个入口获取与继续开发](collaboration/REVIEW_AND_HANDOFF.md)。原分项申请保留历史，当前改从统一待审分支获取；未批准、未合入，新账号HTTP接口尚未接通。
+
+先看 [双方分工](collaboration/TEAM_ONBOARDING.md) 和 [当前进度与下一步](status/MAINLINE_PROGRESS.md)，不需要先记任务编号。完整工作和完成标准在 [任务安排](tasks/README.md)。
+
+给接手的Codex：
+
+1. 先读仓库根 [项目指令](../AGENTS.md)，严格遵守直白中文写法。查看当前代码版本和已有修改，保留原有文件。
+2. 确认自己负责服务器还是App/网页，读相应 [服务器进度](status/CORE_CURRENT.md) 或 [App和网页进度](status/EXPERIENCE_CURRENT.md)，检查有无别人已接手同一项任务。
+3. 结合任务阅读 [当前设计](architecture/TARGET_DESIGN.md)、[需求依据](requirements/README.md) 和 [外部条件](operations/EXTERNAL_READINESS.md)。原始R0.6的架构、分工和执行规则从 [方案入口](baselines/r06/00_START_HERE.md) 查阅；不能只看摘要就声称读懂所有来源。
+4. 先登记自己的任务，再修改自己负责的代码；涉及双方共用的重要规则，要由另一方检查后再加入共同版本。具体操作见 [协作方法](collaboration/GIT_WORKFLOW.md)。
+
+当前依据是2026-09-21收到的R0.6方案，业务范围继承R0.3。第一版工程、会前材料、会后意见和后续需求都保留，原始材料在 [来源目录](sources/README.md)。旧报告“只整理、不开发”的限制已被用户后续开工要求替代。
+
+目前已开展基础代码建设，但还没有完成整个产品。历史材料检查见 [最初整理记录](tasks/records/CORE-S0-000.md)，各项实际代码和测试以当前进度列出的提交为准。

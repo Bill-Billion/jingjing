@@ -83,6 +83,8 @@ async function runSession(options) {
 }
 async function main() {
   const stage=process.argv[2];
+  const sms=process.argv[3]==='--sms';
+  if(process.argv.length>3 && !(sms && stage==='11' && process.argv.length===4)) throw Error('UNKNOWN_BROWSER_CHECK_OPTION');
   const ports={'11':[3220,5199],'14':[3242,5202],'15':[3262,5203],'16':[3282,5206],'17':[3302,5205],'18':[3322,5207],'19':[3342,5209],'20':[3362,5211]};
   if(!ports[stage]) throw Error('UNKNOWN_BROWSER_TEST_STAGE');
   const root=path.resolve(__dirname,'..'), webRoot=path.join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace');
@@ -91,7 +93,7 @@ async function main() {
   const requireWeb=createRequire(path.join(webRoot,'package.json'));
   const env={...process.env,VITE_BACKEND_ORIGIN:apiUrl,BASE_URL:webUrl,[`PR${stage}_WEB_URL`]:webUrl,[`PR${stage}_UI_STATE_FILE`]:statePath,
     CHROME_PATH:process.env.CHROME_PATH||requireWeb('playwright-core').chromium.executablePath()};
-  const check=stage==='11'?{file:path.join(webRoot,'tools/e2e-login.mjs'),cwd:webRoot}:{file:path.join(root,`scripts/pr${stage}-ui-browser-check.mjs`),cwd:root};
+  const check=sms?{file:path.join(root,'scripts/sms-login-browser-check.mjs'),cwd:root}:stage==='11'?{file:path.join(webRoot,'tools/e2e-login.mjs'),cwd:webRoot}:{file:path.join(root,`scripts/pr${stage}-ui-browser-check.mjs`),cwd:root};
   await runSession({api:{file:path.join(root,`scripts/pr${stage}-ui-test-server.cjs`),args:['--test-only'],cwd:root},
     web:{file:path.join(webRoot,'node_modules/vite/bin/vite.js'),args:['--host','127.0.0.1','--port',String(ports[stage][1]),'--strictPort'],cwd:webRoot},
     check,statePath,apiUrl,webUrl,logDir,env});
