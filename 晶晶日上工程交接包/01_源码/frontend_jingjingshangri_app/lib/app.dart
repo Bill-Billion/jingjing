@@ -10,6 +10,13 @@ import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
 import 'licensing/license_models.dart';
 import 'trade/trade_pages.dart';
+import 'gigs/gig_pages.dart';
+import 'gigs/gig_forms.dart';
+import 'production/production_pages.dart';
+import 'projects/project_pages.dart';
+import 'projects/project_forms.dart';
+import 'finance/finance_pages.dart';
+import 'finance/finance_forms.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -35,7 +42,6 @@ class JingjingShangriApp extends StatelessWidget {
         '/custom-request' =>
           const AppShell(initialTab: 1),
         '/cultivate' ||
-        '/mcn' ||
         '/endorsement' ||
         '/talent-academy' =>
           const AppShell(initialTab: 2),
@@ -73,14 +79,28 @@ class JingjingShangriApp extends StatelessWidget {
             title: '隐私政策',
             body: LegalDocs.privacyPolicy,
             updatedAt: LegalDocs.privacyUpdated),
-        '/wallet' || '/usage-report' => const AppUnavailablePage(
-            title: '我的结算',
-            description: '结算与收入查询暂未开放。收付款需要有真实记录与依据，账号资料不会显示为可提现余额。'),
+        '/wallet' ||
+        '/usage-report' ||
+        '/finance' =>
+          FinanceAgreementsPage(sourceId: uri.queryParameters['sourceId']),
+        '/finance/agreement' => FinanceOverviewPage(
+            agreementId: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/records' => FinanceRecordsPage(
+            agreementId: uri.queryParameters['agreementId'] ?? '',
+            kind: uri.queryParameters['kind'] ?? 'SETTLEMENT'),
+        '/finance/record' =>
+          FinanceRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/finance/entries' => FinanceEntriesPage(
+            agreementId: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/payout/new' => FinanceFormPage(
+            mode: 'PAYOUT', id: uri.queryParameters['agreementId'] ?? ''),
+        '/finance/dispute/new' => FinanceFormPage(
+            mode: 'DISPUTE', id: uri.queryParameters['recordId'] ?? ''),
+        '/finance/notifications' => const FinanceNotificationsPage(),
         '/identity' || '/my-humans' => const AppUnavailablePage(
             title: '数字人资料',
             description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),
-        '/humans' || '/human-detail' => const AppUnavailablePage(
-            title: '艺人发现', description: '公开人物目录暂未开放。作者及数字人私有材料不会作为公开推荐展示。'),
+        '/discover' || '/humans' || '/human-detail' => const GigDiscoveryPage(),
         '/orders' => licenseKinds.containsKey(uri.queryParameters['kind'])
             ? LicenseRecordsPage(kind: uri.queryParameters['kind']!)
             : TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
@@ -93,7 +113,39 @@ class JingjingShangriApp extends StatelessWidget {
           TradeRefundPage(paymentId: uri.queryParameters['paymentId'] ?? ''),
         '/licensing' => LicenseRecordsPage(
             kind: uri.queryParameters['kind'] ?? 'RESERVATION'),
-        '/my-projects' => const LicenseRecordsPage(kind: 'PROJECT'),
+        '/my-projects' => const ProjectsListPage(),
+        '/projects/list' => const ProjectsListPage(),
+        '/projects/role' =>
+          ProjectsCataloguePage(roleId: uri.queryParameters['roleId'] ?? ''),
+        '/projects/project' =>
+          ProjectRecordPage(recordId: uri.queryParameters['projectId'] ?? ''),
+        '/projects/record' =>
+          ProjectRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/projects/apply' => ProjectFormPage(
+            mode: 'APPLY', id: uri.queryParameters['roleId'] ?? ''),
+        '/projects/invitation' => ProjectFormPage(
+            mode: 'INVITATION', id: uri.queryParameters['candidateId'] ?? ''),
+        '/projects/release/new' => ProjectFormPage(
+            mode: 'RELEASE',
+            id: uri.queryParameters['projectId'] ?? '',
+            priorId: uri.queryParameters['priorId']),
+        '/projects/external/new' => ProjectFormPage(
+            mode: 'EXTERNAL', id: uri.queryParameters['releaseId'] ?? ''),
+        '/production' =>
+          ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
+        '/production/project' => ProductionProjectPage(
+            projectId: uri.queryParameters['projectId'] ?? ''),
+        '/production/version' => ProductionVersionPage(
+            versionId: uri.queryParameters['versionId'] ?? ''),
+        '/production/feedback' => ProductionVersionPage(
+            versionId: uri.queryParameters['versionId'] ?? '',
+            feedback: true,
+            evidence: args is Map<String, dynamic> ? args : null),
+        '/my-works' ||
+        '/production/works' =>
+          const ProductionProjectsPage(works: true),
+        '/production/work' =>
+          ProductionWorkPage(projectId: uri.queryParameters['projectId'] ?? ''),
         '/licensing/catalog' => const LicenseCatalog(),
         '/licensing/record' =>
           LicenseRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
@@ -104,18 +156,36 @@ class JingjingShangriApp extends StatelessWidget {
           LicenseBindingForm(grantId: uri.queryParameters['grantId'] ?? ''),
         '/licensing/reading' =>
           LicenseReaderPage(recordId: uri.queryParameters['recordId'] ?? ''),
-        '/messages' || '/chat' => const AppUnavailablePage(
-            title: '业务通知与留言', description: '订单和项目内的通知、留言暂未开放。这里不会提供通用私信聊天。'),
-        '/ai-create' || '/my-works' => const AppUnavailablePage(
-            title: '创作工具与历史作品',
-            description: '创作任务与历史作品查询暂未开放。作者投稿作品请通过“作者与作品”管理。'),
+        '/messages' || '/gigs/notifications' => const GigNotificationsPage(),
+        '/chat' => const AppUnavailablePage(
+            title: '业务留言', description: '当前不提供通用私信。商单暂停与直接合作结束可在商单通知查看。'),
+        '/gigs' => const GigCataloguePage(),
+        '/gigs/request' =>
+          GigPublicRequestPage(gigId: uri.queryParameters['gigId'] ?? ''),
+        '/gigs/requests/new' => const GigRequestForm(),
+        '/gigs/offers/new' =>
+          GigOfferForm(gigId: uri.queryParameters['gigId'] ?? ''),
+        '/gigs/relations/new' => const GigRelationForm(),
+        '/mcn' => const GigRecordsPage(kind: 'RELATION'),
+        '/gigs/records' => GigRecordsPage(
+            kind: uri.queryParameters['kind'] ?? 'GIG',
+            gigId: uri.queryParameters['gigId']),
+        '/gigs/record' =>
+          GigRecordPage(recordId: uri.queryParameters['recordId'] ?? ''),
+        '/ranking' ||
+        '/rankings' ||
+        '/leaderboard' ||
+        '/gigs/ranking' =>
+          GigRankingPage(recordId: uri.queryParameters['recordId']),
+        '/ai-create' => const AppUnavailablePage(
+            title: '生成服务',
+            description:
+                '生成服务按具体制作项目核对本人同意、用途与原约定。未开通时不会创建演示任务或视频，请从“我的—制作与交付”查看项目。'),
         '/video-lib' ||
         '/video-order' ||
         '/sample-library' ||
         '/sample-order-detail' =>
-          const AppUnavailablePage(
-              title: '制作与交付',
-              description: '样片与成片页面暂未开放。制作、修改、验收和最终下载会按具体版本与授权条件办理。'),
+          ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
         '/after-sales' || '/review' => const AppUnavailablePage(
             title: '反馈与售后', description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),
         _ => const AppUnknownPage(),

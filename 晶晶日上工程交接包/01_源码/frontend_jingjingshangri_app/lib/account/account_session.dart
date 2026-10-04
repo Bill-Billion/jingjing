@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'account_api.dart';
 
@@ -18,11 +19,79 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  bool financeAccessDenied = false;
+  List<Map<String, dynamic>> get financePending =>
+      api.financePending(token: _token, party: partyId);
+  void denyFinance() {
+    _epoch++;
+    api.clearSupplyOperations();
+    financeAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryFinanceAccess() async {
+    await loadParties();
+    await refreshParty();
+    financeAccessDenied = false;
+    notifyListeners();
+  }
+
   bool supplyAccessDenied = false;
   bool licensingAccessDenied = false;
   bool tradeAccessDenied = false;
+  bool productionAccessDenied = false;
+  bool projectsAccessDenied = false;
+  List<Map<String, dynamic>> get projectsPending =>
+      api.projectsPending(token: _token, party: partyId);
+  void denyProjects() {
+    _epoch++;
+    api.clearSupplyOperations();
+    projectsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryProjectsAccess() async {
+    await loadParties();
+    await refreshParty();
+    projectsAccessDenied = false;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> get productionPending =>
+      api.productionPending(token: _token, party: partyId);
+  void denyProduction() {
+    _epoch++;
+    api.clearSupplyOperations();
+    productionAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryProductionAccess() async {
+    await loadParties();
+    await refreshParty();
+    productionAccessDenied = false;
+    notifyListeners();
+  }
+
   List<Map<String, dynamic>> get tradePending =>
       api.tradePending(token: _token, party: partyId);
+  bool gigsAccessDenied = false;
+  List<Map<String, dynamic>> get gigsPending =>
+      api.gigsPending(token: _token, party: partyId);
+  void denyGigs() {
+    _epoch++;
+    api.clearSupplyOperations();
+    gigsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryGigsAccess() async {
+    await loadParties();
+    await refreshParty();
+    gigsAccessDenied = false;
+    notifyListeners();
+  }
+
   void denyTrade() {
     _epoch++;
     api.clearSupplyOperations();
@@ -125,6 +194,10 @@ class AccountSession extends ChangeNotifier {
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
+    gigsAccessDenied = false;
+    productionAccessDenied = false;
+    projectsAccessDenied = false;
+    financeAccessDenied = false;
     _epoch++;
     _token = null;
     account = null;
@@ -146,7 +219,7 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     int? version,
     Uint8List? bytes,
-    void Function(Map<String, dynamic>)? validate,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
     if (_token == null) {
@@ -165,9 +238,30 @@ class AccountSession extends ChangeNotifier {
       return result;
     } on AccountError catch (error) {
       if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/finance/') &&
+          started == _epoch) {
+        denyFinance();
+      }
+
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/projects/') &&
+          started == _epoch) {
+        denyProjects();
+      }
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/production/') &&
+          started == _epoch) {
+        denyProduction();
+      }
+      if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/trade/') &&
           started == _epoch) {
         denyTrade();
+      }
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/gigs/') &&
+          started == _epoch) {
+        denyGigs();
       }
       if (error.status == 403 &&
           path.startsWith('/api/v1/supply/') &&
@@ -201,7 +295,7 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     Map<String, dynamic>? body,
     int? version,
-    void Function(Map<String, dynamic>)? validate,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) =>
       _request(method, path,
           actingParty: actingParty,
@@ -219,18 +313,34 @@ class AccountSession extends ChangeNotifier {
           actingParty: actingParty,
           validate: validate);
   Future<Uint8List> readBytes(String path,
-      {required String actingParty}) async {
+      {String? actingParty, Map<String, dynamic>? query}) async {
     final started = _epoch;
     if (_token == null) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
     try {
-      final bytes =
-          await api.readBytes(path, token: _token!, party: actingParty);
+      final bytes = await api.readBytes(path,
+          token: _token!, party: actingParty, query: query);
       _check(started);
       return bytes;
     } on AccountError catch (e) {
-      if (e.status == 403 && started == _epoch) denySupply();
+      if (started == _epoch) {
+        if (path.startsWith('/api/v1/finance/') &&
+            [403, 404].contains(e.status)) {
+          denyFinance();
+        } else if (path.startsWith('/api/v1/gigs/') &&
+            [403, 404].contains(e.status)) {
+          denyGigs();
+        } else if (path.startsWith('/api/v1/projects/') &&
+            [403, 404].contains(e.status)) {
+          denyProjects();
+        } else if (path.startsWith('/api/v1/production/') &&
+            [403, 404].contains(e.status)) {
+          denyProduction();
+        } else if (e.status == 403) {
+          denySupply();
+        }
+      }
       if (e.status == 401 && started == _epoch) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
@@ -279,6 +389,10 @@ class AccountSession extends ChangeNotifier {
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
+    gigsAccessDenied = false;
+    productionAccessDenied = false;
+    projectsAccessDenied = false;
+    financeAccessDenied = false;
     _epoch++;
     selected = value;
     notifyListeners();

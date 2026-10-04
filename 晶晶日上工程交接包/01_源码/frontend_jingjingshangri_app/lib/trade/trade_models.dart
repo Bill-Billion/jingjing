@@ -1,5 +1,6 @@
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
+import '../gigs/gig_models.dart' show gigCommercial;
 
 const tradeKinds = {
   'ORDER': '订单',
@@ -64,6 +65,25 @@ const tradeContractLabels = {
   'payment_window_minutes': '付款窗口（分钟）',
   'license_reservation_id': '关联许可预留编号',
   'order_id': '订单编号',
+  'commercial': '原商业约定',
+  'ranking_opt_in': '明确选择公开入榜',
+  'offer_id': '接单约定编号',
+  'offer_sha256': '接单约定指纹',
+  'gig_id': '商业需求编号',
+  'scope': '用途范围',
+  'purpose': '用途',
+  'territory': '地区',
+  'valid_until': '有效截止',
+  'valid_from': '开始时间',
+  'category': '商业类别',
+  'commission': '佣金约定',
+  'mcn_bps': 'MCN 分成（万分比）',
+  'platform_bps': '平台费用（万分比）',
+  'relation': '直接合作原约定',
+  'mcn_party_id': 'MCN 主体编号',
+  'sha256': '保存指纹',
+  'avatar_id': '数字人编号',
+  'consent_id': '本人同意编号',
 };
 const tradeStatuses = {
   'IN_REVIEW': '独立审核中',
@@ -174,6 +194,14 @@ void _spec(dynamic value) {
 }
 
 void _quote(Map<String, dynamic> d) {
+  if (d['commercial'] != null) {
+    try {
+      gigCommercial(d['commercial']);
+    } on AccountError {
+      tradeRequire(false);
+    }
+    tradeRequire(d['transaction_model'] == 'DIRECT_SUPPLIER');
+  }
   tradeRequire(d['currency'] == 'CNY' &&
       tradeMinor(d['total_minor']) &&
       ['ALIPAY', 'APPLE'].contains(d['channel']) &&
