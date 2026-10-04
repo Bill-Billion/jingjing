@@ -8,6 +8,8 @@ on:
       - '晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/**'
       - '.github/workflows/pr11-frontend-checks.yml'
       - 'scripts/pr11-ui-test-server.cjs'
+      - 'scripts/sms-login-browser-check.mjs'
+      - '晶晶日上工程交接包/01_源码/backend_server/src/modules/providers/sms*.js'
       - 'scripts/pr13-ui-test-server.cjs'
       - 'scripts/pr14-ui-test-server.cjs'
       - 'scripts/pr14-ui-browser-check.mjs'
@@ -21,6 +23,8 @@ on:
       - '晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/**'
       - '.github/workflows/pr11-frontend-checks.yml'
       - 'scripts/pr11-ui-test-server.cjs'
+      - 'scripts/sms-login-browser-check.mjs'
+      - '晶晶日上工程交接包/01_源码/backend_server/src/modules/providers/sms*.js'
       - 'scripts/pr13-ui-test-server.cjs'
       - 'scripts/pr14-ui-test-server.cjs'
       - 'scripts/pr14-ui-browser-check.mjs'
@@ -88,6 +92,15 @@ jobs:
           cd 晶晶日上工程交接包/01_源码/frontend_ops_workspace
           export CHROME_PATH="$(node --input-type=module -e 'import {chromium} from "playwright-core"; console.log(chromium.executablePath())')"
           npm run e2e
+          cd "$GITHUB_WORKSPACE"
+          node scripts/sms-login-browser-check.mjs
+      - name: 保存短信页面检查摘要和合成截图
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sms-login-browser
+          path: .local/sms-login/browser/
+          if-no-files-found: ignore
       - name: 用真实许可接口检查选本、核验、项目与阅稿页面
         working-directory: ${{ github.workspace }}
         shell: bash
