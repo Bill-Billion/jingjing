@@ -30,11 +30,16 @@ let db, mysql, connection, providers, grantMaintainer, apiServer, controlServer,
 let stateSave = Promise.resolve(), closing = false;
 let phase = 'configuration', stateOwned = false, schemaCreated = false, payerOrganizationId, ruleId;
 let storageAvailable = true, evidenceIntact = true, responseLoss = null, membershipEnabled = true, workerEnabled = false, workerTimer, workerBusy = false, jobs, reportHandler;
-const workerHistory = [];
+const workerHistory = [], providerCalls = [];
 const key = () => crypto.randomUUID(), sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const now = Date.now(), validFrom = new Date(now - 86400000).toISOString(), validUntil = new Date(now + 90 * 86400000).toISOString();
 const targetScope = purpose => ({ purpose, territory: 'CN', language: 'zh', valid_until: new Date(now + 30 * 86400000).toISOString() });
 const operations = {
+  payment: /^\/api\/v1\/trade\/payments$/,
+  paymentReconcile: /^\/api\/v1\/trade\/payments\/[0-9a-f-]{36}\/reconciliation$/,
+  refund: /^\/api\/v1\/trade\/refunds$/,
+  refundExecute: /^\/api\/v1\/trade\/refunds\/[0-9a-f-]{36}\/execution$/,
+  refundReconcile: /^\/api\/v1\/trade\/refunds\/[0-9a-f-]{36}\/reconciliation$/,
   comment: /^\/api\/v1\/operations\/objects\/(TRADE|PRODUCTION|PROJECTS)\/[0-9a-f-]{36}\/comments$/,
   commentAction: /^\/api\/v1\/operations\/comments\/[0-9a-f-]{36}\/actions$/,
   markRead: /^\/api\/v1\/operations\/notifications\/[0-9]+\/read$/,
@@ -108,7 +113,7 @@ async function snapshot() {
     records:Object.fromEntries(Object.entries(records).map(([name,r])=>[name,describe(all.get(r.id)||r)])),allRecords:rows.map(summary),
     assets:Object.fromEntries(Object.entries(assets).map(([name,a])=>[name,{id:a.id,ownerPartyId:a.owner_party_id,purpose:a.purpose,byteSize:a.byte_size,contentSha256:a.content_sha256}])),
     media:Object.fromEntries(Object.entries(media).map(([name,m])=>[name,{path:m.path,byteSize:m.bytes.length,contentSha256:sha(m.bytes),label:m.label}])),creation,scenarios,recovery,
-    controls:{storageAvailable,evidenceIntact,membershipEnabled,workerEnabled,nextResponseLoss:responseLoss,grants:Object.fromEntries([...grants].map(([k,v])=>[k,v.enabled]))},workerHistory,
+    controls:{storageAvailable,evidenceIntact,membershipEnabled,workerEnabled,nextResponseLoss:responseLoss,grants:Object.fromEntries([...grants].map(([k,v])=>[k,v.enabled]))},workerHistory,providerCalls,
     verification:{passed:checks.length,checks},limitations:[
       '所有账号、材料、付款、脸声本人同意和金额仅合成隔离测试；不证明真人身份、真实到账、真实商业默认或正式业务启用。',
       '仅外部SMS/私有存储/支付传输替身；业务路由、权限、账本、任务队列、租约和报表生成使用原后端。',
@@ -251,6 +256,7 @@ async function main() {
   const yuan = n => `${Math.floor(n / 100)}.${String(n % 100).padStart(2, '0')}`;
   alipay.exec = async (method, input, options) => {
     assert.equal(options.validateSign, true); const b = input.bizContent;
+    providerCalls.push({method,paymentId:b.outTradeNo,refundId:b.outRequestNo||null});
     const [[p]] = await db.execute("SELECT * FROM trade_records WHERE id=? AND kind='PAYMENT'", [b.outTradeNo]); assert(p);
     const d = typeof p.data_json === 'string' ? JSON.parse(p.data_json) : p.data_json;
     if (method === 'alipay.trade.query') { const q = paymentQueries.get(p.id) || 'PENDING'; if (q === 'TIMEOUT') throw new Error('SYNTHETIC_QUERY_TIMEOUT'); return { code: '10000', outTradeNo: p.id, tradeNo: `synthetic.pr20.${p.id}`, totalAmount: yuan(d.amount_minor), tradeStatus: q === 'SUCCEEDED' ? 'TRADE_SUCCESS' : 'WAIT_BUYER_PAY' }; }
