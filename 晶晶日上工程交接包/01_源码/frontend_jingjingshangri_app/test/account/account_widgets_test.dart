@@ -48,6 +48,57 @@ Future<void> close(WidgetTester tester) async {
 }
 
 void main() {
+  for (final status in [403, 404]) {
+    testWidgets('身份详情$status后停止自动刷新，仍能退出或手动重试', (tester) async {
+      late FakeAccountAdapter adapter;
+      var unavailable = true;
+      adapter = FakeAccountAdapter(handler: (r) {
+        if (unavailable &&
+            (r.path == '/api/v1/parties/$orgId' ||
+                r.path == '/api/v1/parties/$personId')) {
+          return envelope({'code': 'TEST_ACCESS_RESTRICTED'},
+              status: status, error: true);
+        }
+        return adapter.defaultReply(r);
+      });
+      final session = AccountSession(api: adapter.createApi());
+      await tester
+          .runAsync(() => session.login('13800000000', invitationId, '123456'));
+      await pump(tester, session, const AccountPage());
+      for (var i = 0; i < 4; i++) {
+        await frames(tester);
+      }
+      final requestsAfterError = adapter.requests.length;
+      await frames(tester);
+      expect(adapter.requests.length, requestsAfterError,
+          reason: '失败身份不能被列表再次自动选中并重复请求');
+      expect(
+          adapter.requests
+              .where((r) => r.path == '/api/v1/parties/$orgId')
+              .length,
+          1);
+      expect(session.isLoggedIn, isTrue);
+      expect(tester.takeException(), isNull);
+      unavailable = false;
+      await tester.tap(find.byTooltip('刷新'));
+      await frames(tester);
+      expect(session.partyId, isNotNull);
+      await tester.tap(find.text('退出登录'));
+      await frames(tester);
+      await tester.tap(find.text('确认'));
+      await frames(tester);
+      expect(session.isLoggedIn, isFalse);
+      expect(
+          adapter.requests
+              .where((r) =>
+                  r.method == 'DELETE' &&
+                  r.path == '/api/v1/auth/sessions/current')
+              .length,
+          1);
+      await close(tester);
+    });
+  }
+
   testWidgets('短信503不启动发送成功倒计时，也不进入演示登录', (tester) async {
     final adapter = FakeAccountAdapter(
         handler: (_) =>

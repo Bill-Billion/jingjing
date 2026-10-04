@@ -12,6 +12,8 @@ class AccountSession extends ChangeNotifier {
   final _pendingRevocations = <String>{};
   bool get hasPendingLogout => _pendingRevocations.isNotEmpty;
   int _partyRead = 0;
+  final _unavailableParties = <String>{};
+  String? partyNotice;
   Map<String, dynamic>? account;
   Map<String, dynamic>? selected;
   List<Map<String, dynamic>> parties = [];
@@ -227,6 +229,8 @@ class AccountSession extends ChangeNotifier {
     operationsAccessDenied = false;
     _epoch++;
     operationsTargets.clear();
+    _unavailableParties.clear();
+    partyNotice = null;
     _token = null;
     account = null;
     selected = null;
@@ -384,7 +388,12 @@ class AccountSession extends ChangeNotifier {
     }
   }
 
-  Future<void> loadParties({bool more = false}) async {
+  Future<void> loadParties(
+      {bool more = false, bool retryUnavailable = false}) async {
+    if (retryUnavailable) {
+      _unavailableParties.clear();
+      partyNotice = null;
+    }
     if (more && partiesCursor == null) return;
     final ticket = ++_partyRead;
     final result = await read('/api/v1/me/parties', query: {
@@ -392,7 +401,11 @@ class AccountSession extends ChangeNotifier {
       if (more && partiesCursor != null) 'cursor': partiesCursor,
     });
     if (ticket != _partyRead) return;
-    final rows = maps(result['items']);
+    // A stale list may keep returning an inaccessible identity. Only an
+    // explicit user refresh retries it; automatic refresh must not loop.
+    final rows = maps(result['items'])
+        .where((row) => !_unavailableParties.contains(row['party']['id']))
+        .toList();
     parties = {
       for (final row in [
         ...(more ? parties : <Map<String, dynamic>>[]),
@@ -406,9 +419,11 @@ class AccountSession extends ChangeNotifier {
     final match = parties.where((row) => row['party']['id'] == partyId);
     if (match.isNotEmpty) {
       final wasOwner = isOwner;
+      final previousStatus = party?['current_status'];
       selected = match.first;
       if ((wasOwner && !isOwner) ||
-          ['SUSPENDED', 'CLOSED'].contains(party?['current_status'])) {
+          (previousStatus != party?['current_status'] &&
+              ['SUSPENDED', 'CLOSED'].contains(party?['current_status']))) {
         api.clearSupplyOperations();
         _epoch++;
         operationsTargets.clear();
@@ -420,6 +435,7 @@ class AccountSession extends ChangeNotifier {
 
   void select(Map<String, dynamic> value) {
     if (value['party']['id'] == partyId) return;
+    partyNotice = null;
     api.clearSupplyOperations();
     supplyAccessDenied = false;
     licensingAccessDenied = false;
@@ -439,9 +455,11 @@ class AccountSession extends ChangeNotifier {
     final id = partyId;
     if (id == null) return;
     try {
+      final previousStatus = party?['current_status'];
       final result = await read('/api/v1/parties/$id', actingParty: id);
       selected = {...selected!, 'party': result};
-      if (['SUSPENDED', 'CLOSED'].contains(result['current_status'])) {
+      if (['SUSPENDED', 'CLOSED'].contains(result['current_status']) &&
+          result['current_status'] != previousStatus) {
         api.clearSupplyOperations();
         _epoch++;
         operationsTargets.clear();
@@ -451,6 +469,8 @@ class AccountSession extends ChangeNotifier {
       notifyListeners();
     } on AccountError catch (error) {
       if ([403, 404].contains(error.status) && partyId == id) {
+        _unavailableParties.add(id);
+        partyNotice = '部分身份暂时无法访问，已停止自动重试。可以刷新当前记录，或选择其他身份。';
         api.clearSupplyOperations();
         _epoch++;
         operationsTargets.clear();
