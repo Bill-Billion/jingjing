@@ -1,0 +1,9 @@
+'use strict';
+const {id,ref,label,error}=require('../party/policy');
+const domains=Object.freeze(['TRADE','PRODUCTION','PROJECTS','FINANCE','SUPPLY','LICENSE','GIGS']);
+function target(domain,record_id){if(!domains.includes(domain))throw error('INVALID_BUSINESS_DOMAIN',400);return {domain,record_id:id(record_id)};}
+function page(after=0,limit=30){if(!Number.isSafeInteger(after)||after<0||!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_PAGE',400);return {after,limit};}
+function request(i){if(!['CASH','SETTLEMENT','WORKLOAD'].includes(i.kind)||!['SANDBOX','PRODUCTION'].includes(i.environment))throw error('INVALID_REPORT',400);for(const v of [i.period_start,i.period_end])if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(v)||!Number.isFinite(Date.parse(v))||new Date(v).toISOString()!==v)throw error('INVALID_PERIOD',400);if(i.period_end<=i.period_start||Date.parse(i.period_end)-Date.parse(i.period_start)>366*86400000)throw error('INVALID_PERIOD',400);return {kind:i.kind,environment:i.environment,period_start:i.period_start,period_end:i.period_end,metric_version:'1'};}
+function csvCell(value){if(typeof value==='number'&&Number.isFinite(value))return String(value);let s=String(value??'');if(/^[\s]*[=+\-@]/u.test(s)||/^[\t\r\n]/u.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';}
+function csv(report){const columns=['domain','record_id','source_id','category','amount_minor','currency','status','occurred_at'];const metadata=['metric_version','environment','period_start','period_end','generated_at','row_count'].map(k=>[k,report[k]]);return '\ufeff'+[...metadata,...report.limitations.map(v=>['limitation',v]),[],columns,...report.rows.map(r=>columns.map(c=>r[c]??''))].map(r=>r.map(csvCell).join(',')).join('\r\n')+'\r\n';}
+module.exports={domains,target,page,request,csv,csvCell};
