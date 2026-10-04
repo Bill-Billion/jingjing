@@ -79,9 +79,32 @@ async function ready(p=page){await p.getByText('正在读取实际记录…',{ex
 async function go(p,path){page=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
 async function shot(p,name,gallery){if(new URL(p.url()).pathname.startsWith('/operations/'))await ready(p);const actual=await p.locator('[data-gallery]').first().getAttribute('data-gallery');if(gallery)assert.equal(actual,gallery);const file='screenshots/pr20-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,gallery:gallery||actual,viewport:p.viewportSize()});await save()}
 const fill=(p,key,v)=>p.getByTestId(key).fill(String(v))
+async function notificationPage(p,cursor,action){
+ // Track the request created by this navigation/click, not a late response to an
+ // earlier page read. Match pagination explicitly before trusting next_cursor.
+ const pending=handled(p.waitForRequest(r=>{
+  const u=new URL(r.url());return r.method()==='GET'&&u.pathname==='/api/v1/operations/notifications'
+   &&u.searchParams.get('cursor')===(cursor===null?null:String(cursor))
+   &&u.searchParams.get('limit')==='30'&&u.searchParams.get('unread_only')==='false'
+ }))
+ await action();const request=await pending,response=await request.response();assert(response,'Notification request was aborted')
+ const d=await data(response);await response.finished()
+ // A response alone does not prove Vue applied it. Require the actual rows and
+ // pagination control to agree with that page; a missing page still fails.
+ await p.waitForFunction(({ids,more})=>{
+  const refresh=document.querySelector('[data-testid="ops-refresh"]')
+  const next=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='继续读取更早事件')
+  return refresh&&!refresh.disabled&&!!next===more&&ids.every(id=>document.querySelector('[data-testid="ops-open-event-'+id+'"]'))
+ },{ids:d.items.map(x=>x.id),more:d.next_cursor!==null})
+ return d
+}
 async function allNotifications(a){
- const p=a.page;let received=wait(p,'GET','/operations/notifications');await go(p,'/operations/notifications');let d=await data(await received),rows=[...d.items]
- for(let n=0;d.next_cursor!==null;n++){assert(n<40);received=wait(p,'GET','/operations/notifications');await p.getByRole('button',{name:'继续读取更早事件',exact:true}).click();d=await data(await received);await ready(p);rows.push(...d.items)}
+ const p=a.page;let d=await notificationPage(p,null,()=>go(p,'/operations/notifications')),rows=[...d.items]
+ for(let n=0;d.next_cursor!==null;n++){
+  assert(n<40);const cursor=d.next_cursor
+  d=await notificationPage(p,cursor,()=>p.getByRole('button',{name:'继续读取更早事件',exact:true}).click())
+  assert.notEqual(d.next_cursor,cursor,'Notification cursor must advance');rows.push(...d.items)
+ }
  assert.equal(new Set(rows.map(x=>x.id)).size,rows.length);return rows
 }
 async function comments(a,domain,rid,{operator=false}={}){
