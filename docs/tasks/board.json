@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-04",
+  "updated_on": "2026-10-05",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -2191,6 +2191,43 @@
       "blockers": [],
       "updated_on": "2026-10-03",
       "current_increment": "本批前端已追加原PR21（core/stage-12-release-rehearsal）；所列本机验证通过，远端CI以原PR为准，未合并或部署。"
+    },
+    {
+      "id": "CORE-FULL-FLOW-20261005",
+      "title": "完整流程测试、身份切换修复与模拟业务资料",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-flow-acceptance-20261005",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-043",
+        "REQ-044",
+        "REQ-045"
+      ],
+      "dependencies": [
+        "CORE-S6-001"
+      ],
+      "deliverables": [
+        "docs/tasks/records/CORE-full-flow-20261005.md",
+        "docs/testing/FULL_FLOW_ACCEPTANCE.md",
+        "docs/testing/BUGS_20261005.md"
+      ],
+      "acceptance": "身份详情失败时页面不反复刷新；统一隔离测试版本有客户、作者、制作、运营和结算资料，可重复运行完整流程且保留断点及问题记录；不调用收费服务，不把模拟结果当正式验收。",
+      "shared_boundaries": [
+        "test-fixtures",
+        "frontend-account"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/tasks/records/CORE-full-flow-20261005.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-05"
     }
   ],
   "delivery_policy": {
