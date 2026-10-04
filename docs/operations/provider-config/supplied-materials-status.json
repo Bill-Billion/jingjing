@@ -1,0 +1,159 @@
+{
+  "environment": "sandbox",
+  "offline_only": true,
+  "network_calls": 0,
+  "values_in_report": false,
+  "groups": [
+    {
+      "id": "base",
+      "work": "服务器和MySQL",
+      "fields_present": [
+        "NODE_ENV",
+        "DB_CLIENT",
+        "MYSQL_PORT",
+        "MYSQL_DATABASE"
+      ],
+      "missing_or_placeholder_fields": [
+        "MYSQL_HOST",
+        "MYSQL_USER",
+        "MYSQL_PASSWORD",
+        "MYSQL_SSL_MODE",
+        "AUTH_SECRET_BASE64",
+        "API_ALLOWED_ORIGINS"
+      ],
+      "configuration_issues": [
+        "DB_CLIENT必须为mysql"
+      ],
+      "configuration_complete": false,
+      "current_runtime_implementation": true,
+      "switch_enabled": null,
+      "result": "配置尚未齐全或不符合新版要求",
+      "real_service_verified": false
+    },
+    {
+      "id": "sms",
+      "work": "短信登录",
+      "fields_present": [
+        "VOLC_ACCESS_KEY_ID",
+        "VOLC_SECRET_ACCESS_KEY",
+        "SMS_SIGN_NAME"
+      ],
+      "missing_or_placeholder_fields": [
+        "SMS_ACCOUNT",
+        "SMS_LOGIN_TEMPLATE_ID",
+        "SMS_CONFIG_REVISION"
+      ],
+      "configuration_issues": [],
+      "configuration_complete": false,
+      "current_runtime_implementation": true,
+      "switch_enabled": false,
+      "result": "配置尚未齐全或不符合新版要求",
+      "real_service_verified": false
+    },
+    {
+      "id": "storage",
+      "work": "私有文件存储（OSS）",
+      "fields_present": [
+        "OSS_REGION"
+      ],
+      "missing_or_placeholder_fields": [
+        "OSS_BUCKET",
+        "OSS_ACCESS_KEY_ID",
+        "OSS_ACCESS_KEY_SECRET",
+        "OSS_ENVIRONMENT"
+      ],
+      "configuration_issues": [
+        "OSS_ENVIRONMENT与目标环境不一致",
+        "新版OSS_ENDPOINT必须留空",
+        "OSS地域格式应为oss-开头"
+      ],
+      "configuration_complete": false,
+      "current_runtime_implementation": true,
+      "switch_enabled": null,
+      "result": "配置尚未齐全或不符合新版要求",
+      "real_service_verified": false
+    },
+    {
+      "id": "alipay",
+      "work": "支付宝",
+      "fields_present": [],
+      "missing_or_placeholder_fields": [
+        "TRADE_ALIPAY_APP_ID",
+        "TRADE_ALIPAY_MERCHANT_ID",
+        "TRADE_ALIPAY_MERCHANT_PARTY_ID",
+        "TRADE_ALIPAY_PRIVATE_KEY",
+        "TRADE_ALIPAY_PUBLIC_KEY",
+        "TRADE_ALIPAY_NOTIFY_URL",
+        "TRADE_ALIPAY_CONFIG_REVISION"
+      ],
+      "configuration_issues": [],
+      "configuration_complete": false,
+      "current_runtime_implementation": true,
+      "switch_enabled": false,
+      "result": "配置尚未齐全或不符合新版要求",
+      "real_service_verified": false
+    },
+    {
+      "id": "apple",
+      "work": "Apple购买",
+      "fields_present": [],
+      "missing_or_placeholder_fields": [
+        "TRADE_APPLE_BUNDLE_ID",
+        "TRADE_APPLE_APP_APPLE_ID",
+        "TRADE_APPLE_MERCHANT_PARTY_ID",
+        "TRADE_APPLE_PRIVATE_KEY",
+        "TRADE_APPLE_KEY_ID",
+        "TRADE_APPLE_ISSUER_ID",
+        "TRADE_APPLE_ROOT_CERT_PATHS",
+        "TRADE_APPLE_CONFIG_REVISION"
+      ],
+      "configuration_issues": [],
+      "configuration_complete": false,
+      "current_runtime_implementation": true,
+      "switch_enabled": false,
+      "result": "配置尚未齐全或不符合新版要求",
+      "real_service_verified": false
+    },
+    {
+      "id": "models",
+      "work": "模型和数字人（还需新版接入实现）",
+      "fields_present": [
+        "ARK_API_KEY"
+      ],
+      "missing_or_placeholder_fields": [
+        "ARK_LLM_MODEL",
+        "ARK_T2I_MODEL",
+        "ARK_T2V_MODEL"
+      ],
+      "configuration_issues": [],
+      "configuration_complete": false,
+      "current_runtime_implementation": false,
+      "switch_enabled": null,
+      "result": "仅有旧调用资料，新版接入未完成",
+      "real_service_verified": false
+    },
+    {
+      "id": "speech",
+      "work": "语音（还需新版接入实现）",
+      "fields_present": [],
+      "missing_or_placeholder_fields": [
+        "SPEECH_API_KEY",
+        "SPEECH_APP_ID",
+        "SPEECH_VOICE_ID"
+      ],
+      "configuration_issues": [],
+      "configuration_complete": false,
+      "current_runtime_implementation": false,
+      "switch_enabled": null,
+      "result": "仅有旧调用资料，新版接入未完成",
+      "real_service_verified": false
+    }
+  ],
+  "notes": [
+    "配置检查通过不代表密钥有效、权限开通、余额充足或服务已经启用。",
+    "新版OSS不读取旧OSS_ENABLED开关；能否调用仍取决于完整配置和数据库中的服务验证记录。",
+    "旧ALIPAY_*只可作为字段迁移线索；平台商户主体ID必须另行核对。",
+    "实名、内容审核和电子签还需确定产品/接口与新版实现，不能仅靠环境变量声称接通。",
+    "本工具不检查证书真实性或读取证书内容、不验证合同及素材授权。"
+  ]
+}
