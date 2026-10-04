@@ -35,6 +35,25 @@ test('gigs isolated MySQL and real HTTP cooperation, commissions and rankings',{
  const relationInput={artist_party_id:seller.personal_party_id,scope:'COMMERCIAL',valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',exclusive:true,terms:'synthetic direct-only agreement',commission:{platform_bps:2000,mcn_bps:500},evidence_asset_ids:[mcnEvidence.id]};
  await t.test('MCN cannot silently add artist; artist acceptance is required',async()=>{relation=take(await api('POST','/relations',mcn,relationInput));assert.equal(relation.current_status,'INVITED');assert.equal((await api('POST','/relations/'+relation.id+'/decision',mcn,{decision:'ACCEPT',reason:'self'},mcn.personal_party_id,{'If-Match':'"1"'})).status,409);relation=take(await api('POST','/relations/'+relation.id+'/decision',seller,{decision:'ACCEPT',reason:'agree'},seller.personal_party_id,{'If-Match':'"1"'}));assert.equal(relation.current_status,'ACTIVE');});
  await t.test('overlapping exclusive relation rejected and outsiders cannot read',async()=>{const other=take(await api('POST','/relations',mcn,relationInput));assert.equal((await api('POST','/relations/'+other.id+'/decision',seller,{decision:'ACCEPT',reason:'duplicate'},seller.personal_party_id,{'If-Match':'"1"'})).status,409);assert.equal((await api('GET','/records/'+relation.id,outsider)).status,404);});
+ await t.test('relation display names require participant ownership and never alter saved terms',async()=>{
+  const path='/relations/'+relation.id+'/parties';
+  const before=take(await api('GET','/records/'+relation.id,seller));
+  for(const person of [seller,mcn]){
+   const names=take(await api('GET',path,person),'GigRelationPartiesResponse');
+   assert.equal(names.record_id,relation.id);assert.equal(names.source,'CURRENT_DISPLAY_NAME');
+   assert.deepEqual(names.parties,[{party_id:mcn.personal_party_id,display_name:'mcn'},{party_id:seller.personal_party_id,display_name:'supplier'}]);
+  }
+  assert.equal((await api('GET',path,null)).status,401);
+  assert.equal((await api('GET',path,seller,undefined,null)).status,400);
+  assert.equal((await api('GET',path,outsider)).status,404);
+  assert.equal((await api('GET',path,reviewer,undefined,null)).status,400);
+  assert.equal((await api('GET','/relations/'+rule.id+'/parties',seller)).status,404);
+  await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE party_id=? AND account_id=?",[seller.personal_party_id,seller.account_id]);
+  try{assert.equal((await api('GET',path,seller)).status,403);}finally{await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[seller.personal_party_id,seller.account_id]);}
+  await db.execute('UPDATE parties SET display_name=? WHERE id=?',['new display <script>literal</script>',mcn.personal_party_id]);
+  assert.equal(take(await api('GET',path,seller),'GigRelationPartiesResponse').parties[0].display_name,'new display <script>literal</script>');
+  assert.deepEqual(take(await api('GET','/records/'+relation.id,seller)),before);
+ });
  const gigInput={title:'Synthetic brand task',brief:'Explicit commercial use',category:'TEST',scope:{purpose:'COMMERCIAL',territory:'CN',valid_until:'2098-01-01T00:00:00.000Z'},proofs:[{code:'AUTHORITY',asset_id:buyerEvidence.id}]};
  await t.test('missing proofs, forbidden category and unreviewed publication blocked',async()=>{assert.equal((await api('POST','/requests',buyer,{...gigInput,rule_id:rule.id,proofs:[]})).status,409);assert.equal((await api('POST','/requests',buyer,{...gigInput,rule_id:rule.id,category:'BANNED_TEST'})).status,409);gig=take(await api('POST','/requests',buyer,{...gigInput,rule_id:rule.id}));assert.equal(take(await api('GET','/catalogue',buyer),'GigCatalogueResponse').items.length,0);gig=await review(gig);assert.equal(take(await api('GET','/catalogue',buyer),'GigCatalogueResponse').items.length,1);});
  const offerInput=()=>({gig_id:gig.id,spec_id:spec.id,avatar_id:avatar.id,consent_id:consent.id,relation_id:relation.id,commission:relationInput.commission,terms:'synthetic receipt-based commission, MCN funded from platform',ranking_opt_in:true,evidence_asset_ids:[evidence.id]});

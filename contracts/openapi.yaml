@@ -5909,6 +5909,52 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/gigs/relations/{record_id}/parties:
+    get:
+      operationId: getGigRelationParties
+      summary: 读取合作双方当前显示名称（仅双方有效负责人）
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 当前显示名称不是法定名称核验或历史合同快照；不返回账号、手机或证件信息。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRelationPartiesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACTING_PARTY_OWNER
   /api/v1/gigs/records/{record_id}:
     get:
       operationId: getGigRecord
@@ -19463,6 +19509,40 @@ components:
       - $ref: '#/components/schemas/GigOfferRecord'
       - $ref: '#/components/schemas/GigCommissionRecord'
       - $ref: '#/components/schemas/GigRankingRecord'
+    GigRelationPartiesResponse:
+      type: object
+      additionalProperties: false
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required: [record_id, source, parties]
+          properties:
+            record_id:
+              type: string
+              format: uuid
+            source:
+              const: CURRENT_DISPLAY_NAME
+            parties:
+              type: array
+              minItems: 2
+              maxItems: 2
+              description: 仅包含该合作的MCN和合作本人，各一次；名称来自当前主体资料，不修改历史约定。
+              items:
+                type: object
+                additionalProperties: false
+                required: [party_id, display_name]
+                properties:
+                  party_id:
+                    type: string
+                    format: uuid
+                  display_name:
+                    type: [string, 'null']
+                    minLength: 1
+                    maxLength: 120
     GigRecordResponse:
       type: object
       additionalProperties: false

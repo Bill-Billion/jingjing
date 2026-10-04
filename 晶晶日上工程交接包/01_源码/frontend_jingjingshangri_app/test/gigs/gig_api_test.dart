@@ -12,6 +12,65 @@ import '../supply/supply_fixtures.dart';
 import 'gig_fixtures.dart';
 
 void main() {
+  test('合作名称校验双方编号、拒绝越权失败，兼容旧服务器404', () async {
+    final r = GigRecord.parse(gigData('RELATION'), party: personId);
+    var status = 200;
+    var body = <String, dynamic>{
+      'record_id': r.id,
+      'source': 'CURRENT_DISPLAY_NAME',
+      'parties': [
+        {'party_id': r.owner, 'display_name': '测试MCN'},
+        {'party_id': r.counterparty, 'display_name': '测试合作人'}
+      ]
+    };
+    late FakeAccountAdapter a;
+    a = FakeAccountAdapter(
+        handler: (q) =>
+            q.path.endsWith('/parties') && q.path.contains('/gigs/relations/')
+                ? envelope(status == 200 ? body : {'code': 'NOT_FOUND'},
+                    status: status, error: status != 200)
+                : a.defaultReply(q));
+    final session = await buyerSession(a), api = GigApi(session);
+    expect((await api.relationNames(r))[r.owner], '测试MCN');
+    expect(a.requests.last.headers['X-Acting-Party'], personId);
+    body['record_id'] = offerId;
+    await expectLater(api.relationNames(r), throwsA(isA<AccountError>()));
+    body['record_id'] = r.id;
+    body['parties'][1]['party_id'] = r.owner;
+    await expectLater(api.relationNames(r), throwsA(isA<AccountError>()));
+    status = 404;
+    expect(await api.relationNames(r), isEmpty);
+    for (final code in [503, 403]) {
+      status = code;
+      await expectLater(api.relationNames(r), throwsA(isA<AccountError>()));
+    }
+  });
+  test('合作名称请求途中切换身份，旧响应不得显示', () async {
+    final result = Completer<ResponseBody>();
+    late FakeAccountAdapter a;
+    a = FakeAccountAdapter(
+        handler: (q) => q.path.contains('/gigs/relations/')
+            ? result.future
+            : a.defaultReply(q));
+    final session = await buyerSession(a), api = GigApi(session);
+    final r = GigRecord.parse(gigData('RELATION'), party: personId);
+    final pending = api.relationNames(r);
+    final rejected = expectLater(
+        pending,
+        throwsA(isA<AccountError>()
+            .having((e) => e.code, 'code', 'CONTEXT_CHANGED')));
+    await Future<void>.delayed(Duration.zero);
+    session.select(identity(orgId));
+    result.complete(envelope({
+      'record_id': r.id,
+      'source': 'CURRENT_DISPLAY_NAME',
+      'parties': [
+        {'party_id': r.owner, 'display_name': '旧名称'},
+        {'party_id': r.counterparty, 'display_name': '旧合作人'}
+      ]
+    }));
+    await rejected;
+  });
   test('真实 DTO 逐项验证、原文指纹和当前主体，拒绝假权限及更改原文', () {
     for (final kind in ['GIG', 'OFFER', 'RELATION', 'COMMISSION']) {
       expect(GigRecord.parse(gigData(kind), party: personId).kind, kind);

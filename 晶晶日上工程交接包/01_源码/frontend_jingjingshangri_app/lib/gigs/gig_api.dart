@@ -85,6 +85,35 @@ class GigApi {
     return GigRecord.parse(d, party: p, id: id);
   }
 
+  Future<Map<String, String?>> relationNames(GigRecord r) async {
+    gigRequire(r.kind == 'RELATION');
+    final p = owner(), epoch = session.epoch;
+    try {
+      final d = gigMap(
+          await session.read('/api/v1/gigs/relations/${r.id}/parties',
+              actingParty: p),
+          keys: ['record_id', 'source', 'parties']);
+      check(epoch, p);
+      gigRequire(
+          d['record_id'] == r.id && d['source'] == 'CURRENT_DISPLAY_NAME');
+      final rows = gigList(d['parties']);
+      gigRequire(rows.length == 2);
+      final names = <String, String?>{};
+      for (final value in rows) {
+        final row = gigMap(value, keys: ['party_id', 'display_name']);
+        gigRequire([r.owner, r.counterparty].contains(row['party_id']) &&
+            !names.containsKey(row['party_id']) &&
+            (row['display_name'] == null || gigText(row['display_name'], 120)));
+        names[row['party_id'] as String] = row['display_name'] as String?;
+      }
+      return names;
+    } on AccountError catch (e) {
+      check(epoch, p);
+      if (e.status == 404 && e.code == 'NOT_FOUND') return {};
+      rethrow;
+    }
+  }
+
   Map<String, dynamic>? pending(String path, {bool reviewer = false}) =>
       session.pending('POST', path, actingParty: reviewer ? null : owner());
   Future<GigRecord> write(String path, Map<String, dynamic> body,

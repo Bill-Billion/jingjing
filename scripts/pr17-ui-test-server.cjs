@@ -219,6 +219,10 @@ async function main() {
     const p = { phone, accountId: session.account.id, token: session.access_token };
     const parties = await call('GET', '/me/parties', { person: p }); p.personalPartyId = parties.items.find(r => r.party.kind === 'PERSON')?.party.id;
     assert(p.personalPartyId); p.actingPartyId = p.personalPartyId; people[name] = p;
+    const labels={seller:'林小禾·合作演员',buyer:'星桥·商单客户',reviewer:'材料审核员',mcn:'青岚·经纪负责人',member:'青岚·普通成员',outsider:'无关测试访客',ruleAuthor:'规则登记员'};
+    const personal=parties.items.find(r=>r.party.id===p.personalPartyId).party;
+    await call('PATCH',`/parties/${p.personalPartyId}`,{person:p,party:p.personalPartyId,version:personal.object_version,body:{display_name:labels[name]+'（合成测试）'}});
+
   }
   const { seller, buyer, reviewer, mcn, member, outsider, ruleAuthor } = people;
   const organization = await call('POST', '/organizations', { person: mcn, body: { display_name: '青岚直签 MCN（合成隔离测试）' } });

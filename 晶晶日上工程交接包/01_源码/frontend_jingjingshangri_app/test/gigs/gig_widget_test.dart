@@ -48,6 +48,48 @@ Future<void> consentConfirm(WidgetTester tester) async {
 
 ResponseBody emptyPage() => envelope({'items': [], 'next_cursor': null});
 void main() {
+  testWidgets('合作详情展示双方名称，重新读取遇到拒绝会清空名称', (tester) async {
+    late FakeAccountAdapter a;
+    var denied = false;
+    final relation = gigData('RELATION', status: 'INVITED');
+    a = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith('/records/$relationId')) return envelope(relation);
+      if (r.path.endsWith('/relations/$relationId/parties')) {
+        return denied
+            ? envelope({'code': 'GIG_PARTY_FORBIDDEN'},
+                status: 403, error: true)
+            : envelope({
+                'record_id': relationId,
+                'source': 'CURRENT_DISPLAY_NAME',
+                'parties': [
+                  {
+                    'party_id': relation['owner_party_id'],
+                    'display_name': '测试MCN公司'
+                  },
+                  {
+                    'party_id': relation['counterparty_id'],
+                    'display_name': '测试合作本人'
+                  }
+                ]
+              });
+      }
+      return a.defaultReply(r);
+    });
+    final s = (await tester.runAsync(() => buyerSession(a)))!;
+    await nav.openApp(tester, s, route: '/gigs/record?recordId=$relationId');
+    await reveal(tester, find.text('测试MCN公司'));
+    expect(find.text('测试MCN公司'), findsOneWidget);
+    expect(find.text('测试合作本人'), findsOneWidget);
+    denied = true;
+    // Dispose the previous route so reopening really performs a fresh request.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await nav.openApp(tester, s, route: '/gigs/record?recordId=$relationId');
+    await nav.frames(tester);
+    expect(find.text('测试MCN公司'), findsNothing);
+    expect(find.text('测试合作本人'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('买方完整条款确认，与不同 offer 的报价隔离，身份切换清空原内容', (tester) async {
     late FakeAccountAdapter a;
     var accepted = false;

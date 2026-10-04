@@ -19,6 +19,17 @@ function createGigsRepository(db,{resolvePrincipal=async()=>null}={}){
  async function mutate(ctx,input,op,auth,fn){const i=policy.copy(input);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),hint=await load(tx,i.record_id,null,'');if(hint.kind==='OFFER')await load(tx,hint.parent_id,'GIG');if(hint.kind==='RELATION')await one(tx,'SELECT id FROM parties WHERE id=? FOR UPDATE',[hint.counterparty_id]);const r=await load(tx,i.record_id);await auth(tx,a,r,i);return command(tx,a,op,i,async()=>{match(r,i.expected_version);return fn(tx,a,r,i);});});}
  const self=async(tx,a,r,i)=>{await owner(tx,a,i.party_id);if(r.owner_party_id!==i.party_id)throw error('GIG_PARTY_FORBIDDEN');};
  const api={
+ async relationParties(ctx,{record_id,party_id}){return db.withTransaction(async tx=>{
+  if(!party_id)throw error('ACTING_PARTY_REQUIRED',400);
+  const a=await actor(tx,ctx),r=await load(tx,record_id,'RELATION','FOR SHARE');
+  await access(tx,a,r,party_id);
+  const parties=[];
+  for(const party of [r.owner_party_id,r.counterparty_id]){
+   const row=await one(tx,'SELECT id,display_name FROM parties WHERE id=? FOR SHARE',[party]);
+   parties.push({party_id:party,display_name:row?.display_name||null});
+  }
+  return {record_id:r.id,source:'CURRENT_DISPLAY_NAME',parties};
+ });},
  async read(ctx,{record_id,party_id}){return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await load(tx,record_id,null,'FOR SHARE');await access(tx,a,r,party_id);return r;});},
  async list(ctx,{party_id,kind,after='',limit=20}){if(!['RULE','RELATION','GIG','OFFER','COMMISSION','RANKING'].includes(kind)||!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIST',400);if(after)id(after);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);if(party_id)await owner(tx,a,party_id);else await operator(tx,a);const [rows]=await tx.execute('SELECT * FROM gig_records WHERE kind=? AND id>? '+(party_id?"AND (owner_party_id=? OR counterparty_id=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.relation.mcn_party_id'))=?) ":'')+'ORDER BY id LIMIT ?',[kind,after,...(party_id?[party_id,party_id,party_id]:[]),limit+1]);return {items:rows.slice(0,limit).map(dto),next_cursor:rows.length>limit?rows[limit-1].id:null};});},
  async createRule(ctx,i){shape(i,['rule','operation_key']);const rule=policy.rules(i.rule);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await operator(tx,a);return command(tx,a,'RULE',i,()=>insert(tx,a,'RULE',null,null,null,'IN_REVIEW',{rule,review:null}));});},

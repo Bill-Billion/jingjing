@@ -298,6 +298,11 @@ class AccountSession extends ChangeNotifier {
       }
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/gigs/') &&
+          !(method == 'GET' &&
+              error.status == 404 &&
+              error.code == 'NOT_FOUND' &&
+              RegExp(r'^/api/v1/gigs/relations/[0-9a-fA-F-]{36}/parties$')
+                  .hasMatch(path)) &&
           started == _epoch) {
         denyGigs();
       }

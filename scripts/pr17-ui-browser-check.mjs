@@ -32,6 +32,19 @@ const input=(p,label)=>p.getByLabel(new RegExp('^'+label.replace(/[.*+?^${}()|[\
 async function uploaded(p,label){await p.getByLabel('选择'+label+'文件',{exact:true}).setInputFiles({name:'synthetic-proof.txt',mimeType:'text/plain',buffer:Buffer.from('ISOLATED TEST / SYNTHETIC ONLY\nOnly local browser proof; no actual advertising or personal rights.')});const r=post(p,'/supply/assets');await p.getByRole('button',{name:'上传私有材料',exact:true}).click();return data(await r)}
 async function review(row,section,reviewer){const p=reviewer.page;await go(p,`/gigs/reviews/${section}/${row.id}`);if(row.kind!=='RULE'){const r=p.waitForResponse(r=>r.request().method()==='GET'&&new URL(r.url()).pathname.startsWith(`/api/v1/gigs/records/${row.id}/evidence/`));const download=p.waitForEvent('download');await p.getByRole('button',{name:'读取本记录私有证明',exact:true}).first().click();assert.equal((await r).status(),200);assert.equal(await (await download).failure(),null)}await p.getByTestId('gigs-review-decision').selectOption('APPROVED');if(row.kind!=='RULE')for(const key of ['identity_verified','authority_verified','materials_reviewed','content_reviewed','marking_reviewed'])await p.getByTestId('gigs-check-'+key).check();await p.getByTestId('gigs-review-reason').fill('仅隔离浏览器测试：已核对实际合成材料与原条款，不能当作真实业务核验。');await shot(p,'review-'+section+'-desktop');const r=post(p,`/gigs/records/${row.id}/reviews`);await p.getByTestId('gigs-review-submit').click();return data(await r)}
 async function run(){
+ if(process.argv.includes('--relation-names-only')){
+  await check('网页实际合作详情展示双方名称与编号，身份退出清除内容',async()=>{
+   const seller=await login('seller'),p=seller.page;
+   const response=p.waitForResponse(r=>new URL(r.url()).pathname===`/api/v1/gigs/relations/${id('webRelationInvited')}/parties`);
+   await go(p,'/gigs/relations/'+id('webRelationInvited'));
+   const names=await data(await response);assert.equal(names.parties.length,2);
+   for(const row of names.parties){assert(row.display_name);await p.getByRole('main').getByText(row.display_name,{exact:true}).waitFor();await p.getByText(row.party_id,{exact:true}).first().waitFor()}
+   await shot(p,'relation-names');
+   await p.evaluate(()=>{sessionStorage.removeItem('ops.session.token')});await p.reload();await p.getByTestId('phone-input').waitFor();
+   assert.equal(await p.getByText(names.parties[0].display_name,{exact:true}).count(),0);
+  });return;
+ }
+
  const buyer=await login('buyer'),seller=await login('seller'),reviewer=await login('reviewer'),mcn=await login('mcn'),author=await login('ruleAuthor');const c=state.creation.web
  await check('真实商单目录与需求登记，私有证明实际上传后待审',async()=>{
   const p=buyer.page;await go(p,'/gigs/catalogue');await shot(p,'catalogue-desktop');await go(p,'/gigs/requests/new');assert.equal(await p.getByTestId('gigs-rule').inputValue(),'');await p.getByTestId('gigs-title').fill('浏览器合成商单（仅隔离测试）');await p.getByTestId('gigs-brief').fill('明确商业用途、地域和证明；不是正式广告或真实权利材料。');await p.getByTestId('gigs-rule').selectOption(c.ruleId);await p.getByTestId('gigs-category').selectOption(c.category);await p.getByTestId('gigs-territory').fill(c.scope.territory);await p.getByTestId('gigs-until').fill(c.scope.valid_until.slice(0,16));await uploaded(p,'商单证明1');await shot(p,'request-new-desktop');const r=post(p,'/gigs/requests');await p.getByTestId('gigs-submit').click();created.gig=await data(await r);assert.equal(created.gig.current_status,'IN_REVIEW');await p.waitForURL(u=>u.pathname.endsWith(created.gig.id));created.gig=await review(created.gig,'requests',reviewer);assert.equal(created.gig.current_status,'PUBLISHED')

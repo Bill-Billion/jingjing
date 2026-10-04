@@ -419,6 +419,7 @@ class _RecordState extends State<_Record> {
   int ticket = 0;
   List<Map<String, dynamic>> entries = [];
   List<TradeRecord> linked = [];
+  Map<String, String?> relationNames = {};
   final reason = TextEditingController();
   @override
   void initState() {
@@ -438,11 +439,15 @@ class _RecordState extends State<_Record> {
       busy = true;
       data = null;
       linked = [];
+      relationNames = {};
       entries = [];
       error = null;
     });
     try {
       final r = await api.record(widget.id);
+      final names = r.kind == 'RELATION'
+          ? await api.relationNames(r)
+          : <String, String?>{};
       var links = <TradeRecord>[], changes = <Map<String, dynamic>>[];
       if (r.kind == 'OFFER' && r.status == 'ACCEPTED') {
         final trade = TradeApi(widget.session);
@@ -454,6 +459,7 @@ class _RecordState extends State<_Record> {
       if (mounted && t == ticket) {
         setState(() {
           data = r;
+          relationNames = names;
           linked = links;
           entries = changes;
         });
@@ -612,6 +618,10 @@ class _RecordState extends State<_Record> {
         ],
       'RELATION' => [
           supplyCard('合作双方', [
+            tradeFact('MCN 显示名称', relationNames[r.owner] ?? '名称暂未提供，请结合编号核对'),
+            tradeFact(
+                '合作本人显示名称', relationNames[r.counterparty] ?? '名称暂未提供，请结合编号核对'),
+            supplyNote('显示名称可能变更，不代表已核实的法定名称；请结合编号核对。'),
             tradeFact('MCN 主体编号', r.owner),
             tradeFact('合作本人主体编号', r.counterparty)
           ]),

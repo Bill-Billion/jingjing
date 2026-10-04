@@ -71,6 +71,15 @@ function checked<T>(r:ApiResult<unknown>,i:SupplyIdentity,g:(v:unknown)=>v is T)
 export const gigTitle=(r:GigRecord)=>r.kind==='GIG'?r.data.title:r.kind==='RULE'?`规则 ${r.data.rule.version}`:r.kind==='RELATION'?'直接 MCN 合作':r.kind==='OFFER'?'商单服务提案':r.kind==='COMMISSION'?'订单佣金计提':'榜单快照'
 export const gigStatuses:Record<string,string>={IN_REVIEW:'待独立审核',EFFECTIVE:'规则已生效',RETIRED:'规则已退役',INVITED:'待本人确认',ACTIVE:'直接合作有效',ENDED:'合作已结束',REJECTED:'已拒绝',PUBLISHED:'已发布',SUSPENDED:'商单已暂停',APPROVED:'已审待客户确认',ACCEPTED:'客户已确认',CALCULATED:'已计提，未出款'}
 export async function listGigs(i:SupplyIdentity,kind:GigKind,cursor:string|null=null,signal?:AbortSignal){const q=new URLSearchParams({kind,limit:'20'});if(cursor)q.set('cursor',cursor);return checked(await request(`/gigs/records?${q}`,options(i,signal)),i,(v):v is GigPage=>obj(v)&&array(v.items,x=>isGigRecord(x)&&x.kind===kind&&visible(x,i))&&nullableId(v.next_cursor))}
+export interface RelationParties {record_id:string;source:'CURRENT_DISPLAY_NAME';parties:{party_id:string;display_name:string|null}[]}
+export async function getRelationParties(i:SupplyIdentity,r:GigRecord,signal?:AbortSignal):Promise<RelationParties|null>{
+ if(r.kind!=='RELATION'||!i.partyId)throw new ApiError({status:400,code:'INVALID_RELATION',message:'请先选择合作双方的有效身份。'});
+ try{return checked(await request(`/gigs/relations/${encodeURIComponent(r.id)}/parties`,options(i,signal)),i,(v):v is RelationParties=>
+  obj(v)&&Object.keys(v).length===3&&v.record_id===r.id&&v.source==='CURRENT_DISPLAY_NAME'&&Array.isArray(v.parties)&&v.parties.length===2&&
+  v.parties.every(p=>obj(p)&&Object.keys(p).length===2&&[r.owner_party_id,r.counterparty_id].includes(p.party_id as string)&&(p.display_name===null||text(p.display_name,120)))&&
+  new Set(v.parties.map(p=>p.party_id)).size===2);
+ }catch(e){if(e instanceof ApiError&&e.status===404&&e.code==='NOT_FOUND')return null;throw e}
+}
 export async function getGig(i:SupplyIdentity,id:string,kind?:GigKind,signal?:AbortSignal){return checked(await request(`/gigs/records/${encodeURIComponent(id)}`,options(i,signal)),i,(v):v is GigRecord=>isGigRecord(v)&&v.id===id&&(!kind||v.kind===kind)&&visible(v,i))}
 export async function postGig(i:SupplyIdentity,c:GigWrite,key:string,signal?:AbortSignal){return checked(await request(c.path,{...options(i,signal),method:'POST',body:c.body,idempotencyKey:key,ifMatch:c.version}),i,(v):v is GigRecord=>isGigRecord(v)&&v.kind===c.resultKind&&visible(v,i)&&(!c.targetId||v.id===c.targetId))}
 export async function getCatalogue(i:SupplyIdentity,signal?:AbortSignal){const p={...i,partyId:null};return checked(await request('/gigs/catalogue',options(p,signal)),p,(v):v is Catalogue=>obj(v)&&array(v.rules,x=>obj(x)&&validSupplyId(x.id)&&isGigRule(x.rule))&&array(v.items,x=>obj(x)&&validSupplyId(x.id)&&text(x.title,200)&&text(x.brief)&&text(x.category,128)&&scope(x.scope)&&validSupplyId(x.buyer_party_id)))}

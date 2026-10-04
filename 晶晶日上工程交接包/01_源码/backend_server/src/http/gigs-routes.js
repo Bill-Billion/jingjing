@@ -22,6 +22,7 @@ function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/commissions','calculate',['order_id']);
  post('/rankings','ranking',['rule_id','as_of'],{party:false});
  router.get('/records',wrap(async(req,res)=>{shape(req.query,['kind','cursor','limit']);reply(req,res,await repo.list(req,{kind:req.query.kind,party_id:acting(req,false),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
+ router.get('/relations/:record_id/parties',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.relationParties(req,{record_id:id(req.params.record_id),party_id:acting(req)}));}));
  router.get('/records/:record_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.read(req,{record_id:id(req.params.record_id),party_id:acting(req,false)}));}));
  router.get('/catalogue',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.catalogue(req));}));
  router.get('/notifications',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.notifications(req,{party_id:acting(req)}));}));
