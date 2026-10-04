@@ -98,7 +98,17 @@ async function submitEdition(){if(!p.value||!isSponsor.value||locked.value||!fin
 async function submitRelease(){if(!p.value||!isSponsor.value||locked.value||!catalogue.value.some(c=>c.kind==='CHANNEL'&&c.id===release.channel)||release.prior&&!releases.value.some(r=>r.id===release.prior)||!assets.value.length||assets.value.length>30||!release.note.trim())return;const r=p.value;await ui.write({path:`/projects/projects/${r.id}/releases`,targetId:r.id,projectId:r.id,version:r.object_version,resultKind:'RELEASE',label:'提交新发行申请',body:{channel_id:release.channel,prior_release_id:release.prior||null,material_asset_ids:[...assets.value],note:release.note.trim()}},r=>void router.push(`/projects/releases/${r.id}/external`))}
 async function registerChannel(){if(locked.value||!isOwner.value||!channel.name.trim()||!channel.reference.trim()||!channel.requirements.trim()||assets.value.length!==1)return;await ui.write({path:'/projects/channels',resultKind:'CHANNEL',label:'登记渠道档案待审核',body:{name:channel.name.trim(),channel_reference:channel.reference.trim(),submission_requirements:channel.requirements.trim(),evidence_asset_id:assets.value[0]}},r=>void router.push(`/projects/channels/${r.id}`))}
 async function reportExternal(){const r=detail.value;if(r?.kind!=='RELEASE'||!isSponsor.value||locked.value||!external.outcome||!external.reference.trim()||!validDate(external.time)||Date.parse(external.time)>Date.now()||!external.note.trim()||assets.value.length!==1)return;await ui.write({path:`/projects/releases/${r.id}/external-events`,targetId:r.id,projectId:r.project_id!,version:r.object_version,resultKind:'EXTERNAL_EVENT',label:'登记真实外部报告待核实',body:{outcome:external.outcome,external_reference:external.reference.trim(),occurred_at:until(external.time),evidence_asset_id:assets.value[0],note:external.note.trim()}},r=>void router.push(`/projects/records/${r.id}`))}
-async function readEvidence(id:string){const r=detail.value;if(!r||locked.value||!evidenceIds(r).includes(id))return;await ui.read('evidence',(i,s)=>projectEvidence(i,r.id,id,s),blob=>{const url=ui.objectUrl(blob),a=document.createElement('a');a.href=url;a.download=`项目私有证明-${id}.bin`;a.click();readAssets.value=[...new Set([...readAssets.value,id])];notice.value='已通过当前权限接口读取私有材料。请实际核对内容后填写结论。'})}
+async function readEvidence(id:string){
+ const r=detail.value;if(!r||locked.value||!evidenceIds(r).includes(id))return
+ const ticket=pageTicket
+ readAssets.value=readAssets.value.filter(asset=>asset!==id);notice.value='';ui.revoke()
+ const result=await ui.read('evidence',(i,s)=>projectEvidence(i,r.id,id,s),blob=>{
+  if(disposed||ticket!==pageTicket)return
+  const url=ui.objectUrl(blob),a=document.createElement('a');a.href=url;a.download=`项目私有证明-${id}.bin`;a.click()
+  readAssets.value=[...new Set([...readAssets.value,id])];notice.value='已通过当前权限接口读取私有材料。请实际核对内容后填写结论。'
+ })
+ if(!result&&!disposed&&ticket===pageTicket)resetDecision()
+}
 async function review(){const r=detail.value;if(!r||!reviewValid.value||locked.value)return;await ui.write({path:`/projects/records/${r.id}/reviews`,targetId:r.id,projectId:r.project_id||undefined,version:r.object_version,resultKind:r.kind,label:'提交独立核验',body:{decision:decision.value,reason:reason.value.trim(),verification:Object.fromEntries(currentFields.value.map(k=>[k,!!checks[k]]))}},()=>void loadPage())}
 </script>
 <template>
