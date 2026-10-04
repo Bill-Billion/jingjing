@@ -21,3 +21,16 @@
 复验：按账号接口说明启动 scripts/pr11-ui-test-server.cjs --test-only 及本地Vue开发服务；设置 PR11_UI_STATE_FILE、BASE_URL、CHROME_PATH，在仓库根运行 node scripts/sms-login-browser-check.mjs；原网页目录继续运行 npm run e2e。本机运行日志和截图保存在 .local/sms-login/。
 
 [短信页面检查摘要](CORE-sms-login-browser-20261004.json) · [不依赖OSS的后续安排](../../collaboration/NEXT_WITHOUT_OSS.md)。
+
+## 已集中上传并建立唯一合并申请
+
+[第22份申请：短信登录阶段](https://github.com/Bill-Billion/jingjing/pull/22)，目标integration。功能版本8ad909c已上传，随后文档补充仍在同一申请；最新文档提交的检查以申请当前版本为准，不另开申请。未合并、未部署，另一方尚未实际批准。
+
+功能版本的[服务器检查](https://github.com/Bill-Billion/jingjing/actions/runs/37203175889)与[App和网页检查](https://github.com/Bill-Billion/jingjing/actions/runs/37203175870)全部成功，已下载日志和短信页面摘要核对：
+
+- 后端完整回归305通过、0失败、1项缺脱敏旧库样本跳过；模块专项单独通过，不与全套重复相加。
+- App125项测试、所列静态检查、Web构建通过。它们是自动化测试，不是原生手机或真实短信端到端验收。
+- Vue构建及账号、许可、交易浏览器检查通过；其中账号24项，短信专项8项，短信只替换HTTPS发送。前端业务源码未修改。
+- 测试接口、私有控制端口、网页服务及本机MySQL均已停止；本次临时盘符已释放。
+
+本侧已完成集中上传、自动检查和现有页面隔离联调。队友独立审阅、维护者合并、真实短信完整登录、OSS及正式上线仍为不同的待办事项，不能把本申请成功当作它们全部完成。
