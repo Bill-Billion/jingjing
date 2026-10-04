@@ -516,16 +516,19 @@ class _VersionReviewState extends State<_VersionReview> {
 
   Future<void> readContent({bool full = false}) async {
     final v = version;
-    if (v == null) return;
+    if (v == null || reading) return;
     final t = ticket, epoch = widget.session.epoch, p = api.participant();
+    final previousVideo = video;
     setState(() {
       reading = true;
       error = null;
+      video = null;
+      text = null;
+      opened = false;
     });
     try {
       // Every play/read starts with a fresh permission-checked content request.
-      await video?.dispose();
-      video = null;
+      await previousVideo?.dispose();
       final content = await api.content(v);
       api.check(epoch, p);
       if (!mounted || t != ticket) return;
@@ -581,9 +584,19 @@ class _VersionReviewState extends State<_VersionReview> {
         setState(() => opened = true);
       }
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = productionError(e));
+      if (mounted && t == ticket) {
+        setState(() {
+          checks.clear();
+          error = productionError(e);
+        });
+      }
     } catch (_) {
-      if (mounted && t == ticket) setState(() => error = '私有内容暂不能播放或阅读，请重新读取。');
+      if (mounted && t == ticket) {
+        setState(() {
+          checks.clear();
+          error = '私有内容暂不能播放或阅读，请重新读取。';
+        });
+      }
     } finally {
       if (mounted && t == ticket) setState(() => reading = false);
     }

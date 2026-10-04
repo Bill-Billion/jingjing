@@ -37,6 +37,47 @@ Future<void> reveal(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  for (final status in [409, 503]) {
+    testWidgets('重新读取私有剧本$status后清空旧内容与阅读确认', (tester) async {
+      var unavailable = false;
+      final adapter = productionAdapter(
+          override: (r) => unavailable && r.path.endsWith('/content')
+              ? envelope({
+                  'code': status == 409
+                      ? 'PRODUCTION_LICENSE_NOT_READY'
+                      : 'SERVICE_UNAVAILABLE'
+                }, status: status, error: true)
+              : null);
+      final s = (await tester.runAsync(() => buyerSession(adapter)))!;
+      await nav.openApp(tester, s,
+          route: '/production/version?versionId=$productionVersionId');
+      await reveal(tester, find.widgetWithText(TextField, '确认说明'));
+      await tester.enterText(find.widgetWithText(TextField, '确认说明'), '先前已读的内容');
+      await reveal(tester,
+          find.byKey(const ValueKey('production-check-script_reviewed')));
+      await tester
+          .tap(find.byKey(const ValueKey('production-check-script_reviewed')));
+      await reveal(tester, find.text('完整阅读'));
+      await tester.tap(find.text('完整阅读'));
+      await nav.frames(tester);
+      await tester.tap(find.text('返回审阅'));
+      await nav.frames(tester);
+      final confirm = find.widgetWithText(FilledButton, '确认这版剧本');
+      await reveal(tester, confirm);
+      expect(tester.widget<FilledButton>(confirm).onPressed, isNotNull);
+      unavailable = true;
+      await reveal(tester, find.text('完整阅读'));
+      await tester.tap(find.text('完整阅读'));
+      await nav.frames(tester);
+      expect(find.text('本版内容已打开。请自行核对完整内容，再勾选验收项。'), findsNothing);
+      expect(find.text(scriptBody), findsNothing);
+      await reveal(tester, confirm);
+      expect(tester.widget<FilledButton>(confirm).onPressed, isNull);
+      expect(adapter.requests.where((r) => r.path == feedbackPath), isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('当前剧本完整阅读、说明与检查项齐备后才确认具体版本', (tester) async {
     final adapter = productionAdapter(),
         s = (await tester.runAsync(() => buyerSession(adapter)))!;
