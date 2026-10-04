@@ -1,3 +1,5 @@
+> 2026-10-05第四批：App浏览器实际16组通过，相关82项自动检查通过；修复项目材料读取/保存失败提示。仍本地、未更新安卓包。[当前计划](status/CORE_CURRENT.md)；工作入口仍为 `worktrees/full-flow`。
+
 > 2026-10-05第三批主测：商单、选角、发行与异常恢复28组通过，两处材料重读状态已修复。仍本地、未更新安卓包；[当前计划](status/CORE_CURRENT.md)。实际工作树为 `worktrees/full-flow`，旧core入口仅同步进度。
 
 > 2026-10-04阶段补充交付：第19—21份完整应用检查通过，外部服务配置准备完毕。先看[最新进度](status/CORE_CURRENT.md)与[配置及补资料说明](operations/provider-config/README.md)。仍待实际审阅合并，真实服务没有启用。
