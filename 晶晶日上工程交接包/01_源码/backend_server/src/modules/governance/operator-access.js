@@ -1,7 +1,7 @@
 'use strict';
 const {randomUUID}=require('node:crypto');
 const {id,ref,shape,label,error}=require('../party/policy');
-const actions=Object.freeze(['CREATE_RULE','READ_RULE','RULE_IN_REVIEW','RULE_APPROVED','RULE_EFFECTIVE','RULE_RETIRED','SEAL','CREATE_SOURCE','READ_SOURCE','REVIEW_SOURCE','WITHDRAW_SOURCE','SUPPLY_REVIEW_PROFILE','SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONTENT','SUPPLY_REVIEW_CONSENT','LICENSE_REVIEW','TRADE_REVIEW','TRADE_REFUND']);
+const actions=Object.freeze(['CREATE_RULE','READ_RULE','RULE_IN_REVIEW','RULE_APPROVED','RULE_EFFECTIVE','RULE_RETIRED','SEAL','CREATE_SOURCE','READ_SOURCE','REVIEW_SOURCE','WITHDRAW_SOURCE','SUPPLY_REVIEW_PROFILE','SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONTENT','SUPPLY_REVIEW_CONSENT','LICENSE_REVIEW','TRADE_REVIEW','TRADE_REFUND','PRODUCTION_REVIEW','PROJECT_REVIEW','GIG_REVIEW','FINANCE_REVIEW','OPERATIONS_REPORT','OPERATIONS_AUDIT','COMMENT_MODERATE']);
 function normalize(input){
  shape(input,['account_id','action','enabled','expires_at','expected_version','authority_ref','reason']);
  id(input.account_id);ref(input.authority_ref);label(input.reason,500);

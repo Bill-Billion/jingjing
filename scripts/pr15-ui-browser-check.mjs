@@ -15,7 +15,7 @@ assert.equal(state.testOnly, true)
 const base = process.env.PR15_WEB_URL || 'http://127.0.0.1:5204'
 const onlyLogin = process.argv.includes('--only-login-return')
 for (const url of [state.apiUrl, state.controlUrl, base]) assert.equal(new URL(url).hostname, '127.0.0.1')
-const evidence = resolve(root, 'docs/ux/pr15-ui/evidence'), shots = resolve(evidence, 'screenshots')
+const evidence = resolve(root, process.env.PR15_UI_EVIDENCE_DIR || 'docs/ux/pr15-ui/evidence'), shots = resolve(evidence, 'screenshots')
 await mkdir(shots, { recursive: true })
 const results = [], pageErrors = [], screenshots = [], actors = {}, suffix = Date.now().toString(36)
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
@@ -155,7 +155,7 @@ async function run() {
     const r = post(p, '/payments/' + payment.id + '/reconciliation'); await p.getByRole('button', { name: '核实支付结果', exact: true }).click(); payment = await data(await r)
     assert.equal(payment.current_status, 'SUCCEEDED'); await go(p, '/trade/orders/' + order.id)
     order = await api(buyer, 'GET', '/trade/records/' + order.id); assert.equal(order.data.financial.received_minor, 18000); assert.equal(order.current_status, 'PAID')
-    await p.getByRole('button', { name: '制作交付尚未开放', exact: true }).waitFor(); await shot(p, 'order-paid-desktop')
+    await p.getByRole('button', { name: '本单无制作明细', exact: true }).waitFor(); await shot(p, 'order-paid-desktop')
   })
   await check('退款逐项金额→独立复核→单独执行→实际渠道核实', async () => {
     const p = buyer.page; await go(p, '/trade/refunds/new'); await p.getByTestId('trade-refund-payment').selectOption(payment.id)
