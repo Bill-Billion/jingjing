@@ -447,6 +447,8 @@ async function main() {
   await control('/evidence?enabled=false');await request('GET',proofRoute,{person:recipient,party:recipient.personalPartyId,status:503});await control('/evidence?enabled=true');await control('/storage?enabled=false');await request('GET',proofRoute,{person:recipient,party:recipient.personalPartyId,status:503});await control('/storage?enabled=true');assert((await request('GET',proofRoute,{person:recipient,party:recipient.personalPartyId})).body.equals(proof.body));
   checks.push('Anonymous/any-Origin control denied; actual underlying PRODUCTION_REVIEW revocation rejects whole generated WORKLOAD content while CASH remains readable; source grant restoration recovers original snapshot; actual OWNER membership revoke blocks old-token comments/inbox/report content, restore succeeds; private proof exact bytes/hash/404 outsider, corruption503/storage503 and restoration verified');
 
+  // Force the real MySQL binary-protocol zero-fraction case for every browser run.
+  await db.execute("UPDATE ops_events SET created_at=DATE_FORMAT(created_at,'%Y-%m-%d %H:%i:%s')");
   phase='account and party notification read state and unknown reply recovery';
   const notifications=await call('GET',ops('/notifications?limit=100'),{person:payer,party:payerOrganizationId});assert(notifications.items.length);const event=notifications.items.find(n=>n.record_id===vo.id);assert(event);
   assert.equal((await call('GET',ops('/notifications?limit=100'),{person:outsider,party:outsider.personalPartyId})).items.length,0);

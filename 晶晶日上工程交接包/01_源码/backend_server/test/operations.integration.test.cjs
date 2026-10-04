@@ -137,6 +137,26 @@ test('operations actual HTTP permissions, comments, notifications and report job
   for(let batch=0;batch<4;batch++){const values=[],parts=[];for(let n=0;n<500;n++){parts.push("(?,?,?,'ACCRUAL',1,?,?,?)");values.push(agreement,buyer.personal_party_id,digest(key()),agreement,JSON.stringify(entry),digest(entry));}await db.execute('INSERT INTO finance_entries(agreement_id,party_id,fact_key,category,amount_minor,source_id,data_json,data_sha256) VALUES '+parts.join(','),values);}
   const large=ok(await call('POST','/reports',buyer,{...reportBody,kind:'SETTLEMENT'}));const blocked=await runJob();assert.equal(blocked.result.error_code,'REPORT_LIMIT_EXCEEDED');const out=ok(await call('GET','/reports/'+large.id),'OpsReportResponse');assert.equal(out.result,null);assert.equal(out.current_status,'BLOCKED');
  });
+ await t.test('whole-second MySQL values remain millisecond UTC across notifications comments audit and new reports',async()=>{
+  const stamp='2026-06-01 00:00:00.000',expected='2026-06-01T00:00:00.000Z';
+  const historical=JSON.stringify(ok(await call('GET','/reports/'+report.id)));
+  await db.execute('UPDATE ops_events SET created_at=? WHERE record_id=?',[stamp,order.id]);
+  const notices=ok(await call('GET','/notifications?limit=100'),'OpsNotificationListResponse').items.filter(x=>x.record_id===order.id);
+  assert.ok(notices.length);for(const row of notices)assert.equal(row.created_at,expected);
+  await db.execute('UPDATE ops_comments SET created_at=? WHERE id=?',[stamp,c.id]);
+  assert.equal(ok(await call('GET',target+'/comments'),'OpsCommentListResponse').items.find(x=>x.id===c.id).created_at,expected);
+  await db.execute('UPDATE ops_audit SET created_at=? WHERE object_id=?',[stamp,c.id]);
+  const audit=ok(await call('GET','/audit?object_id='+c.id,reviewer,undefined,null),'OpsAuditListResponse').items;
+  assert.ok(audit.length);for(const row of audit)assert.equal(row.created_at,expected);
+  await db.execute('UPDATE trade_audit SET created_at=? WHERE record_id=?',[stamp,order.id]);
+  const history=ok(await call('GET',target+'/audit',reviewer,undefined,null),'OpsBusinessAuditListResponse').items;
+  assert.ok(history.length);for(const row of history)assert.equal(row.created_at,expected);
+  await db.execute('UPDATE trade_journal SET created_at=? WHERE order_id=?',[stamp,order.id]);
+  const fresh=ok(await call('POST','/reports',buyer,reportBody));assert.equal((await runJob()).result.status,'SUCCEEDED');
+  const result=ok(await call('GET','/reports/'+fresh.id),'OpsReportResponse').result;
+  const cash=result.rows.filter(x=>x.record_id===order.id);assert.ok(cash.length);for(const row of cash)assert.equal(row.occurred_at,expected);
+  assert.match(result.generated_at,/\.\d{3}Z$/);assert.equal(JSON.stringify(ok(await call('GET','/reports/'+report.id))),historical);
+ });
  const out=path.resolve(__dirname,'../../../..','.local/operations-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:opsFixtures,requests},null,2));
  }finally{if(server)await new Promise(r=>{server.close(r);server.closeAllConnections();});if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
 });

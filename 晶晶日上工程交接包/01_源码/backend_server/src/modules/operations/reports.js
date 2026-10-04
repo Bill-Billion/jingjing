@@ -2,7 +2,8 @@
 const {error}=require('../party/policy'),{digest}=require('../governance/content');
 const {createOperationsRepository}=require('./repository');
 const MAX_ROWS=2000,parse=v=>typeof v==='string'?JSON.parse(v):v;
-const iso=v=>v.replace(' ','T')+'Z',sqlTime=v=>v.replace('T',' ').slice(0,-1);
+const {sqlUtcInstant:iso}=require('./time');
+const sqlTime=v=>v.replace('T',' ').slice(0,-1);
 async function build(tx,access,a,r,request){
  const args=[sqlTime(request.period_start),sqlTime(request.period_end),request.environment],party=r.party_id;
  let query,domain;
