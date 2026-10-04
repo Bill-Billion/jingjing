@@ -58,7 +58,11 @@ function cleanup() {
       try { await connection.end(); } catch (e) { failures.push(e); }
     }
     files.clear(); sent.clear(); paymentQueries.clear(); refundQueries.clear();
-    try { if (mediaDir) await fs.rm(mediaDir, { recursive: true, force: true }); } catch (e) { failures.push(e); }
+    try { if (mediaDir) {
+      assert.equal(path.dirname(path.resolve(mediaDir)), path.resolve(__dirname, '../.local'));
+      assert(path.basename(mediaDir).startsWith('pr20-ui-media-'));
+      await fs.rm(mediaDir, { recursive: true, force: true });
+    } } catch (e) { failures.push(e); }
     if (!failures.length && stateOwned) try { const saved = JSON.parse(await fs.readFile(statePath, 'utf8')); if (saved.controlToken === controlToken) await fs.unlink(statePath); }
     catch (e) { if (e.code !== 'ENOENT') failures.push(e); }
     if (failures.length) throw new AggregateError(failures, 'PR20_LOCAL_CLEANUP_FAILED');
@@ -90,7 +94,7 @@ function summary(row) {
 }
 async function snapshot() {
   const rows = [];
-  for (const table of ['finance_records','project_records','production_records','trade_records','supply_records']) rows.push(...(await db.execute(`SELECT * FROM ${table} ORDER BY id`))[0]);
+  for (const table of ['finance_records','project_records','production_records','trade_records','supply_records','license_records']) rows.push(...(await db.execute(`SELECT * FROM ${table} ORDER BY id`))[0]);
   const [comments] = await db.execute('SELECT * FROM ops_comments ORDER BY id');
   const [reports] = await db.execute('SELECT r.*,j.status job_status,j.attempts,j.last_error FROM ops_reports r JOIN platform_jobs j ON j.id=r.job_id ORDER BY r.id');
   const all = new Map(rows.map(r => [r.id,r]));
@@ -146,7 +150,8 @@ async function makeMedia() {
   };
   await fs.mkdir(path.dirname(statePath), { recursive: true });
   mediaDir = await fs.mkdtemp(path.resolve(__dirname, '../.local/pr20-ui-media-')); await fs.chmod(mediaDir, 0o700);
-  const ffmpeg = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg']; let executable;
+  const ffmpeg = [process.env.JX_TEST_FFMPEG, '/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg'].filter(Boolean);
+  if (process.env.JX_TEST_FFMPEG) assert(path.isAbsolute(process.env.JX_TEST_FFMPEG), 'Test ffmpeg path must be absolute'); let executable;
   for (const file of ffmpeg) { try { await fs.access(file); executable = file; break; } catch {} }
   assert(executable, 'Existing ffmpeg is required; no dependency is installed by this fixture.');
   for (const [name, rgb, label] of [['preview', [31, 77, 64], 'PREVIEW'], ['final', [125, 58, 31], 'FINAL FILE']]) {
@@ -424,6 +429,7 @@ async function main() {
     if(req.headers.origin||req.headers.authorization!==`Bearer ${controlToken}`){res.writeHead(403);res.end('{"error":"TEST_CONTROL_FORBIDDEN"}');return;}
     try {const u=new URL(req.url,controlUrl),get=k=>u.searchParams.get(k);let out;
       if(req.method==='GET'&&u.pathname==='/code'){assert(Object.values(phones).includes(get('phone')));const code=sent.get(get('phone'));res.writeHead(code?200:404);res.end(JSON.stringify({code:code||null}));return;}
+      else if(req.method==='POST'&&u.pathname==='/shutdown'){res.end(JSON.stringify({stopping:true}));setImmediate(()=>cleanup().then(()=>process.exit(0),()=>process.exit(1)));return;}
       else if(req.method==='GET'&&u.pathname==='/state')out=await snapshot();
       else if(req.method==='POST'&&['/storage','/evidence'].includes(u.pathname)){assert(['true','false'].includes(get('enabled')));if(u.pathname==='/storage')storageAvailable=get('enabled')==='true';else evidenceIntact=get('enabled')==='true';out={storageAvailable,evidenceIntact};}
       else if(req.method==='POST'&&u.pathname==='/reviewer-permission'){assert(['OPERATIONS_REPORT','OPERATIONS_AUDIT','COMMENT_MODERATE','TRADE_REVIEW','TRADE_REFUND','PRODUCTION_REVIEW','PROJECT_REVIEW','FINANCE_REVIEW'].includes(get('action')));assert(['true','false'].includes(get('enabled')));const g=await grant('independentReviewer',get('action'),get('enabled')==='true');out={action:g.action,enabled:g.enabled};}
@@ -466,7 +472,11 @@ async function main() {
   for(const port of [5211,5212,8779,8780]){const origin=`http://127.0.0.1:${port}`,r=await request('OPTIONS',ops('/reports'),{status:204,headers:{Origin:origin,'Access-Control-Request-Method':'POST'}});assert.equal(r.headers.get('access-control-allow-origin'),origin);}await request('OPTIONS',ops('/reports'),{status:403,headers:{Origin:'https://example.invalid'}});
   checks.push('Notifications derive real business events; read row is exact account+party, same event remains unread for other party; outsider feed empty; comment/action/markRead/report each really commit then one503 reply, original-key replay yields one real comment/read/report job; original worker enable control generates a queued report, disabling leaves fresh independent App/Web PENDING and CORS allows only explicit loopback UI ports');
   creation.common={report:{kind:'CASH',...period},reportKinds:['CASH','SETTLEMENT','WORKLOAD'],comment:{body:'仅合成纯文本留言，不是真实商业交流',reply_to:null},commentTargets:['TRADE.ORDER','PRODUCTION.PROJECT','PRODUCTION.VERSION','PROJECTS.PROJECT'],payerPartyId:payerOrganizationId,recipientPartyId:recipient.personalPartyId,operatorAccountId:independentReviewer.accountId,proofRoute,reportJsonHashMeaning:'IMMUTABLE_REPORT_JSON_NOT_CSV_BYTES'};
-  phase='private runtime state';await saveState();assert.equal((await fs.stat(statePath)).mode&0o777,0o600);const safe=JSON.stringify(await snapshot());assert.equal(safe.includes(controlToken),false);for(const p of Object.values(people))assert.equal(safe.includes(p.token),false);
+  if(process.argv.includes('--full-flow')) {
+    phase='full-flow checkpoints';
+    await require('./full-flow-fixtures.cjs').seed({call,request,records,people,assets,media,ruleId,grant,pay,checks,scenarios});
+  }
+  phase='private runtime state';await saveState();if(process.platform!=='win32')assert.equal((await fs.stat(statePath)).mode&0o777,0o600);const safe=JSON.stringify(await snapshot());assert.equal(safe.includes(controlToken),false);for(const p of Object.values(people))assert.equal(safe.includes(p.token),false);
   console.log(`Isolated PR20 API ready: ${apiUrl}; control ${controlUrl}; PID ${process.pid}; schema ${schema}; ${checks.length} actual check groups; private runtime ${statePath}`);
 }
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{Promise.resolve(startupPromise).catch(()=>{}).then(cleanup).then(()=>process.exit(0),()=>{console.error(`PR20 cleanup failed for own schema ${schema}`);process.exit(1);});});
