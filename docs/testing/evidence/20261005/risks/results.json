@@ -1,0 +1,147 @@
+{
+  "syntheticOnly": true,
+  "nativeAndroidRetest": false,
+  "complete": true,
+  "results": [
+    {
+      "name": "付款创建已成功但回复丢失：只恢复原请求，不生成第二笔",
+      "status": "PASS"
+    },
+    {
+      "name": "支付查询超时：不显示到账、不允许取消；原请求重试后只入账一次",
+      "status": "PASS"
+    },
+    {
+      "name": "退款申请回复丢失：恢复同一申请，未审核不能执行，不能退超原付款",
+      "status": "PASS"
+    },
+    {
+      "name": "审核员退款权限撤销后，旧页面与旧登录令牌不能继续操作",
+      "status": "PASS"
+    },
+    {
+      "name": "已批准退款执行后回复丢失：恢复原执行，不重复退款",
+      "status": "PASS"
+    },
+    {
+      "name": "退款查询超时、到账核对及再次核对：实际退款合计仍为100分",
+      "status": "PASS"
+    },
+    {
+      "name": "负责人机构权限撤销后清空旧订单，恢复后可重新读取",
+      "status": "PASS"
+    },
+    {
+      "name": "已验收但尾款未付时拒绝最终文件，无关用户始终无权读取",
+      "status": "PASS"
+    },
+    {
+      "name": "许可暂停后原私有样片不能继续读取，历史订单和许可仍保留",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "facts": {
+    "paymentId": "9d9fd984-52ce-4720-8c47-45392afcb033",
+    "orderId": "a0b74c67-6752-4abd-962c-56406c7cb25e",
+    "receivedMinor": 5500,
+    "refundId": "17190bde-e0d5-4339-aef9-e95b123faf8f",
+    "refundProviderCalls": 1,
+    "refundedMinor": 100,
+    "unpaidFinalVersionId": "873c1789-a858-4cc1-9d98-42ac06cc19d1",
+    "suspendedLicenseCode": "PRODUCTION_LICENSE_NOT_READY"
+  },
+  "writes": [
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments",
+      "key": "a0c9c88e-ac86-4fc4-ba1b-70d23ec927ee",
+      "version": null,
+      "body": "{\"order_id\":\"a0b74c67-6752-4abd-962c-56406c7cb25e\",\"installment_key\":\"first\"}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments",
+      "key": "a0c9c88e-ac86-4fc4-ba1b-70d23ec927ee",
+      "version": null,
+      "body": "{\"order_id\":\"a0b74c67-6752-4abd-962c-56406c7cb25e\",\"installment_key\":\"first\"}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments/9d9fd984-52ce-4720-8c47-45392afcb033/reconciliation",
+      "key": "79061783-666e-4cba-a35d-79ecd3cd474e",
+      "version": null,
+      "body": "{\"transaction_id\":null}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments/9d9fd984-52ce-4720-8c47-45392afcb033/reconciliation",
+      "key": "79061783-666e-4cba-a35d-79ecd3cd474e",
+      "version": null,
+      "body": "{\"transaction_id\":null}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments/9d9fd984-52ce-4720-8c47-45392afcb033/reconciliation",
+      "key": "c3d7d450-861a-42da-93f3-0b2c9f811faf",
+      "version": null,
+      "body": "{\"transaction_id\":null}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds",
+      "key": "9daec4ca-c231-4e5a-a820-74f2dfc18b4b",
+      "version": null,
+      "body": "{\"payment_id\":\"9d9fd984-52ce-4720-8c47-45392afcb033\",\"allocations\":[{\"line_id\":\"film\",\"amount_minor\":100}],\"reason\":\"仅模拟部分退款，不发生真实资金变动\"}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds",
+      "key": "9daec4ca-c231-4e5a-a820-74f2dfc18b4b",
+      "version": null,
+      "body": "{\"payment_id\":\"9d9fd984-52ce-4720-8c47-45392afcb033\",\"allocations\":[{\"line_id\":\"film\",\"amount_minor\":100}],\"reason\":\"仅模拟部分退款，不发生真实资金变动\"}"
+    },
+    {
+      "actor": "independentReviewer",
+      "path": "/api/v1/trade/records/17190bde-e0d5-4339-aef9-e95b123faf8f/reviews",
+      "key": "b452d97e-8e5a-432b-b854-34d974b4ec44",
+      "version": "\"1\"",
+      "body": "{\"decision\":\"APPROVED\",\"reason\":\"仅隔离资料独立核对\"}"
+    },
+    {
+      "actor": "independentReviewer",
+      "path": "/api/v1/trade/refunds/17190bde-e0d5-4339-aef9-e95b123faf8f/execution",
+      "key": "f65cb25a-ae1c-4005-ae9d-eec33ff3f45e",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "independentReviewer",
+      "path": "/api/v1/trade/refunds/17190bde-e0d5-4339-aef9-e95b123faf8f/execution",
+      "key": "f65cb25a-ae1c-4005-ae9d-eec33ff3f45e",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds/17190bde-e0d5-4339-aef9-e95b123faf8f/reconciliation",
+      "key": "ec42c2f5-9a1d-4541-8625-be18cebe554b",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds/17190bde-e0d5-4339-aef9-e95b123faf8f/reconciliation",
+      "key": "ec42c2f5-9a1d-4541-8625-be18cebe554b",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds/17190bde-e0d5-4339-aef9-e95b123faf8f/reconciliation",
+      "key": "2f076f34-3612-4bfc-b96e-31a3a5fce9f0",
+      "version": null,
+      "body": "{}"
+    }
+  ]
+}

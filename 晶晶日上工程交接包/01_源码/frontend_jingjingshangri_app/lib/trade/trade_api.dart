@@ -135,10 +135,11 @@ class TradeApi {
         .where((i) => i['key'] == key);
     if (!order.isBuyer(owner()) ||
         !['OPEN', 'PARTIALLY_PAID'].contains(order.status) ||
-        i.length != 1 ||
-        i.single['trigger'] != 'ORDER_ACCEPTED') {
+        i.length != 1) {
       throw const AccountError(422, 'INSTALLMENT_NOT_READY');
     }
+    // Acceptance/payment gates are rechecked by the server for this original
+    // installment. Local project summaries never establish financial facts.
     return write('/api/v1/trade/payments',
         {'order_id': order.id, 'installment_key': key},
         kind: 'PAYMENT');

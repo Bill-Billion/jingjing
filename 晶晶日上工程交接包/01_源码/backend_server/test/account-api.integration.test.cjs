@@ -108,6 +108,27 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
     assert.equal((await request('POST','/api/v1/auth/sessions',{phone,challenge_id:row.id,code:sent.get(phone)},null,{'Idempotency-Key':key()})).status,401);
    }finally{unknown=false;}
   });
+  await t.test('actual SMS provider composition logs in via HTTP and unknown dispatch cannot login or resend',async()=>{
+   const {EventEmitter}=require('node:events'),received=new Map();let dispatches=0,fail=false;
+   const config={NODE_ENV:'test',SMS_ENABLED:'true',VOLC_ACCESS_KEY_ID:'fake-id',VOLC_SECRET_ACCESS_KEY:'fake-secret',SMS_ACCOUNT:'fake-account',SMS_SIGN_NAME:'测试',SMS_LOGIN_TEMPLATE_ID:'fake-template',SMS_CONFIG_REVISION:'http-sms-v1'};
+   const transport=(options,callback)=>{dispatches++;assert.equal(options.hostname,'sms.volcengineapi.com');const req=new EventEmitter();req.destroy=()=>{};req.setTimeout=()=>{};req.end=body=>{
+    const value=JSON.parse(body);received.set(value.PhoneNumbers,JSON.parse(value.TemplateParam).code);
+    queueMicrotask(()=>{if(fail){req.emit('error',Error('simulated timeout'));return;}const res=new EventEmitter();res.statusCode=200;res.complete=true;res.destroy=()=>{};callback(res);res.emit('data',Buffer.from(JSON.stringify({ResponseMetadata:{RequestId:'fake-http-request'},Result:{MessageID:['fake-http-message']}})));res.emit('end');});
+   };return req;};
+   const provider=createSmsProvider(db,config,{request:transport});
+   await withApi({sms:provider},async()=>{
+    const blocked=await challenge();assert.equal(blocked.response.status,503);assert.equal(dispatches,0);
+    await readiness.record({...provider.identity,current_status:'SANDBOX_VERIFIED',config_revision:config.SMS_CONFIG_REVISION,expected_version:0,evidence_ref:'synthetic-transport-only'},{actor_ref:'test-only'});
+    const c=await challenge();assert.equal(c.response.status,200);c.code=received.get(c.phone);const k=key(),a=await login(c,k);assert.equal(a.status,200);assert.equal((await login(c,k)).body.data.access_token,a.body.data.access_token);assert.equal(dispatches,1);
+    assert.equal((await request('GET','/api/v1/me',undefined,a.body.data.access_token)).status,200);
+    fail=true;const broken=await challenge();assert.equal(broken.response.status,503);assert.equal(dispatches,2);
+    const [[stored]]=await db.execute('SELECT * FROM auth_challenges WHERE phone_hash=?',[auth.secure.digest('phone',broken.phone)]);assert.equal(stored.current_status,'UNKNOWN');
+    const attempt=await request('POST','/api/v1/auth/sessions',{phone:broken.phone,challenge_id:stored.id,code:received.get(broken.phone)},null,{'Idempotency-Key':key()});assert.equal(attempt.status,401);
+    assert.equal((await challenge(broken.phone,broken.k)).response.status,503);assert.equal(dispatches,2);
+   });
+   const changed=createSmsProvider(db,{...config,SMS_CONFIG_REVISION:'http-sms-v2'},{request:transport});
+   await assert.rejects(changed.call('send',{phone:nextPhone(),code:'123456'}),{code:'PROVIDER_CONFIGURATION_CHANGED'});assert.equal(dispatches,2);
+  });
   await t.test('HTTP invitations require the intended recipient; removal preserves personal identity',async()=>{
    const owner=await user(),recipient=await user(),outsider=await user();
    const org=await request('POST','/api/v1/organizations',{display_name:'合成机构'},owner.token,{'Idempotency-Key':key()});record('OrganizationResultResponse',org);

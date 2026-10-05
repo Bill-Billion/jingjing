@@ -2,7 +2,7 @@
 // 离屏构建并推进若干帧；任何 RenderFlex 越界/无界约束都会让用例失败。demo 数据、不联网。
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'support/historical_layout_host.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jingjingshangri_app/theme/app_theme.dart';
@@ -56,7 +56,12 @@ Future<UserProvider> _user() async {
   final up = UserProvider();
   await up.saveLogin({
     'token': 'demo-token',
-    'user': {'id': 1, 'nickname': '林晚晴', 'phone': '138****6688', 'role': 'user'},
+    'user': {
+      'id': 1,
+      'nickname': '林晚晴',
+      'phone': '138****6688',
+      'role': 'user'
+    },
   });
   return up;
 }
@@ -75,13 +80,13 @@ void main() {
     'orders': () => const OrdersPage(),
     'wallet': () => const WalletPage(),
     'checkout': () => const CheckoutPage(
-      orderNo: 'DEMO202609040001',
-      bizType: 'video',
-      title: '基础祝福视频',
-      spec: '基础祝福 · 约15秒',
-      talentName: '林沐雪',
-      amount: 99,
-    ),
+          orderNo: 'DEMO202609040001',
+          bizType: 'video',
+          title: '基础祝福视频',
+          spec: '基础祝福 · 约15秒',
+          talentName: '林沐雪',
+          amount: 99,
+        ),
     'my_works': () => const MyWorksPage(),
     'messages': () => const MessagesPage(),
     'profile': () => const ProfilePage(),
@@ -96,7 +101,8 @@ void main() {
     'audition': () => const AuditionPage(),
     'mcn': () => const McnPage(),
     'after_sales': () => const AfterSalesPage(orderNo: 'VD20260824001'),
-    'review': () => const ReviewPage(orderNo: 'VD20260824001', talentName: '苏婉儿'),
+    'review': () =>
+        const ReviewPage(orderNo: 'VD20260824001', talentName: '苏婉儿'),
     'usage_report': () => const UsageReportPage(humanId: 1, humanName: '林沐雪'),
     'video_order': () => const VideoOrderPage(),
     'endorsement': () => const EndorsementPage(),
@@ -171,13 +177,17 @@ void main() {
           t.view.devicePixelRatio = 1.0;
           addTearDown(t.view.reset);
           final up = await _user();
+          final session =
+              await historicalLayoutSession(t, loggedIn: up.isLoggedIn);
+          final page = entry.value();
           await t.pumpWidget(
-            ChangeNotifierProvider<UserProvider>.value(
-              value: up,
+            HistoricalLayoutProviders(
+              user: up,
+              session: session,
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.darkTheme,
-                home: entry.value(),
+                home: page,
               ),
             ),
           );
@@ -186,6 +196,7 @@ void main() {
           }
           // 能走到这里且框架未抛布局异常即通过；再补一帧收尾动画
           await t.pump(const Duration(milliseconds: 200));
+          expectCurrentShell(t, page);
         });
       }
     });

@@ -32,6 +32,7 @@ def render_tasks(board):
         '下面共30组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
         '这张表记录完整工作范围，逐次成果与待审状态以当前进度为准；各阶段完成部分不等于整组已经验收。'
         '本侧负责后端，队友负责App与网页，按当前阶段说明协作。'
+        '用户已授权本侧主测完整流程并修复必要页面问题；具体分工以对应工作行和任务记录为准。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
         '表中的“需先完成”指整项工作最后验收前需要的其他成果。'
@@ -46,7 +47,8 @@ def render_tasks(board):
         for t in board['tasks']:
             if t['stage'] != stage:
                 continue
-            who = '本侧：服务器和数据' if t['stream'] == 'Core' else '队友：App和网页'
+            who = explanations[t['id']].get('responsibility',
+                '本侧：服务器和数据' if t['stream'] == 'Core' else '队友：App和网页')
             who += '；已接手' if t['owner'] else '；尚未接手'
             dependencies = '；'.join(names[d] for d in t['dependencies']) or '可独立开始'
             lines.append('|{}|{}|{}|{}|{}|'.format(names[t['id']], who,

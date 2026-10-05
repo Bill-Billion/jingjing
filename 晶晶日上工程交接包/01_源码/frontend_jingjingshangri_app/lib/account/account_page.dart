@@ -71,13 +71,13 @@ class _AccountPageState extends State<AccountPage> {
       _busy = false;
       if (_session.isLoggedIn) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _refresh();
+          if (mounted) _refresh(retryUnavailable: false);
         });
       }
     }
   }
 
-  Future<void> _refresh() async {
+  Future<void> _refresh({bool retryUnavailable = true}) async {
     if (!_session.isLoggedIn) return;
     final ticket = ++_load;
     setState(() {
@@ -85,7 +85,7 @@ class _AccountPageState extends State<AccountPage> {
       _error = null;
     });
     try {
-      await _session.loadParties();
+      await _session.loadParties(retryUnavailable: retryUnavailable);
       await _session.refreshParty();
       final inbox =
           await _session.read('/api/v1/me/invitations', query: {'limit': 20});
@@ -471,7 +471,7 @@ class _AccountPageState extends State<AccountPage> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
                 if (_busy) const LinearProgressIndicator(),
-                if (_error != null)
+                if (_error != null || session.partyNotice != null)
                   Card(
                       color: AccountTheme.surface,
                       child: Padding(
@@ -479,7 +479,7 @@ class _AccountPageState extends State<AccountPage> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(_error!,
+                                Text(_error ?? session.partyNotice!,
                                     style: const TextStyle(
                                         color: AccountTheme.danger)),
                                 TextButton(
