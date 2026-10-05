@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 // User-authorized 75-minute synthetic session. Own child processes only.
 const {spawn}=require('node:child_process');
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
@@ -7,8 +7,9 @@ async function main(){
  assert.equal(process.argv[2],'--authorized-full-test');
  const exe=process.env.JX_CLOUDFLARED;assert(exe&&fs.existsSync(exe),'Existing cloudflared is required');
  const dir=path.join(root,'.local/mobile-session');fs.mkdirSync(dir,{recursive:true});
- const stateFile=path.join(dir,'session.json');assert(!fs.existsSync(stateFile),'Do not overwrite an existing session');
- const startedAt=Date.now(),expiresAt=startedAt+75*60000,children=[];
+ const stateFile=path.join(dir,'session.json');let previous; if(fs.existsSync(stateFile)){previous=JSON.parse(fs.readFileSync(stateFile,'utf8'));assert(process.argv[3]==='--same-window'&&previous.closed&&previous.expiresAt>Date.now(),'Existing session must be closed; resume cannot extend its window');}
+ const startedAt=previous?.startedAt??Date.now(),expiresAt=previous?.expiresAt??startedAt+75*60000,children=[];
+ assert(expiresAt<=Date.now()+75*60000);
  const state={testOnly:true,syntheticOnly:true,scenario:'full',pid:process.pid,startedAt,expiresAt,closed:false};
  const save=()=>fs.writeFileSync(stateFile,JSON.stringify(state,null,2));save();
  let stopped=false,timer;
@@ -24,7 +25,8 @@ async function main(){
  }
  if(!ready){stop();throw new Error('Local gateway failed to become ready');}
  const log=fs.createWriteStream(path.join(dir,'tunnel.log'),{flags:'a'});
- const tunnel=spawn(exe,['tunnel','--url','http://127.0.0.1:3380','--no-autoupdate','--protocol','http2'],{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});children.push(tunnel);
+ const edges=(process.env.JX_TUNNEL_EDGES||'').split(',').filter(Boolean);assert(edges.every(ip=>/^198\.41\.(192|200)\.\d{1,3}$/.test(ip)),'Only verified Cloudflare edge addresses');
+ const tunnel=spawn(exe,['tunnel','--url','http://127.0.0.1:3380','--no-autoupdate','--protocol','quic',...edges.flatMap(ip=>['--edge',ip+':7844'])],{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});children.push(tunnel);
  state.gatewayPid=gateway.pid;state.tunnelPid=tunnel.pid;save();
  tunnel.on('error',stop);tunnel.on('exit',()=>{log.end();stop();});
  let output='';
