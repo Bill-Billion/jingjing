@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart' show FontLoader;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'support/historical_layout_host.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jingjingshangri_app/theme/app_theme.dart';
@@ -70,9 +70,12 @@ Future<void> _shoot(
   addTearDown(tester.view.reset);
 
   final up = user ?? UserProvider();
+  final session =
+      await historicalLayoutSession(tester, loggedIn: up.isLoggedIn);
   await tester.pumpWidget(
-    ChangeNotifierProvider<UserProvider>.value(
-      value: up,
+    HistoricalLayoutProviders(
+      user: up,
+      session: session,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
@@ -99,12 +102,14 @@ Future<void> _shoot(
     await tester.pump(const Duration(milliseconds: 90));
   }
 
-  final boundary = tester
-      .renderObject(find.byType(RepaintBoundary).first) as RenderRepaintBoundary;
+  expectCurrentShell(tester, page);
+  final boundary = tester.renderObject(find.byType(RepaintBoundary).first)
+      as RenderRepaintBoundary;
   late Uint8List bytes;
   await tester.runAsync(() async {
-    final image =
-        await boundary.toImage(pixelRatio: 1.5).timeout(const Duration(seconds: 12));
+    final image = await boundary
+        .toImage(pixelRatio: 1.5)
+        .timeout(const Duration(seconds: 12));
     final data = await image
         .toByteData(format: ui.ImageByteFormat.png)
         .timeout(const Duration(seconds: 12));
@@ -124,7 +129,8 @@ void main() {
   setUpAll(_bootDemo);
 
   testWidgets('M0-登录 390', (tester) async {
-    await _shoot(tester, 'm0_login_390', const LoginPage(), settleAssets: false);
+    await _shoot(tester, 'm0_login_390', const LoginPage(),
+        settleAssets: false);
   });
 
   testWidgets('M0-首页 390', (tester) async {

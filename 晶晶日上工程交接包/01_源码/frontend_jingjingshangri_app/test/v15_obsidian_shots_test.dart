@@ -6,9 +6,10 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart' show FontLoader, MethodChannel, MethodCall;
+import 'package:flutter/services.dart'
+    show FontLoader, MethodChannel, MethodCall;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'support/historical_layout_host.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jingjingshangri_app/theme/app_theme.dart';
@@ -113,9 +114,12 @@ Future<void> _shoot(
   addTearDown(tester.view.reset);
 
   final up = user ?? UserProvider();
+  final session =
+      await historicalLayoutSession(tester, loggedIn: up.isLoggedIn);
   await tester.pumpWidget(
-    ChangeNotifierProvider<UserProvider>.value(
-      value: up,
+    HistoricalLayoutProviders(
+      user: up,
+      session: session,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
@@ -143,12 +147,14 @@ Future<void> _shoot(
     await tester.pump(const Duration(milliseconds: 80));
   }
 
-  final boundary = tester
-      .renderObject(find.byType(RepaintBoundary).first) as RenderRepaintBoundary;
+  expectCurrentShell(tester, page);
+  final boundary = tester.renderObject(find.byType(RepaintBoundary).first)
+      as RenderRepaintBoundary;
   late Uint8List bytes;
   await tester.runAsync(() async {
-    final image =
-        await boundary.toImage(pixelRatio: 1.0).timeout(const Duration(seconds: 10));
+    final image = await boundary
+        .toImage(pixelRatio: 1.0)
+        .timeout(const Duration(seconds: 10));
     final data = await image
         .toByteData(format: ui.ImageByteFormat.png)
         .timeout(const Duration(seconds: 10));
@@ -173,10 +179,8 @@ void main() {
   // ── 一级页基准 390x844 ──
   testWidgets('01 登录页', (tester) async {
     await _shoot(tester, '01_login_390', const LoginPage());
-    await _shoot(tester, 'r_login_360', const LoginPage(),
-        w: 360, h: 780);
-    await _shoot(tester, 'r_login_840', const LoginPage(),
-        w: 840, h: 1100);
+    await _shoot(tester, 'r_login_360', const LoginPage(), w: 360, h: 780);
+    await _shoot(tester, 'r_login_840', const LoginPage(), w: 840, h: 1100);
   });
 
   testWidgets('02 首页', (tester) async {
@@ -185,7 +189,8 @@ void main() {
   });
 
   testWidgets('03 创作中心', (tester) async {
-    await _shoot(tester, '03_create_390', const GlowPanel(), settleAssets: false);
+    await _shoot(tester, '03_create_390', const GlowPanel(),
+        settleAssets: false);
     await _shoot(tester, 'r_create_360', const GlowPanel(),
         w: 360, h: 780, settleAssets: false);
     await _shoot(tester, 'r_create_840', const GlowPanel(),
@@ -193,8 +198,7 @@ void main() {
   });
 
   testWidgets('04 AI文生视频阶段进度', (tester) async {
-    final created =
-        MockData.aiVideoTask('暖光客厅里，银发奶奶收到生日祝福，笑着挥手，电影感人像');
+    final created = MockData.aiVideoTask('暖光客厅里，银发奶奶收到生日祝福，笑着挥手，电影感人像');
     final seed = Map<String, dynamic>.from(created['task'] as Map);
     final id = '${seed['id']}';
     await ApiService().getAiTask(id);
@@ -218,7 +222,8 @@ void main() {
         kind: 'video',
         prompt: '暖光客厅里，银发奶奶收到生日祝福，笑着挥手，电影感人像',
       ),
-      w: 360, h: 780,
+      w: 360,
+      h: 780,
       settleAssets: false,
       fakePumps: 5,
     );
@@ -230,7 +235,8 @@ void main() {
         kind: 'video',
         prompt: '暖光客厅里，银发奶奶收到生日祝福，笑着挥手，电影感人像',
       ),
-      w: 840, h: 1100,
+      w: 840,
+      h: 1100,
       settleAssets: false,
       fakePumps: 5,
     );
@@ -341,10 +347,8 @@ void main() {
 
   testWidgets('18 MCN看板(H5引导)', (tester) async {
     await _shoot(tester, '18_mcn_390', const McnPage());
-    await _shoot(tester, 'r_mcn_360', const McnPage(),
-        w: 360, h: 780);
-    await _shoot(tester, 'r_mcn_840', const McnPage(),
-        w: 840, h: 1100);
+    await _shoot(tester, 'r_mcn_360', const McnPage(), w: 360, h: 780);
+    await _shoot(tester, 'r_mcn_840', const McnPage(), w: 840, h: 1100);
   });
 
   testWidgets('19 设置', (tester) async {
@@ -375,8 +379,10 @@ void main() {
   testWidgets('22 创建数字人向导', (tester) async {
     // 依赖 LiquidBackdrop 本地丝绸位图承担深色底，需 settleAssets 等其解码
     await _shoot(tester, '22_audition_390', const AuditionPage());
-    await _shoot(tester, 'r_audition_360', const AuditionPage(), w: 360, h: 780);
-    await _shoot(tester, 'r_audition_840', const AuditionPage(), w: 840, h: 1100);
+    await _shoot(tester, 'r_audition_360', const AuditionPage(),
+        w: 360, h: 780);
+    await _shoot(tester, 'r_audition_840', const AuditionPage(),
+        w: 840, h: 1100);
   });
 
   // ── 关键页三档响应式 ──
@@ -408,30 +414,43 @@ void main() {
   });
 
   testWidgets('24 确认订单收银台', (tester) async {
-    await _shoot(tester, '24_checkout_390', const CheckoutPage(
-      orderNo: 'DEMO202609040001',
-      bizType: 'video',
-      title: '基础祝福视频',
-      spec: '基础祝福 · 约15秒',
-      talentName: '林沐雪',
-      amount: 99,
-    ));
-    await _shoot(tester, 'r_checkout_360', const CheckoutPage(
-      orderNo: 'DEMO202609040001',
-      bizType: 'video',
-      title: '基础祝福视频',
-      spec: '基础祝福 · 约15秒',
-      talentName: '林沐雪',
-      amount: 99,
-    ), w: 360, h: 780);
-    await _shoot(tester, 'r_checkout_840', const CheckoutPage(
-      orderNo: 'DEMO202609040001',
-      bizType: 'video',
-      title: '基础祝福视频',
-      spec: '基础祝福 · 约15秒',
-      talentName: '林沐雪',
-      amount: 99,
-    ), w: 840, h: 1100);
+    await _shoot(
+        tester,
+        '24_checkout_390',
+        const CheckoutPage(
+          orderNo: 'DEMO202609040001',
+          bizType: 'video',
+          title: '基础祝福视频',
+          spec: '基础祝福 · 约15秒',
+          talentName: '林沐雪',
+          amount: 99,
+        ));
+    await _shoot(
+        tester,
+        'r_checkout_360',
+        const CheckoutPage(
+          orderNo: 'DEMO202609040001',
+          bizType: 'video',
+          title: '基础祝福视频',
+          spec: '基础祝福 · 约15秒',
+          talentName: '林沐雪',
+          amount: 99,
+        ),
+        w: 360,
+        h: 780);
+    await _shoot(
+        tester,
+        'r_checkout_840',
+        const CheckoutPage(
+          orderNo: 'DEMO202609040001',
+          bizType: 'video',
+          title: '基础祝福视频',
+          spec: '基础祝福 · 约15秒',
+          talentName: '林沐雪',
+          amount: 99,
+        ),
+        w: 840,
+        h: 1100);
   });
 
   testWidgets('25 定制视频下单', (tester) async {
@@ -452,7 +471,9 @@ void main() {
           'name': '林沐雪',
           'specialty': '古风 / 温婉 / 祝福',
         }),
-        w: 360, h: 780, fakePumps: 6);
+        w: 360,
+        h: 780,
+        fakePumps: 6);
     await _shoot(
         tester,
         'r_video_order_human_840',
@@ -461,7 +482,9 @@ void main() {
           'name': '林沐雪',
           'specialty': '古风 / 温婉 / 祝福',
         }),
-        w: 840, h: 1100, fakePumps: 6);
+        w: 840,
+        h: 1100,
+        fakePumps: 6);
   });
 
   testWidgets('26 选剧库', (tester) async {
@@ -484,8 +507,7 @@ void main() {
   });
 
   testWidgets('28 圆梦席位', (tester) async {
-    await _shoot(tester, '28_projects_390', const ProjectsPage(),
-        fakePumps: 6);
+    await _shoot(tester, '28_projects_390', const ProjectsPage(), fakePumps: 6);
   });
 
   testWidgets('29 项目详情', (tester) async {
@@ -520,7 +542,9 @@ void main() {
           'localCover': 'assets/images/theater_1.jpg',
           'intro': '上古洪荒，群雄并起，少年轩辕集结百家席位于天下合的宏大史诗。',
         }),
-        w: 360, h: 780, fakePumps: 4);
+        w: 360,
+        h: 780,
+        fakePumps: 4);
     await _shoot(
         tester,
         'r_project_detail_840',
@@ -536,7 +560,9 @@ void main() {
           'localCover': 'assets/images/theater_1.jpg',
           'intro': '上古洪荒，群雄并起，少年轩辕集结百家席位于天下合的宏大史诗。',
         }),
-        w: 840, h: 1100, fakePumps: 4);
+        w: 840,
+        h: 1100,
+        fakePumps: 4);
   });
 
   testWidgets('30 售后进度', (tester) async {
@@ -576,14 +602,10 @@ void main() {
   });
 
   testWidgets('33 身份认证', (tester) async {
-    await _shoot(tester, '33_identity_390',
-        const IdentityPage(),
-        fakePumps: 3);
-    await _shoot(tester, 'r_identity_360',
-        const IdentityPage(),
+    await _shoot(tester, '33_identity_390', const IdentityPage(), fakePumps: 3);
+    await _shoot(tester, 'r_identity_360', const IdentityPage(),
         w: 360, h: 780, fakePumps: 3);
-    await _shoot(tester, 'r_identity_840',
-        const IdentityPage(),
+    await _shoot(tester, 'r_identity_840', const IdentityPage(),
         w: 840, h: 1100, fakePumps: 3);
   });
 
@@ -600,19 +622,21 @@ void main() {
   });
 
   testWidgets('35 剧本阅读', (tester) async {
-    await _shoot(tester, '35_script_reader_390',
-        const ScriptReaderPage(orderId: 1),
+    await _shoot(
+        tester, '35_script_reader_390', const ScriptReaderPage(orderId: 1),
         fakePumps: 6);
-    await _shoot(tester, 'r_script_reader_360',
-        const ScriptReaderPage(orderId: 1),
+    await _shoot(
+        tester, 'r_script_reader_360', const ScriptReaderPage(orderId: 1),
         w: 360, h: 780, fakePumps: 6);
-    await _shoot(tester, 'r_script_reader_840',
-        const ScriptReaderPage(orderId: 1),
+    await _shoot(
+        tester, 'r_script_reader_840', const ScriptReaderPage(orderId: 1),
         w: 840, h: 1100, fakePumps: 6);
   });
 
   testWidgets('36 艺人详情', (tester) async {
-    await _shoot(tester, '36_human_detail_390',
+    await _shoot(
+        tester,
+        '36_human_detail_390',
         HumanDetailPage(human: const {
           'id': 1,
           'name': '林沐雪',
@@ -627,7 +651,9 @@ void main() {
           'localAvatar': 'assets/images/artist_1.jpg',
         }),
         fakePumps: 6);
-    await _shoot(tester, 'r_human_detail_360',
+    await _shoot(
+        tester,
+        'r_human_detail_360',
         HumanDetailPage(human: const {
           'id': 1,
           'name': '林沐雪',
@@ -641,8 +667,12 @@ void main() {
           'desc': '温柔治愈系数字人，擅长祝福与陪伴口播',
           'localAvatar': 'assets/images/artist_1.jpg',
         }),
-        w: 360, h: 780, fakePumps: 6);
-    await _shoot(tester, 'r_human_detail_840',
+        w: 360,
+        h: 780,
+        fakePumps: 6);
+    await _shoot(
+        tester,
+        'r_human_detail_840',
         HumanDetailPage(human: const {
           'id': 1,
           'name': '林沐雪',
@@ -656,18 +686,17 @@ void main() {
           'desc': '温柔治愈系数字人，擅长祝福与陪伴口播',
           'localAvatar': 'assets/images/artist_1.jpg',
         }),
-        w: 840, h: 1100, fakePumps: 6);
+        w: 840,
+        h: 1100,
+        fakePumps: 6);
   });
 
   testWidgets('37 我的视频', (tester) async {
-    await _shoot(tester, '37_video_lib_390',
-        const VideoLibPage(),
+    await _shoot(tester, '37_video_lib_390', const VideoLibPage(),
         fakePumps: 6);
-    await _shoot(tester, 'r_video_lib_360',
-        const VideoLibPage(),
+    await _shoot(tester, 'r_video_lib_360', const VideoLibPage(),
         w: 360, h: 780, fakePumps: 6);
-    await _shoot(tester, 'r_video_lib_840',
-        const VideoLibPage(),
+    await _shoot(tester, 'r_video_lib_840', const VideoLibPage(),
         w: 840, h: 1100, fakePumps: 6);
   });
 
@@ -698,13 +727,17 @@ void main() {
       tester,
       'r_chat_360',
       ChatPage(human: const {'id': 1, 'name': '林沐雪'}),
-      w: 360, h: 780, fakePumps: 6,
+      w: 360,
+      h: 780,
+      fakePumps: 6,
     );
     await _shoot(
       tester,
       'r_chat_840',
       ChatPage(human: const {'id': 1, 'name': '林沐雪'}),
-      w: 840, h: 1100, fakePumps: 6,
+      w: 840,
+      h: 1100,
+      fakePumps: 6,
     );
   });
 
@@ -726,7 +759,8 @@ void main() {
         'title': '我的人生剧',
         'genre': '古装史诗',
       }),
-      w: 360, h: 780,
+      w: 360,
+      h: 780,
     );
     await _shoot(
       tester,
@@ -736,7 +770,8 @@ void main() {
         'title': '我的人生剧',
         'genre': '古装史诗',
       }),
-      w: 840, h: 1100,
+      w: 840,
+      h: 1100,
     );
   });
 
@@ -770,7 +805,8 @@ void main() {
         'seatsClaimed': 72,
         'days': 23,
       }),
-      w: 360, h: 780,
+      w: 360,
+      h: 780,
     );
     await _shoot(
       tester,
@@ -786,7 +822,8 @@ void main() {
         'seatsClaimed': 72,
         'days': 23,
       }),
-      w: 840, h: 1100,
+      w: 840,
+      h: 1100,
     );
   });
 }

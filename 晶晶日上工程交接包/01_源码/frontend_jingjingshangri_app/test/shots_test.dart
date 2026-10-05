@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart' show FontLoader;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'support/historical_layout_host.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jingjingshangri_app/theme/app_theme.dart';
@@ -79,9 +79,12 @@ Future<void> _shoot(
   addTearDown(tester.view.reset);
 
   final up = user ?? UserProvider();
+  final session =
+      await historicalLayoutSession(tester, loggedIn: up.isLoggedIn);
   await tester.pumpWidget(
-    ChangeNotifierProvider<UserProvider>.value(
-      value: up,
+    HistoricalLayoutProviders(
+      user: up,
+      session: session,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
@@ -100,8 +103,9 @@ Future<void> _shoot(
 
   // 关键：解码等待与 toImage 必须放在「同一个」runAsync 内，且其间不再 pump，
   // 否则图片解码后产生的待绘制帧会让 toImage 在测试假时钟里永久死锁。
-  final boundary = tester
-      .renderObject(find.byType(RepaintBoundary).first) as RenderRepaintBoundary;
+  expectCurrentShell(tester, page);
+  final boundary = tester.renderObject(find.byType(RepaintBoundary).first)
+      as RenderRepaintBoundary;
   late Uint8List bytes;
   await tester.runAsync(() async {
     if (settleAssets) {
@@ -144,8 +148,7 @@ void main() {
 
   testWidgets('04 AI 文生视频线性阶段进度(60%)', (tester) async {
     // 预登记一个视频演示任务并推进到第 3 轮（分镜阶段 60%），页面首帧 poll 后定格。
-    final created = MockData.aiVideoTask(
-        '暖光客厅里，银发奶奶收到生日祝福，笑着挥手，电影感人像');
+    final created = MockData.aiVideoTask('暖光客厅里，银发奶奶收到生日祝福，笑着挥手，电影感人像');
     final seed = Map<String, dynamic>.from(created['task'] as Map);
     final id = '${seed['id']}';
     await ApiService().getAiTask(id); // polls=1
@@ -171,18 +174,15 @@ void main() {
 
   // ── 三档宽度适配核对（艺人广场网格列数随宽度变化）──
   testWidgets('W1 紧凑 360 宽', (tester) async {
-    await _shoot(tester, 'w360_humans', const HumansPage(),
-        w: 360, h: 780);
+    await _shoot(tester, 'w360_humans', const HumansPage(), w: 360, h: 780);
   });
 
   testWidgets('W2 基准 390 宽', (tester) async {
-    await _shoot(tester, 'w390_humans', const HumansPage(),
-        w: 390, h: 844);
+    await _shoot(tester, 'w390_humans', const HumansPage(), w: 390, h: 844);
   });
 
   testWidgets('W3 展开 840 宽（多列）', (tester) async {
-    await _shoot(tester, 'w840_humans', const HumansPage(),
-        w: 840, h: 1100);
+    await _shoot(tester, 'w840_humans', const HumansPage(), w: 840, h: 1100);
   });
 
   // ── V12.5 金额边界/闭环修复页离屏核对（演示数据，金额单位元）──
@@ -193,18 +193,14 @@ void main() {
 
   testWidgets('07 数字人使用报告（元口径）', (tester) async {
     final up = await _loggedInUser();
-    await _shoot(
-        tester,
-        '07_usage_report',
+    await _shoot(tester, '07_usage_report',
         const UsageReportPage(humanId: 1, humanName: '林沐雪'),
         user: up);
   });
 
   testWidgets('08 售后进度（真实接口结构+演示兜底时间轴）', (tester) async {
     final up = await _loggedInUser();
-    await _shoot(
-        tester,
-        '08_after_sales',
+    await _shoot(tester, '08_after_sales',
         const AfterSalesPage(orderNo: 'VD20260824001'),
         user: up);
   });
