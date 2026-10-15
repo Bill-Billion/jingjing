@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晶晶日上 · 分账逻辑与清分结算规则（后端开发规格）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>晶</text></svg>">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&display=swap">
+<style>
+:root{--brand:#c8102e;--brand-d:#9e0c24;--gold:#c9a227;--ink:#1c2430;--mut:#5b6675;--line:#e6e9ee;--bg:#f4f6f9;--card:#fff;--ok:#0e9f6e;--warn:#b7791f;--danger:#c0392b;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans SC",-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+.hero{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-d) 100%);color:#fff;border-radius:0 0 22px 22px;padding:46px 44px 40px;position:relative;overflow:hidden;margin:0 -20px 30px}
+.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero .kicker{display:inline-block;font-size:12.5px;letter-spacing:2px;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-family:"Noto Serif SC",serif;font-size:31px;line-height:1.35;font-weight:900;margin-bottom:12px;position:relative}
+.hero p{font-size:14.5px;opacity:.92;max-width:760px;position:relative}
+.hero .meta{margin-top:18px;font-size:12.5px;opacity:.8;position:relative}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:28px}
+.toc b{font-size:13px;color:var(--mut);display:block;margin-bottom:10px;letter-spacing:1px}
+.toc a{display:inline-block;font-size:13px;color:var(--brand);text-decoration:none;background:#fdf0f2;border:1px solid #f5d6da;border-radius:8px;padding:5px 12px;margin:4px 6px 4px 0}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px 32px;margin-bottom:24px}
+h2{font-family:"Noto Serif SC",serif;font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+h2 .no{background:var(--brand);color:#fff;width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-family:sans-serif;flex:0 0 auto}
+.sub{color:var(--mut);font-size:13.5px;margin-bottom:20px}
+h3{font-size:16px;margin:26px 0 12px;padding-left:11px;border-left:4px solid var(--gold)}
+p{margin-bottom:12px}
+.table-scroll{overflow-x:auto;margin:14px 0;-webkit-overflow-scratch:touch}
+table{border-collapse:collapse;width:100%;font-size:13.8px}
+table.fixed{table-layout:fixed}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#f7f9fb;font-weight:700;font-size:13px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hl{color:var(--brand);font-weight:700}
+.ok{color:var(--ok);font-weight:700}
+.note{background:#f7f9fc;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;padding:13px 16px;font-size:13.5px;margin:16px 0}
+.note.good{border-left-color:var(--ok);background:#f2faf6}
+.note.warn{border-left-color:var(--warn);background:#fdf9f0}
+.note.danger{border-left-color:var(--danger);background:#fdf3f2}
+ul.clean{list-style:none;margin:8px 0}
+ul.clean li{padding:6px 0 6px 22px;position:relative;font-size:14px}
+ul.clean li::before{content:"";position:absolute;left:4px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.flow{display:flex;align-items:stretch;gap:0;margin:18px 0;flex-wrap:wrap}
+.fstep{flex:1;min-width:150px;background:#f7f9fc;border:1px solid var(--line);border-radius:11px;padding:13px 14px;text-align:center;font-size:13.3px;position:relative}
+.fstep .t{font-weight:700;display:block;margin-bottom:3px}
+.fstep .d{color:var(--mut);font-size:12px}
+.farrow{display:flex;align-items:center;justify-content:center;padding:0 8px;color:var(--brand);font-size:20px;font-weight:700}
+.pill{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:12px;font-weight:500}
+.pill.p{background:#fdf0f2;color:var(--brand)}
+.pill.g{background:#f4f0e2;color:var(--gold)}
+.pill.o{background:#eaf6f0;color:var(--ok)}
+.code{background:#1e2733;color:#d7dee8;border-radius:10px;padding:16px 18px;font-family:Consolas,Monaco,monospace;font-size:12.8px;line-height:1.65;overflow-x:auto;margin:14px 0;white-space:pre}
+.code .k{color:#e8a33d}.code .s{color:#8fd175}.code .c{color:#7a8696}
+.foot{color:var(--mut);font-size:12px;text-align:center;margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
+@media (max-width:680px){
+ .hero{padding:34px 24px 28px}.hero h1{font-size:23px}
+ section{padding:22px 18px}
+ .flow{flex-direction:column}.farrow{transform:rotate(90deg);padding:6px 0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+<span class="kicker">后端开发规格 · 推荐定稿 · 可直接开发</span>
+<h1>晶晶日上 · 分账逻辑与清分结算规则</h1>
+<p>面向后端/结算系统：定义每一类业务的资金如何拆分给谁、何时清分、如何开票计税、如何退款，以及分账规则与分账明细的数据结构。规则引擎化、可配置，新业务只加规则、不改主流程。</p>
+<div class="meta">版本 V1.0（推荐定稿）　|　2026-10-07　|　平台品牌：晶晶日上（数字经纪人平台）　|　运营主体：人生主角（北京）数字科技有限公司</div>
+</div>
+
+<div class="toc">
+<b>目录</b>
+<a href="#s1">①两层分账模型</a><a href="#s2">②分账总表</a><a href="#s3">③MCN-艺人分成</a><a href="#s4">④返佣与共创</a><a href="#s5">⑤清分与状态机</a><a href="#s6">⑥发票与个税</a><a href="#s7">⑦退款与尾差</a><a href="#s8">⑧后端字段规格</a>
+</div>
+
+<!-- ====================== 第1章 ====================== -->
+<section id="s1">
+<h2><span class="no">1</span>核心：两层分账模型</h2>
+<div class="sub">先抽平台佣金（第一层），再把"供给侧可分账金额"在 MCN 与艺人之间分（第二层）。返佣从平台侧列支，不碰供给方本金。</div>
+
+<h3>1.1 资金流（一笔订单的钱怎么走）</h3>
+<div class="flow">
+ <div class="fstep"><span class="t">买家付款</span><span class="d">出品人/品牌/用户下单支付</span></div>
+ <div class="farrow">→</div>
+ <div class="fstep"><span class="t">持牌机构监管</span><span class="d">进入待清算/托管账户，平台不触碰、不沉淀</span></div>
+ <div class="farrow">→</div>
+ <div class="fstep"><span class="t">履约 + 确认</span><span class="d">交付/验收，买家确认或自动确认</span></div>
+ <div class="farrow">→</div>
+ <div class="fstep"><span class="t">清分引擎拆分</span><span class="d">按分账规则一次拆成多笔</span></div>
+ <div class="farrow">→</div>
+ <div class="fstep"><span class="t">T+1 到各方账户</span><span class="d">平台 / MCN / 艺人 / 返佣方 / 承制方</span></div>
+</div>
+
+<h3>1.2 两层拆分（撮合类业务）</h3>
+<ul class="clean">
+<li><b>第一层 · 平台佣金：</b>成交后平台先抽——样片/数字商品 <span class="hl">18%</span>，商单/线下出场 <span class="hl">22%</span>。</li>
+<li><b>第二层 · 供给侧分成：</b>扣除佣金后的 <span class="hl">82% / 78%</span> 为"可分账金额"，在艺人和其归属 MCN 之间分：默认 <b>艺人 80%、MCN 20%</b>（即可分账金额的 80/20）。</li>
+<li><b>独立艺人（无 MCN）：</b>可分账金额全部归艺人（样片 82%、商单 78%）。</li>
+<li><b>返佣（推荐/KOC）：</b>从<b>平台佣金里</b>列支、设上限，平台不倒贴；详见第 4 章。</li>
+</ul>
+<div class="note good"><b>设计原则：</b>① 平台不设资金池、不垫资，全部走持牌清分；② 分账只动"真实成交、已确认"的订单；③ 数字人、样片所有权始终归艺人本人，分成关系不等于所有权转移；④ 所有比例可在后台按合同/MCN 等级配置，但需当事人在线签署确认。</div>
+</section>
+
+<!-- ====================== 第2章 ====================== -->
+<section id="s2">
+<h2><span class="no">2</span>分账总表（按业务类型）</h2>
+<div class="sub">撮合类百分比＝占"成交额"；自营类平台全额收款、成本与毛利单列。所有数值为推荐默认，可在分账规则中配置。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:960px">
+<colgroup><col style="width:15%"><col style="width:13%"><col style="width:14%"><col style="width:10%"><col style="width:11%"><col style="width:22%"><col style="width:15%"></colgroup>
+<tr><th>业务类型</th><th>计费基数</th><th>平台净留</th><th>MCN</th><th>艺人</th><th>返佣 / 承制 / 成本</th><th>清分时点</th></tr>
+<tr>
+<td><b>样片/数字商品售卖</b><br><span class="pill p">撮合</span></td><td>ASP × 份数（综合 ASP≈150）</td>
+<td class="num hl">10.8%<br><span style="font-weight:400;font-size:11px">(总抽 18%)</span></td><td class="num">16.4%</td><td class="num">65.6%</td>
+<td>返佣 7.2%（从平台佣金出）；样片零边际成本</td><td>确认收货/自动确认后 T+1</td>
+</tr>
+<tr>
+<td><b>商单</b>（品牌/剧组数字人出演、授权）<br><span class="pill p">撮合</span></td><td>商单金额（ASP≈8,000）</td>
+<td class="num hl">15.4%<br><span style="font-weight:400;font-size:11px">(总抽 22%)</span></td><td class="num">15.6%</td><td class="num">62.4%</td>
+<td>返佣 6.6%；如需平台承制，制作费另计（见定制片）</td><td>里程碑/验收后 T+1</td>
+</tr>
+<tr>
+<td><b>线下试镜/见面</b><br><span class="pill p">撮合</span></td><td>出场费</td>
+<td class="num hl">15.4%<br><span style="font-weight:400;font-size:11px">(总抽 22%)</span></td><td class="num">15.6%</td><td class="num">62.4%</td>
+<td>返佣 6.6%；<b>交通等可报销款凭票实报、不抽成、不入分账</b></td><td>见面完成、双方确认后 T+1</td>
+</tr>
+<tr>
+<td><b>人生主角定制片</b><br><span class="pill g">自营承制</span></td><td>定制费（分品类定价）</td>
+<td colspan="3" style="text-align:center;color:var(--mut)">平台全额收款并向买家开票</td>
+<td>制作/承制成本约 <b>50%</b>（含外包团队、客串数字人授权费）；返佣 <b>10%</b>；<b>平台毛利约 40%</b></td><td>30% 开工 / 阶段 / 尾款，验收清分</td>
+</tr>
+<tr>
+<td><b>平台代做样片</b><br><span class="pill g">自营服务</span></td><td>1,000 元/单</td>
+<td colspan="3" style="text-align:center;color:var(--mut)">平台 100%（制作成本约 60%、毛利约 40%）</td>
+<td>样片/数字人所有权归艺人；平台只收制作服务费</td><td>50% 开工、50% 交付</td>
+</tr>
+<tr>
+<td><b>数字人创建</b><br><span class="pill o">一次性</span></td><td>60 元/人</td>
+<td colspan="3" style="text-align:center;color:var(--mut)">平台 100%（算力成本约 50%）</td>
+<td>不分账</td><td>支付后即时</td>
+</tr>
+<tr>
+<td><b>数字人托管</b><br><span class="pill o">订阅</span></td><td>29 元/月（付费率约 20%）</td>
+<td colspan="3" style="text-align:center;color:var(--mut)">平台 100%</td>
+<td>不分账；经常性收入</td><td>按月扣费</td>
+</tr>
+<tr>
+<td><b>共创片场</b>（多人数字人同框）<br><span class="pill g">自营+裂变</span></td><td>包场/定制费</td>
+<td colspan="3" style="text-align:center;color:var(--mut)">资金结构同"定制片"</td>
+<td><b>最低 10 人开拍、满 20 人免单</b>；KOC 返佣 10%；各参与者得专属片段</td><td>同定制片里程碑</td>
+</tr>
+</table>
+</div>
+<div class="note"><b>校验要求：</b>撮合类每一行"平台净留＋MCN＋艺人＋返佣"必须＝100%（已核验：样片 10.8+16.4+65.6+7.2＝100；商单/线下 15.4+15.6+62.4+6.6＝100）。独立艺人时 MCN 份额并入艺人。</div>
+</section>
+
+<!-- ====================== 第3章 ====================== -->
+<section id="s3">
+<h2><span class="no">3</span>MCN 与艺人的分成规则（第二层）</h2>
+<div class="sub">分成只针对"供给侧可分账金额"（样片 82%、商单 78%），默认艺人 80%、MCN 20%。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:640px">
+<colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup>
+<tr><th>归属状态</th><th>样片（占成交额%）</th><th>商单/线下（占成交额%）</th></tr>
+<tr><td><b>独立艺人</b>（无 MCN）</td><td>艺人 <span class="hl">82%</span>、MCN 0</td><td>艺人 <span class="hl">78%</span>、MCN 0</td></tr>
+<tr><td><b>归属 MCN</b>（默认 MCN 分 20%）</td><td>MCN 16.4%、艺人 <span class="hl">65.6%</span></td><td>MCN 15.6%、艺人 <span class="hl">62.4%</span></td></tr>
+</table>
+</div>
+<h3>3.1 规则要点</h3>
+<ul class="clean">
+<li><b>MCN 分成率可配置：</b>默认 20%，可按 MCN 合同/等级在 <b>10%–30%</b> 区间设定；调整须艺人在线电子签署确认后生效，存量订单按签约时比例执行。</li>
+<li><b>所有权不转移：</b>数字人形象、声音、样片版权始终归艺人本人；MCN 仅按约获得分成，不取得资产所有权。</li>
+<li><b>签约关系决定分成：</b>以有效《MCN-艺人签约/授权协议》为准；默认一人一"主 MCN"，订单发生时按当时归属关系自动路由分账。</li>
+<li><b>解约：</b>分成关系终止即停止向 MCN 分账，资产不转移、不影响艺人后续交易；已成交未清分订单仍按原约执行。</li>
+<li><b>MCN 侧义务：</b>MCN 承担其承诺的管理/推广/垫付等义务，平台只负责按确认结果清分，不介入 MCN 与艺人的内部约定纠纷（但冻结争议金额）。</li>
+</ul>
+<div class="note warn"><b>合规：</b>MCN 与艺人的分成、授权须书面化、实名化；自然人艺人所得的个税处理见第 6 章。平台不得通过分成安排使任一方规避法定纳税义务。</div>
+</section>
+
+<!-- ====================== 第4章 ====================== -->
+<section id="s4">
+<h2><span class="no">4</span>推荐返佣与共创裂变</h2>
+<div class="sub">返佣是平台的"获客成本"，一律从平台佣金/毛利里列支、设上限，绝不动 MCN/艺人本金；只设一级推荐关系。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:680px">
+<colgroup><col style="width:26%"><col style="width:24%"><col style="width:24%"><col style="width:26%"></colgroup>
+<tr><th>业务</th><th>返佣（占成交额）</th><th>口径 / 上限</th><th>平台净留</th></tr>
+<tr><td>样片/数字商品</td><td class="num hl">7.2%</td><td>平台佣金 18% 的 40%</td><td class="num">10.8%</td></tr>
+<tr><td>商单 / 线下出场</td><td class="num hl">6.6%</td><td>平台佣金 22% 的 30%</td><td class="num">15.4%</td></tr>
+<tr><td>定制片 / 共创包场</td><td class="num hl">10%</td><td>在平台毛利约 40% 内列支</td><td class="num">毛利约 30%</td></tr>
+</table>
+</div>
+<h3>4.1 返佣规则</h3>
+<ul class="clean">
+<li><b>只设一级：</b>仅"直接带来该订单的推荐人"获得返佣，不设多级/团队层级、不以发展下线人数计酬（符合禁止传销规定）。</li>
+<li><b>结算时点：</b>订单确认并度过退款/售后期后，与分账同批或售后期满 T+1 结算；退款、撤单、自购、虚假交易不计返佣。</li>
+<li><b>风控：</b>返佣与实名、设备、支付、IP、收货真实性挂钩；异常订单冻结返佣，刷单追回。</li>
+</ul>
+<h3>4.2 共创片场裂变</h3>
+<ul class="clean">
+<li><b>门槛：</b>最低 10 人上传数字人开拍、满 20 人发起人免单（免单为服务权益、不产生现金分账）。</li>
+<li><b>返佣：</b>邀请/发起方按定制片规则返佣约 10%；各参与者获得含本人数字人的专属片段用于再分享。</li>
+<li><b>一带 N：</b>一个主订单带动多人创建数字人（创建费/托管），后续成交各自走第 2 章分账。</li>
+</ul>
+</section>
+
+<!-- ====================== 第5章 ====================== -->
+<section id="s5">
+<h2><span class="no">5</span>资金清分与订单状态机</h2>
+<div class="sub">买家资金全程在持牌机构监管账户，平台不设资金池；清分由持牌机构按分账指令直接到各方账户。</div>
+<h3>5.1 订单状态机</h3>
+<div class="flow">
+ <div class="fstep"><span class="t">待支付</span></div><div class="farrow">→</div>
+ <div class="fstep"><span class="t">已支付·托管</span><span class="d">资金进入监管账户</span></div><div class="farrow">→</div>
+ <div class="fstep"><span class="t">履约中</span><span class="d">里程碑/交付</span></div><div class="farrow">→</div>
+ <div class="fstep"><span class="t">待确认</span><span class="d">交付待验收</span></div><div class="farrow">→</div>
+ <div class="fstep"><span class="t">已确认</span><span class="d">或超时自动确认</span></div><div class="farrow">→</div>
+ <div class="fstep"><span class="t">已清分</span><span class="d">T+1 到账</span></div>
+</div>
+<div class="flow">
+ <div class="fstep" style="border-color:#e8b4ad;background:#fdf3f2"><span class="t">退款中</span><span class="d">未清分：原路退、取消分账</span></div><div class="farrow">→</div>
+ <div class="fstep" style="border-color:#e8b4ad;background:#fdf3f2"><span class="t">已退款</span></div>
+ <div style="flex:.4"></div>
+ <div class="fstep" style="border-color:#e3cf9a;background:#fdf9ec"><span class="t">纠纷·冻结</span><span class="d">冻结争议金额</span></div><div class="farrow">→</div>
+ <div class="fstep" style="border-color:#e3cf9a;background:#fdf9ec"><span class="t">裁定</span><span class="d">继续清分 / 部分或全额退</span></div>
+</div>
+<h3>5.2 清分要点</h3>
+<ul class="clean">
+<li><b>持牌清分：</b>对接银行/持牌支付机构的"担保交易＋分账"能力；平台只下发分账指令，不代收代持。</li>
+<li><b>T+1：</b>确认后次工作日完成清分；自营里程碑按节点分次放款。</li>
+<li><b>多次清分：</b>一笔订单可按里程碑/部分退款产生多个分账批次（batch_no），每批多条明细（seq），全程幂等、不可重复清分。</li>
+<li><b>自动确认与售后期：</b>交付后约定时限（如 7 天）买家未操作自动确认；数字商品一经交付原则不支持无理由退款。</li>
+<li><b>结算账户：</b>平台/MCN/艺人/承制方均须实名并绑定本人/本企业收款账户，通过资质与协议审核后方可收款。</li>
+</ul>
+</section>
+
+<!-- ====================== 第6章 ====================== -->
+<section id="s6">
+<h2><span class="no">6</span>发票与税务处理</h2>
+<div class="sub">结算系统须为每笔分账记录"开票方、税率、个税处理方式"；增值税一般纳税人现代服务税率 6%，含税收入先做价税分离。</div>
+<h3>6.1 两种开票模型（按业务配置）</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:18%"><col style="width:41%"><col style="width:41%"></colgroup>
+<tr><th>模型</th><th>A · 撮合（平台仅就佣金）</th><th>B · 自营（平台全额收）</th></tr>
+<tr><td>适用</td><td>样片、商单、线下出场等撮合交易</td><td>定制片、代做样片、创建、托管</td></tr>
+<tr><td>平台开票</td><td>就<b>平台佣金/经纪服务费</b>开 6% 发票</td><td>就<b>订单全额</b>向买家开 6% 发票</td></tr>
+<tr><td>他方开票</td><td>MCN/艺人就各自所得向付款方开票（自然人由委托代征主体/税务代开）</td><td>外包承制/制作方向平台开进项发票，平台抵扣</td></tr>
+<tr><td>C 端简化（可选）</td><td colspan="2">为买家体验，也可由平台全额向买家开票、各供给方再向平台开票（平台进项抵扣）——需系统支持"全额开票＋进项回收"链路</td></tr>
+</table>
+</div>
+<h3>6.2 自然人个人所得税</h3>
+<ul class="clean">
+<li><b>所得性质：</b>自然人艺人/推荐人所得一般为<b>劳务报酬</b>（预扣率 20%–40%）或<b>经营所得</b>（按规定核定/查账）；企业 MCN 自行申报。</li>
+<li><b>代扣代缴 / 委托代征：</b>支付方（平台或 MCN）依法代扣代缴；建议对接持牌<b>灵活用工/委托代征</b>平台对自然人批量结算、代征个税并代开发票，实现"到手即完税"。</li>
+<li><b>结算前置校验：</b>自然人收款方须选择税务处理方式（自证企业身份 / 平台代征 / 自行申报），未确定不得清分；返佣所得同样完税。</li>
+</ul>
+<div class="note danger"><b>红线：</b>不得用"私户拆分、虚开、虚假灵活用工"等方式帮任何一方逃税；开票须与真实交易、资金流、合同流一致（三流一致）。</div>
+</section>
+
+<!-- ====================== 第7章 ====================== -->
+<section id="s7">
+<h2><span class="no">7</span>退款、纠纷与尾差处理</h2>
+<h3>7.1 退款规则</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:680px">
+<colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup>
+<tr><th>时点 / 情形</th><th>处理</th><th>对分账影响</th></tr>
+<tr><td>清分前退款</td><td>取消分账指令，原路全额退款</td><td>无资金流出</td></tr>
+<tr><td>部分履约/里程碑</td><td>按已完成且确认部分结算，余额退回</td><td>仅就已履约批次清分</td></tr>
+<tr><td>清分后退款</td><td>数字商品已交付原则不退；服务类按责任方承担</td><td>按各方分账比例追回；不足部分从保证金/风险准备金垫付后追偿</td></tr>
+<tr><td>返佣联动</td><td>订单退款则对应返佣作废/追回</td><td>未发不发、已发追回</td></tr>
+</table>
+</div>
+<h3>7.2 纠纷与尾差</h3>
+<ul class="clean">
+<li><b>纠纷冻结：</b>未清分冻结争议订单全额；已清分冻结等额风险准备金；举证后平台调解或依仲裁/司法结果执行。</li>
+<li><b>尾差：</b>分账按"分"四舍五入，须保证 Σ各方金额＝可分账金额；尾差（通常 ≤1 分）统一由<b>平台</b>承担或计入平台，并记录 rounding_diff 字段。</li>
+<li><b>保证金（可选）：</b>MCN/承制方可缴纳保证金，用于担保退款、违约与交付，提升清分优先级。</li>
+</ul>
+</section>
+
+<!-- ====================== 第8章 ====================== -->
+<section id="s8">
+<h2><span class="no">8</span>后端开发规格（数据结构与门禁）</h2>
+<div class="sub">建议"规则配置驱动、清分与业务解耦"：监听 order.confirmed / milestone.reached 事件 → 读取 settle_rule → 生成 settle_batch/settle_entry → 调用持牌机构分账接口。新业务只加规则。</div>
+
+<h3>8.1 分账规则表 settle_rule（可配置）</h3>
+<div class="code"><span class="c">// 示例：样片/数字商品（归属MCN，含一级返佣）。金额单位：分</span>
+{
+  <span class="k">"rule_id"</span>: <span class="s">"SAMPLE_MCN_V1"</span>,
+  <span class="k">"biz_type"</span>: <span class="s">"sample_sale"</span>,
+  <span class="k">"base_type"</span>: <span class="s">"GMV_INCL_VAT"</span>,          <span class="c">// 分账基数：含税成交额</span>
+  <span class="k">"participants"</span>: [
+    {<span class="k">"role"</span>:<span class="s">"referral"</span>, <span class="k">"calc"</span>:<span class="s">"percent"</span>, <span class="k">"value"</span>:<span class="s">7.2</span>,  <span class="k">"priority"</span>:<span class="s">1</span>},
+    {<span class="k">"role"</span>:<span class="s">"platform"</span>, <span class="k">"calc"</span>:<span class="s">"percent"</span>, <span class="k">"value"</span>:<span class="s">10.8</span>, <span class="k">"priority"</span>:<span class="s">2</span>},
+    {<span class="k">"role"</span>:<span class="s">"mcn"</span>,      <span class="k">"calc"</span>:<span class="s">"percent"</span>, <span class="k">"value"</span>:<span class="s">16.4</span>, <span class="k">"when_affiliated"</span>:<span class="s">true</span>},
+    {<span class="k">"role"</span>:<span class="s">"artist"</span>,   <span class="k">"calc"</span>:<span class="s">"remainder"</span>, <span class="k">"priority"</span>:<span class="s">9</span>} <span class="c">// 兜底取剩余</span>
+  ],
+  <span class="k">"trigger_event"</span>: <span class="s">"order.confirmed"</span>,
+  <span class="k">"settle_delay"</span>: <span class="s">"T+1"</span>,
+  <span class="k">"refund_mode"</span>: <span class="s">"pro_rata"</span>,               <span class="c">// 退款按分账比例追回</span>
+  <span class="k">"invoice_model"</span>: <span class="s">"A_COMMISSION"</span>,
+  <span class="k">"tax_mode"</span>: {<span class="k">"natural_person"</span>:<span class="s">"withhold_or_delegate"</span>},
+  <span class="k">"version"</span>: <span class="s">1</span>, <span class="k">"status"</span>: <span class="s">"active"</span>
+}</div>
+
+<h3>8.2 分账批次 / 明细</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:22%"><col style="width:78%"></colgroup>
+<tr><th>表</th><th>关键字段</th></tr>
+<tr><td><b>settle_batch</b><br>（分账批次）</td><td>batch_no、order_no、type（正常/退款/追补）、milestone_no、base_amount、currency、status、idempotency_key、created_at、cleared_at</td></tr>
+<tr><td><b>settle_entry</b><br>（分账明细）</td><td>batch_no、seq、payee_id、payee_role（platform/mcn/artist/referral/producer）、account_id、amount、fee_bearer、status、cleared_at</td></tr>
+</table>
+</div>
+
+<h3>8.3 账户、关系表</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+<tr><th>表</th><th>关键字段</th></tr>
+<tr><td>payee_account</td><td>payee_id、类型（企业/自然人）、实名状态、开户名、账号、税务处理方式、资质审核状态、保证金余额</td></tr>
+<tr><td>mcn_artist_relation</td><td>artist_id、mcn_id、mcn_share%（默认20）、agreement_id、起止时间、状态；订单按发生时关系路由</td></tr>
+<tr><td>referral_relation</td><td>referrer_id、被推荐订单、层级（固定一级）、返佣率、状态</td></tr>
+</table>
+</div>
+
+<h3>8.4 校验门禁（落库/清分前）</h3>
+<ul class="clean">
+<li>规则内 percent 之和＋remainder 逻辑＝100%；配置保存即校验。</li>
+<li>Σ settle_entry.amount ＝ settle_batch.base_amount（含尾差），借贷平衡。</li>
+<li>幂等：同一 order＋milestone 的批次唯一，重复请求不重复清分。</li>
+<li>仅"已确认 / 里程碑达成且未退款、未冻结"订单可发起清分。</li>
+<li>收款方实名、协议、税务处理方式齐备，否则该笔挂起并告警。</li>
+<li>退款/纠纷自动联动冻结或追回返佣与各方分账。</li>
+</ul>
+<div class="note good"><b>落地建议：</b>比例与角色全部配置化（不写死在代码）；清分服务独立、以事件驱动；对接持牌机构分账 API 并保留全量对账文件，每日与渠道对账、差异自动告警。</div>
+<div class="foot">晶晶日上 · 分账逻辑与清分结算规则（后端开发规格）　|　V1.0 推荐定稿　|　2026-10-07　|　具体税率、开票与委托代征以主管税务机关及持牌机构最新规定为准</div>
+</section>
+</div>
+</body>
+</html>

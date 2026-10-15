@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晶晶日上 · 平台交易与履约规则合集（样片·试镜·商单·退款·版权投诉）20261013</title>
+<style>
+:root{
+  --ink:#2b2620; --ink2:#4a4238; --gold:#b8860b; --gold2:#d4af37; --goldbg:#faf6ec;
+  --line:#e3d8c3; --red:#b02a1e; --redbg:#fdf0ee; --green:#1f7a4d; --greenbg:#eef7f1;
+  --blue:#1f4e8c; --bluebg:#eef3fb; --gray:#8a8175; --paper:#fffdf8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Songti SC","STSong","SimSun","Noto Serif SC",serif;color:var(--ink);
+  background:linear-gradient(180deg,#f3ece0,#efe7d8 240px);line-height:1.8;font-size:15.5px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+.cover{background:linear-gradient(135deg,#2b2620,#3a332a);color:#f5ecd9;border-radius:14px;
+  padding:46px 40px;margin:26px 0 22px;box-shadow:0 8px 28px rgba(60,45,15,.18)}
+.cover .kicker{color:var(--gold2);letter-spacing:4px;font-size:14px}
+.cover h1{font-size:28px;margin:12px 0 10px;line-height:1.4}
+.cover .sub{color:#d8c9aa;font-size:15px;line-height:1.9}
+.cover .meta{margin-top:18px;font-size:13px;color:#b9a988;border-top:1px solid #5a5040;padding-top:12px}
+.toc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 28px;margin:20px 0}
+.toc h2{font-size:18px;border:none;margin-bottom:8px;color:var(--gold)}
+.toc a{display:inline-block;margin:5px 18px 5px 0;color:var(--ink2);text-decoration:none;font-size:14.5px}
+.toc a span{color:var(--gold);font-weight:700;margin-right:6px}
+.part{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px 34px;margin:22px 0;box-shadow:0 2px 10px rgba(70,55,20,.06)}
+.ptag{display:inline-block;background:var(--gold);color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;letter-spacing:1px}
+h2{font-size:22px;margin:12px 0 16px;padding-bottom:12px;border-bottom:2px solid var(--gold2);color:var(--ink)}
+h3{font-size:17px;margin:22px 0 10px;color:var(--ink);border-left:4px solid var(--gold2);padding-left:10px}
+h4{font-size:15.5px;margin:16px 0 6px;color:var(--ink)}
+p{margin:8px 0}
+ul,ol{margin:8px 0 8px 24px}
+li{margin:5px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:#fff}
+th,td{border:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+th{background:var(--goldbg);color:var(--ink);font-weight:700}
+tr:nth-child(even) td{background:#fdfbf5}
+.note{border-radius:9px;padding:12px 16px;margin:14px 0;font-size:14px;line-height:1.75}
+.note.good{background:var(--greenbg);border:1px solid #bfe2cd}
+.note.warn{background:var(--redbg);border:1px solid #f0c4be}
+.note.tip{background:var(--goldbg);border:1px solid #e6d6ae}
+.note.blue{background:var(--bluebg);border:1px solid #c3d5ef}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0}
+.fstep{border:1px solid var(--gold2);background:var(--goldbg);border-radius:8px;padding:8px 12px;font-size:13px;text-align:center}
+.farrow{color:var(--gold);font-weight:700}
+.printbtns{position:sticky;top:8px;z-index:10;text-align:right;margin:14px 0}
+.btn{display:inline-block;background:var(--gold);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;margin-left:8px;font-family:inherit}
+.btn:hover{background:#9c7009}
+.foot{text-align:center;color:var(--gray);font-size:13px;margin:24px 0 0}
+@media print{body{background:#fff}.part,.toc{box-shadow:none;page-break-inside:avoid}.printbtns{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="printbtns"><button class="btn" onclick="window.print()">打印 / 导出 PDF</button></div>
+
+<div class="cover">
+  <div class="kicker">晶晶日上 · 交易与履约规则（第三批 · 面向后端/客服/监管）</div>
+  <h1>晶晶日上平台交易与履约规则合集<br>数字商品 · 试镜服务 · 商单参演 · 退款售后 · 版权投诉</h1>
+  <div class="sub">
+    本合集把平台五类核心交易/履约场景写成可直接执行的规则：商品怎么卖、试镜怎么履约、商单怎么签、退款纠纷怎么处理、侵权投诉怎么响应。既是商家与用户的交易规则，也是后端清分、客服裁定、履行电子商务平台法定义务的依据。<br>
+    与《平台社区与交易规则》《分账逻辑与清分结算规则（后端开发规格）》《平台治理制度合集》及各合同模板配套使用。
+  </div>
+  <div class="meta">运营主体：人生主角（北京）数字科技有限公司及其全资子公司人生主角（昆山）数字科技有限公司，以实际备案/签约主体为准　｜　V1.0　｜　2026-10-13</div>
+</div>
+
+<div class="toc">
+<h2>目录</h2>
+<a href="#r1"><span>规则一</span>数字商品/样片交易规则</a>
+<a href="#r2"><span>规则二</span>试镜服务规则（含线下安全）</a>
+<a href="#r3"><span>规则三</span>商单/非标参演规则</a>
+<a href="#r4"><span>规则四</span>退款/售后/纠纷处理规则</a>
+<a href="#r5"><span>规则五</span>知识产权投诉与维权规则（避风港）</a>
+<a href="#r6"><span>附则</span>入驻核验与交易信息保存</a>
+</div>
+
+<div class="part" id="r1">
+<span class="ptag">规则一 · P0</span>
+<h2>数字商品 / 样片交易规则</h2>
+<p class="sub">适用于艺人/MCN 在平台售卖的数字人形象、样片、成片等可在线交付、可重复授权的数字商品。这是"一份样片可卖给多个人"的规则基础。</p>
+
+<h3>1. 商品上架与权利要求</h3>
+<ul>
+  <li>卖家须完成 L1 实名认证；主角光环（达人）认证须通过人工审核并提交模卡/生活照/全身照等资料。</li>
+  <li>上架数字人形象、样片必须已完成<b>肖像、声音、生物识别、AI 训练</b>等授权链（本人实名＋人脸核验后单独电子签，MCN 不得代签），授权链不完整的商品不得上架。</li>
+  <li>商品页须如实标明：数字人形象、可交付内容、是否可定制、授权用途范围、是否非独家、交付形式与时限；不得含有虚假、夸大或侵权信息。</li>
+  <li>平台技术侧只提供基础数字人形象创建与托管；样片、深度定制、成片均由真人制作团队承制，卖家不得承诺平台自助"一键出片"。</li>
+</ul>
+
+<h3>2. 交易标的与许可性质</h3>
+<ul>
+  <li>买受人购买的是<b>个人/企业的有限使用许可</b>，不是数字人肖像权、声音权或成片著作权的转移：默认<b>非独家、非独占、不可转售、不可再许可</b>，许可权项通常为复制权、信息网络传播权（以商品页约定为准）。</li>
+  <li>数字人肖像权、声音权始终归艺人本人；数字人美术形象与成片的著作权归属按《数字人肖像授权协议》《样片/数字商品许可合同》约定。</li>
+  <li>因平台/卖家保留信息网络传播权与再许可权，同一份数字商品<b>可向不同买受人无限次重复授权、零边际成本重复售卖</b>，这是商品可重复售卖的法律支点。</li>
+  <li>买受人仅可在约定用途、地域、期限内使用；超出范围（如二次出售、用于违法广告、冒充真人、伪造他人）即构成违约与侵权，平台与权利人有权追责。</li>
+</ul>
+
+<h3>3. 下单、交付与确认</h3>
+<div class="flow">
+  <div class="fstep">买家下单</div><div class="farrow">→</div>
+  <div class="fstep">付款至持牌机构托管</div><div class="farrow">→</div>
+  <div class="fstep">卖家在线交付（或自动发货）</div><div class="farrow">→</div>
+  <div class="fstep">买家确认 / 48小时超时自动确认</div><div class="farrow">→</div>
+  <div class="fstep">T+1 清分</div>
+</div>
+<ul>
+  <li><b>即买即得：</b>标品样片/数字商品支持在线自动交付；需简单制作的按商品页承诺时限交付。</li>
+  <li><b>自动确认：</b>商品交付后<b>48 小时</b>内买家未确认且未提出异议，系统自动确认，进入清分，防止恶意不确认。</li>
+  <li><b>交付即原则不退：</b>数字商品一经交付、可在线获取的，因可复制、可重复使用的特性，原则上不适用七天无理由退款；但存在卖家未交付、内容与描述严重不符、授权链瑕疵、侵权等情形的，按规则四处理。</li>
+</ul>
+
+<h3>4. 佣金与清分</h3>
+<table>
+  <tr><th>项目</th><th>口径</th></tr>
+  <tr><td>平台佣金</td><td>数字商品/样片交易按成交额抽 <b>18%</b>（MCN/艺人侧内部分成另计）。</td></tr>
+  <tr><td>供给侧分成</td><td>默认艺人 80% / MCN 20%，MCN 分成可按等级在 10%–30% 配置，以在线签署为准。</td></tr>
+  <tr><td>清分时点</td><td>确认或超时自动确认后，由持牌机构于 <b>T+1</b> 直接清分至各方账户，平台不设资金池、不做二清。</td></tr>
+  <tr><td>返佣联动</td><td>如涉及一级直推返佣，订单退款则返佣作废/追回（详见共创返佣规则）。</td></tr>
+</table>
+
+<h3>5. 禁止行为</h3>
+<ul>
+  <li>禁止在平台交付前/外引导买家站外交易、私下转账、添加站外联系方式完成交易；</li>
+  <li>禁止售卖无授权人脸/声音、名人或逝者形象、未成年人敏感内容、擦边或违法内容；</li>
+  <li>禁止盗卖他人数字人、破解/去水印后转售、刷单炒信、虚假评价。</li>
+</ul>
+<div class="note warn"><b>盗版与越权追责：</b>买受人超出许可范围使用、或卖家上架无授权商品的，平台有权下架、封禁、冻结款项，并依据权利人通知与证据追偿；造成损失的，由责任方承担。</div>
+</div>
+
+<div class="part" id="r2">
+<span class="ptag">规则二 · P0</span>
+<h2>试镜服务规则（含线下安全）</h2>
+<p class="sub">适用于出品人就特定角色/场景发起的试镜邀约，包括线上试镜与线下试镜（一口价含交通、可由艺人自行上架、由出品人付款）。</p>
+
+<h3>1. 试镜邀约与上架</h3>
+<ul>
+  <li>试镜分为<b>线上试镜</b>与<b>线下试镜</b>，均为独立业务、正常上架，可由艺人自行设置是否接受。</li>
+  <li><b>线下试镜采用"一口价含交通"（类似包邮）：</b>艺人只设一个<b>固定出场费总价（已含交通）</b>，商品页只展示一个价格；不再单列交通费、不做凭票报销，平台按含交通总价计入佣金基数。</li>
+  <li>艺人可设置试镜公开开关、可接时段、所在城市与可赴约范围；出品人发起邀约后由艺人接受，或艺人自行上架供出品人下单。</li>
+</ul>
+
+<h3>2. 标准交付内容</h3>
+<ul>
+  <li>线下试镜默认交付为<b>约定拍摄/试镜过程＋6 张照片＋1 段视频</b>（具体可在商品页约定，以订单确认为准）。</li>
+  <li>线上试镜按约定交付试镜视频/素材；试镜素材的用途以商品页与电子合同约定为限。</li>
+  <li><b>面试/试镜只提供"机会"，不承诺角色：</b>最终出演主角、配角或群演由剧组按人物匹配结果决定，与《晶钻抽奖规则》中面试卡"不承诺角色"口径一致。</li>
+</ul>
+
+<h3>3. 下单、付款与安全护栏</h3>
+<ul>
+  <li>出品人下单后款项进持牌机构托管，试镜完成并确认后 T+1 清分；平台不提前放款。</li>
+  <li><b>线下安全（重点）：</b>① 平台仅支持在正规、公开、可核验的场所进行，艺人可拒绝偏僻/封闭/夜间场所；② 线上行程、地点、联系人信息留痕；③ 提供一键分享行程、紧急联系/求助入口；④ 建议购买意外险并作安全提示；⑤ 严禁以试镜名义实施违法、色情、陪侍或其他线下违规活动，一经发现立即封禁并上报。</li>
+  <li>出行、打车等费用已含在一口价内，平台不另设交通费字段。</li>
+  <li>双方在正式合作前仅可通过平台消息进行单向沟通，建立合作、客服介入对接后才可双向，全程留痕，禁止站外私下交易。</li>
+</ul>
+
+<h3>4. 确认、佣金与取消</h3>
+<ul>
+  <li>试镜完成并交付后，出品人<b>48 小时</b>内未确认且无异议的，系统自动确认并清分。</li>
+  <li>平台按含交通的一口价成交总额抽 <b>22%</b>；供给侧按 MCN/艺人约定分成。</li>
+  <li><b>取消：</b>试镜前出品人取消的，按双方约定与平台规则处理（未履约全额原路退）；艺人方无正当理由失约的，影响其信用、评分并可能承担违约责任；因不可抗力或安全原因取消的，按规则四安全免责处理。</li>
+</ul>
+<div class="note tip"><b>后续参演：</b>试镜成功后，数字人实际参演某部剧属于"商单/非标参演"（见规则三），另行一人一剧一价、签署《数字人参演/版权合同》并由出品人付款，不包含在试镜费用内。</div>
+</div>
+<div class="part" id="r3">
+<span class="ptag">规则三 · P0</span>
+<h2>商单 / 非标参演规则</h2>
+<p class="sub">适用于数字人参演具体影视剧、定制广告、非标合作等无法用标品一口价覆盖的交易。核心是"一人一剧一价、电子合同、付款托管、按合同多方清分"。</p>
+
+<h3>1. 非标交易的特点</h3>
+<ul>
+  <li>价格、角色、戏份、用途、地域、期限、独家与否、分红方式均因项目而异，<b>不设固定版权档位</b>，由双方协商确定。</li>
+  <li>出演方式可能是：买断、独家许可、按收益分红、固定片酬＋分红等；最终以《数字人参演/版权合同》（电子合同）约定为准。</li>
+  <li>平台仅提供信息展示、撮合、合同签署、付款托管与清分，不替任何一方确定片酬、不承诺出演结果。</li>
+</ul>
+
+<h3>2. 交易流程</h3>
+<div class="flow">
+  <div class="fstep">选角/投稿/撮合</div><div class="farrow">→</div>
+  <div class="fstep">报价单（一人一剧一价）</div><div class="farrow">→</div>
+  <div class="fstep">电子合同签署</div><div class="farrow">→</div>
+  <div class="fstep">付款托管</div><div class="farrow">→</div>
+  <div class="fstep">里程碑履约</div><div class="farrow">→</div>
+  <div class="fstep">验收</div><div class="farrow">→</div>
+  <div class="fstep">按合同多方清分</div>
+</div>
+<ul>
+  <li><b>报价单：</b>列明角色、片酬或分红、付款节点、交付物、修改次数、用途与期限、版权归属、违约条款。</li>
+  <li><b>电子合同：</b>非标参演必须签署书面电子合同，作为清分引擎多方分账的依据；无合同不进入付款托管。</li>
+  <li><b>付款托管：</b>出品人款项先入持牌机构监管账户，按合同节点（如 30% 开工、阶段款、尾款）放款。</li>
+  <li><b>线下撮合边界：</b>主创沟通、试戏、拍摄可线下进行，但资金、合同、确认必须走平台；禁止脱离平台私下付款。</li>
+</ul>
+
+<h3>3. 分账、佣金与税务</h3>
+<ul>
+  <li>平台对商单/非标参演及线下成交按成交额抽 <b>22%</b>；含制作/承制的，制作费、客串数字人授权费等按合同列支。</li>
+  <li>清分按合同逐节点进行，每笔订单可产生多个分账批次，全程幂等、不可重复清分；尾差由平台承担。</li>
+  <li>自然人收款须先确定税务处理方式（自证企业身份/平台委托代征/自行申报），依法开具发票或代扣个人所得税后方可清分；坚持合同流、资金流、发票流三流一致。</li>
+</ul>
+<div class="note warn"><b>红线：</b>禁止以商单名义进行站外交易、阴阳合同、虚假分成、规避分账或虚开发票；发现即冻结、封禁并依法处理。</div>
+</div>
+
+<div class="part" id="r4">
+<span class="ptag">规则四 · P0</span>
+<h2>退款 / 售后 / 纠纷处理规则</h2>
+<p class="sub">明确各类订单在清分前后的退款路径、部分履约结算、售后与纠纷裁定，以及风险准备金的垫付与追偿，保障买家权益并保护卖家合法收益。</p>
+
+<h3>1. 退款基本原则</h3>
+<ul>
+  <li>买家资金全程在持牌机构监管账户，平台不设资金池；退款按订单是否已清分、履约程度、责任归属分别处理。</li>
+  <li>退款须通过平台申请，站外私下交易不受平台保护、不予受理。</li>
+</ul>
+<table>
+  <tr><th>情形</th><th>处理方式</th><th>资金处理</th></tr>
+  <tr><td>清分前退款</td><td>取消分账指令，原路全额退款</td><td>无资金流出，全额原路退回</td></tr>
+  <tr><td>未履约（试镜/商单未执行）</td><td>核实后全额原路退</td><td>取消分账</td></tr>
+  <tr><td>部分履约/里程碑</td><td>按已完成且确认的部分结算，余额退回</td><td>仅就已履约批次清分</td></tr>
+  <tr><td>数字商品已交付</td><td>原则上不支持无理由退款；但未交付、严重不符、授权瑕疵、侵权除外</td><td>按责任方处理</td></tr>
+  <tr><td>清分后退款（服务类）</td><td>按责任方承担</td><td>按各方分账比例追回；不足从保证金/风险准备金垫付后追偿</td></tr>
+  <tr><td>返佣联动</td><td>订单退款则对应返佣作废/追回</td><td>未发不发、已发追回</td></tr>
+  <tr><td>未成年人误充</td><td>凭监护人材料与核实，按未成年人保护规则处理</td><td>核实后原路退回</td></tr>
+</table>
+
+<h3>2. 售后与争议处理</h3>
+<ul>
+  <li><b>售后时限：</b>数字商品交付后 48 小时确认；服务/定制类可按合同约定设置验收期与售后期。</li>
+  <li><b>争议范围：</b>未交付、内容与描述严重不符、质量不达标、授权链瑕疵、错发漏发、数量/时长不符、付款后无法联系等。</li>
+  <li>买卖双方应先自行协商；协商不成任一方可申请平台介入，双方须在规定时限内举证（订单、聊天记录、交付物、付款凭证、素材源文件等）。</li>
+</ul>
+
+<h3>3. 纠纷冻结与平台裁定</h3>
+<ul>
+  <li><b>冻结：</b>未清分的争议订单全额冻结；已清分的冻结等额风险准备金/保证金。</li>
+  <li><b>裁定：</b>平台依据合同、规则与证据组织调解；调解不成的，依双方仲裁/司法结果执行。</li>
+  <li>平台裁定结果可导致继续清分、部分退款或全额退款；对恶意欺诈、刷单、伪造证据的一方从严处置并记录信用。</li>
+</ul>
+
+<h3>4. 保证金与风险准备金</h3>
+<ul>
+  <li><b>保证金（可选）：</b>MCN/承制方可缴纳保证金，用于担保退款、违约与交付，提升清分优先级。</li>
+  <li><b>风险准备金：</b>平台按合规内控要求计提，用于清分后退款先行赔付、向责任方追偿；垫付后依法向责任方追偿。</li>
+  <li><b>尾差：</b>分账按"分"四舍五入，须保证各方金额合计＝可分账金额；尾差（通常≤1 分）由平台承担并记录 rounding_diff。</li>
+</ul>
+<div class="note blue"><b>清分前/后退款路径与状态机、字段（settle_batch、settle_entry、refund_mode、rounding_diff 等）以《分账逻辑与清分结算规则（后端开发规格）》为准。</b></div>
+</div>
+<div class="part" id="r5">
+<span class="ptag">规则五 · P0</span>
+<h2>知识产权投诉与维权规则（避风港）</h2>
+<p class="sub">平台依据《电子商务法》第42–45条、《信息网络传播权保护条例》第14–17条、《民法典》《著作权法》及肖像、声音保护规定，建立"通知—反通知—及时处置—错误反赔"的维权机制，覆盖肖像权、声音权、著作权及数字人形象/成片侵权。</p>
+
+<h3>1. 投诉范围</h3>
+<ul>
+  <li>未经授权使用他人肖像、声音或生物识别信息生成数字人；</li>
+  <li>售卖/分发盗版样片、成片，去除/篡改水印、破解后转售；</li>
+  <li>侵犯数字人美术形象、剧本、音乐、视频等著作权；</li>
+  <li>侵犯逝者人格利益（由配偶/子女/父母主张）、英雄烈士名誉荣誉；</li>
+  <li>其他知识产权或人格权侵权。</li>
+</ul>
+
+<h3>2. 通知—反通知流程</h3>
+<div class="flow">
+  <div class="fstep">权利人提交侵权通知（含权利证明、侵权链接、初步证据、联系方式）</div><div class="farrow">→</div>
+  <div class="fstep">平台形式审查（建议 24 小时内）</div><div class="farrow">→</div>
+  <div class="fstep">删除/下架/断开链接并通知卖家</div><div class="farrow">→</div>
+  <div class="fstep">卖家可反通知（含不侵权证明）</div><div class="farrow">→</div>
+  <div class="fstep">转送权利人、恢复或维持下架</div>
+</div>
+<ul>
+  <li><b>显著入口：</b>平台在 App/网站显著位置设置"侵权投诉"入口与投诉指引。</li>
+  <li><b>及时处置：</b>收到合格通知后，平台将及时采取删除、屏蔽、断开链接、下架商品等必要措施，<b>建议在 24 小时内</b>完成初步处置。</li>
+  <li><b>重复侵权：</b>对多次/故意侵权的卖家，平台下架其商品并可封店、封禁账户、冻结款项。</li>
+  <li><b>错误投诉反赔：</b>权利人错误通知造成卖家或平台损害的，依法承担赔偿责任；恶意投诉、伪造权属证明的，记入信用并追责。</li>
+  <li><b>全程留痕：</b>通知、反通知、处置、送达记录均留存备查，配合主管部门、司法或仲裁。</li>
+</ul>
+
+<h3>3. 平台责任边界</h3>
+<ul>
+  <li>平台对站内侵权行为依法履行事前资质核验、事中及时处置、事后配合维权义务；</li>
+  <li>对明知或应知侵权而未采取必要措施的，依法与卖家承担连带责任；</li>
+  <li>对涉及肖像、声音、生物识别的投诉，平台可优先采取下架、停用数字人等审慎措施，避免损害扩大。</li>
+</ul>
+<div class="note good"><b>裁判依据：</b>北京互联网法院"AI 文生图"案确认 AI 为工具、使用者可享有作品权利；虚拟数字人形象具备独创性的构成美术作品，擅自售卖构成侵权。平台据此支持数字人形象与成片的确权与维权，但前提是授权链与归属约定完整。</div>
+</div>
+
+<div class="part" id="r6">
+<span class="ptag">附则 · 平台法定义务</span>
+<h2>入驻核验与交易信息保存</h2>
+<p class="sub">平台作为电子商务平台经营者，依《电子商务法》履行经营者登记核验、信息报送、商品/服务信息与交易记录保存、安全保障等义务。</p>
+
+<h3>1. 入驻核验与登记</h3>
+<ul>
+  <li>对平台内经营者（艺人、MCN、制作团队/机构、商家）进行实名登记、资质核验：自然人核身份，企业/MCN 核营业执照、相关许可与经办人授权。</li>
+  <li>对无需办理市场主体登记的依法免予登记，并按规定核验身份；定期更新核验信息，信息失效或不实则暂停经营。</li>
+  <li>按规定向市场监管部门报送平台内经营者身份信息、提示办理登记、提示税务登记；对显著违法行为采取处置并报告。</li>
+  <li>主角光环（达人）认证、机构认证等收费审核服务的审核标准与费用须公示。</li>
+</ul>
+
+<h3>2. 交易信息保存</h3>
+<ul>
+  <li>商品/服务信息、订单、支付、清分、合同、授权、聊天、投诉与处置等交易记录，自交易完成之日起<b>保存不少于 3 年</b>。</li>
+  <li>依《网络数据安全管理条例》等要求落实日志留存与数据安全；涉及个人信息的按《隐私政策》《个人信息保护影响评估（PIA）》执行。</li>
+</ul>
+
+<h3>3. 与其他文件的关系</h3>
+<ul>
+  <li>社区与消息规则、共创返佣、榜单/排名、内容审核分级、未成年人保护、晶钻抽奖，见《平台治理制度合集》；</li>
+  <li>资金清分、状态机、字段与税务口径，见《分账逻辑与清分结算规则（后端开发规格）》；</li>
+  <li>各方权利义务与合同条款，见《平台合规协议包》与《P0 合同模板包》。</li>
+</ul>
+
+<div class="note tip"><b>待补充（不影响规则上线，上线前由对应负责人填写）：</b>侵权投诉受理邮箱与电话、客服及争议处理团队、各业务自动确认与售后期的后台配置值、保证金/风险准备金比例、持牌支付/清分机构名称。</div>
+
+<div class="foot">晶晶日上 · 数字人IP经纪＋定制剧服务平台　｜　本规则由平台运营方负责解释与更新，更新后在站内公示　｜　2026-10-13</div>
+</div>
+</div>
+</body>
+</html>

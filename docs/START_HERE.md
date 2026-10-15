@@ -1,3 +1,5 @@
+> 当前先看[V5新阶段需求与开发计划](reviews/v5-d1-intake/00_READ_FIRST.md)。已有工程核对到25e6d29，计划在本地core/v5-d1-planning；业务开发未开始。原R0.6任务及下文阶段记录保留历史，不能覆盖V5新目标。
+
 > 2026-10-05第四批：App浏览器实际16组通过，相关82项自动检查通过；修复项目材料读取/保存失败提示。仍本地、未更新安卓包。[当前计划](status/CORE_CURRENT.md)；工作入口仍为 `worktrees/full-flow`。
 
 > 2026-10-05第三批主测：商单、选角、发行与异常恢复28组通过，两处材料重读状态已修复。仍本地、未更新安卓包；[当前计划](status/CORE_CURRENT.md)。实际工作树为 `worktrees/full-flow`，旧core入口仅同步进度。

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晶晶日上 · V4 需求补充定稿（开发执行版）QC-01</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>晶</text></svg>">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&display=swap">
+<style>
+:root{--brand:#c8102e;--brand-d:#9e0c24;--gold:#c9a227;--ink:#1c2430;--mut:#5b6675;--line:#e6e9ee;--bg:#f4f6f9;--card:#fff;--ok:#0e9f6e;--warn:#b7791f;--danger:#c0392b;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans SC",-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+.hero{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-d) 100%);color:#fff;border-radius:0 0 22px 22px;padding:46px 44px 40px;position:relative;overflow:hidden;margin:0 -20px 30px}
+.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero .kicker{display:inline-block;font-size:12.5px;letter-spacing:2px;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-family:"Noto Serif SC",serif;font-size:30px;line-height:1.35;font-weight:900;margin-bottom:12px;position:relative}
+.hero p{font-size:14.5px;opacity:.92;max-width:780px;position:relative}
+.hero .meta{margin-top:18px;font-size:12.5px;opacity:.8;position:relative}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:28px}
+.toc b{font-size:13px;color:var(--mut);display:block;margin-bottom:10px;letter-spacing:1px}
+.toc a{display:inline-block;font-size:13px;color:var(--brand);text-decoration:none;background:#fdf0f2;border:1px solid #f5d6da;border-radius:8px;padding:5px 12px;margin:4px 6px 4px 0}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px 32px;margin-bottom:24px}
+h2{font-family:"Noto Serif SC",serif;font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+h2 .no{background:var(--brand);color:#fff;width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-family:sans-serif;flex:0 0 auto}
+.sub{color:var(--mut);font-size:13.5px;margin-bottom:20px}
+h3{font-size:15.5px;margin:22px 0 10px;padding-left:11px;border-left:4px solid var(--gold)}
+p{margin-bottom:11px}
+.table-scroll{overflow-x:auto;margin:14px 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.6px}
+table.fixed{table-layout:fixed}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#f7f9fb;font-weight:700;font-size:13px}
+.hl{color:var(--brand);font-weight:700}.ok{color:var(--ok);font-weight:700}
+.note{background:#f7f9fc;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;padding:13px 16px;font-size:13.5px;margin:16px 0}
+.note.good{border-left-color:var(--ok);background:#f2faf6}
+.note.warn{border-left-color:var(--warn);background:#fdf9f0}
+.note.danger{border-left-color:var(--danger);background:#fdf3f2}
+ul.clean{list-style:none;margin:8px 0}
+ul.clean li{padding:5px 0 5px 22px;position:relative;font-size:14px}
+ul.clean li::before{content:"";position:absolute;left:4px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.qcard{border:1px solid var(--line);border-radius:13px;padding:0;margin:16px 0;overflow:hidden}
+.qcard .qh{background:linear-gradient(90deg,#fdf0f2,#fff);padding:12px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qcard .qh .tag{background:var(--brand);color:#fff;font-size:11.5px;padding:2px 9px;border-radius:6px;font-family:sans-serif}
+.qcard .qh .pick{font-size:12px;color:var(--ok);font-weight:700;margin-left:auto}
+.qcard .qb{padding:16px 20px}
+.pill{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:12px;font-weight:500}
+.pill.p{background:#fdf0f2;color:var(--brand)}.pill.g{background:#f4f0e2;color:var(--gold)}.pill.o{background:#eaf6f0;color:var(--ok)}
+.foot{color:var(--mut);font-size:12px;text-align:center;margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
+@media (max-width:680px){.hero{padding:34px 22px 28px}.hero h1{font-size:22px}section{padding:22px 18px}.qcard .qh .pick{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+<span class="kicker">V4 需求补充 · 已拍板定稿 · 开发执行版</span>
+<h1>晶晶日上 · V4 需求补充定稿（QC-01）</h1>
+<p>12 组业务口径问题已按推荐档全部定稿。本文件是 F1《APP 开发变更说明书（最终版）》、F2《分账逻辑与清分结算规则》、F3《12 个月规模化总账》的补充与修订；<b>凡与本文件冲突，以本文件（最新）为准</b>。技术细节以 F2 后端规格为准，本文件聚焦业务口径与开发落地。</p>
+<div class="meta">定稿日期 2026-10-09　|　平台品牌：晶晶日上（数字经纪人平台）　|　运营主体：人生主角（北京）数字科技有限公司</div>
+</div>
+
+<div class="toc">
+<b>目录</b>
+<a href="#s0">①定稿总原则</a><a href="#s1">②12 题定稿条款（上）</a><a href="#s2">③12 题定稿条款（下）</a><a href="#s3">④F1/F2 修订对照</a><a href="#s4">⑤开发落地清单</a><a href="#s5">⑥外部核验 V01–V05</a><a href="#s6">⑦待定值与说明</a>
+</div>
+
+<!-- ====================== 第0章 ====================== -->
+<section id="s0">
+<h2><span class="no">0</span>定稿总原则与文件关系</h2>
+<div class="sub">已明确的部分不再表决，本文件只补冲突与缺项；所有"建议"已转为"定稿条款"。</div>
+<ul class="clean">
+<li><b>冲突仲裁：</b>F1/F2/F3 与本文件不一致时，以本文件为准；本文件未涉及的，仍按原文件执行。</li>
+<li><b>真实闭环：</b>所有分账只动"真实成交、已确认"的订单，不做虚假过单；资金全程持牌监管、平台不设资金池。</li>
+<li><b>资产归属：</b>数字人形象、声音、样片版权始终归艺人本人；MCN 分成、机构代理均不导致所有权转移。</li>
+<li><b>配置优先：</b>比例、时限、阶段、许可范围、认证门槛一律后台可配置，但变更须当事人在线签署确认；存量订单按签约/下单时口径执行。</li>
+<li><b>合规底线：</b>合同流、资金流、发票流三流一致；自然人所得依法完税；AI 生成内容按规定保留显式/隐式标识。</li>
+</ul>
+<div class="note good"><b>本期范围：</b>对外以平台官方承接制作与履约；剧本提供方、承制方完整自助门户<b>本期不开放、但端口与角色预留</b>，未来线上入驻不返工。</div>
+</section>
+
+<!-- ====================== 第1章：Q01-Q06 ====================== -->
+<section id="s1">
+<h2><span class="no">1</span>12 题定稿条款（上：Q01–Q06）</h2>
+<div class="sub">每题标注采用的候选与可执行口径，直接作为开发与运营规则。</div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q01</span>合作联系卡：何时解锁、向谁解锁<span class="pick">定稿：候选① 分业务规则</span></div><div class="qb">
+<ul class="clean">
+<li><b>术语明确：</b>"清分"＝持牌机构已按分账指令把资金<b>实际划付</b>到各收款方账户，不是仅付款入账或冻结。</li>
+<li><b>线下试镜：</b>艺人接受邀约＋身份/授权条件满足＋出品方付款（资金托管）成功 → 解锁行程与赴约所需联系卡。</li>
+<li><b>数字人商单：</b>邀约接受＋首款/里程碑款托管成功 → 开放履约对接（默认平台专员/结构化沟通，必要时开对接人）。</li>
+<li><b>现成样片/数字商品：</b>保留清分后规则；数字商品通常无需联系，默认不开放私人联系方式。</li>
+<li><b>官方人工定制：</b>只走平台客服/制作专员入口，不开放艺人或其他机构私人联系方式。</li>
+<li><b>归属 MCN：</b>按授权显示联系人（艺人本人或机构经纪人）；退款后停止新发/继续查看，已展示号码无法追回。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q02</span>购买样片取得哪些使用权益<span class="pick">定稿：候选① 成片非独家许可为主</span></div><div class="qb">
+<ul class="clean">
+<li><b>商品拆分：</b>①代做样片服务（1000/单）；②现成成片使用许可（主售数字商品）；③定制预览版（仅带水印预览）。</li>
+<li><b>默认许可：</b>非独家、限本买家，含个人收藏＋个人社交账号公开分享，个人非商业、长期、地区不限。</li>
+<li><b>不含、须另购：</b>品牌/商业广告、剪辑改编二创、影视或多平台发行、声音单独使用、再次 AI 生成、源文件/模型文件、调用该数字人制作新内容、独家买断。</li>
+<li><b>购买页：</b>显著展示许可范围与未含项；下单即同意许可，下载不推定更多权利。</li>
+<li><b>上架与同框：</b>上架/定价/公开展示须艺人（或授权 MCN）确认；多人同框需全体权利人授权，授权费从制作预算分配。</li>
+<li><b>私人成片：</b>默认进私有库，经确认才进广场；平台宣传展示单独授权；下架后已售许可继续有效。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q03</span>作者供稿与外部制作人员如何进入<span class="pick">定稿：候选① 商务对接＋端口预留</span></div><div class="qb">
+<ul class="clean">
+<li><b>剧本：</b>本期由平台商务签约、运营维护；作者/版权机构完整自助交易入口暂不开放（旧入口收回/隐藏）。</li>
+<li><b>外部制作人员：</b>默认经企业微信/指定商务渠道交稿，平台制作岗回写工单与版本；CMS 仅平台内部使用。</li>
+<li><b>受限交稿入口（可选）：</b>为长期承制方开放，仅见本人受派工单、必要素材、上传版本，不见其余。</li>
+<li><b>历史承接：</b>已购剧本许可、历史作品资料归档保留、已售许可有效；新独家/授权改商务办理。</li>
+<li><b>端口预留：</b>剧本提供方、承制方角色与数据结构预留，未来开放线上入驻不返工（本期 UI 不开放）。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q04</span>个人客户下单与出品认证边界<span class="pick">定稿：候选① 按动作分级认证</span></div><div class="qb">
+<ul class="clean">
+<li><b>个人账户：</b>可买官方祝福、现成样片、私人定制（个人非商业），不强制提交公司执照。</li>
+<li><b>出品认证：</b>企业/剧组/品牌或自然人出品人通过后，可发数字人商单、真人试镜邀约、商业委托；真人试镜仅认证出品方可发起。</li>
+<li><b>本人主演商品：</b>引导创建本人数字人但不强制（可平台代做/用授权形象）；非本人主演商品不绑创建费。</li>
+<li><b>企业代下单：</b>员工须提交在职/授权证明，审核代表权。</li>
+<li><b>为亲友制作：</b>须取得被使用人授权，上传素材不等于同意；未成年人按监护人授权与内容限制执行。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q05</span>人工定制的阶段、付款与合同回写<span class="pick">定稿：候选① 最小节点＋阶段规格表</span></div><div class="qb">
+<ul class="clean">
+<li><b>定制片阶段（默认，可配）：</b>①首款 30%＋需求采集/合同授权 → 开工；②需求定稿与角色阵容（阶段款）；③正式预览（付至约 90%，限修改轮次）；④成片确认＋尾款 10%，交付正式片。代做样片仍 50%/50%。</li>
+<li><b>开工条件：</b>该阶段款进入监管托管即可开工，不要求已清分给承制方；制作款在阶段确认后释放。</li>
+<li><b>合同/授权：</b>可 App 跳转电子签或外部签后上传；外部签由合同岗核验真实结果，上传不等于有效。</li>
+<li><b>回写责任：</b>制作岗回写定稿/阵容/预览/成片，客户在系统确认正式版；企微形成的新要求 → 新报价/变更单。</li>
+<li><b>规格与修改：</b>每档明确时长/清晰度/画幅/人数/交期/修改轮次；平台纠错免费、客户改创意按变更收费。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q06</span>自动验收、返修与正式文件开放<span class="pick">定稿：候选① 逐业务时限＋故障例外</span></div><div class="qb">
+<ul class="clean">
+<li><b>确认时限（自正式交付且可查看＋通知到达起算）：</b>自动/即时数字商品即时；现成样片约 3 天；人工定制/阶段交稿 7 天。草稿、返修中不计。</li>
+<li><b>暂停与重计时：</b>申请返修、文件不可用、申请延期、权利争议 → 暂停；重交后重新起算。</li>
+<li><b>故障不转嫁：</b>买家已付款确认，仅因供给方收款资料或通道故障，不无限锁定交付，平台介入处理。</li>
+<li><b>退款顺序：</b>未开工全退；部分履约按已完成确认部分结算；制作失败/无法授权/侵权不套"数字商品不退"，应退。</li>
+<li><b>标识：</b>"无水印"指去除商业预览水印；法定 AI 显式/隐式标识必须保留。</li>
+</ul></div></div>
+</section>
+
+<!-- ====================== 第2章：Q07-Q12 ====================== -->
+<section id="s2">
+<h2><span class="no">2</span>12 题定稿条款（下：Q07–Q12）</h2>
+<div class="sub">续上，每题为可执行定稿口径。</div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q07</span>真人试镜：到场、取消与交通费<span class="pick">定稿：候选① 出场费与交通分列</span></div><div class="qb">
+<ul class="clean">
+<li><b>费用结构：</b>固定出场费（计入 22% 佣金基数，按商单档分账）＋交通费凭票实报实销（不抽成、不入分账，走单独报销单）；若报价已含交通补贴，则全额计入佣金基数、不再另报。二选一，商品页写明。</li>
+<li><b>履约判定：</b>以按约完成本次试镜服务为准，不以是否被录用为付费条件。</li>
+<li><b>到场证据：</b>预约/邀约信息、双方确认、必要现场凭证，不持续采集定位。</li>
+<li><b>取消表：</b>分别规定出品方取消、艺人取消、改期、现场等待、出品方未到/拒确认、安全原因离场的费用与信用处理（未开始可退；已赴约付出场费＋交通；安全离场不担责照付）。</li>
+<li><b>确认争议：</b>仅一方确认或拒确认转客服核实，按专门时限处理，不套数字商品自动验收。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q08</span>首次分账与推荐佣金以哪张表为准<span class="pick">定稿：候选① 以 F2 逐业务比例为准</span></div><div class="qb">
+<ul class="clean">
+<li><b>首个生效版本：</b>样片 返佣7.2/平台10.8/MCN16.4/艺人65.6；商单 6.6/15.4/15.6/62.4；定制 成本约50/返佣10/毛利约40。</li>
+<li><b>修订 F1：</b>CPS 10–15% 改为 F2 逐业务值；资金示意图 12% 改为对应业务值（示意图不作配置）。</li>
+<li><b>无推荐人：</b>返佣份额归平台，不另分给供给方。</li>
+<li><b>返佣基数：</b>按实付且扣除退款后金额；优惠由发起方承担、通道费按约定另计；定制"毛利 40%"为返佣前口径，扣返佣后平台约 30%。</li>
+<li><b>归因：</b>固定一级、末次点击/下单时绑定推荐码为准；设归因有效期；自购不返佣，多链接以末次成交为准，发起人免单订单不重复计返佣。</li>
+<li><b>锁定时点：</b>订单成立（付款）时锁定商品比例与 MCN 关系；历史订单按原约。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q09</span>人工核算后付款与退款缺口承担<span class="pick">定稿：候选① 复核后持牌通道执行</span></div><div class="qb">
+<ul class="clean">
+<li><b>做剧分红：</b>后台按合同录入 → 复核 → 经持牌通道执行 → 回传结果/凭证并关联同一结算单；财务外部端操作仅作授权例外、仍回填关联。</li>
+<li><b>应付形成：</b>制作服务费按阶段确认、出演授权费按用途确认、发行收入按真实账单到达；发行账单由出品/发行方提交、财务复核扣减，参与方可异议。</li>
+<li><b>退款缺口：</b>先按责任方分账比例追回/撤回转款；不足且已设风险准备金时垫付并追偿；未设则退款等待/失败，平台不常态垫资。</li>
+<li><b>保证金：</b>可选、不默认；是否收取、对象、额度、退还及与清分优先级关系由财务定。</li>
+<li><b>T+1 口径：</b>指指令提交后次工作日，实际到账以机构为准；节假日顺延、资料不齐挂起、部分失败可重试/拆分。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q10</span>创建、托管与套餐买到什么权益<span class="pick">定稿：候选① 分离权益卡</span></div><div class="qb">
+<ul class="clean">
+<li><b>创建 60：</b>按每个真实权利人首次建模/数字人档案计；含约定重试，重大变更另计；生成失败不扣费/返还；档案生成成功为交付。</li>
+<li><b>托管 29：</b>按每个数字人/月计，含保存、可调用、上架资格（生成次数按套餐另计）；停费停新生成/上架，历史成片、已交付文件与已售许可仍可查/有效。</li>
+<li><b>套餐：</b>MCN 样品套餐、全年节日套餐明确含条数、适用对象、能否机构共用、有效期及未用次数处理。</li>
+<li><b>扣减：</b>下单预占、交付成功实扣；失败/重复回调/取消返还；自动节日生成默认仅提醒、确认后消耗。</li>
+<li><b>续费：</b>自动续费须明确订购、可随时停；存储期、下载链接有效期、许可期分别给出。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q11</span>共创片场：付款、10 人开拍与 20 人免单<span class="pick">定稿：候选① 发起人整包付款</span></div><div class="qb">
+<ul class="clean">
+<li><b>付款结构：</b>发起人整包购买，是订单客户与验收人；参与者上传数字人并授权，发起人得整片、参与者得本人专属片段。</li>
+<li><b>有效人数：</b>按去重真实权利人、完成数字人上传＋本次授权（及付款结构要求的确认）计；一人多数字人只算一人；仅照片/未授权/未付款/退款退出不计。</li>
+<li><b>免单：</b>满 20 免"发起人个人参与费/一份服务额度"，非整包、非现金、不含他人创建托管，成本由平台作营销费用承担。</li>
+<li><b>截止/未成组：</b>设开组截止；未达 10 延期或退款；达 10 未达 20 正常付款不享免单；满 20 后退出按截止时点人数处理。</li>
+<li><b>叠加：</b>发起人兼 KOC，免单与 10% 返佣不就同一笔重复计；返佣按新增参与者的净成交额计。</li>
+</ul></div></div>
+
+<div class="qcard"><div class="qh"><span class="tag">Q12</span>MCN 代理、多人数字人与作品展示确认<span class="pick">定稿：候选① 列明代理范围</span></div><div class="qb">
+<ul class="clean">
+<li><b>一人一主 MCN：</b>按真实权利人，其名下多个数字人/造型归同一关系；纯虚拟数字人须登记权利主体。</li>
+<li><b>代理范围：</b>MCN 可代办素材、上架、定价建议、推荐；接受邀约、确认出演用途、调整分成比例须本人或经明确/签约授权，电子签留痕。</li>
+<li><b>多人订单：</b>先逐人确定数字人授权费（含客串），再按各自 MCN 关系分别分账。</li>
+<li><b>再生成同意：</b>第三方调用脸/声音/再生成按本次用途范围取得同意；私人档案与公开营销/广场展示授权分开，作品沉淀默认私有、公开须授权。</li>
+<li><b>变更：</b>换角色/声音/用途/解约由权利人确认，在制订单新使用暂停；历史订单不重算。</li>
+</ul></div></div>
+</section>
+
+<!-- ====================== 第3章 修订对照 ====================== -->
+<section id="s3">
+<h2><span class="no">3</span>F1/F2 修订对照表</h2>
+<div class="sub">下列条款按本文件替换；未列出部分维持原文件。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:760px">
+<colgroup><col style="width:20%"><col style="width:36%"><col style="width:44%"></colgroup>
+<tr><th>位置</th><th>原口径</th><th>修订后（以本文件为准）</th></tr>
+<tr><td>F1 通用联系卡</td><td>付款＋清分成功后才解锁</td><td>分业务：试镜/商单付款托管＋邀约成立即解锁；现成样片清分后；官方定制走专员</td></tr>
+<tr><td>F1 推荐 CPS</td><td>统一 10%–15%</td><td>改为 F2 逐业务值：样片 7.2%、商单 6.6%、定制 10%</td></tr>
+<tr><td>F1 资金示意图</td><td>使用 12%</td><td>改为对应业务值；示意图仅示意、不作分账配置</td></tr>
+<tr><td>F1 作者/剧本自助</td><td>个人作者自助上架交易</td><td>本期收回/隐藏，商务签约运营；角色与端口预留</td></tr>
+<tr><td>F2 定制毛利</td><td>"成本50＋返佣10＝毛利40"与"再扣到30"并存</td><td>明确毛利 40% 为返佣前，扣返佣 10% 后平台约 30%</td></tr>
+<tr><td>F2 退款/不垫资</td><td>平台不垫资</td><td>补充：若设立风险准备金则垫付并追偿；未设则等待/失败</td></tr>
+<tr><td>各处验收时限</td><td>"如 7 天"示例</td><td>逐业务：即时数字商品即时、现成样片约 3 天、人工定制 7 天</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ====================== 第4章 开发落地清单 ====================== -->
+<section id="s4">
+<h2><span class="no">4</span>开发落地清单（新增 / 调整）</h2>
+<div class="sub">按模块归集，作为排期与验收依据；均为配置化能力。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:760px">
+<colgroup><col style="width:22%"><col style="width:78%"></colgroup>
+<tr><th>模块</th><th>开发项</th></tr>
+<tr><td>A 交易与联系</td><td>联系卡解锁事件按业务可配；试镜/商单提前到付款托管＋邀约成立；官方定制专员入口；退款停用逻辑</td></tr>
+<tr><td>B 商品与许可</td><td>商品三类拆分（代做服务/成片许可/预览版）；许可范围字段（用途、期限、地区、次数、未含项）；上架授权；多人同框授权与分配</td></tr>
+<tr><td>C 认证与角色</td><td>个人/出品分级；动作×认证矩阵；企业代表权审核；预留剧本提供方、承制方角色及受限交稿入口（本期可隐藏）</td></tr>
+<tr><td>D 履约与里程碑</td><td>定制阶段表可配（节点/成果/确认/比例）；合同电子签与外部签上传核验；岗位回写；变更单；商品规格字段</td></tr>
+<tr><td>E 验收与售后</td><td>逐业务时限与计时起点；返修/争议暂停重计时；通道故障不锁交付；退款顺序；预览水印与法定 AI 标识分离</td></tr>
+<tr><td>F 试镜 O2O</td><td>出场费＋报销单（报销不入分账、不抽成）；到场证据；六类取消表；单方确认转客服流程</td></tr>
+<tr><td>G 分账与返佣</td><td>按 F2 比例配置；一级返佣、末次归因、有效期、自购排除、无推荐归平台；返佣基数与优惠/通道费口径</td></tr>
+<tr><td>H 收费权益</td><td>创建/托管/套餐计费对象与权益；额度预占/实扣/失败返还；停费后访问范围；续费与取消</td></tr>
+<tr><td>I 共创片场</td><td>整包付款与验收；去重授权真人计数；免单权益范围；开组截止/未成组；返佣叠加规则</td></tr>
+<tr><td>J MCN/多人</td><td>MCN 代理权限矩阵；多人订单逐人授权费＋各自 MCN 分账；公私库与公开广场展示授权</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ====================== 第5章 外部核验 ====================== -->
+<section id="s5">
+<h2><span class="no">5</span>外部核验清单 V01–V05</h2>
+<div class="sub">由真实服务商与专业岗位提供书面证据，不能凭偏好或测算推定；未到位前对应功能不上线。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:820px">
+<colgroup><col style="width:8%"><col style="width:20%"><col style="width:22%"><col style="width:36%"><col style="width:14%"></colgroup>
+<tr><th>编号</th><th>事项</th><th>责任方</th><th>需提供</th><th>阻塞</th></tr>
+<tr><td>V01</td><td>支付及自动清分</td><td>财务＋银行/持牌支付商</td><td>产品全名、签约主体、准入、监管清分路线、T+1 含义、里程碑放款、退款追回、保证金、费率</td><td>自动分账上线</td></tr>
+<tr><td>V02</td><td>iOS 付款方式</td><td>产品＋iOS＋商店合规</td><td>商品×地区×付款渠道矩阵（IAP/外付）</td><td>iOS 上架</td></tr>
+<tr><td>V03</td><td>合同/发票/个税</td><td>商务＋财务＋法务</td><td>各类合同样例、开票方、所得类型、扣缴人、凭证</td><td>结算与开票</td></tr>
+<tr><td>V04</td><td>AI/存储/交付</td><td>制作＋采购＋技术</td><td>真人资产/语音产品、接口权限、试片证据、标识、私有存储与删除</td><td>相关 SKU 交付</td></tr>
+<tr><td>V05</td><td>资质与分发</td><td>业务＋合规</td><td>资质办理状态、开发者/云/商户主体关系、证据</td><td>对应功能上线</td></tr>
+</table>
+</div>
+<div class="note warn"><b>注意：</b>不在本文件中存放密钥或证件原件；业务拍板、专业核验、接口真实测试三条线分别留痕。</div>
+</section>
+
+<!-- ====================== 第6章 待定值 ====================== -->
+<section id="s6">
+<h2><span class="no">6</span>待定值与说明</h2>
+<div class="sub">下列先用推荐默认值开发（均可配置），最终以合同、财务及服务商书面口径为准，不阻塞框架开发。</div>
+<ul class="clean">
+<li>MCN 分成具体取值：默认 20%，范围 10%–30%（合同/等级定）。</li>
+<li>自然人结算的委托代征/灵活用工主体选择（财务定）。</li>
+<li>保证金、风险准备金的是否设立、额度与扣划授权（财务定）。</li>
+<li>推荐归因有效期的具体天数；自购/免单排除规则已确定。</li>
+<li>各业务验收时限先用：即时 / 约 3 天 / 7 天；许可期限的合同表述。</li>
+</ul>
+<div class="note"><b>说明：</b>F3 的增长、销量、客单与净利为经营测算，不自动转为上线承诺或商品规则；本文件不替代法务、税务、支付机构的正式意见与上线合规核验。</div>
+<div class="foot">晶晶日上 · V4 需求补充定稿（开发执行版）QC-01　|　2026-10-09　|　与 F1/F2/F3 冲突以本文件为准；具体税率、开票、付款与资质以主管机关及持牌机构最新规定为准</div>
+</section>
+</div>
+</body>
+</html>

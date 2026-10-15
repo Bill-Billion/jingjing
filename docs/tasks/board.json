@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-05",
+  "updated_on": "2026-10-15",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -2313,5 +2313,3641 @@
       "guide": "docs/testing/FULL_FLOW_ACCEPTANCE.md",
       "note": "第四批App实际页面16组与相关82项自动检查通过，修复项目材料旧提示及保存异常；仍本地，下一步集中交付和新版安卓验收准备。 截图发现MCN双方仅编号缺直观名称，待优先修复。"
     }
-  }
+  },
+  "planning_intakes": [
+    {
+      "id": "JX-V5-D1-PLAN",
+      "package_version": "20261016-D1",
+      "reviewed_on_local_date": "2026-10-15",
+      "status": "LOCAL_PLAN_FOR_REVIEW",
+      "analysis_owner": "chengcongcong222",
+      "analysis_branch": "core/v5-d1-planning",
+      "code_anchor": "25e6d29f81fd882edc203b732a48fe90d15f8c9f",
+      "business_source": "V5_20261013",
+      "decision_note": "V5业务要求作为新阶段目标；工程拆分与未决规则不冒充甲方批准。计划区不重置原R0.6任务和历史验收。",
+      "entry": "docs/reviews/v5-d1-intake/00_READ_FIRST.md",
+      "source_archive": "docs/baselines/v5-d1/MANIFEST.json",
+      "supplemental_sources": "docs/sources/v5-change/MANIFEST.json",
+      "planned_acceptance_source": "docs/baselines/v5-d1/data/acceptance.json",
+      "execution_note": "现有tasks保留旧阶段。60项新任务只在此计划区维护；实施接手时迁入统一可执行视图并升级检查器，删除相应计划副本，不能双写。旧R0.6生成器当前仅统计原41组工作。",
+      "tasks": [
+        {
+          "id": "CORE-DEL-00",
+          "package": "DEL-00",
+          "title": "旧阶段归档、PR23合并与V5任务基线—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "在已授权本地CLI完成合并门禁；以merge保留历史合入integration；保存实际merge SHA；更新原docs/status、任务board、来源与契约台账。",
+          "contract": "baseline_id、source_sha、integration_sha、contract_version、owner、review_evidence",
+          "dependencies": [],
+          "external_or_decisions": [],
+          "acceptance_ids": [
+            "ACC-DEL-00.01",
+            "ACC-DEL-00.02",
+            "ACC-DEL-00.03",
+            "ACC-DEL-00.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 1,
+          "dependency_note": "共同起点尚未形成；本轮只完成分析与来源保存，不代合并。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "UX-DEL-00",
+          "package": "DEL-00",
+          "title": "旧阶段归档、PR23合并与V5任务基线—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "确认本地未推送工作、实际GitHub账号和文件归属；从同一合并点建立ux分支；给出页面迁移清单，不替Core认领。",
+          "contract": "baseline_id、source_sha、integration_sha、contract_version、owner、review_evidence",
+          "dependencies": [],
+          "external_or_decisions": [],
+          "acceptance_ids": [
+            "ACC-DEL-00.01",
+            "ACC-DEL-00.02",
+            "ACC-DEL-00.03",
+            "ACC-DEL-00.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 1,
+          "dependency_note": "共同起点尚未形成；本轮只完成分析与来源保存，不代合并。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "CORE-DEL-01",
+          "package": "DEL-01",
+          "title": "账号、主体、成员与三端访问—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "扩展既有身份与成员模型；统一艺人、买家、星探能力查询；C/B/A会话访问边界，运营不由前台自选授予。",
+          "contract": "account、acting_party、membership、capabilities、allowed_actions（新增则走契约变更）",
+          "dependencies": [
+            "DEL-00"
+          ],
+          "external_or_decisions": [
+            "DEC-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-01.01",
+            "ACC-DEL-01.02",
+            "ACC-DEL-01.03",
+            "ACC-DEL-01.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 1,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "UX-DEL-01",
+          "package": "DEL-01",
+          "title": "账号、主体、成员与三端访问—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "复用登录/退出/主体信息和企业代表权；全员同导航，具体动作显示权限和不足原因；失权清空旧私密内容。",
+          "contract": "account、acting_party、membership、capabilities、allowed_actions（新增则走契约变更）",
+          "dependencies": [
+            "DEL-00"
+          ],
+          "external_or_decisions": [
+            "DEC-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-01.01",
+            "ACC-DEL-01.02",
+            "ACC-DEL-01.03",
+            "ACC-DEL-01.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 1,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "CORE-DEL-02",
+          "package": "DEL-02",
+          "title": "实名年龄、主角光环与认证收费—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "实名结果、权利人稳定标识、年龄/监护状态、L1免费与L2/L3审核单；10元审核费接真实支付证据、补件、有效期、申诉。",
+          "contract": "identity_result、rights_holder_ref、age_band、guardian_case、halo_case、review_payment",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-11",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-02.01",
+            "ACC-DEL-02.02",
+            "ACC-DEL-02.03",
+            "ACC-DEL-02.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "身份结构可先做；审核收费接DEL-07；专业及真实服务另验。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-07",
+            "SUP-17"
+          ]
+        },
+        {
+          "id": "UX-DEL-02",
+          "package": "DEL-02",
+          "title": "实名年龄、主角光环与认证收费—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "实名与认证分开页面；明确费用和人工审核；未配置/驳回/补料/年龄异议均有去向；不能一勾成年就通过。",
+          "contract": "identity_result、rights_holder_ref、age_band、guardian_case、halo_case、review_payment",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-11",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-02.01",
+            "ACC-DEL-02.02",
+            "ACC-DEL-02.03",
+            "ACC-DEL-02.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "身份结构可先做；审核收费接DEL-07；专业及真实服务另验。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-07",
+            "SUP-17"
+          ]
+        },
+        {
+          "id": "CORE-DEL-03",
+          "package": "DEL-03",
+          "title": "多数字人、造型声音及基础创建托管—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "复用works/consent档案，增加数字人—真人权利人—造型/声音版本—外部资产映射；创建60/人、托管29/月业务及失败返还；不建深度影视生成器。",
+          "contract": "avatar、look_version、voice_version、provider_asset_ref、creation_order、hosting_entitlement",
+          "dependencies": [
+            "DEL-01",
+            "DEL-02"
+          ],
+          "external_or_decisions": [
+            "DEC-11",
+            "DEC-17",
+            "EXT-02",
+            "DEC-08",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-03.01",
+            "ACC-DEL-03.02",
+            "ACC-DEL-03.03",
+            "ACC-DEL-03.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "基础关系先交；创建/托管收费接DEL-07，真实模型另验，不复制制作流程。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-05",
+            "SUP-06",
+            "SUP-21"
+          ]
+        },
+        {
+          "id": "UX-DEL-03",
+          "package": "DEL-03",
+          "title": "多数字人、造型声音及基础创建托管—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "我的艺人/多数字人列表、造型声音、资料公开选择、创建处理中/失败/待权限、托管权益和取消续订。",
+          "contract": "avatar、look_version、voice_version、provider_asset_ref、creation_order、hosting_entitlement",
+          "dependencies": [
+            "DEL-01",
+            "DEL-02"
+          ],
+          "external_or_decisions": [
+            "DEC-11",
+            "DEC-17",
+            "EXT-02",
+            "DEC-08",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-03.01",
+            "ACC-DEL-03.02",
+            "ACC-DEL-03.03",
+            "ACC-DEL-03.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "基础关系先交；创建/托管收费接DEL-07，真实模型另验，不复制制作流程。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-05",
+            "SUP-06",
+            "SUP-21"
+          ]
+        },
+        {
+          "id": "CORE-DEL-04",
+          "package": "DEL-04",
+          "title": "广场艺人目录、城市筛选与匹配—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "从已审核私有档案生成公开投影；按城市/价格/认证/评分检索；位置权限拒绝支持手动城市；AI匹配能力独立启用。",
+          "contract": "public_artist、search_filter、city、sample_preview、match_result、ranking_basis",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03"
+          ],
+          "external_or_decisions": [
+            "EXT-02"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-04.01",
+            "ACC-DEL-04.02",
+            "ACC-DEL-04.03",
+            "ACC-DEL-04.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-08",
+            "SUP-11"
+          ]
+        },
+        {
+          "id": "UX-DEL-04",
+          "package": "DEL-04",
+          "title": "广场艺人目录、城市筛选与匹配—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "电影感艺人货架、搜索筛选、详情、试听、公开作品、找出品人入口；区分广场发现与仅公开接单艺人的试镜。",
+          "contract": "public_artist、search_filter、city、sample_preview、match_result、ranking_basis",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03"
+          ],
+          "external_or_decisions": [
+            "EXT-02"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-04.01",
+            "ACC-DEL-04.02",
+            "ACC-DEL-04.03",
+            "ACC-DEL-04.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-08",
+            "SUP-11"
+          ]
+        },
+        {
+          "id": "CORE-DEL-05",
+          "package": "DEL-05",
+          "title": "艺人视频商品上架与内容运营—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "增加现成视频、代做样片服务、私人预览等对象类型；复用商品规格版本和内容/权利双审，公开素材与私有文件分离。",
+          "contract": "product_kind、seller_party、license_snapshot、public_projection、asset_ref、publish_review",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-24"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "DEC-17",
+            "EXT-04"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-05.01",
+            "ACC-DEL-05.02",
+            "ACC-DEL-05.03",
+            "ACC-DEL-05.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-05",
+            "SUP-07",
+            "SUP-22"
+          ]
+        },
+        {
+          "id": "UX-DEL-05",
+          "package": "DEL-05",
+          "title": "艺人视频商品上架与内容运营—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "个人轻上架、MCN批量上架、视频货架与详情、带锁全片、许可摘要、运营栏目/推荐/节日套餐。",
+          "contract": "product_kind、seller_party、license_snapshot、public_projection、asset_ref、publish_review",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-24"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "DEC-17",
+            "EXT-04"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-05.01",
+            "ACC-DEL-05.02",
+            "ACC-DEL-05.03",
+            "ACC-DEL-05.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-05",
+            "SUP-07",
+            "SUP-22"
+          ]
+        },
+        {
+          "id": "CORE-DEL-06",
+          "package": "DEL-06",
+          "title": "现成视频的购买、许可和受控下载—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "在既有trade上增加现货订单/授权权益；受信付款确认后发一次权益；完成可播放/下载记录、版本、撤权和售后。",
+          "contract": "stock_order、payment_result、purchase_entitlement、download_access、delivery_receipt",
+          "dependencies": [
+            "DEL-05",
+            "DEL-07",
+            "DEL-08"
+          ],
+          "external_or_decisions": [
+            "DEC-04",
+            "DEC-08",
+            "EXT-03",
+            "DEC-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-06.01",
+            "ACC-DEL-06.02",
+            "ACC-DEL-06.03",
+            "ACC-DEL-06.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-02"
+          ]
+        },
+        {
+          "id": "UX-DEL-06",
+          "package": "DEL-06",
+          "title": "现成视频的购买、许可和受控下载—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "现货商品→权益确认→收银→解锁→受控下载，不进入故事卡/人工报价/制作等待。",
+          "contract": "stock_order、payment_result、purchase_entitlement、download_access、delivery_receipt",
+          "dependencies": [
+            "DEL-05",
+            "DEL-07",
+            "DEL-08"
+          ],
+          "external_or_decisions": [
+            "DEC-04",
+            "DEC-08",
+            "EXT-03",
+            "DEC-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-06.01",
+            "ACC-DEL-06.02",
+            "ACC-DEL-06.03",
+            "ACC-DEL-06.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-02"
+          ]
+        },
+        {
+          "id": "CORE-DEL-07",
+          "package": "DEL-07",
+          "title": "报价合同、各商品收银与退款恢复—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "复用trade订单/合同快照；按现货、人工定制、样片制作、试镜、创建/订阅配置付款计划；支付意图、SDK回跳查单、未知结果、退款与补差。",
+          "contract": "order_kind、quote_version、payment_plan、payment_attempt、receipt、refund_case、price_change",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-04",
+            "DEC-10",
+            "EXT-03",
+            "DEC-01",
+            "DEC-12",
+            "DEC-17"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-07.01",
+            "ACC-DEL-07.02",
+            "ACC-DEL-07.03",
+            "ACC-DEL-07.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先给商品类型与付款计划，第二段接现货/定制；第三段试镜、第四段余额、第五段券依次追加验证。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-03",
+            "SUP-05",
+            "SUP-13",
+            "SUP-17",
+            "SUP-22"
+          ]
+        },
+        {
+          "id": "UX-DEL-07",
+          "package": "DEL-07",
+          "title": "报价合同、各商品收银与退款恢复—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "统一收银壳但按商品展示付款条件；接原生支付/回跳与失败恢复，不在客户端直接置paid。",
+          "contract": "order_kind、quote_version、payment_plan、payment_attempt、receipt、refund_case、price_change",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-04",
+            "DEC-10",
+            "EXT-03",
+            "DEC-01",
+            "DEC-12",
+            "DEC-17"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-07.01",
+            "ACC-DEL-07.02",
+            "ACC-DEL-07.03",
+            "ACC-DEL-07.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先给商品类型与付款计划，第二段接现货/定制；第三段试镜、第四段余额、第五段券依次追加验证。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-03",
+            "SUP-05",
+            "SUP-13",
+            "SUP-17",
+            "SUP-22"
+          ]
+        },
+        {
+          "id": "CORE-DEL-08",
+          "package": "DEL-08",
+          "title": "V5分账规则、历史订单与财务校验迁移—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "新增V5两层规则版本；独立MCN份额/推荐返佣；同时修改计算、应付来源校验、快照、退款冲回、尾差、税票证据及批次对账；旧版不可覆盖。",
+          "contract": "fee_rule_version、fee_base、mcn_supply_share、referral_share、settlement_batch、adjustment",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-07",
+            "DEC-14",
+            "EXT-03",
+            "EXT-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-08.01",
+            "ACC-DEL-08.02",
+            "ACC-DEL-08.03",
+            "ACC-DEL-08.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 1,
+          "dependency_note": "第一段完成策略/快照/来源校验兼容；随后每种交易实际接入仍各自验收。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-01",
+            "SUP-06"
+          ]
+        },
+        {
+          "id": "UX-DEL-08",
+          "package": "DEL-08",
+          "title": "V5分账规则、历史订单与财务校验迁移—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "报价/订单/MCN/财务展示同一版本的计算明细；不把所有余额当现金可提现；异常需待核查。",
+          "contract": "fee_rule_version、fee_base、mcn_supply_share、referral_share、settlement_batch、adjustment",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-07",
+            "DEC-14",
+            "EXT-03",
+            "EXT-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-08.01",
+            "ACC-DEL-08.02",
+            "ACC-DEL-08.03",
+            "ACC-DEL-08.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 1,
+          "dependency_note": "第一段完成策略/快照/来源校验兼容；随后每种交易实际接入仍各自验收。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-01",
+            "SUP-06"
+          ]
+        },
+        {
+          "id": "CORE-DEL-09",
+          "package": "DEL-09",
+          "title": "真实试镜预约、到场取样与清分—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "公开接试镜/标价设置，城市/时间地点/真实用途，先付后接拒，未接全退；6照1视频交付、按约到场确认、定时和争议，底板授权入库。",
+          "contract": "audition_offer、invitation、acceptance、appointment、delivery_set、baseplate_consent",
+          "dependencies": [
+            "DEL-02",
+            "DEL-03",
+            "DEL-07",
+            "DEL-08",
+            "DEL-12"
+          ],
+          "external_or_decisions": [
+            "DEC-03",
+            "DEC-04",
+            "DEC-11",
+            "EXT-03",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-09.01",
+            "ACC-DEL-09.02",
+            "ACC-DEL-09.03",
+            "ACC-DEL-09.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 3,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-20"
+          ]
+        },
+        {
+          "id": "UX-DEL-09",
+          "package": "DEL-09",
+          "title": "真实试镜预约、到场取样与清分—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "仅公开接单艺人出现在试镜页；一口价含交通，无主题/职业固定菜单；行程、安全、交付和客服。",
+          "contract": "audition_offer、invitation、acceptance、appointment、delivery_set、baseplate_consent",
+          "dependencies": [
+            "DEL-02",
+            "DEL-03",
+            "DEL-07",
+            "DEL-08",
+            "DEL-12"
+          ],
+          "external_or_decisions": [
+            "DEC-03",
+            "DEC-04",
+            "DEC-11",
+            "EXT-03",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-09.01",
+            "ACC-DEL-09.02",
+            "ACC-DEL-09.03",
+            "ACC-DEL-09.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 3,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-20"
+          ]
+        },
+        {
+          "id": "CORE-DEL-10",
+          "package": "DEL-10",
+          "title": "六类通告与发布资格—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "剧/商演/商单/活动/招募/平台通告类型和动态字段，城市时限、审核、发布权限、失效/下架；关联项目或需求而非直接成交订单。",
+          "contract": "notice、notice_kind、eligibility、publish_review、target_project、recruitment_slots",
+          "dependencies": [
+            "DEL-01",
+            "DEL-17"
+          ],
+          "external_or_decisions": [
+            "DEC-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-10.01",
+            "ACC-DEL-10.02",
+            "ACC-DEL-10.03",
+            "ACC-DEL-10.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 3,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "先按资格接口做；DEL-17最小资格计算必须第三段前提供，不能等待整个第四段。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "UX-DEL-10",
+          "package": "DEL-10",
+          "title": "六类通告与发布资格—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "通告列表、分类详情、类型化发布和投稿按钮；平台官方通告仅运营；不强迫每类都填到场设备。",
+          "contract": "notice、notice_kind、eligibility、publish_review、target_project、recruitment_slots",
+          "dependencies": [
+            "DEL-01",
+            "DEL-17"
+          ],
+          "external_or_decisions": [
+            "DEC-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-10.01",
+            "ACC-DEL-10.02",
+            "ACC-DEL-10.03",
+            "ACC-DEL-10.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 3,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "先按资格接口做；DEL-17最小资格计算必须第三段前提供，不能等待整个第四段。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "CORE-DEL-11",
+          "package": "DEL-11",
+          "title": "意向卡、反向投稿与客服转单—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "面向买家/通告的三类投稿、意向卡、幂等回复、状态/时限、客服工单、关联正式报价与订单。",
+          "contract": "intent_card、submission、reply_decision、cs_ticket、linked_quote_order",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-10"
+          ],
+          "external_or_decisions": [
+            "DEC-03",
+            "DEC-04"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-11.01",
+            "ACC-DEL-11.02",
+            "ACC-DEL-11.03",
+            "ACC-DEL-11.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 3,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "客服转单必须引用DEL-07真实报价/订单；单向投递可先做。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "UX-DEL-11",
+          "package": "DEL-11",
+          "title": "意向卡、反向投稿与客服转单—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "我的投稿/被投稿、形象/想演角色/自己做剧表单、感兴趣/婉拒、待客服、转入订单的追踪。",
+          "contract": "intent_card、submission、reply_decision、cs_ticket、linked_quote_order",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-10"
+          ],
+          "external_or_decisions": [
+            "DEC-03",
+            "DEC-04"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-11.01",
+            "ACC-DEL-11.02",
+            "ACC-DEL-11.03",
+            "ACC-DEL-11.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 3,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "客服转单必须引用DEL-07真实报价/订单；单向投递可先做。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "CORE-DEL-12",
+          "package": "DEL-12",
+          "title": "订单会话、通知与客服权限—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "复用通知基础，新增会话列表/参与者/资格来源、文本与业务卡片/媒体、客服加入、敏感内容处理、已读、冻结和归档；补差走交易服务。",
+          "contract": "conversation、participant_scope、message、conversation_eligibility、read_receipt",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-03",
+            "EXT-04"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-12.01",
+            "ACC-DEL-12.02",
+            "ACC-DEL-12.03",
+            "ACC-DEL-12.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "第一段给候选门槛和样例，正式开放前解决冲突；官方定制只走平台客服。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-02",
+            "SUP-20"
+          ]
+        },
+        {
+          "id": "UX-DEL-12",
+          "package": "DEL-12",
+          "title": "订单会话、通知与客服权限—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "消息三分区：订单会话、单向投稿、系统通知；权限不足有真实原因，客服与交易对方入口分开。",
+          "contract": "conversation、participant_scope、message、conversation_eligibility、read_receipt",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-03",
+            "EXT-04"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-12.01",
+            "ACC-DEL-12.02",
+            "ACC-DEL-12.03",
+            "ACC-DEL-12.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 3,
+          "dependency_note": "第一段给候选门槛和样例，正式开放前解决冲突；官方定制只走平台客服。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-02",
+            "SUP-20"
+          ]
+        },
+        {
+          "id": "CORE-DEL-13",
+          "package": "DEL-13",
+          "title": "剧本商务供稿与运营入库—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "限制新增作者自助上传和独立版权商城；A端代录作者、权利链、作品版本及项目用法；保留旧合同、许可和文件读权限；非标许可走报价合同。",
+          "contract": "work、work_version、source_party、rights_evidence、cms_submission、historical_grant",
+          "dependencies": [
+            "DEL-01",
+            "DEL-24"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "EXT-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-13.01",
+            "ACC-DEL-13.02",
+            "ACC-DEL-13.03",
+            "ACC-DEL-13.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-22"
+          ]
+        },
+        {
+          "id": "UX-DEL-13",
+          "package": "DEL-13",
+          "title": "剧本商务供稿与运营入库—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "移除公开作者入驻/新投稿入口，历史记录继续可查；运营剧本库与受控项目材料，不新建D端。",
+          "contract": "work、work_version、source_party、rights_evidence、cms_submission、historical_grant",
+          "dependencies": [
+            "DEL-01",
+            "DEL-24"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "EXT-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-13.01",
+            "ACC-DEL-13.02",
+            "ACC-DEL-13.03",
+            "ACC-DEL-13.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-22"
+          ]
+        },
+        {
+          "id": "CORE-DEL-14",
+          "package": "DEL-14",
+          "title": "定制品类与动态故事采集—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "品类与采集字段发布版本、草稿/正式提交/补件；字段目的/最小化/附件私有；提交为待受理需求，关联后续quote和production。",
+          "contract": "story_schema_version、story_card、attachment_ref、submission、supplement_request",
+          "dependencies": [
+            "DEL-01",
+            "DEL-24"
+          ],
+          "external_or_decisions": [
+            "DEC-15"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-14.01",
+            "ACC-DEL-14.02",
+            "ACC-DEL-14.03",
+            "ACC-DEL-14.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "UX-DEL-14",
+          "package": "DEL-14",
+          "title": "定制品类与动态故事采集—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "爱情婚礼、家族、人生、创业、宠物等真实动态表单；保存恢复、必填错误、补件、素材用途/授权提醒。",
+          "contract": "story_schema_version、story_card、attachment_ref、submission、supplement_request",
+          "dependencies": [
+            "DEL-01",
+            "DEL-24"
+          ],
+          "external_or_decisions": [
+            "DEC-15"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-14.01",
+            "ACC-DEL-14.02",
+            "ACC-DEL-14.03",
+            "ACC-DEL-14.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": []
+        },
+        {
+          "id": "CORE-DEL-15",
+          "package": "DEL-15",
+          "title": "真人承制、报价里程碑与交付—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "复用production派单和四阶段版本；接故事卡/品类/档期、承制主体、开工依据、30/60/10付款计划、正式交稿/返修和个人成果。",
+          "contract": "story_ref、production_project、order_line_id、stage_plan、deliverable_version、acceptance",
+          "dependencies": [
+            "DEL-03",
+            "DEL-07",
+            "DEL-08",
+            "DEL-13",
+            "DEL-14"
+          ],
+          "external_or_decisions": [
+            "DEC-04",
+            "DEC-08",
+            "DEC-10",
+            "EXT-02",
+            "EXT-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-15.01",
+            "ACC-DEL-15.02",
+            "ACC-DEL-15.03",
+            "ACC-DEL-15.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "故事受理可先行；正式开工依赖演员/授权/阶段付款事实。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-02",
+            "SUP-03"
+          ]
+        },
+        {
+          "id": "UX-DEL-15",
+          "package": "DEL-15",
+          "title": "真人承制、报价里程碑与交付—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "定制商城、报价确认、制作进度、版本反馈及成片管理；沿用现有接口，不另起一套custom production数据库事实。",
+          "contract": "story_ref、production_project、order_line_id、stage_plan、deliverable_version、acceptance",
+          "dependencies": [
+            "DEL-03",
+            "DEL-07",
+            "DEL-08",
+            "DEL-13",
+            "DEL-14"
+          ],
+          "external_or_decisions": [
+            "DEC-04",
+            "DEC-08",
+            "DEC-10",
+            "EXT-02",
+            "EXT-05"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-15.01",
+            "ACC-DEL-15.02",
+            "ACC-DEL-15.03",
+            "ACC-DEL-15.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 2,
+          "dependency_note": "故事受理可先行；正式开工依赖演员/授权/阶段付款事实。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-02",
+            "SUP-03"
+          ]
+        },
+        {
+          "id": "CORE-DEL-16",
+          "package": "DEL-16",
+          "title": "多人共创、去重授权及10/20权益—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "房间与主订单、受邀/加入/授权、真实权利人去重、开工资格与20人参与费减免快照；退组/延期/退款、个人片段访问。",
+          "contract": "co_room、participant_rights_holder、join_consent、readiness、benefit_snapshot、personal_deliverable",
+          "dependencies": [
+            "DEL-02",
+            "DEL-03",
+            "DEL-14",
+            "DEL-15",
+            "DEL-20"
+          ],
+          "external_or_decisions": [
+            "DEC-07",
+            "DEC-11",
+            "DEC-15"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-16.01",
+            "ACC-DEL-16.02",
+            "ACC-DEL-16.03",
+            "ACC-DEL-16.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 5,
+          "planned_internal_completion_milestone": 5,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-04"
+          ]
+        },
+        {
+          "id": "UX-DEL-16",
+          "package": "DEL-16",
+          "title": "多人共创、去重授权及10/20权益—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "建房邀请、参与者独立填写与授权、人数和待办、开工条件、退组/未成团、主片与本人片段权限。",
+          "contract": "co_room、participant_rights_holder、join_consent、readiness、benefit_snapshot、personal_deliverable",
+          "dependencies": [
+            "DEL-02",
+            "DEL-03",
+            "DEL-14",
+            "DEL-15",
+            "DEL-20"
+          ],
+          "external_or_decisions": [
+            "DEC-07",
+            "DEC-11",
+            "DEC-15"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-16.01",
+            "ACC-DEL-16.02",
+            "ACC-DEL-16.03",
+            "ACC-DEL-16.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 5,
+          "planned_internal_completion_milestone": 5,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-04"
+          ]
+        },
+        {
+          "id": "CORE-DEL-17",
+          "package": "DEL-17",
+          "title": "消费者储值与星探会员—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "消费者托管余额账与充值订单、消费分配、退款、对账；300元资格、365天会员年续期冻结恢复；六级从合格成长派生，非购买等级。",
+          "contract": "custodial_balance、recharge_order、consumer_payment_allocation、membership_period、growth_level",
+          "dependencies": [
+            "DEL-02",
+            "DEL-07",
+            "DEL-18"
+          ],
+          "external_or_decisions": [
+            "DEC-05",
+            "DEC-06",
+            "DEC-12",
+            "DEC-13",
+            "EXT-03",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-17.01",
+            "ACC-DEL-17.02",
+            "ACC-DEL-17.03",
+            "ACC-DEL-17.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "第二段定义余额及资格事件，第三段前提供最小发布资格；第四段收口周期与真实渠道限制。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-01",
+            "SUP-18"
+          ]
+        },
+        {
+          "id": "UX-DEL-17",
+          "package": "DEL-17",
+          "title": "消费者储值与星探会员—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "储值/消费余额、星探开通说明、会员年进度与冻结状态；未验证通道禁真实充值，不能额外售会费。",
+          "contract": "custodial_balance、recharge_order、consumer_payment_allocation、membership_period、growth_level",
+          "dependencies": [
+            "DEL-02",
+            "DEL-07",
+            "DEL-18"
+          ],
+          "external_or_decisions": [
+            "DEC-05",
+            "DEC-06",
+            "DEC-12",
+            "DEC-13",
+            "EXT-03",
+            "EXT-01"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-17.01",
+            "ACC-DEL-17.02",
+            "ACC-DEL-17.03",
+            "ACC-DEL-17.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "第二段定义余额及资格事件，第三段前提供最小发布资格；第四段收口周期与真实渠道限制。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-01",
+            "SUP-18"
+          ]
+        },
+        {
+          "id": "CORE-DEL-18",
+          "package": "DEL-18",
+          "title": "晶钻、消费成长与积分事件账—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "来源批次、免费/消费/退款事件、可用余额与累计成长分离；售后后发分、到期、冲回、并发占用；不自行新增现金购买晶钻产品。",
+          "contract": "points_lot、points_ledger、source_kind、qualifying_growth、reversal、expiry",
+          "dependencies": [
+            "DEL-01",
+            "DEL-07"
+          ],
+          "external_or_decisions": [
+            "DEC-06",
+            "DEC-12"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-18.01",
+            "ACC-DEL-18.02",
+            "ACC-DEL-18.03",
+            "ACC-DEL-18.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "第二段先定义合格成交/退款事件；发分须接DEL-06/09/15履约售后，不能只接支付。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-09",
+            "SUP-10",
+            "SUP-11",
+            "SUP-14"
+          ]
+        },
+        {
+          "id": "UX-DEL-18",
+          "package": "DEL-18",
+          "title": "晶钻、消费成长与积分事件账—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "可用/累计成长各自解释，来源与到期记录、待入账、退款冲回和异议；不混同人民币余额。",
+          "contract": "points_lot、points_ledger、source_kind、qualifying_growth、reversal、expiry",
+          "dependencies": [
+            "DEL-01",
+            "DEL-07"
+          ],
+          "external_or_decisions": [
+            "DEC-06",
+            "DEC-12"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-18.01",
+            "ACC-DEL-18.02",
+            "ACC-DEL-18.03",
+            "ACC-DEL-18.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "第二段先定义合格成交/退款事件；发分须接DEL-06/09/15履约售后，不能只接支付。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-09",
+            "SUP-10",
+            "SUP-11",
+            "SUP-14"
+          ]
+        },
+        {
+          "id": "CORE-DEL-19",
+          "package": "DEL-19",
+          "title": "艺人六榜、买家城市榜及成长评价—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "艺人认证/接单成长/好评分立；消费/成交事实、六榜及城市买家榜版本与防刷；个性化关闭回退非个性排序；广告字段预留不开收费。",
+          "contract": "artist_growth、review、halo_weight、rank_snapshot、buyer_city_rank、ranking_version",
+          "dependencies": [
+            "DEL-02",
+            "DEL-04",
+            "DEL-18"
+          ],
+          "external_or_decisions": [
+            "DEC-05",
+            "DEC-06",
+            "DEC-16",
+            "EXT-06"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-19.01",
+            "ACC-DEL-19.02",
+            "ACC-DEL-19.03",
+            "ACC-DEL-19.04",
+            "ACC-DEL-19.05"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 4,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "补光环、成长、星光值、阈值/防刷、月冠军验收；自然榜单与付费广告预埋区分。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-07",
+            "SUP-08",
+            "SUP-09",
+            "SUP-14"
+          ]
+        },
+        {
+          "id": "UX-DEL-19",
+          "package": "DEL-19",
+          "title": "艺人六榜、买家城市榜及成长评价—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "榜单名称“排行榜”，各维度/地区/评分依据说明；免费自然排序与权益推荐位可区分。",
+          "contract": "artist_growth、review、halo_weight、rank_snapshot、buyer_city_rank、ranking_version",
+          "dependencies": [
+            "DEL-02",
+            "DEL-04",
+            "DEL-18"
+          ],
+          "external_or_decisions": [
+            "DEC-05",
+            "DEC-06",
+            "DEC-16",
+            "EXT-06"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-19.01",
+            "ACC-DEL-19.02",
+            "ACC-DEL-19.03",
+            "ACC-DEL-19.04",
+            "ACC-DEL-19.05"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 4,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "补光环、成长、星光值、阈值/防刷、月冠军验收；自然榜单与付费广告预埋区分。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-07",
+            "SUP-08",
+            "SUP-09",
+            "SUP-14"
+          ]
+        },
+        {
+          "id": "CORE-DEL-20",
+          "package": "DEL-20",
+          "title": "一级推荐、7天归因及退款返佣—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "推荐链接/归因事件、7天末次有效归因、自购排除、订单快照、售后结算、退款冲回；多层不建；费率冲突只影响发布版本。",
+          "contract": "referral_attribution、order_attribution_snapshot、commission_accrual、reversal",
+          "dependencies": [
+            "DEL-01",
+            "DEL-07",
+            "DEL-08"
+          ],
+          "external_or_decisions": [
+            "DEC-07",
+            "EXT-03"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-20.01",
+            "ACC-DEL-20.02",
+            "ACC-DEL-20.03",
+            "ACC-DEL-20.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 4,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-04"
+          ]
+        },
+        {
+          "id": "UX-DEL-20",
+          "package": "DEL-20",
+          "title": "一级推荐、7天归因及退款返佣—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "推荐记录、待结佣/已结佣/作废原因；复制链接不代表成交奖励；不建下级团队。",
+          "contract": "referral_attribution、order_attribution_snapshot、commission_accrual、reversal",
+          "dependencies": [
+            "DEL-01",
+            "DEL-07",
+            "DEL-08"
+          ],
+          "external_or_decisions": [
+            "DEC-07",
+            "EXT-03"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-20.01",
+            "ACC-DEL-20.02",
+            "ACC-DEL-20.03",
+            "ACC-DEL-20.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 4,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-04"
+          ]
+        },
+        {
+          "id": "CORE-DEL-21",
+          "package": "DEL-21",
+          "title": "晶钻抽奖、十连保底及概率发布—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "奖池版本、资格与未成年门禁、300/2700扣分幂等、安全随机/保底算法、库存、公示、开奖和补偿记录；不使用前端随机作事实。",
+          "contract": "lottery_pool_version、draw_batch、draw_record、published_distribution、award_entitlement",
+          "dependencies": [
+            "DEL-02",
+            "DEL-18",
+            "DEL-22"
+          ],
+          "external_or_decisions": [
+            "DEC-01",
+            "DEC-02",
+            "DEC-09",
+            "EXT-06",
+            "DEC-16"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-21.01",
+            "ACC-DEL-21.02",
+            "ACC-DEL-21.03",
+            "ACC-DEL-21.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 5,
+          "planned_internal_completion_milestone": 5,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-12",
+            "SUP-18"
+          ]
+        },
+        {
+          "id": "UX-DEL-21",
+          "package": "DEL-21",
+          "title": "晶钻抽奖、十连保底及概率发布—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "规则公示、余额不足/资格不足/发布待核验、单抽十连结果与记录；不把角色机会显示为已获主角。",
+          "contract": "lottery_pool_version、draw_batch、draw_record、published_distribution、award_entitlement",
+          "dependencies": [
+            "DEL-02",
+            "DEL-18",
+            "DEL-22"
+          ],
+          "external_or_decisions": [
+            "DEC-01",
+            "DEC-02",
+            "DEC-09",
+            "EXT-06",
+            "DEC-16"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-21.01",
+            "ACC-DEL-21.02",
+            "ACC-DEL-21.03",
+            "ACC-DEL-21.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 5,
+          "planned_internal_completion_milestone": 5,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-12",
+            "SUP-18"
+          ]
+        },
+        {
+          "id": "CORE-DEL-22",
+          "package": "DEL-22",
+          "title": "固定兑换、卡券制作金与中奖权益兑现—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "券模板/发行/锁定/核销/释放、固定兑换6000等、满减门槛、到期及退款；面试卡批次与预约、7天曝光权益实际执行。",
+          "contract": "coupon_definition、entitlement、exchange_order、coupon_lock、redemption、audition_voucher、exposure_grant",
+          "dependencies": [
+            "DEL-07",
+            "DEL-18"
+          ],
+          "external_or_decisions": [
+            "DEC-01",
+            "DEC-02",
+            "DEC-09",
+            "DEC-16",
+            "EXT-06"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-22.01",
+            "ACC-DEL-22.02",
+            "ACC-DEL-22.03",
+            "ACC-DEL-22.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 4,
+          "planned_internal_completion_milestone": 5,
+          "dependency_note": "收银及积分账稳定后做；权益规则与实际奖品条件分别核验。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-12",
+            "SUP-13",
+            "SUP-14"
+          ]
+        },
+        {
+          "id": "UX-DEL-22",
+          "package": "DEL-22",
+          "title": "固定兑换、卡券制作金与中奖权益兑现—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "兑换确认、我的券、适用商品/满减提示、收银选券、面试预约与补救、曝光绑定资产和到期说明。",
+          "contract": "coupon_definition、entitlement、exchange_order、coupon_lock、redemption、audition_voucher、exposure_grant",
+          "dependencies": [
+            "DEL-07",
+            "DEL-18"
+          ],
+          "external_or_decisions": [
+            "DEC-01",
+            "DEC-02",
+            "DEC-09",
+            "DEC-16",
+            "EXT-06"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-22.01",
+            "ACC-DEL-22.02",
+            "ACC-DEL-22.03",
+            "ACC-DEL-22.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 4,
+          "planned_internal_completion_milestone": 5,
+          "dependency_note": "收银及积分账稳定后做；权益规则与实际奖品条件分别核验。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-12",
+            "SUP-13",
+            "SUP-14"
+          ]
+        },
+        {
+          "id": "CORE-DEL-23",
+          "package": "DEL-23",
+          "title": "个人信息权利、青少年与消费保护—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "查询复制更正删除/注销请求、15工作日平台目标、留存例外；撤回跨上传/商品/生成/分发；年龄/监护/误充、限额冷静期、举报申诉和偏好。",
+          "contract": "privacy_request、retention_hold、withdrawal_event、provider_deletion_result、teen_policy、spend_limit、complaint",
+          "dependencies": [
+            "DEL-01",
+            "DEL-02"
+          ],
+          "external_or_decisions": [
+            "DEC-11",
+            "DEC-13",
+            "DEC-15",
+            "EXT-07"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-23.01",
+            "ACC-DEL-23.02",
+            "ACC-DEL-23.03",
+            "ACC-DEL-23.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "每段接入年龄/撤回/隐私保护，不等第六段才写。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-10",
+            "SUP-15",
+            "SUP-16",
+            "SUP-17",
+            "SUP-18",
+            "SUP-19"
+          ]
+        },
+        {
+          "id": "UX-DEL-23",
+          "package": "DEL-23",
+          "title": "个人信息权利、青少年与消费保护—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "权益中心可提交并跟进，不仅本地开关；撤回影响、保留依据、处理状态、误识别申诉；营销退订与交易通知区分。",
+          "contract": "privacy_request、retention_hold、withdrawal_event、provider_deletion_result、teen_policy、spend_limit、complaint",
+          "dependencies": [
+            "DEL-01",
+            "DEL-02"
+          ],
+          "external_or_decisions": [
+            "DEC-11",
+            "DEC-13",
+            "DEC-15",
+            "EXT-07"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-23.01",
+            "ACC-DEL-23.02",
+            "ACC-DEL-23.03",
+            "ACC-DEL-23.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "每段接入年龄/撤回/隐私保护，不等第六段才写。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-10",
+            "SUP-15",
+            "SUP-16",
+            "SUP-17",
+            "SUP-18",
+            "SUP-19"
+          ]
+        },
+        {
+          "id": "CORE-DEL-24",
+          "package": "DEL-24",
+          "title": "私有素材、内容审核与AI标识全链—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "上传/生成/发布/下载共用素材审查结果、显隐标识和失败阻断；私有访问、用途、生命周期；SDK清单版本、PIA引用、日志策略和服务证据。",
+          "contract": "media_asset、review_result、label_result、access_decision、sdk_inventory、pia_reference",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "EXT-02",
+            "EXT-04",
+            "EXT-07"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-24.01",
+            "ACC-DEL-24.02",
+            "ACC-DEL-24.03",
+            "ACC-DEL-24.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "私有上传、审核、标识随每条链实现；大文件与撤回等全链第六段收口。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-16",
+            "SUP-19",
+            "SUP-21",
+            "SUP-23",
+            "SUP-24"
+          ]
+        },
+        {
+          "id": "UX-DEL-24",
+          "package": "DEL-24",
+          "title": "私有素材、内容审核与AI标识全链—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "上传进度/待审/驳回、公开范围、标签说明、下载可用理由；A端审查/SDK与处理清单可维护。",
+          "contract": "media_asset、review_result、label_result、access_decision、sdk_inventory、pia_reference",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "EXT-02",
+            "EXT-04",
+            "EXT-07"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-24.01",
+            "ACC-DEL-24.02",
+            "ACC-DEL-24.03",
+            "ACC-DEL-24.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "私有上传、审核、标识随每条链实现；大文件与撤回等全链第六段收口。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-16",
+            "SUP-19",
+            "SUP-21",
+            "SUP-23",
+            "SUP-24"
+          ]
+        },
+        {
+          "id": "CORE-DEL-25",
+          "package": "DEL-25",
+          "title": "MCN独立PC经营与个人轻操作—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "沿用主体成员与主MCN互认合同；委托权限、多艺人批量操作、受派订单、评论客服与看板；独立PC入口和会话范围但不复制主体账。",
+          "contract": "mcn_relation、delegation_scope、artist_batch、assignment、mcn_metrics、comment_moderation",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-05",
+            "DEL-08",
+            "DEL-12"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "DEC-18"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-25.01",
+            "ACC-DEL-25.02",
+            "ACC-DEL-25.03",
+            "ACC-DEL-25.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "第二段先交受托供给及操作范围，第三段订单分派，第四段完整看板。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-06",
+            "SUP-09"
+          ]
+        },
+        {
+          "id": "UX-DEL-25",
+          "package": "DEL-25",
+          "title": "MCN独立PC经营与个人轻操作—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "现有Web内形成独立MCN工作区/部署入口；App只留个人轻上架/收入；权限矩阵和解除关系提示。",
+          "contract": "mcn_relation、delegation_scope、artist_batch、assignment、mcn_metrics、comment_moderation",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-05",
+            "DEL-08",
+            "DEL-12"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "DEC-18"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-25.01",
+            "ACC-DEL-25.02",
+            "ACC-DEL-25.03",
+            "ACC-DEL-25.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 2,
+          "planned_internal_completion_milestone": 4,
+          "dependency_note": "第二段先交受托供给及操作范围，第三段订单分派，第四段完整看板。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-06",
+            "SUP-09"
+          ]
+        },
+        {
+          "id": "CORE-DEL-26",
+          "package": "DEL-26",
+          "title": "运营CMS总工作台与规则发布—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "组装各域运营接口与角色范围；字段模板/奖池/券/费率发布审批、版本、生效与撤销；制作工单/投诉/对账待办聚合；规则缺值禁发布。",
+          "contract": "operator_scope、configuration_draft、publish_approval、effective_version、work_queue",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-18"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-26.01",
+            "ACC-DEL-26.02",
+            "ACC-DEL-26.03",
+            "ACC-DEL-26.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "每条业务同步交运营受理/审核/规则发布；第六段只收口聚合。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-01",
+            "SUP-14",
+            "SUP-15",
+            "SUP-19",
+            "SUP-21",
+            "SUP-22",
+            "SUP-23",
+            "SUP-24",
+            "SUP-25"
+          ]
+        },
+        {
+          "id": "UX-DEL-26",
+          "package": "DEL-26",
+          "title": "运营CMS总工作台与规则发布—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "沿用共同Web组件，运营和MCN入口、菜单、权限与数据边界独立；客服处理和业务总档案，剧本仅A端管理。",
+          "contract": "operator_scope、configuration_draft、publish_approval、effective_version、work_queue",
+          "dependencies": [
+            "DEL-01"
+          ],
+          "external_or_decisions": [
+            "DEC-18"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-26.01",
+            "ACC-DEL-26.02",
+            "ACC-DEL-26.03",
+            "ACC-DEL-26.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "每条业务同步交运营受理/审核/规则发布；第六段只收口聚合。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-01",
+            "SUP-14",
+            "SUP-15",
+            "SUP-19",
+            "SUP-21",
+            "SUP-22",
+            "SUP-23",
+            "SUP-24",
+            "SUP-25"
+          ]
+        },
+        {
+          "id": "CORE-DEL-27",
+          "package": "DEL-27",
+          "title": "非标参演、项目发行与收入凭证—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "一人一剧一价的报价/合同关联角色/数字人；多方会签/内容版本/外部发行结果；当期服务费与未来发行收入分别建可追溯结算来源。",
+          "contract": "participation_agreement、cast_binding、project_edition、channel_result、statement、revenue_settlement",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-08",
+            "DEL-13",
+            "DEL-15"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "DEC-14",
+            "EXT-05",
+            "DEC-10"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-27.01",
+            "ACC-DEL-27.02",
+            "ACC-DEL-27.03",
+            "ACC-DEL-27.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 6,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-06"
+          ]
+        },
+        {
+          "id": "UX-DEL-27",
+          "package": "DEL-27",
+          "title": "非标参演、项目发行与收入凭证—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "通告内项目介绍/演出记录、本人参演约定、会签待办、发行状态与合同收入；不做竞拍/公众收益份额。",
+          "contract": "participation_agreement、cast_binding、project_edition、channel_result、statement、revenue_settlement",
+          "dependencies": [
+            "DEL-01",
+            "DEL-03",
+            "DEL-08",
+            "DEL-13",
+            "DEL-15"
+          ],
+          "external_or_decisions": [
+            "DEC-08",
+            "DEC-14",
+            "EXT-05",
+            "DEC-10"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-27.01",
+            "ACC-DEL-27.02",
+            "ACC-DEL-27.03",
+            "ACC-DEL-27.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 6,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-06"
+          ]
+        },
+        {
+          "id": "CORE-DEL-28",
+          "package": "DEL-28",
+          "title": "五Tab迁移、原型缺陷与视觉接线—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "配合迁移路由和端侧权限，更新OpenAPI错误实例/实现台账；不把静态原型状态计API实现。",
+          "contract": "route_migration、screen_contract、view_state、prototype_to_live_mapping",
+          "dependencies": [
+            "DEL-00",
+            "DEL-01"
+          ],
+          "external_or_decisions": [],
+          "acceptance_ids": [
+            "ACC-DEL-28.01",
+            "ACC-DEL-28.02",
+            "ACC-DEL-28.03",
+            "ACC-DEL-28.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "第一段是路由与页面骨架，各业务页面按阶段接线，第六段全范围验收。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-11",
+            "SUP-25"
+          ]
+        },
+        {
+          "id": "UX-DEL-28",
+          "package": "DEL-28",
+          "title": "五Tab迁移、原型缺陷与视觉接线—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "改广场/试镜/通告/消息/我的，旧深链映射与返回保留；电影感组件遵循最新原型并纠正动态字段、必填及模板字符串；双视角入口不恢复。",
+          "contract": "route_migration、screen_contract、view_state、prototype_to_live_mapping",
+          "dependencies": [
+            "DEL-00",
+            "DEL-01"
+          ],
+          "external_or_decisions": [],
+          "acceptance_ids": [
+            "ACC-DEL-28.01",
+            "ACC-DEL-28.02",
+            "ACC-DEL-28.03",
+            "ACC-DEL-28.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "第一段是路由与页面骨架，各业务页面按阶段接线，第六段全范围验收。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-11",
+            "SUP-25"
+          ]
+        },
+        {
+          "id": "CORE-DEL-29",
+          "package": "DEL-29",
+          "title": "集成验收、迁移恢复与发布证据—服务端与规则",
+          "suggested_owner": "chengcongcong222",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "逐业务隔离MySQL/HTTP回归、版本分流/幂等/并发/故障恢复、历史迁移演练、性能目标实测和Provider生产证据台账。",
+          "contract": "acceptance_run、source_sha、environment、artifact_hash、provider_evidence、release_decision",
+          "dependencies": [
+            "DEL-01",
+            "DEL-02",
+            "DEL-03",
+            "DEL-04",
+            "DEL-05",
+            "DEL-06",
+            "DEL-07",
+            "DEL-08",
+            "DEL-09",
+            "DEL-10",
+            "DEL-11",
+            "DEL-12",
+            "DEL-13",
+            "DEL-14",
+            "DEL-15",
+            "DEL-16",
+            "DEL-17",
+            "DEL-18",
+            "DEL-19",
+            "DEL-20",
+            "DEL-21",
+            "DEL-22",
+            "DEL-23",
+            "DEL-24",
+            "DEL-25",
+            "DEL-26",
+            "DEL-27",
+            "DEL-28"
+          ],
+          "external_or_decisions": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04",
+            "EXT-05",
+            "EXT-06",
+            "EXT-07"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-29.01",
+            "ACC-DEL-29.02",
+            "ACC-DEL-29.03",
+            "ACC-DEL-29.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "从第一段准备资料和回归，每段留证，第六段完整迁移恢复及发布候选。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-16",
+            "SUP-23",
+            "SUP-24"
+          ]
+        },
+        {
+          "id": "UX-DEL-29",
+          "package": "DEL-29",
+          "title": "集成验收、迁移恢复与发布证据—App与Web",
+          "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
+          "claimed_by": null,
+          "claim_status": "未认领",
+          "work": "跨端完整场景、Flutter分析/测试与Android/iOS构建真机、Web正式构建/权限；安装包、视觉与接口提交对应。",
+          "contract": "acceptance_run、source_sha、environment、artifact_hash、provider_evidence、release_decision",
+          "dependencies": [
+            "DEL-01",
+            "DEL-02",
+            "DEL-03",
+            "DEL-04",
+            "DEL-05",
+            "DEL-06",
+            "DEL-07",
+            "DEL-08",
+            "DEL-09",
+            "DEL-10",
+            "DEL-11",
+            "DEL-12",
+            "DEL-13",
+            "DEL-14",
+            "DEL-15",
+            "DEL-16",
+            "DEL-17",
+            "DEL-18",
+            "DEL-19",
+            "DEL-20",
+            "DEL-21",
+            "DEL-22",
+            "DEL-23",
+            "DEL-24",
+            "DEL-25",
+            "DEL-26",
+            "DEL-27",
+            "DEL-28"
+          ],
+          "external_or_decisions": [
+            "EXT-01",
+            "EXT-02",
+            "EXT-03",
+            "EXT-04",
+            "EXT-05",
+            "EXT-06",
+            "EXT-07"
+          ],
+          "acceptance_ids": [
+            "ACC-DEL-29.01",
+            "ACC-DEL-29.02",
+            "ACC-DEL-29.03",
+            "ACC-DEL-29.04"
+          ],
+          "pr": null,
+          "start_sha": null,
+          "end_sha": null,
+          "implementation": "未开始",
+          "tests": "未执行",
+          "peer_review": "未审阅",
+          "integration": "未合入",
+          "production": "未启用",
+          "planned_start_milestone": 1,
+          "planned_internal_completion_milestone": 6,
+          "dependency_note": "从第一段准备资料和回归，每段留证，第六段完整迁移恢复及发布候选。",
+          "plan_status": "建议安排，尚未认领；验收未执行",
+          "scope_supplement_ids": [
+            "SUP-16",
+            "SUP-23",
+            "SUP-24"
+          ]
+        }
+      ],
+      "evidence": [
+        "docs/tasks/records/CORE-v5-d1-intake.md",
+        "docs/reviews/v5-d1-intake/GIT_BASELINE.json"
+      ],
+      "scope_supplements": [
+        {
+          "id": "SUP-01",
+          "title": "发票、税务方式和每日渠道对账",
+          "requirement_type": "继承规则与真实财务核验",
+          "feature_ids": [
+            "DEL-08.04",
+            "DEL-17.01",
+            "DEL-26.04"
+          ],
+          "package_ids": [
+            "DEL-08",
+            "DEL-17",
+            "DEL-26"
+          ],
+          "core_tasks": [
+            "CORE-DEL-08",
+            "CORE-DEL-17",
+            "CORE-DEL-26"
+          ],
+          "experience_tasks": [
+            "UX-DEL-08",
+            "UX-DEL-17",
+            "UX-DEL-26"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/original/1甲方：晶晶日上_分账逻辑与清分结算规则_后端开发规格_20261007.html",
+              "section": "§6—§8"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_财务核验对接清单_V01支付清分_V03合同财税_20261009.html",
+              "section": "V01/V03"
+            }
+          ],
+          "source_summary": "分账规格 §6—§8；财务核验 V01／V03",
+          "acceptance_details": "每批结算能关联合同、真实回单、发票／税务处理；未具备收款资格时挂起；重复回单和差异不被当作到账。真实税率由财务核实",
+          "decisions": [
+            "DEC-14"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-02",
+          "title": "正式交付才开始计时",
+          "requirement_type": "继承规则细化",
+          "feature_ids": [
+            "DEL-06.04",
+            "DEL-15.03",
+            "DEL-15.04",
+            "DEL-12.04"
+          ],
+          "package_ids": [
+            "DEL-06",
+            "DEL-12",
+            "DEL-15"
+          ],
+          "core_tasks": [
+            "CORE-DEL-06",
+            "CORE-DEL-12",
+            "CORE-DEL-15"
+          ],
+          "experience_tasks": [
+            "UX-DEL-06",
+            "UX-DEL-12",
+            "UX-DEL-15"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q05/Q06"
+            }
+          ],
+          "source_summary": "问答 Q05／Q06",
+          "acceptance_details": "草稿、通知未到、文件不可看不计时；返修／争议暂停；重新正式交付后按版本重计；渠道付款失败不无限锁住已付客户的成果",
+          "decisions": [
+            "DEC-04",
+            "DEC-10"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-03",
+          "title": "免费纠错、创意改稿和部分取消",
+          "requirement_type": "继承规则及正式商品参数",
+          "feature_ids": [
+            "DEL-07.03",
+            "DEL-07.04",
+            "DEL-15.04"
+          ],
+          "package_ids": [
+            "DEL-07",
+            "DEL-15"
+          ],
+          "core_tasks": [
+            "CORE-DEL-07",
+            "CORE-DEL-15"
+          ],
+          "experience_tasks": [
+            "UX-DEL-07",
+            "UX-DEL-15"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q05/Q06"
+            },
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "§3.4"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/06_平台交易与履约规则合集_样片试镜商单退款版权投诉_20261013.html",
+              "section": "退款规则"
+            }
+          ],
+          "source_summary": "问答 Q05／Q06；V5 §3.4；履约规则退款章",
+          "acceptance_details": "错误纠正不重复收费；新增创意先出变更单；退款只结算已经完成并确认部分；欺诈、侵权和交付失败不能套“概不退款”",
+          "decisions": [
+            "DEC-04",
+            "DEC-10"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-04",
+          "title": "共创截止日、免单和返佣互斥",
+          "requirement_type": "继承规则细化",
+          "feature_ids": [
+            "DEL-16.02",
+            "DEL-16.03",
+            "DEL-16.04",
+            "DEL-20.03"
+          ],
+          "package_ids": [
+            "DEL-16",
+            "DEL-20"
+          ],
+          "core_tasks": [
+            "CORE-DEL-16",
+            "CORE-DEL-20"
+          ],
+          "experience_tasks": [
+            "UX-DEL-16",
+            "UX-DEL-20"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q08/Q11"
+            }
+          ],
+          "source_summary": "问答 Q08／Q11",
+          "acceptance_details": "9／10／19／20 位真实参与者分别测试；一人多造型不凑数；同一笔发起人免单与返佣不重复；退出后金额和片段权限正确",
+          "decisions": [
+            "DEC-07"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-05",
+          "title": "创建、托管、套餐和自动续费",
+          "requirement_type": "继承收费规则；基础档案与长期模型交付定义仍需统一；真实供应商能力待核验",
+          "feature_ids": [
+            "DEL-03.02",
+            "DEL-03.03",
+            "DEL-05.01",
+            "DEL-07.04"
+          ],
+          "package_ids": [
+            "DEL-03",
+            "DEL-05",
+            "DEL-07"
+          ],
+          "core_tasks": [
+            "CORE-DEL-03",
+            "CORE-DEL-05",
+            "CORE-DEL-07"
+          ],
+          "experience_tasks": [
+            "UX-DEL-03",
+            "UX-DEL-05",
+            "UX-DEL-07"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q10"
+            },
+            {
+              "path": "docs/baselines/v5-d1/data/full_scope.json",
+              "section": "DEL-03.02"
+            }
+          ],
+          "source_summary": "问答 Q10；D1 DEL-03.02",
+          "acceptance_details": "首次建档、多个造型、多个数字人的收费单位分别核对，不重复收费；基础档案／形象与长期模型分别呈现真实结果，商品交付定义待统一；失败释放权益；取消续费不删历史成果；自动续费有独立同意和取消入口",
+          "decisions": [
+            "DEC-17"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-06",
+          "title": "多位艺人逐人授权与分账",
+          "requirement_type": "继承规则细化",
+          "feature_ids": [
+            "DEL-25.01",
+            "DEL-25.03",
+            "DEL-27.02",
+            "DEL-08.01",
+            "DEL-03.01",
+            "DEL-03.04"
+          ],
+          "package_ids": [
+            "DEL-03",
+            "DEL-08",
+            "DEL-25",
+            "DEL-27"
+          ],
+          "core_tasks": [
+            "CORE-DEL-03",
+            "CORE-DEL-08",
+            "CORE-DEL-25",
+            "CORE-DEL-27"
+          ],
+          "experience_tasks": [
+            "UX-DEL-03",
+            "UX-DEL-08",
+            "UX-DEL-25",
+            "UX-DEL-27"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q12"
+            }
+          ],
+          "source_summary": "问答 Q12",
+          "acceptance_details": "同一订单两位艺人可有不同 MCN；机构不能代签本人专属人格授权；解除后旧订单快照不变，新邀约停止；纯虚拟数字人登记实际权利主体，不强套真人脸声授权流程",
+          "decisions": [
+            "DEC-08",
+            "DEC-18"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-07",
+          "title": "光环、艺人成长和销售门槛",
+          "requirement_type": "继承规则及原文冲突",
+          "feature_ids": [
+            "DEL-02.02",
+            "DEL-02.03",
+            "DEL-05.02",
+            "DEL-19.01"
+          ],
+          "package_ids": [
+            "DEL-02",
+            "DEL-05",
+            "DEL-19"
+          ],
+          "core_tasks": [
+            "CORE-DEL-02",
+            "CORE-DEL-05",
+            "CORE-DEL-19"
+          ],
+          "experience_tasks": [
+            "UX-DEL-02",
+            "UX-DEL-05",
+            "UX-DEL-19"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/03_晶晶日上_信用成长榜单与积分体系_产品规则定稿_20261011.html",
+              "section": "§1—§2"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_1011评审录音变更对照清单_给开发_20261011.html",
+              "section": "字段及定时任务"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/04_平台治理制度合集_社区交易内容审核未成年人抽奖规则_20261013.html",
+              "section": "交易准入和等级权益"
+            }
+          ],
+          "source_summary": "信用专项 §1—§2；录音变更字段及定时任务；治理规则准入冲突",
+          "acceptance_details": "12 个月到期、提前 30 日提醒、金色月复审；90 日成长不足的降级与提醒；L1／L2 各能经营什么须有明确表",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-08",
+          "title": "六榜真正的算法与城市边界",
+          "requirement_type": "继承规则细化",
+          "feature_ids": [
+            "DEL-04.02",
+            "DEL-19.02",
+            "DEL-19.03"
+          ],
+          "package_ids": [
+            "DEL-04",
+            "DEL-19"
+          ],
+          "core_tasks": [
+            "CORE-DEL-04",
+            "CORE-DEL-19"
+          ],
+          "experience_tasks": [
+            "UX-DEL-04",
+            "UX-DEL-19"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/03_晶晶日上_信用成长榜单与积分体系_产品规则定稿_20261011.html",
+              "section": "§3"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_1011评审录音变更对照清单_给开发_20261011.html",
+              "section": "榜单字段、定时任务与验收"
+            }
+          ],
+          "source_summary": "信用专项 §3；录音变更验收",
+          "acceptance_details": "7 日新账号冷却、有效评价至少 10 条、复购至少 20 位买家、7 日热度去重、30 日新人窗口分别构造边界；曝光系数与榜单加权系数分开",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-09",
+          "title": "艺人星光不能无记录消失",
+          "requirement_type": "D1未显式覆盖；保留或明确范围决定",
+          "feature_ids": [
+            "DEL-18.01",
+            "DEL-19.01",
+            "DEL-25.04"
+          ],
+          "package_ids": [
+            "DEL-18",
+            "DEL-19",
+            "DEL-25"
+          ],
+          "core_tasks": [
+            "CORE-DEL-18",
+            "CORE-DEL-19",
+            "CORE-DEL-25"
+          ],
+          "experience_tasks": [
+            "UX-DEL-18",
+            "UX-DEL-19",
+            "UX-DEL-25"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/03_晶晶日上_信用成长榜单与积分体系_产品规则定稿_20261011.html",
+              "section": "§4开头"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_1011评审录音变更对照清单_给开发_20261011.html",
+              "section": "星光账户、流水和钱包切换"
+            }
+          ],
+          "source_summary": "信用专项 §4 开头；录音变更“星光账户／流水”和钱包切换",
+          "acceptance_details": "明确这是艺人侧资源权益记录，不与买家晶钻互转、不能提现；可以先轻量记账，但若本期取消或延期，应形成有来源的显式范围决定",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-10",
+          "title": "每种积分来源、到期与提醒",
+          "requirement_type": "继承规则细化",
+          "feature_ids": [
+            "DEL-18.01",
+            "DEL-18.02",
+            "DEL-18.03",
+            "DEL-18.04",
+            "DEL-23.04"
+          ],
+          "package_ids": [
+            "DEL-18",
+            "DEL-23"
+          ],
+          "core_tasks": [
+            "CORE-DEL-18",
+            "CORE-DEL-23"
+          ],
+          "experience_tasks": [
+            "UX-DEL-18",
+            "UX-DEL-23"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/03_晶晶日上_信用成长榜单与积分体系_产品规则定稿_20261011.html",
+              "section": "§4"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_1011评审录音变更对照清单_给开发_20261011.html",
+              "section": "积分批次和任务中心"
+            }
+          ],
+          "source_summary": "信用专项 §4；录音变更积分批次／任务中心",
+          "acceptance_details": "逐一列注册、实名、认证、首单、复购、评价、分享、签到等事件；按最早到期批次消耗，提前提醒；过期、退款、抽奖不误改累计成长",
+          "decisions": [
+            "DEC-06"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-11",
+          "title": "收藏、足迹与任务中心入口",
+          "requirement_type": "D1未显式覆盖；页面与事件验收",
+          "feature_ids": [
+            "DEL-04.04",
+            "DEL-18.01",
+            "DEL-28.01",
+            "DEL-28.04"
+          ],
+          "package_ids": [
+            "DEL-04",
+            "DEL-18",
+            "DEL-28"
+          ],
+          "core_tasks": [
+            "CORE-DEL-04",
+            "CORE-DEL-18",
+            "CORE-DEL-28"
+          ],
+          "experience_tasks": [
+            "UX-DEL-04",
+            "UX-DEL-18",
+            "UX-DEL-28"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "我的页面清单"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_1011评审录音变更对照清单_给开发_20261011.html",
+              "section": "任务中心"
+            },
+            {
+              "path": "docs/baselines/v5-d1/sources/03_晶晶日上_信用成长榜单与积分体系_产品规则定稿_20261011.html",
+              "section": "§3人气榜"
+            }
+          ],
+          "source_summary": "V5 我的页清单；录音变更任务中心；信用专项人气榜含收藏",
+          "acceptance_details": "用户能回到收藏对象和浏览记录；私有／下架对象不泄漏；任务领取去重。这些词目前未出现在 D1 的 full_scope／acceptance 中",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-12",
+          "title": "奖品有效期、无法兑现和兑换门槛",
+          "requirement_type": "继承规则及真实奖品供给",
+          "feature_ids": [
+            "DEL-22.01",
+            "DEL-22.02",
+            "DEL-22.04",
+            "DEL-21.04"
+          ],
+          "package_ids": [
+            "DEL-21",
+            "DEL-22"
+          ],
+          "core_tasks": [
+            "CORE-DEL-21",
+            "CORE-DEL-22"
+          ],
+          "experience_tasks": [
+            "UX-DEL-21",
+            "UX-DEL-22"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/04_晶晶日上_晶钻抽奖与角色奖品方案_面试卡券制作费版_V2_20261013.html",
+              "section": "§2—§5"
+            }
+          ],
+          "source_summary": "抽奖 V2 §2—§5",
+          "acceptance_details": "面试卡本人绑定、90 天、一次延期／降级／退分；制作券 30 天、最低订单金额、不可叠加、不可拆分、适用商品分别测试；曝光 7 天须实际展示",
+          "decisions": [
+            "DEC-01",
+            "DEC-16"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-13",
+          "title": "券的占用、核销、退款和恢复",
+          "requirement_type": "D1修订建议未获业务批准",
+          "feature_ids": [
+            "DEL-22.03",
+            "DEL-07.04"
+          ],
+          "package_ids": [
+            "DEL-07",
+            "DEL-22"
+          ],
+          "core_tasks": [
+            "CORE-DEL-07",
+            "CORE-DEL-22"
+          ],
+          "experience_tasks": [
+            "UX-DEL-07",
+            "UX-DEL-22"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/04_晶晶日上_晶钻抽奖与角色奖品方案_面试卡券制作费版_V2_20261013.html",
+              "section": "§3"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/04_平台治理制度合集_社区交易内容审核未成年人抽奖规则_20261013.html",
+              "section": "抽奖规则退款条款"
+            }
+          ],
+          "source_summary": "抽奖 V2 §3；D1 DEL-22.03；治理规则抽奖章",
+          "acceptance_details": "分开支付失败释放占用、未使用到期、已使用后退款、商家责任退款；最后一种恢复规则仍需明确，不能当作已批准",
+          "decisions": [
+            "DEC-01"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-14",
+          "title": "月冠军投票和奖励全链条",
+          "requirement_type": "继承规则及真实奖品供给",
+          "feature_ids": [
+            "DEL-19.05",
+            "DEL-18.04",
+            "DEL-22.04",
+            "DEL-26.04"
+          ],
+          "package_ids": [
+            "DEL-18",
+            "DEL-19",
+            "DEL-22",
+            "DEL-26"
+          ],
+          "core_tasks": [
+            "CORE-DEL-18",
+            "CORE-DEL-19",
+            "CORE-DEL-22",
+            "CORE-DEL-26"
+          ],
+          "experience_tasks": [
+            "UX-DEL-18",
+            "UX-DEL-19",
+            "UX-DEL-22",
+            "UX-DEL-26"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/baselines/v5-d1/sources/03_晶晶日上_信用成长榜单与积分体系_产品规则定稿_20261011.html",
+              "section": "§5"
+            }
+          ],
+          "source_summary": "信用专项 §5；D1 新增 DEL-19.05",
+          "acceptance_details": "60／20／20 复合评分按来源留据；每天最多 10 票、100 分／票、同城同分类、撤销作弊票与申诉、最终奖励库存及核销一起验证",
+          "decisions": [
+            "DEC-16"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-15",
+          "title": "隐私请求不只有注销",
+          "requirement_type": "已有宽泛条目需补具体请求类型",
+          "feature_ids": [
+            "DEL-23.01",
+            "DEL-23.04",
+            "DEL-26.01"
+          ],
+          "package_ids": [
+            "DEL-23",
+            "DEL-26"
+          ],
+          "core_tasks": [
+            "CORE-DEL-23",
+            "CORE-DEL-26"
+          ],
+          "experience_tasks": [
+            "UX-DEL-23",
+            "UX-DEL-26"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/07_数据权利与第三方共享规则合集_注销删除AI退出_SDK清单_20261013.html",
+              "section": "数据权利与注销规则"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/02_平台合规协议包_第一批5份_20261012.html",
+              "section": "隐私政策"
+            }
+          ],
+          "source_summary": "数据权利规则第一部分；协议包隐私条款",
+          "acceptance_details": "查询复制、更正、删除、账号注销、可携导出、自动化决策解释／人工申诉、近亲属请求分别核验身份与范围，不把一个“完成”按钮当实际处理",
+          "decisions": [
+            "DEC-13"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-16",
+          "title": "撤回、删数和外部服务结果",
+          "requirement_type": "继承规则及实际供应商结果",
+          "feature_ids": [
+            "DEL-23.02",
+            "DEL-24.01",
+            "DEL-29.03"
+          ],
+          "package_ids": [
+            "DEL-23",
+            "DEL-24",
+            "DEL-29"
+          ],
+          "core_tasks": [
+            "CORE-DEL-23",
+            "CORE-DEL-24",
+            "CORE-DEL-29"
+          ],
+          "experience_tasks": [
+            "UX-DEL-23",
+            "UX-DEL-24",
+            "UX-DEL-29"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/07_数据权利与第三方共享规则合集_注销删除AI退出_SDK清单_20261013.html",
+              "section": "AI退出和第三方处理"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q02/Q10"
+            },
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "§2.14"
+            }
+          ],
+          "source_summary": "数据权利规则；问答 Q02／Q10；V5 §2.14",
+          "acceptance_details": "撤回停止新调用，缓存、草稿、供应商任务逐项处理；历史有效合同、法定留存和新授权分开；拒绝某项权限不阻断无关功能",
+          "decisions": [
+            "DEC-08",
+            "DEC-13",
+            "DEC-15"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-17",
+          "title": "未成年人限制和监护工具",
+          "requirement_type": "继承保护规则及原文允许范围冲突",
+          "feature_ids": [
+            "DEL-02.01",
+            "DEL-02.04",
+            "DEL-23.03",
+            "DEL-07.04"
+          ],
+          "package_ids": [
+            "DEL-02",
+            "DEL-07",
+            "DEL-23"
+          ],
+          "core_tasks": [
+            "CORE-DEL-02",
+            "CORE-DEL-07",
+            "CORE-DEL-23"
+          ],
+          "experience_tasks": [
+            "UX-DEL-02",
+            "UX-DEL-07",
+            "UX-DEL-23"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/04_平台治理制度合集_社区交易内容审核未成年人抽奖规则_20261013.html",
+              "section": "未成年人保护制度"
+            },
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "§2.14"
+            }
+          ],
+          "source_summary": "治理规则“未成年人保护制度”各章；V5 §2.14",
+          "acceptance_details": "未成年账号不得绕过付费／经营／试镜拦截；成人委托儿童形象单列；监护绑定、使用时长、信息删除、消费投诉和退款留证。具体儿童素材范围先解决冲突",
+          "decisions": [
+            "DEC-11"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-18",
+          "title": "限额、防沉迷和用户自主设置",
+          "requirement_type": "机制已定；具体阈值待业务确认",
+          "feature_ids": [
+            "DEL-17.04",
+            "DEL-21.02",
+            "DEL-23.03",
+            "DEL-23.04"
+          ],
+          "package_ids": [
+            "DEL-17",
+            "DEL-21",
+            "DEL-23"
+          ],
+          "core_tasks": [
+            "CORE-DEL-17",
+            "CORE-DEL-21",
+            "CORE-DEL-23"
+          ],
+          "experience_tasks": [
+            "UX-DEL-17",
+            "UX-DEL-21",
+            "UX-DEL-23"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/09_用户理性使用与防沉迷干预制度_20261013.html",
+              "section": "理性使用制度"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/04_平台治理制度合集_社区交易内容审核未成年人抽奖规则_20261013.html",
+              "section": "未成年人保护制度"
+            }
+          ],
+          "source_summary": "理性使用制度；治理规则未成年人制度",
+          "acceptance_details": "调低额度立即生效、调高等待、夜间提醒、高频抽奖提醒、免打扰、停用偏好；未确定数值按缺参数显示未启用，不伪造正式阈值",
+          "decisions": [
+            "DEC-13"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-19",
+          "title": "投诉、反通知、复核和恢复",
+          "requirement_type": "继承流程；期限须专业核实",
+          "feature_ids": [
+            "DEL-23.04",
+            "DEL-24.02",
+            "DEL-26.01",
+            "DEL-26.03"
+          ],
+          "package_ids": [
+            "DEL-23",
+            "DEL-24",
+            "DEL-26"
+          ],
+          "core_tasks": [
+            "CORE-DEL-23",
+            "CORE-DEL-24",
+            "CORE-DEL-26"
+          ],
+          "experience_tasks": [
+            "UX-DEL-23",
+            "UX-DEL-24",
+            "UX-DEL-26"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/03_P0合同模板包_14份_20261012.html",
+              "section": "第14份投诉反通知合同"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/06_平台交易与履约规则合集_样片试镜商单退款版权投诉_20261013.html",
+              "section": "版权投诉章"
+            },
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "§2.14"
+            }
+          ],
+          "source_summary": "合同模板第 14 份；履约规则版权投诉章；V5 24 小时响应",
+          "acceptance_details": "通知双方、保留证据、人工复核、部分冻结、结果送达及恢复链路；响应不等于判定完毕，专业期限未核实不自动下结论",
+          "decisions": [
+            "DEC-13"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-20",
+          "title": "线上／线下试镜及安全",
+          "requirement_type": "继承规则及线上试镜范围核对",
+          "feature_ids": [
+            "DEL-09.01",
+            "DEL-09.03",
+            "DEL-09.04",
+            "DEL-12.03"
+          ],
+          "package_ids": [
+            "DEL-09",
+            "DEL-12"
+          ],
+          "core_tasks": [
+            "CORE-DEL-09",
+            "CORE-DEL-12"
+          ],
+          "experience_tasks": [
+            "UX-DEL-09",
+            "UX-DEL-12"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/06_平台交易与履约规则合集_样片试镜商单退款版权投诉_20261013.html",
+              "section": "试镜履约章"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q07"
+            },
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "§2.4"
+            }
+          ],
+          "source_summary": "履约规则试镜章；问答 Q07；V5 §2.4",
+          "acceptance_details": "来源写有线上试镜，D1 主体描述为线下，须显式标明本期支持方式；不据此新增实时视频通话服务。线下地点确认、行程分享、紧急求助、迟到取消及安全退出留证，不持续采集轨迹",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-21",
+          "title": "审核覆盖文字、声音和每类用户内容",
+          "requirement_type": "继承规则；实际审核能力须验收",
+          "feature_ids": [
+            "DEL-24.02",
+            "DEL-26.01",
+            "DEL-03.04"
+          ],
+          "package_ids": [
+            "DEL-03",
+            "DEL-24",
+            "DEL-26"
+          ],
+          "core_tasks": [
+            "CORE-DEL-03",
+            "CORE-DEL-24",
+            "CORE-DEL-26"
+          ],
+          "experience_tasks": [
+            "UX-DEL-03",
+            "UX-DEL-24",
+            "UX-DEL-26"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/04_平台治理制度合集_社区交易内容审核未成年人抽奖规则_20261013.html",
+              "section": "内容审核制度"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/01_平台法律合规与文件清单_可行性调研_20261011.html",
+              "section": "Q3"
+            }
+          ],
+          "source_summary": "治理规则内容审核；法律调研 Q3",
+          "acceptance_details": "审核覆盖本期实际开放的头像、昵称、评论、订单会话、照片和音视频，并提供申诉；来源中的“私信、动态”不据此扩建通用聊天或动态社区。真人素材授权可核验，不自行建立未经许可的人脸库",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-22",
+          "title": "正式签约模板与已签历史隔离",
+          "requirement_type": "模板冲突修订与已签历史隔离",
+          "feature_ids": [
+            "DEL-05.03",
+            "DEL-07.01",
+            "DEL-13.03",
+            "DEL-26.02"
+          ],
+          "package_ids": [
+            "DEL-05",
+            "DEL-07",
+            "DEL-13",
+            "DEL-26"
+          ],
+          "core_tasks": [
+            "CORE-DEL-05",
+            "CORE-DEL-07",
+            "CORE-DEL-13",
+            "CORE-DEL-26"
+          ],
+          "experience_tasks": [
+            "UX-DEL-05",
+            "UX-DEL-07",
+            "UX-DEL-13",
+            "UX-DEL-26"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/03_P0合同模板包_14份_20261012.html",
+              "section": "14份合同模板"
+            },
+            {
+              "path": "docs/sources/v5-change/supplements/晶晶日上_V4需求补充定稿_开发执行版_20261009.html",
+              "section": "Q02/Q05/Q12"
+            }
+          ],
+          "source_summary": "合同模板包 14 份；问答 Q02／Q05／Q12",
+          "acceptance_details": "修正付款、验收、分享、人格撤回及所有权冲突；签署人和版本可追溯；更换模板不改老订单；剧本 5 万买断／零保底 8% 等只是待签方案，不自动上架",
+          "decisions": [
+            "DEC-04",
+            "DEC-08",
+            "DEC-10"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-23",
+          "title": "真实服务主体、SDK 和发布材料",
+          "requirement_type": "真实主体、资质与供应商材料",
+          "feature_ids": [
+            "DEL-24.04",
+            "DEL-26.03",
+            "DEL-29.03",
+            "DEL-29.04"
+          ],
+          "package_ids": [
+            "DEL-24",
+            "DEL-26",
+            "DEL-29"
+          ],
+          "core_tasks": [
+            "CORE-DEL-24",
+            "CORE-DEL-26",
+            "CORE-DEL-29"
+          ],
+          "experience_tasks": [
+            "UX-DEL-24",
+            "UX-DEL-26",
+            "UX-DEL-29"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/00_合规文件总目录与上线检查台账_20261013.html",
+              "section": "上线检查台账"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/05_上线资质与备案动作清单_谁办周期材料卡点_20261013.html",
+              "section": "主体资质清单"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/07_数据权利与第三方共享规则合集_注销删除AI退出_SDK清单_20261013.html",
+              "section": "SDK清单"
+            }
+          ],
+          "source_summary": "合规目录；上线清单；数据权利 SDK 清单",
+          "acceptance_details": "甲方提供运营／合同／收款／开票／云服务／App 发布主体；实际装了哪些 SDK 就披露哪些，不因材料列举 Redis、IM、Stripe 等而新增产品；资质号、联系人和投诉渠道未齐不写已上线",
+          "decisions": [
+            "DEC-12",
+            "DEC-14"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-24",
+          "title": "留存期限、敏感操作和内部职责",
+          "requirement_type": "继承制度；具体适用期须核实",
+          "feature_ids": [
+            "DEL-24.01",
+            "DEL-24.04",
+            "DEL-26.04",
+            "DEL-29.02"
+          ],
+          "package_ids": [
+            "DEL-24",
+            "DEL-26",
+            "DEL-29"
+          ],
+          "core_tasks": [
+            "CORE-DEL-24",
+            "CORE-DEL-26",
+            "CORE-DEL-29"
+          ],
+          "experience_tasks": [
+            "UX-DEL-24",
+            "UX-DEL-26",
+            "UX-DEL-29"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/06_平台交易与履约规则合集_样片试镜商单退款版权投诉_20261013.html",
+              "section": "留存章"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/07_数据权利与第三方共享规则合集_注销删除AI退出_SDK清单_20261013.html",
+              "section": "数据权利例外"
+            },
+            {
+              "path": "docs/sources/v5-change/compliance/08_内部合规管理制度合集_算法伦理数据安全个保网络安全财税投诉培训_20261013.html",
+              "section": "内部权限和安全制度"
+            }
+          ],
+          "source_summary": "履约规则留存章；数据权利规则；内部合规制度",
+          "acceptance_details": "交易合同／投诉记录、网络日志、影响评估各按经核实的类别期限；敏感导出和后台越权有审批与记录；离职撤权和恢复演练可验证；制度培训只留证，不新建人事／合规平台",
+          "decisions": [
+            "DEC-13"
+          ],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        },
+        {
+          "id": "SUP-25",
+          "title": "面向用户的品牌和失效规则清理",
+          "requirement_type": "继承新版本；历史来源原样保留",
+          "feature_ids": [
+            "DEL-28.01",
+            "DEL-28.02",
+            "DEL-28.03",
+            "DEL-28.04",
+            "DEL-26.02"
+          ],
+          "package_ids": [
+            "DEL-26",
+            "DEL-28"
+          ],
+          "core_tasks": [
+            "CORE-DEL-26",
+            "CORE-DEL-28"
+          ],
+          "experience_tasks": [
+            "UX-DEL-26",
+            "UX-DEL-28"
+          ],
+          "source_refs": [
+            {
+              "path": "docs/sources/v5-change/compliance/01_平台法律合规与文件清单_可行性调研_20261011.html",
+              "section": "平台定位"
+            },
+            {
+              "path": "docs/sources/v5-change/original/6甲方：晶晶日上_APP开发需求总纲_V5最终版_20261013.html",
+              "section": "§1—§3和页面清单"
+            },
+            {
+              "path": "docs/sources/v5-change/original/5甲方：晶晶日上_V4变更对照清单_给开发_20261011.html",
+              "section": "变更对照"
+            }
+          ],
+          "source_summary": "法律调研平台定位；V5 页面与业务清单；V4 变更",
+          "acceptance_details": "对外品牌、五入口、商品名称、旧会费词、旧交通费、旧独立视频页、旧生成套餐、旧付款和抽成提示在页面／合同／通知一起检查；保留历史文件原文",
+          "decisions": [],
+          "status": "已归入本地开发计划；实现和验收未执行；所列业务冲突仍待决定",
+          "review_date": "2026-10-15"
+        }
+      ],
+      "supplement_note": "25条补充细则归回原30工作包/60配对任务，不新增第二套进度。原件冻结，技术证据见02_CODE_GAPS；业务冲突仅在对应规则启用前闭合。"
+    }
+  ]
 }

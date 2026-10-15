@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>晶晶日上 · 财务核验对接清单（V01 支付清分 / V03 合同财税）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>晶</text></svg>">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&display=swap">
+<style>
+:root{--brand:#c8102e;--brand-d:#9e0c24;--gold:#c9a227;--ink:#1c2430;--mut:#5b6675;--line:#e6e9ee;--bg:#f4f6f9;--card:#fff;--warn:#b7791f;--ok:#0e9f6e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans SC",-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px 70px}
+.hero{background:linear-gradient(135deg,var(--brand),var(--brand-d));color:#fff;border-radius:0 0 22px 22px;padding:42px 44px 36px;margin:0 -20px 28px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero .kicker{display:inline-block;font-size:12.5px;letter-spacing:2px;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-family:"Noto Serif SC",serif;font-size:27px;font-weight:900;margin-bottom:10px;position:relative}
+.hero p{font-size:14px;opacity:.93;max-width:760px;position:relative}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 32px;margin-bottom:22px}
+h2{font-family:"Noto Serif SC",serif;font-size:20px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:11px}
+h2 .no{background:var(--brand);color:#fff;width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-family:sans-serif}
+.sub{color:var(--mut);font-size:13.5px;margin-bottom:18px}
+.table-scroll{overflow-x:auto;margin:12px 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13.6px;table-layout:fixed}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#f7f9fb;font-weight:700;font-size:13px}
+.note{border:1px solid var(--line);border-left:4px solid var(--gold);background:#fdf9f0;border-radius:10px;padding:13px 16px;font-size:13.5px;margin:16px 0}
+.note.good{border-left-color:var(--ok);background:#f2faf6}
+ul.clean{list-style:none;margin:6px 0}
+ul.clean li{padding:4px 0 4px 21px;position:relative;font-size:14px}
+ul.clean li::before{content:"";position:absolute;left:4px;top:12px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.foot{color:var(--mut);font-size:12px;text-align:center;margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+@media (max-width:640px){.hero{padding:32px 22px 26px}.hero h1{font-size:20px}section{padding:22px 18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<span class="kicker">财务核验对接清单 · V01 / V03</span>
+<h1>晶晶日上 · 上线前置财务核验清单</h1>
+<p>下列两项是开发上线的<b>前置外部核验</b>，需财务（联合法务、商务及持牌机构）提供书面或后台截图证据；未到位前，对应功能不上线。每项已注明用途与阻塞点，便于直接对照准备。</p>
+</div>
+
+<section>
+<h2><span class="no">V01</span>支付及自动清分（对接：银行 / 持牌支付机构）</h2>
+<div class="sub">目的：确认"代收—担保托管—分账清分—退款追回"全链路持牌合规，平台不设资金池、不触碰二清红线。</div>
+<div class="table-scroll">
+<table style="min-width:720px">
+<colgroup><col style="width:30%"><col style="width:42%"><col style="width:28%"></colgroup>
+<tr><th>核验项</th><th>为什么需要（阻塞点）</th><th>期望形式</th></tr>
+<tr><td>支付产品全名与版本</td><td>确认支持"担保交易＋分账/清分"，而非仅普通收款</td><td>产品页 / 合同条款</td></tr>
+<tr><td>签约主体与准入条件</td><td>确定以哪家公司签约、需哪些资质，避免主体错配</td><td>准入清单 / 签约要求</td></tr>
+<tr><td>持牌与资金监管路线</td><td>证明资金由持牌机构监管、平台不设资金池、无二清</td><td>牌照 + 资金流向说明</td></tr>
+<tr><td>清分执行时点（T+1）</td><td>明确指令到实际划付时长、节假日/资料不齐如何处理</td><td>产品规则 / 结算说明</td></tr>
+<tr><td>里程碑 / 担保放款</td><td>定制阶段托管款能否按客户确认节点逐笔释放</td><td>功能说明</td></tr>
+<tr><td>退款与资金追回</td><td>清分后退款如何按责任方从各收款方追回/撤回</td><td>退款规则</td></tr>
+<tr><td>保证金 / 风险准备金</td><td>是否支持保证金账户的冻结、扣划、退还</td><td>功能说明</td></tr>
+<tr><td>费率与发票</td><td>支付/分账/提现手续费计入成本，能否开票</td><td>费率表 + 开票说明</td></tr>
+</table>
+</div>
+</section>
+
+<section>
+<h2><span class="no">V03</span>合同、发票与个税（对接：财务 ＋ 法务 ＋ 商务）</h2>
+<div class="sub">目的：保证合同流、资金流、发票流三流一致，自然人艺人依法完税，结算可开票、可留证。</div>
+<div class="table-scroll">
+<table style="min-width:720px">
+<colgroup><col style="width:30%"><col style="width:42%"><col style="width:28%"></colgroup>
+<tr><th>核验项</th><th>为什么需要（阻塞点）</th><th>期望形式</th></tr>
+<tr><td>各类合同样例</td><td>定制片、出演/肖像声音授权、MCN 合作、试镜出场、剧本授权、平台服务协议</td><td>合同模板</td></tr>
+<tr><td>开票主体与税目</td><td>以哪家公司开票、各业务适用税目（现代服务等）</td><td>开票信息 / 税目口径</td></tr>
+<tr><td>自然人艺人所得</td><td>所得定性（劳务报酬 / 经营所得）、扣缴义务人、税率口径</td><td>税务口径说明</td></tr>
+<tr><td>委托代征 / 灵活用工</td><td>是否接入、用哪家、费率与凭证，解决大量自然人结算</td><td>方案 / 报价</td></tr>
+<tr><td>MCN 结算与发票路径</td><td>MCN 向平台开票、平台向 MCN/艺人付款的完整路径</td><td>资金/票据路径图</td></tr>
+<tr><td>凭证归档</td><td>清分回单、发票、完税凭证如何关联同一结算单留档</td><td>归档清单</td></tr>
+</table>
+</div>
+</section>
+
+<section>
+<h2><span class="no">★</span>协作与反馈方式</h2>
+<ul class="clean">
+<li>建议财务在约定工作日内反馈（时限由财务确认）；先给已有材料，缺口项标注"办理中/预计时间"。</li>
+<li>材料回收后由我方逐项核对是否覆盖开发所需，未覆盖的再定向补充，不反复打扰。</li>
+<li>密钥、证件原件不在聊天中传输，统一走安全渠道并留痕。</li>
+</ul>
+<div class="note good"><b>不阻塞说明：</b>开发可先用默认比例、时限、阶段框架推进；上述核验到位后再切换为真实通道与正式税务口径。</div>
+<div class="note">本清单用于业务对接与材料准备，不替代持牌机构、税务师或律师的正式意见；最终以主管机关及服务商最新规定为准。</div>
+<div class="foot">晶晶日上 · 财务核验对接清单（V01/V03）　|　2026-10-09</div>
+</section>
+</div>
+</body>
+</html>

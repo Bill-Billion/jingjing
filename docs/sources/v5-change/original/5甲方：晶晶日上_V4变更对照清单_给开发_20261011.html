@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>晶晶日上 V4 变更对照清单（给开发）· 20261011</title>
+<style>
+:root{--brand:#c8102e;--gold:#c9a227;--ink:#1f2733;--mut:#5b6675;--line:#e6e9ef;--bg:#f5f6f8;--ok:#1a7f4b;--new:#1a7f4b;--chg:#c8102e;--pre:#8a6d00;--cut:#6b7280;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;line-height:1.65;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:36px 22px 70px}
+header{background:linear-gradient(135deg,#a50d26,#c8102e);color:#fff;border-radius:16px;padding:30px 32px;margin-bottom:22px}
+header .k{font-size:13px;letter-spacing:2px;opacity:.85}
+header h1{margin:8px 0 6px;font-size:27px}
+header p{margin:0;font-size:14px;opacity:.92}
+section{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin:18px 0;box-shadow:0 1px 3px rgba(20,30,50,.04)}
+h2{font-size:20px;margin:0 0 4px;padding-left:12px;border-left:5px solid var(--brand)}
+.sub{color:var(--mut);font-size:13.5px;margin:0 0 16px 12px}
+h3{font-size:16px;margin:22px 0 8px;color:#33404f}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0 6px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#faf3f4;font-weight:700}
+td code,p code,li code{background:#f2f4f8;border-radius:4px;padding:1px 5px;font-family:Consolas,Menlo,monospace;font-size:12.5px;color:#a50d26}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;color:#fff;white-space:nowrap}
+.t-new{background:var(--new)}.t-chg{background:var(--chg)}.t-pre{background:var(--pre)}.t-cut{background:var(--cut)}
+.note{background:#f7f9fc;border-left:4px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:13.5px;margin:12px 0}
+.note.danger{background:#fdf1f3;border-color:var(--brand)}
+.note.ok{background:#eefaf2;border-color:var(--ok)}
+ul{margin:6px 0;padding-left:22px}li{margin:4px 0}
+.small{font-size:12.5px;color:var(--mut)}
+.ck li{list-style:none;position:relative;padding-left:24px}
+.ck li::before{content:"☐";position:absolute;left:0;color:var(--brand);font-size:16px}
+.foot{color:var(--mut);font-size:12.5px;text-align:center;margin-top:26px}
+.tbl-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="k">晶晶日上 · 数字经纪人平台 · 研发增量说明</div>
+<h1>V4 变更对照清单（给前端 / 后端 / 测试）</h1>
+<p>基线：V3（20261011）　|　本版：V4，源自 2026-10-11 下午需求评审（约 53 分钟）老板逐条拍板　|　配套文档：《晶晶日上_APP开发需求总纲_V4_20261011.html》</p>
+</header>
+
+<section>
+<h2>一图看懂 V4</h2>
+<p class="sub">只看这一段也能知道动了什么</p>
+<div class="tbl-wrap"><table>
+<tr><th style="width:14%">板块</th><th>变更一句话</th><th style="width:9%">性质</th></tr>
+<tr><td><b>底部导航</b></td><td>旧【广场·视频·试镜·剧集·我的】→ 新【<b>广场 · 试镜 · 通告 · 消息 · 我的</b>】；视频并入广场"视频"子频道</td><td><span class="tag t-chg">改</span></td></tr>
+<tr><td><b>消息中心</b></td><td>新增底部【消息】：订单成立后<b>双向会话</b>；投稿/意向<b>单向投递</b>、同意后转客服</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><b>买家体系</b></td><td>出品人=买家、实名即可；买家侧<b>只有一套"晶钻"</b>（消费获得、可抽奖兑换）；<b>星探共 6 级：向账户余额累计充值满 300 元（钱可消费、不可提现、持牌托管、非会费）即解锁"新锐星探"，每个会员年累计充值满 300 续期；2–6 级只靠真实消费累计晶钻（1万 / 5万 / 20万 / 50万 / 100万）晋升、不能买级或跳级</b></td><td><span class="tag t-chg">改</span></td></tr>
+<tr><td><b>城市榜+投稿</b></td><td>新增出品人/机构城市榜；艺人可<b>反向投稿自荐</b>（形象/想演的剧/自己想做剧）</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><b>通告</b></td><td>"剧集"扩充改名【通告】：剧/商演/商单/活动/招募/平台通告，招募可接投稿</td><td><span class="tag t-chg">改</span></td></tr>
+<tr><td><b>MCN 后台</b></td><td>MCN/卖家管理<b>移出 APP</b>，新建<b>独立 PC 网页后台</b>（P1 最小版并行）</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><b>试镜</b></td><td>砍一期主题/角色标签菜单；艺人自助开关公开试镜；<b>参演一人一剧一价、线下撮合</b>，线上只走合同+清分</td><td><span class="tag t-chg">改</span></td></tr>
+<tr><td><b>投流排名</b></td><td>一期<b>不开放</b>付费投流/广告，但排序权重/广告位/竞价字段<b>全部预埋</b></td><td><span class="tag t-pre">预埋</span></td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>1. 前端（Flutter）路由与页面变更</h2>
+<div class="tbl-wrap"><table>
+<tr><th style="width:22%">路由 / 页面</th><th style="width:12%">动作</th><th>说明与关键组件</th></tr>
+<tr><td><code>/home</code> 广场（首屏）</td><td><span class="tag t-chg">改</span></td><td>顶部子频道切换 <code>artists</code>（艺人排行榜＋货架）/ <code>videos</code>（视频商品信息流）；左上角 LBS；含"找出品人/机构"入口。<b>前端文案统一"排行榜"，禁止出现"龙虎榜"</b></td></tr>
+<tr><td><code>/auditions</code> 试镜中心</td><td><span class="tag t-chg">改</span></td><td>只返回 <code>audition_settings.open_audition=true</code> 的艺人；城市/距离/排名列表＋邀约下单；<b>移除主题/角色标签筛选器</b></td></tr>
+<tr><td><code>/notices</code> 通告</td><td><span class="tag t-chg">改</span></td><td>原剧集页扩充；类型 tab：drama/show/order/event/recruit/platform；演出记录、抽奖积分兑换、月冠军；招募详情含"我要投稿"</td></tr>
+<tr><td><code>/messages</code> 消息中心</td><td><span class="tag t-new">新增</span></td><td>三个分区：订单会话（双向 IM）/ 投稿信箱（单向）/ 系统通知；会话内"找客服"按钮</td></tr>
+<tr><td><code>/chat/:conversationId</code></td><td><span class="tag t-new">新增</span></td><td>订单双向会话：文本/卡片/视频/补差改价、敏感词拦截提示、客服加入；按 type 渲染只读或可聊</td></tr>
+<tr><td><code>/buyers-rank</code> 出品人城市榜</td><td><span class="tag t-new">新增</span></td><td>按城市列星探/高消费买家/机构；艺人侧显示"投稿/自荐"按钮</td></tr>
+<tr><td><code>/submissions</code> 我的投稿</td><td><span class="tag t-new">新增</span></td><td>艺人发起投稿（形象/想演角色/自己想做剧）、状态跟踪；出品方侧"被投稿"收件箱（感兴趣/婉拒）</td></tr>
+<tr><td><code>/scout</code> 星探开通</td><td><span class="tag t-new">新增</span></td><td>未开通：展示<b>"充值满 300 元解锁新锐星探"引导（充值进可消费余额、非会费、不可提现）＋充值支付</b>与权益说明；已开通：展示当前等级、<b>2–6 级晶钻成长进度（只展示差多少晶钻、不提供购买）</b>、本会员年累计充值 / 续期进度、到期冻结提示</td></tr>
+<tr><td><code>/me</code> 我的</td><td><span class="tag t-chg">改</span></td><td>认证三入口（主角光环/晶钻/星探）、我的投稿与被投稿、<b>公开试镜与公开标价开关</b>；移除 MCN 批量管理入口（改 PC 后台外链/不展示）</td></tr>
+<tr><td>艺人详情页</td><td><span class="tag t-chg">改</span></td><td>"发邀约"（意向卡）、公开试镜状态与一口价、资料按艺人自主上传展示（无平台主题模板）</td></tr>
+<tr><td>主角光环认证</td><td><span class="tag t-chg">改</span></td><td>按平台模板自助上传：模卡/生活照/全身照（一寸照/简历可选）；<b>L1 实名免费；达人认证（L2/L3）提交时缴 10 元审核费，平台 / 三方人工审核，驳回可补料重提</b></td></tr>
+<tr><td><b>MCN PC 后台</b>（独立站点）</td><td><span class="tag t-new">新增</span></td><td>新 B 端工程（Web）：登录/多艺人管理/资料商品上架/订单分单/收入看板/评论；投流入口后期。<b>不在 APP 内</b></td></tr>
+</table></div>
+<div class="note danger">前端<b>不做</b>：付费投流/广告购买入口、试镜主题标签多选、参演版权固定档位商城、婚礼/AI 婚庆等 AI 暂不可达品类入口、远距离附加费字段。</div>
+</section>
+
+<section>
+<h2>2. 后端新增服务 / 模块（Node）</h2>
+<div class="tbl-wrap"><table>
+<tr><th style="width:26%">服务</th><th>职责</th></tr>
+<tr><td><code>MessagingService</code></td><td>会话与消息；<b>两套权限</b>：订单会话（order，双向）/ 投稿意向（submission，单向）；敏感词、风控、留痕、客服转接</td></tr>
+<tr><td><code>SubmissionService</code></td><td>艺人反向投稿/自荐；目标为出品人或通告；状态机；"感兴趣"转客服工单</td></tr>
+<tr><td><code>BuyerLevelService</code></td><td>星探 <b>6 级</b>：<b>1 级新锐由"账户累计充值满 300 元"解锁</b>（充值进持牌托管的可消费余额、非会费、不可提现），每个会员年累计充值满 300 续期；<b>2–6 级按累计获得晶钻（1万 / 5万 / 20万 / 50万 / 100万）自动晋升、不可购买、不可跳级</b>；到期未达续期门槛则冻结特权、等级与晶钻保留、再充值恢复；鉴权与城市榜取值</td></tr>
+<tr><td><code>ScoutMembershipService</code></td><td>星探会员：<b>账户累计充值满 300 解锁新锐（充值进可消费余额、不可提现、持牌托管）</b>、2–6 级按累计晶钻自动晋升；会员年累计充值满 300 续期、到期冻结 / 再充恢复、特权鉴权（发通告 / 城市榜优先 / 接投稿）</td></tr>
+<tr><td><code>NoticeService</code></td><td>通告 CRUD、六类分类、城市筛选、发布权限（仅星探/机构）、通告接投稿</td></tr>
+<tr><td><code>CityBuyerRankService</code></td><td>出品人/机构城市榜打分与周期快照</td></tr>
+<tr><td><code>AuditionSettingsService</code></td><td>艺人公开试镜/公开标价开关、一口价与城市</td></tr>
+<tr><td><code>McnPortalApi</code>（B 端）</td><td>PC 后台：多艺人授权、上架审核提交、分单、看板、评论；独立 B 端鉴权</td></tr>
+<tr><td><code>RankWeightService</code> / <code>AdBidService</code></td><td><b>预埋</b>：排序权重配置、广告位、竞价模型；一期只读配置、不产生扣费与前端入口</td></tr>
+<tr><td><code>ContractService</code>（扩展）</td><td>非标参演报价单/电子合同、合同内<b>多方分红比例</b>，驱动清分引擎按比例分账</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>3. 新增数据表（关键字段）</h2>
+<p class="sub">字段为最小集建议，命名可按现网规范调整；金额一律最小货币单位、分库分表与审计字段沿用现规范</p>
+<div class="tbl-wrap"><table>
+<tr><th style="width:24%">表</th><th>关键字段</th><th style="width:10%">说明</th></tr>
+<tr><td><code>conversations</code></td><td>id, order_id, type(<b>order|submission</b>), buyer_id, artist_id, mcn_id, status, cs_joined, created_at</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>messages</code></td><td>id, conversation_id, sender_id, kind(text|card|video|system|price_change), content, sensitive_hit, read_at, created_at</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>submissions</code></td><td>id, artist_id, target_type(buyer|notice), target_id, payload_type(image|role|self_drama), payload_json, status(<b>pending|interested|declined|cs_handled</b>), cs_ticket_id, created_at</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>buyer_levels</code></td><td>user_id, <b>total_earned_points（累计获得晶钻·定级用·只增/保级）</b>, available_points（可用余额·抽奖消耗，与 points_accounts 同源）, <b>level</b>, updated_at（<b>晶钻等级由累计晶钻派生，不另打分</b>）</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>scout_memberships</code></td><td>user_id, <b>star_level(1–6)</b>, source(<b>recharge 充值解锁 | growth 消费成长</b>), <b>unlock_recharge_amount（解锁 / 续期门槛，默认 300）、period_recharge_total（本会员年累计充值）</b>, recharge_order_ids, start_at, expire_at, status(<b>active / frozen 到期冻结</b>), <b>growth_level（按累计晶钻应得等级，恢复用）</b></td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>notices</code></td><td>id, publisher_id, publisher_type(scout|org), category(drama|show|order|event|recruit|platform), city, title, content, status, created_at</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>city_buyer_rank_snapshots</code></td><td>city, subject_type(buyer|org), subject_id, score, rank, period</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>audition_settings</code></td><td>artist_id, open_audition(bool), public_price(bool), all_in_price, city, updated_at</td><td><span class="tag t-new">新增</span></td></tr>
+<tr><td><code>ad_bids</code> <span class="small">（预埋）</span></td><td>id, advertiser_id, position, bid_type(cpc|cpm|day), bid_amount, weight, status, start_at, end_at</td><td><span class="tag t-pre">预埋</span></td></tr>
+<tr><td><code>rank_weights</code> <span class="small">（预埋）</span></td><td>scene(artist|buyer), factor, weight, ad_slot_enabled, updated_at</td><td><span class="tag t-pre">预埋</span></td></tr>
+</table></div>
+<div class="note"><b>复用 / 扩展（不新建）：</b><br>
+· <code>orders</code> 增加 <code>contract_id</code>（非标参演挂合同）、订单来源 source；<br>
+· <code>settlement_details</code> 支持合同约定的<b>多方分红</b>行（一方出品、多方艺人/机构按比例）；<br>
+· <code>sys_configs</code> 增加：投流总开关（默认关）、<b>新锐星探解锁 / 续期充值门槛（每个会员年累计充值满 300 元、非会费、进可消费余额）、2–6 级累计晶钻阈值（1万 / 5万 / 20万 / 50万 / 100万）、会员年周期（默认 365 天）</b>、试镜默认交付模板（6照1视频）、<b>认证策略（L1 实名免费、达人认证 L2/L3 审核费 10 元/次）</b>；<br>
+· <code>halo_verifications</code> 扩展：audit_fee（达人认证 10 元）、audit_status（待审 / 通过 / 驳回）、auditor_type（平台 / 三方）；审核费对应一笔小额支付订单，L1 实名不收费；<br>
+· <code>user_wallets</code>（托管余额账户：balance、frozen、可消费 / 不可提现 / 不可转让标记；余额由<b>持牌支付机构托管、平台不设资金池、不二清</b>）与 <code>recharge_orders</code>（充值订单：amount、pay_channel 持牌、paid_at；用于星探"累计充值满 300 解锁 / 续期"判定，充值未消费不得晶钻）新增或在 V3 钱包表上扩展；<br>
+· 信用/成长/榜单/积分相关 13 张表见《1011评审录音变更对照清单》第 6 节，本版继续沿用。</div>
+</section>
+
+<section>
+<h2>4. 状态机与定时任务</h2>
+<h3>新增状态机</h3>
+<div class="tbl-wrap"><table>
+<tr><th style="width:20%">对象</th><th>状态流转</th></tr>
+<tr><td>订单会话</td><td>未付款（不可聊）→ 已付款/邀约已接受（<b>开通双向</b>）→ 履约中 → 已清分（归档只读）；纠纷时冻结</td></tr>
+<tr><td>投稿 / 意向</td><td>submitted → interested（→ 生成客服工单 cs_handled）/ declined；<b>interested 之前不产生双向会话</b></td></tr>
+<tr><td>星探会员</td><td>inactive → active（达标自动 / 付费）→ expired；降级收回发通告与接投稿权限</td></tr>
+<tr><td>晶钻等级</td><td>按<b>累计获得晶钻</b>每日重算，只升 / 按规则保级（抽奖消耗可用余额、不降级）；阈值后台可配</td></tr>
+</table></div>
+<h3>新增定时任务（cron）</h3>
+<ul>
+<li>每日：按累计晶钻重算星探 2–6 级成长等级、<b>核对本会员年累计充值是否满 300（满则顺延、到期未满则冻结特权，再充满即恢复 growth_level）</b>、生成出品人 / 机构城市榜快照；</li>
+<li>每日/每小时：会话敏感词复核、超期订单会话归档；</li>
+<li>投流相关 cron <b>一期不部署扣费逻辑</b>，仅保留权重读取。</li>
+</ul>
+<p class="small">沿用 V3 既有：出品人自动确认 48h、意向卡 72h、数字商品售后 7 天、清分 T+1、成长值 90 天保级、月冠军评选等，不变。</p>
+</section>
+
+<section>
+<h2>5. 权限 / 鉴权变更（RBAC）</h2>
+<ul>
+<li><b>买家</b>：实名即可下单、买数字商品、发试镜邀约与意向卡，<b>无营业执照门槛</b>；</li>
+<li><b>星探（会员有效）</b>：发商单 / 招募、城市榜优先、接收投稿须<b>有效星探（新锐 1 级起）</b>或机构；<b>发活动通告需铜牌（3 级）、大型招募 / 活动主办需钻石（6 级）</b>；会员到期冻结后收回上述权限；</li>
+<li><b>会话权限</b>：订单会话仅买卖双方＋平台客服；投稿信箱单向，未"同意合作"前禁止双向发消息；</li>
+<li><b>MCN PC 后台</b>：独立 B 端登录与多艺人授权关系（一号管 10–20 人），与 C 端 token 体系隔离；</li>
+<li>所有消息、投稿、合同、改价补差动作<b>实名＋留痕＋敏感词风控</b>，站外导流预警/封禁。</li>
+</ul>
+</section>
+
+<section>
+<h2>6. 一期"不做但要预留"清单</h2>
+<div class="tbl-wrap"><table>
+<tr><th>事项</th><th>一期处理</th></tr>
+<tr><td>付费投流 / 广告</td><td>建 <code>ad_bids/rank_weights</code> 与广告位字段、总开关默认关；<b>无前端入口、无扣费</b></td></tr>
+<tr><td>试镜主题/角色标签菜单</td><td>不做筛选器与点选；艺人主页资料自主；后期再迭代</td></tr>
+<tr><td>数字人参演/版权商城</td><td>不做固定档位 SKU；走报价单/电子合同＋多方分红清分（一人一剧一价）</td></tr>
+<tr><td>远距离附加费</td><td>不做系统字段；订单会话协商、艺人改价/出品人补差</td></tr>
+<tr><td>剧本提供方自助门户</td><td>端口/角色预留，本期线下商务签约（沿用 V3）</td></tr>
+<tr><td>婚礼/AI 婚庆等细分</td><td>一期不上线，避免能力不达与反复改版</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>7. 提测验收清单（测试照此勾）</h2>
+<ul class="ck">
+<li>底部固定且仅有 5 个 Tab：广场/试镜/通告/消息/我的；首屏为广场；全 APP 前端无"龙虎榜"字样。</li>
+<li>广场可切【艺人】【视频】；视频商品在视频子频道与艺人详情均可购买/解锁/下载。</li>
+<li>试镜中心只出现"公开试镜"艺人；关闭开关后该艺人不在试镜列表、但仍可在广场被发邀约。</li>
+<li>试镜下单为含交通一口价、按总价抽 22%；无主题标签点选；默认交付 6 照 1 视频。</li>
+<li>未成交时投稿/意向只能单向发送，无法双向聊天；点"同意合作"后生成客服对接工单。</li>
+<li>订单付款/邀约接受后，买卖双方出现双向会话与客服入口，消息过敏感词、有留痕。</li>
+<li>买家实名即可购买；<b>晶钻等级按累计获得晶钻正确刷新（抽奖消耗可用余额、不降低累计等级）</b>；星探晶钻达标 / 付费后才能发正式通告、接投稿。</li>
+<li><b>L1 实名认证免费；达人认证（L2/L3）提交需支付 10 元审核费并进入人工 / 三方审核，通过后点亮主角光环，驳回可补料重提；不收保证金。</b></li>
+<li><b>星探：</b>未开通用户不能发通告 / 接投稿 / 上榜；<b>向余额累计充值满 300 元（进可消费余额、不可提现、非会费）后即时解锁新锐 1 级</b>；<b>2–6 级仅按累计晶钻自动晋升、全站无付费升级 / 补差价跳级入口</b>；每个会员年累计充值满 300 续期，未满到期冻结、等级与晶钻保留、再充恢复；<b>只充值未消费不得晶钻</b>。</li>
+<li>出品人/机构城市榜按城市与等级正确排序；艺人可提交三类投稿并看到状态流转。</li>
+<li>通告六类可分类浏览；仅星探/机构可见并使用"发布通告"；招募可收到投稿。</li>
+<li>非标参演：可建报价单/合同（含多方分红比例）→ 付款 → 按合同 T+1 清分到多方，金额合计=100%。</li>
+<li>MCN PC 后台可登录并管理多艺人、上架、分单、看看板；APP 内无 MCN 批量管理入口。</li>
+<li>投流/广告无任何可下单入口，相关表与配置存在且总开关为关。</li>
+<li>分账 18%/22%、艺人80·MCN20、足额纳税口径、清分状态机与 T+1 无回归。</li>
+</ul>
+<div class="note ok"><b>不变项（防止误改）：</b>平台定位与 slogan、分账比例、艺人三套信用＋买家一套晶钻（积分与等级一体）、持牌清分不设资金池不二清、数字人资产归个人、每部剧平台真实闭环。</div>
+</section>
+
+<div class="foot">晶晶日上 · V4 变更对照清单（给开发）　|　2026-10-11　|　价格/阈值/充值门槛为待定或后台可配项，以运营/财务终值为准；资质、税务、资金以主管机关及持牌机构规定为准。</div>
+</div>
+</body>
+</html>
