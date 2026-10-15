@@ -1,3 +1,11 @@
+# 当前协作入口：V5计划与第一轮故事接口
+
+[双方先看计划和分工](docs/reviews/v5-d1-intake/09_TEAM_START.md) · [队友接故事页面与运营收件](docs/collaboration/V5_R01_STORY_INTAKE.md) · [实际进度](docs/status/CORE_CURRENT.md)。第一轮后端文字流程已通过隔离检查；页面和跨端验收待做。旧PR23、新接口审阅、合入与正式启用分开记录。
+
+---
+
+以下为此前记录，状态以各自当时版本为准。
+
 > **当前V5协作入口：[双方先读这份](docs/reviews/v5-d1-intake/09_TEAM_START.md)。** 已整理需求分析、队友原型审阅和12轮计划。本侧认领第一轮故事保存/提交/运营受理；前端页面待伙伴本人接手。正式接口实现状态见交接记录。方案分支不表示旧PR已合并，以下保留此前历史。
 
 > 2026-10-03远端同步：本批前端、原图映射和验收记录已追加至 [PR21](https://github.com/Bill-Billion/jingjing/pull/21) 的 `core/stage-12-release-rehearsal` 分支；本机检查结果保留，远端CI以该PR的Checks为准。未合并或部署。下文“本地完成／未上传”属于此次同步前的验收记录。

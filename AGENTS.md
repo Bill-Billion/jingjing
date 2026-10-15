@@ -2,6 +2,10 @@
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。
 
+## V5当前施工入口
+
+方案9167bd4已上传core/v5-d1-planning；第一轮后端分支core/v5-r01-story-intake，先读[真实接口与合成资料](docs/collaboration/V5_R01_STORY_INTAKE.md)。文字流程已实现并通过专项，页面/跨端/实际队友审阅未完成；不把第一轮后端交接写成整包完成。本轮为接口及测试资料的集中小交付点，旧PR23仍待审。
+
 ## V5新阶段接手入口
 
 当前已接收客户V5及D1完整交付材料，先读[需求对照与开发计划](docs/reviews/v5-d1-intake/00_READ_FIRST.md)。用户2026-10-15已要求详细计划后逐轮推进。当前原型审阅和12轮计划已形成，先看[逐轮安排](docs/reviews/v5-d1-intake/07_ROUND_PLAN.md)与[首两轮交接](docs/reviews/v5-d1-intake/08_FIRST_ROUND_HANDOFF.md)；实施按授权继续，无需重复请批普通细节。60项任务仍在既有board的planning_intakes中；用户现要求先发布计划再实施，本侧已认领CORE-DEL-14的第一轮部分，前端待本人接手；不把原41组任务状态当V5进度。D1原件冻结，后续只维护同一board/status。

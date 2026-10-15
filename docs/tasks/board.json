@@ -2319,7 +2319,7 @@
       "id": "JX-V5-D1-PLAN",
       "package_version": "20261016-D1",
       "reviewed_on_local_date": "2026-10-15",
-      "status": "LOCAL_PLAN_FOR_REVIEW",
+      "status": "PLAN_PUBLISHED_FIRST_BACKEND_HANDOFF",
       "analysis_owner": "chengcongcong222",
       "analysis_branch": "core/v5-d1-planning",
       "code_anchor": "25e6d29f81fd882edc203b732a48fe90d15f8c9f",
@@ -3584,24 +3584,27 @@
             "ACC-DEL-14.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "9167bd4694b500420752b0fa5db576ef0f107e0c",
           "end_sha": null,
-          "implementation": "未开始",
-          "tests": "未执行",
+          "implementation": "第一轮后端文字流程已写好；补件、报价关联和附件未完成",
+          "tests": "29项故事专项、99份实际HTTP格式、17组本机联调工具检查通过；整包未验收",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 2,
           "planned_internal_completion_milestone": 2,
           "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
-          "plan_status": "先实施故事保存/提交/运营受理；完整工作包仍未完成",
+          "plan_status": "第一轮后端可交接，整包继续进行",
           "scope_supplement_ids": [],
           "planned_delivery_rounds": [
             "V5-R01",
             "V5-R02",
             "V5-R10"
           ],
-          "claim_scope": "V5-R01文字故事、模板版本、草稿、提交、运营受理与隔离测试；不含第二轮补件报价及前端页面"
+          "claim_scope": "V5-R01文字故事、模板版本、草稿、提交、运营受理与隔离测试；不含第二轮补件报价及前端页面",
+          "implementation_branch": "core/v5-r01-story-intake",
+          "handoff": "docs/collaboration/V5_R01_STORY_INTAKE.md",
+          "evidence": "docs/testing/evidence/v5-r01/RESULTS.json"
         },
         {
           "id": "UX-DEL-14",
@@ -6285,14 +6288,20 @@
           "dependency_meaning": "只等待所需能力；完整验收依赖不等于前置整个大包必须做完",
           "core_owner_suggestion": "chengcongcong222",
           "experience_owner": "待队友本人确认",
-          "implementation": "未开始",
-          "tests": "未执行",
+          "implementation": "后端已写好；页面待队友实际接入",
+          "tests": "仅后端和本机联调工具通过；App/网页业务线未验收",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "core_owner": "chengcongcong222",
-          "core_claim_status": "已认领，准备实施",
-          "scope_note": "先交可独立验证的后端文字流程；前端未认领、附件受限场景未完成、整轮未验收"
+          "core_claim_status": "已认领且后端文字流程已实现",
+          "scope_note": "本批作为可独立验证的接口与合成资料小交付点；第一轮整体仍未验收，不把CORE-DEL-14整包标完成。",
+          "core_implementation": "文字流程已实现",
+          "core_tests": "隔离MySQL专项及真实HTTP格式已通过",
+          "experience_implementation": "待队友本人确认接手与页面接线",
+          "cross_client_acceptance": "未执行",
+          "handoff": "docs/collaboration/V5_R01_STORY_INTAKE.md",
+          "evidence": "docs/testing/evidence/v5-r01/RESULTS.json"
         },
         {
           "id": "V5-R02",
@@ -6638,7 +6647,7 @@
       "round_plan_entry": "docs/reviews/v5-d1-intake/07_ROUND_PLAN.md",
       "prototype_review_entry": "docs/reviews/v5-d1-intake/06_FIGMA_REVIEW.md",
       "first_round_handoff": "docs/reviews/v5-d1-intake/08_FIRST_ROUND_HANDOFF.md",
-      "round_note": "用户2026-10-15要求结合Figma逐轮推进。12轮是原六阶段的可检查交付点，不替换原60任务；当前只完成原型与计划准备。来源、业务决定、实现、验收和启用分别记。",
+      "round_note": "12轮沿用原30包/60任务；第一轮仅后端文字流程已实现并自验，页面/跨端/队友审阅/合入/正式启用均分开记录。",
       "prototype_findings": [
         {
           "id": "FIG-01",
@@ -6933,7 +6942,20 @@
         "scope": "需求原件、分析、原型审阅、12轮计划、双方工作方式和第一轮认领",
         "authorization": "用户要求先上传材料同步，再推进我方任务",
         "peer_read_status": "待队友确认已读和接手",
-        "merge_status": "未合并，旧PR23待审"
+        "merge_status": "未合并，旧PR23待审",
+        "commit": "9167bd4694b500420752b0fa5db576ef0f107e0c",
+        "verified_remote": true,
+        "checks": "SUCCESS",
+        "checks_url": "https://github.com/Bill-Billion/jingjing/actions/runs/38718804599"
+      },
+      "backend_handoff": {
+        "branch": "core/v5-r01-story-intake",
+        "base_commit": "9167bd4694b500420752b0fa5db576ef0f107e0c",
+        "scope": "第一轮文字故事接口和可重建的本机合成资料",
+        "publication": "本批集中交接；实际提交与上传结果以分支和CURRENT为准",
+        "peer_review": "待真实前端伙伴审阅；本侧辅助复审不能代签",
+        "integration": "未合入，依赖旧PR23待审代码",
+        "pr": null
       }
     }
   ]

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.11.0-rc.1
+  version: 0.12.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -12,6 +12,7 @@ servers:
 security:
 - bearerAuth: []
 tags:
+- name: customization
 - name: gigs
 - name: supply
 - name: session
@@ -7983,6 +7984,424 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/OpsRetryRequest'
+  /api/v1/customization-categories:
+    get:
+      operationId: listCustomizationCategories
+      summary: 查看已发布的故事表单
+      description: 登录账号级，只读已发布表单版本；不要求先创建数字人或星探资格。带附件要求的模板如实标为当前不能提交。没有已发布配置时返回空列表，不自动生成正式模板或价格。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationCategoryPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT
+  /api/v1/customization-requests:
+    post:
+      operationId: createCustomizationRequest
+      summary: 保存一份未填完的故事
+      description: 当前有效成员创建本人草稿，固定责任主体和表单快照。草稿仅本人可见，不能读取同机构其他成员的故事。提交仅表示制作意向，不授予机构成员报价、付款或代签权限。未填完可保存；不能自报 actor、状态、价格、版本或授权。Idempotency-Key 同键同请求返回原结果，重放先重新鉴权。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '413':
+          description: JSON 请求超过 64KB 技术限制；未保存或提交。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomizationRequest'
+    get:
+      operationId: listCustomizationRequests
+      summary: 找回自己的故事和办理进度
+      description: 仅返回当前主体下本人创建且当前仍有有效成员关系的记录。机构成员和机构负责人均无权读取另一成员的私人故事；主体切换不转移草稿。游标绑定账号、主体、筛选和排序；默认20条，最多100条。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: current_status
+        required: false
+        schema:
+          type: string
+          enum:
+          - DRAFT
+          - SUBMITTED
+          - INTAKE
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/customization-requests/{id}:
+    get:
+      operationId: getCustomizationRequest
+      summary: 打开自己的故事或运营已收到的提交
+      description: 本人携带责任主体读取；无主体头时仅有专门受理岗位的运营可打开已提交版本。不可见与不存在均404，运营不读草稿。强 ETag 对应当前 object_version。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          $ref: '#/components/schemas/Id'
+        description: 本人读取必须带责任主体并检查本人及当前有效成员关系；无主体头仅允许拥有 CUSTOMIZATION_INTAKE 岗位的运营读取正式提交版本。不可回退另一身份。
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+    patch:
+      operationId: updateCustomizationRequest
+      summary: 保存整份草稿答案
+      description: 仅DRAFT可编辑；answers整份替换，空字符串保持为空。模板和责任主体不能改变。旧版本新操作返回412；同键已成功原请求先重放，不因为对象后来变化误拒。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '413':
+          description: JSON 请求超过 64KB 技术限制；未保存或提交。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomizationRequest'
+  /api/v1/customization-requests/{id}/submissions:
+    post:
+      operationId: submitCustomizationRequest
+      summary: 正式把故事交给平台
+      description: 按草稿绑定模板校验，缺项返回422/CUSTOMIZATION_VALIDATION_FAILED和安全field/reason。保存不可变提交版本，只将DRAFT转为SUBMITTED。附件提交尚未支持时明确拒绝，不产生订单、付款、授权批准或制作任务。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '413':
+          description: JSON 请求超过 64KB 技术限制；未保存或提交。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomizationEmptyCommand'
+  /api/v1/operations/customization-requests:
+    get:
+      operationId: listCustomizationIntakeRequests
+      summary: 运营查看待受理和受理中的故事
+      description: 仅账号拥有有效 CUSTOMIZATION_INTAKE 岗位可用，拒绝X-Acting-Party。只返回SUBMITTED/INTAKE摘要，不返回草稿和故事全文。游标绑定当前操作人、筛选和排序。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: current_status
+        required: false
+        schema:
+          type: string
+          enum:
+          - SUBMITTED
+          - INTAKE
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: AUTHORIZED_CUSTOMIZATION_OPERATOR
+  /api/v1/operations/customization-requests/{id}/intake:
+    post:
+      operationId: intakeCustomizationRequest
+      summary: 运营开始受理这份故事
+      description: 仅有效 CUSTOMIZATION_INTAKE 岗位；拒绝X-Acting-Party。原子记录受理人、时间和SUBMITTED到INTAKE变更。无权不能从机构OWNER等角色自动取得权限。受理不代表报价通过、内容通过或开工；重复请求不重复受理。
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已按当前权限读取或提交成功；不代表收款、内容审核、正式授权或开工。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizationRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          $ref: '#/components/responses/Unprocessable'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '413':
+          description: JSON 请求超过 64KB 技术限制；未保存或提交。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-actor-scope: AUTHORIZED_CUSTOMIZATION_OPERATOR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomizationEmptyCommand'
 components:
   securitySchemes:
     bearerAuth:
@@ -20463,3 +20882,399 @@ components:
       - avatar_id
       - consent_id
       - rule_id
+    CustomizationField:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{0,63}$
+        label:
+          type: string
+          minLength: 1
+          maxLength: 120
+        type:
+          type: string
+          enum:
+          - TEXT
+          - CHOICE
+          - PRIVATE_ATTACHMENT
+        required:
+          type: boolean
+        max_length:
+          type: integer
+          minimum: 1
+          maximum: 12000
+        options:
+          type: array
+          minItems: 1
+          maxItems: 50
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 120
+      required:
+      - key
+      - label
+      - type
+      - required
+      description: 已发布表单字段。PRIVATE_ATTACHMENT 只描述尚未开放的附件要求；第一轮不可用字符串冒充私有素材。max_length 为技术长度，非商品规格。
+    CustomizationTemplateSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 160
+        description:
+          type: string
+          minLength: 0
+          maxLength: 2000
+        fields:
+          type: array
+          minItems: 1
+          maxItems: 40
+          items:
+            $ref: '#/components/schemas/CustomizationField'
+      required:
+      - title
+      - description
+      - fields
+    CustomizationAnswers:
+      type: object
+      maxProperties: 40
+      propertyNames:
+        pattern: ^[a-z][a-z0-9_]{0,63}$
+      additionalProperties:
+        type: string
+        minLength: 0
+        maxLength: 12000
+      description: 纯文本答案；服务端按绑定模板检查未知字段与各字段长度，答案UTF-8总量最多48KiB，拒绝constructor/prototype等危险字段名。草稿可缺值或空字符串。PATCH 用整份 answers 替换，不能把清空值回填为旧答案。
+    CustomizationCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        template_version_id:
+          type: string
+          format: uuid
+        category_code:
+          type: string
+          pattern: ^[A-Za-z][A-Za-z0-9_-]{0,39}$
+        template_version:
+          type: integer
+          minimum: 1
+        template_snapshot:
+          $ref: '#/components/schemas/CustomizationTemplateSnapshot'
+        submission_available:
+          type: boolean
+        unavailable_reason:
+          anyOf:
+          - type: string
+            const: ATTACHMENT_SUBMISSION_NOT_READY
+          - type: 'null'
+      required:
+      - template_version_id
+      - category_code
+      - template_version
+      - template_snapshot
+      - submission_available
+      - unavailable_reason
+      allOf:
+      - if:
+          properties:
+            submission_available:
+              const: true
+        then:
+          properties:
+            unavailable_reason:
+              type: 'null'
+        else:
+          properties:
+            unavailable_reason:
+              const: ATTACHMENT_SUBMISSION_NOT_READY
+    CustomizationSubmission:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        answers:
+          $ref: '#/components/schemas/CustomizationAnswers'
+        template_snapshot:
+          $ref: '#/components/schemas/CustomizationTemplateSnapshot'
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        submitted_by:
+          type: string
+          format: uuid
+        submitted_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - answers
+      - template_snapshot
+      - content_sha256
+      - submitted_by
+      - submitted_at
+      description: 正式提交时保存的不可变答案和模板副本。受理与后续规则变动均不改写此内容；校验值不证明真实授权或内容已审核。
+    CustomizationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        party_id:
+          type: string
+          format: uuid
+        template_version_id:
+          type: string
+          format: uuid
+        template_snapshot:
+          $ref: '#/components/schemas/CustomizationTemplateSnapshot'
+        answers:
+          $ref: '#/components/schemas/CustomizationAnswers'
+        current_status:
+          type: string
+          enum:
+          - DRAFT
+          - SUBMITTED
+          - INTAKE
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        submission:
+          anyOf:
+          - $ref: '#/components/schemas/CustomizationSubmission'
+          - type: 'null'
+        submitted_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        intake_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        intake_by:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        allowed_actions:
+          type: array
+          uniqueItems: true
+          maxItems: 4
+          items:
+            type: string
+            enum:
+            - READ
+            - SAVE
+            - SUBMIT
+            - INTAKE
+      required:
+      - id
+      - created_by
+      - party_id
+      - template_version_id
+      - template_snapshot
+      - answers
+      - current_status
+      - object_version
+      - submission
+      - submitted_at
+      - intake_at
+      - intake_by
+      - allowed_actions
+      description: DRAFT 是本人草稿；SUBMITTED 是已送平台待查看；INTAKE 仅表示运营开始受理。没有报价批准、收款、实名通过、权利授权或制作开工含义。allowed_actions 为当前查看者提示，写入仍重新鉴权。
+      allOf:
+      - if:
+          properties:
+            current_status:
+              const: DRAFT
+        then:
+          properties:
+            submission:
+              type: 'null'
+            submitted_at:
+              type: 'null'
+            intake_at:
+              type: 'null'
+            intake_by:
+              type: 'null'
+        else:
+          properties:
+            submission:
+              $ref: '#/components/schemas/CustomizationSubmission'
+            submitted_at:
+              type: string
+              format: date-time
+      - if:
+          properties:
+            current_status:
+              const: INTAKE
+        then:
+          properties:
+            intake_at:
+              type: string
+              format: date-time
+            intake_by:
+              type: string
+              format: uuid
+        else:
+          properties:
+            intake_at:
+              type: 'null'
+            intake_by:
+              type: 'null'
+    CustomizationRequestSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        party_id:
+          type: string
+          format: uuid
+        template_version_id:
+          type: string
+          format: uuid
+        category_title:
+          type: string
+          minLength: 1
+          maxLength: 160
+        current_status:
+          type: string
+          enum:
+          - DRAFT
+          - SUBMITTED
+          - INTAKE
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        submitted_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        intake_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        allowed_actions:
+          type: array
+          uniqueItems: true
+          maxItems: 4
+          items:
+            type: string
+            enum:
+            - READ
+            - SAVE
+            - SUBMIT
+            - INTAKE
+      required:
+      - id
+      - party_id
+      - template_version_id
+      - category_title
+      - current_status
+      - object_version
+      - submitted_at
+      - intake_at
+      - allowed_actions
+      description: 列表只含办理摘要，不包含故事答案、模板内容、私人素材或操作人员身份。运营列表不返回 DRAFT。
+    CreateCustomizationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        template_version_id:
+          type: string
+          format: uuid
+        answers:
+          $ref: '#/components/schemas/CustomizationAnswers'
+      required:
+      - template_version_id
+      - answers
+    UpdateCustomizationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        answers:
+          $ref: '#/components/schemas/CustomizationAnswers'
+      required:
+      - answers
+    CustomizationEmptyCommand:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    CustomizationCategoryPageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/CustomizationCategory'
+          required:
+          - items
+      required:
+      - meta
+      - data
+    CustomizationRequestResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/CustomizationRequest'
+      required:
+      - meta
+      - data
+    CustomizationRequestPageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/CustomizationRequestSummary'
+            next_cursor:
+              anyOf:
+              - type: string
+                minLength: 1
+                maxLength: 512
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data

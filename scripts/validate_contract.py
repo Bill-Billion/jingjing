@@ -113,6 +113,12 @@ def validate(runtime_fixtures=None):
     operations = []
     provider_callbacks={'receiveAppleTradeNotification','receiveAlipayTradeNotification'}
     public_ids = provider_callbacks | {'createSmsChallenge','createSession','getLiveness','getReadiness'}
+    customization_account_scopes = {
+        'listCustomizationCategories': 'ACCOUNT',
+        'getCustomizationRequest': 'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
+        'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
+    }
     for path, item in spec['paths'].items():
         for method, op in item.items():
             if method not in {'get','post','patch','put','delete'}:
@@ -127,15 +133,23 @@ def validate(runtime_fixtures=None):
             if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
                 check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
-            if method == 'patch':
+            if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest'}:
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
             account_scoped_supply = {'listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
                 'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent',
                 'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob','reviewProjectOperation','listProjectCatalogue','listManagedProjects','getProjectRecord','listProjectRecords','listProjectConfirmations','getProjectReadiness','downloadProjectEvidence','createGigRule','retireGigRule','reviewGigRecord','suspendGig','createGigRanking','listGigRecords','getGigRecord','listGigCatalogue','getGigRanking','downloadGigEvidence','decideDisputeFinanceOperation','reviewFinanceOperation','listFinanceAgreements','listFinanceRecords','getFinanceRecord','listFinanceConfirmations','getFinanceReadiness','getFinanceBalances','listFinanceEntries','downloadFinanceEvidence','listBusinessComments','addBusinessComment','changeBusinessComment','listOperationsAudit','listBusinessAudit','requestBusinessReport','getBusinessReport','downloadBusinessReport','retryBusinessReport'}
+            if op['operationId'] in customization_account_scopes:
+                check(op.get('x-actor-scope') == customization_account_scopes[op['operationId']],
+                      'Customization actor scope: '+path)
+                if op['operationId'] == 'getCustomizationRequest':
+                    check(headers.get('X-Acting-Party',{}).get('required') is False,
+                          'Customization owner-or-operator read: '+path)
+                else:
+                    check('X-Acting-Party' not in headers, 'Customization account-scoped action: '+path)
             if op['operationId'] in account_scoped_supply:
                 check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
-            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks and path not in {
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
                     '/api/v1/me/parties','/api/v1/identity-verifications/current',
                     '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:
@@ -145,6 +159,10 @@ def validate(runtime_fixtures=None):
                 check(op['operationId'] in implemented_ids, 'Runtime evidence declared: '+op['operationId'])
             else:
                 check(op['operationId'] not in implemented_ids, 'Unimplemented boundary: '+op['operationId'])
+            if op['operationId'] in {'createCustomizationRequest','getCustomizationRequest',
+                    'updateCustomizationRequest','submitCustomizationRequest','intakeCustomizationRequest'}:
+                check('ETag' in op['responses']['200'].get('headers',{}),
+                      'Customization object version header: '+path+' '+method)
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')

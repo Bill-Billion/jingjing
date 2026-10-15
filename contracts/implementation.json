@@ -1,5 +1,5 @@
 {
-  "version": "0.11.0-rc.1",
+  "version": "0.12.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -155,7 +155,15 @@
     "getBusinessReport",
     "downloadBusinessReport",
     "retryBusinessReport",
-    "getGigRelationParties"
+    "getGigRelationParties",
+    "listCustomizationCategories",
+    "createCustomizationRequest",
+    "listCustomizationRequests",
+    "getCustomizationRequest",
+    "updateCustomizationRequest",
+    "submitCustomizationRequest",
+    "listCustomizationIntakeRequests",
+    "intakeCustomizationRequest"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -175,5 +183,21 @@
   "finance_evidence": "晶晶日上工程交接包/01_源码/backend_server/test/settlement.integration.test.cjs",
   "finance_limits": "Stage 10 combines Stage 8 gigs and Stage 9 projects. Verified customer receipts, payables, external payout evidence and channel revenue remain separate. Automatic payout is not implemented or enabled. No real payment, publication, deployment or client integration.",
   "operations_evidence": "晶晶日上工程交接包/01_源码/backend_server/test/operations.integration.test.cjs",
-  "operations_limits": "In-app business notifications and comments only. Reports are bounded immutable snapshots; no invented profit, delivery capacity or verified production readiness. Requires operations worker. No general IM, production access, paid provider or deployment."
+  "operations_limits": "In-app business notifications and comments only. Reports are bounded immutable snapshots; no invented profit, delivery capacity or verified production readiness. Requires operations worker. No general IM, production access, paid provider or deployment.",
+  "customization": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listCustomizationCategories",
+      "createCustomizationRequest",
+      "listCustomizationRequests",
+      "getCustomizationRequest",
+      "updateCustomizationRequest",
+      "submitCustomizationRequest",
+      "listCustomizationIntakeRequests",
+      "intakeCustomizationRequest"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization.integration.test.cjs",
+    "policy_evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-policy.test.cjs",
+    "limits": "V5第一轮文字故事、草稿、正式提交、运营受理已通过本机隔离MySQL与HTTP专项。未获队友实际审阅，未完成App/网页联调，未正式启用。主体有效成员仅管理本人故事；提交制作意向不授予报价/付款/代签权。不含附件上传、报价、订单、付款或制作；没有正式模板自动初始化。"
+  }
 }

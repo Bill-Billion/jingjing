@@ -109,12 +109,23 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    }finally{unknown=false;}
   });
   await t.test('actual SMS provider composition logs in via HTTP and unknown dispatch cannot login or resend',async()=>{
+   // This case uses synthetic credentials and an injected, network-free transport. Keep
+   // host diagnostics out of its fixture, then restore them even if an assertion fails.
+   const debugKeys=['DEBUG','NODE_DEBUG'],savedDebug=Object.fromEntries(debugKeys.map(k=>[k,process.env[k]]));
+   try {
+   for(const k of debugKeys)delete process.env[k];
    const {EventEmitter}=require('node:events'),received=new Map();let dispatches=0,fail=false;
    const config={NODE_ENV:'test',SMS_ENABLED:'true',VOLC_ACCESS_KEY_ID:'fake-id',VOLC_SECRET_ACCESS_KEY:'fake-secret',SMS_ACCOUNT:'fake-account',SMS_SIGN_NAME:'测试',SMS_LOGIN_TEMPLATE_ID:'fake-template',SMS_CONFIG_REVISION:'http-sms-v1'};
    const transport=(options,callback)=>{dispatches++;assert.equal(options.hostname,'sms.volcengineapi.com');const req=new EventEmitter();req.destroy=()=>{};req.setTimeout=()=>{};req.end=body=>{
     const value=JSON.parse(body);received.set(value.PhoneNumbers,JSON.parse(value.TemplateParam).code);
     queueMicrotask(()=>{if(fail){req.emit('error',Error('simulated timeout'));return;}const res=new EventEmitter();res.statusCode=200;res.complete=true;res.destroy=()=>{};callback(res);res.emit('data',Buffer.from(JSON.stringify({ResponseMetadata:{RequestId:'fake-http-request'},Result:{MessageID:['fake-http-message']}})));res.emit('end');});
    };return req;};
+   for(const k of debugKeys){
+    process.env[k]='synthetic-debug';
+    assert.throws(()=>createSmsProvider(db,config,{request:transport}),/SMS_DEBUG_LOGGING_FORBIDDEN/);
+    delete process.env[k];
+   }
+   assert.equal(dispatches,0);
    const provider=createSmsProvider(db,config,{request:transport});
    await withApi({sms:provider},async()=>{
     const blocked=await challenge();assert.equal(blocked.response.status,503);assert.equal(dispatches,0);
@@ -128,6 +139,7 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    });
    const changed=createSmsProvider(db,{...config,SMS_CONFIG_REVISION:'http-sms-v2'},{request:transport});
    await assert.rejects(changed.call('send',{phone:nextPhone(),code:'123456'}),{code:'PROVIDER_CONFIGURATION_CHANGED'});assert.equal(dispatches,2);
+   }finally{for(const k of debugKeys){if(savedDebug[k]===undefined)delete process.env[k];else process.env[k]=savedDebug[k];}}
   });
   await t.test('HTTP invitations require the intended recipient; removal preserves personal identity',async()=>{
    const owner=await user(),recipient=await user(),outsider=await user();

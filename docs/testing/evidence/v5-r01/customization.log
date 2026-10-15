@@ -1,0 +1,185 @@
+TAP version 13
+# Subtest: story drafts preserve omissions and deliberate empty values until formal submission
+ok 1 - story drafts preserve omissions and deliberate empty values until formal submission
+  ---
+  duration_ms: 2.0251
+  type: 'test'
+  ...
+# Subtest: category fields constrain answers without accepting prices, state or authority from the client
+ok 2 - category fields constrain answers without accepting prices, state or authority from the client
+  ---
+  duration_ms: 0.4639
+  type: 'test'
+  ...
+# Subtest: text bounds count Unicode characters while the overall saved answers have a byte limit
+ok 3 - text bounds count Unicode characters while the overall saved answers have a byte limit
+  ---
+  duration_ms: 1.4125
+  type: 'test'
+  ...
+# Subtest: required private materials cannot be replaced by a public URL, a raw file identifier or a fake successful upload
+ok 4 - required private materials cannot be replaced by a public URL, a raw file identifier or a fake successful upload
+  ---
+  duration_ms: 0.3518
+  type: 'test'
+  ...
+# Subtest: published template validation rejects ambiguous field keys, unknown types and duplicate choices
+ok 5 - published template validation rejects ambiguous field keys, unknown types and duplicate choices
+  ---
+  duration_ms: 0.8158
+  type: 'test'
+  ...
+# Subtest: pagination validates limits and state filters and operations cannot request private drafts
+ok 6 - pagination validates limits and state filters and operations cannot request private drafts
+  ---
+  duration_ms: 0.2808
+  type: 'test'
+  ...
+# Subtest: story intake HTTP, privacy, immutable submissions and rollback in isolated MySQL
+    # Subtest: empty configuration exposes no fabricated categories; only a publisher can publish immutable template versions
+    ok 1 - empty configuration exposes no fabricated categories; only a publisher can publish immutable template versions
+      ---
+      duration_ms: 72.2009
+      type: 'test'
+      ...
+    # Subtest: an incomplete draft is private and can be restored, deliberately emptied and saved without old-value substitution
+    ok 2 - an incomplete draft is private and can be restored, deliberately emptied and saved without old-value substitution
+      ---
+      duration_ms: 68.6598
+      type: 'test'
+      ...
+    # Subtest: listing returns necessary summaries without private answers or submission bodies
+    ok 3 - listing returns necessary summaries without private answers or submission bodies
+      ---
+      duration_ms: 34.2585
+      type: 'test'
+      ...
+    # Subtest: publishing a newer category does not silently migrate existing drafts or their questions
+    ok 4 - publishing a newer category does not silently migrate existing drafts or their questions
+      ---
+      duration_ms: 23.9831
+      type: 'test'
+      ...
+    # Subtest: submit creates one immutable version and exposes that exact text to the intake operator
+    ok 5 - submit creates one immutable version and exposes that exact text to the intake operator
+      ---
+      duration_ms: 41.1855
+      type: 'test'
+      ...
+    # Subtest: intake records a responsible operator without rewriting the submission or implying payment/production approval
+    ok 6 - intake records a responsible operator without rewriting the submission or implying payment/production approval
+      ---
+      duration_ms: 22.9068
+      type: 'test'
+      ...
+    # Subtest: idempotency protects a create or save from double creation and refuses changed content under the same key
+    ok 7 - idempotency protects a create or save from double creation and refuses changed content under the same key
+      ---
+      duration_ms: 35.6744
+      type: 'test'
+      ...
+    # Subtest: two concurrent saves with the same version cannot silently overwrite one another
+    ok 8 - two concurrent saves with the same version cannot silently overwrite one another
+      ---
+      duration_ms: 28.7302
+      type: 'test'
+      ...
+    # Subtest: concurrent submission with different keys creates exactly one submitted version
+    ok 9 - concurrent submission with different keys creates exactly one submitted version
+      ---
+      duration_ms: 18.0287
+      type: 'test'
+      ...
+    # Subtest: institution membership does not expose another member's private story, even to the institution owner
+    ok 10 - institution membership does not expose another member's private story, even to the institution owner
+      ---
+      duration_ms: 33.4623
+      type: 'test'
+      ...
+    # Subtest: removing membership immediately denies reads, writes and previously successful idempotent replays
+    ok 11 - removing membership immediately denies reads, writes and previously successful idempotent replays
+      ---
+      duration_ms: 24.6609
+      type: 'test'
+      ...
+    # Subtest: revoked operator grants deny detail, inbox and replay of a previously successful intake
+    ok 12 - revoked operator grants deny detail, inbox and replay of a previously successful intake
+      ---
+      duration_ms: 37.2473
+      type: 'test'
+      ...
+    # Subtest: suspended accounts cannot replay an old creation or read previously accessible content
+    ok 13 - suspended accounts cannot replay an old creation or read previously accessible content
+      ---
+      duration_ms: 22.2582
+      type: 'test'
+      ...
+    # Subtest: required attachments remain unavailable and cannot be smuggled in as a URL or forged evidence identifier
+    ok 14 - required attachments remain unavailable and cannot be smuggled in as a URL or forged evidence identifier
+      ---
+      duration_ms: 30.3072
+      type: 'test'
+      ...
+    # Subtest: a valid long story can submit and replay even when the response contains more than 64 KiB of immutable content
+    ok 15 - a valid long story can submit and replay even when the response contains more than 64 KiB of immutable content
+      ---
+      duration_ms: 49.8132
+      type: 'test'
+      ...
+    # Subtest: client-supplied state, authority and undeclared fields never become accepted story answers
+    ok 16 - client-supplied state, authority and undeclared fields never become accepted story answers
+      ---
+      duration_ms: 25.8786
+      type: 'test'
+      ...
+    # Subtest: HTTP commands require authentication, an explicit party, idempotency and version headers
+    ok 17 - HTTP commands require authentication, an explicit party, idempotency and version headers
+      ---
+      duration_ms: 23.1781
+      type: 'test'
+      ...
+    # Subtest: HTTP enforces the 64 KiB JSON boundary and returns only fixed validation reasons, never story text
+    ok 18 - HTTP enforces the 64 KiB JSON boundary and returns only fixed validation reasons, never story text
+      ---
+      duration_ms: 7.6747
+      type: 'test'
+      ...
+    # Subtest: pagination binds signed cursors to user, party, list type and filter
+    ok 19 - pagination binds signed cursors to user, party, list type and filter
+      ---
+      duration_ms: 35.4279
+      type: 'test'
+      ...
+    # Subtest: failed audit rolls back creation and its deduplication record so a safe retry creates one draft
+    ok 20 - failed audit rolls back creation and its deduplication record so a safe retry creates one draft
+      ---
+      duration_ms: 11.2633
+      type: 'test'
+      ...
+    # Subtest: failed submission audit rolls back state, immutable version and operation record together
+    ok 21 - failed submission audit rolls back state, immutable version and operation record together
+      ---
+      duration_ms: 21.7443
+      type: 'test'
+      ...
+    # Subtest: story intake has no order, payment, refund or production side effects
+    ok 22 - story intake has no order, payment, refund or production side effects
+      ---
+      duration_ms: 13.8111
+      type: 'test'
+      ...
+    1..22
+ok 7 - story intake HTTP, privacy, immutable submissions and rollback in isolated MySQL
+  ---
+  duration_ms: 3797.7072
+  type: 'test'
+  ...
+1..7
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4096.9278

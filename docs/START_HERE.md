@@ -1,3 +1,11 @@
+# 当前从这里开始：第一轮文字故事后端交接
+
+[实际接口、合成资料与页面分工](collaboration/V5_R01_STORY_INTAKE.md) · [十二轮计划](reviews/v5-d1-intake/07_ROUND_PLAN.md) · [当前真实状态](status/CORE_CURRENT.md)。方案已上传；本侧已写好并检查文字故事流程，前端页面待实际接入。旧申请尚未合并，不能把新分支当已批准共同版本。
+
+---
+
+以下为此前记录，状态以各自当时版本为准。
+
 > 2026-10-15最新：已实际审阅队友Figma，形成[调整清单](reviews/v5-d1-intake/06_FIGMA_REVIEW.md)、[十二轮计划](reviews/v5-d1-intake/07_ROUND_PLAN.md)及[首两轮施工说明](reviews/v5-d1-intake/08_FIRST_ROUND_HANDOFF.md)。接下来先做故事保存、提交和运营受理。当前业务代码未增加，页面未代队友认领；以下原记录保留历史。
 
 > 当前先看[V5新阶段需求与开发计划](reviews/v5-d1-intake/00_READ_FIRST.md)。已有工程核对到25e6d29，计划在本地core/v5-d1-planning；业务开发未开始。原R0.6任务及下文阶段记录保留历史，不能覆盖V5新目标。
