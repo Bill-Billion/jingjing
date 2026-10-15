@@ -219,6 +219,105 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    assert.equal(await count('customization_submissions'),before);assert.deepEqual(await repo.get(buyer.ctx,{request_id:row.id,party_id:buyer.personal_party_id}),row);
    assert.equal((await repo.submit(buyer.ctx,input)).current_status,'SUBMITTED');assert.equal(await count('customization_submissions'),before+1);
   });
+  // Second-round supplement cases reuse only the same isolated identities and fixture API.
+  const issues=[{field_key:'story',reason:'合成测试：时间线不清楚',instruction:'补充事件先后，并逐项说明补充情况'}];
+  const openSupplement=(row,items=issues,person=operator,k=key())=>request('POST','/operations/customization-requests/'+(row.id||row.request_id)+'/supplements',person,{items},null,headers(row,k));
+  const getSupplement=(id,person=buyer,party=person.personal_party_id)=>request('GET','/customization-requests/'+id+'/supplement',person,undefined,party);
+  const saveSupplement=(row,answers,responses,person=buyer,party=person.personal_party_id,k=key())=>request('PATCH','/customization-requests/'+row.request_id+'/supplement',person,{answers,responses},party,headers(row,k));
+  const finishSupplement=(row,person=buyer,party=person.personal_party_id,k=key())=>request('POST','/customization-requests/'+row.request_id+'/supplement-submissions',person,{},party,headers(row,k));
+  const readyStory=async()=>capture(await intake(capture(await submit(await make(fullAnswers)),'CustomizationRequestResponse')),'CustomizationRequestResponse');
+  let amended,openCard,savedCard,revised;
+  await t.test('only a current operator can request scoped supplements after actual intake; request replay is stable',async()=>{
+   const draftOnly=await make(fullAnswers);failed(await openSupplement(draftOnly),404);
+   const pending=capture(await submit(draftOnly),'CustomizationRequestResponse');failed(await openSupplement(pending),409);
+   amended=capture(await intake(pending),'CustomizationRequestResponse');
+   failed(await openSupplement(amended,issues,buyer),403);
+   const empty=capture(await getSupplement(amended.id),'CustomizationSupplementContextResponse');assert.equal(empty.supplement,null);
+   failed(await openSupplement(amended,[...issues,...issues]),400);
+   failed(await openSupplement(amended,[{...issues[0],field_key:'unknown'}]),400);
+   const k=key();openCard=capture(await openSupplement(amended,issues,operator,k),'CustomizationSupplementContextResponse');
+   assert.equal(openCard.supplement.current_status,'OPEN');assert.equal(openCard.draft,null);
+   assert.deepEqual(capture(await openSupplement(amended,issues,operator,k),'CustomizationSupplementContextResponse'),openCard);
+   failed(await openSupplement({...openCard,id:amended.id}),409);
+   failed(await openSupplement(amended,[{...issues[0],reason:'changed'}],operator,k),409);
+  });
+  await t.test('supplement draft edits and responses are private and do not overwrite the submitted story',async()=>{
+   const card=capture(await getSupplement(amended.id),'CustomizationSupplementContextResponse');assert.deepEqual(card.draft.answers,fullAnswers);
+   savedCard=capture(await saveSupplement(card,{...fullAnswers,story:'PRIVATE_SYNTHETIC_DRAFT'},{story:'PRIVATE_SYNTHETIC_REPLY'}),'CustomizationSupplementContextResponse');
+   const ops=capture(await getSupplement(amended.id,operator,null),'CustomizationSupplementContextResponse');assert.equal(ops.draft,null);assert.equal(JSON.stringify(ops).includes('PRIVATE_SYNTHETIC'),false);
+   const published=capture(await request('GET','/customization-requests/'+amended.id,operator,undefined,null),'CustomizationRequestResponse');assert.deepEqual(published.answers,fullAnswers);
+   failed(await getSupplement(amended.id,other),404);failed(await saveSupplement(savedCard,fullAnswers,{},other),404);
+   failed(await save({...amended,object_version:savedCard.object_version},fullAnswers),409);
+  });
+  await t.test('every requested item needs an explicit response; clearing remains empty and never silently closes a request',async()=>{
+   savedCard=capture(await saveSupplement(savedCard,{...fullAnswers,story:''},{story:''}),'CustomizationSupplementContextResponse');
+   assert.equal(savedCard.draft.answers.story,'');failed(await finishSupplement(savedCard),422);
+   savedCard=capture(await saveSupplement(savedCard,fullAnswers,{story:''}),'CustomizationSupplementContextResponse');
+   const response=failed(await finishSupplement(savedCard),422);assert.ok(response.body.error.details.some(x=>x.field==='responses.story'&&x.reason==='REQUIRED'));
+   assert.equal((await getSupplement(amended.id)).body.data.supplement.current_status,'OPEN');
+   failed(await saveSupplement(savedCard,fullAnswers,{notes:'not requested'}),400);
+   savedCard=capture(await saveSupplement(savedCard,{...fullAnswers,story:'第二次正式提交的合成内容'},{story:'已经逐项补充时间线'}),'CustomizationSupplementContextResponse');
+  });
+  await t.test('resubmission freezes a new version, preserves the first, and returns to operations without marking the material approved',async()=>{
+   const k=key();revised=capture(await finishSupplement(savedCard,buyer,buyer.personal_party_id,k),'CustomizationRequestResponse');
+   assert.equal(revised.current_status,'SUBMITTED');assert.equal(revised.intake_by,null);assert.equal(revised.intake_at,null);
+   assert.notEqual(revised.submission.id,amended.submission.id);
+   assert.deepEqual(capture(await finishSupplement(savedCard,buyer,buyer.personal_party_id,k),'CustomizationRequestResponse'),revised);
+   const response=capture(await getSupplement(amended.id,operator,null),'CustomizationSupplementContextResponse');assert.equal(response.supplement.current_status,'RESPONDED');assert.equal(response.draft,null);assert.equal(response.supplement.response.responses.story,'已经逐项补充时间线');
+   const old=capture(await request('GET','/customization-requests/'+amended.id+'/submissions/'+amended.submission.id),'CustomizationSubmissionVersionResponse');assert.deepEqual(old.submission,amended.submission);assert.equal(old.supplement_response,null);
+   const latest=capture(await request('GET','/customization-requests/'+amended.id+'/submissions/'+revised.submission.id,operator,undefined,null),'CustomizationSubmissionVersionResponse');assert.equal(latest.submission_number,2);assert.deepEqual(latest.supplement_response.items,issues);
+   failed(await finishSupplement({...savedCard,object_version:revised.object_version}),409);
+  });
+  await t.test('multiple supplement rounds retain all published versions and private history stays scoped to the request',async()=>{
+   const accepted=capture(await intake(revised),'CustomizationRequestResponse');
+   let card=capture(await openSupplement(accepted),'CustomizationSupplementContextResponse');
+   card=capture(await saveSupplement(card,revised.answers,{story:'复核后确认上述内容，无需再次改写'}),'CustomizationSupplementContextResponse');
+   const third=capture(await finishSupplement(card),'CustomizationRequestResponse');assert.equal(third.current_status,'SUBMITTED');
+   const first=capture(await request('GET','/customization-requests/'+amended.id+'/submissions?limit=1'),'CustomizationSubmissionHistoryResponse');assert.equal(first.items[0].submission_number,1);assert.ok(first.next_cursor);assert.equal(first.items[0].answers,undefined);
+   const cursor=encodeURIComponent(first.next_cursor),url='/customization-requests/'+amended.id+'/submissions?limit=1&cursor='+cursor;
+   const second=capture(await request('GET',url),'CustomizationSubmissionHistoryResponse');assert.equal(second.items[0].submission_number,2);
+   failed(await request('GET',url,other),400);
+   failed(await request('GET','/customization-requests/'+intaken.id+'/submissions?cursor='+cursor),400);
+   failed(await request('GET','/customization-requests/'+amended.id+'/submissions?current_status=INTAKE'),400);
+   failed(await request('GET','/customization-requests/'+amended.id+'/submissions/'+intaken.submission.id),404);
+   failed(await request('GET','/customization-requests/'+amended.id+'/submissions/'+amended.submission.id,other),404);
+   const old=capture(await request('GET','/customization-requests/'+amended.id+'/submissions/'+revised.submission.id),'CustomizationSubmissionVersionResponse');assert.equal(old.supplement_response.responses.story,'已经逐项补充时间线');
+  });
+  await t.test('concurrent requests, draft saves and submissions each have a single winner',async()=>{
+   const story=await readyStory();let results=await Promise.all([openSupplement(story),openSupplement(story)]);assert.deepEqual(results.map(x=>x.status).sort(),[200,412]);
+   const card=results.find(x=>x.status===200).body.data;
+   results=await Promise.all([saveSupplement(card,fullAnswers,{story:'A'}),saveSupplement(card,fullAnswers,{story:'B'})]);assert.deepEqual(results.map(x=>x.status).sort(),[200,412]);
+   const saved=results.find(x=>x.status===200).body.data;
+   results=await Promise.all([finishSupplement(saved),finishSupplement(saved)]);assert.deepEqual(results.map(x=>x.status).sort(),[200,412]);
+   const [[count]]=await db.execute('SELECT COUNT(*) n FROM customization_submissions WHERE request_id=?',[story.id]);assert.equal(Number(count.n),2);
+  });
+  await t.test('revoked membership and operator grants block supplement reads and old command replay',async()=>{
+   const story=await readyStory(),k=key(),card=capture(await openSupplement(story,issues,operator,k),'CustomizationSupplementContextResponse');
+   const saveKey=key(),saved=capture(await saveSupplement(card,fullAnswers,{story:'response'},buyer,buyer.personal_party_id,saveKey),'CustomizationSupplementContextResponse');
+   await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);
+   try{failed(await getSupplement(story.id),403);failed(await saveSupplement(card,fullAnswers,{story:'response'},buyer,buyer.personal_party_id,saveKey),403);failed(await finishSupplement(saved),403);}
+   finally{await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);}
+   await grant(operator,'CUSTOMIZATION_INTAKE',false,3);
+   try{failed(await getSupplement(story.id,operator,null),403);failed(await openSupplement(story,issues,operator,k),403);failed(await request('GET','/customization-requests/'+story.id+'/submissions',operator,undefined,null),403);}
+   finally{await grant(operator,'CUSTOMIZATION_INTAKE',true,4);}
+  });
+  await t.test('audit failure rolls back supplement request, private save and resubmission as complete transactions',async()=>{
+   const story=await readyStory(),broken={...db,withTransaction:work=>db.withTransaction(tx=>work({execute:async(sql,args)=>{if(sql.includes('INSERT INTO customization_audit'))throw Error('supplement audit failure');return tx.execute(sql,args);}}))},bad=createCustomizationRepository(broken,{resolvePrincipal});
+   const input={request_id:story.id,items:issues,expected_version:story.object_version,operation_key:key()},before=await count('customization_supplements');
+   await assert.rejects(bad.requestSupplement(operator.ctx,input),/supplement audit failure/);assert.equal(await count('customization_supplements'),before);
+   const card=await repo.requestSupplement(operator.ctx,input),saveInput={request_id:story.id,party_id:buyer.personal_party_id,answers:fullAnswers,responses:{story:'valid reply'},expected_version:card.object_version,operation_key:key()};
+   await assert.rejects(bad.saveSupplement(buyer.ctx,saveInput),/supplement audit failure/);assert.deepEqual((await repo.getSupplement(buyer.ctx,{request_id:story.id,party_id:buyer.personal_party_id})).draft.responses,{});
+   const saved=await repo.saveSupplement(buyer.ctx,saveInput),finish={request_id:story.id,party_id:buyer.personal_party_id,expected_version:saved.object_version,operation_key:key()},versions=await count('customization_submissions');
+   await assert.rejects(bad.submitSupplement(buyer.ctx,finish),/supplement audit failure/);assert.equal(await count('customization_submissions'),versions);assert.equal((await repo.getSupplement(buyer.ctx,{request_id:story.id,party_id:buyer.personal_party_id})).supplement.current_status,'OPEN');
+   const complete=await repo.submitSupplement(buyer.ctx,finish);assert.equal(complete.current_status,'SUBMITTED');
+  });
+  await t.test('supplements cannot request unavailable attachments, change template fields or accept a forged status',async()=>{
+   const template=await publish('optional_material',{...snapshot,fields:[...snapshot.fields,{key:'portrait',label:'未开放附件',type:'PRIVATE_ATTACHMENT',required:false}]});
+   const story=capture(await intake(capture(await submit(await make(fullAnswers,buyer,buyer.personal_party_id,template)),'CustomizationRequestResponse')),'CustomizationRequestResponse');
+   failed(await openSupplement(story,[{...issues[0],field_key:'portrait'}]),422);
+   failed(await request('POST','/operations/customization-requests/'+story.id+'/supplements',operator,{items:issues,approved:true},null,headers(story)),400);
+   failed(await request('POST','/operations/customization-requests/'+story.id+'/supplements',operator,{items:issues},null,{'Idempotency-Key':key()}),428);
+  });
   await t.test('story intake has no order, payment, refund or production side effects',async()=>{
    for(const table of ['trade_records','trade_journal','production_records'])assert.equal(await count(table),0,table+' must remain empty');
    const current=capture(await request('GET','/customization-requests/'+intaken.id),'CustomizationRequestResponse');assert.deepEqual(current.submission,submitted.submission);

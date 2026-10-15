@@ -33,8 +33,8 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
   function mac(req, scope, encoded) {
     return createHmac('sha256', secret).update(JSON.stringify(['customization-cursor-v1', req.account.id, req.actingParty || null, scope, encoded])).digest('hex');
   }
-  function page(req, isOperator = false) {
-    shape(req.query, ['cursor', 'limit', 'current_status']);
+  function page(req, isOperator = false, historyId = null) {
+    shape(req.query, historyId ? ['cursor','limit'] : ['cursor', 'limit', 'current_status']);
     const limitText = req.query.limit;
     if (limitText !== undefined && (typeof limitText !== 'string' || !/^[1-9][0-9]{0,2}$/.test(limitText))) throw error('INVALID_LIMIT', 400);
     const limit = limitText === undefined ? 20 : Number(limitText);
@@ -42,7 +42,7 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
     const current_status = req.query.current_status ?? null;
     const statuses = isOperator ? ['SUBMITTED', 'INTAKE'] : ['DRAFT', 'SUBMITTED', 'INTAKE'];
     if (current_status !== null && !statuses.includes(current_status)) throw error('INVALID_FILTER', 400);
-    const scope = JSON.stringify([isOperator ? 'intake' : 'own', current_status]);
+    const scope = JSON.stringify(historyId ? ['submission-history',historyId] : [isOperator ? 'intake' : 'own', current_status]);
     let after = '';
     if (req.query.cursor !== undefined) {
       try {
@@ -95,6 +95,28 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
   router.post('/operations/customization-requests/:request_id/intake', wrap(async (req, res) => {
     shape(req.query, []); shape(req.body, []); operator(req);
     reply(req, res, await repo.intake(req, { request_id: id(req.params.request_id), expected_version: expected(req), operation_key: key(req) }));
+  }));
+  router.get('/customization-requests/:request_id/supplement', wrap(async (req,res)=>{
+    shape(req.query,[]);reply(req,res,await repo.getSupplement(req,{request_id:id(req.params.request_id),party_id:acting(req,false)}));
+  }));
+  router.post('/operations/customization-requests/:request_id/supplements',wrap(async(req,res)=>{
+    shape(req.query,[]);shape(req.body,['items']);operator(req);
+    reply(req,res,await repo.requestSupplement(req,{request_id:id(req.params.request_id),items:req.body.items,expected_version:expected(req),operation_key:key(req)}));
+  }));
+  router.patch('/customization-requests/:request_id/supplement',wrap(async(req,res)=>{
+    shape(req.query,[]);shape(req.body,['answers','responses']);
+    reply(req,res,await repo.saveSupplement(req,{request_id:id(req.params.request_id),party_id:acting(req),...req.body,expected_version:expected(req),operation_key:key(req)}));
+  }));
+  router.post('/customization-requests/:request_id/supplement-submissions',wrap(async(req,res)=>{
+    shape(req.query,[]);shape(req.body,[]);
+    reply(req,res,await repo.submitSupplement(req,{request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));
+  }));
+  router.get('/customization-requests/:request_id/submissions',wrap(async(req,res)=>{
+    const request_id=id(req.params.request_id),party_id=acting(req,false),p=page(req,false,request_id);
+    paged(req,res,await repo.submissionHistory(req,{request_id,party_id,after:p.after,limit:p.limit}),p.scope);
+  }));
+  router.get('/customization-requests/:request_id/submissions/:submission_id',wrap(async(req,res)=>{
+    shape(req.query,[]);reply(req,res,await repo.getSubmission(req,{request_id:id(req.params.request_id),submission_id:id(req.params.submission_id),party_id:acting(req,false)}));
   }));
   return router;
 }

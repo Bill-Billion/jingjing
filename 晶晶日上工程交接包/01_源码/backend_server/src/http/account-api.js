@@ -36,6 +36,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/finance',express.json({limit:'128kb',strict:true}));
  app.use('/api/v1/projects',express.json({limit:'128kb',strict:true}));
  app.use('/api/v1/customization-requests',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/operations/customization-requests',express.json({limit:'64kb',strict:true}));
  app.use(express.json({limit:'16kb',strict:true}));
  app.use(createOperationsRouter({databaseReady:mysqlReady(db)}));
  const meta=req=>({request_id:req.requestId,actor:req.account?{account_id:req.account.id}:null,acting_party:req.actingParty||null});
@@ -154,7 +155,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   // Never reflect a story answer, SQL, provider response or arbitrary thrown details.
   const formReasons=['REQUIRED','INVALID_CHOICE','TOO_LONG','INVALID_TYPE','ATTACHMENT_NOT_SUPPORTED','ATTACHMENT_SUBMISSION_NOT_READY','UNKNOWN_FIELD','TOO_LARGE'];
   const details=code==='CUSTOMIZATION_VALIDATION_FAILED'&&Array.isArray(e.details)
-   ?e.details.slice(0,40).filter(d=>d&&typeof d.field==='string'&&/^answers\.[a-z][a-z0-9_]{0,63}$/.test(d.field)&&formReasons.includes(d.reason)).map(d=>({field:d.field,reason:d.reason})):[];
+   ?e.details.slice(0,40).filter(d=>d&&typeof d.field==='string'&&/^(answers|responses)\.[a-z][a-z0-9_]{0,63}$/.test(d.field)&&formReasons.includes(d.reason)).map(d=>({field:d.field,reason:d.reason})):[];
   res.status(status).json({meta:meta(req),error:{code,message,retryable,details}});
  });
  return app;

@@ -920,6 +920,56 @@
           "next_cursor": null
         }
       }
+    },
+    {
+      "name": "supplement does not accept approval state",
+      "schema": "RequestCustomizationSupplement",
+      "value": {
+        "items": [
+          {
+            "field_key": "story",
+            "reason": "合成：时间线待补充",
+            "instruction": "补充时间顺序"
+          }
+        ],
+        "approved": true
+      }
+    },
+    {
+      "name": "supplement requires reason",
+      "schema": "RequestCustomizationSupplement",
+      "value": {
+        "items": [
+          {
+            "field_key": "story",
+            "reason": "",
+            "instruction": "补充"
+          }
+        ]
+      }
+    },
+    {
+      "name": "supplement draft does not accept quote price",
+      "schema": "SaveCustomizationSupplement",
+      "value": {
+        "answers": {},
+        "responses": {},
+        "price": 100
+      }
+    },
+    {
+      "name": "submission summary excludes story",
+      "schema": "CustomizationSubmissionSummary",
+      "value": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "submission_number": 1,
+        "submitted_by": "11111111-1111-4111-8111-111111111111",
+        "submitted_at": "2026-10-15T00:00:00Z",
+        "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "answers": {
+          "story": "private"
+        }
+      }
     }
   ]
 }

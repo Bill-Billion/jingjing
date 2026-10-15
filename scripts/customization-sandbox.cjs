@@ -86,6 +86,10 @@ async function main() {
     const draft = await repo.create(buyer.ctx, { party_id:buyer.personal_party_id, template_version_id:family.template_version_id, answers:{ story:'还没写完的合成故事' }, operation_key:randomUUID() });
     const prepared = await repo.create(buyer.ctx, { party_id:buyer.personal_party_id, template_version_id:life.template_version_id, answers:{ moment:'虚构的毕业重逢', message:'这里只是合成测试文字' }, operation_key:randomUUID() });
     const submitted = await repo.submit(buyer.ctx, { request_id:prepared.id, party_id:buyer.personal_party_id, expected_version:prepared.object_version, operation_key:randomUUID() });
+    const supplementDraft=await repo.create(buyer.ctx,{party_id:buyer.personal_party_id,template_version_id:family.template_version_id,answers:{story:'合成故事，请补充时间线',tone:'温暖'},operation_key:randomUUID()});
+    const supplementSubmission=await repo.submit(buyer.ctx,{request_id:supplementDraft.id,party_id:buyer.personal_party_id,expected_version:supplementDraft.object_version,operation_key:randomUUID()});
+    const supplementIntake=await repo.intake(people.operator.ctx,{request_id:supplementDraft.id,expected_version:supplementSubmission.object_version,operation_key:randomUUID()});
+    await repo.requestSupplement(people.operator.ctx,{request_id:supplementDraft.id,items:[{field_key:'story',reason:'合成场景：时间线不明确',instruction:'补充事件顺序并写明回复'}],expected_version:supplementIntake.object_version,operation_key:randomUUID()});
     const app = createAccountApi({ db, secret, allowedOrigins:['http://localhost:5173','http://127.0.0.1:5173','http://localhost:5000','http://127.0.0.1:5000'] });
     // Restrict this local fixture to this handoff; no login issuance or other business APIs.
     checkRunning();
@@ -98,7 +102,10 @@ async function main() {
       ['PATCH',new RegExp('^/api/v1/customization-requests/'+uuid+'$')],
       ['POST',new RegExp('^/api/v1/customization-requests/'+uuid+'/submissions$')],
       ['GET',/^\/api\/v1\/operations\/customization-requests$/],
-      ['POST',new RegExp('^/api/v1/operations/customization-requests/'+uuid+'/intake$')]
+      ['POST',new RegExp('^/api/v1/operations/customization-requests/'+uuid+'/(intake|supplements)$')],
+      ['GET',new RegExp('^/api/v1/customization-requests/'+uuid+'/(supplement|submissions(?:/'+uuid+')?)$')],
+      ['PATCH',new RegExp('^/api/v1/customization-requests/'+uuid+'/supplement$')],
+      ['POST',new RegExp('^/api/v1/customization-requests/'+uuid+'/supplement-submissions$')]
     ];
     server=http.createServer((req,res)=>{
       const pathname=req.url.split('?')[0];
@@ -111,13 +118,13 @@ async function main() {
     const base_url = 'http://127.0.0.1:' + server.address().port + '/api/v1';
     await fs.mkdir(out, { recursive:true });
     const accounts = Object.fromEntries(Object.entries(people).map(([role, p]) => [role, { account_id:p.account_id, party_id:p.personal_party_id, bearer_token:p.token }]));
-    await fs.writeFile(path.join(out, 'access.json'), JSON.stringify({ synthetic_only:true, base_url, accounts, templates:{ family:family.template_version_id, life:life.template_version_id, blocked:blocked.template_version_id }, requests:{ draft:draft.id, submitted:submitted.id } }, null, 2), { mode:0o600 });
+    await fs.writeFile(path.join(out, 'access.json'), JSON.stringify({ synthetic_only:true, base_url, accounts, templates:{ family:family.template_version_id, life:life.template_version_id, blocked:blocked.template_version_id }, requests:{ draft:draft.id, submitted:submitted.id, supplement:supplementDraft.id } }, null, 2), { mode:0o600 });
     await fs.writeFile(path.join(out, 'status.json'), JSON.stringify({ status:'RUNNING', synthetic_only:true, host:'127.0.0.1', port:server.address().port, expires_in_minutes:60, database:name }, null, 2));
     checkRunning();
     starting=false;
     timer=setTimeout(stop,60*60*1000);
     // Do not print even synthetic session tokens in logs or include them in Git.
-    console.log(JSON.stringify({ status:'READY', base_url, access_file:path.relative(root, path.join(out, 'access.json')), stop_file:path.relative(root,path.join(out,'stop')), scenarios:['不完整草稿','已提交待受理','另一买家无权','必填附件不可提交'], synthetic_only:true }));
+    console.log(JSON.stringify({ status:'READY', base_url, access_file:path.relative(root, path.join(out, 'access.json')), stop_file:path.relative(root,path.join(out,'stop')), scenarios:['不完整草稿','已提交待受理','待补充未提交','另一买家无权','必填附件不可提交'], synthetic_only:true }));
   } catch(e) {
     starting=false;
     const result=await cleanup();

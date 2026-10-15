@@ -116,6 +116,10 @@ def validate(runtime_fixtures=None):
     customization_account_scopes = {
         'listCustomizationCategories': 'ACCOUNT',
         'getCustomizationRequest': 'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'getCustomizationSupplement':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'listCustomizationSubmissions':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'getCustomizationSubmission':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'requestCustomizationSupplement':'AUTHORIZED_CUSTOMIZATION_OPERATOR',
         'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
         'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
     }
@@ -133,7 +137,7 @@ def validate(runtime_fixtures=None):
             if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
                 check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
-            if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest'}:
+            if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest','requestCustomizationSupplement','submitCustomizationSupplement'}:
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
             account_scoped_supply = {'listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
@@ -142,7 +146,7 @@ def validate(runtime_fixtures=None):
             if op['operationId'] in customization_account_scopes:
                 check(op.get('x-actor-scope') == customization_account_scopes[op['operationId']],
                       'Customization actor scope: '+path)
-                if op['operationId'] == 'getCustomizationRequest':
+                if op['operationId'] in {'getCustomizationRequest','getCustomizationSupplement','listCustomizationSubmissions','getCustomizationSubmission'}:
                     check(headers.get('X-Acting-Party',{}).get('required') is False,
                           'Customization owner-or-operator read: '+path)
                 else:
@@ -160,7 +164,7 @@ def validate(runtime_fixtures=None):
             else:
                 check(op['operationId'] not in implemented_ids, 'Unimplemented boundary: '+op['operationId'])
             if op['operationId'] in {'createCustomizationRequest','getCustomizationRequest',
-                    'updateCustomizationRequest','submitCustomizationRequest','intakeCustomizationRequest'}:
+                    'updateCustomizationRequest','submitCustomizationRequest','intakeCustomizationRequest','getCustomizationSupplement','saveCustomizationSupplement','requestCustomizationSupplement','submitCustomizationSupplement'}:
                 check('ETag' in op['responses']['200'].get('headers',{}),
                       'Customization object version header: '+path+' '+method)
             for code, response in op['responses'].items():

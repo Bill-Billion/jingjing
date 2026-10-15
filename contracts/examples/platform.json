@@ -3096,6 +3096,136 @@
           ]
         }
       }
+    },
+    {
+      "name": "CustomizationSupplementContextResponse",
+      "schema": "CustomizationSupplementContextResponse",
+      "value": {
+        "meta": {
+          "request_id": "a5b55197-7e90-4778-a6f4-0b379abe06a6",
+          "actor": {
+            "account_id": "9698d82b-ca3a-4eb5-9660-18282cc36295"
+          },
+          "acting_party": "a080c91d-0ab2-479d-8e83-6be0173b741f"
+        },
+        "data": {
+          "request_id": "079d3ef3-fca6-4a84-b073-7993d3893c83",
+          "object_version": 3,
+          "supplement": null,
+          "draft": null,
+          "allowed_actions": [
+            "READ"
+          ]
+        }
+      }
+    },
+    {
+      "name": "CustomizationSubmissionHistoryResponse",
+      "schema": "CustomizationSubmissionHistoryResponse",
+      "value": {
+        "meta": {
+          "request_id": "28175277-0de1-4a9c-8f30-9848e8f28949",
+          "actor": {
+            "account_id": "9698d82b-ca3a-4eb5-9660-18282cc36295"
+          },
+          "acting_party": "a080c91d-0ab2-479d-8e83-6be0173b741f"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "fd2bbf43-758a-4061-8233-51e4c1f71cd7",
+              "submission_number": 1,
+              "submitted_by": "9698d82b-ca3a-4eb5-9660-18282cc36295",
+              "submitted_at": "2026-10-15T11:16:21.199Z",
+              "content_sha256": "f9fae5887bcaa2f05ae506e80f8153b894c77302d233bc4b4ac5ccc9371d054c"
+            }
+          ],
+          "next_cursor": "ZmQyYmJmNDMtNzU4YS00MDYxLTgyMzMtNTFlNGMxZjcxY2Q3.7d5f2c4a765d6fa49458acb692f28a7949451a1d66cbfb6a0dd3fb7f15815422"
+        }
+      }
+    },
+    {
+      "name": "CustomizationSubmissionVersionResponse",
+      "schema": "CustomizationSubmissionVersionResponse",
+      "value": {
+        "meta": {
+          "request_id": "e57cb494-47b8-4f97-8bc5-680c8f807078",
+          "actor": {
+            "account_id": "9698d82b-ca3a-4eb5-9660-18282cc36295"
+          },
+          "acting_party": "a080c91d-0ab2-479d-8e83-6be0173b741f"
+        },
+        "data": {
+          "request_id": "079d3ef3-fca6-4a84-b073-7993d3893c83",
+          "submission_number": 1,
+          "submission": {
+            "id": "fd2bbf43-758a-4061-8233-51e4c1f71cd7",
+            "answers": {
+              "tone": "温暖",
+              "story": "这是隔离测试的合成故事，不是私人经历。"
+            },
+            "template_snapshot": {
+              "title": "合成婚礼故事",
+              "fields": [
+                {
+                  "key": "story",
+                  "type": "TEXT",
+                  "label": "共同经历",
+                  "required": true,
+                  "max_length": 12000
+                },
+                {
+                  "key": "tone",
+                  "type": "CHOICE",
+                  "label": "氛围",
+                  "options": [
+                    "温暖",
+                    "纪实"
+                  ],
+                  "required": true
+                },
+                {
+                  "key": "notes",
+                  "type": "TEXT",
+                  "label": "补充",
+                  "required": false,
+                  "max_length": 500
+                }
+              ],
+              "description": "仅用于隔离测试"
+            },
+            "content_sha256": "f9fae5887bcaa2f05ae506e80f8153b894c77302d233bc4b4ac5ccc9371d054c",
+            "submitted_by": "9698d82b-ca3a-4eb5-9660-18282cc36295",
+            "submitted_at": "2026-10-15T11:16:21.199Z"
+          },
+          "supplement_response": null
+        }
+      }
+    },
+    {
+      "name": "request supplement",
+      "schema": "RequestCustomizationSupplement",
+      "value": {
+        "items": [
+          {
+            "field_key": "story",
+            "reason": "合成：时间线待补充",
+            "instruction": "补充时间顺序"
+          }
+        ]
+      }
+    },
+    {
+      "name": "save supplement",
+      "schema": "SaveCustomizationSupplement",
+      "value": {
+        "answers": {
+          "story": "合成内容"
+        },
+        "responses": {
+          "story": "合成说明"
+        }
+      }
     }
   ],
   "contract_version": "0.11.0-rc.1"

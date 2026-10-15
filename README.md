@@ -1,3 +1,11 @@
+# 当前本地进展：第二轮补件已实现，报价关联待继续
+
+先看[本次实际进度](docs/status/CORE_CURRENT.md)和[补件流程与接法](docs/collaboration/V5_R02_SUPPLEMENTS.md)。本批仍本地，第一轮5e54a3b已发布供队友使用；第二轮未完成、未上传，不把后端检查当作页面验收。
+
+---
+
+以下为此前记录。
+
 # 当前协作入口：V5计划与第一轮故事接口
 
 [双方先看计划和分工](docs/reviews/v5-d1-intake/09_TEAM_START.md) · [队友接故事页面与运营收件](docs/collaboration/V5_R01_STORY_INTAKE.md) · [实际进度](docs/status/CORE_CURRENT.md)。第一轮后端文字流程已通过隔离检查；页面和跨端验收待做。旧PR23、新接口审阅、合入与正式启用分开记录。
