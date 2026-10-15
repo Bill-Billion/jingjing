@@ -424,6 +424,212 @@
         ],
         "reason": "test"
       }
+    },
+    {
+      "name": "Production record must declare current version",
+      "fixture": "ProductionRecordResponse",
+      "remove_path": [
+        "data",
+        "object_version"
+      ]
+    },
+    {
+      "name": "No made-up production success status",
+      "fixture": "ProductionRecordResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "FAKE_COMPLETED"
+    },
+    {
+      "name": "Unversioned acceptance rejected",
+      "schema": "ProductionFeedbackRequest",
+      "value": {
+        "decision": "ACCEPT",
+        "note": "test",
+        "checklist": null,
+        "paid": true
+      }
+    },
+    {
+      "name": "Unknown generation operation rejected",
+      "schema": "ProductionGenerationRequest",
+      "value": {
+        "operation": "IMAGE_TO_VIDEO_IS_LONG_LIVED",
+        "avatar_id": "11111111-1111-4111-8111-111111111111",
+        "asset_id": null,
+        "consent_id": "11111111-1111-4111-8111-111111111111"
+      }
+    },
+    {
+      "name": "private purpose is not a public project",
+      "schema": "ProjectCreateRequest",
+      "value": {
+        "title": "private",
+        "scope": {
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "language": "zh",
+          "valid_until": "2090-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "fractional cast money rejected",
+      "schema": "ProjectApplyRequest",
+      "value": {
+        "avatar_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "consent_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "amount_minor": 1.5,
+        "note": "synthetic"
+      }
+    },
+    {
+      "name": "confirmation cannot omit exact version hash",
+      "schema": "ProjectConfirmRequest",
+      "value": {
+        "decision": "APPROVED",
+        "reason": "synthetic"
+      }
+    },
+    {
+      "name": "gigs fractional rate rejected",
+      "schema": "GigCommissionTerms",
+      "value": {
+        "platform_bps": 1.5,
+        "mcn_bps": 0
+      }
+    },
+    {
+      "name": "gigs multi-level commission rejected",
+      "schema": "GigCommissionTerms",
+      "value": {
+        "platform_bps": 1000,
+        "mcn_bps": 500,
+        "downstream_bps": 100
+      }
+    },
+    {
+      "name": "gigs private use cannot become commercial scope",
+      "schema": "GigScope",
+      "value": {
+        "purpose": "PRIVATE",
+        "territory": "CN",
+        "valid_until": "2099-01-01T00:00:00.000Z"
+      }
+    },
+    {
+      "name": "gigs public ranking future source cannot be client event",
+      "schema": "GigRankingRequest",
+      "value": {
+        "rule_id": "11111111-1111-4111-8111-111111111111",
+        "as_of": "2026-09-28T00:00:00.000Z",
+        "clicks": 9000
+      }
+    },
+    {
+      "name": "finance fractional payout rejected",
+      "schema": "FinanceRequestpayoutRequest",
+      "value": {
+        "recipient_party_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "amount_minor": 0.1,
+        "destination_asset_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "note": "synthetic"
+      }
+    },
+    {
+      "name": "finance confirmation requires content hash",
+      "schema": "FinanceConfirmRequest",
+      "value": {
+        "decision": "APPROVED",
+        "reason": "synthetic"
+      }
+    },
+    {
+      "name": "finance client cannot claim direct paid balance",
+      "schema": "FinanceSettleRequest",
+      "value": {
+        "period_reference": "test",
+        "note": "test",
+        "paid_minor": 1000
+      }
+    },
+    {
+      "name": "finance automatic payout cannot be ready",
+      "fixture": "FinanceReadinessResponse",
+      "mutate_path": [
+        "data",
+        "automatic_payout",
+        "current_status"
+      ],
+      "replace_with": "PRODUCTION_VERIFIED"
+    },
+    {
+      "name": "finance percentage cannot be floating",
+      "schema": "FinanceShare",
+      "value": {
+        "party_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "bps": 1.5,
+        "role": "MCN"
+      }
+    },
+    {
+      "name": "finance manual proof must have outcome",
+      "schema": "FinancePayoutevidenceRequest",
+      "value": {
+        "amount_minor": 1000,
+        "external_reference": "synthetic",
+        "occurred_at": "2020-01-01T00:00:00.000Z",
+        "evidence_asset_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "note": "test"
+      }
+    },
+    {
+      "name": "comments cannot select author",
+      "schema": "OpsAddCommentRequest",
+      "value": {
+        "body": "text",
+        "reply_to": null,
+        "author_account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+      }
+    },
+    {
+      "name": "report requires environment",
+      "schema": "OpsReportRequest",
+      "value": {
+        "kind": "CASH",
+        "period_start": "2026-01-01T00:00:00Z",
+        "period_end": "2026-02-01T00:00:00Z"
+      }
+    },
+    {
+      "name": "profit is not cash report",
+      "schema": "OpsReportRequest",
+      "value": {
+        "kind": "PROFIT",
+        "environment": "PRODUCTION",
+        "period_start": "2026-01-01T00:00:00Z",
+        "period_end": "2026-02-01T00:00:00Z"
+      }
+    },
+    {
+      "name": "withdrawn comments cannot retain visible body",
+      "fixture": "OpsCommentResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "WITHDRAWN"
+    },
+    {
+      "name": "pending report cannot claim success",
+      "fixture": "OpsReportResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "SUCCEEDED"
     }
   ]
 }

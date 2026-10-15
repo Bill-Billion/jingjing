@@ -1,4 +1,5 @@
 'use strict';
+require('../晶晶日上工程交接包/01_源码/backend_server/scripts/test-network-guard.cjs');
 
 // Local browser tests only. This launcher never participates in the production API.
 const assert = require('node:assert/strict');
@@ -14,6 +15,8 @@ const { openDatabase } = fromBackend('./src/infrastructure/database');
 const { migrate } = fromBackend('./src/infrastructure/database/migrator');
 const { createAccountApi } = fromBackend('./src/http/account-api');
 const { createReadinessRepository } = fromBackend('./src/modules/providers/readiness');
+const { createSmsProvider } = fromBackend('./src/modules/providers/sms');
+const { EventEmitter } = require('node:events');
 
 const statePath = path.resolve(process.env.PR11_UI_STATE_FILE || '.local/pr11-ui-runtime.json');
 const schema = `jx_test_${process.pid}_${crypto.randomBytes(6).toString('hex')}`;
@@ -70,20 +73,38 @@ async function main() {
   db = await openDatabase({ ...env, MYSQL_DATABASE: schema });
   await migrate(db);
 
-  const descriptor = { provider_kind: 'SmsProvider', provider_code: 'pr11-ui-synthetic',
-    capability_code: 'login_sms', environment: 'SANDBOX' };
+  // Exercise the actual SMS adapter/signing/response parser; only HTTPS I/O is synthetic.
+  // No real credentials are loaded, and the process cannot open external TCP connections.
+  const sent = new Map();
+  let smsEnabled = true, dispatches = 0;
+  const smsConfig = { NODE_ENV: 'test', SMS_ENABLED: 'true', VOLC_ACCESS_KEY_ID: 'fake-id',
+    VOLC_SECRET_ACCESS_KEY: 'fake-secret', SMS_ACCOUNT: 'fake-account', SMS_SIGN_NAME: '隔离测试',
+    SMS_LOGIN_TEMPLATE_ID: 'fake-template', SMS_CONFIG_REVISION: 'browser-synthetic-v1' };
+  const provider = createSmsProvider(db, smsConfig, { request(options, callback) {
+    assert.equal(options.hostname, 'sms.volcengineapi.com');
+    dispatches++;
+    const req = new EventEmitter(); req.destroy = () => {}; req.setTimeout = () => {};
+    req.end = body => {
+      const value = JSON.parse(body);
+      sent.set(value.PhoneNumbers, JSON.parse(value.TemplateParam).code);
+      queueMicrotask(() => {
+        const res = new EventEmitter(); res.statusCode = 200; res.complete = true; res.destroy = () => {};
+        callback(res);
+        res.emit('data', Buffer.from(JSON.stringify({ ResponseMetadata: { RequestId: 'browser-synthetic-request' }, Result: { MessageID: ['browser-synthetic-message'] } })));
+        res.emit('end');
+      });
+    };
+    return req;
+  } });
   const readiness = createReadinessRepository(db, {
     authorizeChange: async () => true, verifyEvidence: async () => true,
   });
-  await readiness.record({ ...descriptor, current_status: 'SANDBOX_VERIFIED',
-    config_revision: 'synthetic-v1', expected_version: 0,
-    evidence_ref: 'local-browser-test-only' }, { actor_ref: 'synthetic-test' });
-  const sent = new Map();
-  let smsEnabled = true;
-  const sms = { async call(operation, input) {
-    if (!smsEnabled || operation !== 'send') throw Object.assign(new Error('Test SMS unavailable'), { code: 'SMS_NOT_READY', status: 503 });
-    sent.set(input.phone, input.code);
-    return { accepted: true, provider_request_id: 'synthetic-local-only' };
+  await readiness.record({ ...provider.identity, current_status: 'SANDBOX_VERIFIED',
+    config_revision: smsConfig.SMS_CONFIG_REVISION, expected_version: 0,
+    evidence_ref: 'local-browser-synthetic-only' }, { actor_ref: 'synthetic-test' });
+  const sms = { async call(operation, input, context) {
+    if (!smsEnabled) throw Object.assign(new Error('Test SMS unavailable'), { code: 'SMS_NOT_READY', status: 503 });
+    return provider.call(operation, input, context);
   }};
   const app = createAccountApi({ db, secret: crypto.randomBytes(32).toString('base64'), sms,
     authSettings: { ipSendsPerHour: 1000, totalSendsPerHour: 1000, ipLoginsPerMinute: 1000 },
@@ -124,6 +145,12 @@ async function main() {
     }
     try {
       const url = new URL(req.url, 'http://127.0.0.1');
+      if (req.method === 'POST' && url.pathname === '/shutdown') {
+        res.end('{"stopping":true}'); setImmediate(() => cleanup().then(() => process.exit(0), () => process.exit(1))); return;
+      }
+      if (req.method === 'GET' && url.pathname === '/metrics') {
+        res.end(JSON.stringify({ dispatches, syntheticOnly: true })); return;
+      }
       if (req.method === 'GET' && url.pathname === '/code') {
         const code = sent.get(url.searchParams.get('phone'));
         res.writeHead(code ? 200 : 404); res.end(JSON.stringify({ code: code || null })); return;

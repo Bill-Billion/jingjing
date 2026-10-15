@@ -1,0 +1,1655 @@
+{
+  "baseline_commit": "acd5f99",
+  "gallery": "design/full-ui-20260929",
+  "stage": "PR16",
+  "date": "2026-10-03",
+  "backend_commit": "b24e7df85ba3eec777386b4b067094692649a575",
+  "frontend_dependency": "PR15/1e10cce",
+  "note": "图册示例字段须以原PR16实际接口约束；未实现上下文单独说明，不当作接口或功能。",
+  "views": [
+    {
+      "id": "APP-14-01",
+      "title": "订单详情",
+      "image": "images/APP-14-01-v2.png",
+      "image_sha256": "70c25ea7c4a0f94f146789176bd28a909f76588406f1dfdbe50bf161afedbb5e",
+      "layout": [
+        "返回标题与订单编号",
+        "下一步任务突出区域",
+        "订单付款事实",
+        "制作四阶段进度",
+        "合同与许可入口",
+        "订单留言摘要",
+        "售后入口"
+      ],
+      "fields": [
+        {
+          "label": "订单",
+          "source": "ORDER.id",
+          "example": "订单 …0051",
+          "editable": false
+        },
+        {
+          "label": "下一步",
+          "source": "PROJECT.data.current.SAMPLE + VERSION.current_status",
+          "example": "查看当前样片",
+          "editable": false
+        },
+        {
+          "label": "应付总额",
+          "source": "ORDER.data.quote.total_minor",
+          "example": "¥1,280.00",
+          "editable": false
+        },
+        {
+          "label": "已核实收款",
+          "source": "ORDER.data.financial.received_minor",
+          "example": "¥380.00",
+          "editable": false
+        },
+        {
+          "label": "已核实退款",
+          "source": "ORDER.data.financial.refunded_minor",
+          "example": "¥0.00",
+          "editable": false
+        },
+        {
+          "label": "阶段",
+          "source": "PROJECT.data.current/accepted",
+          "example": "剧本已确认 → 样片待确认 → 粗剪 → 成片",
+          "editable": false
+        },
+        {
+          "label": "合同",
+          "source": "ORDER.data.contract.signing_method",
+          "example": "查看原合同内容",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "查看订单记录与原始承诺"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "use": "查看本人机构或获分配的制作项目"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "查看有权限的制作记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/operations/objects/{domain}/{record_id}/comments",
+          "use": "查看订单、项目或制作版本内留言"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/trade/orders/{record_id}/cancellation",
+          "use": "取消尚未支付且没有结果未知付款的订单"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "查看当前样片",
+          "method": "LOCAL",
+          "path": "APP-15-02",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        },
+        {
+          "label": "查看合同",
+          "method": "LOCAL",
+          "path": "APP-11-02",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        },
+        {
+          "label": "订单留言",
+          "method": "LOCAL",
+          "path": "LOCAL:order-comments",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        },
+        {
+          "label": "售后与退款",
+          "method": "LOCAL",
+          "path": "APP-31",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/trade/record?recordId=<orderId>",
+      "implemented_api_refs": [
+        "GET /production/projects",
+        "GET /production/projects/{id}/records"
+      ],
+      "actual_evidence": "evidence/pr15-regression-results.json",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "APP-15-01",
+      "title": "确认剧本",
+      "image": "images/APP-15-01.png",
+      "image_sha256": "5e5131b2bf06de82d047f06bd5e2237136f7dbef0a47d0773bf100a0eddc8119",
+      "layout": [
+        "返回与阶段标题",
+        "版本号与只读说明",
+        "纯文本剧本节选",
+        "完整正文入口",
+        "本版意见区",
+        "底部修改与确认"
+      ],
+      "fields": [
+        {
+          "label": "版本",
+          "source": "VERSION.data.revision",
+          "example": "第 1 版",
+          "editable": false
+        },
+        {
+          "label": "阶段",
+          "source": "VERSION.data.stage",
+          "example": "剧本",
+          "editable": false
+        },
+        {
+          "label": "状态",
+          "source": "VERSION.current_status",
+          "example": "审核通过，等待你确认",
+          "editable": false
+        },
+        {
+          "label": "内容",
+          "source": "GET production/versions/{record_id}/content?variant=preview",
+          "example": "第一场　旧车站\n林：这次，我想把那句话说完。",
+          "editable": false
+        },
+        {
+          "label": "版本说明",
+          "source": "VERSION.data.note",
+          "example": "已整理本次故事与台词。",
+          "editable": false
+        },
+        {
+          "label": "验收勾选",
+          "source": "feedback.checklist.script_reviewed",
+          "example": "我已阅读本版剧本",
+          "editable": true
+        },
+        {
+          "label": "确认说明",
+          "source": "feedback.note",
+          "example": "已阅读并确认本版剧本",
+          "editable": true,
+          "image_visible": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "查看有权限的制作记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "查看项目版本反馈及任务"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "权限与付款核验后读取预览或交付文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "use": "客户对当前版本提出修改或确认验收"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "完整阅读",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "variant=preview，当前已审SCRIPT",
+          "enabled": true
+        },
+        {
+          "label": "提出修改",
+          "method": "LOCAL",
+          "path": "APP-15-03",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        },
+        {
+          "label": "确认这版剧本",
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "condition": "未勾选；勾选并填写note后decision=ACCEPT可提交",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/version?versionId=<versionId>",
+      "implemented_api_refs": [
+        "GET /production/versions/{id}/content",
+        "POST /production/versions/{id}/feedback"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-app-script-before-mobile.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "APP-15-02",
+      "title": "审阅样片",
+      "image": "images/APP-15-02-v2.png",
+      "image_sha256": "719b74cf91876be52015542a7a98a11089b7b005b574641920ce00337f99d1b2",
+      "layout": [
+        "返回标题",
+        "视频预览容器",
+        "版本与状态",
+        "约定规格入口",
+        "验收检查清单",
+        "版本说明",
+        "底部提交意见入口"
+      ],
+      "fields": [
+        {
+          "label": "阶段与版本",
+          "source": "VERSION.data.stage/revision",
+          "example": "样片 · 第 2 版",
+          "editable": false
+        },
+        {
+          "label": "状态",
+          "source": "VERSION.current_status",
+          "example": "审核通过，等待你确认",
+          "editable": false
+        },
+        {
+          "label": "预览",
+          "source": "GET production/versions/{record_id}/content?variant=preview",
+          "example": "示例预览画面 · 保留AI标识",
+          "editable": false
+        },
+        {
+          "label": "说明",
+          "source": "VERSION.data.note",
+          "example": "已按上一版意见调整对白节奏。",
+          "editable": false
+        },
+        {
+          "label": "检查项",
+          "source": "feedback.checklist",
+          "example": "剧本内容、交付规格、声音、内容标识",
+          "editable": false
+        },
+        {
+          "label": "原约定",
+          "source": "PROJECT.data.specification",
+          "example": "查看本单规格与修改约定",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "查看有权限的制作记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "查看项目版本反馈及任务"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "权限与付款核验后读取预览或交付文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "use": "客户对当前版本提出修改或确认验收"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "播放预览",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "variant=preview，当前APPROVED版本",
+          "enabled": true
+        },
+        {
+          "label": "本版确认与修改意见",
+          "method": "LOCAL",
+          "path": "APP-15-03",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        },
+        {
+          "label": "版本记录",
+          "method": "LOCAL",
+          "path": "LOCAL:version-metadata",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/version?versionId=<versionId>",
+      "implemented_api_refs": [
+        "GET /production/versions/{id}/content",
+        "POST /production/versions/{id}/feedback"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-app-sample-preview-mobile.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "APP-15-03",
+      "title": "提交本版意见",
+      "image": "images/APP-15-03.png",
+      "image_sha256": "59970e2f7635c5268e917a33d845a27d55bd0f1ac6974764ec50e13da3ad5518",
+      "layout": [
+        "返回标题与绑定版本",
+        "确认/请求修改二选一",
+        "修改意见文本区",
+        "合同修改次数说明",
+        "验收勾选区域随decision切换",
+        "底部提交"
+      ],
+      "fields": [
+        {
+          "label": "绑定版本",
+          "source": "feedback path.record_id + VERSION.data.revision",
+          "example": "样片 · 第 2 版",
+          "editable": false
+        },
+        {
+          "label": "决定",
+          "source": "feedback.decision",
+          "example": "请求修改",
+          "editable": true
+        },
+        {
+          "label": "意见",
+          "source": "feedback.note",
+          "example": "请放慢结尾对白的节奏，保留当前配乐。",
+          "editable": true
+        },
+        {
+          "label": "次数说明",
+          "source": "PROJECT.data.change_requests/specification.revision_limit",
+          "example": "修改次数按本单约定记录",
+          "editable": false
+        },
+        {
+          "label": "检查项",
+          "source": "feedback.checklist",
+          "example": "请求修改时无需勾选验收项",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "查看有权限的制作记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "查看项目版本反馈及任务"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "权限与付款核验后读取预览或交付文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "use": "客户对当前版本提出修改或确认验收"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "提交修改意见",
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "condition": "买方OWNER且当前已审版；decision=REQUEST_CHANGES,note完整,checklist=null，未超约定次数",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/feedback?versionId=<versionId>",
+      "implemented_api_refs": [
+        "POST /production/versions/{id}/feedback"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-app-feedback-form-mobile.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "APP-18-01",
+      "title": "我的交付作品",
+      "image": "images/APP-18-01.png",
+      "image_sha256": "8d88c15ee2de9263e628957c6a9f3022ea7d9e18e4f313e7cc77f85708262b24",
+      "layout": [
+        "返回标题",
+        "私人访问说明",
+        "交付文本卡片",
+        "付款/验收分列",
+        "加载更多"
+      ],
+      "fields": [
+        {
+          "label": "项目",
+          "source": "PROJECT.id",
+          "example": "制作项目 …0071",
+          "editable": false
+        },
+        {
+          "label": "阶段",
+          "source": "PROJECT.data.current.FINAL",
+          "example": "当前成片",
+          "editable": false
+        },
+        {
+          "label": "验收",
+          "source": "PROJECT.data.accepted.FINAL",
+          "example": "最终版本已验收",
+          "editable": false
+        },
+        {
+          "label": "付款",
+          "source": "ORDER.current_status",
+          "example": "约定款项已付清",
+          "editable": false
+        },
+        {
+          "label": "说明",
+          "source": "static_local_asset",
+          "example": "仅本人及获准人员可见",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "use": "查看本人机构或获分配的制作项目"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "查看有权限的制作记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "权限与付款核验后读取预览或交付文件"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "查看订单记录与原始承诺"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "查看成片",
+          "method": "LOCAL",
+          "path": "APP-18-02",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        },
+        {
+          "label": "加载更多",
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "condition": "next_cursor非空；只显示能核实对应成片的有权项目",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/works",
+      "implemented_api_refs": [
+        "GET /production/projects",
+        "GET /production/records/{id}"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-app-works-mobile.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "APP-18-02",
+      "title": "私人作品",
+      "image": "images/APP-18-02.png",
+      "image_sha256": "f86fd1f1fe2050a6a16ec8ca8d603f4424e07e140bd0133d81cfefe9d64b679a",
+      "layout": [
+        "返回标题",
+        "受控视频预览",
+        "最终版本与AI标识说明",
+        "验收/付款/允许用途",
+        "原约定入口",
+        "下载原片与新用途说明"
+      ],
+      "fields": [
+        {
+          "label": "作品",
+          "source": "ORDER.data.quote.lines[].title",
+          "example": "私人短片制作",
+          "editable": false
+        },
+        {
+          "label": "版本",
+          "source": "VERSION.data.revision",
+          "example": "最终成片 · 第 1 版",
+          "editable": false
+        },
+        {
+          "label": "预览",
+          "source": "GET production/versions/{record_id}/content?variant=preview",
+          "example": "示例成片预览",
+          "editable": false
+        },
+        {
+          "label": "验收",
+          "source": "PROJECT.data.accepted.FINAL",
+          "example": "已验收当前版本",
+          "editable": false
+        },
+        {
+          "label": "付款",
+          "source": "ORDER.current_status",
+          "example": "已付清",
+          "editable": false
+        },
+        {
+          "label": "用途",
+          "source": "PROJECT.data.purpose",
+          "example": "私人使用",
+          "editable": false
+        },
+        {
+          "label": "公开用途",
+          "source": "static_local_asset",
+          "example": "公开分享或发行需另行办理项目与授权",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "use": "查看本人机构或获分配的制作项目"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "查看有权限的制作记录"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "权限与付款核验后读取预览或交付文件"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records/{record_id}",
+          "use": "查看订单记录与原始承诺"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "播放成片",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "variant=preview，当前已审最终版",
+          "enabled": true
+        },
+        {
+          "label": "下载当前原片",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "variant=final，当前FINAL已验收、ORDER PAID且权利有效",
+          "enabled": true
+        },
+        {
+          "label": "了解公开项目",
+          "method": "LOCAL",
+          "path": "APP-23",
+          "condition": "按所选身份导航后再次由服务器核验权限",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/work?projectId=<projectId>",
+      "implemented_api_refs": [
+        "GET /production/records/{id}",
+        "GET /production/versions/{id}/content"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-app-private-work-mobile.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-16-01",
+      "title": "我参与的制作项目",
+      "image": "images/WEB-16-01-v2.png",
+      "image_sha256": "00f6780599eb7480225a86bb9c584540e02bfc30425919748bc2c149a4958228",
+      "layout": [
+        "当前主体及范围说明",
+        "制作项目表",
+        "项目状态与负责人编号",
+        "创建与继续加载"
+      ],
+      "fields": [
+        {
+          "label": "项目编号",
+          "source": "GET /api/v1/production/projects → response.data.items[].id",
+          "example": "项目编号",
+          "editable": false
+        },
+        {
+          "label": "当前状态",
+          "source": "GET /api/v1/production/projects → response.data.items[].current_status",
+          "example": "待开工核验",
+          "editable": false
+        },
+        {
+          "label": "相关订单和负责人",
+          "source": "GET /api/v1/production/projects → response.data.items[].order_id / data.items[].data.assignee_account_id",
+          "example": "按记录编号显示",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "use": "继续加载"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "制作方及当前负责人"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects",
+          "use": "创建待核验任务"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传开工证明"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/assignment",
+          "use": "保存负责人变更"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "继续加载",
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "condition": "当前主体OWNER或指定制作负责人；next_cursor非空",
+          "enabled": true
+        },
+        {
+          "label": "查看制作项目",
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "condition": "有当前记录权限；以服务器当前状态和版本为准",
+          "enabled": true
+        },
+        {
+          "label": "新建制作项目",
+          "method": "LOCAL",
+          "path": "WEB-16-02",
+          "condition": "本地页面导航，不更改业务状态",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/projects",
+      "implemented_api_refs": [
+        "GET /production/projects"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-projects-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-16-02",
+      "title": "建立制作任务",
+      "image": "images/WEB-16-02.png",
+      "image_sha256": "d3a0c4ac48b208d606e39b6b4d87e03b95a01240fe3e0095d8d8b32687bee76f",
+      "layout": [
+        "订单与服务明细",
+        "获准剧本及许可用途",
+        "制作负责人",
+        "用途地域及脸声同意",
+        "外部合同证明"
+      ],
+      "fields": [
+        {
+          "label": "订单编号",
+          "source": "POST /api/v1/production/projects → request.order_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "明细编号",
+          "source": "POST /api/v1/production/projects → request.line_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "剧本版本编号",
+          "source": "POST /api/v1/production/projects → request.script_version_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "已绑定许可用途编号",
+          "source": "POST /api/v1/production/projects → request.license_project_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "负责人账号",
+          "source": "POST /api/v1/production/projects → request.assignee_account_id",
+          "example": "制作方有效成员账号",
+          "editable": true
+        },
+        {
+          "label": "用途",
+          "source": "POST /api/v1/production/projects → request.purpose",
+          "example": "待选择",
+          "editable": true
+        },
+        {
+          "label": "地域",
+          "source": "POST /api/v1/production/projects → request.territory",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "本人同意记录",
+          "source": "POST /api/v1/production/projects → request.consent_ids",
+          "example": "逐个引用有效记录",
+          "editable": true
+        },
+        {
+          "label": "开工证明",
+          "source": "POST /api/v1/production/projects → request.evidence_asset_id",
+          "example": "待填写",
+          "editable": true
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "use": "继续加载"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "制作方及当前负责人"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects",
+          "use": "创建待核验任务"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传开工证明"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/assignment",
+          "use": "保存负责人变更"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "上传开工证明",
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "condition": "使用私有审核证据 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；X-Acting-Party=必填当前已鉴权主体id；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；query.purpose=必填；由材料用途固定WORK_CONTENT/RIGHTS_EVIDENCE/CONSENT_EVIDENCE/REVIEW_EVIDENCE，不能跨用途复用；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+          "enabled": true
+        },
+        {
+          "label": "创建待核验任务",
+          "method": "POST",
+          "path": "/api/v1/production/projects",
+          "condition": "商家OWNER；订单权利与负责人合法 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.order_id←本页“订单编号”字段；body.line_id←本页“明细编号”字段；body.script_version_id←本页“剧本版本编号”字段；body.license_project_id←本页“已绑定许可用途编号”字段；body.assignee_account_id←本页“负责人账号”字段；body.purpose←本页“用途”字段；body.territory←本页“地域”字段；body.consent_ids←本页“本人同意记录”字段；body.evidence_asset_id←本页“开工证明”字段；必填结构：order_id；line_id；script_version_id；license_project_id；license_project_id可显式null；assignee_account_id；purpose；territory；consent_ids[]；evidence_asset_id",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/projects/new",
+      "implemented_api_refs": [
+        "POST /production/projects"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-create-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-16-03",
+      "title": "调整制作负责人",
+      "image": "images/WEB-16-03-v2.png",
+      "image_sha256": "c4f2b3461b5a557b006863f940523b9d56920ea1985c837e7d2e9d9e271cdaae",
+      "layout": [
+        "项目及制作方",
+        "现负责人编号",
+        "新负责人账号输入",
+        "权限与状态提示"
+      ],
+      "fields": [
+        {
+          "label": "制作方及当前负责人",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.producer_party_id / data.data.assignee_account_id",
+          "example": "当前主体和账号编号",
+          "editable": false
+        },
+        {
+          "label": "新负责人",
+          "source": "POST /api/v1/production/projects/{record_id}/assignment → request.assignee_account_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "变更理由",
+          "source": "POST /api/v1/production/projects/{record_id}/assignment → request.reason",
+          "example": "待填写",
+          "editable": true
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "use": "继续加载"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "制作方及当前负责人"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects",
+          "use": "创建待核验任务"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/supply/assets",
+          "use": "上传开工证明"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/assignment",
+          "use": "保存负责人变更"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "保存负责人变更",
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/assignment",
+          "condition": "商家OWNER；新账号为制作方有效成员且项目允许变更 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；X-Acting-Party=必填当前已鉴权主体id；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.assignee_account_id←本页“新负责人”字段；body.reason←本页“变更理由”字段；必填结构：assignee_account_id；reason",
+          "enabled": false
+        },
+        {
+          "label": "返回制作项目",
+          "method": "LOCAL",
+          "path": "WEB-17",
+          "condition": "本地页面导航，不更改业务状态",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/projects/{id}/assignment",
+      "implemented_api_refs": [
+        "POST /production/projects/{id}/assignment"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-assignment-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-17-01",
+      "title": "制作项目与私有素材",
+      "image": "images/WEB-17-01-v2.png",
+      "image_sha256": "0f345f14c8c54b23dec1a9389fc50bf492f14230efd30810a2a9fcc14f17435b",
+      "layout": [
+        "订单和权利依据",
+        "剧本、许可及同意记录",
+        "负责人和工作范围",
+        "项目关联记录",
+        "文件上传与交稿入口"
+      ],
+      "fields": [
+        {
+          "label": "项目状态",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.current_status",
+          "example": "待开工核验",
+          "editable": false
+        },
+        {
+          "label": "剧本与用途",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.script_version_id / data.data.license_project_id",
+          "example": "本项目引用记录",
+          "editable": false
+        },
+        {
+          "label": "交付规格",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.specification",
+          "example": "按订单快照显示",
+          "editable": false
+        },
+        {
+          "label": "关联版本和反馈",
+          "source": "GET /api/v1/production/projects/{project_id}/records → response.data.items",
+          "example": "本页获准项目记录",
+          "editable": false
+        },
+        {
+          "label": "文件类型",
+          "source": "POST /api/v1/production/projects/{project_id}/files → request.query.media_type",
+          "example": "纯文本或视频按阶段选择",
+          "editable": true
+        },
+        {
+          "label": "私有文件",
+          "source": "POST /api/v1/production/projects/{project_id}/files → request.body",
+          "example": "选择本地文件，最大50MiB",
+          "editable": true
+        },
+        {
+          "label": "本项目文件",
+          "source": "GET /api/v1/production/projects/{project_id}/records → response.data.items[].id / data.items[].current_status / data.items[].data.media_type / data.items[].data.byte_size",
+          "example": "kind=FILE的当前页记录",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "项目规格"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "继续加载项目文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "use": "上传项目文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "use": "提交开工核验"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/evidence",
+          "use": "读取项目证据"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/generation-readiness",
+          "use": "刷新可用条件"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/generations/{record_id}/job",
+          "use": "刷新已有任务"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/generation",
+          "use": "发起生成"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "上传项目文件",
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "condition": "负责人或获准制作方；项目状态允许；最大50MiB 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.project_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+          "enabled": false
+        },
+        {
+          "label": "进入版本交付",
+          "method": "LOCAL",
+          "path": "WEB-18-01",
+          "condition": "本地页面导航，不更改业务状态",
+          "enabled": true
+        },
+        {
+          "label": "继续加载项目文件",
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "condition": "kind=FILE；项目OWNER或指定负责人，next_cursor非空",
+          "enabled": true
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/projects/{id}",
+      "implemented_api_refs": [
+        "GET /production/records/{id}",
+        "GET /production/projects/{id}/records",
+        "POST /production/projects/{id}/files"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-project-files-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-17-02",
+      "title": "开工依据独立核验",
+      "image": "images/WEB-17-02.png",
+      "image_sha256": "87479f014742ddb080139b565cef5c398ed5f1d4bf09df0765d506aad3cec725",
+      "layout": [
+        "订单规格与项目用途",
+        "剧本许可与本人同意",
+        "外部签署及权利依据",
+        "逐项验证与理由"
+      ],
+      "fields": [
+        {
+          "label": "项目规格",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.specification",
+          "example": "本项目交付约定",
+          "editable": false
+        },
+        {
+          "label": "合同指纹",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.contract_sha256",
+          "example": "核对外部证明对应合同",
+          "editable": true
+        },
+        {
+          "label": "身份已核实",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.identity_verified",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "相关签署已核实",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.signatures_verified",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "权利已核实",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.rights_verified",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "本次决定",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.decision",
+          "example": "待选择",
+          "editable": true
+        },
+        {
+          "label": "本次理由",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.reason",
+          "example": "待填写",
+          "editable": true
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "项目规格"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "继续加载项目文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "use": "上传项目文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "use": "提交开工核验"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/evidence",
+          "use": "读取项目证据"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/generation-readiness",
+          "use": "刷新可用条件"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/generations/{record_id}/job",
+          "use": "刷新已有任务"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/generation",
+          "use": "发起生成"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "读取项目证据",
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/evidence",
+          "condition": "PRODUCTION_REVIEW且独立于制作、买方与创建者",
+          "enabled": true
+        },
+        {
+          "label": "提交开工核验",
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "condition": "独立PRODUCTION_REVIEW且所有依据已核实 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；body.verification←本页“合同指纹 / 身份已核实 / 相关签署已核实 / 权利已核实”字段；PROJECT批准用合同/身份/签署/权利四项；VERSION批准按SCRIPT一项或其他阶段四项checklist；拒绝verification=null；必填结构：decision枚举=APPROVED,REJECTED；reason；verification按记录类型/阶段选择契约联合结构，禁止混合分支",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/reviews/projects/{id}",
+      "implemented_api_refs": [
+        "GET /production/projects/{id}/evidence",
+        "POST /production/records/{id}/reviews"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-review-projects-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-17-03",
+      "title": "生成服务状态与任务",
+      "image": "images/WEB-17-03-v2.png",
+      "image_sha256": "ce55c2b57378a882118fab86d607193e45646c7bb6820a95587d0097be0cdb8f",
+      "layout": [
+        "项目和已获准素材",
+        "当前业务可用条件",
+        "生成服务状态说明",
+        "已有任务查询区",
+        "后续入口"
+      ],
+      "fields": [
+        {
+          "label": "可用条件",
+          "source": "GET /api/v1/production/projects/{record_id}/generation-readiness → response.data",
+          "example": "真实返回的当前状态及原因",
+          "editable": false
+        },
+        {
+          "label": "已有任务状态",
+          "source": "GET /api/v1/production/generations/{record_id}/job → response.data.current_status / data.attempts / data.last_error",
+          "example": "仅从已有生成记录进入时展示",
+          "editable": false
+        },
+        {
+          "label": "当前说明",
+          "source": "LOCAL:页面解释文案，不持久化业务数据",
+          "example": "真实生成服务尚未开通",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "项目规格"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "继续加载项目文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "use": "上传项目文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "use": "提交开工核验"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/evidence",
+          "use": "读取项目证据"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/generation-readiness",
+          "use": "刷新可用条件"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/generations/{record_id}/job",
+          "use": "刷新已有任务"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/generation",
+          "use": "发起生成"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "刷新可用条件",
+          "method": "GET",
+          "path": "/api/v1/production/projects/{record_id}/generation-readiness",
+          "condition": "项目当前负责人或获准制作方",
+          "enabled": true
+        },
+        {
+          "label": "刷新已有任务",
+          "method": "GET",
+          "path": "/api/v1/production/generations/{record_id}/job",
+          "condition": "仅有获准的真实生成记录时",
+          "enabled": false
+        },
+        {
+          "label": "发起生成",
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/generation",
+          "condition": "仅后端readiness允许且真实服务已启用；当前未开通 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；X-Acting-Party=必填当前已鉴权主体id；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.operation←当前未开放，不收集/发送；启用后独立生成表单固定选择CREATE_LONG_LIVED/RENDER/DELETE_LONG_LIVED；body.avatar_id←当前未开放，不发送；启用后选定数字人记录id；body.asset_id←当前未开放，不发送；新建时null，渲染/删除用对应DIGITAL_ASSET.id；body.consent_id←当前未开放，不发送；启用后选定有效同意id；必填结构：operation枚举=CREATE_LONG_LIVED,RENDER,DELETE_LONG_LIVED；avatar_id；asset_id；asset_id可显式null；consent_id",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/projects/{id}/generation",
+      "implemented_api_refs": [
+        "GET /production/projects/{id}/generation-readiness",
+        "POST /production/projects/{id}/generations",
+        "GET /production/generations/{id}/job",
+        "POST /production/generations/{id}/retry"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-generation-disabled-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-18-01",
+      "title": "提交制作版本",
+      "image": "images/WEB-18-01.png",
+      "image_sha256": "f1dc1681e9c80dc4edd18f53f86104f8553a18481369434c32e13563843e63fc",
+      "layout": [
+        "项目当前阶段及规格",
+        "本次原件与预览文件",
+        "版本说明",
+        "历史版本编号与反馈",
+        "提交独立审片"
+      ],
+      "fields": [
+        {
+          "label": "阶段与历史版本",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.current / data.data.accepted / data.data.revisions",
+          "example": "按剧本、样片、粗剪、成片四阶段分别显示",
+          "editable": false
+        },
+        {
+          "label": "版本阶段",
+          "source": "POST /api/v1/production/projects/{record_id}/versions → request.stage",
+          "example": "选择当前允许阶段",
+          "editable": true
+        },
+        {
+          "label": "本次原件文件编号",
+          "source": "POST /api/v1/production/projects/{record_id}/versions → request.file_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "本次预览文件编号",
+          "source": "POST /api/v1/production/projects/{record_id}/versions → request.preview_file_id",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "版本说明",
+          "source": "POST /api/v1/production/projects/{record_id}/versions → request.note",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "上一轮反馈",
+          "source": "GET /api/v1/production/projects/{project_id}/records → response.data.items[].data.note",
+          "example": "已有意见纯文本",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "交付门槛"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/versions",
+          "use": "提交本次版本"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "上一轮反馈"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "use": "上传私有文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "use": "提交内部审片结论"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "读取成片原件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "use": "提交客户决定"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "上传私有文件",
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "condition": "制作负责人；文字剧本或视频类型与阶段一致 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.project_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；X-Acting-Party=必填当前已鉴权主体id；query.media_type=必填；由用户所选文件的允许MIME带入；此动作契约不要求If-Match，不虚构版本门槛；Content-Type=application/octet-stream；body=所选文件原始字节，不包JSON；大小/类型由实际路由校验",
+          "enabled": true
+        },
+        {
+          "label": "提交本次版本",
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/versions",
+          "condition": "前阶段已验收且当前权利有效；文件齐备 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；X-Acting-Party=必填当前已鉴权主体id；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.stage←本页“版本阶段”字段；body.file_id←本页“本次原件文件编号”字段；body.preview_file_id←本页“本次预览文件编号”字段；body.note←本页“版本说明”字段；必填结构：stage枚举=SCRIPT,SAMPLE,ROUGH_CUT,FINAL；file_id；preview_file_id；note",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/projects/{id}/versions",
+      "implemented_api_refs": [
+        "POST /production/projects/{id}/versions"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-version-submit-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-18-02",
+      "title": "版本独立审片",
+      "image": "images/WEB-18-02.png",
+      "image_sha256": "5a790a4da717f6509b3baaae608046fd67bde7a50f922f0129ba2e9637462a15",
+      "layout": [
+        "准确阶段与修订编号",
+        "受控预览",
+        "交付说明及依据",
+        "审核结论与理由"
+      ],
+      "fields": [
+        {
+          "label": "阶段修订",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.stage / data.data.revision",
+          "example": "样片第2版（设计示例）",
+          "editable": false
+        },
+        {
+          "label": "版本说明",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.note",
+          "example": "按提交文本显示",
+          "editable": false
+        },
+        {
+          "label": "本次决定",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.decision",
+          "example": "待选择",
+          "editable": true
+        },
+        {
+          "label": "本次理由",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.reason",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "剧本已核对",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.script_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "交付规格已核对",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.specification_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "音频已核对",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.audio_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "品牌标识已核对",
+          "source": "POST /api/v1/production/records/{record_id}/reviews → request.verification.branding_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "交付门槛"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/versions",
+          "use": "提交本次版本"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "上一轮反馈"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "use": "上传私有文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "use": "提交内部审片结论"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "读取成片原件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "use": "提交客户决定"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "打开获准版本",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "审核员有权读取该版本；query.variant=preview，读取私有文件内容",
+          "enabled": true
+        },
+        {
+          "label": "提交内部审片结论",
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "condition": "独立PRODUCTION_REVIEW；不能替客户验收 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；不依赖X-Acting-Party；按Bearer的独立操作授权校验，不能用主体OWNER替代；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“本次决定”字段；body.reason←本页“本次理由”字段；body.verification←本页“剧本已核对 / 交付规格已核对 / 音频已核对 / 品牌标识已核对”字段；PROJECT批准用合同/身份/签署/权利四项；VERSION批准按SCRIPT一项或其他阶段四项checklist；拒绝verification=null；必填结构：decision枚举=APPROVED,REJECTED；reason；verification按记录类型/阶段选择契约联合结构，禁止混合分支",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/reviews/versions/{id}",
+      "implemented_api_refs": [
+        "GET /production/versions/{id}/content",
+        "POST /production/records/{id}/reviews"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-review-versions-sample-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    },
+    {
+      "id": "WEB-18-03",
+      "title": "客户审片与阶段验收",
+      "image": "images/WEB-18-03-v2.png",
+      "image_sha256": "14ec4c610119541610bcfb6acc84f67657b79a6a79a957b33394ec7be2fc377f",
+      "layout": [
+        "当前版本及预览",
+        "规格逐项核对",
+        "验收检查项",
+        "纯文本反馈",
+        "明确阶段决定"
+      ],
+      "fields": [
+        {
+          "label": "版本说明",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.data.stage / data.data.revision / data.data.note",
+          "example": "样片第2版（示例）",
+          "editable": false
+        },
+        {
+          "label": "反馈决定",
+          "source": "POST /api/v1/production/versions/{record_id}/feedback → request.decision",
+          "example": "接受本阶段或要求修改",
+          "editable": true
+        },
+        {
+          "label": "反馈正文",
+          "source": "POST /api/v1/production/versions/{record_id}/feedback → request.note",
+          "example": "待填写",
+          "editable": true
+        },
+        {
+          "label": "剧本已核对",
+          "source": "POST /api/v1/production/versions/{record_id}/feedback → request.checklist.script_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "交付规格已核对",
+          "source": "POST /api/v1/production/versions/{record_id}/feedback → request.checklist.specification_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "音频已核对",
+          "source": "POST /api/v1/production/versions/{record_id}/feedback → request.checklist.audio_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "品牌标识已核对",
+          "source": "POST /api/v1/production/versions/{record_id}/feedback → request.checklist.branding_reviewed",
+          "example": "尚未核对",
+          "editable": true
+        },
+        {
+          "label": "交付门槛",
+          "source": "GET /api/v1/production/records/{record_id} → response.data.current_status",
+          "example": "内部审核已通过",
+          "editable": false
+        }
+      ],
+      "api_refs": [
+        {
+          "method": "GET",
+          "path": "/api/v1/production/records/{record_id}",
+          "use": "交付门槛"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{record_id}/versions",
+          "use": "提交本次版本"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects/{project_id}/records",
+          "use": "上一轮反馈"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/projects/{project_id}/files",
+          "use": "上传私有文件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/records/{record_id}/reviews",
+          "use": "提交内部审片结论"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "use": "读取成片原件"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "use": "提交客户决定"
+        }
+      ],
+      "gallery_actions": [
+        {
+          "label": "查看受控预览",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "买方有权查看当前已审版本",
+          "enabled": true
+        },
+        {
+          "label": "提交客户决定",
+          "method": "POST",
+          "path": "/api/v1/production/versions/{record_id}/feedback",
+          "condition": "买方OWNER；当前版本与项目状态有效 【实现上下文，不渲染】Authorization=当前有效Bearer，不在页面编辑；X-Request-Id可选，仅关联请求，不替代幂等键；path.record_id=从当前明确目标记录/路由带入并核对类型，不让用户任意改写；Idempotency-Key=本次意图本地生成并保存的16–128字符键；重试完全相同请求复用，禁止超时另建业务；If-Match=目标path记录最新GET响应object_version加双引号；不是关联父对象版本；成功后刷新，412重读；X-Acting-Party=必填当前已鉴权主体id；Content-Type=application/json；只发送契约字段；空对象动作发送{}；必填但nullable的字段也明确发送null；字段绑定：body.decision←本页“反馈决定”字段；body.note←本页“反馈正文”字段；body.checklist←本页“剧本已核对 / 交付规格已核对 / 音频已核对 / 品牌标识已核对”字段；必填结构：decision枚举=ACCEPT,REQUEST_CHANGES；note；checklist按记录类型/阶段选择契约联合结构，禁止混合分支；checklist可显式null",
+          "enabled": false
+        },
+        {
+          "label": "读取成片原件",
+          "method": "GET",
+          "path": "/api/v1/production/versions/{record_id}/content",
+          "condition": "仅FINAL且客户已验收、尾款到账等交付条件全部满足；本图样片不可用",
+          "enabled": false
+        }
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "implemented_route": "/production/versions/{id}",
+      "implemented_api_refs": [
+        "GET /production/versions/{id}/content",
+        "POST /production/versions/{id}/feedback"
+      ],
+      "actual_evidence": "evidence/screenshots/pr16-web-customer-final-desktop.png",
+      "scope_note": "Only current interface actions implemented; original future-context actions remain subject to their own phase. Generation service default NOT_ENABLED."
+    }
+  ]
+}

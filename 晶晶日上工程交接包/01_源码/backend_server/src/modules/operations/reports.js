@@ -1,0 +1,30 @@
+ 'use strict';
+const {error}=require('../party/policy'),{digest}=require('../governance/content');
+const {createOperationsRepository}=require('./repository');
+const MAX_ROWS=2000,parse=v=>typeof v==='string'?JSON.parse(v):v;
+const {sqlUtcInstant:iso}=require('./time');
+const sqlTime=v=>v.replace('T',' ').slice(0,-1);
+async function build(tx,access,a,r,request){
+ const args=[sqlTime(request.period_start),sqlTime(request.period_end),request.environment],party=r.party_id;
+ let query,domain;
+ if(request.kind==='CASH'){domain='TRADE';query=`SELECT j.id source_id,j.order_id record_id,j.direction category,j.amount_minor,j.currency,j.created_at occurred_at,p.data_sha256 source_sha256 FROM trade_journal j JOIN trade_records p ON p.id=j.source_id JOIN trade_records o ON o.id=j.order_id WHERE j.created_at>=? AND j.created_at<? AND JSON_UNQUOTE(JSON_EXTRACT(p.data_json,'$.environment'))=? ${party?'AND (o.buyer_party_id=? OR o.merchant_party_id=?)':''} ORDER BY j.created_at,j.id LIMIT 2001`;if(party)args.push(party,party);}
+ else if(request.kind==='SETTLEMENT'){domain='FINANCE';query=`SELECT CAST(e.id AS CHAR) source_id,e.agreement_id record_id,e.category,e.amount_minor,'CNY' currency,e.created_at occurred_at,e.data_sha256 source_sha256,e.data_json,e.party_id FROM finance_entries e JOIN finance_records g ON g.id=e.agreement_id WHERE e.created_at>=? AND e.created_at<? AND JSON_UNQUOTE(JSON_EXTRACT(g.data_json,'$.environment'))=? ${party?'AND e.party_id=?':''} ORDER BY e.created_at,e.id LIMIT 2001`;if(party)args.push(party);}
+ else {domain='PRODUCTION';query=`SELECT p.id source_id,p.id record_id,'PROJECT' category,p.current_status status,p.created_at occurred_at,p.data_sha256 source_sha256 FROM production_records p JOIN trade_records o ON o.id=p.order_id WHERE p.kind='PROJECT' AND p.created_at>=? AND p.created_at<? AND EXISTS(SELECT 1 FROM trade_records pay JOIN trade_journal j ON j.source_id=pay.id AND j.direction='RECEIPT' WHERE pay.order_id=o.id AND JSON_UNQUOTE(JSON_EXTRACT(pay.data_json,'$.environment'))=?) AND NOT EXISTS(SELECT 1 FROM trade_records pay JOIN trade_journal j ON j.source_id=pay.id AND j.direction='RECEIPT' WHERE pay.order_id=o.id AND JSON_UNQUOTE(JSON_EXTRACT(pay.data_json,'$.environment'))<>?) ${party?'AND (o.buyer_party_id=? OR o.merchant_party_id=?)':''} ORDER BY p.created_at,p.id LIMIT 2001`;args.push(request.environment);if(party)args.push(party,party);}
+ const [records]=await tx.execute(query,args);if(records.length>MAX_ROWS)throw error('REPORT_LIMIT_EXCEEDED',409);
+ const rows=[],sources=new Map(),totals={};for(const row of records){if(row.data_json&&digest(parse(row.data_json))!==row.source_sha256)throw error('STORED_CONTENT_MISMATCH',503);const key=domain+':'+row.record_id;if(!sources.has(key)){const current=await access.source(tx,a,{domain,record_id:row.record_id,party_id:party});sources.set(key,{domain,record_id:row.record_id,content_sha256:current.content_sha256});}const amount=row.amount_minor===undefined?null:Number(row.amount_minor);if(amount!==null&&!Number.isSafeInteger(amount))throw error('REPORT_MONEY_OVERFLOW',409);const value={domain,record_id:row.record_id,source_id:row.source_id,source_sha256:row.source_sha256,category:row.category,amount_minor:amount,currency:row.currency||null,status:row.status||null,party_id:row.party_id||null,occurred_at:iso(row.occurred_at)};rows.push(value);const k=row.status||row.category;totals[k]=(totals[k]||0)+(amount===null?1:amount);if(!Number.isSafeInteger(totals[k]))throw error('REPORT_MONEY_OVERFLOW',409);}
+ const [[clock]]=await tx.execute('SELECT CURRENT_TIMESTAMP(3) as time');
+ return {metric_version:'1',environment:request.environment,period_start:request.period_start,period_end:request.period_end,generated_at:iso(clock.time),row_count:rows.length,totals,rows,sources:[...sources.values()],limitations:request.kind==='CASH'?['按流水入账时间统计；收款、退款分列；不是利润或可分配余额','历史申报已付不作为核验到账']:request.kind==='SETTLEMENT'?['仅核算台账；计提、调整、已付、退回分列；不代替银行流水','主体查看自己的份额，运营查看全部份额；不能把双方份额相加当收入']:['统计期间内创建的制作项目在生成报表时的状态，不是历史时点状态','仅计入有单一环境已核验收款的订单；未付、环境不明或混合环境项目不计入','未记录人员工时和实际制作成本，不提供虚构产能或利润']};
+}
+function createOperationsHandlers(db){
+ const access=createOperationsRepository(db)._internal;
+ async function execute(job){try{return await db.withTransaction(async tx=>{
+  const [[lease]]=await tx.execute("SELECT id FROM platform_jobs WHERE id=? AND task_type='OPERATIONS_REPORT' AND payload_ref=? AND status='RUNNING' AND lease_token=? AND lease_owner=? AND lease_until>CURRENT_TIMESTAMP(6) FOR UPDATE",[job.id,job.payload_ref,job.lease_token,job.lease_owner]);if(!lease)throw error('LEASE_LOST',409);
+  const r=await access.loadReport(tx,job.payload_ref);if(r.job_id!==job.id)throw error('REPORT_JOB_MISMATCH',409);const [[account]]=await tx.execute('SELECT * FROM identity_accounts WHERE id=? FOR SHARE',[r.created_by]);if(!account||account.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE');const a={...account,principal:{subject_ref:account.subject_ref,request_id:job.id},request_id:job.id};await access.reportAccess(tx,a,r);
+  if(r.result_json)return {status:'SUCCEEDED',result_ref:r.id};const request=parse(r.request_json);if(digest(request)!==r.request_sha256)throw error('STORED_CONTENT_MISMATCH',503);
+  const result=await build(tx,access,a,r,request);
+  const [[still]]=await tx.execute('SELECT lease_until>CURRENT_TIMESTAMP(6) valid FROM platform_jobs WHERE id=?',[job.id]);if(!Number(still.valid))throw error('LEASE_LOST',409);
+  await tx.execute('UPDATE ops_reports SET result_json=?,result_sha256=? WHERE id=? AND result_json IS NULL',[JSON.stringify(result),digest(result),r.id]);await access.audit(tx,a,r.id,'REPORT_GENERATED',1);return {status:'SUCCEEDED',result_ref:r.id};
+ });}catch(e){if(e.code==='LEASE_LOST')throw e;return {status:'BLOCKED',error_code:['REPORT_LIMIT_EXCEEDED','REPORT_MONEY_OVERFLOW','ACCOUNT_NOT_ACTIVE','PARTY_ACTION_FORBIDDEN','OPERATIONS_FORBIDDEN'].includes(e.code)?e.code:'REPORT_REQUIRES_REVIEW'};}}
+ return new Map([['OPERATIONS_REPORT',{execute,recover:execute}]]);
+}
+module.exports={createOperationsHandlers,build,MAX_ROWS};

@@ -144,6 +144,10 @@ class FakeAccountAdapter implements HttpClientAdapter {
         'allowed_actions': []
       });
     }
+    if (options.path.contains('/gigs/relations/') &&
+        options.path.endsWith('/parties')) {
+      return envelope({'code': 'NOT_FOUND'}, status: 404, error: true);
+    }
     return envelope({});
   }
 

@@ -1,4 +1,4 @@
- 'use strict';
+'use strict';
 const {randomUUID,createHash}=require('node:crypto');
 const {id,ref,label,shape,version,error}=require('../party/policy');
 const {canonical,digest}=require('../governance/content');
@@ -24,7 +24,7 @@ function createSupplyRepository(db,{resolvePrincipal=async()=>null,verifyProject
   if(row.created_by===a.id||await one(tx,"SELECT id FROM party_memberships WHERE party_id=? AND account_id=? AND current_status='ACTIVE'",[row.owner_party_id,a.id]))throw error('SELF_REVIEW_FORBIDDEN');
  }
  function data(row){const value=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;if(digest(value)!==row.data_sha256)throw error('STORED_CONTENT_MISMATCH',503);if(row.kind==='WORK_VERSION'&&(value.version.content.id!==row.id||value.version.content.work_id!==row.stream_ref||value.version.content.owner_party_id!==row.owner_party_id||value.version.content.revision!==row.revision||value.version.object_version!==row.object_version||policy.reviewProgress(value.version)!==row.current_status))throw error('STORED_CONTENT_MISMATCH',503);return {id:row.id,kind:row.kind,stream_ref:row.stream_ref,revision:row.revision,owner_party_id:row.owner_party_id,created_by:row.created_by,current_status:row.current_status,object_version:row.object_version,data:value};}
- async function audit(tx,a,row,event,from=0){await tx.execute('INSERT INTO supply_audit(id,record_id,actor_account_id,event_code,from_version,to_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?,?)',[randomUUID(),row.id,a.id,event,from,row.object_version,digest(row.data),a.request_id]);}
+ async function audit(tx,a,row,event,from=0){const eventId=randomUUID();await tx.execute('INSERT INTO supply_audit(id,record_id,actor_account_id,event_code,from_version,to_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?,?)',[eventId,row.id,a.id,event,from,row.object_version,digest(row.data),a.request_id]);if(!event.startsWith('ASSET_'))await require('../operations/events').publishEvent(tx,{domain:'SUPPLY',record_id:row.id,event_id:eventId,event_code:event,object_version:row.object_version,actor_account_id:a.id});}
  async function insert(tx,a,{kind,stream,revision=1,partyId,status,body,recordId=randomUUID()}){
   const row={id:recordId,kind,stream_ref:stream,revision,owner_party_id:partyId,created_by:a.id,current_status:status,object_version:1,data:body};
   await tx.execute('INSERT INTO supply_records(id,kind,stream_ref,revision,owner_party_id,created_by,current_status,object_version,data_json,data_sha256) VALUES (?,?,?,?,?,?,?,?,?,?)',[row.id,kind,stream,revision,partyId,a.id,status,1,JSON.stringify(body),digest(body)]);

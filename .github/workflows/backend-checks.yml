@@ -28,6 +28,8 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22.19.0'
+      - name: 离线检查配置缺项和凭证不外泄
+        run: python3 scripts/provider_config_audit_test.py
       - name: 单独检查账号权限规则
         run: node scripts/backend-check.cjs party-unit
       - name: 安装锁定版本的接口检查工具
@@ -76,6 +78,11 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/supply-http-fixtures.json --report .local/ci-evidence/supply-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/licensing-http-fixtures.json --report .local/ci-evidence/licensing-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/trade-http-fixtures.json --report .local/ci-evidence/trade-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/production-http-fixtures.json --report .local/ci-evidence/production-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/projects-http-fixtures.json --report .local/ci-evidence/projects-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/gigs-http-fixtures.json --report .local/ci-evidence/gigs-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/finance-http-fixtures.json --report .local/ci-evidence/finance-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/operations-http-fixtures.json --report .local/ci-evidence/operations-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop
