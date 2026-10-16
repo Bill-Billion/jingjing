@@ -71,3 +71,18 @@ test('customization interim payment is not silently treated as sample acceptance
  assert.throws(()=>plan(lines,[{trigger:'ORDER_ACCEPTED',allocations:[{line_id:'a',amount_minor:100}]}]),{code:'CUSTOMIZATION_PAYMENT_PLAN_INVALID'});
  assert.throws(()=>plan(lines,['ORDER_ACCEPTED','SAMPLE_ACCEPTED','FINAL_ACCEPTED'].map((trigger,i)=>({trigger,allocations:[{line_id:'a',amount_minor:[30,60,10][i]}]}))),{code:'CUSTOMIZATION_PAYMENT_PLAN_INVALID'});
 });
+
+const finance=require('../src/modules/customization/finance-policy');
+const {randomUUID}=require('node:crypto');
+const platform=randomUUID(),producer=randomUUID(),shares=[{party_id:producer,bps:5000,role:'PRODUCER'},{party_id:platform,bps:5000,role:'PLATFORM'}];
+test('self-operated income rounds each recipient half up and platform absorbs exact remainder',()=>{
+ const result=finance.split(1,shares,platform);assert.equal(result.rounding_diff_minor,-1);assert.equal(result.entries[0].amount_minor,1);assert.equal(result.entries[1].amount_minor,0);
+ for(const n of [0,1,3,10001,900000000000])assert.equal(finance.split(n,shares,platform).entries.reduce((sum,x)=>sum+x.amount_minor,0),n);
+ assert.deepEqual(finance.split(1,[...shares].reverse(),platform).entries.slice().reverse(),result.entries);
+});
+test('custom finance requires explicit self-operated approved terms and delivery condition, not marketplace commission defaults',()=>{
+ const value={model:'V5_SELF_OPERATED',platform_party_id:platform,rounding:'HALF_UP_PLATFORM_REMAINDER',rules:{version:'test',settlement_at:'2020-01-01T00:00:00.000Z',release_condition:'DELIVERY_ACCEPTED',terms:'synthetic',lines:[{line_id:'p',shares,deductions:[]}]}};
+ assert.deepEqual(finance.policy(value,[{line_id:'p',total_minor:100,provider_party_id:producer}],platform),value);
+ for(const bad of [undefined,{...value,model:'MARKETPLACE'},{...value,rules:{...value.rules,release_condition:'RECEIVED'}},{...value,platform_party_id:producer}])assert.throws(()=>finance.policy(bad,[{line_id:'p',total_minor:100,provider_party_id:producer}],platform));
+ const mcn=structuredClone(value);mcn.rules.lines[0].shares[0].role='MCN';assert.throws(()=>finance.policy(mcn,[{line_id:'p',total_minor:100,provider_party_id:producer}],platform));
+});

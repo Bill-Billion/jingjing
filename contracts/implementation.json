@@ -1,5 +1,5 @@
 {
-  "version": "0.14.0-rc.1",
+  "version": "0.14.0-rc.3",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -239,5 +239,16 @@
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
     "limits": "商品分类随规格审核并冻结；已分类商品无法漏传故事绕行。V5正式切换必须设TRADE_REQUIRE_V5_PRODUCTS=true，默认保留旧业务过渡；此前已发报价和订单保留。仅私人定制可形成未付款单，其他V5分类报价返回尚未实现；新分账/真实付款/前端验收未完成，未上传未启用。"
+  },
+  "customization_finance": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createTradeQuote",
+      "acceptTradeQuote",
+      "agreementFinanceOperation",
+      "settleFinanceOperation"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
+    "limits": "自营定制财务条款从已批准规则固定到报价、合同和财务；净退款及平台尾差检查。模拟入账/退款只是隔离数据，无真实支付、签署或转账。MCN撮合新算法、推荐归因、税票/渠道核对仍待；新付款仍阻断，页面未验收、未上传未启用。"
   }
 }

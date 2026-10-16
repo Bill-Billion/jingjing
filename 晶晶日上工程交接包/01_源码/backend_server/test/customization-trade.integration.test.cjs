@@ -43,7 +43,8 @@ test('platform customization quote HTTP, story version and unique order transact
   for(const p of people){p.token=randomBytes(32).toString('base64url');await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[auth.secure.digest('token',p.token),p.account_id]);}
   async function grant(p,action,enabled=true,expected_version=0){return maintainOperatorGrant(db,{account_id:p.account_id,action,enabled,expires_at:null,expected_version,authority_ref:'synthetic:quote-tests',reason:'isolated quote fixture only'});}
   await grant(reviewer,'TRADE_REVIEW');await grant(merchant,'TRADE_REVIEW');await grant(merchant,'CUSTOMIZATION_INTAKE');
-  const ruleId=key(),rule=createRuleContent({id:ruleId,rule_key:'customization.synthetic',version:'1',terms:{explicit:'Synthetic, no formal prices or rights'}});
+  const financePolicy={model:'V5_SELF_OPERATED',platform_party_id:merchantOrg.party_id,rounding:'HALF_UP_PLATFORM_REMAINDER',rules:{version:'synthetic-finance-1',settlement_at:'2020-01-01T00:00:00.000Z',release_condition:'DELIVERY_ACCEPTED',terms:'合成比例，仅验算，不是正式成本或毛利',lines:[{line_id:'production',shares:[{party_id:merchant.personal_party_id,role:'PRODUCER',bps:6667},{party_id:merchantOrg.party_id,role:'PLATFORM',bps:3333}],deductions:[]}]}};
+  const ruleId=key(),rule=createRuleContent({id:ruleId,rule_key:'customization.synthetic',version:'1',terms:{explicit:'Synthetic, no formal prices or rights',customization_finance:financePolicy}});
   await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'customization.synthetic','1',JSON.stringify(rule),'2020-01-01 00:00:00',operator.account_id,'EFFECTIVE']);
   let paidCalls=0;const fakeProviders=()=>({get:()=>({config:{provider:'ALIPAY',environment:'SANDBOX',merchant_party_id:merchantOrg.party_id,app_id:'synthetic',merchant_id:'synthetic',config_revision:1},assertReady:async()=>{},call:async()=>{paidCalls++;throw Error('External calls forbidden');}})});
   const trade=createTradeRepository(db,{resolvePrincipal,customizationMerchantPartyId:merchantOrg.party_id});
@@ -220,6 +221,55 @@ test('platform customization quote HTTP, story version and unique order transact
    try{denied(await http('POST','/trade/quotes',merchant,body,merchantOrg.party_id,null,op),503);assert.equal(take(await list(r),'CustomizationQuotePageResponse').items.length,0);}
    finally{await db.withConnection(c=>c.query('DROP TRIGGER customization_link_fail'));}
    take(await http('POST','/trade/quotes',merchant,body,merchantOrg.party_id,null,op));
+  });
+  await grant(reviewer,'FINANCE_REVIEW');
+  const financeTake=r=>take(r,'FinanceRecordResponse');
+  const finReview=r=>http('POST','/finance/records/'+r.id+'/reviews',reviewer,{decision:'APPROVED',reason:'合成财务证据复核，不是真实签署',verification:{parties_verified:true,contract_verified:true,amount_verified:true,evidence_verified:true}},null,r.object_version);
+  const evidenceId=key();
+  // Synthetic metadata only; no real signature, bank proof, provider payment or stored private document.
+  await db.execute("INSERT INTO supply_assets(id,owner_party_id,created_by,operation_hash,object_key,purpose,media_type,byte_size,content_sha256,current_status) VALUES (?,?,?,?,?,'RIGHTS_EVIDENCE','text/plain',1,?,'READY')",[evidenceId,merchantOrg.party_id,merchant.account_id,digest(key()),'synthetic:'+key(),digest('synthetic')]);
+  const agreementBody=o=>({source_type:'ORDER',source_id:o.id,previous_agreement_id:null,environment:'SANDBOX',rule_id:ruleId,rules:o.data.quote.customization_finance.rules,evidence_asset_id:evidenceId});
+  await t.test('customization quote refuses missing or mismatched approved finance terms without defaults',async()=>{
+   const otherRule=key(),content=createRuleContent({id:otherRule,rule_key:'synthetic.no-finance',version:'1',terms:{note:'no formal cost terms'}});
+   await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[otherRule,'synthetic.no-finance','1',JSON.stringify(content),'2020-01-01 00:00:00',operator.account_id,'EFFECTIVE']);
+   assert.equal(denied(await http('POST','/trade/quotes',merchant,{...quoteBody(await ready()),rule_id:otherRule},merchantOrg.party_id),409).code,'CUSTOMIZATION_FINANCE_RULE_REQUIRED');
+   const badFinance=structuredClone(financePolicy);badFinance.rules.lines[0].shares[0].party_id=key();const badContent=createRuleContent({id:otherRule,rule_key:'synthetic.no-finance',version:'2',terms:{customization_finance:badFinance}});await db.execute('UPDATE governance_rules SET content_json=? WHERE id=?',[JSON.stringify(badContent),otherRule]);assert.equal(denied(await http('POST','/trade/quotes',merchant,{...quoteBody(await ready()),rule_id:otherRule},merchantOrg.party_id),409).code,'CUSTOMIZATION_FINANCE_PARTY_NOT_ACTIVE');
+  });
+  await t.test('accepted quote freezes approved finance even after the governing rule content is replaced',async()=>{
+   const q=take(await review(await quote(await ready()))),before=q.data.customization_finance;
+   const replacement=createRuleContent({id:ruleId,rule_key:'customization.synthetic',version:'2',terms:{explicit:'synthetic changed terms',customization_finance:{...financePolicy,rules:{...financePolicy.rules,version:'synthetic-finance-2'}}}});
+   await db.execute('UPDATE governance_rules SET content_json=? WHERE id=?',[JSON.stringify(replacement),ruleId]);
+   try{
+    const order=take(await accept(q));assert.deepEqual(order.data.quote.customization_finance,before);assert.deepEqual(order.data.contract.rule_contents[0],before.rule_snapshot.content);
+    const body=agreementBody(order),bad=structuredClone(body);bad.rules.lines[0].shares[0].bps=5000;bad.rules.lines[0].shares[1].bps=5000;
+    assert.equal(denied(await http('POST','/finance/agreements',merchant,bad,merchantOrg.party_id),409).code,'CUSTOMIZATION_FINANCE_SNAPSHOT_MISMATCH');
+    const wrongRule={...body,rule_id:key()};assert.equal(denied(await http('POST','/finance/agreements',merchant,wrongRule,merchantOrg.party_id),409).code,'CUSTOMIZATION_FINANCE_SNAPSHOT_MISMATCH');
+    denied(await http('POST','/finance/agreements',stranger,body,stranger.personal_party_id),403);
+    const agreement=financeTake(await http('POST','/finance/agreements',merchant,body,merchantOrg.party_id));assert.deepEqual(agreement.data.rule_snapshot,before.rule_snapshot.content);
+   }finally{await db.execute('UPDATE governance_rules SET content_json=? WHERE id=?',[JSON.stringify(rule),ruleId]);}
+  });
+  await t.test('unpaid order accrues nothing; synthetic receipts and refunds use frozen shares and persist platform rounding',async()=>{
+   const order=take(await accept(take(await review(await quote(await ready())))));
+   let agreement=financeTake(await http('POST','/finance/agreements',merchant,agreementBody(order),merchantOrg.party_id));
+   denied(await http('POST','/finance/records/'+agreement.id+'/reviews',merchant,{decision:'APPROVED',reason:'self',verification:{parties_verified:true,contract_verified:true,amount_verified:true,evidence_verified:true}},null,agreement.object_version),403);
+   agreement=financeTake(await finReview(agreement));
+   const settle=()=>http('POST','/finance/agreements/'+agreement.id+'/settlements',merchant,{period_reference:key(),note:'合成对账'},merchantOrg.party_id,agreement.object_version);
+   denied(await settle(),409);
+   for(const [p,acting] of [[buyer,buyer.personal_party_id],[merchant,merchantOrg.party_id],[merchant,merchant.personal_party_id]])financeTake(await http('POST','/finance/records/'+agreement.id+'/confirmations',p,{content_sha256:agreement.content_sha256,decision:'APPROVED',reason:'仅合成确认'},acting,agreement.object_version));
+   const empty=financeTake(await settle());assert.equal(empty.data.received_minor,0);assert.ok(empty.data.balances.every(x=>x.accrued_minor===0));
+   async function observation(direction,amount){
+    const rid=key(),data={provider:'ALIPAY',environment:'SANDBOX',transaction_id:'synthetic:'+key(),allocations:[{line_id:'production',amount_minor:amount}]};
+    await db.execute('INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,parent_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,?,?,?,?,?,?,?,?,?)',[rid,direction==='RECEIPT'?'PAYMENT':'REFUND',buyer.personal_party_id,merchantOrg.party_id,order.id,order.id,merchant.account_id,'SUCCEEDED',JSON.stringify(data),digest(data)]);
+    await db.execute('INSERT INTO trade_journal(id,source_id,order_id,direction,currency,amount_minor,provider_reference) VALUES (?,?,?,?,?,?,?)',[key(),rid,order.id,direction,'CNY',amount,'synthetic:'+key()]);
+   }
+   await observation('RECEIPT',5);const first=financeTake(await settle());assert.equal(first.data.received_minor,5);
+   assert.equal(first.data.balances.find(x=>x.party_id===merchant.personal_party_id).accrued_minor,3);assert.equal(first.data.balances.find(x=>x.party_id===merchantOrg.party_id).accrued_minor,2);
+   await observation('REFUND',4);const after=financeTake(await settle());assert.equal(after.data.received_minor,1);assert.equal(after.data.balances.find(x=>x.party_id===merchant.personal_party_id).accrued_minor,1);assert.equal(after.data.balances.find(x=>x.party_id===merchantOrg.party_id).accrued_minor,0);
+   const entries=take(await http('GET','/finance/agreements/'+agreement.id+'/entries',merchant,undefined,merchantOrg.party_id),'FinanceEntriesResponse');assert.ok(entries.items.length>0);assert.ok(entries.items.every(x=>x.data.rounding?.[0].platform_party_id===merchantOrg.party_id));
+   const [[before]]=await db.execute('SELECT COUNT(*) n FROM finance_entries WHERE agreement_id=?',[agreement.id]);financeTake(await settle());const [[afterRepeat]]=await db.execute('SELECT COUNT(*) n FROM finance_entries WHERE agreement_id=?',[agreement.id]);assert.equal(before.n,afterRepeat.n);
+   await observation('REFUND',1);const zero=financeTake(await settle());assert.ok(zero.data.balances.every(x=>x.accrued_minor===0));
+   denied(await http('GET','/finance/agreements/'+agreement.id+'/balances',stranger),404);
+   assert.equal(denied(await http('POST','/trade/payments',buyer,{order_id:order.id,installment_key:'first'}),409).code,'CUSTOMIZATION_PAYMENT_RULES_PENDING');
   });
   assert.equal(paidCalls,0);
   const output=path.resolve(__dirname,'../../../..','.local/customization-quote-http-fixtures.json');await fs.mkdir(path.dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
