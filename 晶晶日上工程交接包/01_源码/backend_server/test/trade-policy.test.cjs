@@ -27,7 +27,7 @@ test('server derives required story from saved product, not a client-selected fl
  const lines=[{product_profile:custom,line_kind:'PRODUCTION'}];
  assert.throws(()=>products.quote(lines,{}),{code:'CUSTOMIZATION_SOURCE_REQUIRED'});
  products.quote(lines,{customization_source:{request_id:'checked separately'}});
- for(const type of products.TYPES.filter(t=>t!==custom.type))assert.throws(()=>products.quote([{product_profile:{version:'V5',type}}],{}),{code:'PRODUCT_FLOW_NOT_IMPLEMENTED'});
+ for(const type of products.TYPES.filter(t=>['MANUAL_SAMPLE','STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(t)))assert.throws(()=>products.quote([{product_profile:{version:'V5',type}}],{}),{code:'PRODUCT_FLOW_NOT_IMPLEMENTED'});
 });
 test('legacy and V5 products cannot be mixed to weaken rules',()=>{
  assert.throws(()=>products.quote([{product_profile:custom},{}],{customization_source:{}}),{code:'MIXED_PRODUCT_PROFILES'});

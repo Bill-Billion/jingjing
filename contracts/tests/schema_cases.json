@@ -1349,6 +1349,50 @@
           "relation_reference": null
         }
       }
+    },
+    {
+      "name": "Artist identity cannot be set by display-name request",
+      "schema": "ArtistPerson",
+      "value": {
+        "id": "synthetic",
+        "identity_status": "VERIFIED"
+      }
+    },
+    {
+      "name": "Agency cannot request signing authority in finite delegation",
+      "schema": "ArtistDelegationInput",
+      "value": {
+        "organization_party_id": "00000000-0000-0000-0000-000000000001",
+        "relation_id": "00000000-0000-0000-0000-000000000002",
+        "actions": [
+          "SIGN_CONTRACT"
+        ],
+        "valid_from": "2026-01-01T00:00:00.000Z",
+        "valid_until": "2027-01-01T00:00:00.000Z",
+        "evidence_asset_ids": [
+          "00000000-0000-0000-0000-000000000003"
+        ],
+        "terms": "synthetic"
+      }
+    },
+    {
+      "name": "Artist page must not return verified identity fingerprint",
+      "fixture": "ArtistPersonResponse",
+      "mutate_path": [
+        "data",
+        "identity_key"
+      ],
+      "replace_with": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "Digital archive cannot claim long-lived model is ready",
+      "fixture": "ArtistAvatarResponse",
+      "mutate_path": [
+        "data",
+        "data",
+        "long_lived_model_status"
+      ],
+      "replace_with": "READY"
     }
   ]
 }

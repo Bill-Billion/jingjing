@@ -1,5 +1,5 @@
 {
-  "version": "0.15.0-rc.1",
+  "version": "0.16.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -171,7 +171,37 @@
     "listCustomizationSubmissions",
     "getCustomizationSubmission",
     "listCustomizationQuotes",
-    "previewMarketplaceFinance"
+    "previewMarketplaceFinance",
+    "getArtistServices",
+    "listArtistCatalogue",
+    "listArtistReviews",
+    "createArtistPerson",
+    "listArtistPeople",
+    "getArtistPerson",
+    "listArtistRecords",
+    "getArtistRecord",
+    "createArtistAvatar",
+    "verifyArtistIdentity",
+    "declareArtistConsent",
+    "createArtistDelegation",
+    "createArtistVariant",
+    "requestArtistHalo",
+    "submitArtistListing",
+    "reviewArtistRecord",
+    "withdrawArtistRecord",
+    "supplementArtistRecord",
+    "appealArtistRecord",
+    "requestArtistService",
+    "getArtistService",
+    "syncArtistService",
+    "cancelArtistService",
+    "changeArtistRenewalReminder",
+    "recordArtistServiceResult",
+    "uploadArtistAsset",
+    "getArtistAsset",
+    "downloadArtistAsset",
+    "downloadArtistReviewAsset",
+    "downloadArtistPublicPreview"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -262,5 +292,18 @@
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/marketplace.integration.test.cjs",
     "limits": "财务试算是真实接口且无订单/收付款副作用。两层财务来源与退款在合成订单验证；V5撮合下单、真实推荐归因、自动清分和签署认证未开放。旧单保留旧算法。"
+  },
+  "artists": {
+    "branch": "core/v5-r03-artists-assets",
+    "test": "node scripts/backend-check.cjs artists",
+    "peer_review": "PENDING",
+    "production_enabled": false,
+    "limitations": [
+      "儿童实际处理关闭，用户已确认",
+      "第三方实名和长期模型未正式接入",
+      "L3成长数据第9轮接入，当前不可购买审核",
+      "自动扣费未启用；续托管提醒单独可取消",
+      "页面和跨端验收待队友接入"
+    ]
   }
 }

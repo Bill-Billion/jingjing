@@ -10,7 +10,7 @@ const {createSupplyRouter}=require('./supply-routes');
 const {createLicensingRouter}=require('./licensing-routes');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory,productionProviderFactory}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory,productionProviderFactory,artistIdentityProviderFactory}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
@@ -135,10 +135,11 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/operations',require('./business-operations-routes').createBusinessOperationsRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/finance',require('./settlement-routes').createSettlementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/projects',require('./projects-routes').createProjectsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
- app.use('/api/v1/production',require('./production-routes').createProductionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,providerFactory:productionProviderFactory}));
+ app.use('/api/v1/production',require('./production-routes').createProductionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,providerFactory:productionProviderFactory,artistIdentityProviderFactory}));
  app.use('/api/v1/gigs',require('./gigs-routes').createGigsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/artists',require('./artist-routes').createArtistRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,identityProviderFactory:artistIdentityProviderFactory}));
  app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use((req,res,next)=>next(error('NOT_FOUND',404)));
  app.use((e,req,res,next)=>{

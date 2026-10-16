@@ -9,6 +9,7 @@ from importlib.metadata import version
 import json
 from pathlib import Path
 import platform
+import re
 import sys
 from unittest.mock import patch
 
@@ -106,7 +107,15 @@ def validate(runtime_fixtures=None):
         check(not valid(schema, value), 'Rejected example: '+x['name'])
 
     for x in runtime_cases:
-        check(valid(x['schema'],x['value']), 'Actual HTTP response: '+x['schema'])
+        schema = x['schema']
+        if 'method' in x and 'path' in x:
+            matches = [item[x['method'].lower()] for route, item in spec['paths'].items()
+                       if x['method'].lower() in item and re.fullmatch(re.sub(r'\{[^}]+\}', '[^/]+', route), x['path'])]
+            check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
+            if len(matches) == 1 and schema != 'ErrorResponse':
+                schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
+        check(valid(schema,x['value']), 'Actual HTTP response: '+schema)
+
 
     # Candidate protocol invariants. These are not server behavioral tests.
     implemented_ids=set(json.loads((ROOT/'contracts/implementation.json').read_text(encoding='utf-8'))['isolated_tested_operations'])
@@ -141,7 +150,7 @@ def validate(runtime_fixtures=None):
             if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest','requestCustomizationSupplement','submitCustomizationSupplement'}:
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
-            account_scoped_supply = {'previewMarketplaceFinance','listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
+            account_scoped_supply = {'getArtistServices','listArtistCatalogue','listArtistReviews','getArtistRecord','reviewArtistRecord','recordArtistServiceResult','downloadArtistReviewAsset','downloadArtistPublicPreview','previewMarketplaceFinance','listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
                 'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent',
                 'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob','reviewProjectOperation','listProjectCatalogue','listManagedProjects','getProjectRecord','listProjectRecords','listProjectConfirmations','getProjectReadiness','downloadProjectEvidence','createGigRule','retireGigRule','reviewGigRecord','suspendGig','createGigRanking','listGigRecords','getGigRecord','listGigCatalogue','getGigRanking','downloadGigEvidence','decideDisputeFinanceOperation','reviewFinanceOperation','listFinanceAgreements','listFinanceRecords','getFinanceRecord','listFinanceConfirmations','getFinanceReadiness','getFinanceBalances','listFinanceEntries','downloadFinanceEvidence','listBusinessComments','addBusinessComment','changeBusinessComment','listOperationsAudit','listBusinessAudit','requestBusinessReport','getBusinessReport','downloadBusinessReport','retryBusinessReport'}
             if op['operationId'] in customization_account_scopes:
@@ -171,7 +180,7 @@ def validate(runtime_fixtures=None):
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')
-                if op['operationId'] in {'downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence','downloadProductionContent','downloadProductionEvidence','downloadProjectEvidence','downloadGigEvidence','downloadFinanceEvidence'} and code=='200':
+                if op['operationId'] in {'downloadArtistAsset','downloadArtistReviewAsset','downloadArtistPublicPreview','downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence','downloadProductionContent','downloadProductionEvidence','downloadProjectEvidence','downloadGigEvidence','downloadFinanceEvidence'} and code=='200':
                     check(response['content']['application/octet-stream']['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
                     check('Cache-Control' in response.get('headers',{}), 'Private file no-store declared')
                     continue
