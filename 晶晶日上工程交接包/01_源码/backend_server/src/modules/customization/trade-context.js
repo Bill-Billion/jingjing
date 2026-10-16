@@ -32,4 +32,14 @@ async function bindOrder(tx,order){
  try{await tx.execute('INSERT INTO customization_orders(request_id,submission_id,quote_id,order_id) VALUES (?,?,?,?)',[s.request_id,s.submission_id,order.parent_id,order.id]);}
  catch(e){if(e.code==='ER_DUP_ENTRY')throw error('CUSTOMIZATION_ORDER_EXISTS',409);throw e;}
 }
-module.exports={source,current,assertUnordered,bindOrder};
+// Internal reader: caller must already authorize access to the linked production project.
+async function orderedSubmission(tx,value,buyer,orderId){
+ const v=source(value),r=await one(tx,'SELECT * FROM customization_requests WHERE id=? AND party_id=? FOR SHARE',[v.request_id,buyer]);
+ const link=await one(tx,'SELECT order_id FROM customization_orders WHERE request_id=? AND submission_id=? AND order_id=? FOR SHARE',[v.request_id,v.submission_id,orderId]);
+ const s=await one(tx,'SELECT * FROM customization_submissions WHERE id=? AND request_id=? FOR SHARE',[v.submission_id,v.request_id]);
+ if(!r||!link||!s)throw error('CUSTOMIZATION_NOT_FOUND',404);
+ const hash=digest({format:'customization-submission-v1',id:s.id,request_id:s.request_id,template_version_id:s.template_version_id,template_sha256:s.template_sha256,answers_sha256:s.answers_sha256,submitted_by:s.submitted_by,submitted_at:instant(s.submitted_at)});
+ if(hash!==s.content_sha256||hash!==v.content_sha256||digest(parse(s.answers_json))!==s.answers_sha256||digest(parse(s.template_snapshot_json))!==s.template_sha256)throw error('STORED_CONTENT_MISMATCH',503);
+ return {request_id:r.id,submission_id:s.id,content_sha256:s.content_sha256,template_snapshot:parse(s.template_snapshot_json),answers:parse(s.answers_json)};
+}
+module.exports={source,current,assertUnordered,bindOrder,orderedSubmission};

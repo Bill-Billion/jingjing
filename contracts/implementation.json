@@ -1,5 +1,5 @@
 {
-  "version": "0.16.0-rc.1",
+  "version": "0.17.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -201,7 +201,16 @@
     "getArtistAsset",
     "downloadArtistAsset",
     "downloadArtistReviewAsset",
-    "downloadArtistPublicPreview"
+    "downloadArtistPublicPreview",
+    "getCustomizationFulfillment",
+    "getProductionStory",
+    "startCustomizationProduction",
+    "openCustomizationCase",
+    "resolveCustomizationCase",
+    "syncCustomizationRefund",
+    "acknowledgeCustomizationDelivery",
+    "reissueCustomizationDelivery",
+    "downloadCustomizationCaseEvidence"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -249,7 +258,7 @@
       "getCustomizationSubmission"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization.integration.test.cjs",
-    "limits": "第二轮补件/重提/历史的本地实现；报价关联、页面和整轮验收尚未完成，未上传、未合入、未正式启用。"
+    "limits": "截至第4轮：前置后端已交接；本轮带已审交付条款的定制订单接制作付款与售后，旧缺条款订单仍阻止付款。真实服务、前端、实际审阅、合入与启用未完成。其他商品流程按后续轮次，原订单承诺保留。"
   },
   "customization_quote_binding": {
     "status": "IMPLEMENTED_ISOLATED_TESTS",
@@ -260,7 +269,7 @@
       "listCustomizationQuotes"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
-    "limits": "平台组织配置+OWNER+受理岗；故事定制30/60/10、未付款订单；新报价须使用V5定制分类。付款强制阻断，V5分账/中间付款条件和前端未完成，本地未上传未启用。"
+    "limits": "截至第4轮：前置后端已交接；本轮带已审交付条款的定制订单接制作付款与售后，旧缺条款订单仍阻止付款。真实服务、前端、实际审阅、合入与启用未完成。其他商品流程按后续轮次，原订单承诺保留。"
   },
   "trade_product_routing": {
     "status": "IMPLEMENTED_ISOLATED_TESTS",
@@ -269,7 +278,7 @@
       "createTradeQuote"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
-    "limits": "商品分类随规格审核并冻结；已分类商品无法漏传故事绕行。V5正式切换必须设TRADE_REQUIRE_V5_PRODUCTS=true，默认保留旧业务过渡；此前已发报价和订单保留。仅私人定制可形成未付款单，其他V5分类报价返回尚未实现；新分账/真实付款/前端验收未完成，未上传未启用。"
+    "limits": "截至第4轮：前置后端已交接；本轮带已审交付条款的定制订单接制作付款与售后，旧缺条款订单仍阻止付款。真实服务、前端、实际审阅、合入与启用未完成。其他商品流程按后续轮次，原订单承诺保留。"
   },
   "customization_finance": {
     "status": "IMPLEMENTED_ISOLATED_TESTS",
@@ -280,7 +289,7 @@
       "settleFinanceOperation"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
-    "limits": "自营定制财务条款从已批准规则固定到报价、合同和财务；净退款及平台尾差检查。模拟入账/退款只是隔离数据，无真实支付、签署或转账。MCN撮合新算法、推荐归因、税票/渠道核对仍待；新付款仍阻断，页面未验收、未上传未启用。"
+    "limits": "截至第4轮：前置后端已交接；本轮带已审交付条款的定制订单接制作付款与售后，旧缺条款订单仍阻止付款。真实服务、前端、实际审阅、合入与启用未完成。其他商品流程按后续轮次，原订单承诺保留。"
   },
   "marketplace_finance": {
     "status": "IMPLEMENTED_ISOLATED_TESTS",
@@ -305,5 +314,21 @@
       "自动扣费未启用；续托管提醒单独可取消",
       "页面和跨端验收待队友接入"
     ]
+  },
+  "customization_delivery": {
+    "operations": [
+      "getCustomizationFulfillment",
+      "getProductionStory",
+      "startCustomizationProduction",
+      "openCustomizationCase",
+      "resolveCustomizationCase",
+      "syncCustomizationRefund",
+      "acknowledgeCustomizationDelivery",
+      "reissueCustomizationDelivery",
+      "downloadCustomizationCaseEvidence"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-delivery.integration.test.cjs",
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "limits": "仅本轮后端及合成数据；页面、双方审阅、合入和真实服务未完成。旧订单不改写；缺完整交付条款仍不开放付款。首次预览与90%先后待用户确认，双方模式仅隔离测试。"
   }
 }

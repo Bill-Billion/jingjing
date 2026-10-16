@@ -2,9 +2,9 @@
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。
 
-## 当前施工：第三轮后端交接
+## 当前施工：第四轮定制制作后端交接
 
-实际在worktrees/full-flow的core/v5-r03-artists-assets；先读[第三轮交接](docs/collaboration/V5_R03_HANDOFF.md)、CURRENT和测试证据。本侧后端及合成资料已自验，页面/实际队友审阅/合入/正式启用未完成，不代认领。儿童实际采集、建模、公开已按用户决定关闭；L3事实来源第9轮，自动续费扣款及真实服务未启用。后续第4轮定制付款制作，先核对预览与累计90%付款先后。继续集中交付，不新增重复串联申请。
+实际在worktrees/full-flow的core/v5-r04-customization-delivery；先读[第四轮交接](docs/collaboration/V5_R04_HANDOFF.md)、CURRENT及测试证据。本侧后端已自验，实际上传和远端检查以CURRENT为准；页面/队友审阅/合入/正式启用未完成。首次预览与90%付款先后尚待用户答复，正式商品不得自选默认；儿童实际处理继续关闭。共12轮，下一轮第5轮现成视频。继续集中交付、不新增重复串联申请；不把历史已上传分支当共同版本。
 
 ## V5当前施工入口
 

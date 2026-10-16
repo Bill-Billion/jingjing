@@ -20,6 +20,7 @@ async function main() {
     if(!await require('../infrastructure/database/recovery-guard').recoveryAllowed(db))throw Object.assign(new Error('Restored database requires independent review'),{code:'RESTORE_REVIEW_REQUIRED'});
     const enabled = new Map(handlers);
     if (process.env.PRODUCTION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/production/handlers').createProductionHandlers(db,{env:process.env})) enabled.set(name,handler);
+    if (process.env.PRODUCTION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/production/acceptance-handler').createCustomizationAcceptanceHandlers(db,{env:process.env})) enabled.set(name,handler);
     if (process.env.OPERATIONS_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/operations/reports').createOperationsHandlers(db)) enabled.set(name,handler);
     worker = createWorker({ repository: createJobRepository(db), handlers:enabled, log: (record) => console.log(JSON.stringify(record)) });
     process.once('SIGINT', stop); process.once('SIGTERM', stop);
