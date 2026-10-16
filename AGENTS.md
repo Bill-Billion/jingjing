@@ -4,7 +4,7 @@
 
 ## 当前施工：第四轮定制制作后端交接
 
-实际在worktrees/full-flow的core/v5-r04-customization-delivery；先读[第四轮交接](docs/collaboration/V5_R04_HANDOFF.md)、CURRENT及测试证据。本侧后端已自验，实际上传和远端检查以CURRENT为准；页面/队友审阅/合入/正式启用未完成。首次预览与90%付款先后尚待用户答复，正式商品不得自选默认；儿童实际处理继续关闭。共12轮，下一轮第5轮现成视频。继续集中交付、不新增重复串联申请；不把历史已上传分支当共同版本。
+实际在worktrees/full-flow的core/v5-r04-customization-delivery；先读[第四轮交接](docs/collaboration/V5_R04_HANDOFF.md)、CURRENT及测试证据。本侧后端已自验，实际上传和远端检查以CURRENT为准；页面/队友审阅/合入/正式启用未完成。用户已确认先带水印正式预览、确认后补至累计90%；新正式商品明确选PREVIEW_BEFORE_INTERIM，历史订单快照保留；本决定本地保存待下一轮集中同步；儿童实际处理继续关闭。共12轮，下一轮第5轮现成视频。继续集中交付、不新增重复串联申请；不把历史已上传分支当共同版本。
 
 ## V5当前施工入口
 
