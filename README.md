@@ -1,3 +1,11 @@
+# 第二轮后端交接入口
+
+补资料至未付款订单及新旧财务已本机自验，页面/跨端/审阅未完成。先读[统一交接](docs/collaboration/V5_R02_HANDOFF.md)和[实际状态](docs/status/CORE_CURRENT.md)。完整分支core/v5-r02-story-quote，前置第一轮和PR23待审依赖保留。
+
+---
+
+以下保留此前记录，当前状态以上文为准。
+
 # 最新本地进展：定制报价与财务遵守同一份约定
 
 [本批接法与剩余任务](docs/collaboration/V5_R02_CUSTOMIZATION_FINANCE.md)。报价固定原条款、财务来源比对、退款及平台尾差已写好并测过。本批未上传，第二轮未全部完成；MCN撮合、推荐、其他财务与页面继续。

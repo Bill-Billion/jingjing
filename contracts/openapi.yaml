@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.14.0-rc.3
+  version: 0.15.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -8821,6 +8821,62 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/marketplace-preview:
+    get:
+      operationId: previewMarketplaceFinance
+      summary: 财务按已批准规则和有效MCN关系试算，不生成订单或应付
+      tags:
+      - finance
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: rule_id
+        in: query
+        required: true
+        schema: &preview_id001
+          type: string
+          format: uuid
+      - name: supplier_party_id
+        in: query
+        required: true
+        schema: *preview_id001
+      - name: relation_id
+        in: query
+        required: false
+        schema: *preview_id001
+      - name: net_minor
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      responses:
+        '200':
+          description: Isolated implementation. Approval or payable is not an actual transfer. Synthetic tests do
+            not enable production services.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketplacePreviewResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -9789,28 +9845,40 @@ components:
           minItems: 1
           maxItems: 30
           items:
-            type: object
-            additionalProperties: false
-            properties:
-              line_id:
-                type: string
-                minLength: 1
-                maxLength: 128
-              shares:
-                type: array
-                minItems: 1
-                maxItems: 30
-                items:
-                  $ref: '#/components/schemas/FinanceShare'
-              deductions:
-                type: array
-                maxItems: 30
-                items:
-                  $ref: '#/components/schemas/FinanceDeduction'
-            required:
-            - line_id
-            - shares
-            - deductions
+            oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                line_id: &market0_id001
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                shares:
+                  type: array
+                  minItems: 1
+                  maxItems: 30
+                  items:
+                    $ref: '#/components/schemas/FinanceShare'
+                deductions: &market0_id002
+                  type: array
+                  maxItems: 30
+                  items:
+                    $ref: '#/components/schemas/FinanceDeduction'
+              required:
+              - line_id
+              - shares
+              - deductions
+            - type: object
+              additionalProperties: false
+              properties:
+                line_id: *market0_id001
+                allocation:
+                  $ref: '#/components/schemas/MarketplaceAllocation'
+                deductions: *market0_id002
+              required:
+              - line_id
+              - allocation
+              - deductions
       required:
       - version
       - settlement_at
@@ -11422,6 +11490,17 @@ components:
               required:
               - current_status
               - meaning
+            business_gate:
+              type: object
+              additionalProperties: false
+              properties:
+                current_status:
+                  const: NOT_ENABLED
+                reason_code:
+                  const: MARKETPLACE_PAYOUT_NOT_ENABLED
+              required:
+              - current_status
+              - reason_code
           required:
           - environment
           - automatic_payout
@@ -15106,6 +15185,8 @@ components:
           $ref: '#/components/schemas/CustomizationQuoteSource'
         customization_finance:
           $ref: '#/components/schemas/CustomizationFinanceSnapshot'
+        marketplace_finance:
+          $ref: '#/components/schemas/MarketplaceFinanceSnapshot'
       required:
       - lines
       - installments
@@ -15318,6 +15399,8 @@ components:
               $ref: '#/components/schemas/CustomizationQuoteSource'
             customization_finance:
               $ref: '#/components/schemas/CustomizationFinanceSnapshot'
+            marketplace_finance:
+              $ref: '#/components/schemas/MarketplaceFinanceSnapshot'
           required:
           - lines
           - installments
@@ -19605,6 +19688,8 @@ components:
               - type: 'null'
               - type: string
                 maxLength: 8000
+            v5_terms:
+              $ref: '#/components/schemas/McnV5Terms'
           required:
           - scope
           - valid_from
@@ -21072,6 +21157,8 @@ components:
             type: string
             format: uuid
           minItems: 1
+        v5_terms:
+          $ref: '#/components/schemas/McnV5Terms'
       required:
       - artist_party_id
       - scope
@@ -22204,3 +22291,188 @@ components:
       - line_id
       - platform_party_id
       - rounding_diff_minor
+
+    McnV5Terms:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          const: V5
+        supply_share_bps:
+          type: integer
+          minimum: 1000
+          maximum: 3000
+          description: 扣除平台佣金后供给侧收入中的份额；新协议省略时记为2000，必须由艺人确认。
+      required:
+      - version
+
+    MarketplaceAllocation:
+      type: object
+      additionalProperties: false
+      properties:
+        model:
+          const: V5_TWO_LAYER
+        product_type:
+          enum:
+          - STOCK_VIDEO
+          - COMMERCIAL
+          - AUDITION
+        fee_base:
+          const: NET_PAID
+        platform_party_id: &market6_id001
+          type: string
+          format: uuid
+        platform_bps: &market6_id002
+          type: integer
+          minimum: 0
+          maximum: 10000
+        supplier_party_id: *market6_id001
+        mcn_party_id: &market6_id003
+          anyOf:
+          - *market6_id001
+          - type: 'null'
+        mcn_supply_bps: *market6_id002
+        referrer_party_id: *market6_id003
+        referral_bps: *market6_id002
+        rounding:
+          const: HALF_UP_PLATFORM_REMAINDER
+      required:
+      - model
+      - product_type
+      - fee_base
+      - platform_party_id
+      - platform_bps
+      - supplier_party_id
+      - mcn_party_id
+      - mcn_supply_bps
+      - referrer_party_id
+      - referral_bps
+      - rounding
+      description: 准确两层比例，不把MCN供给侧比例转换为有精度损失的成交额整数比例；推荐计算已可验算，真实推荐归因尚未开放。
+
+    MarketplaceAmounts:
+      type: object
+      additionalProperties: false
+      properties:
+        net_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        entries:
+          type: array
+          minItems: 2
+          maxItems: 4
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              role:
+                enum:
+                - PLATFORM
+                - SUPPLIER
+                - MCN
+                - REFERRER
+              party_id:
+                type: string
+                format: uuid
+              amount_minor:
+                type: integer
+                minimum: -900000000000
+                maximum: 900000000000
+            required:
+            - role
+            - party_id
+            - amount_minor
+        rounding_diff_minor:
+          type: integer
+          minimum: -2
+          maximum: 2
+      required:
+      - net_minor
+      - entries
+      - rounding_diff_minor
+
+    MarketplaceFinanceSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        allocation:
+          $ref: '#/components/schemas/MarketplaceAllocation'
+        rule_snapshot:
+          type: object
+          additionalProperties: false
+          properties:
+            content:
+              $ref: '#/components/schemas/RuleContent'
+            current_status:
+              const: EFFECTIVE
+            effective_at:
+              type: string
+              format: date-time
+          required:
+          - content
+          - current_status
+          - effective_at
+        relation_snapshot:
+          anyOf:
+          - $ref: '#/components/schemas/GigRelationRecord'
+          - type: 'null'
+        captured_at:
+          type: string
+          format: date-time
+      required:
+      - allocation
+      - rule_snapshot
+      - relation_snapshot
+      - captured_at
+      description: 后续商品流程引用的固定财务来源。第二轮仅隔离订单样本验证，不开放V5撮合下单，也不接受客户端直接提交此字段。
+
+    MarketplacePreviewResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            meaning:
+              const: PREVIEW_ONLY_NOT_ORDER_OR_PAYABLE
+            rule_id: &market9_id001
+              type: string
+              format: uuid
+            rule_content_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+            allocation:
+              $ref: '#/components/schemas/MarketplaceAllocation'
+            amounts:
+              $ref: '#/components/schemas/MarketplaceAmounts'
+            relation_reference:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  id: *market9_id001
+                  version:
+                    type: integer
+                    minimum: 1
+                  sha256:
+                    type: string
+                    pattern: ^[a-f0-9]{64}$
+                required:
+                - id
+                - version
+                - sha256
+              - type: 'null'
+          required:
+          - meaning
+          - rule_id
+          - rule_content_sha256
+          - allocation
+          - amounts
+          - relation_reference
+      required:
+      - meta
+      - data

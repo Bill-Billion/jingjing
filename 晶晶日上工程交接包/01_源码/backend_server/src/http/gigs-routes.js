@@ -13,7 +13,7 @@ function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/rules','createRule',['rule'],{party:false});
  post('/records/:record_id/reviews','review',['decision','reason','checks'],{party:false,existing:true});
  post('/rules/:record_id/retirement','retireRule',['reason'],{party:false,existing:true});
- post('/relations','relation',['artist_party_id','scope','valid_from','valid_until','exclusive','terms','commission','evidence_asset_ids']);
+ post('/relations','relation',['artist_party_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
  post('/relations/:record_id/decision','relationDecision',['decision','reason'],{existing:true});
  post('/requests','createGig',['title','brief','category','scope','rule_id','proofs']);
  post('/requests/:record_id/suspension','suspend',['reason'],{party:false,existing:true});

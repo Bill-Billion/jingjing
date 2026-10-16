@@ -2319,7 +2319,7 @@
       "id": "JX-V5-D1-PLAN",
       "package_version": "20261016-D1",
       "reviewed_on_local_date": "2026-10-15",
-      "status": "FIRST_ROUND_PUBLISHED_SECOND_ROUND_LOCAL",
+      "status": "SECOND_ROUND_BACKEND_SELF_TESTED_HANDOFF_PENDING",
       "analysis_owner": "chengcongcong222",
       "analysis_branch": "core/v5-d1-planning",
       "code_anchor": "25e6d29f81fd882edc203b732a48fe90d15f8c9f",
@@ -2933,7 +2933,7 @@
           "title": "报价合同、各商品收银与退款恢复—服务端与规则",
           "suggested_owner": "chengcongcong222",
           "claimed_by": "chengcongcong222",
-          "claim_status": "已认领第二轮平台定制报价及未付款订单部分",
+          "claim_status": "已认领本轮相关部分，整包未完成",
           "work": "复用trade订单/合同快照；按现货、人工定制、样片制作、试镜、创建/订阅配置付款计划；支付意图、SDK回跳查单、未知结果、退款与补差。",
           "contract": "order_kind、quote_version、payment_plan、payment_attempt、receipt、refund_case、price_change",
           "dependencies": [
@@ -2956,15 +2956,15 @@
           "pr": null,
           "start_sha": "c0ec464d119f08d197fb84e40bff0c2879e04c7a",
           "end_sha": null,
-          "implementation": "补件、平台报价与未付款订单、商品分类及强制分流已本地实现；新分账/财务和跨端仍未完成",
-          "tests": "定制64、交易30、本机联调10、236份HTTP/5324格式通过；标准18组复跑通过，综合512通过/1项缺脱敏旧库跳过。初次数据库中断失败证据保留；页面未验收",
+          "implementation": "故事报价、复核、未付款订单、商品分流已实现；后续收银退款待办",
+          "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 1,
           "planned_internal_completion_milestone": 2,
           "dependency_note": "先给商品类型与付款计划，第二段接现货/定制；第三段试镜、第四段余额、第五段券依次追加验证。",
-          "plan_status": "本地施工，未完成整包",
+          "plan_status": "本轮后端部分已自验，整包和跨端未完成",
           "scope_supplement_ids": [
             "SUP-03",
             "SUP-05",
@@ -2982,8 +2982,8 @@
           ],
           "claim_scope": "绑定故事版本、平台授权报价、独立复核、买方确认；收银退款及整包仍未完成；商品版本分类、报价分流及旧约定兼容",
           "implementation_branch": "core/v5-r02-story-quote",
-          "handoff": "docs/collaboration/V5_R02_PRODUCT_ROUTING.md",
-          "evidence": "docs/testing/evidence/v5-r02-products/RESULTS.json"
+          "handoff": "docs/collaboration/V5_R02_HANDOFF.md",
+          "evidence": "docs/testing/evidence/v5-r02-close/RESULTS.json"
         },
         {
           "id": "UX-DEL-07",
@@ -3045,7 +3045,7 @@
           "title": "V5分账规则、历史订单与财务校验迁移—服务端与规则",
           "suggested_owner": "chengcongcong222",
           "claimed_by": "chengcongcong222",
-          "claim_status": "已认领；本批先完成私人定制财务来源部分",
+          "claim_status": "已认领本轮相关部分，整包未完成",
           "work": "新增V5两层规则版本；独立MCN份额/推荐返佣；同时修改计算、应付来源校验、快照、退款冲回、尾差、税票证据及批次对账；旧版不可覆盖。",
           "contract": "fee_rule_version、fee_base、mcn_supply_share、referral_share、settlement_batch、adjustment",
           "dependencies": [
@@ -3066,15 +3066,15 @@
           "pr": null,
           "start_sha": "441c68acacb49f2c3a67ec10ea841728f3d96d05",
           "end_sha": null,
-          "implementation": "私人定制财务来源部分已写完并测过；MCN撮合、推荐与税票核对等仍待，整项未完成",
-          "tests": "定制69项、财务27项、交易30项、本机交接11项通过；263份HTTP返回/5357项格式检查通过；完整18组通过，综合517通过/1项缺脱敏旧库样本跳过；页面与真机未验收",
+          "implementation": "自营及MCN两层规则/来源/退款/尾差、旧单兼容已测；撮合正式订单、推荐归因、出款和全量财税仍待",
+          "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 1,
           "planned_internal_completion_milestone": 1,
           "dependency_note": "第一段完成策略/快照/来源校验兼容；随后每种交易实际接入仍各自验收。",
-          "plan_status": "本地施工，整包未完成",
+          "plan_status": "本轮后端部分已自验，整包和跨端未完成",
           "scope_supplement_ids": [
             "SUP-01",
             "SUP-06"
@@ -3087,8 +3087,8 @@
           ],
           "implementation_branch": "core/v5-r02-story-quote",
           "claim_scope": "已批准自营定制财务快照、原订单约定校验、退款净额和平台尾差；MCN撮合及其他子项继续",
-          "handoff": "docs/collaboration/V5_R02_CUSTOMIZATION_FINANCE.md",
-          "evidence": "docs/testing/evidence/v5-r02-finance/RESULTS.json"
+          "handoff": "docs/collaboration/V5_R02_HANDOFF.md",
+          "evidence": "docs/testing/evidence/v5-r02-close/RESULTS.json"
         },
         {
           "id": "UX-DEL-08",
@@ -3575,7 +3575,7 @@
           "title": "定制品类与动态故事采集—服务端与规则",
           "suggested_owner": "chengcongcong222",
           "claimed_by": "chengcongcong222",
-          "claim_status": "已认领第一轮及第二轮相关部分，未认领整包完成",
+          "claim_status": "已认领本轮相关部分，整包未完成",
           "work": "品类与采集字段发布版本、草稿/正式提交/补件；字段目的/最小化/附件私有；提交为待受理需求，关联后续quote和production。",
           "contract": "story_schema_version、story_card、attachment_ref、submission、supplement_request",
           "dependencies": [
@@ -3594,15 +3594,15 @@
           "pr": null,
           "start_sha": "9167bd4694b500420752b0fa5db576ef0f107e0c",
           "end_sha": null,
-          "implementation": "补件和平台故事报价至未付款订单已本地实现；V5分账/收银条件/附件/跨端等剩余范围未完成",
-          "tests": "定制59专项、本机联调9项、218份HTTP/5300格式通过；标准18组通过，综合502通过、1项缺脱敏旧库跳过；跨端未验收",
+          "implementation": "文字故事、补件历史、平台报价关联已实现；附件及后续范围、页面未完成",
+          "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 2,
           "planned_internal_completion_milestone": 2,
           "dependency_note": "先对齐所需小接口，内部开发可并行；真实启用单列。",
-          "plan_status": "第二轮本地施工，未完成整包",
+          "plan_status": "本轮后端部分已自验，整包和跨端未完成",
           "scope_supplement_ids": [],
           "planned_delivery_rounds": [
             "V5-R01",
@@ -3611,8 +3611,8 @@
           ],
           "claim_scope": "第一轮已交接；继续第二轮补件、重提、历史版本及报价关联，本批先实现补件部分",
           "implementation_branch": "core/v5-r02-story-quote",
-          "handoff": "docs/collaboration/V5_R02_PLATFORM_QUOTES.md",
-          "evidence": "docs/testing/evidence/v5-r02-quote/RESULTS.json"
+          "handoff": "docs/collaboration/V5_R02_HANDOFF.md",
+          "evidence": "docs/testing/evidence/v5-r02-close/RESULTS.json"
         },
         {
           "id": "UX-DEL-14",
@@ -5036,8 +5036,8 @@
           "package": "DEL-29",
           "title": "集成验收、迁移恢复与发布证据—服务端与规则",
           "suggested_owner": "chengcongcong222",
-          "claimed_by": null,
-          "claim_status": "未认领",
+          "claimed_by": "chengcongcong222",
+          "claim_status": "已认领本轮相关部分，整包未完成",
           "work": "逐业务隔离MySQL/HTTP回归、版本分流/幂等/并发/故障恢复、历史迁移演练、性能目标实测和Provider生产证据台账。",
           "contract": "acceptance_run、source_sha、environment、artifact_hash、provider_evidence、release_decision",
           "dependencies": [
@@ -5086,17 +5086,17 @@
             "ACC-DEL-29.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "e2e7f6cec8d574f844b42cfda021d6f4c4e9c39c",
           "end_sha": null,
-          "implementation": "未开始",
-          "tests": "未执行",
+          "implementation": "本轮隔离MySQL/HTTP、串联及合成资料已测；全产品迁移恢复、性能与正式服务仍待",
+          "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 1,
           "planned_internal_completion_milestone": 6,
           "dependency_note": "从第一段准备资料和回归，每段留证，第六段完整迁移恢复及发布候选。",
-          "plan_status": "建议安排，尚未认领；验收未执行",
+          "plan_status": "本轮后端部分已自验，整包和跨端未完成",
           "scope_supplement_ids": [
             "SUP-16",
             "SUP-23",
@@ -5115,7 +5115,11 @@
             "V5-R10",
             "V5-R11",
             "V5-R12"
-          ]
+          ],
+          "implementation_branch": "core/v5-r02-story-quote",
+          "handoff": "docs/collaboration/V5_R02_HANDOFF.md",
+          "evidence": "docs/testing/evidence/v5-r02-close/RESULTS.json",
+          "claim_scope": "仅本轮后端自验、串联与合成资料，不代表整包完成"
         },
         {
           "id": "UX-DEL-29",
@@ -6333,19 +6337,23 @@
           "dependency_meaning": "只等待所需能力；完整验收依赖不等于前置整个大包必须做完",
           "core_owner_suggestion": "chengcongcong222",
           "experience_owner": "待队友本人确认",
-          "implementation": "补件、平台报价与未付款订单、商品分流、自营定制财务约定已本地实现；MCN撮合及其他财务、付款条件和跨端仍未完成",
-          "tests": "定制69项、财务27项、交易30项、本机交接11项通过；263份HTTP返回/5357项格式检查通过；完整18组通过，综合517通过/1项缺脱敏旧库样本跳过；页面与真机未验收",
+          "implementation": "本轮后端已写完并自验；页面与跨端未完成",
+          "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "core_owner": "chengcongcong222",
           "core_claim_status": "已认领，连续推进本地后端；整轮未完成",
           "start_sha": "5e54a3b54d1e34f6db02f2a257ea4f1248e8a155",
-          "scope_note": "实际依赖第一轮未合入代码。补件部分本地c0ec464；2026-10-16继续故事版本、平台报价、复核与未付款订单。用户已确认先由平台签约主体报价，操作人同时具备受理权限及该主体报价权，外部制作机构暂不直接读取私人故事。按阶段集中交付。",
-          "handoff": "docs/collaboration/V5_R02_CUSTOMIZATION_FINANCE.md",
-          "evidence": "docs/testing/evidence/v5-r02-finance/RESULTS.json",
+          "scope_note": "终点未付款订单；付款制作第4轮，现货第5轮，试镜第7轮，推荐归因第9轮，全量财税渠道按后续安排；未删范围",
+          "handoff": "docs/collaboration/V5_R02_HANDOFF.md",
+          "evidence": "docs/testing/evidence/v5-r02-close/RESULTS.json",
           "publication": "本批未推送，整轮条件齐备后集中交接",
-          "user_confirmation": "2026-10-16用户明确选择：先由平台签约主体报价；同时校验受理权限与该主体报价权；外部制作机构暂不直接读私人故事"
+          "user_confirmation": "2026-10-16用户明确选择：先由平台签约主体报价；同时校验受理权限与该主体报价权；外部制作机构暂不直接读私人故事",
+          "core_implementation": "补件至未付款订单、新旧财务与MCN两层验证已完成",
+          "core_tests": "本机通过，远端待集中推送核对",
+          "experience_implementation": "用户表示可能未开工，待本人确认",
+          "cross_client_acceptance": "未执行"
         },
         {
           "id": "V5-R03",
@@ -6663,7 +6671,7 @@
       "round_plan_entry": "docs/reviews/v5-d1-intake/07_ROUND_PLAN.md",
       "prototype_review_entry": "docs/reviews/v5-d1-intake/06_FIGMA_REVIEW.md",
       "first_round_handoff": "docs/reviews/v5-d1-intake/08_FIRST_ROUND_HANDOFF.md",
-      "round_note": "12轮沿用原30包/60任务；第一轮仅后端文字流程已实现并自验，页面/跨端/队友审阅/合入/正式启用均分开记录。",
+      "round_note": "12轮沿用30包/60任务；第1—2轮后端部分已自验；页面/跨端/审阅/合入/启用分别记录。",
       "prototype_findings": [
         {
           "id": "FIG-01",
@@ -6974,16 +6982,17 @@
         "pr": null
       },
       "current_local_batch": {
-        "title": "定制报价固定财务约定，财务据原约定记账",
+        "title": "第二轮后端收口：两层分账、历史兼容与完整交接",
         "owner": "chengcongcong222",
         "branch": "core/v5-r02-story-quote",
-        "base_commit": "441c68acacb49f2c3a67ec10ea841728f3d96d05",
-        "scope": "自营定制财务规则快照、源规则匹配、退款及尾差、旧单兼容；MCN撮合链另续",
-        "acceptance": "缺规则不能报价；后改比例不追改旧报价；财务不能换比例；退款与尾差有据；真实支付仍阻断",
-        "implementation": "定制财务约定、订单继承、来源比对和退款尾差已本地实现；MCN撮合与整轮未完成",
-        "publication": "本地，阶段集中上传",
-        "peer_review": "待实际审阅",
-        "tests": "定制69项、财务27项、交易30项、本机交接11项通过；263份HTTP返回/5357项格式检查通过；完整18组通过，综合517通过/1项缺脱敏旧库样本跳过；页面与真机未验收"
+        "base_commit": "e2e7f6cec8d574f844b42cfda021d6f4c4e9c39c",
+        "scope": "保持未付款订单终点；补MCN有效比例、供给侧两层分账、只读试算、财务来源匹配、新旧退款与尾差；完成本轮验收和集中交付",
+        "acceptance": "无MCN及10/20/30%与细分比例分别核对；规则与关系快照保留；改财务来源拒绝；试算无订单和支付副作用；整条补件报价流程有可重建资料",
+        "implementation": "本侧本轮后端已写完",
+        "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
+        "publication": "集中上传待执行",
+        "peer_review": "待队友实际审阅",
+        "out_of_round": "真实付款制作属第4轮；推荐归因属第9轮；全量税票渠道对账按原后续安排；本轮只验证规则与应付来源，不虚报已接外部服务"
       }
     }
   ]

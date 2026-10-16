@@ -1,5 +1,5 @@
 {
-  "version": "0.14.0-rc.3",
+  "version": "0.15.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -170,7 +170,8 @@
     "submitCustomizationSupplement",
     "listCustomizationSubmissions",
     "getCustomizationSubmission",
-    "listCustomizationQuotes"
+    "listCustomizationQuotes",
+    "previewMarketplaceFinance"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -250,5 +251,16 @@
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
     "limits": "自营定制财务条款从已批准规则固定到报价、合同和财务；净退款及平台尾差检查。模拟入账/退款只是隔离数据，无真实支付、签署或转账。MCN撮合新算法、推荐归因、税票/渠道核对仍待；新付款仍阻断，页面未验收、未上传未启用。"
+  },
+  "marketplace_finance": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "previewMarketplaceFinance",
+      "createGigRelation",
+      "agreementFinanceOperation",
+      "settleFinanceOperation"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/marketplace.integration.test.cjs",
+    "limits": "财务试算是真实接口且无订单/收付款副作用。两层财务来源与退款在合成订单验证；V5撮合下单、真实推荐归因、自动清分和签署认证未开放。旧单保留旧算法。"
   }
 }

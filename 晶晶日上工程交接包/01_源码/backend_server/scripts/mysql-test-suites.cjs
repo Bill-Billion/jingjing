@@ -4,7 +4,7 @@ module.exports=Object.freeze({
  customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs'],
  release:['test/release-policy.test.cjs','test/release.integration.test.cjs'],
  operations:['test/operations-policy.test.cjs','test/operations.integration.test.cjs'],
- finance:['test/settlement-policy.test.cjs','test/settlement.integration.test.cjs'],
+ finance:['test/settlement-policy.test.cjs','test/marketplace-policy.test.cjs','test/marketplace.integration.test.cjs','test/settlement.integration.test.cjs'],
  projects:['test/projects-policy.test.cjs','test/projects.integration.test.cjs'],
  production:['test/production-policy.test.cjs','test/production.integration.test.cjs'],
  gigs:['test/gigs-policy.test.cjs','test/gigs.integration.test.cjs'],

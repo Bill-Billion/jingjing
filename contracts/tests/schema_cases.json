@@ -1234,6 +1234,121 @@
         "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
         "rounding_diff_minor": 0.5
       }
+    },
+    {
+      "name": "wrong-marketplace-model",
+      "schema": "MarketplaceAllocation",
+      "value": {
+        "fee_base": "NET_PAID",
+        "mcn_party_id": null,
+        "mcn_supply_bps": 0,
+        "model": "V5_SELF_OPERATED",
+        "platform_bps": 1800,
+        "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+        "product_type": "STOCK_VIDEO",
+        "referral_bps": 0,
+        "referrer_party_id": null,
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+      }
+    },
+    {
+      "name": "unknown-marketplace-type",
+      "schema": "MarketplaceAllocation",
+      "value": {
+        "fee_base": "NET_PAID",
+        "mcn_party_id": null,
+        "mcn_supply_bps": 0,
+        "model": "V5_TWO_LAYER",
+        "platform_bps": 1800,
+        "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+        "product_type": "PRIVATE_CUSTOMIZATION",
+        "referral_bps": 0,
+        "referrer_party_id": null,
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+      }
+    },
+    {
+      "name": "fractional-marketplace-rate",
+      "schema": "MarketplaceAllocation",
+      "value": {
+        "fee_base": "NET_PAID",
+        "mcn_party_id": null,
+        "mcn_supply_bps": 0,
+        "model": "V5_TWO_LAYER",
+        "platform_bps": 1800.5,
+        "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+        "product_type": "STOCK_VIDEO",
+        "referral_bps": 0,
+        "referrer_party_id": null,
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+      }
+    },
+    {
+      "name": "mcn-rate-below-agreed-range",
+      "schema": "McnV5Terms",
+      "value": {
+        "version": "V5",
+        "supply_share_bps": 999
+      }
+    },
+    {
+      "name": "mcn-rate-above-agreed-range",
+      "schema": "McnV5Terms",
+      "value": {
+        "version": "V5",
+        "supply_share_bps": 3001
+      }
+    },
+    {
+      "name": "preview-cannot-claim-payment",
+      "schema": "MarketplacePreviewResponse",
+      "value": {
+        "meta": {
+          "request_id": "56b447a9-4045-4a92-a3d2-9dfcbda8eeac",
+          "actor": {
+            "account_id": "3c55c407-f001-44da-8d8e-8e2c59c116cf"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "meaning": "PAID",
+          "rule_id": "b9ca7b27-9da3-4958-8549-97508562ca96",
+          "rule_content_sha256": "b4be4d0b6ba22b944db196b549cc1ccfb11c874946b7edc730f0cd562a0b1157",
+          "allocation": {
+            "fee_base": "NET_PAID",
+            "mcn_party_id": null,
+            "mcn_supply_bps": 0,
+            "model": "V5_TWO_LAYER",
+            "platform_bps": 1800,
+            "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+            "product_type": "STOCK_VIDEO",
+            "referral_bps": 0,
+            "referrer_party_id": null,
+            "rounding": "HALF_UP_PLATFORM_REMAINDER",
+            "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+          },
+          "amounts": {
+            "net_minor": 10000,
+            "entries": [
+              {
+                "role": "PLATFORM",
+                "party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+                "amount_minor": 1800
+              },
+              {
+                "role": "SUPPLIER",
+                "party_id": "91810df9-e019-4bc8-8bdd-098be96252bb",
+                "amount_minor": 8200
+              }
+            ],
+            "rounding_diff_minor": 0
+          },
+          "relation_reference": null
+        }
+      }
     }
   ]
 }

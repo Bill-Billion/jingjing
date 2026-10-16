@@ -11,6 +11,7 @@ function policy(value,lines,merchant){
  for(const row of rules.lines){
   const line=lines.find(l=>l.line_id===row.line_id);
   if(!line||row.deductions.reduce((n,x)=>n+x.amount_minor,0)>line.total_minor)throw error('CUSTOMIZATION_FINANCE_RULE_INVALID',409);
+  if(row.allocation)throw error('CUSTOMIZATION_FINANCE_RULE_INVALID',409);
   const platforms=row.shares.filter(x=>x.role==='PLATFORM');
   if(platforms.length!==1||platforms[0].party_id!==merchant||!row.shares.some(x=>x.party_id===line.provider_party_id)||row.shares.some(x=>!['PLATFORM','PRODUCER','RIGHTSHOLDER','PARTICIPANT','SUPPLIER'].includes(x.role)))throw error('CUSTOMIZATION_FINANCE_RULE_INVALID',409);
  }

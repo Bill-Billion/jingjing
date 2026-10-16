@@ -2,9 +2,9 @@
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。
 
-## 当前本地施工：第二轮定制财务约定
+## 当前施工：第二轮后端交接
 
-实际在worktrees/full-flow的core/v5-r02-story-quote。先读[最新交接](docs/collaboration/V5_R02_CUSTOMIZATION_FINANCE.md)和CURRENT。故事报价、商品分流、定制财务约定已本地实现并测试；MCN撮合新分账、推荐、其他财务及跨端仍待。新定制报价必须有已批准财务条款，报价和订单固定原文；不写死示例成本或比例，不重算旧合同。用户已确认先由平台签约主体报价，外部制作机构暂不直接读私人故事。真实收款仍阻断；V5正式切换须TRADE_REQUIRE_V5_PRODUCTS=true及其他条件齐备。阶段集中交付，不逐小项推送、不代前端认领或审阅。
+实际在worktrees/full-flow的core/v5-r02-story-quote，先读[统一交接](docs/collaboration/V5_R02_HANDOFF.md)与CURRENT。本轮补件至未付款订单、自营财务、MCN两层规则/来源/退款/历史兼容已实现并自验。页面/跨端/审阅/合入/启用未完成。前端可能未开工，待本人确认，不代认领。付款制作第4轮，推荐实际归因第9轮，不将全部后续任务当第二轮阻塞。平台签约主体报价，外部机构暂不直接读私人故事。实际支付及撮合出款阻止。本次集中交付接口与资料，不新增重复串联申请，保留实际审阅要求。
 
 ## V5当前施工入口
 
