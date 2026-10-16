@@ -2319,7 +2319,7 @@
       "id": "JX-V5-D1-PLAN",
       "package_version": "20261016-D1",
       "reviewed_on_local_date": "2026-10-15",
-      "status": "SECOND_ROUND_BACKEND_SELF_TESTED_HANDOFF_PENDING",
+      "status": "SECOND_ROUND_BACKEND_PUBLISHED_FRONTEND_PENDING",
       "analysis_owner": "chengcongcong222",
       "analysis_branch": "core/v5-d1-planning",
       "code_anchor": "25e6d29f81fd882edc203b732a48fe90d15f8c9f",
@@ -6348,12 +6348,14 @@
           "scope_note": "终点未付款订单；付款制作第4轮，现货第5轮，试镜第7轮，推荐归因第9轮，全量财税渠道按后续安排；未删范围",
           "handoff": "docs/collaboration/V5_R02_HANDOFF.md",
           "evidence": "docs/testing/evidence/v5-r02-close/RESULTS.json",
-          "publication": "本批未推送，整轮条件齐备后集中交接",
+          "publication": "已集中上传本轮后端与合成资料",
           "user_confirmation": "2026-10-16用户明确选择：先由平台签约主体报价；同时校验受理权限与该主体报价权；外部制作机构暂不直接读私人故事",
           "core_implementation": "补件至未付款订单、新旧财务与MCN两层验证已完成",
-          "core_tests": "本机通过，远端待集中推送核对",
+          "core_tests": "本机与远端18组通过，综合527通过/1项缺脱敏旧库跳过；页面未验收",
           "experience_implementation": "用户表示可能未开工，待本人确认",
-          "cross_client_acceptance": "未执行"
+          "cross_client_acceptance": "未执行",
+          "published_commit": "b7d95d61390ddd9621123b6e76a5165a9d7c8334",
+          "checks_url": "https://github.com/Bill-Billion/jingjing/actions/runs/38855341739"
         },
         {
           "id": "V5-R03",
@@ -6990,9 +6992,111 @@
         "acceptance": "无MCN及10/20/30%与细分比例分别核对；规则与关系快照保留；改财务来源拒绝；试算无订单和支付副作用；整条补件报价流程有可重建资料",
         "implementation": "本侧本轮后端已写完",
         "tests": "18组通过；综合527通过/1项缺脱敏旧库样本跳过；定制69、财务37、商单24、交易30；315份HTTP/5440格式；串联18项。页面真机未验收。",
-        "publication": "集中上传待执行",
+        "publication": "b7d95d6已集中上传，远端检查成功",
         "peer_review": "待队友实际审阅",
-        "out_of_round": "真实付款制作属第4轮；推荐归因属第9轮；全量税票渠道对账按原后续安排；本轮只验证规则与应付来源，不虚报已接外部服务"
+        "out_of_round": "真实付款制作属第4轮；推荐归因属第9轮；全量税票渠道对账按原后续安排；本轮只验证规则与应付来源，不虚报已接外部服务",
+        "published_commit": "b7d95d61390ddd9621123b6e76a5165a9d7c8334",
+        "checks_url": "https://github.com/Bill-Billion/jingjing/actions/runs/38855341739"
+      },
+      "round2_backend_handoff": {
+        "branch": "core/v5-r02-story-quote",
+        "published_commit": "b7d95d61390ddd9621123b6e76a5165a9d7c8334",
+        "verified_remote": true,
+        "run_id": 38855341739,
+        "checks": "SUCCESS",
+        "checks_url": "https://github.com/Bill-Billion/jingjing/actions/runs/38855341739",
+        "downloaded_and_verified": true,
+        "contract_lf_sha256": "91fd1521fb51145f84e32eb31cedead213217e1d3bc906d27fd992fe1cc1889b",
+        "contract_report_count": 14,
+        "contracts": {
+          "customization-quote-contract.json": {
+            "result": "PASS",
+            "responses": 97,
+            "checks": 5222
+          },
+          "customization-runtime-contract.json": {
+            "result": "PASS",
+            "responses": 166,
+            "checks": 5291
+          },
+          "finance-contract.json": {
+            "result": "PASS",
+            "responses": 114,
+            "checks": 5239
+          },
+          "gigs-contract.json": {
+            "result": "PASS",
+            "responses": 40,
+            "checks": 5165
+          },
+          "governance-runtime-contract.json": {
+            "result": "PASS",
+            "responses": 3,
+            "checks": 5128
+          },
+          "governance-service-contract.json": {
+            "result": "PASS",
+            "responses": 1,
+            "checks": 5126
+          },
+          "licensing-contract.json": {
+            "result": "PASS",
+            "responses": 40,
+            "checks": 5165
+          },
+          "marketplace-contract.json": {
+            "result": "PASS",
+            "responses": 52,
+            "checks": 5177
+          },
+          "operations-contract.json": {
+            "result": "PASS",
+            "responses": 68,
+            "checks": 5193
+          },
+          "production-contract.json": {
+            "result": "PASS",
+            "responses": 62,
+            "checks": 5187
+          },
+          "projects-contract.json": {
+            "result": "PASS",
+            "responses": 103,
+            "checks": 5228
+          },
+          "runtime-contract.json": {
+            "result": "PASS",
+            "responses": 40,
+            "checks": 5165
+          },
+          "supply-contract.json": {
+            "result": "PASS",
+            "responses": 26,
+            "checks": 5151
+          },
+          "trade-contract.json": {
+            "result": "PASS",
+            "responses": 48,
+            "checks": 5173
+          }
+        },
+        "regression": {
+          "tests": 528,
+          "pass": 527,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 1,
+          "todo": 0
+        },
+        "integration": "28662ab39950ad6a2f0b3c4ca372df9a65195b96",
+        "peer_review": "待真实队友审阅",
+        "frontend": "可能未开工，待本人确认",
+        "cross_client": "未执行",
+        "pr": null,
+        "pr_reason": "本次集中交接后端接口和资料；跨端条件未齐，不新增重复串联申请",
+        "merged": false,
+        "deployed": false,
+        "later_document_commits": "只补充交付记录，最新检查以分支实际结果为准"
       }
     }
   ]
