@@ -1,6 +1,6 @@
-# 第三轮后端已写好并自验，准备集中交付
+# 第三轮后端已集中上传，等待实际审阅
 
-2026-10-16。实际施工目录 `worktrees/full-flow`，完整分支 `core/v5-r03-artists-assets`。本侧负责人 chengcongcong222；队友负责页面，接手与进度待本人确认。共同版本仍 `28662ab`，本轮包含未合入的前置代码，队友应从完整分支取得接口。实际上传和远端检查以交付证据为准。
+2026-10-16。实际施工目录 `worktrees/full-flow`，完整分支 `core/v5-r03-artists-assets`。本侧负责人 chengcongcong222；队友负责页面，接手与进度待本人确认。共同版本仍 `28662ab`，本轮包含未合入的前置代码，队友应从完整分支取得接口。功能提交 bd0b89a 已上传并通过全部远端自动检查；19组通过、本轮专项32通过、综合559通过/1项缺脱敏旧库样本跳过。[远端检查](https://github.com/Bill-Billion/jingjing/actions/runs/38866366153)结果见[发布证据](../testing/evidence/v5-r03/PUBLICATION.json)。
 
 |事情|本侧已做到哪里|还需什么|
 |---|---|---|
