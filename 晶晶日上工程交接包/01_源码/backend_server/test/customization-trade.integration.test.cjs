@@ -47,7 +47,7 @@ test('platform customization quote HTTP, story version and unique order transact
   await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'customization.synthetic','1',JSON.stringify(rule),'2020-01-01 00:00:00',operator.account_id,'EFFECTIVE']);
   let paidCalls=0;const fakeProviders=()=>({get:()=>({config:{provider:'ALIPAY',environment:'SANDBOX',merchant_party_id:merchantOrg.party_id,app_id:'synthetic',merchant_id:'synthetic',config_revision:1},assertReady:async()=>{},call:async()=>{paidCalls++;throw Error('External calls forbidden');}})});
   const trade=createTradeRepository(db,{resolvePrincipal,customizationMerchantPartyId:merchantOrg.party_id});
-  server=createAccountApi({db,secret,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:merchantOrg.party_id},tradeProvidersFactory:fakeProviders}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+  server=createAccountApi({db,secret,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:merchantOrg.party_id,TRADE_REQUIRE_V5_PRODUCTS:'true'},tradeProvidersFactory:fakeProviders}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
   const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
   async function http(method,url,p=buyer,body,acting=p.personal_party_id,version=null,op=key()){
    const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+p.token,...(acting?{'X-Acting-Party':acting}:{}),...(body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':op}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
@@ -57,11 +57,53 @@ test('platform customization quote HTTP, story version and unique order transact
   function denied(r,status){assert.equal(r.status,status,JSON.stringify(r.body));fixtures.push({schema:'ErrorResponse',value:r.body});return r.body.error;}
   const review=q=>http('POST','/trade/records/'+q.id+'/reviews',reviewer,{decision:'APPROVED',reason:'合成报价独立复核'},null,q.object_version);
   const specification={version:'synthetic-1',service_tier:'隔离测试，不是真实商品',sample_seconds:23,final_seconds:119,revision_limit:2,deliverables:['合成测试文件'],terms:'仅供测试；不作为正式价格、权利或改稿承诺'};
-  const spec=take(await review(take(await http('POST','/trade/specifications',merchant,{previous_spec_id:null,title:'合成定制',provider_party_id:merchantOrg.party_id,line_kind:'PRODUCTION',unit_minor:10001,currency:'CNY',specification},merchantOrg.party_id))));
+  const spec=take(await review(take(await http('POST','/trade/specifications',merchant,{previous_spec_id:null,title:'合成定制',provider_party_id:merchantOrg.party_id,line_kind:'PRODUCTION',unit_minor:10001,currency:'CNY',specification,product_profile:{version:'V5',type:'PRIVATE_CUSTOMIZATION'}},merchantOrg.party_id))));
   const quoteBody=r=>({buyer_party_id:buyer.personal_party_id,lines:[{line_id:'production',spec_id:spec.id,quantity:1}],installments:[['first','ORDER_ACCEPTED',3000],['interim','CUSTOMIZATION_INTERIM_CONFIRMED',6000],['last','FINAL_ACCEPTED',1001]].map(([key,trigger,amount_minor])=>({key,trigger,allocations:[{line_id:'production',amount_minor}],apple_product_id:null})),channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:ruleId,expires_at:new Date(Date.now()+3600000).toISOString(),payment_window_minutes:30,license_reservation_id:null,customization_source:source(r)});
   const quote=async r=>take(await http('POST','/trade/quotes',merchant,quoteBody(r),merchantOrg.party_id));
   const accept=(q,op=key())=>http('POST','/trade/quotes/'+q.id+'/acceptance',buyer,{quote_sha256:q.content_sha256},buyer.personal_party_id,q.object_version,op);
   const list=(r,p=buyer,acting=p.personal_party_id,suffix='')=>http('GET','/customization-requests/'+r.id+'/quotes'+suffix,p,undefined,acting);
+  const specInput=(extra={})=>({party_id:merchantOrg.party_id,previous_spec_id:null,title:'合成商品分类测试',provider_party_id:merchantOrg.party_id,line_kind:'PRODUCTION',unit_minor:10001,currency:'CNY',specification,operation_key:key(),...extra});
+  const legacy=await trade.createSpec(merchant.ctx,specInput());
+  const legacyPublished=take(await review(legacy));
+  await t.test('enabled V5 creation refuses unclassified specifications; no failed command or spec persists',async()=>{
+   const input=specInput(),{party_id,operation_key,...body}=input;
+   const [[before]]=await db.execute('SELECT COUNT(*) n FROM trade_records');
+   assert.equal(denied(await http('POST','/trade/specifications',merchant,body,party_id,null,operation_key),409).code,'PRODUCT_PROFILE_REQUIRED');
+   const [[after]]=await db.execute('SELECT COUNT(*) n FROM trade_records');assert.equal(after.n,before.n);
+   take(await http('POST','/trade/specifications',merchant,{...body,product_profile:{version:'V5',type:'PRIVATE_CUSTOMIZATION'}},party_id,null,operation_key));
+  });
+  await t.test('V5 stored specification requires story even when caller omits it and cutover is off',async()=>{
+   const body=quoteBody(await ready());delete body.customization_source;
+   assert.equal(denied(await http('POST','/trade/quotes',merchant,body,merchantOrg.party_id),409).code,'CUSTOMIZATION_SOURCE_REQUIRED');
+   await assert.rejects(trade.quote(merchant.ctx,{...body,party_id:merchantOrg.party_id,operation_key:key()}),{code:'CUSTOMIZATION_SOURCE_REQUIRED'});
+  });
+  await t.test('new specification versions retain classification; switching or removing it is refused',async()=>{
+   for(const product_profile of [undefined,{version:'V5',type:'STOCK_VIDEO'}])await assert.rejects(trade.createSpec(merchant.ctx,specInput({previous_spec_id:spec.id,...(product_profile?{product_profile}:{})})),{code:'PRODUCT_PROFILE_CANNOT_CHANGE'});
+   const next=await trade.createSpec(merchant.ctx,specInput({previous_spec_id:spec.id,product_profile:{version:'V5',type:'PRIVATE_CUSTOMIZATION'}}));
+   assert.equal(next.parent_id,spec.id);assert.equal(next.current_status,'IN_REVIEW');assert.deepEqual(next.data.product_profile,spec.data.product_profile);
+  });
+  await t.test('cutover rejects fresh legacy quote but preserves a pre-cutover quote, replay and frozen old order',async()=>{
+   const body=quoteBody(await ready());delete body.customization_source;body.lines[0].spec_id=legacyPublished.id;
+   body.installments=[{key:'old_full',trigger:'ORDER_ACCEPTED',allocations:[{line_id:'production',amount_minor:10001}],apple_product_id:null}];
+   const input={...body,party_id:merchantOrg.party_id,operation_key:key()},oldQuote=await trade.quote(merchant.ctx,input);
+   const strict=createTradeRepository(db,{resolvePrincipal,customizationMerchantPartyId:merchantOrg.party_id,requireV5Products:true});
+   assert.equal((await strict.quote(merchant.ctx,input)).id,oldQuote.id);
+   assert.equal(denied(await http('POST','/trade/quotes',merchant,body,merchantOrg.party_id),409).code,'PRODUCT_PROFILE_REQUIRED');
+   const approved=take(await review(oldQuote)),order=take(await accept(approved));
+   assert.deepEqual(order.data.quote.installments,body.installments);assert.equal(order.data.quote.lines[0].product_profile,undefined);
+   const before=structuredClone(order.data.contract);
+   take(await review(await trade.createSpec(merchant.ctx,specInput({previous_spec_id:legacyPublished.id,product_profile:{version:'V5',type:'PRIVATE_CUSTOMIZATION'},unit_minor:20002}))));
+   const reread=take(await http('GET','/trade/records/'+order.id,buyer));assert.deepEqual(reread.data.contract,before);assert.equal(reread.data.quote.total_minor,10001);
+  });
+  await t.test('mixed legacy and V5 products roll back the quote; unimplemented product flows fail explicitly',async()=>{
+   const body=quoteBody(await ready());body.lines.push({line_id:'old',spec_id:legacyPublished.id,quantity:1});
+   assert.equal(denied(await http('POST','/trade/quotes',merchant,body,merchantOrg.party_id),409).code,'MIXED_PRODUCT_PROFILES');
+   for(const type of ['MANUAL_SAMPLE','STOCK_VIDEO','COMMERCIAL','AUDITION']){
+    const s=take(await review(await trade.createSpec(merchant.ctx,specInput({product_profile:{version:'V5',type}}))));
+    const b=quoteBody(await ready());delete b.customization_source;b.lines[0].spec_id=s.id;
+    assert.equal(denied(await http('POST','/trade/quotes',merchant,b,merchantOrg.party_id),409).code,'PRODUCT_FLOW_NOT_IMPLEMENTED');
+   }
+  });
   await t.test('source only accepts explicit request, submission and digest; no mutable caller reference',()=>{
    const s={request_id:key(),submission_id:key(),content_sha256:'a'.repeat(64)};assert.deepEqual(context.source(s),s);assert.notEqual(context.source(s),s);
    for(const bad of [{...s,approved:true},{...s,content_sha256:'fake'},{...s,submission_id:'bad'},{}])assert.throws(()=>context.source(bad));

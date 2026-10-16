@@ -1,3 +1,11 @@
+# 最新本地进展：按商品进入正确交易流程
+
+[本批接法和剩余任务](collaboration/V5_R02_PRODUCT_ROUTING.md)。商品分类、报价限制和旧订单兼容已写好；本批本地待审，第二轮仍未全部完成。
+
+---
+
+以下保留历史入口，状态以最新CURRENT为准。
+
 # 当前入口：第二轮平台报价与订单
 
 先看[本批接法](collaboration/V5_R02_PLATFORM_QUOTES.md)及[当前状态](status/CORE_CURRENT.md)。本批本地未上传；第二轮尚未全部完成。

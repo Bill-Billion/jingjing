@@ -229,6 +229,15 @@
       "listCustomizationQuotes"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
-    "limits": "平台签约组织配置+OWNER+受理岗；新定制30/60/10、未付款订单。外部机构不直接读私人故事；付款强制阻断，V5分账/中间付款条件和前端未完成。本批本地未上传未启用。 旧通用报价保留；V5商品分型及服务器强制分流仍待实现，正式开放前必须完成，不能只靠页面带引用。"
+    "limits": "平台组织配置+OWNER+受理岗；故事定制30/60/10、未付款订单；新报价须使用V5定制分类。付款强制阻断，V5分账/中间付款条件和前端未完成，本地未上传未启用。"
+  },
+  "trade_product_routing": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createTradeSpecification",
+      "createTradeQuote"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs",
+    "limits": "商品分类随规格审核并冻结；已分类商品无法漏传故事绕行。V5正式切换必须设TRADE_REQUIRE_V5_PRODUCTS=true，默认保留旧业务过渡；此前已发报价和订单保留。仅私人定制可形成未付款单，其他V5分类报价返回尚未实现；新分账/真实付款/前端验收未完成，未上传未启用。"
   }
 }

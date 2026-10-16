@@ -1,0 +1,99 @@
+{
+  "result": "BACKEND_AND_LOCAL_HANDOFF_CHECKS_PASS",
+  "date": "2026-10-16",
+  "base_commit": "2d4070a630c4e0c0c39f87d9b1d0697717de1d87",
+  "branch": "core/v5-r02-story-quote",
+  "integration_checked": "28662ab39950ad6a2f0b3c4ca372df9a65195b96",
+  "customization": {
+    "pass": 64
+  },
+  "trade": {
+    "pass": 30
+  },
+  "http": {
+    "result": "PASS",
+    "contract_version": "0.14.0-rc.2",
+    "contract_sha256": "66f8d6ec924fb0bf6e546c82fbfc2ea066a7c85f73af2eb4b6ceb584e44d35de",
+    "openapi_version": "3.1.1",
+    "operations": 175,
+    "schemas": 299,
+    "runtime_response_cases": 236,
+    "valid_fixtures": 91,
+    "negative_cases": 101,
+    "checks": 5324,
+    "failures": [],
+    "python": "3.10.11",
+    "tools": {
+      "openapi-spec-validator": "0.9.0",
+      "jsonschema": "4.26.0",
+      "PyYAML": "6.0.3"
+    },
+    "network_during_validation": "DISABLED",
+    "runtime_tests": "NOT_RUN",
+    "limits": "Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified."
+  },
+  "sandbox": {
+    "result": "PASS",
+    "checks": 10,
+    "scenarios": [
+      "platform sees pending quote",
+      "intake is not financial review",
+      "cannot accept before review",
+      "independent review",
+      "unpaid unsigned order",
+      "reviewed product type frozen in order",
+      "repeated acceptance returns same order",
+      "story links to order",
+      "other buyer denied",
+      "fixture has no payment route"
+    ],
+    "synthetic_only": true,
+    "page_testing": "NOT_RUN"
+  },
+  "uploaded": false,
+  "peer_review": "PENDING",
+  "frontend_and_android": "NOT_RUN",
+  "production": "NOT_ENABLED",
+  "limits": [
+    "V5 rollout requires TRADE_REQUIRE_V5_PRODUCTS=true on all application instances; default remains legacy transition.",
+    "Only private customization is routed to unpaid order; other V5 types explicitly unavailable.",
+    "New customization payment stays blocked; V5 settlement and intermediate payment terms remain incomplete.",
+    "First full run failed after isolated MySQL exited; root cause not established, evidence retained.",
+    "Missing sanitized legacy SQLite sample is not migration acceptance."
+  ],
+  "normalized_lf_sha256": {
+    "contracts/openapi.yaml": "f4e6489b3003cc1674a97e6d92ae487bc9f4f6f51d9c12d129fd3d960429d07a",
+    "scripts/customization-sandbox.cjs": "d26d85940e9b617c7142f40a030b17f4b56727e76c146b19e659cb848e2d4c4a",
+    "晶晶日上工程交接包/01_源码/backend_server/src/http/trade-routes.js": "2a63ba82392742d8e8642c11617d35d4aa48dadefd3e2907095645f79fd6a3a1",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/trade/repository.js": "d3b79e5a9243c0dd62f9017fcae617ed424da9586f9e890e42e7d76ad60365a5",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/trade/product-policy.js": "cd8b008ebd3059865321dc397419e703c1791d2351f412cf6be13c742ff981b0",
+    "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs": "4fec9e50c8489bf719546d0218b2b0594de96b1154b5d6709547a1c4261dc99f",
+    "晶晶日上工程交接包/01_源码/backend_server/test/trade-policy.test.cjs": "e1d7bbb8241e981810a45442bb814a1044078202aab2b130a24228ab7c206f34"
+  },
+  "full_regression": {
+    "groups_passed": 18,
+    "tests": 513,
+    "pass": 512,
+    "fail": 0,
+    "skipped": 1
+  },
+  "runtime_cleanup": {
+    "result": "PASS",
+    "closed_loopback_ports": [
+      33316,
+      65141,
+      65514
+    ],
+    "public_entry_opened": false,
+    "paid_calls": false,
+    "retained_isolated_test_schemas": 11,
+    "retained_reason": "Interrupted worker-test schemas retained as local evidence, no unverified bulk deletion."
+  },
+  "documentation": {
+    "result": "PASS",
+    "links_checked": 909,
+    "original_files": 94,
+    "legacy_requirements": 60,
+    "legacy_tasks": 41
+  }
+}

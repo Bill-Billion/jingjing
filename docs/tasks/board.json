@@ -2956,8 +2956,8 @@
           "pr": null,
           "start_sha": "c0ec464d119f08d197fb84e40bff0c2879e04c7a",
           "end_sha": null,
-          "implementation": "补件和平台故事报价至未付款订单已本地实现；V5分账/收银条件/附件/跨端等剩余范围未完成",
-          "tests": "定制59专项、本机联调9项、218份HTTP/5300格式通过；标准18组通过，综合502通过、1项缺脱敏旧库跳过；跨端未验收",
+          "implementation": "补件、平台报价与未付款订单、商品分类及强制分流已本地实现；新分账/财务和跨端仍未完成",
+          "tests": "定制64、交易30、本机联调10、236份HTTP/5324格式通过；标准18组复跑通过，综合512通过/1项缺脱敏旧库跳过。初次数据库中断失败证据保留；页面未验收",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
@@ -2980,10 +2980,10 @@
             "V5-R07",
             "V5-R11"
           ],
-          "claim_scope": "绑定故事版本、平台授权报价、独立复核、买方确认；收银退款及整包仍未完成",
+          "claim_scope": "绑定故事版本、平台授权报价、独立复核、买方确认；收银退款及整包仍未完成；商品版本分类、报价分流及旧约定兼容",
           "implementation_branch": "core/v5-r02-story-quote",
-          "handoff": "docs/collaboration/V5_R02_PLATFORM_QUOTES.md",
-          "evidence": "docs/testing/evidence/v5-r02-quote/RESULTS.json"
+          "handoff": "docs/collaboration/V5_R02_PRODUCT_ROUTING.md",
+          "evidence": "docs/testing/evidence/v5-r02-products/RESULTS.json"
         },
         {
           "id": "UX-DEL-07",
@@ -6329,8 +6329,8 @@
           "dependency_meaning": "只等待所需能力；完整验收依赖不等于前置整个大包必须做完",
           "core_owner_suggestion": "chengcongcong222",
           "experience_owner": "待队友本人确认",
-          "implementation": "补件、故事版本、平台报价复核和未付款订单已本地实现；新分账/财务兼容和跨端未完成",
-          "tests": "定制59专项、本机联调9项、218份HTTP/5300格式通过；标准18组通过，综合502通过、1项缺脱敏旧库跳过；跨端未验收",
+          "implementation": "补件、平台报价与未付款订单、商品分类及强制分流已本地实现；新分账/财务和跨端仍未完成",
+          "tests": "定制64、交易30、本机联调10、236份HTTP/5324格式通过；标准18组复跑通过，综合512通过/1项缺脱敏旧库跳过。初次数据库中断失败证据保留；页面未验收",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
@@ -6338,8 +6338,8 @@
           "core_claim_status": "已认领，本地实现补件部分",
           "start_sha": "5e54a3b54d1e34f6db02f2a257ea4f1248e8a155",
           "scope_note": "实际依赖第一轮未合入代码。补件部分本地c0ec464；2026-10-16继续故事版本、平台报价、复核与未付款订单。用户已确认先由平台签约主体报价，操作人同时具备受理权限及该主体报价权，外部制作机构暂不直接读取私人故事。按阶段集中交付。",
-          "handoff": "docs/collaboration/V5_R02_PLATFORM_QUOTES.md",
-          "evidence": "docs/testing/evidence/v5-r02-quote/RESULTS.json",
+          "handoff": "docs/collaboration/V5_R02_PRODUCT_ROUTING.md",
+          "evidence": "docs/testing/evidence/v5-r02-products/RESULTS.json",
           "publication": "本批未推送，整轮条件齐备后集中交接",
           "user_confirmation": "2026-10-16用户明确选择：先由平台签约主体报价；同时校验受理权限与该主体报价权；外部制作机构暂不直接读私人故事"
         },
@@ -6968,6 +6968,17 @@
         "peer_review": "待真实前端伙伴审阅；本侧辅助复审不能代签",
         "integration": "未合入，依赖旧PR23待审代码",
         "pr": null
+      },
+      "current_local_batch": {
+        "title": "按商品版本区分交易流程，堵住漏传故事的绕行",
+        "owner": "chengcongcong222",
+        "branch": "core/v5-r02-story-quote",
+        "base_commit": "2d4070a630c4e0c0c39f87d9b1d0697717de1d87",
+        "scope": "商品版本分类、服务器报价分流、新版启用限制、旧订单兼容；不启用新支付或替前端改页面",
+        "acceptance": "新版定制不带故事被拒绝；分类不可降级或混用；旧确认订单保留；隔离HTTP和回归通过",
+        "implementation": "本批已实现并通过检查，整轮未完成",
+        "publication": "本地，阶段集中上传",
+        "peer_review": "待实际审阅"
       }
     }
   ]

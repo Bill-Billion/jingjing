@@ -2,9 +2,9 @@
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。
 
-## 当前本地施工：第二轮平台报价与订单
+## 当前本地施工：第二轮商品分流与历史兼容
 
-实际在worktrees/full-flow的core/v5-r02-story-quote。先读[最新交接](docs/collaboration/V5_R02_PLATFORM_QUOTES.md)和CURRENT。用户2026-10-16明确先由平台签约主体报价；外部制作机构暂不直接读取私人故事。本批本地接通报价/复核/未付款订单，新分账与财务等仍未完成，真实收款明确阻断。原旧订单不回写；阶段集中交付，不逐小项推送、不代前端认领或审阅。
+实际在worktrees/full-flow的core/v5-r02-story-quote。先读[最新交接](docs/collaboration/V5_R02_PRODUCT_ROUTING.md)和CURRENT。已分类商品强制按类型走流程；V5正式开启前须设置TRADE_REQUIRE_V5_PRODUCTS=true，旧业务过渡开关不能算正式启用。用户2026-10-16明确先由平台签约主体报价；外部制作机构暂不直接读取私人故事。本批本地接通报价/复核/未付款订单，新分账与财务等仍未完成，真实收款明确阻断。原旧订单不回写；阶段集中交付，不逐小项推送、不代前端认领或审阅。
 
 ## V5当前施工入口
 

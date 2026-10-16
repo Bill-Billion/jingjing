@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.14.0-rc.1
+  version: 0.14.0-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -14867,6 +14867,8 @@ components:
           const: CNY
         specification:
           $ref: '#/components/schemas/TradeSpecification'
+        product_profile:
+          $ref: '#/components/schemas/TradeProductProfile'
         review:
           anyOf:
           - type: object
@@ -14932,6 +14934,8 @@ components:
                 const: CNY
               specification:
                 $ref: '#/components/schemas/TradeSpecification'
+              product_profile:
+                $ref: '#/components/schemas/TradeProductProfile'
               review:
                 anyOf:
                 - type: object
@@ -15143,6 +15147,8 @@ components:
                     const: CNY
                   specification:
                     $ref: '#/components/schemas/TradeSpecification'
+                  product_profile:
+                    $ref: '#/components/schemas/TradeProductProfile'
                   review:
                     anyOf:
                     - type: object
@@ -15918,6 +15924,8 @@ components:
           const: CNY
         specification:
           $ref: '#/components/schemas/TradeSpecification'
+        product_profile:
+          $ref: '#/components/schemas/TradeProductProfile'
         previous_spec_id:
           anyOf:
           - type: string
@@ -22114,3 +22122,21 @@ components:
       required:
       - meta
       - data
+    TradeProductProfile:
+      type: object
+      additionalProperties: false
+      description: 商品分类随规格独立审核并冻结到报价和订单。V5启用时新规格必填；旧记录允许缺省。已分类商品不得降级或改类；未知流程拒绝报价。
+      properties:
+        version:
+          const: V5
+        type:
+          type: string
+          enum:
+          - PRIVATE_CUSTOMIZATION
+          - MANUAL_SAMPLE
+          - STOCK_VIDEO
+          - COMMERCIAL
+          - AUDITION
+      required:
+      - version
+      - type
