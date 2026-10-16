@@ -118,6 +118,7 @@ def validate(runtime_fixtures=None):
         'getCustomizationRequest': 'ACCOUNT_OR_AUTHORIZED_REVIEWER',
         'getCustomizationSupplement':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
         'listCustomizationSubmissions':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'listCustomizationQuotes':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
         'getCustomizationSubmission':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
         'requestCustomizationSupplement':'AUTHORIZED_CUSTOMIZATION_OPERATOR',
         'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
@@ -146,7 +147,7 @@ def validate(runtime_fixtures=None):
             if op['operationId'] in customization_account_scopes:
                 check(op.get('x-actor-scope') == customization_account_scopes[op['operationId']],
                       'Customization actor scope: '+path)
-                if op['operationId'] in {'getCustomizationRequest','getCustomizationSupplement','listCustomizationSubmissions','getCustomizationSubmission'}:
+                if op['operationId'] in {'getCustomizationRequest','getCustomizationSupplement','listCustomizationSubmissions','getCustomizationSubmission','listCustomizationQuotes'}:
                     check(headers.get('X-Acting-Party',{}).get('required') is False,
                           'Customization owner-or-operator read: '+path)
                 else:

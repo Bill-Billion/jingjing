@@ -2,9 +2,9 @@
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。
 
-## 当前本地施工：第二轮补件与报价
+## 当前本地施工：第二轮平台报价与订单
 
-在worktrees/full-flow的core/v5-r02-story-quote继续，基于已发布5e54a3b（依赖第一轮/旧PR23仍待审）。先读[补件交接](docs/collaboration/V5_R02_SUPPLEMENTS.md)。本批只本地保存补件/重提/历史，报价关联是下一部分；不每个小任务推送。第一轮远端可继续供前端接入；第二轮及整包未完成，不代前端认领。实际检查见CURRENT和同一board。
+实际在worktrees/full-flow的core/v5-r02-story-quote。先读[最新交接](docs/collaboration/V5_R02_PLATFORM_QUOTES.md)和CURRENT。用户2026-10-16明确先由平台签约主体报价；外部制作机构暂不直接读取私人故事。本批本地接通报价/复核/未付款订单，新分账与财务等仍未完成，真实收款明确阻断。原旧订单不回写；阶段集中交付，不逐小项推送、不代前端认领或审阅。
 
 ## V5当前施工入口
 

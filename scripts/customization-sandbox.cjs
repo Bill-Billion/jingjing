@@ -68,14 +68,14 @@ async function main() {
     const auth = createAuthRepository(db, { secret });
     const repo = createCustomizationRepository(db, { resolvePrincipal });
     const people = {};
-    for (const [role, label] of Object.entries({ buyer:'合成客户甲', outsider:'合成客户乙', operator:'合成收件员', publisher:'合成模板维护员' })) {
+    for (const [role, label] of Object.entries({ buyer:'合成客户甲', outsider:'合成客户乙', operator:'合成收件员', publisher:'合成模板维护员', merchant:'合成平台报价人', reviewer:'合成独立复核员' })) {
       const ctx = {}; principals.set(ctx, { subject_ref:'synthetic:story:' + randomUUID(), request_id:randomUUID() });
       const record = await party.registerAccount(ctx, { display_name:label });
       const token = randomBytes(32).toString('base64url');
       await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+7200000)', [auth.secure.digest('token', token), record.account_id]);
       people[role] = { ctx, ...record, token }; checkRunning();
     }
-    for (const [role, action] of [['operator','CUSTOMIZATION_INTAKE'],['publisher','CUSTOMIZATION_TEMPLATE_PUBLISH']]) {
+    for (const [role, action] of [['operator','CUSTOMIZATION_INTAKE'],['publisher','CUSTOMIZATION_TEMPLATE_PUBLISH'],['merchant','CUSTOMIZATION_INTAKE'],['reviewer','TRADE_REVIEW']]) {
       await maintainOperatorGrant(db, { account_id:people[role].account_id, action, enabled:true, expires_at:null, expected_version:0, authority_ref:'synthetic:story-handoff', reason:'仅本机合成联调，非正式运营授权' });
     }
     const family = await repo.publishTemplate(people.publisher.ctx, { category_code:'synthetic_family', template_version:1, source_ref:'synthetic:story-handoff-only', operation_key:randomUUID(), template_snapshot:{ title:'测试用家庭故事', description:'纯合成联调模板，不是已批准商品规格；不填真实身份或材料。', fields:[{ key:'story', label:'想记录的故事', type:'TEXT', required:true, max_length:4000 }, { key:'tone', label:'表达方式', type:'CHOICE', required:true, options:['温暖','轻松'] }] } });
@@ -90,11 +90,26 @@ async function main() {
     const supplementSubmission=await repo.submit(buyer.ctx,{request_id:supplementDraft.id,party_id:buyer.personal_party_id,expected_version:supplementDraft.object_version,operation_key:randomUUID()});
     const supplementIntake=await repo.intake(people.operator.ctx,{request_id:supplementDraft.id,expected_version:supplementSubmission.object_version,operation_key:randomUUID()});
     await repo.requestSupplement(people.operator.ctx,{request_id:supplementDraft.id,items:[{field_key:'story',reason:'合成场景：时间线不明确',instruction:'补充事件顺序并写明回复'}],expected_version:supplementIntake.object_version,operation_key:randomUUID()});
-    const app = createAccountApi({ db, secret, allowedOrigins:['http://localhost:5173','http://127.0.0.1:5173','http://localhost:5000','http://127.0.0.1:5000'] });
+    const merchant=await party.createOrganization(people.merchant.ctx,{display_name:'仅本机合成平台签约组织',operation_key:randomUUID()});
+    const {createRuleContent}=require(path.join(backend,'src/modules/governance/content'));
+    const ruleId=randomUUID(),rule=createRuleContent({id:ruleId,rule_key:'synthetic.customization',version:'1',terms:{explicit:'仅本机测试，非正式收费及权利条款'}});
+    await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'synthetic.customization','1',JSON.stringify(rule),'2020-01-01 00:00:00',people.publisher.account_id,'EFFECTIVE']);
+    const trade=require(path.join(backend,'src/modules/trade/repository')).createTradeRepository(db,{resolvePrincipal,customizationMerchantPartyId:merchant.party_id});
+    let spec=await trade.createSpec(people.merchant.ctx,{party_id:merchant.party_id,previous_spec_id:null,title:'合成定制商品：不是正式价格',provider_party_id:merchant.party_id,line_kind:'PRODUCTION',unit_minor:10001,currency:'CNY',specification:{version:'synthetic-1',service_tier:'仅合成测试',sample_seconds:23,final_seconds:119,revision_limit:2,deliverables:['合成文件'],terms:'不得用于真实收费、制作或权利承诺'},operation_key:randomUUID()});
+    spec=await trade.review(people.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'合成测试规格',operation_key:randomUUID()});
+    let quoteStory=await repo.create(buyer.ctx,{party_id:buyer.personal_party_id,template_version_id:family.template_version_id,answers:{story:'只用于报价联调的虚构故事',tone:'温暖'},operation_key:randomUUID()});
+    quoteStory=await repo.submit(buyer.ctx,{request_id:quoteStory.id,party_id:buyer.personal_party_id,expected_version:quoteStory.object_version,operation_key:randomUUID()});
+    quoteStory=await repo.intake(people.operator.ctx,{request_id:quoteStory.id,expected_version:quoteStory.object_version,operation_key:randomUUID()});
+    const quoted=await trade.quote(people.merchant.ctx,{party_id:merchant.party_id,buyer_party_id:buyer.personal_party_id,lines:[{line_id:'production',spec_id:spec.id,quantity:1}],installments:[['first','ORDER_ACCEPTED',3000],['interim','CUSTOMIZATION_INTERIM_CONFIRMED',6000],['last','FINAL_ACCEPTED',1001]].map(([key,trigger,amount_minor])=>({key,trigger,allocations:[{line_id:'production',amount_minor}],apple_product_id:null})),channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:ruleId,expires_at:new Date(Date.now()+3600000).toISOString(),payment_window_minutes:30,license_reservation_id:null,customization_source:{request_id:quoteStory.id,submission_id:quoteStory.submission.id,content_sha256:quoteStory.submission.content_sha256},operation_key:randomUUID()});
+    const app = createAccountApi({ db, secret, tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:merchant.party_id}, allowedOrigins:['http://localhost:5173','http://127.0.0.1:5173','http://localhost:5000','http://127.0.0.1:5000'] });
     // Restrict this local fixture to this handoff; no login issuance or other business APIs.
     checkRunning();
     const uuid='[a-fA-F0-9-]{36}';
     const rules=[
+      ['GET',new RegExp('^/api/v1/trade/records(?:/'+uuid+')?$')],
+      ['POST',/^\/api\/v1\/trade\/quotes$/],
+      ['POST',new RegExp('^/api/v1/trade/records/'+uuid+'/reviews$')],
+      ['POST',new RegExp('^/api/v1/trade/quotes/'+uuid+'/acceptance$')],
       ['GET',/^\/(health|ready)$/],
       ['GET',/^\/api\/v1\/(me|me\/parties|customization-categories)$/],
       ['GET',new RegExp('^/api/v1/customization-requests(?:/'+uuid+')?$')],
@@ -103,7 +118,7 @@ async function main() {
       ['POST',new RegExp('^/api/v1/customization-requests/'+uuid+'/submissions$')],
       ['GET',/^\/api\/v1\/operations\/customization-requests$/],
       ['POST',new RegExp('^/api/v1/operations/customization-requests/'+uuid+'/(intake|supplements)$')],
-      ['GET',new RegExp('^/api/v1/customization-requests/'+uuid+'/(supplement|submissions(?:/'+uuid+')?)$')],
+      ['GET',new RegExp('^/api/v1/customization-requests/'+uuid+'/(quotes|supplement|submissions(?:/'+uuid+')?)$')],
       ['PATCH',new RegExp('^/api/v1/customization-requests/'+uuid+'/supplement$')],
       ['POST',new RegExp('^/api/v1/customization-requests/'+uuid+'/supplement-submissions$')]
     ];
@@ -118,13 +133,13 @@ async function main() {
     const base_url = 'http://127.0.0.1:' + server.address().port + '/api/v1';
     await fs.mkdir(out, { recursive:true });
     const accounts = Object.fromEntries(Object.entries(people).map(([role, p]) => [role, { account_id:p.account_id, party_id:p.personal_party_id, bearer_token:p.token }]));
-    await fs.writeFile(path.join(out, 'access.json'), JSON.stringify({ synthetic_only:true, base_url, accounts, templates:{ family:family.template_version_id, life:life.template_version_id, blocked:blocked.template_version_id }, requests:{ draft:draft.id, submitted:submitted.id, supplement:supplementDraft.id } }, null, 2), { mode:0o600 });
+    await fs.writeFile(path.join(out, 'access.json'), JSON.stringify({ synthetic_only:true, base_url, accounts, templates:{ family:family.template_version_id, life:life.template_version_id, blocked:blocked.template_version_id }, requests:{ draft:draft.id, submitted:submitted.id, supplement:supplementDraft.id, quote:quoteStory.id }, trade:{merchant_party_id:merchant.party_id,specification_id:spec.id,rule_id:ruleId,quote_id:quoted.id} }, null, 2), { mode:0o600 });
     await fs.writeFile(path.join(out, 'status.json'), JSON.stringify({ status:'RUNNING', synthetic_only:true, host:'127.0.0.1', port:server.address().port, expires_in_minutes:60, database:name }, null, 2));
     checkRunning();
     starting=false;
     timer=setTimeout(stop,60*60*1000);
     // Do not print even synthetic session tokens in logs or include them in Git.
-    console.log(JSON.stringify({ status:'READY', base_url, access_file:path.relative(root, path.join(out, 'access.json')), stop_file:path.relative(root,path.join(out,'stop')), scenarios:['不完整草稿','已提交待受理','待补充未提交','另一买家无权','必填附件不可提交'], synthetic_only:true }));
+    console.log(JSON.stringify({ status:'READY', base_url, access_file:path.relative(root, path.join(out, 'access.json')), stop_file:path.relative(root,path.join(out,'stop')), scenarios:['不完整草稿','已提交待受理','待补充未提交','平台报价待独立复核','另一买家无权','必填附件不可提交'], synthetic_only:true }));
   } catch(e) {
     starting=false;
     const result=await cleanup();

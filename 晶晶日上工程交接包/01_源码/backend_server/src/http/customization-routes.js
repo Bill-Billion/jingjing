@@ -118,6 +118,10 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
   router.get('/customization-requests/:request_id/submissions/:submission_id',wrap(async(req,res)=>{
     shape(req.query,[]);reply(req,res,await repo.getSubmission(req,{request_id:id(req.params.request_id),submission_id:id(req.params.submission_id),party_id:acting(req,false)}));
   }));
+  router.get('/customization-requests/:request_id/quotes',wrap(async(req,res)=>{
+    const request_id=id(req.params.request_id),party_id=acting(req,false),p=page(req,false,'quotes:'+request_id);
+    paged(req,res,await repo.quotes(req,{request_id,party_id,after:p.after,limit:p.limit}),p.scope);
+  }));
   return router;
 }
 module.exports = { createCustomizationRouter };

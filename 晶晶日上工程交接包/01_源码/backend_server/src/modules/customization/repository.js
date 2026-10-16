@@ -104,6 +104,15 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
   return {request_id:r.id,submission_number:s.submission_number,submission:{id:s.id,answers:stored(s.answers_json,s.answers_sha256),template_snapshot:stored(s.template_snapshot_json,s.template_sha256),content_sha256:s.content_sha256,submitted_by:s.submitted_by,submitted_at:instant(s.submitted_at)},supplement_response:supplement?{supplement_id:supplement.id,base_submission_id:supplement.base_submission_id,items:stored(supplement.items_json,supplement.items_sha256),responses:stored(supplement.responses_json,supplement.responses_sha256),requested_by:supplement.requested_by,requested_at:instant(supplement.requested_at)}:null};
  }
  return Object.freeze({
+  async quotes(ctx,{request_id,party_id=null,after='',limit=20}){
+   id(request_id);if(party_id!==null)id(party_id);P.page({after,limit});
+   return db.withTransaction(async tx=>{
+    const a=await actor(tx,ctx),r=await load(tx,request_id);await visible(tx,a,r,party_id);
+    const [rows]=await tx.execute('SELECT q.*,b.submission_id AS linked_submission_id,o.order_id AS linked_order_id FROM customization_quotes b JOIN trade_records q ON q.id=b.quote_id LEFT JOIN customization_orders o ON o.quote_id=q.id WHERE b.request_id=? AND q.id>? ORDER BY q.id LIMIT ?',[r.id,after,limit+1]);
+    const latest=r.submission_number?await one(tx,'SELECT id FROM customization_submissions WHERE request_id=? AND submission_number=?',[r.id,r.submission_number]):null;
+    return {items:rows.slice(0,limit).map(q=>{const data=stored(q.data_json,q.data_sha256),s=data.customization;if(!s||s.request_id!==r.id||s.submission_id!==q.linked_submission_id)throw error('STORED_CONTENT_MISMATCH',503);return {id:q.id,submission_id:s.submission_id,source_content_sha256:s.content_sha256,source_is_current:s.submission_id===latest?.id,current_status:q.current_status,object_version:q.object_version,content_sha256:q.data_sha256,order_id:q.linked_order_id||null};}),next_cursor:rows.length>limit?rows[limit-1].id:null};
+   });
+  },
   async getSupplement(ctx,{request_id,party_id=null}){
    id(request_id);if(party_id!==null)id(party_id);
    return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await load(tx,request_id);await visible(tx,a,r,party_id);return supplementData(r,await latestSupplement(tx,r),party_id===null);});
@@ -113,7 +122,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
    return db.withTransaction(async tx=>{
     const a=await actor(tx,ctx);await operator(tx,a);const r=await load(tx,i.request_id,'FOR UPDATE');await visible(tx,a,r,null);
     return command(tx,a,'SUPPLEMENT_REQUEST',r.id,i,async()=>{
-     match(r,i.expected_version);if(r.current_status!=='INTAKE'||(await latestSupplement(tx,r))?.current_status==='OPEN')throw error('SUPPLEMENT_NOT_REQUESTABLE',409);
+     match(r,i.expected_version);await require('./trade-context').assertUnordered(tx,r.id);if(r.current_status!=='INTAKE'||(await latestSupplement(tx,r))?.current_status==='OPEN')throw error('SUPPLEMENT_NOT_REQUESTABLE',409);
      const current=await detail(tx,r,true),items=S.items(current.template_snapshot,i.items),empty={};
      await tx.execute('INSERT INTO customization_supplements(id,request_id,base_submission_id,opened_version,items_json,items_sha256,draft_answers_json,draft_answers_sha256,responses_json,responses_sha256,requested_by) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[randomUUID(),r.id,current.submission.id,r.object_version+1,JSON.stringify(items),digest(items),JSON.stringify(current.answers),digest(current.answers),JSON.stringify(empty),digest(empty),a.id]);
      await tx.execute('UPDATE customization_requests SET object_version=object_version+1,updated_at=CURRENT_TIMESTAMP(3) WHERE id=?',[r.id]);

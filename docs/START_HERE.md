@@ -1,3 +1,7 @@
+# 当前入口：第二轮平台报价与订单
+
+先看[本批接法](collaboration/V5_R02_PLATFORM_QUOTES.md)及[当前状态](status/CORE_CURRENT.md)。本批本地未上传；第二轮尚未全部完成。
+
 # 当前本地进展：第二轮补件已实现，报价关联待继续
 
 先看[本次实际进度](status/CORE_CURRENT.md)和[补件流程与接法](collaboration/V5_R02_SUPPLEMENTS.md)。本批仍本地，第一轮5e54a3b已发布供队友使用；第二轮未完成、未上传，不把后端检查当作页面验收。

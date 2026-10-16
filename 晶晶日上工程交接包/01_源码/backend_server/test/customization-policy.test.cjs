@@ -56,3 +56,18 @@ test('pagination validates limits and state filters and operations cannot reques
  assert.throws(()=>p.page({current_status:'DRAFT'},{operations:true}));
  assert.doesNotThrow(()=>p.page({current_status:'SUBMITTED'},{operations:true}));
 });
+
+
+test('customization plan keeps cumulative 90 percent and rounds remainder into final payment without changing inputs',()=>{
+ const {plan}=require('../src/modules/customization/quote-policy');
+ const lines=[{line_id:'a',total_minor:10001},{line_id:'b',total_minor:101}];
+ const steps=['ORDER_ACCEPTED','CUSTOMIZATION_INTERIM_CONFIRMED','FINAL_ACCEPTED'].map((trigger,i)=>({key:'step'+i,trigger,allocations:[{line_id:'a',amount_minor:[3000,6000,1001][i]},{line_id:'b',amount_minor:[30,60,11][i]}],apple_product_id:null}));
+ const original=structuredClone(steps);assert.deepEqual(plan(lines,steps),original);assert.deepEqual(steps,original);
+ const wrong=structuredClone(steps);wrong[1].allocations[0].amount_minor=4000;wrong[2].allocations[0].amount_minor=3001;
+ assert.throws(()=>plan(lines,wrong),{code:'CUSTOMIZATION_PAYMENT_PLAN_INVALID'});
+});
+test('customization interim payment is not silently treated as sample acceptance or a full upfront charge',()=>{
+ const {plan}=require('../src/modules/customization/quote-policy');const lines=[{line_id:'a',total_minor:100}];
+ assert.throws(()=>plan(lines,[{trigger:'ORDER_ACCEPTED',allocations:[{line_id:'a',amount_minor:100}]}]),{code:'CUSTOMIZATION_PAYMENT_PLAN_INVALID'});
+ assert.throws(()=>plan(lines,['ORDER_ACCEPTED','SAMPLE_ACCEPTED','FINAL_ACCEPTED'].map((trigger,i)=>({trigger,allocations:[{line_id:'a',amount_minor:[30,60,10][i]}]}))),{code:'CUSTOMIZATION_PAYMENT_PLAN_INVALID'});
+});

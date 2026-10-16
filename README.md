@@ -1,3 +1,7 @@
+# 最新本地进展：平台报价到未付款订单已接通
+
+[本批接法与双方分工](docs/collaboration/V5_R02_PLATFORM_QUOTES.md)。第二轮分账、财务和跨端仍待完成，本批未上传。
+
 # 当前本地进展：第二轮补件已实现，报价关联待继续
 
 先看[本次实际进度](docs/status/CORE_CURRENT.md)和[补件流程与接法](docs/collaboration/V5_R02_SUPPLEMENTS.md)。本批仍本地，第一轮5e54a3b已发布供队友使用；第二轮未完成、未上传，不把后端检查当作页面验收。
