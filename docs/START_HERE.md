@@ -1,6 +1,6 @@
 # 当前入口：第四轮定制制作后端交接
 
-先读[接法与双方工作](collaboration/V5_R04_HANDOFF.md)及[实际进度](status/CORE_CURRENT.md)。实际工作树worktrees/full-flow、完整分支core/v5-r04-customization-delivery；本侧后端已自验，正在集中交付。首款、人工制作、交付和售后已接通隔离测试；页面、实际审阅、合入、真实启用仍单列。首次预览与90%先后待用户答复，儿童实际处理继续关闭。共12轮，下轮第5轮现成视频。
+先读[接法与双方工作](collaboration/V5_R04_HANDOFF.md)及[实际进度](status/CORE_CURRENT.md)。实际工作树worktrees/full-flow、完整分支core/v5-r04-customization-delivery；本侧后端已自验、集中上传，功能版本d7bbf64远端检查通过。首款、人工制作、交付和售后已接通隔离测试；页面、实际审阅、合入、真实启用仍单列。首次预览与90%先后待用户答复，儿童实际处理继续关闭。共12轮，下轮第5轮现成视频。
 
 ---
 
