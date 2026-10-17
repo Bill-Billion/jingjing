@@ -259,15 +259,21 @@ try {
   const owner = actors.owner, buyer = actors.otherOwner, reviewer = actors.reviewer, member = actors.member
   await check('全部旧新工作区菜单在桌面与390宽稳定显示、正确高亮及跳转', async () => {
     const page = buyer.page
+    async function openNavigation() {
+      const toggle = page.getByTestId('customization-menu-toggle')
+      if (await toggle.isVisible() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
+      await page.locator('.workspace-nav').waitFor()
+    }
     const links = await page.locator('.workspace-nav a').evaluateAll(nodes => nodes.map(node => ({ href: node.getAttribute('href'), label: node.textContent.trim() })))
     assert(links.length >= 11, 'Six previous menus plus at least five licensing menus must be present')
     assert.equal(new Set(links.map(link => link.href)).size, links.length)
     for (const width of [1440, 390]) {
       await page.setViewportSize({ width, height: 1000 })
       for (const link of links) {
+        await openNavigation()
         await page.locator('.workspace-nav a').filter({ hasText: link.label }).click()
         await page.waitForURL(url => url.pathname === link.href)
-        await page.locator('.workspace-nav').waitFor()
+        await openNavigation()
         assert.equal(await page.locator('.workspace-nav a').count(), links.length, `${link.label}: stable menus`)
         assert.equal(await page.locator('.workspace-nav a[aria-current="page"]').count(), 1, `${link.label}: one active menu`)
         assert.equal(await page.getByRole('heading', { name: '页面不存在', exact: true }).count(), 0, `${link.label}: no route 404`)
