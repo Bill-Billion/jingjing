@@ -6,9 +6,6 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import 'package:flutter/services.dart';
-import '../licensing/license_pages.dart';
-import '../gigs/gig_pages.dart';
-import '../projects/project_pages.dart';
 
 /// Keep the current tab address without replacing the mounted shell. Child
 /// routes still use ordinary Material routes and return to this updated address.
@@ -52,13 +49,13 @@ class _AppShellState extends State<AppShell> {
   late int _selected = widget.initialTab.clamp(0, 4);
   final _visited = <int>{};
   (int, String?, String?)? _sessionContext;
-  static const _labels = ['首页', '入戏', '培育', '成角', '我的'];
-  static const _routes = ['/home', '/enter', '/cultivate', '/roles', '/my'];
+  static const _labels = ['广场', '试镜', '通告', '消息', '我的'];
+  static const _routes = ['/square', '/audition', '/notices', '/messages', '/my'];
   static const _icons = [
-    Icons.home_outlined,
-    Icons.menu_book_outlined,
-    Icons.eco_outlined,
-    Icons.star_outline,
+    Icons.grid_view_outlined,
+    Icons.video_camera_front_outlined,
+    Icons.article_outlined,
+    Icons.chat_bubble_outline,
     Icons.person_outline,
   ];
 
@@ -113,68 +110,116 @@ class _AppShellState extends State<AppShell> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)));
 
   List<Widget> _currentTools() => [
-        _heading('现在可以办理'),
-        _entry('选剧本与许可', '了解许可范围，预留、提交材料并绑定用途项目。', Icons.menu_book_outlined,
-            () => _open('/licensing/catalog')),
-        _entry('作者与作品', '申请作者资格，管理投稿与私有权利材料。', Icons.edit_note_outlined,
-            () => _open('/supply')),
-        _entry('合同与原约定', '按权限查看合同当时保存的内容和规则。', Icons.description_outlined,
-            () => _open('/contract')),
+        _heading('已有业务'),
+        _entry(
+          '订单与报价',
+          '查看已收到的报价、原订单和付款记录。',
+          Icons.receipt_long_outlined,
+          () => _open('/orders'),
+        ),
+        _entry(
+          '制作与交付',
+          '查看具体项目、审片反馈和已获准交付的作品。',
+          Icons.movie_outlined,
+          () => _open('/production'),
+        ),
+        _entry(
+          '合同与原约定',
+          '按权限查看合同当时保存的内容和规则。',
+          Icons.description_outlined,
+          () => _open('/contract'),
+        ),
       ];
 
   List<Widget> _home(AccountSession session) => [
-        const HomeStationHero(),
+        const ManuscriptHero(
+            title: '让故事与你有关', subtitle: '写下自己的故事，\n由平台制作专员接收。'),
         const SizedBox(height: 16),
-        LayoutBuilder(
-            builder: (context, c) =>
-                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  for (var i = 1; i <= 3; i++) ...[
-                    if (i > 1) const SizedBox(width: 8),
-                    Expanded(
-                        child: Card(
-                            child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Icon(_icons[i],
-                                              size: 32,
-                                              color: AccountTheme.accent)),
-                                      const SizedBox(height: 10),
-                                      Text(_labels[i],
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700)),
-                                      const SizedBox(height: 6),
-                                      Text(['', '私人定制', '商业委托', '公开项目'][i],
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              color: AccountTheme.muted)),
-                                      const SizedBox(height: 12),
-                                      FilledButton(
-                                          style: FilledButton.styleFrom(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4),
-                                              textStyle: const TextStyle(
-                                                  fontSize: 12)),
-                                          onPressed: () => _select(i),
-                                          child: Text(
-                                              ['', '去选剧本', '看商单', '看项目'][i],
-                                              textAlign: TextAlign.center)),
-                                    ])))),
-                  ],
-                ])),
-        _entry('数字人资料', '管理本人的脸部、声音与用途授权 · 暂未开放', Icons.face_outlined,
-            () => _open('/my-humans')),
+        _entry(
+          '把我的故事拍成片',
+          '选择品类，写下想记录的内容；没写完可以先存草稿。',
+          Icons.edit_note_outlined,
+          () => _open('/customization/new'),
+        ),
+        _entry(
+          '我的故事与草稿',
+          '继续填写、查看已提交内容和平台受理进度。',
+          Icons.drafts_outlined,
+          () => _open('/customization'),
+        ),
+        _heading('发现与合作'),
+        _entry(
+          '艺人与视频',
+          '公开艺人和现成视频目录正在接入。',
+          Icons.people_outline,
+          () => _open('/discover'),
+        ),
+        _entry(
+          '试镜预约',
+          '查看试镜服务的接入进度。',
+          Icons.video_camera_front_outlined,
+          () => _select(1),
+        ),
+        _entry('通告与合作', '查看通告分类与已有合作业务。', Icons.article_outlined,
+            () => _select(2)),
         ..._currentTools(),
-        _entry('发现与片场榜单', '公开目录筹备中；按真实快照查看榜单。', Icons.people_outline,
-            () => _open('/discover')),
+      ];
+
+  List<Widget> _audition() => [
+        supplyBusinessIntro('找到适合这段故事的人', '公开可约艺人、含交通的总价和预约接拒流程正在接入。'),
+        appNotice('试镜预约暂未开放。预约、艺人接受、付款核实和后续出演授权会分别确认。'),
+        _entry(
+          '已有订单',
+          '继续查看本人已有订单及其实际状态。',
+          Icons.receipt_long_outlined,
+          () => _open('/orders'),
+        ),
+        _entry(
+          '写下制作意向',
+          '暂未确定演员，也可以先提交文字故事。',
+          Icons.edit_note_outlined,
+          () => _open('/customization/new'),
+        ),
+      ];
+
+  List<Widget> _notices() => [
+        supplyBusinessIntro('通告与合作', '剧、商演、商单、活动、招募和平台通告将分别提供发布与投稿入口。'),
+        appNotice('六类通告与单向投稿正在接入。下面保留已有业务入口，各自按原约定办理。'),
+        _entry(
+          '公开项目与角色',
+          '查看当前公开项目和角色摘要。',
+          Icons.movie_filter_outlined,
+          () => _open('/projects/catalogue'),
+        ),
+        _entry(
+          '商业委托',
+          '查看已有商业需求，按实际资格提交或处理提案。',
+          Icons.work_outline,
+          () => _open('/gigs'),
+        ),
+      ];
+
+  List<Widget> _messages() => [
+        supplyBusinessIntro('消息', '把业务变化、合作意向与具体订单沟通分开查看。'),
+        _entry(
+          '系统与业务通知',
+          '查看当前账号和办理身份获准的通知。',
+          Icons.notifications_outlined,
+          () => _open('/operations/notifications'),
+        ),
+        _entry(
+          '订单与项目留言',
+          '围绕本人有权参与的订单和项目查看现有留言。',
+          Icons.chat_bubble_outline,
+          () => _open('/chat'),
+        ),
+        appNotice('单向投稿和客服处理会话正在接入。提交故事后的进度可在“我的故事与草稿”查看。'),
+        _entry(
+          '我的故事与草稿',
+          '查看平台待查看、受理中等实际状态。',
+          Icons.drafts_outlined,
+          () => _open('/customization'),
+        ),
       ];
 
   Widget supplyBusinessIntro(String title, String description) => Padding(
@@ -290,7 +335,12 @@ class _AppShellState extends State<AppShell> {
         _entry('账号与机构', '管理账号、机构、邀请和办事身份。', Icons.manage_accounts_outlined,
             () => _open('/account')),
         _entry('业务通知', '查看当前账号和办事身份获准的业务变化。', Icons.notifications_outlined,
-            () => _open('/messages')),
+            () => _open('/operations/notifications')),
+        _heading('我的故事'),
+        _entry('我的故事与草稿', '找回草稿、查看提交内容和受理进度。',
+            Icons.drafts_outlined, () => _open('/customization')),
+        _entry('发起制作需求', '选一个品类，先写下你的故事。',
+            Icons.edit_note_outlined, () => _open('/customization/new')),
         _menuGrid(),
         _heading('商单与直接合作'),
         _entry('商单通知', '查看商单暂停与直接合作结束记录', Icons.notifications_outlined,
@@ -322,7 +372,7 @@ class _AppShellState extends State<AppShell> {
         _entry('我的许可项目', '查看公开项目与许可绑定。', Icons.folder_open_outlined,
             () => _open('/licensing?kind=PROJECT')),
         _heading('创作与供给'),
-        _entry('作者与作品', '申请作者资格，管理供给与作品资料。', Icons.edit_note_outlined,
+        _entry('历史作品资料', '查看此前保存的作品和权利资料。', Icons.edit_note_outlined,
             () => _open('/supply')),
         _entry('创作工具', '创作任务与历史作品 · 暂未开放', Icons.auto_awesome_outlined,
             () => _open('/ai-create')),
@@ -336,13 +386,9 @@ class _AppShellState extends State<AppShell> {
   Widget _section(int index, AccountSession session) {
     final identityName = session.party?['display_name'] as String?;
     final children = switch (index) {
-      1 => [
-          _entry('查看已有报价', '私人定制：确认服务方已审核报价，付款与签署另行办理。',
-              Icons.receipt_long_outlined, () => _open('/orders?kind=QUOTE')),
-          const LicenseCatalog(embedded: true)
-        ],
-      2 => [const GigCataloguePage(embedded: true)],
-      3 => [const ProjectsCataloguePage(embedded: true)],
+      1 => _audition(),
+      2 => _notices(),
+      3 => _messages(),
       4 => _mine(session),
       _ => _home(session),
     };
@@ -393,7 +439,7 @@ class _AppShellState extends State<AppShell> {
             IconButton(
                 tooltip: _selected == 4 ? '设置与帮助' : '通知',
                 onPressed: () =>
-                    _open(_selected == 4 ? '/settings' : '/messages'),
+                    _open(_selected == 4 ? '/settings' : '/operations/notifications'),
                 icon: Icon(_selected == 4
                     ? Icons.settings_outlined
                     : Icons.notifications_outlined)),
@@ -432,10 +478,10 @@ class _AppShellState extends State<AppShell> {
                   key: Key('app-tab-$i'),
                   icon: Icon(_icons[i]),
                   selectedIcon: Icon([
-                    Icons.home,
-                    Icons.menu_book,
-                    Icons.eco,
-                    Icons.star,
+                    Icons.grid_view,
+                    Icons.video_camera_front,
+                    Icons.article,
+                    Icons.chat_bubble,
                     Icons.person
                   ][i]),
                   label: _labels[i]))),

@@ -208,12 +208,18 @@ class _LoginPageState extends State<LoginPage> {
     final destination = route != null &&
             !route.hasAuthority &&
             !route.hasScheme &&
-            [
+            (RegExp(r'^/customization/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$').hasMatch(route.path) || [
               '/supply',
               '/supply/profile',
               '/supply/work/new',
               '/supply/record',
               '/enter',
+              '/square',
+              '/audition',
+              '/notices',
+              '/customization',
+              '/customization/new',
+              '/customization/request',
               '/licensing',
               '/licensing/catalog',
               '/licensing/record',
@@ -271,7 +277,7 @@ class _LoginPageState extends State<LoginPage> {
               '/finance/dispute/new',
               '/finance/notifications',
               '/production/work'
-            ].contains(route.path)
+            ].contains(route.path))
         ? route.toString()
         : '/my';
     if (destination != '/my') {

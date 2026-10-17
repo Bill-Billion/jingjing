@@ -194,6 +194,27 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    assert.equal(JSON.stringify(response.body).includes(marker),false);
    const invalid=failed(await request('POST','/customization-requests',buyer,{template_version_id:pet.template_version_id,answers:{pet_story:{private:marker}}},buyer.personal_party_id,headers()),400);assert.equal(JSON.stringify(invalid.body).includes(marker),false);
   });
+  await t.test('HTTP preserves safe whole-form validation reasons without reflecting private answers or unknown field names',async()=>{
+   const row=await make(),marker='PRIVATE_SYNTHETIC_ROOT_ERROR_';
+   const unknown=failed(await save(row,{story:marker,unregistered_note:marker}),400);
+   assert.equal(unknown.body.error.code,'CUSTOMIZATION_VALIDATION_FAILED');
+   assert.deepEqual(unknown.body.error.details,[{field:'answers',reason:'UNKNOWN_FIELD'}]);
+   assert.equal(JSON.stringify(unknown.body).includes(marker),false);
+   assert.equal(JSON.stringify(unknown.body).includes('unregistered_note'),false);
+   const invalid=failed(await save(row,null),400);
+   assert.deepEqual(invalid.body.error.details,[{field:'answers',reason:'INVALID_TYPE'}]);
+   const template=await publish('oversized_answers',{title:'合成总字节边界',description:'仅用于隔离测试',fields:['beginning','middle','ending'].map(key=>({key,label:key,type:'TEXT',required:false,max_length:6000}))});
+   const largeRow=await make({},buyer,buyer.personal_party_id,template);
+   const answers={beginning:'甲'.repeat(6000),middle:'乙'.repeat(6000),ending:'丙'.repeat(6000)};
+   assert.ok(Buffer.byteLength(JSON.stringify(answers),'utf8')>48*1024);
+   assert.ok(Buffer.byteLength(JSON.stringify({answers}),'utf8')<64*1024);
+   const oversized=failed(await save(largeRow,answers),400);
+   assert.equal(oversized.body.error.code,'CUSTOMIZATION_VALIDATION_FAILED');
+   assert.deepEqual(oversized.body.error.details,[{field:'answers',reason:'TOO_LARGE'}]);
+   assert.equal(JSON.stringify(oversized.body).includes('甲'),false);
+   const restored=capture(await request('GET','/customization-requests/'+largeRow.id),'CustomizationRequestResponse');
+   assert.deepEqual(restored.answers,{});assert.equal(restored.object_version,largeRow.object_version);
+  });
   await t.test('pagination binds signed cursors to user, party, list type and filter',async()=>{
    const first=capture(await request('GET','/customization-requests?limit=1'),'CustomizationRequestPageResponse');assert.equal(first.items.length,1);assert.ok(first.next_cursor);
    const cursor=encodeURIComponent(first.next_cursor),next=capture(await request('GET','/customization-requests?limit=1&cursor='+cursor),'CustomizationRequestPageResponse');assert.notEqual(next.items[0].id,first.items[0].id);

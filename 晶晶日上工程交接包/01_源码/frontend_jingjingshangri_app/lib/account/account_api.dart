@@ -23,6 +23,9 @@ class AccountApi {
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/customization-requests') ||
         (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/') ||
         (jsonDecode(key) as List)[3]
             .toString()
@@ -130,7 +133,8 @@ class AccountApi {
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
     final writing = method != 'GET';
-    final supply = path.startsWith('/api/v1/supply/') ||
+    final supply = path.startsWith('/api/v1/customization-requests') ||
+        path.startsWith('/api/v1/supply/') ||
         path.startsWith('/api/v1/licensing/') ||
         path.startsWith('/api/v1/trade/') ||
         path.startsWith('/api/v1/gigs/') ||
@@ -268,6 +272,7 @@ class AccountApi {
       final retrySeconds =
           int.tryParse(response.headers.value('retry-after') ?? '');
       throw AccountError(status, code,
+          details: safeAccountErrorDetails(error is Map ? error['details'] : null),
           resultId: error is Map &&
                   error['details'] is Map &&
                   error['details']['record_id'] is String
@@ -336,12 +341,14 @@ class AccountApi {
 
 class AccountError implements Exception {
   const AccountError(this.status, this.code,
-      {this.uncertain = false, this.retryAt, this.resultId});
+      {this.uncertain = false, this.retryAt, this.resultId,
+      this.details = const []});
   final int status;
   final String code;
   final bool uncertain;
   final DateTime? retryAt;
   final String? resultId;
+  final List<Map<String, String>> details;
   String get message {
     switch (code) {
       case 'ACCOUNT_API_NOT_CONFIGURED':
@@ -399,4 +406,31 @@ class AccountError implements Exception {
 
   @override
   String toString() => message;
+}
+
+/// Only fixed form identifiers and reasons are retained, never raw server text.
+List<Map<String, String>> safeAccountErrorDetails(dynamic value) {
+  if (value is! List) return const [];
+  const reasons = {
+    'REQUIRED',
+    'INVALID_CHOICE',
+    'TOO_LONG',
+    'INVALID_TYPE',
+    'ATTACHMENT_NOT_SUPPORTED',
+    'ATTACHMENT_SUBMISSION_NOT_READY',
+    'UNKNOWN_FIELD',
+    'TOO_LARGE',
+  };
+  final field = RegExp(r'^(answers|responses)(\.[a-z][a-z0-9_]{0,63})?$');
+  return List.unmodifiable([
+    for (final item in value.take(40))
+      if (item is Map &&
+          item['field'] is String &&
+          field.hasMatch(item['field']) &&
+          reasons.contains(item['reason']))
+        Map<String, String>.unmodifiable({
+          'field': item['field'] as String,
+          'reason': item['reason'] as String,
+        }),
+  ]);
 }

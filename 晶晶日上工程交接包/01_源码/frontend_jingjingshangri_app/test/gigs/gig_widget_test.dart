@@ -227,26 +227,33 @@ void main() {
     expect(find.text('已出款'), findsNothing);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('培育保留五栏目及滚动状态，商单子页返回到原栏目', (tester) async {
+  testWidgets('通告进入已有商单，详情返回再回同一栏目', (tester) async {
     late FakeAccountAdapter a;
     a = FakeAccountAdapter(
-        handler: (r) => r.path.endsWith('/catalogue')
-            ? envelope(catalogue())
-            : a.defaultReply(r));
+      handler: (r) => r.path.endsWith('/catalogue')
+          ? envelope(catalogue())
+          : a.defaultReply(r),
+    );
     final s = (await tester.runAsync(() => buyerSession(a)))!;
     await nav.openApp(tester, s, route: '/cultivate');
     expect(find.byType(AppShell), findsOneWidget);
     nav.expectFiveTabs();
+    await tester.tap(find.text('商业委托'));
+    await nav.frames(tester);
     await click(tester, '查看商单需求', outline: true);
     await nav.frames(tester);
     expect(find.text('商单需求'), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
     await tester.tap(find.byType(BackButton));
     await nav.frames(tester);
+    expect(find.byType(NavigationBar), findsNothing);
+    await tester.tap(find.byType(BackButton));
+    await nav.frames(tester);
     nav.expectFiveTabs();
     expect(
-        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
-        2);
+      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      2,
+    );
     for (final i in [4, 0, 2]) {
       await tester.tap(find.byKey(Key('app-tab-$i')));
       await tester.pump();

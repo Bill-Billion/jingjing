@@ -1,0 +1,119 @@
+{
+  "recorded_on": "2026-10-17",
+  "result": "PASS",
+  "stage": "V5-R01-Experience",
+  "owner": "Bill-Billion",
+  "branch": "ux/v5-r01-story-frontend",
+  "base_commit": "c93fe96ca89936300ab44e762b105a344d845d4c",
+  "integration_observed": "28662ab",
+  "scope": "App动态文字故事、草稿、提交状态；运营收件、提交快照与受理；新五栏迁移",
+  "app_regression": {
+    "result": "PASS",
+    "passed": 269,
+    "skipped": 0,
+    "log": "app-regression.log",
+    "note": "最后只读展示调整后又单独复跑以下20项；远端完整版本另记发布证据"
+  },
+  "app_final_story_checks": {
+    "result": "PASS",
+    "passed": 20,
+    "skipped": 0,
+    "analysis": "PASS",
+    "log": "app-readable-answers.log"
+  },
+  "app_analysis": {
+    "result": "PASS",
+    "log": "app-analysis.log"
+  },
+  "web_regression": {
+    "result": "PASS",
+    "passed": 190,
+    "story_subset": 14,
+    "log": "web-regression.log",
+    "note": "专项已包含在190中，不重复相加；窄屏导航修复后专项及构建再次通过"
+  },
+  "backend_error_boundary": {
+    "result": "PASS",
+    "passed": 43,
+    "skipped": 0,
+    "log": "backend-root-validation.log",
+    "before_fix_reproduced_failure": true,
+    "shared_change_review": "PENDING_CORE_REVIEW"
+  },
+  "builds": {
+    "app_product_web": "PASS",
+    "app_log": "app-product-build.log",
+    "web_typecheck_and_product": "PASS",
+    "web_log": "web-build.log",
+    "warning": "网页已有主包大于500kB提示；未为本轮引入额外依赖"
+  },
+  "cross_client": {
+    "result": "PASS",
+    "synthetic_only": true,
+    "real_http": true,
+    "real_mysql": true,
+    "bootstrap": "App仅初始化一次既有合成登录会话；网页仅注入既有合成会话，其余业务走真实接口",
+    "request_id": "378e0767-1c47-497b-9cfd-1747ae892258",
+    "submission_sha256": "492e433bbab37fcdedeebea16d5f1a6a792990f93407f3ad26c4889387f5cf8e",
+    "submission_unchanged": true,
+    "app_submit": {
+      "passed": 13,
+      "evidence": "APP_RESULTS.json"
+    },
+    "web_intake": {
+      "passed": 16,
+      "evidence": "WEB_RESULTS.json"
+    },
+    "app_after_intake": {
+      "passed": 5,
+      "evidence": "APP_INTAKE_RESULTS.json"
+    },
+    "page_errors": 0,
+    "viewports": {
+      "app": [
+        390
+      ],
+      "web": [
+        1440,
+        390
+      ]
+    }
+  },
+  "cleanup": {
+    "result": "PASS",
+    "evidence": "CLEANUP.json"
+  },
+  "publication": "PENDING_STAGE_UPLOAD",
+  "peer_review": "PENDING",
+  "integration": "NOT_MERGED",
+  "production": "NOT_ENABLED",
+  "not_verified": [
+    "Android/iOS真机与原生安装包",
+    "本轮live Figma/逐像素一致",
+    "真实模板发布、附件上传、短信、支付、电子签与数字人服务",
+    "第二轮补件报价及后续新页面"
+  ],
+  "screenshots": [
+    "app-square-390.png",
+    "app-required-attachment-blocked-390.png",
+    "app-restored-draft-390.png",
+    "app-story-draft-390.png",
+    "app-story-submitted-390.png",
+    "app-story-intake-390.png",
+    "web-intake-list-desktop.png",
+    "web-intake-detail-desktop.png",
+    "web-intake-menu-390.png",
+    "web-intake-detail-390.png",
+    "web-intake-record-390.png",
+    "web-intake-forbidden-cleared.png"
+  ],
+  "security_scan": {
+    "result": "PASS",
+    "evidence": "STAGED_FILE_SCAN.json"
+  },
+  "collaboration_check": {
+    "result": "PASS",
+    "evidence": "COLLABORATION_CHECK.json"
+  },
+  "log_normalization": "仅删除日志行尾空白，原始工具输出保留于忽略的本机.local"
+}

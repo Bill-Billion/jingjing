@@ -16,7 +16,7 @@ class OperationsNotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => OperationsGate(
       returnRoute: eventId == null
-          ? '/messages'
+          ? '/operations/notifications'
           : '/operations/notification?eventId=$eventId',
       builder: (s) => _Notifications(session: s, eventId: eventId));
 }
