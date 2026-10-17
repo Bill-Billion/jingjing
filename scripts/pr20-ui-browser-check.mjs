@@ -76,7 +76,7 @@ async function login(name,{second=false}={}){
  const a={...person,page:p,context,token};if(!second)actors[name]=a;return a
 }
 async function ready(p=page){await p.getByText('正在读取实际记录…',{exact:true}).waitFor({state:'hidden'});await p.getByTestId('ops-refresh').waitFor({state:'visible'});await p.waitForTimeout(120)}
-async function go(p,path){page=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
+async function go(p,path){page=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path==='/operations/customization'||path.startsWith('/operations/customization/'))await p.getByTestId('customization-refresh').waitFor();else if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
 async function shot(p,name,gallery){if(new URL(p.url()).pathname.startsWith('/operations/'))await ready(p);const actual=await p.locator('[data-gallery]').first().getAttribute('data-gallery');if(gallery)assert.equal(actual,gallery);const file='screenshots/pr20-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,gallery:gallery||actual,viewport:p.viewportSize()});await save()}
 const fill=(p,key,v)=>p.getByTestId(key).fill(String(v))
 async function notificationPage(p,cursor,action){
