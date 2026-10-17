@@ -496,12 +496,12 @@ void main() {
     await tester
         .runAsync(() => session.login('13800000000', invitationId, '123456'));
     await pump(tester, session, const MainScaffold(initialTab: 4));
-    await tester.tap(find.text('首页').last);
+    await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
     expect(find.text('让故事与你有关'), findsOneWidget);
     expect(
         find.descendant(
-            of: find.byType(NavigationBar), matching: find.text('入戏')),
+            of: find.byType(NavigationBar), matching: find.text('试镜')),
         findsOneWidget);
     await tester.tap(find.byKey(const Key('app-tab-4')));
     await frames(tester);

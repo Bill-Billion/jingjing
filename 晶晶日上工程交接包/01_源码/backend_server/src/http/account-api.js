@@ -152,11 +152,11 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   const retryable=['IDEMPOTENCY_IN_PROGRESS','COMMIT_OUTCOME_UNKNOWN','RATE_LIMITED'].includes(code);
   if(code==='RATE_LIMITED'&&Number.isSafeInteger(e.retryAfter)&&e.retryAfter>0)res.set('Retry-After',String(e.retryAfter));
   const message=code==='RATE_LIMITED'?'请求过于频繁，请等待后重试':retryable?'操作结果尚未确认，请稍后重试原请求':status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查';
-  // Only known form field identifiers and fixed reason codes may leave this boundary.
+  // Only known form roots/field identifiers and fixed reason codes may leave this boundary.
   // Never reflect a story answer, SQL, provider response or arbitrary thrown details.
   const formReasons=['REQUIRED','INVALID_CHOICE','TOO_LONG','INVALID_TYPE','ATTACHMENT_NOT_SUPPORTED','ATTACHMENT_SUBMISSION_NOT_READY','UNKNOWN_FIELD','TOO_LARGE'];
   const details=code==='CUSTOMIZATION_VALIDATION_FAILED'&&Array.isArray(e.details)
-   ?e.details.slice(0,40).filter(d=>d&&typeof d.field==='string'&&/^(answers|responses)\.[a-z][a-z0-9_]{0,63}$/.test(d.field)&&formReasons.includes(d.reason)).map(d=>({field:d.field,reason:d.reason})):[];
+   ?e.details.slice(0,40).filter(d=>d&&typeof d.field==='string'&&/^(answers|responses)(?:\.[a-z][a-z0-9_]{0,63})?$/.test(d.field)&&formReasons.includes(d.reason)).map(d=>({field:d.field,reason:d.reason})):[];
   res.status(status).json({meta:meta(req),error:{code,message,retryable,details}});
  });
  return app;

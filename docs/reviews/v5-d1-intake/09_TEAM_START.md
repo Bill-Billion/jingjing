@@ -1,3 +1,11 @@
+# 当前双方同步：第一轮前端已交付待实际审阅
+
+2026-10-17，前端 Bill-Billion 已接App动态故事、草稿、正式提交和网页受理，新五栏已迁移。完整入口为 `ux/v5-r01-story-frontend`，依赖 Core第四轮 `c93fe96`；[接法、复验与限制](../../collaboration/V5_R01_FRONTEND_HANDOFF.md)、[前端实际状态](../../status/EXPERIENCE_CURRENT.md)。本轮已在[PR24](https://github.com/Bill-Billion/jingjing/pull/24)集中交付，功能版本 `06622db` 远端检查通过；不等于对方已审阅、已合入或正式启用。下一步前端继续第二轮页面，Core复核共享修复并支持联调；不把后端四轮当作四轮页面完成。
+
+---
+
+以下保留原同步记录，当前状态以上文及双方CURRENT为准。
+
 # 当前入口：第二轮后端可交接
 
 补件至未付款订单及新旧财务已实现并本机自验。分工、完整分支及限制见[第二轮交接](../../collaboration/V5_R02_HANDOFF.md)。前端可能未开工，待本人确认；跨端、审阅、合入与启用未完成。

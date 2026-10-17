@@ -112,6 +112,8 @@ async function main() {
       ['POST',new RegExp('^/api/v1/trade/quotes/'+uuid+'/acceptance$')],
       ['GET',/^\/(health|ready)$/],
       ['GET',/^\/api\/v1\/(me|me\/parties|customization-categories)$/],
+      // Account/My pages refresh the selected identity; the real API checks membership.
+      ['GET',new RegExp('^/api/v1/parties/'+uuid+'$')],
       ['GET',new RegExp('^/api/v1/customization-requests(?:/'+uuid+')?$')],
       ['POST',/^\/api\/v1\/customization-requests$/],
       ['PATCH',new RegExp('^/api/v1/customization-requests/'+uuid+'$')],

@@ -6,6 +6,7 @@ import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
 import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
+import 'customization/customization_page.dart';
 import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
 import 'licensing/license_models.dart';
@@ -35,24 +36,37 @@ class JingjingShangriApp extends StatelessWidget {
     if (uri == null || uri.hasAuthority || uri.hasScheme) {
       page = const AppUnknownPage();
     } else {
-      page = switch (path) {
-        '/' || '/home' => const AppShell(),
-        '/enter' ||
-        '/theater' ||
-        '/launch' ||
-        '/custom-request' =>
-          const AppShell(initialTab: 1),
-        '/cultivate' ||
-        '/endorsement' ||
-        '/talent-academy' =>
-          const AppShell(initialTab: 2),
-        '/roles' ||
-        '/projects' ||
-        '/role-market' ||
-        '/project-detail' ||
-        '/audition' =>
-          const AppShell(initialTab: 3),
-        '/my' || '/profile' => const AppShell(initialTab: 4),
+      final storyDetail = RegExp(
+        r'^/customization/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$',
+      );
+      page = path != null && storyDetail.hasMatch(path)
+          ? CustomizationPage(requestId: uri.pathSegments.last)
+          : switch (path) {
+              '/' || '/home' || '/square' => const AppShell(),
+              '/audition' => const AppShell(initialTab: 1),
+              '/notices' ||
+              '/cultivate' ||
+              '/endorsement' ||
+              '/talent-academy' =>
+                const AppShell(initialTab: 2),
+              '/messages' => const AppShell(initialTab: 3),
+              '/my' || '/profile' => const AppShell(initialTab: 4),
+              '/enter' ||
+              '/theater' ||
+              '/launch' ||
+              '/custom-request' ||
+              '/customization/new' =>
+                const CustomizationPage(createNew: true),
+              '/customization' => const CustomizationPage(),
+              '/customization/request' => CustomizationPage(
+                  requestId: uri.queryParameters['requestId'] ?? '',
+                ),
+              '/roles' ||
+              '/projects' ||
+              '/role-market' ||
+              '/project-detail' ||
+              '/projects/catalogue' =>
+                const ProjectsCataloguePage(),
         '/login' => LoginPage(returnRoute: uri.queryParameters['returnRoute']),
         '/account' => const AccountPage(),
         '/contract' => ContractPage(
@@ -157,7 +171,6 @@ class JingjingShangriApp extends StatelessWidget {
           LicenseBindingForm(grantId: uri.queryParameters['grantId'] ?? ''),
         '/licensing/reading' =>
           LicenseReaderPage(recordId: uri.queryParameters['recordId'] ?? ''),
-        '/messages' ||
         '/operations/notifications' =>
           const OperationsNotificationsPage(),
         '/operations/notification' => OperationsNotificationsPage(
@@ -193,14 +206,17 @@ class JingjingShangriApp extends StatelessWidget {
         '/video-order' ||
         '/sample-library' ||
         '/sample-order-detail' =>
-          ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
+          const AppUnavailablePage(title: '现成视频',
+              description: '现成视频商品、购买许可和已购下载正在接入；定制制作请从“把我的故事拍成片”进入。'),
         '/after-sales' || '/review' => const AppUnavailablePage(
             title: '反馈与售后', description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),
         _ => const AppUnknownPage(),
       };
     }
     if (page is AppShell) {
-      return AppShellRoute(settings: settings, shell: page);
+      return AppShellRoute(settings: RouteSettings(
+          name: ['/square', '/audition', '/notices', '/messages', '/my'][page.initialTab],
+          arguments: settings.arguments), shell: page);
     }
     return MaterialPageRoute<dynamic>(settings: settings, builder: (_) => page);
   }

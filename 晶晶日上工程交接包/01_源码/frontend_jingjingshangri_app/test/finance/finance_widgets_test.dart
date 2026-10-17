@@ -39,7 +39,7 @@ Future<void> press(WidgetTester tester, String label) async {
       : label == '选择并上传文件'
           ? find.widgetWithText(OutlinedButton, label)
           : label == '我的结算'
-              ? find.text(label).last
+              ? find.widgetWithText(ListTile, label)
               : find.widgetWithText(FilledButton, label);
   await reveal(tester, finder);
   await tester.tap(finder);
