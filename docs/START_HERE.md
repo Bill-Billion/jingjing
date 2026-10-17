@@ -1,6 +1,6 @@
 # 当前双方同步：第一轮页面可复验，后端前四轮可接入
 
-先看[第一轮前端交接](collaboration/V5_R01_FRONTEND_HANDOFF.md)和[前端实际状态](status/EXPERIENCE_CURRENT.md)。App故事到运营受理已完成本机真实串联，新五栏已迁移；实际交叉审阅、共同版本和正式启用仍分别待办。Core前四轮接口继续见下方交接；第二轮页面接着按原顺序推进。
+先看[第一轮前端交接](collaboration/V5_R01_FRONTEND_HANDOFF.md)和[前端实际状态](status/EXPERIENCE_CURRENT.md)。App故事到运营受理已完成本机真实串联，新五栏已迁移，功能版本 `06622db` 全部远端检查通过；本轮增量已在[PR24](https://github.com/Bill-Billion/jingjing/pull/24)交付；实际交叉审阅、共同版本和正式启用仍分别待办。Core前四轮接口继续见下方交接；第二轮页面接着按原顺序推进。
 
 ---
 

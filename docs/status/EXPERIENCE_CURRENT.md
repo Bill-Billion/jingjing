@@ -1,10 +1,10 @@
-# 第一轮前端已在本机走通，准备集中交付
+# 第一轮前端已上传，远端检查通过，等待实际审阅
 
 2026-10-17，Bill-Billion 已在 `ux/v5-r01-story-frontend` 接通故事文字表单、草稿、正式提交和运营收件受理。起点为 Core 第四轮完整分支 `c93fe96`；后续轮后端已包含，但相应页面没有计入本轮完成。App五栏已改为广场／试镜／通告／消息／我的，原合同、订单和许可子页保留。
 
 本机真实串联通过：App保存、找回、清空并提交同一故事 → 网页实际受理 → App显示受理中，提交快照不变。App完整269项、网页190项通过；最后只读正文调整后故事20项复跑通过；真实浏览器分别13／16／5组通过。修复同品类草稿难区分、提交正文灰字，以及手机网页菜单遮住主要内容的问题。
 
-[本轮可复验交接](../collaboration/V5_R01_FRONTEND_HANDOFF.md) · [实际证据与实拍](../testing/evidence/v5-r01-frontend/RESULTS.json)。上传和远端检查另行核对；Core实际交叉审阅、合入、原生包、真实服务和正式启用仍未完成。下一步前端按第二轮继续补件、报价及确认订单，Core复核本轮共享修复并支持联调。没有把 `UX-DEL-14` 或 `UX-DEL-28` 整包标完成。
+[本轮可复验交接](../collaboration/V5_R01_FRONTEND_HANDOFF.md) · [实际证据与实拍](../testing/evidence/v5-r01-frontend/RESULTS.json)。功能及检查版本 `06622db` 已集中上传，[PR24](https://github.com/Bill-Billion/jingjing/pull/24)为本轮增量草稿审阅入口，基于Core第四轮。App、网页及服务器远端检查全部通过，已下载核对[发布证据](../testing/evidence/v5-r01-frontend/PUBLICATION.json)；Core实际交叉审阅、合入、原生包、真实服务和正式启用仍未完成。下一步前端按第二轮继续补件、报价及确认订单，Core复核本轮共享修复并支持联调。没有把 `UX-DEL-14` 或 `UX-DEL-28` 整包标完成。
 
 ---
 

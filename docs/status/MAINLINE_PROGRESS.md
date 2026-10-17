@@ -1,10 +1,10 @@
-# 后端前四轮可接入，第一轮页面已在本机走通
+# 后端前四轮可接入，第一轮前端已交付待实际审阅
 
 2026-10-17。Core已交付前四轮后端；Bill-Billion 本轮完成第一轮App故事和运营收件页面、新五栏及本机串联，分支 `ux/v5-r01-story-frontend`，后端完整依赖 `c93fe96`。双方现在可以按[前端交接](../collaboration/V5_R01_FRONTEND_HANDOFF.md)操作同一套合成资料；Core的实际最新进展仍见[Core当前状态](CORE_CURRENT.md)。
 
 第一轮真实浏览器按App13组、网页16组、回App5组通过，提交原文和模板不变；App完整269项、网页190项及后续故事20项复跑通过。收件网页手机菜单可展开，正文和受理记录可实际阅读。这里只代表本机合成环境；另一方尚未实际交叉审阅，`integration`仍为核对到的 `28662ab`，未部署或启用真实业务。
 
-前端接着做第二轮补件、报价复核与确认订单；Core复核最小错误提示修复并支持前四轮联调。各轮状态继续只在同一[任务表](../tasks/board.json)和双方CURRENT维护。[本轮实际检查](../testing/evidence/v5-r01-frontend/RESULTS.json)。上传及远端检查以本轮发布记录为准。
+前端接着做第二轮补件、报价复核与确认订单；Core复核最小错误提示修复并支持前四轮联调。各轮状态继续只在同一[任务表](../tasks/board.json)和双方CURRENT维护。[本轮实际检查](../testing/evidence/v5-r01-frontend/RESULTS.json)。本轮增量已上传[PR24](https://github.com/Bill-Billion/jingjing/pull/24)，功能版本 `06622db` 全部远端检查通过；后端综合586通过、1项缺脱敏旧库样本跳过，不能因此认定旧库迁移通过。[实际发布记录](../testing/evidence/v5-r01-frontend/PUBLICATION.json)。
 
 ---
 
