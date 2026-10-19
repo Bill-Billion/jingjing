@@ -1,0 +1,228 @@
+TAP version 13
+# Subtest: trial contact needs both acceptance and verified full payment
+ok 1 - trial contact needs both acceptance and verified full payment
+  ---
+  duration_ms: 1.1614
+  type: 'test'
+  ...
+# Subtest: unsafe venue and contact bait rejected; ordinary business text remains
+ok 2 - unsafe venue and contact bait rejected; ordinary business text remains
+  ---
+  duration_ms: 2.3066
+  type: 'test'
+  ...
+# Subtest: unknown counts and timers are never assigned silently
+ok 3 - unknown counts and timers are never assigned silently
+  ---
+  duration_ms: 0.247
+  type: 'test'
+  ...
+# Subtest: paid audition supplements and isolated simulated payments
+    # Subtest: simulator refuses production and ordinary development databases
+    ok 1 - simulator refuses production and ordinary development databases
+      ---
+      duration_ms: 2.3079
+      type: 'test'
+      ...
+    # Subtest: seller proposes, independent reviewer approves, buyer accepts exact terms once
+    ok 2 - seller proposes, independent reviewer approves, buyer accepts exact terms once
+      ---
+      duration_ms: 49.7948
+      type: 'test'
+      ...
+    # Subtest: mock checkout explicit, pending and unknown do not pay; outsider cannot choose success
+    ok 3 - mock checkout explicit, pending and unknown do not pay; outsider cannot choose success
+      ---
+      duration_ms: 79.8923
+      type: 'test'
+      ...
+    # Subtest: supplement refund needs independent decision; repeat provider proof restores only once
+    ok 4 - supplement refund needs independent decision; repeat provider proof restores only once
+      ---
+      duration_ms: 73.2456
+      type: 'test'
+      ...
+    1..4
+ok 4 - paid audition supplements and isolated simulated payments
+  ---
+  duration_ms: 5846.9316
+  type: 'test'
+  ...
+# Subtest: audition booking, delivery, privacy and refunds in isolated MySQL
+    # Subtest: only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+    ok 1 - only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+      ---
+      duration_ms: 106.6995
+      type: 'test'
+      ...
+    # Subtest: visibility changes independent of public artist archive; price not leaked by catalog
+    ok 2 - visibility changes independent of public artist archive; price not leaked by catalog
+      ---
+      duration_ms: 61.0173
+      type: 'test'
+      ...
+    # Subtest: accepted private invitation exposes matching offers only; revoked invitation cannot book
+    ok 3 - accepted private invitation exposes matching offers only; revoked invitation cannot book
+      ---
+      duration_ms: 87.8722
+      type: 'test'
+      ...
+    # Subtest: unsafe place refused and stale price cannot book
+    ok 4 - unsafe place refused and stale price cannot book
+      ---
+      duration_ms: 10.9165
+      type: 'test'
+      ...
+    # Subtest: unpaid order cannot accept or open conversation; independent venue review required
+    ok 5 - unpaid order cannot accept or open conversation; independent venue review required
+      ---
+      duration_ms: 93.7696
+      type: 'test'
+      ...
+    # Subtest: verified payment is idempotent and still needs artist acceptance
+    ok 6 - verified payment is idempotent and still needs artist acceptance
+      ---
+      duration_ms: 54.3958
+      type: 'test'
+      ...
+    # Subtest: accept opens conversation; duplicate decision returns same booking
+    ok 7 - accept opens conversation; duplicate decision returns same booking
+      ---
+      duration_ms: 28.9448
+      type: 'test'
+      ...
+    # Subtest: contact requires separate consent and is never embedded in booking/order
+    ok 8 - contact requires separate consent and is never embedded in booking/order
+      ---
+      duration_ms: 26.3259
+      type: 'test'
+      ...
+    # Subtest: conversation deduplicates, rejects bait, and unauthorized support cannot read
+    ok 9 - conversation deduplicates, rejects bait, and unauthorized support cannot read
+      ---
+      duration_ms: 37.5986
+      type: 'test'
+      ...
+    # Subtest: departed safety case freezes contact and settlement without credit penalty
+    ok 10 - departed safety case freezes contact and settlement without credit penalty
+      ---
+      duration_ms: 51.9896
+      type: 'test'
+      ...
+    # Subtest: delivery requires correct count, authorization and arrival
+    ok 11 - delivery requires correct count, authorization and arrival
+      ---
+      duration_ms: 97.2953
+      type: 'test'
+      ...
+    # Subtest: actual private bytes required before receipt and acceptance
+    ok 12 - actual private bytes required before receipt and acceptance
+      ---
+      duration_ms: 303.7423
+      type: 'test'
+      ...
+    # Subtest: decline creates one refund request; verified provider refund required for refunded status
+    ok 13 - decline creates one refund request; verified provider refund required for refunded status
+      ---
+      duration_ms: 122.4894
+      type: 'test'
+      ...
+    # Subtest: unaccepted expiry cannot be accepted, goes through refund request
+    ok 14 - unaccepted expiry cannot be accepted, goes through refund request
+      ---
+      duration_ms: 86.2309
+      type: 'test'
+      ...
+    # Subtest: minor cannot create offer or buy even if client says otherwise
+    ok 15 - minor cannot create offer or buy even if client says otherwise
+      ---
+      duration_ms: 4.4877
+      type: 'test'
+      ...
+    # Subtest: legacy order comments cannot bypass dedicated conversation gate
+    ok 16 - legacy order comments cannot bypass dedicated conversation gate
+      ---
+      duration_ms: 6.0465
+      type: 'test'
+      ...
+    # Subtest: automated expiry is lease fenced and creates only one refund request
+    ok 17 - automated expiry is lease fenced and creates only one refund request
+      ---
+      duration_ms: 90.3864
+      type: 'test'
+      ...
+    # Subtest: before departure cancellation is full refund even for safety reason
+    ok 18 - before departure cancellation is full refund even for safety reason
+      ---
+      duration_ms: 80.5658
+      type: 'test'
+      ...
+    # Subtest: custody channel is captured at checkout without changing old contracts or claiming real payment
+    ok 19 - custody channel is captured at checkout without changing old contracts or claiming real payment
+      ---
+      duration_ms: 45.945
+      type: 'test'
+      ...
+    # Subtest: unpaid cancellation uses trade and preserves cancelled appointment
+    ok 20 - unpaid cancellation uses trade and preserves cancelled appointment
+      ---
+      duration_ms: 63.2671
+      type: 'test'
+      ...
+    # Subtest: concurrent accept or decline produces one winner
+    ok 21 - concurrent accept or decline produces one winner
+      ---
+      duration_ms: 117.7407
+      type: 'test'
+      ...
+    # Subtest: reschedule needs other party plus independent venue review; support join/leave controls access
+    ok 22 - reschedule needs other party plus independent venue review; support join/leave controls access
+      ---
+      duration_ms: 300.9112
+      type: 'test'
+      ...
+    # Subtest: new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+    ok 23 - new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+      ---
+      duration_ms: 56.2371
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+    ok 24 - automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+      ---
+      duration_ms: 618.7844
+      type: 'test'
+      ...
+    # Subtest: same artist cannot accept two overlapping appointments and one can be rescheduled later
+    ok 25 - same artist cannot accept two overlapping appointments and one can be rescheduled later
+      ---
+      duration_ms: 202.6738
+      type: 'test'
+      ...
+    # Subtest: MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+    ok 26 - MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+      ---
+      duration_ms: 74.6124
+      type: 'test'
+      ...
+    # Subtest: withdrawn sample consent closes buyer file access without deleting artist archive
+    ok 27 - withdrawn sample consent closes buyer file access without deleting artist archive
+      ---
+      duration_ms: 15.9915
+      type: 'test'
+      ...
+    1..27
+ok 5 - audition booking, delivery, privacy and refunds in isolated MySQL
+  ---
+  duration_ms: 8617.1488
+  type: 'test'
+  ...
+1..5
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8799.0259

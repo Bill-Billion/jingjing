@@ -3,7 +3,7 @@ const {digest}=require('../governance/content');
 const {error}=require('../party/policy');
 const A=require('../artists/context'),C=require('./context'),P=require('./policy');
 function checked(row){if(!row)return null;const data=A.parse(row.data_json);if(digest(data)!==row.data_sha256)throw error('STORED_CONTENT_MISMATCH',503);return {...row,data};}
-function kind(order){const q=order.data.quote;return q.stock_video?'STOCK':q.audition?'AUDITION':q.customization&&!q.customization_change?'CUSTOMIZATION':q.commercial?'COMMERCIAL':null;}
+function kind(order){const q=order.data.quote;return q.stock_video?'STOCK':(q.audition||q.audition_supplement)?'AUDITION':q.customization&&!q.customization_change?'CUSTOMIZATION':q.commercial?'COMMERCIAL':null;}
 // Called in the order-creation transaction, so later rule edits cannot rewrite the earning promise.
 async function bindOrder(tx,order){
  const category=kind(order);if(!category)return;
@@ -19,7 +19,7 @@ async function fulfillment(tx,order){
  }else if(category==='CUSTOMIZATION'){
   const p=checked(await A.one(tx,'SELECT * FROM production_fulfillments WHERE order_id=? FOR SHARE',[order.id]));at=p?.data.completion?.at||null;disputed=!!p?.data.cancellation||p?.data.state==='PAUSED';
  }else if(category==='AUDITION'){
-  const link=await A.one(tx,'SELECT booking_id FROM audition_orders WHERE order_id=?',[order.id]);
+  const link=order.data.quote.audition_supplement||await A.one(tx,'SELECT booking_id FROM audition_orders WHERE order_id=?',[order.id]);
   const p=link?checked(await A.one(tx,'SELECT * FROM audition_records WHERE id=? FOR SHARE',[link.booking_id])):null;at=p?.data.fulfilled_at||null;disputed=!!p?.data.dispute;
  }
  if(category==='COMMERCIAL'){

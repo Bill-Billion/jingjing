@@ -4093,7 +4093,146 @@
           }
         }
       }
+    },
+    {
+      "name": "Independent reviewed growth rule (synthetic)",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "92faed1a-05d0-49c6-ac0a-b0d01ed0d947",
+          "actor": {
+            "account_id": "05f79060-2ec0-4b0a-ae33-220cc13dc091"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "01a83841-bb64-41b8-9e20-aa4b3ead5491",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "05f79060-2ec0-4b0a-ae33-220cc13dc091",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "09e2a2b19b486e254612a1a61904da4c37307ce37bb28c0c17bd8414167cd756",
+          "data": {
+            "rule": {
+              "version": "synthetic-r9",
+              "terms": "Isolated fixture, not approved production rules",
+              "gp": {
+                "STOCK": 1,
+                "AUDITION": 3,
+                "CUSTOMIZATION": 5,
+                "COMMERCIAL": 5,
+                "five_star": 1,
+                "media": 2,
+                "repeat": 2,
+                "refund_penalty": 5
+              },
+              "thresholds": [
+                0,
+                30,
+                120,
+                400,
+                1000
+              ],
+              "retention_days": 90,
+              "retention_bps": 5000,
+              "rank": {
+                "window_days": 30,
+                "popularity_days": 7,
+                "newcomer_days": 30,
+                "cold_start_days": 7,
+                "review_min": 10,
+                "repeat_buyers_min": 20,
+                "bayes_n": 10,
+                "bayes_mean": 4,
+                "weights": [
+                  3000,
+                  2500,
+                  2000,
+                  1000,
+                  1500
+                ],
+                "halo_bps": [
+                  0,
+                  10000,
+                  11500,
+                  13000
+                ]
+              },
+              "starlight": null,
+              "risk_first_penalty": 25,
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": 7,
+                "CUSTOMIZATION": 7,
+                "COMMERCIAL": 7
+              },
+              "referral_bps": {
+                "STOCK": 500,
+                "AUDITION": 500,
+                "CUSTOMIZATION": 500,
+                "COMMERCIAL": 500
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Paid audition supplement (synthetic)",
+      "schema": "AuditionSupplementResponse",
+      "value": {
+        "meta": {
+          "request_id": "b236aa1b-5f05-41d5-b381-cca4e4427f5d",
+          "actor": {
+            "account_id": "6c0dc76b-f95f-48d3-90a4-6e82633f6bec"
+          },
+          "acting_party": "7e4b9fbc-605e-486b-9579-2e119af9da09"
+        },
+        "data": {
+          "id": "c015fbcc-74bf-4201-ab97-ffb10c570a7c",
+          "kind": "SUPPLEMENT",
+          "owner_party_id": "2059bad6-7d13-40c5-8247-a4e8b404479c",
+          "counterparty_id": "7e4b9fbc-605e-486b-9579-2e119af9da09",
+          "parent_id": "e2e2a7ca-1a13-49e7-8f21-3e897b70b5f4",
+          "created_by": "6c0dc76b-f95f-48d3-90a4-6e82633f6bec",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "671f50559bd37c1eb8a93308466050bcaedbbecbcda0a724dee43ce17fde6b72",
+          "data": {
+            "title": "Synthetic extra service",
+            "terms": "Test only",
+            "amount_minor": 5000,
+            "expires_at": "2026-10-19T10:21:14.147Z",
+            "original_order_id": "afdf2867-92f7-4214-a1c9-bf3a0caf2368",
+            "original_contract_sha256": "f2b644807e474e0bc7f3149c6b183835e1a107502f445d1661fca3070ae414a5",
+            "person_id": "423439aa-2efb-46a0-aa3f-ec134f135bb6",
+            "avatar_id": "17c22641-9cea-4df3-ac73-b4cc9c85c569",
+            "review": null,
+            "order_id": null,
+            "refund_limit_minor": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Commercial read marker (synthetic)",
+      "schema": "CommercialConversationResponse",
+      "value": {
+        "meta": {
+          "request_id": "b236aa1b-5f05-41d5-b381-cca4e4427f5d",
+          "actor": {
+            "account_id": "6c0dc76b-f95f-48d3-90a4-6e82633f6bec"
+          },
+          "acting_party": "7e4b9fbc-605e-486b-9579-2e119af9da09"
+        },
+        "data": {
+          "order_id": "00000000-0000-4000-8000-000000000001",
+          "read_until": "00000000-0000-4000-8000-000000000002"
+        }
+      }
     }
   ],
-  "contract_version": "0.21.0-rc.2"
+  "contract_version": "0.22.0-rc.1"
 }

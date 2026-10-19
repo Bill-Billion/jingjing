@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.21.0-rc.2
+  version: 0.22.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -15309,6 +15309,3493 @@ paths:
               additionalProperties: false
               properties: {}
 
+  /api/v1/engagement/tie-reviews:
+    post:
+      operationId: engagementProposeTie
+      summary: 提交同分候选人的人工复核意见
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                event_id: &r09_5e9e371d359f_001
+                  type: string
+                  format: uuid
+                candidate_id: *r09_5e9e371d359f_001
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - event_id
+              - candidate_id
+              - reason
+  /api/v1/engagement/tie-reviews/{record_id}/review:
+    post:
+      operationId: engagementReviewTie
+      summary: 独立复核同分处理意见
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_777cc53d890b_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_777cc53d890b_001
+              required:
+              - decision
+              - reason
+  /api/v1/engagement/growth/sync:
+    post:
+      operationId: engagementSyncGrowth
+      summary: 核对艺人成长和独立星光记录
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: &r09_408c9de5dc2a_001
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                person_id: *r09_408c9de5dc2a_001
+                rule_id: *r09_408c9de5dc2a_001
+              required:
+              - person_id
+              - rule_id
+  /api/v1/engagement/rules:
+    post:
+      operationId: engagementCreateRule
+      summary: 提交成长和推荐规则
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                rule:
+                  $ref: '#/components/schemas/EngagementRule'
+              required:
+              - rule
+  /api/v1/engagement/rules/{record_id}/review:
+    post:
+      operationId: engagementReviewRule
+      summary: 独立审核或停用规则
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_ec5c911cbb1f_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_ec5c911cbb1f_001
+              required:
+              - decision
+              - reason
+  /api/v1/engagement/mcn/staff:
+    post:
+      operationId: engagementStaffGrant
+      summary: 给员工指定艺人和操作权限
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                account_id: &r09_3b249e11ade5_001
+                  type: string
+                  format: uuid
+                person_ids:
+                  type: array
+                  items: *r09_3b249e11ade5_001
+                  maxItems: 100
+                actions:
+                  type: array
+                  items:
+                    enum:
+                    - READ_PROFILE
+                    - MANAGE_AUDITIONS
+                    - COMMERCIAL_MESSAGES
+                    - READ_INCOME
+                    - MANAGE_LISTINGS
+                  maxItems: 100
+                valid_until:
+                  type: string
+                  format: date-time
+              required:
+              - account_id
+              - person_ids
+              - actions
+              - valid_until
+    get:
+      operationId: engagementStaffList
+      summary: 查看机构员工授权记录
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/mcn/staff/{record_id}/revoke:
+    post:
+      operationId: engagementRevokeStaff
+      summary: 撤销员工操作权限
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - reason
+  /api/v1/engagement/mcn/assignments:
+    post:
+      operationId: engagementAssign
+      summary: 将具体订单交给员工处理
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                booking_id: &r09_5613a7e6d76f_001
+                  type: string
+                  format: uuid
+                order_id: *r09_5613a7e6d76f_001
+                account_id: *r09_5613a7e6d76f_001
+              required:
+              - account_id
+  /api/v1/engagement/referrals/links:
+    post:
+      operationId: engagementReferralLink
+      summary: 生成一级推荐链接
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                target_party_id: &r09_3f6e956c5f58_001
+                  type: string
+                  format: uuid
+                category:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                rule_id: *r09_3f6e956c5f58_001
+              required:
+              - target_party_id
+              - category
+              - rule_id
+  /api/v1/engagement/referrals/clicks:
+    post:
+      operationId: engagementReferralClick
+      summary: 记录实际推荐访问
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                link_id:
+                  type: string
+                  format: uuid
+              required:
+              - link_id
+  /api/v1/engagement/referrals/sync:
+    post:
+      operationId: engagementReferralSync
+      summary: 核对推荐佣金与退款
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: &r09_39e780ef1b94_001
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                order_id: *r09_39e780ef1b94_001
+              required:
+              - order_id
+  /api/v1/engagement/profiles:
+    post:
+      operationId: engagementRankingProfile
+      summary: 设置艺人参榜范围和意愿
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                person_id:
+                  type: string
+                  format: uuid
+                city: &r09_bdc819e4b2e0_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                district: *r09_bdc819e4b2e0_001
+                category: *r09_bdc819e4b2e0_001
+                opt_in:
+                  type: boolean
+              required:
+              - person_id
+              - city
+              - district
+              - category
+              - opt_in
+  /api/v1/engagement/reviews:
+    post:
+      operationId: engagementReviewOrder
+      summary: 评价本人已完成的订单
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                order_id: &r09_c1d6d7f74245_002
+                  type: string
+                  format: uuid
+                realism: &r09_c1d6d7f74245_001
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                fit: *r09_c1d6d7f74245_001
+                completeness: *r09_c1d6d7f74245_001
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                media_asset_ids:
+                  type: array
+                  items: *r09_c1d6d7f74245_002
+                  maxItems: 100
+              required:
+              - order_id
+              - realism
+              - fit
+              - completeness
+              - body
+              - media_asset_ids
+  /api/v1/engagement/interactions:
+    post:
+      operationId: engagementInteraction
+      summary: 记录访问或收藏并去重
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                profile_id: &r09_0c58fe358914_001
+                  type: string
+                  format: uuid
+                action:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                device_id: *r09_0c58fe358914_001
+              required:
+              - profile_id
+              - action
+              - device_id
+  /api/v1/engagement/records/{record_id}/moderation:
+    post:
+      operationId: engagementModerate
+      summary: 排除或恢复异常排名依据
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                exclude:
+                  type: boolean
+              required:
+              - reason
+              - exclude
+  /api/v1/engagement/excluded-orders:
+    post:
+      operationId: engagementExcludeOrder
+      summary: 登记需排除的异常订单
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                order_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - order_id
+              - reason
+  /api/v1/engagement/rankings:
+    post:
+      operationId: engagementRankingSnapshot
+      summary: 按规则形成可追溯榜单
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                rule_id:
+                  type: string
+                  format: uuid
+                city: &r09_5a167b190afd_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                district: *r09_5a167b190afd_001
+                category: *r09_5a167b190afd_001
+              required:
+              - rule_id
+              - city
+              - district
+              - category
+    get:
+      operationId: engagementRankingIndex
+      summary: 查找指定地区和类别的榜单
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: city
+        in: query
+        required: true
+        schema: *r09_5a167b190afd_001
+      - name: district
+        in: query
+        required: true
+        schema: *r09_5a167b190afd_001
+      - name: category
+        in: query
+        required: true
+        schema: *r09_5a167b190afd_001
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/buyer-city-profile:
+    post:
+      operationId: engagementBuyerCityProfile
+      summary: 设置买家同城榜参与意愿
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                city:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                opt_in:
+                  type: boolean
+              required:
+              - city
+              - opt_in
+  /api/v1/engagement/reward-stock:
+    post:
+      operationId: engagementRewardStock
+      summary: 登记有依据的奖品库存
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                title: &r09_330a04363a90_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                kind: *r09_330a04363a90_001
+                terms: *r09_330a04363a90_001
+                capacity:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                valid_until:
+                  type: string
+                  format: date-time
+                evidence_asset_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  maxItems: 100
+              required:
+              - title
+              - kind
+              - terms
+              - capacity
+              - valid_until
+              - evidence_asset_ids
+  /api/v1/engagement/reward-stock/{record_id}/review:
+    post:
+      operationId: engagementReviewRewardStock
+      summary: 独立审核奖品库存
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_b92b355d98d4_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_b92b355d98d4_001
+              required:
+              - decision
+              - reason
+  /api/v1/engagement/rewards/{record_id}/redeem:
+    post:
+      operationId: engagementRedeemReward
+      summary: 记录奖励实际兑现及凭证
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: &r09_6a20db93c805_001
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                delivery:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    evidence_asset_id: *r09_6a20db93c805_001
+                    reference: &r09_6a20db93c805_002
+                      type: string
+                      minLength: 1
+                      maxLength: 8000
+                    starts_at:
+                      anyOf:
+                      - *r09_6a20db93c805_002
+                      - type: 'null'
+                    ends_at:
+                      anyOf:
+                      - *r09_6a20db93c805_002
+                      - type: 'null'
+                    placement:
+                      anyOf:
+                      - *r09_6a20db93c805_002
+                      - type: 'null'
+                  required:
+                  - evidence_asset_id
+                  - reference
+                  - starts_at
+                  - ends_at
+                  - placement
+              required:
+              - delivery
+  /api/v1/engagement/competitions:
+    post:
+      operationId: engagementCompetition
+      summary: 建立月冠军活动与固定规则
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                title: &r09_c96b0e169334_002
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                snapshot_id: &r09_c96b0e169334_001
+                  type: string
+                  format: uuid
+                reward_stock_id: *r09_c96b0e169334_001
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                appeal_until:
+                  type: string
+                  format: date-time
+                rules:
+                  $ref: '#/components/schemas/ChampionshipRule'
+              required:
+              - title
+              - snapshot_id
+              - reward_stock_id
+              - starts_at
+              - ends_at
+              - appeal_until
+              - rules
+    get:
+      operationId: engagementCompetitions
+      summary: 查找同城月冠军活动
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: city
+        in: query
+        required: true
+        schema: *r09_c96b0e169334_002
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/competitions/{record_id}/review:
+    post:
+      operationId: engagementReviewCompetition
+      summary: 独立审核活动并预留奖品
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_8a17dd77f526_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_8a17dd77f526_001
+              required:
+              - decision
+              - reason
+  /api/v1/engagement/candidates:
+    post:
+      operationId: engagementNominate
+      summary: 申请参加月冠军评选
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                event_id: &r09_7ec56345977f_001
+                  type: string
+                  format: uuid
+                profile_id: *r09_7ec56345977f_001
+              required:
+              - event_id
+              - profile_id
+  /api/v1/engagement/candidates/{record_id}/review:
+    post:
+      operationId: engagementReviewCandidate
+      summary: 独立审核候选人
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_5a404577b964_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_5a404577b964_001
+              required:
+              - decision
+              - reason
+  /api/v1/engagement/votes:
+    post:
+      operationId: engagementVote
+      summary: 使用晶钻投票并检查每日限次
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                event_id: &r09_42c5cc564680_001
+                  type: string
+                  format: uuid
+                candidate_id: *r09_42c5cc564680_001
+              required:
+              - event_id
+              - candidate_id
+    get:
+      operationId: engagementMyVotes
+      summary: 查看本人投票记录和剩余次数
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: event_id
+        in: query
+        required: true
+        schema: *r09_42c5cc564680_001
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/judgments:
+    post:
+      operationId: engagementJudge
+      summary: 记录独立官方评审分
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                candidate_id:
+                  type: string
+                  format: uuid
+                realism: &r09_810043151a59_001
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                fit: *r09_810043151a59_001
+                completeness: *r09_810043151a59_001
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - candidate_id
+              - realism
+              - fit
+              - completeness
+              - reason
+  /api/v1/engagement/appeals:
+    post:
+      operationId: engagementAppeal
+      summary: 提出评选异议
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                event_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - event_id
+              - reason
+  /api/v1/engagement/appeals/{record_id}/resolve:
+    post:
+      operationId: engagementResolveAppeal
+      summary: 记录异议处理结果
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - reason
+  /api/v1/engagement/votes/{record_id}/review:
+    post:
+      operationId: engagementVoteReview
+      summary: 暂停作废恢复选票或按申诉退分
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_5733c2dabd0c_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_5733c2dabd0c_001
+              required:
+              - decision
+              - reason
+  /api/v1/engagement/competitions/{record_id}/finalize:
+    post:
+      operationId: engagementFinalize
+      summary: 核对评选结束并发放奖励记录
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+              required: []
+  /api/v1/engagement/growth:
+    get:
+      operationId: engagementArtistGrowth
+      summary: 查看授权艺人的成长与星光明细
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: person_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/records/{record_id}:
+    get:
+      operationId: engagementRead
+      summary: 查看本人或授权岗位的业务记录
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: &r09_19a5a721906d_001
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: *r09_19a5a721906d_001
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/queue:
+    get:
+      operationId: engagementQueue
+      summary: 查看本岗位待处理事项
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema: &r09_76b4b0e43474_001
+          type: string
+          minLength: 1
+          maxLength: 8000
+      - name: cursor
+        in: query
+        required: false
+        schema: *r09_76b4b0e43474_001
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/mcn/dashboard:
+    get:
+      operationId: engagementMcnDashboard
+      summary: 查看机构经营和历史订单收入
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/referrals/records:
+    get:
+      operationId: engagementReferralRecords
+      summary: 查看本人推荐佣金记录
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/rankings/{record_id}:
+    get:
+      operationId: engagementRankings
+      summary: 查看指定已发布榜单
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/buyers:
+    get:
+      operationId: engagementBuyerCityRank
+      summary: 查看真实消费产生的同城买家榜
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: city
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/rewards:
+    get:
+      operationId: engagementMyRewards
+      summary: 查看本人获得的奖励
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/exposures:
+    get:
+      operationId: engagementExposures
+      summary: 查看仍在有效期内的奖励曝光
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: city
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/competitions/{record_id}:
+    get:
+      operationId: engagementCompetitionResult
+      summary: 查看月冠军规则候选人与结果
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/rewards/{record_id}/file:
+    get:
+      operationId: downloadEngagementReward
+      summary: 下载本人已经兑现的奖励凭证
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/profiles/{record_id}/listen/{listing_id}/{asset_id}:
+    get:
+      operationId: downloadEngagementListen
+      summary: 读取已授权试听文件并记录去重试听
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: &r09_8b857c8c813c_001
+          type: string
+          format: uuid
+      - name: listing_id
+        in: path
+        required: true
+        schema: *r09_8b857c8c813c_001
+      - name: asset_id
+        in: path
+        required: true
+        schema: *r09_8b857c8c813c_001
+      - name: device_id
+        in: query
+        required: true
+        schema: *r09_8b857c8c813c_001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            audio/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/auditions/bookings/{record_id}/supplements:
+    post:
+      operationId: proposeAuditionSupplement
+      summary: 提出已付款试镜的额外服务和补差
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: &r09_a7094c1dec5e_002
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionSupplementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                title: &r09_a7094c1dec5e_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                terms: *r09_a7094c1dec5e_001
+                amount_minor:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                expires_at:
+                  type: string
+                  format: date-time
+              required:
+              - title
+              - terms
+              - amount_minor
+              - expires_at
+    get:
+      operationId: listAuditionSupplements
+      summary: 查看本次试镜的补差记录
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: *r09_a7094c1dec5e_002
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: *r09_a7094c1dec5e_002
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionSupplementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/auditions/supplements/{record_id}/reviews:
+    post:
+      operationId: reviewAuditionSupplement
+      summary: 独立审核补差条款
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionSupplementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision: &r09_577311e21483_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_577311e21483_001
+              required:
+              - decision
+              - reason
+  /api/v1/auditions/supplements/{record_id}/refund-decision:
+    post:
+      operationId: reviewAuditionSupplementRefund
+      summary: 独立确定补差退款金额
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionSupplementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                refund_minor:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - refund_minor
+              - reason
+  /api/v1/auditions/supplements/checkout:
+    post:
+      operationId: checkoutAuditionSupplement
+      summary: 用户确认补差版本并生成独立未付款订单
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                supplement_id:
+                  type: string
+                  format: uuid
+                supplement_sha256: &r09_b00ad29b4c30_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                channel: *r09_b00ad29b4c30_001
+              required:
+              - supplement_id
+              - supplement_sha256
+              - channel
+  /api/v1/gigs/orders/{order_id}/conversation/messages:
+    post:
+      operationId: sendCommercialMessage
+      summary: 在已付款商单内发送消息或附件
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                kind:
+                  type: string
+                  enum:
+                  - TEXT
+                  - ORDER_CARD
+                  - MEDIA
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                asset_id:
+                  type: string
+                  format: uuid
+              required:
+              - kind
+              description: TEXT requires body; MEDIA requires asset_id; ORDER_CARD references current order. Server
+                enforces the matching fields.
+    get:
+      operationId: listCommercialMessages
+      summary: 查看有权参与的商单会话
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/gigs/orders/{order_id}/conversation/control:
+    post:
+      operationId: controlCommercialConversation
+      summary: 请求客服或冻结归档商单会话
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema: &r09_0a4d3e652d76_001
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: *r09_0a4d3e652d76_001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                action: &r09_0a4d3e652d76_002
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                reason: *r09_0a4d3e652d76_002
+              required:
+              - action
+              - reason
+  /api/v1/gigs/orders/{order_id}/conversation/contact:
+    post:
+      operationId: setCommercialContact
+      summary: 本人同意分享或撤回联系卡
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name: &r09_983b9175b5f0_001
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                phone: *r09_983b9175b5f0_001
+                consent:
+                  type: boolean
+              required:
+              - name
+              - phone
+              - consent
+  /api/v1/gigs/orders/{order_id}/conversation/read:
+    post:
+      operationId: readCommercialMessage
+      summary: 标记已经阅读的商单消息
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema: &r09_7108ce92ff84_001
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: *r09_7108ce92ff84_001
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                message_id: *r09_7108ce92ff84_001
+              required:
+              - message_id
+  /api/v1/gigs/orders/{order_id}/conversation/moderation:
+    post:
+      operationId: moderateCommercialMessage
+      summary: 由运营屏蔽违规消息
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema: &r09_7320e17387a9_001
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                message_id: *r09_7320e17387a9_001
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+              required:
+              - message_id
+              - reason
+  /api/v1/gigs/orders/{order_id}/conversation/contacts:
+    get:
+      operationId: getCommercialContacts
+      summary: 查看当前明确同意分享的联系卡
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema: &r09_918e2bb157d8_001
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: *r09_918e2bb157d8_001
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialConversationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/gigs/orders/{order_id}/conversation/messages/{message_id}/file:
+    get:
+      operationId: downloadCommercialMessageFile
+      summary: 下载本商单可见消息的附件
+      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: order_id
+        in: path
+        required: true
+        schema: &r09_e269c4d6a966_001
+          type: string
+          format: uuid
+      - name: message_id
+        in: path
+        required: true
+        schema: *r09_e269c4d6a966_001
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema: *r09_e269c4d6a966_001
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -15539,6 +19026,998 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    EngagementRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id: &r09_48b52cb975ee_001
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - RULE
+          - STAFF_GRANT
+          - ASSIGNMENT
+          - REFERRAL_LINK
+          - REFERRAL_CLICK
+          - REFERRAL_COMMISSION
+          - RANK_PROFILE
+          - ORDER_REVIEW
+          - INTERACTION
+          - RISK_ORDER
+          - RANK_SNAPSHOT
+          - BUYER_PROFILE
+          - REWARD_STOCK
+          - REWARD_GRANT
+          - COMPETITION
+          - CANDIDATE
+          - VOTE
+          - JUDGMENT
+          - APPEAL
+          - TIE_REVIEW
+          - GROWTH_ACCOUNT
+          - STARLIGHT_ENTRY
+        owner_party_id:
+          anyOf:
+          - *r09_48b52cb975ee_001
+          - type: 'null'
+        parent_id:
+          anyOf:
+          - *r09_48b52cb975ee_001
+          - type: 'null'
+        created_by: *r09_48b52cb975ee_001
+        current_status: &r09_48b52cb975ee_002
+          type: string
+          minLength: 1
+          maxLength: 4000
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          description: 按 kind 区分的数据；规则和历史承诺保留版本与快照，详见第九轮交接字段说明。
+        pending_reason:
+          anyOf:
+          - *r09_48b52cb975ee_002
+          - type: 'null'
+        available_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    EngagementRule:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        gp:
+          type: object
+          additionalProperties: false
+          properties:
+            STOCK:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            AUDITION:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            CUSTOMIZATION:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            COMMERCIAL:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            five_star:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            media:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            repeat:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            refund_penalty:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+          required:
+          - STOCK
+          - AUDITION
+          - CUSTOMIZATION
+          - COMMERCIAL
+          - five_star
+          - media
+          - repeat
+          - refund_penalty
+        thresholds:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            maximum: 900000000000
+          minItems: 5
+          maxItems: 5
+        retention_days:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        retention_bps:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        rank:
+          type: object
+          additionalProperties: false
+          properties:
+            window_days:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            popularity_days:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            newcomer_days:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            cold_start_days:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            review_min:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            repeat_buyers_min:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            bayes_n:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            bayes_mean:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            weights:
+              type: array
+              items:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              minItems: 5
+              maxItems: 5
+            halo_bps:
+              type: array
+              items:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              minItems: 4
+              maxItems: 4
+          required:
+          - window_days
+          - popularity_days
+          - newcomer_days
+          - cold_start_days
+          - review_min
+          - repeat_buyers_min
+          - bayes_n
+          - bayes_mean
+          - weights
+          - halo_bps
+        starlight:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              STOCK:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              AUDITION:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              CUSTOMIZATION:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              COMMERCIAL:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              five_star:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+            required:
+            - STOCK
+            - AUDITION
+            - CUSTOMIZATION
+            - COMMERCIAL
+            - five_star
+          - type: 'null'
+        aftercare_days:
+          type: object
+          additionalProperties: false
+          properties:
+            STOCK:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            AUDITION:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            CUSTOMIZATION:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            COMMERCIAL:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+          required:
+          - STOCK
+          - AUDITION
+          - CUSTOMIZATION
+          - COMMERCIAL
+        referral_bps:
+          type: object
+          additionalProperties: false
+          properties:
+            STOCK:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            AUDITION:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            CUSTOMIZATION:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            COMMERCIAL:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+          required:
+          - STOCK
+          - AUDITION
+          - CUSTOMIZATION
+          - COMMERCIAL
+        risk_first_penalty:
+          type: integer
+          minimum: 1
+          maximum: 100
+        buyer_rank:
+          anyOf:
+          - type: 'null'
+          - type: object
+            additionalProperties: false
+            properties:
+              personal_weights:
+                type: array
+                items:
+                  type: integer
+                  minimum: 0
+                  maximum: 10000
+                minItems: 4
+                maxItems: 4
+              organization_weights:
+                type: array
+                items:
+                  type: integer
+                  minimum: 0
+                  maximum: 10000
+                minItems: 3
+                maxItems: 3
+              scout_priority:
+                type: boolean
+            required:
+            - personal_weights
+            - organization_weights
+            - scout_priority
+          description: Optional reviewed weights. No configuration means factual directory only, ranking disabled.
+      required:
+      - version
+      - terms
+      - gp
+      - thresholds
+      - retention_days
+      - retention_bps
+      - rank
+      - starlight
+      - aftercare_days
+      - referral_bps
+      - risk_first_penalty
+    ChampionshipRule:
+      type: object
+      additionalProperties: false
+      properties:
+        official_bps: &r09_b8a5a28ff809_001
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        ranking_bps: *r09_b8a5a28ff809_001
+        vote_bps: *r09_b8a5a28ff809_001
+        vote_cost: *r09_b8a5a28ff809_001
+        daily_cap: *r09_b8a5a28ff809_001
+        tie_mode:
+          const: MANUAL_REVIEW
+        void_point_policy:
+          const: HOLD_FOR_APPEAL
+      required:
+      - official_bps
+      - ranking_bps
+      - vote_bps
+      - vote_cost
+      - daily_cap
+      - tie_mode
+      - void_point_policy
+    EngagementResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/EngagementRecord'
+          - type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              kind:
+                const: INTERACTION
+              current_status:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              duplicate:
+                const: true
+            required:
+            - id
+            - kind
+            - current_status
+            - duplicate
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+          - type: object
+            additionalProperties: false
+            properties:
+              account:
+                anyOf:
+                - $ref: '#/components/schemas/EngagementRecord'
+                - type: 'null'
+              starlight_entries:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EngagementRecord'
+              exchange_enabled:
+                const: false
+            required:
+            - account
+            - starlight_entries
+            - exchange_enabled
+          - type: object
+            additionalProperties: false
+            properties:
+              relations:
+                type: array
+                items:
+                  type: object
+              assignments:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EngagementRecord'
+              orders:
+                type: array
+                items:
+                  type: object
+              total_accrual_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              history_preserved:
+                const: true
+              truncated:
+                type: boolean
+            required:
+            - relations
+            - assignments
+            - orders
+            - total_accrual_minor
+            - history_preserved
+            - truncated
+          - type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              at:
+                type: string
+                format: date-time
+              city:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              district:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              category:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              rule_id:
+                type: string
+                format: uuid
+              boards:
+                type: object
+                additionalProperties: false
+                properties:
+                  sales:
+                    type: array
+                    items:
+                      type: object
+                  reviews:
+                    type: array
+                    items:
+                      type: object
+                  repeat:
+                    type: array
+                    items:
+                      type: object
+                  popularity:
+                    type: array
+                    items:
+                      type: object
+                  levels:
+                    type: array
+                    items:
+                      type: object
+                  newcomers:
+                    type: array
+                    items:
+                      type: object
+                  composite:
+                    type: array
+                    items:
+                      type: object
+                required:
+                - sales
+                - reviews
+                - repeat
+                - popularity
+                - levels
+                - newcomers
+                - composite
+              personalized:
+                const: false
+              paid_advertising:
+                const: false
+            required:
+            - id
+            - at
+            - city
+            - district
+            - category
+            - rule_id
+            - boards
+            - personalized
+            - paid_advertising
+          - type: object
+            additionalProperties: false
+            properties:
+              city:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              personal:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    party_id:
+                      type: string
+                      format: uuid
+                    party_kind:
+                      enum:
+                      - PERSON
+                      - ORGANIZATION
+                    consumption_growth:
+                      anyOf:
+                      - type: integer
+                        minimum: 0
+                      - type: 'null'
+                    completed_orders:
+                      type: integer
+                      minimum: 0
+                    verified_net_paid_minor:
+                      type: integer
+                      minimum: 0
+                    scout_active:
+                      type: boolean
+                    scout_level:
+                      type: integer
+                      minimum: 0
+                      maximum: 6
+                    compliance_clear:
+                      type: boolean
+                    facts_available:
+                      type: boolean
+                    score:
+                      type: number
+                      minimum: 0
+                      maximum: 100
+                  required:
+                  - party_id
+                  - party_kind
+                  - consumption_growth
+                  - completed_orders
+                  - verified_net_paid_minor
+                  - scout_active
+                  - scout_level
+                  - compliance_clear
+                  - facts_available
+              organizations:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    party_id:
+                      type: string
+                      format: uuid
+                    party_kind:
+                      enum:
+                      - PERSON
+                      - ORGANIZATION
+                    consumption_growth:
+                      anyOf:
+                      - type: integer
+                        minimum: 0
+                      - type: 'null'
+                    completed_orders:
+                      type: integer
+                      minimum: 0
+                    verified_net_paid_minor:
+                      type: integer
+                      minimum: 0
+                    scout_active:
+                      type: boolean
+                    scout_level:
+                      type: integer
+                      minimum: 0
+                      maximum: 6
+                    compliance_clear:
+                      type: boolean
+                    facts_available:
+                      type: boolean
+                    score:
+                      type: number
+                      minimum: 0
+                      maximum: 100
+                  required:
+                  - party_id
+                  - party_kind
+                  - consumption_growth
+                  - completed_orders
+                  - verified_net_paid_minor
+                  - scout_active
+                  - scout_level
+                  - compliance_clear
+                  - facts_available
+              source:
+                const: VERIFIED_CONSUMPTION_ONLY
+              ranking_enabled:
+                type: boolean
+              reason_code:
+                anyOf:
+                - type: string
+                - type: 'null'
+              rule_id:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              organization_wallet_enabled:
+                const: false
+            required:
+            - city
+            - personal
+            - organizations
+            - source
+            - ranking_enabled
+            - reason_code
+            - rule_id
+            - organization_wallet_enabled
+          - type: object
+            additionalProperties: false
+            properties:
+              event_id:
+                type: string
+                format: uuid
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EngagementRecord'
+              day:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              used_today:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              remaining_today:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              points_per_vote:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+            required:
+            - event_id
+            - items
+            - day
+            - used_today
+            - remaining_today
+            - points_per_vote
+          - type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              status:
+                enum:
+                - PUBLISHED
+                - FINALIZED
+              title:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              city:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              district:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              category:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              starts_at:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              ends_at:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              appeal_until:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              rules:
+                $ref: '#/components/schemas/ChampionshipRule'
+              candidates:
+                type: array
+                items:
+                  type: object
+              result:
+                anyOf:
+                - type: object
+                - type: 'null'
+              reward_stock_id:
+                type: string
+                format: uuid
+            required:
+            - id
+            - status
+            - title
+            - city
+            - district
+            - category
+            - starts_at
+            - ends_at
+            - appeal_until
+            - rules
+            - candidates
+            - result
+            - reward_stock_id
+      required:
+      - meta
+      - data
+    AuditionSupplementSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        supplement_id: &r09_c977cbefb649_001
+          type: string
+          format: uuid
+        booking_id: *r09_c977cbefb649_001
+        original_order_id: *r09_c977cbefb649_001
+        original_contract_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        supplement_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        person_id: *r09_c977cbefb649_001
+        avatar_id: *r09_c977cbefb649_001
+        performance_rights_granted:
+          const: false
+      required:
+      - supplement_id
+      - booking_id
+      - original_order_id
+      - original_contract_sha256
+      - supplement_sha256
+      - person_id
+      - avatar_id
+      - performance_rights_granted
+    AuditionSupplementRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: SUPPLEMENT
+        owner_party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        counterparty_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+          - EXPIRED
+          - AWAITING_PAYMENT
+          - PAID
+          - REFUND_REQUIRED
+          - PARTIALLY_REFUNDED
+          - REFUNDED
+          - CANCELLED
+          - PAYMENT_REVIEW_REQUIRED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        data:
+          type: object
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    AuditionSupplementResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AuditionSupplementRecord'
+          - type: object
+            additionalProperties: false
+            properties:
+              booking_id:
+                type: string
+                format: uuid
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditionSupplementRecord'
+                maxItems: 100
+            required:
+            - booking_id
+            - items
+      required:
+      - meta
+      - data
+    CommercialConversationRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - CONVERSATION
+          - COMMERCIAL_MESSAGE
+        owner_party_id:
+          type: string
+          format: uuid
+        counterparty_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        parent_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - OPEN
+          - SENT
+          - HIDDEN
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - counterparty_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    CommercialConversationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CommercialConversationRecord'
+          - type: object
+            additionalProperties: false
+            properties:
+              order_id: &r09_582062130c6e_001
+                type: string
+                format: uuid
+              conversation_id: *r09_582062130c6e_001
+              object_version:
+                type: integer
+                minimum: 1
+              status:
+                enum:
+                - OPEN
+                - FROZEN
+                - ARCHIVED
+              support_requested: &r09_582062130c6e_002
+                type: boolean
+              support_joined: *r09_582062130c6e_002
+              read_until:
+                anyOf:
+                - *r09_582062130c6e_001
+                - type: 'null'
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommercialConversationRecord'
+                maxItems: 100
+              next_cursor:
+                anyOf:
+                - *r09_582062130c6e_001
+                - type: 'null'
+            required:
+            - order_id
+            - conversation_id
+            - object_version
+            - status
+            - support_requested
+            - support_joined
+            - read_until
+            - items
+            - next_cursor
+          - type: object
+            additionalProperties: false
+            properties:
+              order_id: *r09_582062130c6e_001
+              read_until: *r09_582062130c6e_001
+            required:
+            - order_id
+            - read_until
+          - type: object
+            additionalProperties: false
+            properties:
+              order_id: *r09_582062130c6e_001
+              status:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              contacts:
+                type: object
+            required:
+            - order_id
+            - status
+            - contacts
+      required:
+      - meta
+      - data
     OpsComment:
       type: object
       additionalProperties: false
@@ -21728,6 +26207,63 @@ components:
           $ref: '#/components/schemas/ArtistRuleSnapshot'
         audition:
           $ref: '#/components/schemas/AuditionTradeSnapshot'
+        audition_supplement:
+          $ref: '#/components/schemas/AuditionSupplementSnapshot'
+        referral:
+          type: object
+          additionalProperties: false
+          properties:
+            version:
+              const: V5_R09
+            link_id: &r09_65f19e816cb0_001
+              type: string
+              format: uuid
+            click_id: *r09_65f19e816cb0_001
+            referrer_party_id: *r09_65f19e816cb0_001
+            buyer_party_id: *r09_65f19e816cb0_001
+            supplier_party_id: *r09_65f19e816cb0_001
+            category:
+              enum:
+              - STOCK
+              - AUDITION
+              - CUSTOMIZATION
+              - COMMERCIAL
+            clicked_at: &r09_65f19e816cb0_002
+              type: string
+              minLength: 1
+              maxLength: 8000
+            captured_at: *r09_65f19e816cb0_002
+            rule_snapshot:
+              $ref: '#/components/schemas/EngagementRecord'
+            rate_bps:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 900000000000
+              - type: 'null'
+            status:
+              enum:
+              - ATTRIBUTED
+              - RULE_RATE_REVIEW_REQUIRED
+            one_level_only:
+              const: true
+            free_points_reward_enabled:
+              const: false
+          required:
+          - version
+          - link_id
+          - click_id
+          - referrer_party_id
+          - buyer_party_id
+          - supplier_party_id
+          - category
+          - clicked_at
+          - captured_at
+          - rule_snapshot
+          - rate_bps
+          - status
+          - one_level_only
+          - free_points_reward_enabled
       required:
       - lines
       - installments
@@ -21885,6 +26421,23 @@ components:
               - kind
               - product_id
               - app_account_token
+            - type: object
+              additionalProperties: false
+              properties:
+                kind:
+                  const: SIMULATED_PAYMENT
+                simulation:
+                  const: true
+                label:
+                  const: SIMULATED - NO REAL MONEY
+                payment_id:
+                  type: string
+                  format: uuid
+              required:
+              - kind
+              - simulation
+              - label
+              - payment_id
           - type: 'null'
         transaction_id:
           anyOf:
@@ -36121,6 +40674,10 @@ components:
           maxLength: 8000
         audition:
           $ref: '#/components/schemas/AuditionTerms'
+        additional_terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
       required:
       - version
       - terms
@@ -36920,22 +41477,29 @@ components:
       type: object
       additionalProperties: false
       properties:
-        account_id: *walletSchema003
-        rule_id: *walletSchema003
+        account_id: &r09_a5c7fc447476_001
+          type: string
+          format: uuid
+        rule_id: *r09_a5c7fc447476_001
         currency:
           const: CNY
-        recorded_balance_minor: *walletSchema004
-        available_balance_minor: *walletSchema004
-        reserved_balance_minor: *walletSchema004
-        available_points: *walletSchema004
-        points_pending_reversal: *walletSchema004
-        points_actions_enabled:
-          const: false
+        recorded_balance_minor: &r09_a5c7fc447476_002
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        available_balance_minor: *r09_a5c7fc447476_002
+        reserved_balance_minor: *r09_a5c7fc447476_002
+        available_points: *r09_a5c7fc447476_002
+        points_pending_reversal: *r09_a5c7fc447476_002
+        points_actions_enabled: &r09_a5c7fc447476_003
+          type: boolean
         points_block_reason:
           anyOf:
-          - *walletSchema001
+          - type: string
+            minLength: 1
+            maxLength: 8000
           - type: 'null'
-        qualifying_growth: *walletSchema004
+        qualifying_growth: *r09_a5c7fc447476_002
         membership:
           $ref: '#/components/schemas/WalletMembership'
         custody:
@@ -36964,6 +41528,19 @@ components:
           const: false
         transfer_enabled:
           const: false
+        point_uses:
+          type: object
+          additionalProperties: false
+          properties:
+            vote_enabled: *r09_a5c7fc447476_003
+            redemption_enabled:
+              const: false
+            lottery_enabled:
+              const: false
+          required:
+          - vote_enabled
+          - redemption_enabled
+          - lottery_enabled
       required:
       - account_id
       - rule_id

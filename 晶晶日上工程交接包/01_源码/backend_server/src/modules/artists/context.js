@@ -20,7 +20,7 @@ async function relation(tx,r,p,at){const g=await require('../gigs/context').load
 async function authorize(tx,a,p,partyId,action='READ_PROFILE'){
  if(p.current_status!=='ACTIVE')throw error('ARTIST_NOT_ACTIVE',409);
  if(p.owner_party_id===partyId){await self(tx,a,p,partyId);return {self:true,delegation:null};}
- const org=await owner(tx,a,partyId);if(org.kind!=='ORGANIZATION')throw error('ARTIST_NOT_FOUND',404);await activeParty(tx,p.owner_party_id);
+ const org=await require('../engagement/mcn').member(tx,a,partyId,p.id,action);if(org.kind!=='ORGANIZATION')throw error('ARTIST_NOT_FOUND',404);await activeParty(tx,p.owner_party_id);
  const at=await now(tx);const [rows]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='DELEGATION' AND counterparty_id=? AND current_status='ACTIVE' FOR SHARE",[p.id,partyId]);
  for(const raw of rows){const r=checked(raw);if(P.active(r.data,at)&&r.data.actions.includes(action)){await relation(tx,r,p,at);return {self:false,delegation:r};}}
  throw error('ARTIST_DELEGATION_REQUIRED',403);

@@ -24,6 +24,7 @@ async function main() {
     if (process.env.OPERATIONS_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/operations/reports').createOperationsHandlers(db)) enabled.set(name,handler);
     if (process.env.STOCK_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/stock/acceptance-handler').createStockAcceptanceHandlers(db,{env:process.env})) enabled.set(name,handler);
     if (process.env.AUDITION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/auditions/acceptance-handler').createAuditionHandlers(db,{env:process.env})) enabled.set(name,handler);
+    if(process.env.ENGAGEMENT_WORKER_ENABLED==='true')for(const [name,handler] of require('../modules/engagement/jobs').createEngagementHandlers(db))enabled.set(name,handler);
     if(process.env.WALLET_WORKER_ENABLED==='true'){const wallet=require('../modules/wallet/jobs');await wallet.seed(db);for(const [name,handler] of wallet.createWalletHandlers(db))enabled.set(name,handler);}
     worker = createWorker({ repository: createJobRepository(db), handlers:enabled, log: (record) => console.log(JSON.stringify(record)) });
     process.once('SIGINT', stop); process.once('SIGTERM', stop);

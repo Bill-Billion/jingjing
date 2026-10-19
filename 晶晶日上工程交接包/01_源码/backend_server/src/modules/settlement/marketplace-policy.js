@@ -47,8 +47,8 @@ function checked(quote,merchant){
  if(quote.customization_finance||rule.id!==quote.rule_id||a.supplier_party_id!==merchant||quote.lines.length!==1||quote.lines[0].provider_party_id!==merchant||quote.lines[0].product_profile?.version!=='V5'||quote.lines[0].product_profile?.type!==a.product_type)throw error('MARKETPLACE_SOURCE_MISMATCH',409);
  for(const k of ['model','product_type','fee_base','platform_party_id','platform_bps','rounding'])if(a[k]!==cfg[k])throw error('MARKETPLACE_SOURCE_MISMATCH',409);
  if(a.referral_bps!==(a.referrer_party_id?cfg.referral_bps:0))throw error('MARKETPLACE_SOURCE_MISMATCH',409);
- // Live attribution will be bound by its own workflow; this round cannot fabricate it.
- if(a.referrer_party_id)throw error('REFERRAL_ATTRIBUTION_NOT_IMPLEMENTED',409);
+ // The accepted order freezes authenticated last-valid attribution, independently of client input.
+ if(a.referrer_party_id){const r=quote.referral,s=r?.rule_snapshot;if(!r||r.status!=='ATTRIBUTED'||r.referrer_party_id!==a.referrer_party_id||r.supplier_party_id!==merchant||r.rate_bps!==a.referral_bps||!s||digest(s.data)!==s.content_sha256||s.data.rule.referral_bps[r.category]!==a.referral_bps)throw error('REFERRAL_ATTRIBUTION_REQUIRED',409);}
  if(a.mcn_party_id){
   const rel=snap.relation_snapshot;
   if(!rel||digest(rel.data)!==rel.content_sha256||rel.kind!=='RELATION'||rel.current_status!=='ACTIVE'||rel.owner_party_id!==a.mcn_party_id||rel.counterparty_id!==merchant||!rel.data.accepted_by||rel.data.valid_from>snap.captured_at||rel.data.valid_until<=snap.captured_at||mcnTerms(rel.data.v5_terms).supply_share_bps!==a.mcn_supply_bps)throw error('MCN_RELATION_SNAPSHOT_MISMATCH',409);
