@@ -100,7 +100,7 @@ test('platform customization quote HTTP, story version and unique order transact
    const body=quoteBody(await ready());body.lines.push({line_id:'old',spec_id:legacyPublished.id,quantity:1});
    assert.equal(denied(await http('POST','/trade/quotes',merchant,body,merchantOrg.party_id),409).code,'MIXED_PRODUCT_PROFILES');
    for(const type of ['MANUAL_SAMPLE','STOCK_VIDEO','COMMERCIAL','AUDITION']){
-    const s=take(await review(await trade.createSpec(merchant.ctx,specInput({product_profile:{version:'V5',type}}))));
+    const s=take(await review(await trade.createSpec(merchant.ctx,specInput({product_profile:{version:'V5',type},...(type==='STOCK_VIDEO'?{line_kind:'OTHER',specification:{version:'synthetic-stock-v1',stock_license:{scope:'PERSONAL_NONCOMMERCIAL',exclusive:false,territory:'WORLDWIDE',duration:'PERPETUAL',personal_social_sharing:true,acceptance_hours:72,aftercare_terms:'synthetic test'},terms:'synthetic test'}}:{})}))));
     const b=quoteBody(await ready());delete b.customization_source;b.lines[0].spec_id=s.id;
     assert.equal(denied(await http('POST','/trade/quotes',merchant,b,merchantOrg.party_id),409).code,'PRODUCT_FLOW_NOT_IMPLEMENTED');
    }

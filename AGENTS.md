@@ -1,3 +1,9 @@
+# 当前入口：第五轮现成视频后端
+
+实际工作树worktrees/full-flow，分支core/v5-r05-stock-video；先读[本轮交接](docs/collaboration/V5_R05_HANDOFF.md)和CURRENT。L1可销售现货为用户已确认决定；页面、对方审阅、合入、真实服务分别记录。共12轮，下一轮通告与投稿。以下历史入口不覆盖本段。
+
+---
+
 # 项目协作指令
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。

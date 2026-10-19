@@ -1,0 +1,5 @@
+"use strict";
+const test=require('node:test'),assert=require('node:assert/strict'),P=require('../src/modules/stock/policy');
+const spec={version:'test-v1',stock_license:{scope:'PERSONAL_NONCOMMERCIAL',exclusive:false,territory:'WORLDWIDE',duration:'PERPETUAL',personal_social_sharing:true,acceptance_hours:72,aftercare_terms:'independent aftercare review'},terms:'test'};
+test('stock license is a specific noncommercial perpetual video license',()=>{assert.equal(P.license(spec).exclusive,false);for(const change of [{exclusive:true},{scope:'COMMERCIAL'},{duration:'ONE_YEAR'},{personal_social_sharing:false},{acceptance_hours:0}])assert.throws(()=>P.specification({...spec,stock_license:{...spec.stock_license,...change}}));});
+test('stock specification rejects undisclosed license expansion and missing acceptance terms',()=>{assert.throws(()=>P.specification({...spec,source_files:true}));assert.throws(()=>P.specification({...spec,stock_license:{...spec.stock_license,aftercare_terms:''}}));assert.throws(()=>P.participants([{person_id:'invalid'}]));});
