@@ -1,3 +1,7 @@
+当前第8轮首批账本/晶钻已本地测试，尚未整轮完成或上传。继续第8轮剩余工作，先读CORE_CURRENT和V5_R08_HANDOFF；不得跳到第9轮。用户已确认不足晶钻以后发分先抵扣；PR24等队友下午确认。实际工作树full-flow、分支core/v5-r08-wallet-points。
+
+当前第8轮按用户2026-10-19要求开工，实际工作树worktrees/full-flow，分支core/v5-r08-wallet-points。先读CORE_CURRENT及第8轮任务记录。第7轮两项欠项继续保留；PR24仅核实第一轮页面，不代表后续页面完成。以下保留历史。
+
 第7轮第一批后端已上传7fa90b9并通过远端全部检查。状态与未完成工作见CORE_CURRENT和V5_R07_HANDOFF；商单专属会话与已付试镜补差继续补齐，之后第8轮。
 
 本次为第7轮第一批试镜主流程。完整分支core/v5-r07-auditions；先读docs/collaboration/V5_R07_HANDOFF.md与CORE_CURRENT。31个接口已自验；商单专属会话、已付试镜补差仍待补，先完成再进第8轮。共12轮；页面、审阅、合入、启用各自记录。

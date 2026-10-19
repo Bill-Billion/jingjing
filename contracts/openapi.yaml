@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.20.0-rc.1
+  version: 0.21.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -14799,6 +14799,463 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+
+  /api/v1/wallet/rules:
+    get:
+      operationId: listWalletRules
+      summary: 查看已核准的余额与积分规则
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+    post:
+      operationId: createWalletRule
+      summary: 提交余额与积分规则供另一人审核
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletRuleRequest'
+  /api/v1/wallet/rules/{record_id}/review:
+    post:
+      operationId: reviewWalletRule
+      summary: 独立审核余额与积分规则
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema: &walletPath001
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletReviewRequest'
+  /api/v1/wallet/accounts:
+    post:
+      operationId: openWalletAccount
+      summary: 本人接受规则并建立消费账本
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletOpenRequest'
+  /api/v1/wallet/summary:
+    get:
+      operationId: getWalletSummary
+      summary: 查看本人余额记录、晶钻、成长与星探资格
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/wallet/records:
+    get:
+      operationId: listWalletRecords
+      summary: 查看本人充值、积分和资格记录
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: kind
+        required: true
+        schema:
+          enum:
+          - RECHARGE
+          - EARNING
+          - POINT_HOLD
+          - LEVEL_REVIEW
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/wallet/recharges:
+    post:
+      operationId: requestWalletRecharge
+      summary: 充值入口暂未启用，明确返回未接通
+      description: 已实现明确拒绝：503 CUSTODY_PROVIDER_NOT_CONNECTED。不创建充值订单，不标记成功，不代表真实充值功能已实现。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletRechargeRequest'
+  /api/v1/wallet/earnings/sync:
+    post:
+      operationId: syncWalletOrderEarnings
+      summary: 核对本人订单履约和售后后发放晶钻
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletSyncRequest'
+  /api/v1/wallet/level-six:
+    post:
+      operationId: applyWalletLevelSix
+      summary: 提交六级星探的独立资格证明
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletLevelRequest'
+  /api/v1/wallet/level-six/{record_id}/review:
+    post:
+      operationId: reviewWalletLevelSix
+      summary: 独立审核六级资格证明
+      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema: *walletPath001
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletReviewRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -35976,3 +36433,556 @@ components:
       - decision
       - checks
       - reason
+
+    WalletRule:
+      type: object
+      additionalProperties: false
+      properties:
+        points_rounding:
+          const: FLOOR_NET_PAID
+        version: &walletSchema001
+          type: string
+          minLength: 1
+          maxLength: 4000
+        terms: *walletSchema001
+        topup_threshold_minor: &walletSchema002
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        membership_days:
+          const: 365
+        growth_thresholds:
+          type: array
+          items: *walletSchema002
+          minItems: 5
+          maxItems: 5
+        points_per_yuan:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        points_days:
+          const: 365
+        hold_minutes:
+          type: integer
+          minimum: 1
+          maximum: 1440
+        aftercare_days:
+          type: object
+          additionalProperties: false
+          properties:
+            STOCK:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 365
+              - type: 'null'
+            CUSTOMIZATION:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 365
+              - type: 'null'
+            AUDITION:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 365
+              - type: 'null'
+            COMMERCIAL:
+              anyOf:
+              - type: integer
+                minimum: 0
+                maximum: 365
+              - type: 'null'
+          required:
+          - STOCK
+          - CUSTOMIZATION
+          - AUDITION
+          - COMMERCIAL
+        topup_limits:
+          type: object
+          additionalProperties: false
+          properties:
+            single_minor: *walletSchema002
+            daily_minor: *walletSchema002
+            monthly_minor: *walletSchema002
+            cooling_minutes:
+              type: integer
+              minimum: 0
+              maximum: 43200
+          required:
+          - single_minor
+          - daily_minor
+          - monthly_minor
+          - cooling_minutes
+      required:
+      - points_rounding
+      - version
+      - terms
+      - topup_threshold_minor
+      - membership_days
+      - growth_thresholds
+      - points_per_yuan
+      - points_days
+      - hold_minutes
+      - aftercare_days
+      - topup_limits
+    WalletBinding:
+      type: object
+      additionalProperties: false
+      properties:
+        provider: *walletSchema001
+        environment:
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        merchant_id: *walletSchema001
+        revision: *walletSchema001
+      required:
+      - provider
+      - environment
+      - merchant_id
+      - revision
+    WalletEarning:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id: &walletSchema003
+          type: string
+          format: uuid
+        category:
+          enum:
+          - STOCK
+          - CUSTOMIZATION
+          - AUDITION
+          - COMMERCIAL
+        rule_id: *walletSchema003
+        rule:
+          $ref: '#/components/schemas/WalletRule'
+        source_kind:
+          enum:
+          - CONSUMPTION
+          - FREE
+        paid_minor: &walletSchema004
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        refunded_minor: *walletSchema004
+        points: *walletSchema004
+        reversed: *walletSchema004
+        growth_reversed: *walletSchema004
+        spent: *walletSchema004
+        expired: *walletSchema004
+        pending_shortfall: *walletSchema004
+        debt_offset: *walletSchema004
+        debt_settled: *walletSchema004
+        expires_at:
+          anyOf:
+          - &walletSchema005
+            type: string
+            format: date-time
+          - type: 'null'
+        issued_at:
+          anyOf:
+          - *walletSchema005
+          - type: 'null'
+        available_at:
+          anyOf:
+          - *walletSchema005
+          - type: 'null'
+      required:
+      - order_id
+      - category
+      - rule_id
+      - rule
+      - source_kind
+      - paid_minor
+      - refunded_minor
+      - points
+      - reversed
+      - growth_reversed
+      - spent
+      - expired
+      - pending_shortfall
+      - debt_offset
+      - debt_settled
+      - expires_at
+      - issued_at
+      - available_at
+    WalletRecharge:
+      type: object
+      additionalProperties: false
+      properties:
+        amount_minor: *walletSchema002
+        refunded_minor: *walletSchema004
+        currency:
+          const: CNY
+        binding:
+          $ref: '#/components/schemas/WalletBinding'
+        created_at: *walletSchema005
+        occurred_at:
+          anyOf:
+          - *walletSchema005
+          - type: 'null'
+        transaction_id:
+          anyOf:
+          - *walletSchema001
+          - type: 'null'
+        proof_sha256:
+          anyOf:
+          - &walletSchema006
+            type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+      required:
+      - amount_minor
+      - refunded_minor
+      - currency
+      - binding
+      - created_at
+      - occurred_at
+      - transaction_id
+      - proof_sha256
+    WalletPointHold:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          enum:
+          - VOTE
+          - REDEMPTION
+          - LOTTERY
+        reference: *walletSchema001
+        points: *walletSchema002
+        expires_at: *walletSchema005
+        allocations:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              lot_id: *walletSchema003
+              points: *walletSchema002
+            required:
+            - lot_id
+            - points
+        reason: *walletSchema001
+      required:
+      - purpose
+      - reference
+      - points
+      - expires_at
+      - allocations
+    WalletLevelReview:
+      type: object
+      additionalProperties: false
+      properties:
+        valid_from: *walletSchema005
+        valid_until: *walletSchema005
+        terms: *walletSchema001
+        evidence_asset_ids:
+          type: array
+          items: *walletSchema003
+          minItems: 1
+          maxItems: 10
+        review: &walletSchema007
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              by: *walletSchema003
+              reason: *walletSchema001
+              at: *walletSchema005
+            required:
+            - by
+            - reason
+            - at
+          - type: 'null'
+      required:
+      - valid_from
+      - valid_until
+      - terms
+      - evidence_asset_ids
+      - review
+    WalletRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *walletSchema003
+        kind:
+          enum:
+          - RULE
+          - ACCOUNT
+          - EARNING
+          - RECHARGE
+          - POINT_HOLD
+          - LEVEL_REVIEW
+        owner_party_id:
+          anyOf:
+          - *walletSchema003
+          - type: 'null'
+        parent_id:
+          anyOf:
+          - *walletSchema003
+          - type: 'null'
+        created_by: *walletSchema003
+        current_status: *walletSchema001
+        object_version: *walletSchema002
+        content_sha256: *walletSchema006
+        data:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              rule:
+                $ref: '#/components/schemas/WalletRule'
+              review: *walletSchema007
+            required:
+            - rule
+            - review
+          - type: object
+            additionalProperties: false
+            properties:
+              rule_id: *walletSchema003
+              rule_sha256: *walletSchema006
+              rule:
+                $ref: '#/components/schemas/WalletRule'
+              opened_at:
+                anyOf:
+                - *walletSchema005
+                - type: 'null'
+            required:
+            - rule_id
+            - rule_sha256
+            - rule
+            - opened_at
+          - $ref: '#/components/schemas/WalletEarning'
+          - $ref: '#/components/schemas/WalletRecharge'
+          - $ref: '#/components/schemas/WalletPointHold'
+          - $ref: '#/components/schemas/WalletLevelReview'
+        pending_reason:
+          anyOf:
+          - *walletSchema001
+          - type: 'null'
+        available_at:
+          anyOf:
+          - *walletSchema005
+          - type: 'null'
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    WalletMembership:
+      type: object
+      additionalProperties: false
+      properties:
+        active: &walletSchema008
+          type: boolean
+        level:
+          type: integer
+          minimum: 0
+          maximum: 6
+        attained_level:
+          type: integer
+          minimum: 1
+          maximum: 6
+        qualifying_growth: *walletSchema004
+        valid_until:
+          anyOf:
+          - *walletSchema005
+          - type: 'null'
+        renewal_credit_minor: *walletSchema004
+        level_six_review_required: *walletSchema008
+        reason:
+          anyOf:
+          - *walletSchema001
+          - type: 'null'
+      required:
+      - active
+      - level
+      - attained_level
+      - qualifying_growth
+      - valid_until
+      - renewal_credit_minor
+      - level_six_review_required
+      - reason
+    WalletSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id: *walletSchema003
+        rule_id: *walletSchema003
+        currency:
+          const: CNY
+        recorded_balance_minor: *walletSchema004
+        available_points: *walletSchema004
+        points_pending_reversal: *walletSchema004
+        points_actions_enabled:
+          const: false
+        points_block_reason:
+          anyOf:
+          - *walletSchema001
+          - type: 'null'
+        qualifying_growth: *walletSchema004
+        membership:
+          $ref: '#/components/schemas/WalletMembership'
+        custody:
+          type: object
+          additionalProperties: false
+          properties:
+            enabled:
+              const: false
+            reason:
+              const: CUSTODY_PROVIDER_NOT_CONNECTED
+          required:
+          - enabled
+          - reason
+        spending:
+          type: object
+          additionalProperties: false
+          properties:
+            enabled:
+              const: false
+            reason:
+              const: CUSTODY_ORDER_ALLOCATION_NOT_CONNECTED
+          required:
+          - enabled
+          - reason
+        withdrawal_enabled:
+          const: false
+        transfer_enabled:
+          const: false
+      required:
+      - account_id
+      - rule_id
+      - currency
+      - recorded_balance_minor
+      - available_points
+      - points_pending_reversal
+      - points_actions_enabled
+      - points_block_reason
+      - qualifying_growth
+      - membership
+      - custody
+      - spending
+      - withdrawal_enabled
+      - transfer_enabled
+    WalletResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/WalletRecord'
+          - $ref: '#/components/schemas/WalletSummary'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  anyOf:
+                  - $ref: '#/components/schemas/WalletRecord'
+                  - $ref: '#/components/schemas/WalletPublicRule'
+              next_cursor:
+                anyOf:
+                - *walletSchema003
+                - type: 'null'
+            required:
+            - items
+      required:
+      - meta
+      - data
+    WalletRuleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule:
+          $ref: '#/components/schemas/WalletRule'
+      required:
+      - rule
+    WalletReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason: *walletSchema001
+      required:
+      - decision
+      - reason
+    WalletOpenRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id: *walletSchema003
+        rule_sha256: *walletSchema006
+      required:
+      - rule_id
+      - rule_sha256
+    WalletRechargeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        amount_minor: *walletSchema002
+      required:
+      - amount_minor
+    WalletSyncRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id: *walletSchema003
+      required:
+      - order_id
+    WalletLevelRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 10
+      required:
+      - valid_from
+      - valid_until
+      - terms
+      - evidence_asset_ids
+    WalletPublicRule:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        content_sha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        rule:
+          $ref: '#/components/schemas/WalletRule'
+      required:
+      - id
+      - content_sha256
+      - rule

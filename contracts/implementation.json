@@ -1,5 +1,5 @@
 {
-  "version": "0.20.0-rc.1",
+  "version": "0.21.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -277,7 +277,17 @@
     "getAuditionItinerary",
     "downloadAuditionMaterial",
     "reviewAuditionDelivery",
-    "listAuditionInvitationOffers"
+    "listAuditionInvitationOffers",
+    "listWalletRules",
+    "createWalletRule",
+    "reviewWalletRule",
+    "openWalletAccount",
+    "getWalletSummary",
+    "listWalletRecords",
+    "requestWalletRecharge",
+    "syncWalletOrderEarnings",
+    "applyWalletLevelSix",
+    "reviewWalletLevelSix"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -485,5 +495,28 @@
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/auditions.integration.test.cjs",
     "status": "IMPLEMENTED_ISOLATED_TESTS",
     "limits": "页面、正式支付与存储、真实资质、实际交叉审阅及合入另验；榜单属第9轮，完整会员属第8轮。"
+  },
+  "wallet": {
+    "status": "第八轮基础部分；未整轮完成",
+    "operations": [
+      "listWalletRules",
+      "createWalletRule",
+      "reviewWalletRule",
+      "openWalletAccount",
+      "getWalletSummary",
+      "listWalletRecords",
+      "requestWalletRecharge",
+      "syncWalletOrderEarnings",
+      "applyWalletLevelSix",
+      "reviewWalletLevelSix"
+    ],
+    "test": "test/wallet.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "真实充值与余额消费未接通",
+      "通告资格切换及自动发分待接",
+      "免费积分事件与后续用途待接",
+      "未验证页面与真实服务"
+    ]
   }
 }

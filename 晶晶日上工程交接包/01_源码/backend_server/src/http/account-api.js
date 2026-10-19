@@ -34,6 +34,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/notices',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/stock',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/wallet',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/auditions',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/supply',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/finance',express.json({limit:'128kb',strict:true}));
@@ -143,6 +144,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/notices',require('./notices-routes').createNoticesRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/stock',require('./stock-routes').createStockRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/wallet',require('./wallet-routes').createWalletRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/auditions',require('./auditions-routes').createAuditionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/artists',require('./artist-routes').createArtistRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,identityProviderFactory:artistIdentityProviderFactory}));
@@ -153,11 +155,11 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   const client=Number.isInteger(e.status)&&e.status>=400&&e.status<500;
   const safeCode=typeof e.code==='string'&&/^[A-Z][A-Z0-9_]*$/.test(e.code);
   const status=e.type==='entity.parse.failed'?400:e.type==='entity.too.large'?413:client?e.status:503;
-  const code=e.type==='entity.parse.failed'?'INVALID_JSON':e.type==='entity.too.large'?'BODY_TOO_LARGE':((client&&safeCode)||['SMS_NOT_READY','SMS_CHALLENGE_UNAVAILABLE','COMMIT_OUTCOME_UNKNOWN'].includes(e.code)?e.code:'SERVICE_UNAVAILABLE');
+  const code=e.type==='entity.parse.failed'?'INVALID_JSON':e.type==='entity.too.large'?'BODY_TOO_LARGE':((client&&safeCode)||['SMS_NOT_READY','SMS_CHALLENGE_UNAVAILABLE','COMMIT_OUTCOME_UNKNOWN','CUSTODY_PROVIDER_NOT_CONNECTED'].includes(e.code)?e.code:'SERVICE_UNAVAILABLE');
   // Retry the original operation only; this flag never proves a failed commit or authorizes a new key.
   const retryable=['IDEMPOTENCY_IN_PROGRESS','COMMIT_OUTCOME_UNKNOWN','RATE_LIMITED'].includes(code);
   if(code==='RATE_LIMITED'&&Number.isSafeInteger(e.retryAfter)&&e.retryAfter>0)res.set('Retry-After',String(e.retryAfter));
-  const message=code==='RATE_LIMITED'?'请求过于频繁，请等待后重试':retryable?'操作结果尚未确认，请稍后重试原请求':status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查';
+  const message=code==='CUSTODY_PROVIDER_NOT_CONNECTED'?'资金托管服务尚未接通，暂不能充值':code==='RATE_LIMITED'?'请求过于频繁，请等待后重试':retryable?'操作结果尚未确认，请稍后重试原请求':status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查';
   // Only known form field identifiers and fixed reason codes may leave this boundary.
   // Never reflect a story answer, SQL, provider response or arbitrary thrown details.
   const formReasons=['REQUIRED','INVALID_CHOICE','TOO_LONG','INVALID_TYPE','ATTACHMENT_NOT_SUPPORTED','ATTACHMENT_SUBMISSION_NOT_READY','UNKNOWN_FIELD','TOO_LARGE'];
