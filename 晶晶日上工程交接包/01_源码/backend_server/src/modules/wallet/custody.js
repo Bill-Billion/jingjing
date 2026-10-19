@@ -9,7 +9,7 @@ function createCustodyLedger(db){return {
  // Called only after a licensed custody adapter has been configured and user authority resolved by a service.
  async prepare(tx,a,{party_id,amount_minor,operation_key},binding){
   const cfg=config(binding);await C.owner(tx,a,party_id,true);const account=await C.account(tx,party_id),i={party_id,amount_minor,operation_key,binding:cfg};P.integer(amount_minor,1);
-  return C.command(tx,a,'RECHARGE',i,async()=>{const now=await A.now(tx),receipts=await C.rows(tx,party_id,'RECHARGE');P.topupAllowed(account.data.rule,receipts.map(r=>({...r.data,status:r.current_status})),amount_minor,now);return C.insert(tx,a,'RECHARGE',party_id,account.id,'PENDING',{amount_minor,refunded_minor:0,currency:'CNY',binding:cfg,created_at:now,occurred_at:null,transaction_id:null,proof_sha256:null},[party_id,operation_key]);});
+  return C.command(tx,a,'RECHARGE',i,async()=>{const now=await A.now(tx),receipts=await C.rows(tx,party_id,'RECHARGE');if(receipts.some(r=>!['FAILED','CANCELLED'].includes(r.current_status)&&['provider','environment','merchant_id'].some(k=>r.data.binding[k]!==cfg[k])))throw error('CUSTODY_ACCOUNT_MIGRATION_REQUIRED',409);P.topupAllowed(account.data.rule,receipts.map(r=>({...r.data,status:r.current_status})),amount_minor,now);return C.insert(tx,a,'RECHARGE',party_id,account.id,'PENDING',{amount_minor,refunded_minor:0,currency:'CNY',binding:cfg,created_at:now,occurred_at:null,transaction_id:null,proof_sha256:null},[party_id,operation_key]);});
  },
  // proof must come from adapter signature verification/query, never from a user or an operator form.
  async applyVerifiedReceipt(proof){
@@ -24,4 +24,4 @@ function createCustodyLedger(db){return {
   });
  }
 };}
-module.exports={createCustodyLedger};
+module.exports={createCustodyLedger,config};

@@ -117,7 +117,9 @@ test('Real isolated MySQL8 foundation', {skip:!process.env.JX_MYSQL_TEST_ENV_FIL
       }
       assert.equal(killed,true);assert.equal((await outcome).error?.code,'MIGRATION_OUTCOME_UNKNOWN');
       const state=await status(interrupted,{directory});assert.equal(state.history[0].status,'APPLYING');
-      await assert.rejects(migrate(interrupted,{directory}),{code:'MIGRATION_OUTCOME_UNKNOWN'});
+      // KILL acknowledgement can precede server-side advisory-lock release. Wait for that lock,
+      // then assert the persisted APPLYING state still prevents replay; do not weaken the assertion.
+      await assert.rejects(migrate(interrupted,{directory,lockTimeout:5}),{code:'MIGRATION_OUTCOME_UNKNOWN'});
     });
     await t.test('wrong credentials fail without connecting to SQLite',async()=>{
       await assert.rejects(openDatabase({...env,MYSQL_PASSWORD:'wrong-synthetic-password'}),{code:'ER_ACCESS_DENIED_ERROR'});

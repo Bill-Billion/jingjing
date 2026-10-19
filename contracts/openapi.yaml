@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.21.0-rc.1
+  version: 0.21.0-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -14804,7 +14804,7 @@ paths:
     get:
       operationId: listWalletRules
       summary: 查看已核准的余额与积分规则
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -14842,7 +14842,7 @@ paths:
     post:
       operationId: createWalletRule
       summary: 提交余额与积分规则供另一人审核
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -14888,7 +14888,7 @@ paths:
     post:
       operationId: reviewWalletRule
       summary: 独立审核余额与积分规则
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -14941,7 +14941,7 @@ paths:
     post:
       operationId: openWalletAccount
       summary: 本人接受规则并建立消费账本
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -14988,7 +14988,7 @@ paths:
     get:
       operationId: getWalletSummary
       summary: 查看本人余额记录、晶钻、成长与星探资格
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -15028,7 +15028,7 @@ paths:
     get:
       operationId: listWalletRecords
       summary: 查看本人充值、积分和资格记录
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -15046,6 +15046,9 @@ paths:
           - EARNING
           - POINT_HOLD
           - LEVEL_REVIEW
+          - CASH_SPEND
+          - CASH_REFUND
+          - CASH_RECONCILIATION
       responses:
         '200':
           description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
@@ -15115,7 +15118,7 @@ paths:
     post:
       operationId: syncWalletOrderEarnings
       summary: 核对本人订单履约和售后后发放晶钻
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -15162,7 +15165,7 @@ paths:
     post:
       operationId: applyWalletLevelSix
       summary: 提交六级星探的独立资格证明
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -15209,7 +15212,7 @@ paths:
     post:
       operationId: reviewWalletLevelSix
       summary: 独立审核六级资格证明
-      description: 余额积分基础接口。真实托管充值、余额支付、通告资格切换、自动发分和积分用途尚未接通；账户规则和订单承诺保存快照。退款不足晶钻以后发分先抵扣，不追收现金。
+      description: 账务、自动核对和资格衔接已实现；真实资金服务和后续积分用途未启用。规则与订单承诺保留快照，退款不足晶钻以后发分先抵扣。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -15256,6 +15259,56 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/WalletReviewRequest'
+  /api/v1/wallet/check-in:
+    post:
+      operationId: checkInWallet
+      summary: 本人每日签到，按已审核规则发晶钻
+      description: 按北京时间每日一次；未配置奖励时拒绝，不采用默认数额，不增加消费成长。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+
 components:
   securitySchemes:
     bearerAuth:
@@ -21616,6 +21669,7 @@ components:
           enum:
           - ALIPAY
           - APPLE
+          - CUSTODY
         transaction_model:
           type: string
           enum:
@@ -21735,6 +21789,7 @@ components:
           enum:
           - ALIPAY
           - APPLE
+          - CUSTODY
         environment:
           type: string
           enum:
@@ -21847,6 +21902,7 @@ components:
                 enum:
                 - ALIPAY
                 - APPLE
+                - CUSTODY
               environment:
                 type: string
                 enum:
@@ -21933,6 +21989,7 @@ components:
           enum:
           - ALIPAY
           - APPLE
+          - CUSTODY
         environment:
           type: string
           enum:
@@ -22020,6 +22077,7 @@ components:
                 enum:
                 - ALIPAY
                 - APPLE
+                - CUSTODY
               environment:
                 type: string
                 enum:
@@ -22087,6 +22145,7 @@ components:
                 enum:
                 - ALIPAY
                 - APPLE
+                - CUSTODY
               environment:
                 type: string
                 enum:
@@ -22395,6 +22454,7 @@ components:
           enum:
           - ALIPAY
           - APPLE
+          - CUSTODY
         transaction_model:
           type: string
           enum:
@@ -33266,6 +33326,7 @@ components:
           enum:
           - ALIPAY
           - APPLE
+          - CUSTODY
       required:
       - listing_id
       - offer_sha256
@@ -36153,6 +36214,9 @@ components:
       type: object
       additionalProperties: false
       properties:
+        channel:
+          description: 可省略沿用支付宝订单；余额渠道真实服务尚未开通。
+          enum: [ALIPAY, CUSTODY]
         booking_id:
           type: string
           format: uuid
@@ -36438,6 +36502,39 @@ components:
       type: object
       additionalProperties: false
       properties:
+        free_awards:
+          type: object
+          additionalProperties: false
+          properties:
+            REGISTER:
+              anyOf:
+              - type: integer
+                minimum: 1
+                maximum: 1000000
+              - type: 'null'
+            DAILY_CHECKIN:
+              anyOf:
+              - type: integer
+                minimum: 1
+                maximum: 1000000
+              - type: 'null'
+            REVIEW:
+              anyOf:
+              - type: integer
+                minimum: 1
+                maximum: 1000000
+              - type: 'null'
+            SHARE:
+              anyOf:
+              - type: integer
+                minimum: 1
+                maximum: 1000000
+              - type: 'null'
+          required:
+          - REGISTER
+          - DAILY_CHECKIN
+          - REVIEW
+          - SHARE
         points_rounding:
           const: FLOOR_NET_PAID
         version: &walletSchema001
@@ -36717,6 +36814,9 @@ components:
           - RECHARGE
           - POINT_HOLD
           - LEVEL_REVIEW
+          - CASH_SPEND
+          - CASH_REFUND
+          - CASH_RECONCILIATION
         owner_party_id:
           anyOf:
           - *walletSchema003
@@ -36757,6 +36857,10 @@ components:
             - rule
             - opened_at
           - $ref: '#/components/schemas/WalletEarning'
+          - $ref: '#/components/schemas/WalletFreeEarning'
+          - $ref: '#/components/schemas/WalletCashSpend'
+          - $ref: '#/components/schemas/WalletCashRefund'
+          - $ref: '#/components/schemas/WalletCashReconciliation'
           - $ref: '#/components/schemas/WalletRecharge'
           - $ref: '#/components/schemas/WalletPointHold'
           - $ref: '#/components/schemas/WalletLevelReview'
@@ -36821,6 +36925,8 @@ components:
         currency:
           const: CNY
         recorded_balance_minor: *walletSchema004
+        available_balance_minor: *walletSchema004
+        reserved_balance_minor: *walletSchema004
         available_points: *walletSchema004
         points_pending_reversal: *walletSchema004
         points_actions_enabled:
@@ -36850,7 +36956,7 @@ components:
             enabled:
               const: false
             reason:
-              const: CUSTODY_ORDER_ALLOCATION_NOT_CONNECTED
+              const: CUSTODY_PROVIDER_NOT_CONNECTED
           required:
           - enabled
           - reason
@@ -36863,6 +36969,8 @@ components:
       - rule_id
       - currency
       - recorded_balance_minor
+      - available_balance_minor
+      - reserved_balance_minor
       - available_points
       - points_pending_reversal
       - points_actions_enabled
@@ -36986,3 +37094,217 @@ components:
       - id
       - content_sha256
       - rule
+
+    WalletFreeEarning:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        rule:
+          $ref: '#/components/schemas/WalletRule'
+        source_kind:
+          const: FREE
+        paid_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        refunded_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        points:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        reversed:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        growth_reversed:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        spent:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        expired:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        pending_shortfall:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        debt_offset:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        debt_settled:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        issued_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        event_kind:
+          enum:
+          - REGISTER
+          - DAILY_CHECKIN
+          - REVIEW
+          - SHARE
+        source_ref:
+          type: string
+          maxLength: 191
+        occurred_at:
+          type: string
+          format: date-time
+      required:
+      - rule_id
+      - rule
+      - source_kind
+      - paid_minor
+      - refunded_minor
+      - points
+      - reversed
+      - growth_reversed
+      - spent
+      - expired
+      - pending_shortfall
+      - debt_offset
+      - debt_settled
+      - expires_at
+      - issued_at
+      - event_kind
+      - source_ref
+      - occurred_at
+    WalletCashSpend:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        binding:
+          $ref: '#/components/schemas/WalletBinding'
+        currency:
+          const: CNY
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        allocations:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              recharge_id:
+                type: string
+                format: uuid
+              amount_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              returned_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+            required:
+            - recharge_id
+            - amount_minor
+            - returned_minor
+        transaction_id:
+          type:
+          - string
+          - 'null'
+        refund_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - account_id
+      - order_id
+      - payment_id
+      - binding
+      - currency
+      - amount_minor
+      - allocations
+      - transaction_id
+      - refund_ids
+    WalletCashRefund:
+      type: object
+      additionalProperties: false
+      properties:
+        refund_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        currency:
+          const: CNY
+        binding:
+          $ref: '#/components/schemas/WalletBinding'
+      required:
+      - refund_id
+      - payment_id
+      - amount_minor
+      - currency
+      - binding
+    WalletCashReconciliation:
+      type: object
+      additionalProperties: false
+      properties:
+        binding:
+          $ref: '#/components/schemas/WalletBinding'
+        statement_id:
+          type: string
+        observed_at:
+          type: string
+          format: date-time
+        occurred_at:
+          type: string
+          format: date-time
+        local_available_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        provider_available_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        proof_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        meaning:
+          const: OBSERVATION_ONLY_NO_BALANCE_ADJUSTMENT
+      required:
+      - binding
+      - statement_id
+      - observed_at
+      - occurred_at
+      - local_available_minor
+      - provider_available_minor
+      - proof_sha256
+      - meaning

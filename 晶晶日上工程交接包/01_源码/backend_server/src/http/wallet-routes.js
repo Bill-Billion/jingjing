@@ -11,6 +11,7 @@ function createWalletRouter({db,resolvePrincipal}){
  post('/rules','createRule',['rule'],false);
  post('/rules/:record_id/review','reviewRule',['decision','reason'],false,true);
  post('/accounts','open',['rule_id','rule_sha256']);
+ post('/check-in','checkIn',[]);
  post('/recharges','recharge',['amount_minor']);
  post('/earnings/sync','syncOrder',['order_id']);
  post('/level-six','applyLevelSix',['evidence_asset_ids','valid_from','valid_until','terms']);

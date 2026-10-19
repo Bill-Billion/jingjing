@@ -1,50 +1,48 @@
 {
   "date": "2026-10-19",
   "round": "V5-R08",
-  "scope": "第八轮首批账本与晶钻基础；整轮未完成",
   "branch": "core/v5-r08-wallet-points",
   "base_sha": "fc1357ab102c1ad0b4cef2045c759d591ba1aaa7",
   "integration_sha": "28662ab39950ad6a2f0b3c4ca372df9a65195b96",
+  "scope": "余额消费/退款/对账、自动积分与到期、配置化免费奖励、通告资格衔接",
   "full_check": {
     "result": "PASS",
     "groups": 24,
-    "regression_pass": 691,
-    "regression_skip": 1,
-    "scope_note": "完整检查在最后自查修复前运行；之后只改钱包内部的退款取整、身份失效、北京时间限额、规则公开投影及对应文档测试，已复跑完整钱包专项和全部接口格式，不伪称重新跑过全量"
-  },
-  "final_wallet": {
-    "result": "PASS",
-    "tests": 27,
-    "skip": 0
+    "regression": {
+      "tests": 701,
+      "pass": 700,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 1,
+      "todo": 0
+    },
+    "final_wallet": 32,
+    "final_auditions": 31,
+    "final_trade": 30,
+    "source_note": "最终完整验证时业务源代码未再改动；随后仅校正中文文档与接口说明，接口另行复验"
   },
   "http_contracts": {
     "result": "PASS",
     "groups": 20,
-    "responses": 1566,
-    "operations": 292,
-    "schemas": 470
+    "responses": 1577,
+    "operations": 293,
+    "schemas": 474,
+    "version": "0.21.0-rc.2"
   },
-  "review": "本侧自查；队友尚未审阅",
-  "publication": "本地保存，未推送，未创建申请，未合入，未部署",
-  "production": "未启用真实充值、资金托管、积分用途；无生产访问或收费调用",
+  "initial_failure": "保留初次综合失败；故障测试须等服务器释放被KILL连接的锁，再断言APPLYING禁止重放；未放宽安全断言",
+  "publication": "自验完成，待本阶段集中推送；实际版本另见PUBLICATION.json",
+  "review": "本侧自查；队友未审阅",
+  "production": "无生产访问、部署或收费调用；真实充值/余额支付关闭；方向支付宝，产品和权限待确认",
   "remaining": [
-    "余额消费分配、原路退款和对账",
-    "自动发分/过期任务及各交易类型履约接点",
-    "免费积分业务事件",
-    "通告资格切换与历史凭据处理",
-    "前端页面和双方联调",
-    "第七轮商单专属会话、已付试镜补差合同"
+    "评价/分享奖励的业务判定、数额及真实事件接线；已向用户询问是否暂不开放",
+    "队友页面、双方联调、实际审阅及合入",
+    "真实托管服务与正式任务运行验收",
+    "第7轮商单专属会话、已付试镜补差合同"
   ],
   "pr24": {
     "head": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
     "scope": "已核实第一轮故事提交/运营受理，不能代表后续页面",
     "state": "OPEN_DRAFT",
     "next": "按用户要求等队友下午确认，未合入或代其认可"
-  },
-  "local_code_commit": "9cd9abb4858c97a38f5b649b6f524beffa56a910",
-  "cleanup": {
-    "local_mysql_33316": "STOPPED_AND_NO_LISTENER",
-    "temporary_drive_J": "REMOVED",
-    "synthetic_test_databases": "各测试finally执行删除；本批没有运行常驻联调服务"
   }
 }

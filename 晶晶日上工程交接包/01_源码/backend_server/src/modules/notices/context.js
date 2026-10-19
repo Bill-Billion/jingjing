@@ -17,8 +17,8 @@ async function qualification(tx,party,rule){
  if(p.kind==='PERSON')await verifiedPerson(tx,party);
  const rows=(await tx.execute("SELECT * FROM notice_records WHERE owner_party_id=? AND kind IN ('QUALIFICATION','FACT') AND current_status='APPROVED' FOR SHARE",[party]))[0].map(checked);
  if(p.kind==='ORGANIZATION'){const q=rows.filter(r=>r.kind==='QUALIFICATION'&&r.data.valid_from<=now&&now<r.data.valid_until);return {active:q.length>0,level:0,types:[...new Set(q.flatMap(r=>r.data.types))],source_ids:q.map(r=>r.id),reason:q.length?null:'ORGANIZATION_QUALIFICATION_REQUIRED'};}
- const facts=rows.filter(r=>r.kind==='FACT');const q=P.scout(rule.data.rule,facts.map(r=>r.data),now);
- return {...q,types:q.active?P.TYPES.filter(t=>rule.data.rule.minimum_levels[t]!==null&&q.level>=rule.data.rule.minimum_levels[t]):[],source_ids:facts.map(r=>r.id)};
+ const facts=rows.filter(r=>r.kind==='FACT');const legacy={...P.scout(rule.data.rule,facts.map(r=>r.data),now),source_ids:facts.map(r=>r.id)};const W=require('../wallet/qualification'),chosen=W.choose(legacy,await W.read(tx,party,now));const q={active:chosen.active,level:chosen.level,valid_until:chosen.valid_until,reason:chosen.reason};
+ return {...q,types:q.active?P.TYPES.filter(t=>rule.data.rule.minimum_levels[t]!==null&&q.level>=rule.data.rule.minimum_levels[t]):[],source_ids:chosen.source_ids};
 }
 async function publisher(tx,r){const rule=await liveRule(tx,r.data.rule_id);if(r.data.notice.type==='OFFICIAL'){await operator(tx,{id:r.created_by},'NOTICE_OFFICIAL');return {official:true};}const q=await qualification(tx,r.owner_party_id,rule);if(!q.active||!q.types.includes(r.data.notice.type))throw error('NOTICE_PUBLISHER_NOT_ELIGIBLE',409);return q;}
 async function liveNotice(tx,key){const r=await load(tx,key,'NOTICE','FOR SHARE'),now=await A.now(tx);if(r.current_status!=='PUBLISHED'||r.data.notice.valid_from>now||r.data.notice.valid_until<=now)throw error('NOTICE_NOT_OPEN',409);await publisher(tx,r);return r;}

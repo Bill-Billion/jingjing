@@ -7,7 +7,7 @@ function integer(n,min=0,max=MAX){if(!Number.isSafeInteger(n)||n<min||n>max)thro
 function sum(values){return integer(values.reduce((a,b)=>a+integer(b),0));}
 function proportion(n,numerator,denominator){integer(n);integer(numerator);integer(denominator,1);if(numerator>denominator)throw error('WALLET_AMOUNT_INVALID',400);return Number(BigInt(n)*BigInt(numerator)/BigInt(denominator));}
 function rule(value){
- shape(value,['version','terms','topup_threshold_minor','membership_days','growth_thresholds','points_per_yuan','points_rounding','points_days','hold_minutes','aftercare_days','topup_limits']);
+ shape(value,['version','terms','topup_threshold_minor','membership_days','growth_thresholds','points_per_yuan','points_rounding','points_days','hold_minutes','aftercare_days','topup_limits','free_awards']);
  ref(value.version);label(value.terms,4000);integer(value.topup_threshold_minor,1);integer(value.points_per_yuan,1,1000);integer(value.hold_minutes,1,1440);
  if(value.points_rounding!=='FLOOR_NET_PAID')throw error('WALLET_RULE_INVALID',400);
  if(value.membership_days!==365||value.points_days!==365)throw error('WALLET_RULE_INVALID',400);
@@ -18,6 +18,7 @@ function rule(value){
  for(const k of ['single_minor','daily_minor','monthly_minor'])integer(value.topup_limits[k],1);
  integer(value.topup_limits.cooling_minutes,0,43200);
  if(value.topup_limits.single_minor>value.topup_limits.daily_minor||value.topup_limits.daily_minor>value.topup_limits.monthly_minor)throw error('WALLET_RULE_INVALID',400);
+ if(value.free_awards!==undefined){shape(value.free_awards,['REGISTER','DAILY_CHECKIN','REVIEW','SHARE']);for(const kind of ['REGISTER','DAILY_CHECKIN','REVIEW','SHARE'])if(value.free_awards[kind]!==null)integer(value.free_awards[kind],1,1000000);}
  return structuredClone(value);
 }
 function earnedPoints(paidMinor,rate){integer(paidMinor);integer(rate,1,1000);return integer(Number(BigInt(paidMinor)*BigInt(rate)/100n));}

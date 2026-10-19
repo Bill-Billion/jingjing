@@ -26,11 +26,14 @@ function createPointsService(db,{resolveUse}={}){
   return C.save(tx,null,hold,status,hold.data,'POINT_HOLD_'+status);
  });},
  async expireParty(party){id(party);return db.withTransaction(async tx=>{
-  await C.account(tx,party);const now=await A.now(tx);let count=0;
-  for(const h of await C.rows(tx,party,'POINT_HOLD'))if(h.current_status==='HELD'&&h.data.expires_at<=now){await C.save(tx,null,h,'EXPIRED',h.data,'POINT_HOLD_EXPIRED');count++;}
-  for(const lot of await lots(tx,party))if(lot.data.expires_at<=now&&P.remaining(lot.data)>0){await C.save(tx,null,lot,lot.current_status,{...lot.data,expired:lot.data.expired+P.remaining(lot.data)},'POINTS_EXPIRED');count++;}
-  return {changed:count};
+  await C.account(tx,party);return expire(tx,party);
  });}
  };
 }
-module.exports={createPointsService};
+async function expire(tx,party){
+const now=await A.now(tx);let count=0;
+  for(const h of await C.rows(tx,party,'POINT_HOLD'))if(h.current_status==='HELD'&&h.data.expires_at<=now){await C.save(tx,null,h,'EXPIRED',h.data,'POINT_HOLD_EXPIRED');count++;}
+  for(const lot of (await C.rows(tx,party,'EARNING')).filter(r=>['ISSUED','REVERSAL_PENDING'].includes(r.current_status)))if(lot.data.expires_at<=now&&P.remaining(lot.data)>0){await C.save(tx,null,lot,lot.current_status,{...lot.data,expired:lot.data.expired+P.remaining(lot.data)},'POINTS_EXPIRED');count++;}
+  return {changed:count};
+}
+module.exports={createPointsService,expire};

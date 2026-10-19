@@ -1,3 +1,5 @@
+第8轮继续交付：余额账务、自动积分、签到和通告资格衔接已补，最终本机24组已通过；上传状态先看 docs/status/CORE_CURRENT.md 和 docs/collaboration/V5_R08_HANDOFF.md。实际工作目录full-flow；真实托管方向支付宝但产品未确认，保持关闭；评论/分享事件尚未接线。以下历史提示不覆盖最新CURRENT。
+
 当前第8轮首批账本/晶钻已本地测试，尚未整轮完成或上传。继续第8轮剩余工作，先读CORE_CURRENT和V5_R08_HANDOFF；不得跳到第9轮。用户已确认不足晶钻以后发分先抵扣；PR24等队友下午确认。实际工作树full-flow、分支core/v5-r08-wallet-points。
 
 当前第8轮按用户2026-10-19要求开工，实际工作树worktrees/full-flow，分支core/v5-r08-wallet-points。先读CORE_CURRENT及第8轮任务记录。第7轮两项欠项继续保留；PR24仅核实第一轮页面，不代表后续页面完成。以下保留历史。

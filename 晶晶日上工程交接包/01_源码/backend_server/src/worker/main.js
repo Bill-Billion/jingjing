@@ -7,7 +7,7 @@ const handlers = require('./handlers');
 
 async function main() {
   // Fail visibly until a real domain handler exists; an idle empty process is not readiness evidence.
-  if (handlers.size === 0 && process.env.PRODUCTION_WORKER_ENABLED !== 'true' && process.env.OPERATIONS_WORKER_ENABLED !== 'true' && process.env.STOCK_WORKER_ENABLED !== 'true' && process.env.AUDITION_WORKER_ENABLED !== 'true') throw Object.assign(new Error('No enabled domain handlers'), { code: 'WORKER_NOT_READY' });
+  if (handlers.size === 0 && process.env.PRODUCTION_WORKER_ENABLED !== 'true' && process.env.OPERATIONS_WORKER_ENABLED !== 'true' && process.env.STOCK_WORKER_ENABLED !== 'true' && process.env.AUDITION_WORKER_ENABLED !== 'true' && process.env.WALLET_WORKER_ENABLED !== 'true') throw Object.assign(new Error('No enabled domain handlers'), { code: 'WORKER_NOT_READY' });
   const db = await openDatabase();
   let worker, deadline;
   const stop = () => {
@@ -24,6 +24,7 @@ async function main() {
     if (process.env.OPERATIONS_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/operations/reports').createOperationsHandlers(db)) enabled.set(name,handler);
     if (process.env.STOCK_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/stock/acceptance-handler').createStockAcceptanceHandlers(db,{env:process.env})) enabled.set(name,handler);
     if (process.env.AUDITION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/auditions/acceptance-handler').createAuditionHandlers(db,{env:process.env})) enabled.set(name,handler);
+    if(process.env.WALLET_WORKER_ENABLED==='true'){const wallet=require('../modules/wallet/jobs');await wallet.seed(db);for(const [name,handler] of wallet.createWalletHandlers(db))enabled.set(name,handler);}
     worker = createWorker({ repository: createJobRepository(db), handlers:enabled, log: (record) => console.log(JSON.stringify(record)) });
     process.once('SIGINT', stop); process.once('SIGTERM', stop);
     await worker.run();

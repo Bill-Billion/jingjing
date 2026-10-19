@@ -22,8 +22,19 @@ async function fulfillment(tx,order){
   const link=await A.one(tx,'SELECT booking_id FROM audition_orders WHERE order_id=?',[order.id]);
   const p=link?checked(await A.one(tx,'SELECT * FROM audition_records WHERE id=? FOR SHARE',[link.booking_id])):null;at=p?.data.fulfilled_at||null;disputed=!!p?.data.dispute;
  }
- // A commercial order has no accepted fulfillment evidence in this module yet. Never award from payment alone.
- const refunds=(await tx.execute("SELECT id FROM trade_records WHERE kind='REFUND' AND order_id=? AND current_status NOT IN ('SUCCEEDED','REJECTED','CANCELLED')",[order.id]))[0];
+ if(category==='COMMERCIAL'){
+  const projects=(await tx.execute("SELECT r.* FROM production_order_lines l JOIN production_records r ON r.id=l.project_id WHERE l.order_id=? FOR SHARE",[order.id]))[0].map(checked);
+  const lines=order.data.quote.lines.filter(l=>l.line_kind!=='LICENSE');const dates=[];
+  for(const p of projects){
+   if(p.current_status!=='ACCEPTED'||!p.data.current.FINAL||p.data.current.FINAL!==p.data.accepted.FINAL){disputed=true;continue;}
+   const feedbacks=(await tx.execute("SELECT * FROM production_records WHERE project_id=? AND kind='FEEDBACK' ORDER BY created_at DESC",[p.id]))[0].map(checked);
+   const receipt=feedbacks.find(f=>f.data.version_id===p.data.accepted.FINAL&&f.data.decision==='ACCEPT');
+   if(receipt)dates.push(A.instant(receipt.created_at));
+  }
+  if(lines.length&&projects.length===lines.length&&dates.length===lines.length)at=dates.sort().at(-1);
+ }
+
+ const refunds=(await tx.execute("SELECT id FROM trade_records WHERE kind='REFUND' AND order_id=? AND current_status NOT IN ('SUCCEEDED','REJECTED','FAILED','CANCELLED')",[order.id]))[0];
  return {at,disputed:disputed||refunds.length>0};
 }
 async function issue(tx,a,order,r,now){
