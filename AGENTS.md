@@ -1,3 +1,5 @@
+本轮第6轮后端已集中上传6c655a4并通过全部GitHub检查；最终状态见CORE_CURRENT和V5_R06_HANDOFF。共12轮，下一轮第7轮试镜至退款。页面、实际审阅、合入与正式启用另计。
+
 # 当前入口：第六轮通告与单向投稿后端
 
 实际工作树worktrees/full-flow，分支core/v5-r06-notices-submissions。先读docs/collaboration/V5_R06_HANDOFF.md及CORE_CURRENT；本轮自验与上传状态分别记录。用户已确认一级商单/招募、三级活动，机构另审、官方专权。共12轮，下一轮试镜接拒、取样与退款；页面/双方审阅/合入/正式启用未随后端自动完成。以下保留历史入口。
