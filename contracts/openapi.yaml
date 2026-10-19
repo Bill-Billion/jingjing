@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.18.0-rc.1
+  version: 0.19.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -7505,6 +7505,7 @@ paths:
         schema:
           type: string
           enum:
+          - NOTICES
           - TRADE
           - PRODUCTION
           - PROJECTS
@@ -7571,6 +7572,7 @@ paths:
         schema:
           type: string
           enum:
+          - NOTICES
           - TRADE
           - PRODUCTION
           - PROJECTS
@@ -7748,6 +7750,7 @@ paths:
         schema:
           type: string
           enum:
+          - NOTICES
           - TRADE
           - PRODUCTION
           - PROJECTS
@@ -12269,6 +12272,856 @@ paths:
             schema:
               $ref: '#/components/schemas/StockCaseResolutionRequest'
 
+  /api/v1/notices/rules:
+    get:
+      operationId: listNoticeRules
+      summary: 获取已审规则供页面查询资格和提交
+      description: 返回已生效规则的公开条款与编号；不返回审批人或私有凭据。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+    post:
+      operationId: createNoticeRule
+      summary: 提交通告权限规则版本
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeRuleRequest'
+  /api/v1/notices/qualifications:
+    post:
+      operationId: applyNoticeQualification
+      summary: 机构提交通告发布资质
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeQualificationRequest'
+  /api/v1/notices/facts:
+    post:
+      operationId: recordNoticeFinancialFact
+      summary: 财务录入待独立核验的外部资金或成长依据
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeFactRequest'
+  /api/v1/notices/announcements:
+    post:
+      operationId: createAnnouncement
+      summary: 提交分类通告等待审核
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeCreateRequest'
+  /api/v1/notices/submissions:
+    post:
+      operationId: createNoticeSubmission
+      summary: 向具体艺人或出品方单向投递
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeSubmitRequest'
+  /api/v1/notices/records/{record_id}/reviews:
+    post:
+      operationId: reviewNoticeRecord
+      summary: 独立核验通告投稿或资格材料
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeReviewRequest'
+  /api/v1/notices/records/{record_id}/close:
+    post:
+      operationId: closeNoticeRecord
+      summary: 撤回投稿或停止通告资格
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeCloseRequest'
+  /api/v1/notices/submissions/{record_id}/decision:
+    post:
+      operationId: decideNoticeSubmission
+      summary: 感兴趣转客服或婉拒
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeDecisionRequest'
+  /api/v1/notices/cases/{record_id}/quote:
+    post:
+      operationId: linkNoticeQuote
+      summary: 客服核对双方并关联已审报价
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeLinkRequest'
+  /api/v1/notices/eligibility:
+    get:
+      operationId: getNoticeEligibility
+      summary: 查看当前发布资格和不能发布的原因
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: rule_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/notices/records:
+    get:
+      operationId: listNoticeRecords
+      summary: 查看本人投稿或有权处理的待办
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: kind
+        required: true
+        schema:
+          enum:
+          - RULE
+          - QUALIFICATION
+          - FACT
+          - NOTICE
+          - SUBMISSION
+          - CASE
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/notices/records/{record_id}:
+    get:
+      operationId: getNoticeRecord
+      summary: 查看投稿客服进度和原订单
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/notices/catalog:
+    get:
+      operationId: listNoticeCatalog
+      summary: 按城市类型和时间查通告
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: type
+        required: false
+        schema:
+          enum:
+          - DRAMA
+          - PERFORMANCE
+          - COMMERCIAL
+          - EVENT
+          - RECRUITMENT
+          - OFFICIAL
+      - in: query
+        name: city
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 80
+      - in: query
+        name: at
+        required: false
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/notices/catalog/{record_id}:
+    get:
+      operationId: getNoticePublic
+      summary: 查看仍有效的已审通告
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/notices/records/{record_id}/materials/{asset_id}:
+    get:
+      operationId: downloadNoticeMaterial
+      summary: 按当前授权读取投稿或审核附件
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+
 components:
   securitySchemes:
     bearerAuth:
@@ -12509,6 +13362,7 @@ components:
         domain:
           type: string
           enum:
+          - NOTICES
           - TRADE
           - PRODUCTION
           - PROJECTS
@@ -12586,6 +13440,7 @@ components:
         domain:
           type: string
           enum:
+          - NOTICES
           - TRADE
           - PRODUCTION
           - PROJECTS
@@ -12772,6 +13627,7 @@ components:
         domain:
           type: string
           enum:
+          - NOTICES
           - TRADE
           - PRODUCTION
           - PROJECTS
@@ -12881,6 +13737,7 @@ components:
               domain:
                 type: string
                 enum:
+                - NOTICES
                 - TRADE
                 - PRODUCTION
                 - PROJECTS
@@ -26065,6 +26922,7 @@ components:
             - PUBLIC_DISPLAY
             - LONG_LIVED_MODEL
             - NEW_GENERATION
+            - COOPERATION_SUBMISSION
           minItems: 1
           maxItems: 4
         grantee_party_id:
@@ -26123,8 +26981,9 @@ components:
             - MANAGE_MATERIALS
             - MANAGE_AVATARS
             - SUBMIT_LISTING
+            - SUBMIT_COOPERATION
           minItems: 1
-          maxItems: 4
+          maxItems: 5
         valid_from:
           type: string
           format: date-time
@@ -26527,6 +27386,7 @@ components:
             - PUBLIC_DISPLAY
             - LONG_LIVED_MODEL
             - NEW_GENERATION
+            - COOPERATION_SUBMISSION
           minItems: 1
           maxItems: 4
         grantee_party_id:
@@ -26745,8 +27605,9 @@ components:
             - MANAGE_MATERIALS
             - MANAGE_AVATARS
             - SUBMIT_LISTING
+            - SUBMIT_COOPERATION
           minItems: 1
-          maxItems: 4
+          maxItems: 5
         valid_from:
           type: string
           format: date-time
@@ -30462,3 +31323,1569 @@ components:
       additionalProperties: false
       properties: {}
       required: []
+
+    NoticeRule:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        topup_threshold_minor:
+          type: integer
+          minimum: 1
+        membership_days:
+          const: 365
+        growth_thresholds:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          maxItems: 5
+          minItems: 5
+        minimum_levels:
+          type: object
+          additionalProperties: false
+          properties:
+            DRAMA:
+              anyOf:
+              - type: integer
+                minimum: 1
+                maximum: 6
+              - type: 'null'
+            PERFORMANCE:
+              anyOf:
+              - type: integer
+                minimum: 1
+                maximum: 6
+              - type: 'null'
+            COMMERCIAL:
+              const: 1
+            EVENT:
+              const: 3
+            RECRUITMENT:
+              const: 1
+            OFFICIAL:
+              type: 'null'
+          required:
+          - DRAMA
+          - PERFORMANCE
+          - COMMERCIAL
+          - EVENT
+          - RECRUITMENT
+          - OFFICIAL
+        submission_days:
+          type: integer
+          minimum: 1
+          maximum: 365
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - version
+      - topup_threshold_minor
+      - membership_days
+      - growth_thresholds
+      - minimum_levels
+      - submission_days
+      - terms
+    NoticeAnnouncement:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          type:
+            const: DRAMA
+          title:
+            type: string
+            minLength: 1
+            maxLength: 160
+          description:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          city:
+            type: string
+            minLength: 1
+            maxLength: 80
+          valid_from:
+            type: string
+            format: date-time
+          valid_until:
+            type: string
+            format: date-time
+          details:
+            type: object
+            additionalProperties: false
+            properties:
+              synopsis:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              roles:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - synopsis
+            - roles
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          accept_submissions:
+            type: boolean
+        required:
+        - type
+        - title
+        - description
+        - city
+        - valid_from
+        - valid_until
+        - details
+        - project_id
+        - accept_submissions
+      - type: object
+        additionalProperties: false
+        properties:
+          type:
+            const: PERFORMANCE
+          title:
+            type: string
+            minLength: 1
+            maxLength: 160
+          description:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          city:
+            type: string
+            minLength: 1
+            maxLength: 80
+          valid_from:
+            type: string
+            format: date-time
+          valid_until:
+            type: string
+            format: date-time
+          details:
+            type: object
+            additionalProperties: false
+            properties:
+              venue:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              schedule:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              requirements:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - venue
+            - schedule
+            - requirements
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          accept_submissions:
+            type: boolean
+        required:
+        - type
+        - title
+        - description
+        - city
+        - valid_from
+        - valid_until
+        - details
+        - project_id
+        - accept_submissions
+      - type: object
+        additionalProperties: false
+        properties:
+          type:
+            const: COMMERCIAL
+          title:
+            type: string
+            minLength: 1
+            maxLength: 160
+          description:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          city:
+            type: string
+            minLength: 1
+            maxLength: 80
+          valid_from:
+            type: string
+            format: date-time
+          valid_until:
+            type: string
+            format: date-time
+          details:
+            type: object
+            additionalProperties: false
+            properties:
+              deliverables:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              requirements:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - deliverables
+            - requirements
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          accept_submissions:
+            type: boolean
+        required:
+        - type
+        - title
+        - description
+        - city
+        - valid_from
+        - valid_until
+        - details
+        - project_id
+        - accept_submissions
+      - type: object
+        additionalProperties: false
+        properties:
+          type:
+            const: EVENT
+          title:
+            type: string
+            minLength: 1
+            maxLength: 160
+          description:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          city:
+            type: string
+            minLength: 1
+            maxLength: 80
+          valid_from:
+            type: string
+            format: date-time
+          valid_until:
+            type: string
+            format: date-time
+          details:
+            type: object
+            additionalProperties: false
+            properties:
+              venue:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              schedule:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - venue
+            - schedule
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          accept_submissions:
+            type: boolean
+        required:
+        - type
+        - title
+        - description
+        - city
+        - valid_from
+        - valid_until
+        - details
+        - project_id
+        - accept_submissions
+      - type: object
+        additionalProperties: false
+        properties:
+          type:
+            const: RECRUITMENT
+          title:
+            type: string
+            minLength: 1
+            maxLength: 160
+          description:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          city:
+            type: string
+            minLength: 1
+            maxLength: 80
+          valid_from:
+            type: string
+            format: date-time
+          valid_until:
+            type: string
+            format: date-time
+          details:
+            type: object
+            additionalProperties: false
+            properties:
+              roles:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              requirements:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - roles
+            - requirements
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          accept_submissions:
+            type: boolean
+        required:
+        - type
+        - title
+        - description
+        - city
+        - valid_from
+        - valid_until
+        - details
+        - project_id
+        - accept_submissions
+      - type: object
+        additionalProperties: false
+        properties:
+          type:
+            const: OFFICIAL
+          title:
+            type: string
+            minLength: 1
+            maxLength: 160
+          description:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          city:
+            type: string
+            minLength: 1
+            maxLength: 80
+          valid_from:
+            type: string
+            format: date-time
+          valid_until:
+            type: string
+            format: date-time
+          details:
+            type: object
+            additionalProperties: false
+            properties:
+              summary:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - summary
+          project_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          accept_submissions:
+            type: boolean
+        required:
+        - type
+        - title
+        - description
+        - city
+        - valid_from
+        - valid_until
+        - details
+        - project_id
+        - accept_submissions
+    NoticeSubmission:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - PROFILE
+          - ROLE
+          - CREATE_DRAMA
+          - INVITATION
+        target_party_id:
+          type: string
+          format: uuid
+        notice_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        person_id:
+          type: string
+          format: uuid
+        avatar_id:
+          type: string
+          format: uuid
+        consent_id:
+          type: string
+          format: uuid
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        role:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 160
+          - type: 'null'
+        material_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 6
+      required:
+      - kind
+      - target_party_id
+      - notice_id
+      - person_id
+      - avatar_id
+      - consent_id
+      - purpose
+      - content
+      - role
+      - material_asset_ids
+    NoticeChecks:
+      anyOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          source_verified:
+            const: true
+          amount_verified:
+            const: true
+          party_verified:
+            const: true
+          licensed_custody_verified:
+            const: true
+        required:
+        - source_verified
+        - amount_verified
+        - party_verified
+        - licensed_custody_verified
+      - type: object
+        additionalProperties: false
+        properties:
+          business_rule_verified:
+            const: true
+        required:
+        - business_rule_verified
+      - type: object
+        additionalProperties: false
+        properties:
+          identity_verified:
+            const: true
+          authority_verified:
+            const: true
+          evidence_verified:
+            const: true
+        required:
+        - identity_verified
+        - authority_verified
+        - evidence_verified
+      - type: object
+        additionalProperties: false
+        properties:
+          content_reviewed:
+            const: true
+          materials_reviewed:
+            const: true
+          no_private_contact:
+            const: true
+        required:
+        - content_reviewed
+        - materials_reviewed
+        - no_private_contact
+      - type: 'null'
+    NoticeReview:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        checks:
+          $ref: '#/components/schemas/NoticeChecks'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        method:
+          const: EXTERNAL_MANUAL_REVIEW
+      required:
+      - account_id
+      - decision
+      - checks
+      - reason
+      - method
+    NoticeRuleData:
+      type: object
+      additionalProperties: false
+      properties:
+        rule:
+          $ref: '#/components/schemas/NoticeRule'
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeReview'
+          - type: 'null'
+        closed_reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+      required:
+      - rule
+      - review
+    NoticeQualificationData:
+      type: object
+      additionalProperties: false
+      properties:
+        types:
+          type: array
+          items:
+            enum:
+            - DRAMA
+            - PERFORMANCE
+            - COMMERCIAL
+            - EVENT
+            - RECRUITMENT
+          maxItems: 5
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeReview'
+          - type: 'null'
+        closed_reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+      required:
+      - types
+      - valid_from
+      - valid_until
+      - evidence_asset_ids
+      - terms
+      - review
+    NoticeFactData:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - TOPUP
+          - GROWTH
+          - REVERSAL
+        amount:
+          type: integer
+          minimum: 1
+        occurred_at:
+          type: string
+          format: date-time
+        source_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 1
+        evidence_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        method:
+          const: EXTERNAL_RECONCILIATION
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeReview'
+          - type: 'null'
+        closed_reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+      required:
+      - kind
+      - amount
+      - occurred_at
+      - source_ref
+      - evidence_asset_ids
+      - evidence_sha256
+      - method
+      - review
+    NoticeNoticeData:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        rule_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeReview'
+          - type: 'null'
+        closed_reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+      required:
+      - rule_id
+      - rule_sha256
+      - notice
+      - review
+    NoticeSubmissionData:
+      type: object
+      additionalProperties: false
+      properties:
+        submission:
+          $ref: '#/components/schemas/NoticeSubmission'
+        rule_id:
+          type: string
+          format: uuid
+        rule_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        expires_at:
+          type: string
+          format: date-time
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeReview'
+          - type: 'null'
+        decision:
+          anyOf:
+          - enum:
+            - INTERESTED
+            - DECLINE
+          - type: 'null'
+        case_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        closed_reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+      required:
+      - submission
+      - rule_id
+      - rule_sha256
+      - expires_at
+      - review
+      - decision
+      - case_id
+    NoticeCaseData:
+      type: object
+      additionalProperties: false
+      properties:
+        submission_id:
+          type: string
+          format: uuid
+        quote:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              content_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              buyer_party_id:
+                type: string
+                format: uuid
+              merchant_party_id:
+                type: string
+                format: uuid
+              linked_by:
+                type: string
+                format: uuid
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+            required:
+            - id
+            - content_sha256
+            - buyer_party_id
+            - merchant_party_id
+            - linked_by
+            - reason
+          - type: 'null'
+        closed_reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+      required:
+      - submission_id
+      - quote
+      - closed_reason
+    NoticeRecord:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: RULE
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeRuleData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: QUALIFICATION
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeQualificationData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: FACT
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeFactData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: NOTICE
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeNoticeData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: SUBMISSION
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeSubmissionData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: CASE
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeCaseData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+    NoticePublic:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner_party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        object_version:
+          type: integer
+          minimum: 1
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+        official:
+          type: boolean
+        chat_enabled:
+          const: false
+        rule_id:
+          type: string
+          format: uuid
+      required:
+      - id
+      - owner_party_id
+      - object_version
+      - notice
+      - official
+      - chat_enabled
+      - rule_id
+    NoticeEligibility:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        rule_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        active:
+          type: boolean
+        level:
+          type: integer
+          minimum: 0
+          maximum: 6
+        valid_until:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        types:
+          type: array
+          items:
+            enum:
+            - DRAMA
+            - PERFORMANCE
+            - COMMERCIAL
+            - EVENT
+            - RECRUITMENT
+            - OFFICIAL
+          maxItems: 6
+        source_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 10000
+        reason:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+      required:
+      - rule_id
+      - rule_sha256
+      - active
+      - level
+      - types
+      - source_ids
+      - reason
+    NoticeResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeRecord'
+          - $ref: '#/components/schemas/NoticePublic'
+          - $ref: '#/components/schemas/NoticeEligibility'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  anyOf:
+                  - $ref: '#/components/schemas/NoticeRecord'
+                  - $ref: '#/components/schemas/NoticePublic'
+                  - $ref: '#/components/schemas/NoticePublicRule'
+                maxItems: 100
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+            - next_cursor
+      required:
+      - meta
+      - data
+    NoticeRuleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule:
+          $ref: '#/components/schemas/NoticeRule'
+      required:
+      - rule
+    NoticeQualificationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        types:
+          type: array
+          items:
+            enum:
+            - DRAMA
+            - PERFORMANCE
+            - COMMERCIAL
+            - EVENT
+            - RECRUITMENT
+          maxItems: 5
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - types
+      - valid_from
+      - valid_until
+      - evidence_asset_ids
+      - terms
+    NoticeFactRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        party_id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - TOPUP
+          - GROWTH
+          - REVERSAL
+        amount:
+          type: integer
+          minimum: 1
+        occurred_at:
+          type: string
+          format: date-time
+        source_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - party_id
+      - kind
+      - amount
+      - occurred_at
+      - source_ref
+      - evidence_asset_id
+    NoticeCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+      required:
+      - rule_id
+      - notice
+    NoticeSubmitRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        submission:
+          $ref: '#/components/schemas/NoticeSubmission'
+      required:
+      - rule_id
+      - submission
+    NoticeReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        checks:
+          $ref: '#/components/schemas/NoticeChecks'
+      required:
+      - decision
+      - reason
+      - checks
+    NoticeCloseRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    NoticeDecisionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - INTERESTED
+          - DECLINE
+      required:
+      - decision
+    NoticeLinkRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        quote_id:
+          type: string
+          format: uuid
+        quote_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - quote_id
+      - quote_sha256
+      - reason
+
+    NoticePublicRule:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - content_sha256
+      - rule
+      properties:
+        id:
+          type: string
+          format: uuid
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        rule:
+          $ref: '#/components/schemas/NoticeRule'

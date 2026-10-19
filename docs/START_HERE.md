@@ -1,3 +1,9 @@
+# 当前入口：第六轮后端交接
+
+实际工作树worktrees/full-flow，分支core/v5-r06-notices-submissions。先读docs/collaboration/V5_R06_HANDOFF.md及CORE_CURRENT；本轮自验与上传状态分别记录。用户已确认一级商单/招募、三级活动，机构另审、官方专权。共12轮，下一轮试镜接拒、取样与退款；页面/双方审阅/合入/正式启用未随后端自动完成。以下保留历史入口。
+
+---
+
 # 当前入口：第五轮现成视频后端
 
 实际工作树worktrees/full-flow，分支core/v5-r05-stock-video；先读[本轮交接](collaboration/V5_R05_HANDOFF.md)和CURRENT。L1可销售现货为用户已确认决定；页面、对方审阅、合入、真实服务分别记录。共12轮，下一轮通告与投稿。以下历史入口不覆盖本段。
