@@ -104,7 +104,7 @@ test('Real isolated MySQL8 foundation', {skip:!process.env.JX_MYSQL_TEST_ENV_FIL
       const interrupted=await newDatabase();
       const directory=await fixture('interrupted',{'0001_wait.sql':'DO SLEEP(10)'});
       const pending=migrate(interrupted,{directory});
-      const rejected=assert.rejects(pending,{code:'MIGRATION_OUTCOME_UNKNOWN'});
+      const outcome=pending.then(value=>({value}),error=>({error}));
       let killed=false;
       for(let n=0;n<50;n++) {
         await sleep(50);
@@ -115,7 +115,7 @@ test('Real isolated MySQL8 foundation', {skip:!process.env.JX_MYSQL_TEST_ENV_FIL
           await control.query(`KILL CONNECTION ${Number(owner.id)}`);killed=true;break;
         }
       }
-      assert.equal(killed,true);await rejected;
+      assert.equal(killed,true);assert.equal((await outcome).error?.code,'MIGRATION_OUTCOME_UNKNOWN');
       const state=await status(interrupted,{directory});assert.equal(state.history[0].status,'APPLYING');
       await assert.rejects(migrate(interrupted,{directory}),{code:'MIGRATION_OUTCOME_UNKNOWN'});
     });

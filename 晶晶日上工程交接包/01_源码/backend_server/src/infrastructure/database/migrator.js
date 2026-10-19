@@ -105,6 +105,15 @@ async function migrate(db, { directory = DEFAULT_DIRECTORY, retryVersion, expect
         applied.push(migration.version);
       }
       return { applied };
+    } catch (error) {
+      // A lost acknowledgement while recording APPLYING/APPLIED is also uncertain.
+      // Never report it as a safe SQL failure or silently replay DDL.
+      if (error.fatal || ['PROTOCOL_CONNECTION_LOST','ECONNRESET','EPIPE','ETIMEDOUT'].includes(error.code)) {
+        discard = true;
+        connection.destroy();
+        throw problem('MIGRATION_OUTCOME_UNKNOWN', 'Connection lost while recording migration state; inspect database before recovery');
+      }
+      throw error;
     } finally {
       if (!discard) {
         try { await connection.execute('SELECT RELEASE_LOCK(?)', [key]); }

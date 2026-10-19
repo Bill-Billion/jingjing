@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.19.0-rc.1
+  version: 0.20.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -13122,6 +13122,1683 @@ paths:
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 
+  /api/v1/auditions/offers:
+    post:
+      operationId: createAuditionOffer
+      summary: 提交可约时间与含交通总价
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionCreateAuditionOfferRequest'
+  /api/v1/auditions/offers/{record_id}/reviews:
+    post:
+      operationId: reviewAuditionOffer
+      summary: 独立审核试镜供给
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionReviewAuditionOfferRequest'
+  /api/v1/auditions/offers/{record_id}/visibility:
+    post:
+      operationId: setAuditionVisibility
+      summary: 分别开关公开接单及标价
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionSetAuditionVisibilityRequest'
+  /api/v1/auditions/bookings:
+    post:
+      operationId: bookAudition
+      summary: 填写具体艺人试镜预约
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionBookAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/reviews:
+    post:
+      operationId: reviewAuditionBooking
+      summary: 核查真实用途和场所
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionReviewAuditionBookingRequest'
+  /api/v1/auditions/checkout:
+    post:
+      operationId: checkoutAudition
+      summary: 确认总价与合同生成未付款订单
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionCheckoutAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/decision:
+    post:
+      operationId: decideAudition
+      summary: 艺人或受托机构接单或拒绝
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionDecideAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/travel:
+    post:
+      operationId: recordAuditionTravel
+      summary: 记录出发或到场凭据
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionRecordAuditionTravelRequest'
+  /api/v1/auditions/bookings/{record_id}/delivery:
+    post:
+      operationId: deliverAudition
+      summary: 提交本次取样及独立授权
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionDeliverAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/receipt:
+    post:
+      operationId: ackAuditionReceipt
+      summary: 全部文件可查看后开始确认计时
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionAckAuditionReceiptRequest'
+  /api/v1/auditions/bookings/{record_id}/confirm:
+    post:
+      operationId: confirmAudition
+      summary: 买家明确确认履约
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionConfirmAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/expire:
+    post:
+      operationId: expireAudition
+      summary: 核对超时未接并建立退款待办
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionExpireAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/cancel:
+    post:
+      operationId: cancelAudition
+      summary: 取消或因安全原因暂停履约
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionCancelAuditionRequest'
+  /api/v1/auditions/bookings/{record_id}/resolution:
+    post:
+      operationId: resolveAuditionCase
+      summary: 客服依据证据决定退付
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionResolveAuditionCaseRequest'
+  /api/v1/auditions/bookings/{record_id}/contact:
+    post:
+      operationId: setAuditionContact
+      summary: 明确同意或撤回本次赴约联系方式
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionSetAuditionContactRequest'
+  /api/v1/auditions/bookings/{record_id}/support:
+    post:
+      operationId: manageAuditionSupport
+      summary: 申请客服加入或退出
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionManageAuditionSupportRequest'
+  /api/v1/auditions/bookings/{record_id}/messages:
+    post:
+      operationId: sendAuditionMessage
+      summary: 发送订单内文字或获准业务卡片
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionSendAuditionMessageRequest'
+    get:
+      operationId: getAuditionMessages
+      summary: 查看当前订单会话
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/bookings/{record_id}/messages/read:
+    post:
+      operationId: markAuditionMessagesRead
+      summary: 标记本人的消息已读
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionMarkAuditionMessagesReadRequest'
+  /api/v1/auditions/bookings/{record_id}/reschedule:
+    post:
+      operationId: proposeAuditionReschedule
+      summary: 提出新时间或地点
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionProposeAuditionRescheduleRequest'
+  /api/v1/auditions/bookings/{record_id}/reschedule-response:
+    post:
+      operationId: respondAuditionReschedule
+      summary: 另一方接受或拒绝改期
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionRespondAuditionRescheduleRequest'
+  /api/v1/auditions/bookings/{record_id}/reschedule-review:
+    post:
+      operationId: reviewAuditionReschedule
+      summary: 双方确认后核查新场所
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionReviewAuditionRescheduleRequest'
+  /api/v1/auditions/bookings/{record_id}/baseplate:
+    post:
+      operationId: linkAuditionBaseplate
+      summary: 艺人另行授权取样进入自己的造型库
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionLinkAuditionBaseplateRequest'
+  /api/v1/auditions/catalog:
+    get:
+      operationId: listAuditionCatalog
+      summary: 查看公开可约艺人
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: city
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/records:
+    get:
+      operationId: listAuditionRecords
+      summary: 查看本人或受托艺人试镜待办
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: kind
+        required: true
+        schema:
+          enum:
+          - OFFER
+          - BOOKING
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/records/{record_id}:
+    get:
+      operationId: getAuditionRecord
+      summary: 查看有权访问的试镜记录
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/bookings/{record_id}/contacts:
+    get:
+      operationId: getAuditionContacts
+      summary: 条件满足后读取赴约联系卡
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/bookings/{record_id}/itinerary:
+    get:
+      operationId: getAuditionItinerary
+      summary: 本人主动分享行程或进入安全求助
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/bookings/{record_id}/materials/{asset_id}:
+    get:
+      operationId: downloadAuditionMaterial
+      summary: 校验授权后读取私有取样文件
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/bookings/{record_id}/delivery-review:
+    post:
+      operationId: reviewAuditionDelivery
+      summary: 独立审核试镜取样内容和授权
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionDeliveryReviewRequest'
+  /api/v1/auditions/invitation-offers:
+    get:
+      operationId: listAuditionInvitationOffers
+      summary: 查看本人已获接受邀约对应的试镜方案
+      description: 真实试镜接口；接受且付款核实后开放联系，未接退款、争议冻结，取样不包含后续出演权。真实服务和页面另验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: invitation_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -18788,9 +20465,10 @@ components:
       - reason_ref
     TradeSpecification:
       oneOf:
-      - $ref: "#/components/schemas/StockSpecification"
+      - $ref: '#/components/schemas/StockSpecification'
       - $ref: '#/components/schemas/TradeTraditionalSpecification'
       - $ref: '#/components/schemas/ArtistServiceSpecification'
+      - $ref: '#/components/schemas/AuditionSpecification'
     TradeRecord:
       oneOf:
       - type: object
@@ -19253,86 +20931,174 @@ components:
           minItems: 1
           maxItems: 30
           items:
-            type: object
-            additionalProperties: false
-            properties:
-              title:
-                type: string
-                minLength: 1
-                maxLength: 200
-              provider_party_id:
-                type: string
-                format: uuid
-              line_kind:
-                type: string
-                enum:
-                - LICENSE
-                - PRODUCTION
-                - OTHER
-              unit_minor:
-                type: integer
-                minimum: 1
-                maximum: 900000000000
-              currency:
-                const: CNY
-              specification:
-                $ref: '#/components/schemas/TradeSpecification'
-              product_profile:
-                $ref: '#/components/schemas/TradeProductProfile'
-              review:
-                anyOf:
-                - type: object
+            oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                provider_party_id:
+                  type: string
+                  format: uuid
+                line_kind:
+                  type: string
+                  enum:
+                  - LICENSE
+                  - PRODUCTION
+                  - OTHER
+                unit_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+                currency:
+                  const: CNY
+                specification:
+                  $ref: '#/components/schemas/TradeSpecification'
+                product_profile:
+                  $ref: '#/components/schemas/TradeProductProfile'
+                review:
+                  anyOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      decision:
+                        type: string
+                        enum:
+                        - APPROVED
+                        - REJECTED
+                      reason:
+                        type: string
+                        minLength: 1
+                        maxLength: 2000
+                      account_id:
+                        type: string
+                        format: uuid
+                    required:
+                    - decision
+                    - reason
+                    - account_id
+                  - type: 'null'
+                line_id:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                spec_id:
+                  type: string
+                  format: uuid
+                spec_version:
+                  type: integer
+                  minimum: 1
+                  maximum: 100000
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                total_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+              required:
+              - title
+              - provider_party_id
+              - line_kind
+              - unit_minor
+              - currency
+              - specification
+              - review
+              - line_id
+              - spec_id
+              - spec_version
+              - quantity
+              - total_minor
+            - type: object
+              additionalProperties: false
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                provider_party_id:
+                  type: string
+                  format: uuid
+                line_kind:
+                  type: string
+                  enum:
+                  - LICENSE
+                  - PRODUCTION
+                  - OTHER
+                unit_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+                currency:
+                  const: CNY
+                specification:
+                  $ref: '#/components/schemas/AuditionSpecification'
+                product_profile:
+                  type: object
                   additionalProperties: false
                   properties:
-                    decision:
-                      type: string
-                      enum:
-                      - APPROVED
-                      - REJECTED
-                    reason:
-                      type: string
-                      minLength: 1
-                      maxLength: 2000
-                    account_id:
-                      type: string
-                      format: uuid
+                    version:
+                      const: V5
+                    type:
+                      const: AUDITION
                   required:
-                  - decision
-                  - reason
-                  - account_id
-                - type: 'null'
-              line_id:
-                type: string
-                minLength: 1
-                maxLength: 128
-              spec_id:
-                type: string
-                format: uuid
-              spec_version:
-                type: integer
-                minimum: 1
-                maximum: 100000
-              quantity:
-                type: integer
-                minimum: 1
-                maximum: 10000
-              total_minor:
-                type: integer
-                minimum: 1
-                maximum: 900000000000
-            required:
-            - title
-            - provider_party_id
-            - line_kind
-            - unit_minor
-            - currency
-            - specification
-            - review
-            - line_id
-            - spec_id
-            - spec_version
-            - quantity
-            - total_minor
+                  - version
+                  - type
+                review:
+                  anyOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      decision:
+                        type: string
+                        enum:
+                        - APPROVED
+                        - REJECTED
+                      reason:
+                        type: string
+                        minLength: 1
+                        maxLength: 2000
+                      account_id:
+                        type: string
+                        format: uuid
+                    required:
+                    - decision
+                    - reason
+                    - account_id
+                  - type: 'null'
+                line_id:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                spec_id:
+                  type: string
+                  format: uuid
+                spec_version:
+                  type: integer
+                  minimum: 1
+                  maximum: 100000
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                total_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+              required:
+              - title
+              - provider_party_id
+              - line_kind
+              - unit_minor
+              - currency
+              - specification
+              - line_id
+              - quantity
+              - total_minor
+              - product_profile
         installments:
           type: array
           minItems: 1
@@ -19449,6 +21215,8 @@ components:
           $ref: '#/components/schemas/ArtistServiceSnapshot'
         artist_rule_snapshot:
           $ref: '#/components/schemas/ArtistRuleSnapshot'
+        audition:
+          $ref: '#/components/schemas/AuditionTradeSnapshot'
       required:
       - lines
       - installments
@@ -19466,247 +21234,7 @@ components:
       additionalProperties: false
       properties:
         quote:
-          type: object
-          additionalProperties: false
-          properties:
-            stock_video:
-              $ref: '#/components/schemas/StockTradeSnapshot'
-            customization_change:
-              type: object
-              additionalProperties: false
-              required:
-              - project_id
-              - case_id
-              - description
-              - original_order_id
-              - case_content_sha256
-              properties:
-                project_id:
-                  type: string
-                  format: uuid
-                case_id:
-                  type: string
-                  format: uuid
-                description:
-                  type: string
-                  minLength: 1
-                  maxLength: 4000
-                original_order_id:
-                  type: string
-                  format: uuid
-                case_content_sha256:
-                  type: string
-                  pattern: ^[a-f0-9]{64}$
-            lines:
-              type: array
-              minItems: 1
-              maxItems: 30
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  title:
-                    type: string
-                    minLength: 1
-                    maxLength: 200
-                  provider_party_id:
-                    type: string
-                    format: uuid
-                  line_kind:
-                    type: string
-                    enum:
-                    - LICENSE
-                    - PRODUCTION
-                    - OTHER
-                  unit_minor:
-                    type: integer
-                    minimum: 1
-                    maximum: 900000000000
-                  currency:
-                    const: CNY
-                  specification:
-                    $ref: '#/components/schemas/TradeSpecification'
-                  product_profile:
-                    $ref: '#/components/schemas/TradeProductProfile'
-                  review:
-                    anyOf:
-                    - type: object
-                      additionalProperties: false
-                      properties:
-                        decision:
-                          type: string
-                          enum:
-                          - APPROVED
-                          - REJECTED
-                        reason:
-                          type: string
-                          minLength: 1
-                          maxLength: 2000
-                        account_id:
-                          type: string
-                          format: uuid
-                      required:
-                      - decision
-                      - reason
-                      - account_id
-                    - type: 'null'
-                  line_id:
-                    type: string
-                    minLength: 1
-                    maxLength: 128
-                  spec_id:
-                    type: string
-                    format: uuid
-                  spec_version:
-                    type: integer
-                    minimum: 1
-                    maximum: 100000
-                  quantity:
-                    type: integer
-                    minimum: 1
-                    maximum: 10000
-                  total_minor:
-                    type: integer
-                    minimum: 1
-                    maximum: 900000000000
-                required:
-                - title
-                - provider_party_id
-                - line_kind
-                - unit_minor
-                - currency
-                - specification
-                - review
-                - line_id
-                - spec_id
-                - spec_version
-                - quantity
-                - total_minor
-            installments:
-              type: array
-              minItems: 1
-              maxItems: 20
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  key:
-                    type: string
-                    minLength: 1
-                    maxLength: 128
-                  trigger:
-                    type: string
-                    enum:
-                    - ORDER_ACCEPTED
-                    - SAMPLE_ACCEPTED
-                    - FINAL_ACCEPTED
-                    - CUSTOMIZATION_INTERIM_CONFIRMED
-                  allocations:
-                    type: array
-                    minItems: 1
-                    maxItems: 30
-                    items:
-                      type: object
-                      additionalProperties: false
-                      properties:
-                        line_id:
-                          type: string
-                          minLength: 1
-                          maxLength: 128
-                        amount_minor:
-                          type: integer
-                          minimum: 1
-                          maximum: 900000000000
-                      required:
-                      - line_id
-                      - amount_minor
-                  apple_product_id:
-                    anyOf:
-                    - type: string
-                      minLength: 1
-                      maxLength: 128
-                    - type: 'null'
-                required:
-                - key
-                - trigger
-                - allocations
-                - apple_product_id
-            total_minor:
-              type: integer
-              minimum: 1
-              maximum: 900000000000
-            currency:
-              const: CNY
-            channel:
-              type: string
-              enum:
-              - ALIPAY
-              - APPLE
-            transaction_model:
-              type: string
-              enum:
-              - DIRECT_SUPPLIER
-              - PLATFORM_PRINCIPAL
-            rule_id:
-              type: string
-              format: uuid
-            expires_at:
-              type: string
-              format: date-time
-              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
-            payment_window_minutes:
-              type: integer
-              minimum: 1
-              maximum: 10080
-            license_reservation_id:
-              anyOf:
-              - type: string
-                format: uuid
-              - type: 'null'
-            review:
-              anyOf:
-              - type: object
-                additionalProperties: false
-                properties:
-                  decision:
-                    type: string
-                    enum:
-                    - APPROVED
-                    - REJECTED
-                  reason:
-                    type: string
-                    minLength: 1
-                    maxLength: 2000
-                  account_id:
-                    type: string
-                    format: uuid
-                required:
-                - decision
-                - reason
-                - account_id
-              - type: 'null'
-            customization:
-              $ref: '#/components/schemas/CustomizationQuoteSource'
-            customization_finance:
-              $ref: '#/components/schemas/CustomizationFinanceSnapshot'
-            marketplace_finance:
-              $ref: '#/components/schemas/MarketplaceFinanceSnapshot'
-            artist_service:
-              $ref: '#/components/schemas/ArtistServiceSnapshot'
-            artist_rule_snapshot:
-              $ref: '#/components/schemas/ArtistRuleSnapshot'
-          required:
-          - lines
-          - installments
-          - total_minor
-          - currency
-          - channel
-          - transaction_model
-          - rule_id
-          - expires_at
-          - payment_window_minutes
-          - license_reservation_id
-          - review
+          $ref: '#/components/schemas/TradeQuoteData'
         contract:
           $ref: '#/components/schemas/UnsignedSnapshotContent'
         buyer_acknowledged_by:
@@ -26923,6 +28451,7 @@ components:
             - LONG_LIVED_MODEL
             - NEW_GENERATION
             - COOPERATION_SUBMISSION
+            - AUDITION_SAMPLES
           minItems: 1
           maxItems: 4
         grantee_party_id:
@@ -26982,8 +28511,9 @@ components:
             - MANAGE_AVATARS
             - SUBMIT_LISTING
             - SUBMIT_COOPERATION
+            - MANAGE_AUDITIONS
           minItems: 1
-          maxItems: 5
+          maxItems: 6
         valid_from:
           type: string
           format: date-time
@@ -27387,6 +28917,7 @@ components:
             - LONG_LIVED_MODEL
             - NEW_GENERATION
             - COOPERATION_SUBMISSION
+            - AUDITION_SAMPLES
           minItems: 1
           maxItems: 4
         grantee_party_id:
@@ -27606,8 +29137,9 @@ components:
             - MANAGE_AVATARS
             - SUBMIT_LISTING
             - SUBMIT_COOPERATION
+            - MANAGE_AUDITIONS
           minItems: 1
-          maxItems: 5
+          maxItems: 6
         valid_from:
           type: string
           format: date-time
@@ -32889,3 +34421,1558 @@ components:
           pattern: ^[a-f0-9]{64}$
         rule:
           $ref: '#/components/schemas/NoticeRule'
+    AuditionTerms:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        accept_hours:
+          type: integer
+          minimum: 1
+          maximum: 168
+        acceptance_hours:
+          type: integer
+          minimum: 1
+          maximum: 720
+        photo_count:
+          type: integer
+          minimum: 1
+          maximum: 30
+        video_count:
+          type: integer
+          minimum: 1
+          maximum: 5
+        payment_window_minutes:
+          type: integer
+          minimum: 1
+          maximum: 1440
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - version
+      - accept_hours
+      - acceptance_hours
+      - photo_count
+      - video_count
+      - payment_window_minutes
+      - terms
+    AuditionAppointment:
+      type: object
+      additionalProperties: false
+      properties:
+        mode:
+          enum:
+          - OFFLINE
+          - ONLINE_MATERIALS
+        city:
+          type: string
+          minLength: 1
+          maxLength: 300
+        venue:
+          type: string
+          minLength: 1
+          maxLength: 300
+        address:
+          type: string
+          minLength: 1
+          maxLength: 300
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - mode
+      - city
+      - venue
+      - address
+      - starts_at
+      - ends_at
+      - purpose
+    AuditionOffer:
+      type: object
+      additionalProperties: false
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        avatar_id:
+          type: string
+          format: uuid
+        public_consent_id:
+          type: string
+          format: uuid
+        rule_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        city:
+          type: string
+          minLength: 1
+          maxLength: 300
+        service_area:
+          type: string
+          minLength: 1
+          maxLength: 300
+        mode:
+          enum:
+          - OFFLINE
+          - ONLINE_MATERIALS
+        public_booking:
+          type: boolean
+        public_price:
+          type: boolean
+        unit_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        slots:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              starts_at:
+                type: string
+                format: date-time
+              ends_at:
+                type: string
+                format: date-time
+            required:
+            - starts_at
+            - ends_at
+          maxItems: 60
+          minItems: 1
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - person_id
+      - avatar_id
+      - public_consent_id
+      - rule_id
+      - title
+      - city
+      - service_area
+      - mode
+      - public_booking
+      - public_price
+      - unit_minor
+      - slots
+      - terms
+    AuditionDeliveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        photos:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          minItems: 1
+        videos:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 5
+          minItems: 1
+        consent_id:
+          type: string
+          format: uuid
+      required:
+      - photos
+      - videos
+      - consent_id
+    AuditionDelivery:
+      type: object
+      additionalProperties: false
+      properties:
+        photos:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          minItems: 1
+        videos:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 5
+          minItems: 1
+        consent_id:
+          type: string
+          format: uuid
+        hashes:
+          type: object
+          additionalProperties:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+      required:
+      - photos
+      - videos
+      - consent_id
+      - hashes
+    AuditionOfferData:
+      type: object
+      additionalProperties: false
+      properties:
+        offer:
+          $ref: '#/components/schemas/AuditionOffer'
+        rules:
+          $ref: '#/components/schemas/AuditionTerms'
+        rule_snapshot:
+          $ref: '#/components/schemas/ArtistRuleSnapshot'
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                enum:
+                - APPROVE
+                - REJECT
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - reason
+            - account_id
+          - type: 'null'
+      required:
+      - offer
+      - rules
+      - rule_snapshot
+      - review
+    AuditionBookingData:
+      type: object
+      additionalProperties: false
+      properties:
+        offer:
+          $ref: '#/components/schemas/AuditionOffer'
+        rules:
+          $ref: '#/components/schemas/AuditionTerms'
+        rule_snapshot:
+          $ref: '#/components/schemas/ArtistRuleSnapshot'
+        status:
+          type: string
+          minLength: 1
+          maxLength: 40
+        offer_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        appointment:
+          $ref: '#/components/schemas/AuditionAppointment'
+        safety_review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                enum:
+                - APPROVE
+                - REJECT
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+              checks:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    purpose_verified:
+                      const: true
+                    venue_verified:
+                      const: true
+                    adult_parties_verified:
+                      const: true
+                  required:
+                  - purpose_verified
+                  - venue_verified
+                  - adult_parties_verified
+                - type: 'null'
+            required:
+            - decision
+            - reason
+            - account_id
+            - checks
+          - type: 'null'
+        order_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        paid_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        accepted_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        accept_by:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        departed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        arrived_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        arrival_evidence_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+        delivery:
+          anyOf:
+          - $ref: '#/components/schemas/AuditionDelivery'
+          - type: 'null'
+        fulfilled_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        deadline_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        job_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        dispute:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              safety:
+                type: boolean
+              created_by:
+                type: string
+                format: uuid
+              evidence_asset_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                maxItems: 30
+              owner_party_id:
+                type: string
+                format: uuid
+              opened_at:
+                type: string
+                format: date-time
+              resolution:
+                type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - RESUME
+                    - REFUND
+                  refund_minor:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  evidence_asset_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    maxItems: 30
+                  account_id:
+                    type: string
+                    format: uuid
+                  at:
+                    type: string
+                    format: date-time
+                required:
+                - decision
+                - refund_minor
+                - reason
+                - evidence_asset_ids
+                - account_id
+                - at
+            required:
+            - id
+            - reason
+            - safety
+            - created_by
+            - evidence_asset_ids
+            - owner_party_id
+            - opened_at
+          - type: 'null'
+        cases:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              safety:
+                type: boolean
+              created_by:
+                type: string
+                format: uuid
+              evidence_asset_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                maxItems: 30
+              owner_party_id:
+                type: string
+                format: uuid
+              opened_at:
+                type: string
+                format: date-time
+              resolution:
+                type: object
+                additionalProperties: false
+                properties:
+                  decision:
+                    enum:
+                    - RESUME
+                    - REFUND
+                  refund_minor:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 4000
+                  evidence_asset_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    maxItems: 30
+                  account_id:
+                    type: string
+                    format: uuid
+                  at:
+                    type: string
+                    format: date-time
+                required:
+                - decision
+                - refund_minor
+                - reason
+                - evidence_asset_ids
+                - account_id
+                - at
+            required:
+            - id
+            - reason
+            - safety
+            - created_by
+            - evidence_asset_ids
+            - owner_party_id
+            - opened_at
+          maxItems: 100
+        refund_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        expiry_job_id:
+          type: string
+          format: uuid
+        arrival_evidence_owner:
+          type: string
+          format: uuid
+        delivered_at:
+          type: string
+          format: date-time
+        viewed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        viewed_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 35
+        receipt_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        acceptance_method:
+          enum:
+          - BUYER_CONFIRMED
+          - AGREED_TIMEOUT
+        cancel_reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        refund_id:
+          type: string
+          format: uuid
+        refund_verified_at:
+          type: string
+          format: date-time
+        reschedule:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              appointment:
+                $ref: '#/components/schemas/AuditionAppointment'
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              proposed_by:
+                type: string
+                format: uuid
+              created_by:
+                type: string
+                format: uuid
+              other_confirmed:
+                type: boolean
+              safety_review:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    account_id:
+                      type: string
+                      format: uuid
+                    reason:
+                      type: string
+                      minLength: 1
+                      maxLength: 2000
+                    at:
+                      type: string
+                      format: date-time
+                  required:
+                  - account_id
+                  - reason
+                  - at
+                - type: 'null'
+              confirmed_by:
+                type: string
+                format: uuid
+            required:
+            - appointment
+            - reason
+            - proposed_by
+            - created_by
+            - other_confirmed
+            - safety_review
+          - type: 'null'
+        appointment_history:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              previous:
+                $ref: '#/components/schemas/AuditionAppointment'
+              change:
+                type: object
+                additionalProperties: false
+                properties:
+                  appointment:
+                    $ref: '#/components/schemas/AuditionAppointment'
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  proposed_by:
+                    type: string
+                    format: uuid
+                  created_by:
+                    type: string
+                    format: uuid
+                  other_confirmed:
+                    type: boolean
+                  safety_review:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        account_id:
+                          type: string
+                          format: uuid
+                        reason:
+                          type: string
+                          minLength: 1
+                          maxLength: 2000
+                        at:
+                          type: string
+                          format: date-time
+                      required:
+                      - account_id
+                      - reason
+                      - at
+                    - type: 'null'
+                  confirmed_by:
+                    type: string
+                    format: uuid
+                required:
+                - appointment
+                - reason
+                - proposed_by
+                - created_by
+                - other_confirmed
+                - safety_review
+            required:
+            - previous
+            - change
+          maxItems: 100
+        support_requested:
+          type: boolean
+        baseplate_id:
+          type: string
+          format: uuid
+        delivery_review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                enum:
+                - APPROVE
+                - REJECT
+              checks:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    content_reviewed:
+                      const: true
+                    files_viewable:
+                      const: true
+                    consent_verified:
+                      const: true
+                  required:
+                  - content_reviewed
+                  - files_viewable
+                  - consent_verified
+                - type: 'null'
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - checks
+            - reason
+            - account_id
+          - type: 'null'
+      required:
+      - offer
+      - rules
+      - rule_snapshot
+      - status
+      - offer_sha256
+      - appointment
+      - safety_review
+      - order_id
+      - paid_at
+      - accepted_at
+      - accept_by
+      - departed_at
+      - arrived_at
+      - arrival_evidence_ids
+      - delivery
+      - fulfilled_at
+      - deadline_at
+      - job_id
+      - dispute
+      - cases
+      - refund_minor
+    AuditionMessageData:
+      type: object
+      additionalProperties: false
+      properties:
+        body:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 4000
+          - type: 'null'
+        kind:
+          enum:
+          - TEXT
+          - DELIVERY_MEDIA
+          - ORDER_CARD
+        asset_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        order_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        account_id:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+      required:
+      - body
+      - kind
+      - asset_id
+      - order_id
+      - account_id
+      - at
+    AuditionRecord:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: OFFER
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            type: string
+            minLength: 1
+            maxLength: 40
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/AuditionOfferData'
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: BOOKING
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            type: string
+            minLength: 1
+            maxLength: 40
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/AuditionBookingData'
+          conversation_status:
+            enum:
+            - OPEN
+            - FROZEN
+            - ARCHIVED
+            - AWAITING_ACCEPTANCE
+            - AWAITING_VERIFIED_PAYMENT
+          refund_is_verified:
+            type: boolean
+          performance_rights_granted:
+            const: false
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+        - conversation_status
+        - refund_is_verified
+        - performance_rights_granted
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: MESSAGE
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            type: string
+            minLength: 1
+            maxLength: 40
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/AuditionMessageData'
+          is_read:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+    AuditionPublicOffer:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        avatar_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        city:
+          type: string
+          minLength: 1
+          maxLength: 300
+        service_area:
+          type: string
+          minLength: 1
+          maxLength: 300
+        mode:
+          enum:
+          - OFFLINE
+          - ONLINE_MATERIALS
+        slots:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              starts_at:
+                type: string
+                format: date-time
+              ends_at:
+                type: string
+                format: date-time
+            required:
+            - starts_at
+            - ends_at
+          maxItems: 60
+        unit_minor:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 900000000000
+          - type: 'null'
+        public_price:
+          type: boolean
+        currency:
+          const: CNY
+        transport_included:
+          const: true
+        offer_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - id
+      - person_id
+      - avatar_id
+      - title
+      - city
+      - service_area
+      - mode
+      - slots
+      - unit_minor
+      - public_price
+      - currency
+      - transport_included
+      - offer_sha256
+    AuditionContacts:
+      type: object
+      additionalProperties: false
+      properties:
+        booking_id:
+          type: string
+          format: uuid
+        contacts:
+          type: object
+          additionalProperties: false
+          properties:
+            BUYER:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                phone:
+                  type: string
+                  pattern: ^1[3-9][0-9]{9}$
+              required:
+              - name
+              - phone
+            SELLER:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                phone:
+                  type: string
+                  pattern: ^1[3-9][0-9]{9}$
+              required:
+              - name
+              - phone
+          required: []
+      required:
+      - booking_id
+      - contacts
+    AuditionItinerary:
+      type: object
+      additionalProperties: false
+      properties:
+        booking_id:
+          type: string
+          format: uuid
+        appointment:
+          $ref: '#/components/schemas/AuditionAppointment'
+        share:
+          type: object
+          additionalProperties: false
+          properties:
+            mode:
+              const: USER_EXPLICIT_SHARE_ONLY
+            text:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+          - mode
+          - text
+        safety:
+          type: object
+          additionalProperties: false
+          properties:
+            continuous_tracking:
+              const: false
+            emergency_service_enabled:
+              const: false
+            help_action:
+              type: string
+              minLength: 1
+              maxLength: 100
+            notice:
+              type: string
+              minLength: 1
+              maxLength: 1000
+          required:
+          - continuous_tracking
+          - emergency_service_enabled
+          - help_action
+          - notice
+      required:
+      - booking_id
+      - appointment
+      - share
+      - safety
+    AuditionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AuditionRecord'
+          - $ref: '#/components/schemas/AuditionContacts'
+          - $ref: '#/components/schemas/AuditionItinerary'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  anyOf:
+                  - $ref: '#/components/schemas/AuditionRecord'
+                  - $ref: '#/components/schemas/AuditionPublicOffer'
+                maxItems: 100
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              conversation_status:
+                type: string
+                minLength: 1
+                maxLength: 50
+            required:
+            - items
+            - next_cursor
+          - type: object
+            additionalProperties: false
+            properties:
+              booking_id:
+                type: string
+                format: uuid
+              read_message_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                maxItems: 100
+            required:
+            - booking_id
+            - read_message_ids
+      required:
+      - meta
+      - data
+    AuditionTradeSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        booking_id:
+          type: string
+          format: uuid
+        offer_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        person_id:
+          type: string
+          format: uuid
+        avatar_id:
+          type: string
+          format: uuid
+        appointment:
+          $ref: '#/components/schemas/AuditionAppointment'
+        performance_rights_granted:
+          const: false
+      required:
+      - booking_id
+      - offer_sha256
+      - person_id
+      - avatar_id
+      - appointment
+      - performance_rights_granted
+    AuditionSpecification:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        audition:
+          $ref: '#/components/schemas/AuditionTerms'
+      required:
+      - version
+      - terms
+      - audition
+    AuditionCreateAuditionOfferRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        offer:
+          $ref: '#/components/schemas/AuditionOffer'
+      required:
+      - offer
+    AuditionReviewAuditionOfferRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+    AuditionSetAuditionVisibilityRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        public_booking:
+          type: boolean
+        public_price:
+          type: boolean
+      required:
+      - public_booking
+      - public_price
+    AuditionBookAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        offer_id:
+          type: string
+          format: uuid
+        offer_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        appointment:
+          $ref: '#/components/schemas/AuditionAppointment'
+        invitation_id:
+          type: string
+          format: uuid
+      required:
+      - offer_id
+      - offer_sha256
+      - appointment
+    AuditionReviewAuditionBookingRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        checks:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              purpose_verified:
+                const: true
+              venue_verified:
+                const: true
+              adult_parties_verified:
+                const: true
+            required:
+            - purpose_verified
+            - venue_verified
+            - adult_parties_verified
+          - type: 'null'
+      required:
+      - decision
+      - reason
+      - checks
+    AuditionCheckoutAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        booking_id:
+          type: string
+          format: uuid
+        booking_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - booking_id
+      - booking_sha256
+    AuditionDecideAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - ACCEPT
+          - DECLINE
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+    AuditionRecordAuditionTravelRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          enum:
+          - DEPART
+          - ARRIVE
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+      required:
+      - action
+      - evidence_asset_ids
+    AuditionDeliverAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        delivery:
+          $ref: '#/components/schemas/AuditionDeliveryInput'
+      required:
+      - delivery
+    AuditionAckAuditionReceiptRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    AuditionConfirmAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    AuditionExpireAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    AuditionCancelAuditionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        safety:
+          type: boolean
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+      required:
+      - reason
+      - safety
+      - evidence_asset_ids
+    AuditionResolveAuditionCaseRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - RESUME
+          - REFUND
+        refund_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+      required:
+      - decision
+      - refund_minor
+      - reason
+      - evidence_asset_ids
+    AuditionSetAuditionContactRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+        consent:
+          type: boolean
+      required:
+      - name
+      - phone
+      - consent
+    AuditionManageAuditionSupportRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          enum:
+          - REQUEST
+          - JOIN
+          - LEAVE
+      required:
+      - action
+    AuditionSendAuditionMessageRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - TEXT
+          - DELIVERY_MEDIA
+          - ORDER_CARD
+        body:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 4000
+          - type: 'null'
+        asset_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+      required: []
+    AuditionMarkAuditionMessagesReadRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        message_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 100
+      required:
+      - message_ids
+    AuditionProposeAuditionRescheduleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        appointment:
+          $ref: '#/components/schemas/AuditionAppointment'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - appointment
+      - reason
+    AuditionRespondAuditionRescheduleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - ACCEPT
+          - DECLINE
+      required:
+      - decision
+    AuditionReviewAuditionRescheduleRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        checks:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              purpose_verified:
+                const: true
+              venue_verified:
+                const: true
+              adult_parties_verified:
+                const: true
+            required:
+            - purpose_verified
+            - venue_verified
+            - adult_parties_verified
+          - type: 'null'
+      required:
+      - decision
+      - reason
+      - checks
+    AuditionLinkAuditionBaseplateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        consent_id:
+          type: string
+          format: uuid
+        previous_version_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required:
+      - consent_id
+      - previous_version_id
+      - display_name
+    AuditionDeliveryReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        checks:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              content_reviewed:
+                const: true
+              files_viewable:
+                const: true
+              consent_verified:
+                const: true
+            required:
+            - content_reviewed
+            - files_viewable
+            - consent_verified
+          - type: 'null'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - checks
+      - reason

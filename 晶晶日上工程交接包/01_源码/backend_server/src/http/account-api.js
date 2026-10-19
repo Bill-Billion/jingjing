@@ -34,6 +34,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/notices',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/stock',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/auditions',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/supply',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/finance',express.json({limit:'128kb',strict:true}));
  app.use('/api/v1/projects',express.json({limit:'128kb',strict:true}));
@@ -142,6 +143,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/notices',require('./notices-routes').createNoticesRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/stock',require('./stock-routes').createStockRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/auditions',require('./auditions-routes').createAuditionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/artists',require('./artist-routes').createArtistRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,identityProviderFactory:artistIdentityProviderFactory}));
  app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
