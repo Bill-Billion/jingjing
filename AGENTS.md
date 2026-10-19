@@ -1,3 +1,5 @@
+第7轮第一批后端已上传7fa90b9并通过远端全部检查。状态与未完成工作见CORE_CURRENT和V5_R07_HANDOFF；商单专属会话与已付试镜补差继续补齐，之后第8轮。
+
 本次为第7轮第一批试镜主流程。完整分支core/v5-r07-auditions；先读docs/collaboration/V5_R07_HANDOFF.md与CORE_CURRENT。31个接口已自验；商单专属会话、已付试镜补差仍待补，先完成再进第8轮。共12轮；页面、审阅、合入、启用各自记录。
 
 ---

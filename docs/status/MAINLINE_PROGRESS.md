@@ -1,3 +1,9 @@
+第七轮第一批已集中上传 **7fa90b9**，GitHub全部检查通过并已下载核对：23组，试镜30项，综合667通过/1缺旧库样本跳过；19组1544份接口返回通过。商单专属会话和已付试镜补差仍待补；页面、双方审阅、合入和正式启用未完成。
+
+[远端检查](https://github.com/Bill-Billion/jingjing/actions/runs/39193744011) · [本批交接](../collaboration/V5_R07_HANDOFF.md) · [版本与结果证据](../testing/evidence/v5-r07/PUBLICATION.json)
+
+---
+
 # 第七轮第一批后端：主流程已自验，尚有两项扩展待补
 
 本侧在 `core/v5-r07-auditions`（worktrees/full-flow）实现预约、付款后接拒、行程、取样审核与私有读取、确认/争议/退款、订单内消息和联系卡。负责人chengcongcong222。准备集中上传；远端结果随后单列，当前不能写成已上传。
