@@ -1,3 +1,13 @@
+# 本批业务后端已上传并通过远端检查，待队友审阅
+
+功能提交65f8938，分支core/v5-backend-completion；[阶段草稿申请PR25](https://github.com/Bill-Billion/jingjing/pull/25)以第12轮分支为比较起点，只审本批新增范围。[GitHub检查](https://github.com/Bill-Billion/jingjing/actions/runs/39378507446)已通过，已下载核对29组、综合842通过/1跳过、31组接口2797返回；未合并、未部署、未正式启用。
+
+代做样片、供稿权限、已付参演变更与项目收入的后端已写完并测过；队友接法见V5_COMPLETION_HANDOFF。个人信息保护在worktrees/privacy另一个分支继续，不让本批页面等待新模块。用户确认隐私联系人、投诉渠道及分类留存依据待甲方补，登记EXT-PRIVACY-20261020。
+
+下面保留本机开发阶段记录，上传状态以上文为准。
+
+---
+
 # 我方剩余后端工作正在补齐，尚未全部验收
 
 2026-10-20，当前目录 `worktrees/full-flow`，分支 `core/v5-backend-completion`，起点 a0886a3。共同版本核对仍为28662ab；本分支包含尚未合入的前12轮必要代码，不直接推main或部署。
