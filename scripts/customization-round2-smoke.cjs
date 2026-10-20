@@ -1,6 +1,7 @@
  'use strict';
 // Run against a fresh customization-sandbox only; never against deployed services.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{randomUUID}=require('node:crypto');
+require('../晶晶日上工程交接包/01_源码/backend_server/scripts/test-network-guard.cjs');
 const root=path.resolve(__dirname,'..'),allowed=fs.realpathSync(path.join(root,'.local/customization-sandbox'));
 const folder=fs.realpathSync(path.resolve(root,process.argv[2]||''));
 if(path.dirname(folder)!==allowed||!/^jx_test_story_[a-z0-9_]+$/.test(path.basename(folder)))throw Error('Use the folder returned by customization-sandbox');
@@ -42,6 +43,10 @@ function take(r){assert.equal(r.status,200,JSON.stringify(r.body));return r.body
  ok('订单固定商品类型与财务原文',order.data.quote.lines[0].product_profile.type==='PRIVATE_CUSTOMIZATION'&&order.data.contract.rule_contents[0].content_sha256===order.data.quote.customization_finance.rule_snapshot.content.content_sha256);
  const list=take(await call('GET','/customization-requests/'+original+'/quotes','buyer',undefined,buyer));ok('从原需求可找到报价和订单',list.items.some(x=>x.order_id===order.id));
  denied=await call('POST','/trade/payments','buyer',{order_id:order.id,installment_key:'first'},buyer);ok('合成资料工具没有付款入口',denied.status===403&&denied.body.error.code==='LOCAL_FIXTURE_ROUTE_DISABLED');
+ const person=take(await call('GET','/parties/'+buyer,'buyer',undefined,buyer));ok('我的页面能刷新当前本人身份',Boolean(person));
+ const previewPath='/finance/marketplace-preview?'+new URLSearchParams(a.finance_preview).toString();const preview=take(await call('GET',previewPath,'reviewer'));
+ ok('财务复核人能读取只读试算',preview.meaning==='PREVIEW_ONLY_NOT_ORDER_OR_PAYABLE');
+ denied=await call('GET',previewPath,'outsider');ok('普通买家不能冒充财务复核人',denied.status===403);
  const report={result:'PASS',checks:checks.length,scenarios:checks,synthetic_only:true,page_testing:'NOT_RUN',real_payment:'NOT_RUN'};fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
  }finally{fs.writeFileSync(path.join(folder,'stop'),'stop');}
 })().catch(e=>{console.error(e.message);process.exitCode=1;});

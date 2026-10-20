@@ -73,17 +73,36 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
     if(reply.automated!==true||!['PASS','REVIEW','REJECT'].includes(reply.decision)||!reply.provider_request_id)throw error('MODERATION_RESULT_UNKNOWN',503);
     result={file_id:f.id,output_sha256:f.content_sha256,policy_sha256:policy.sha256,decision:reply.decision,provider_request_id:reply.provider_request_id,manual_review:'STILL_REQUIRED'};
    }else{
-    if(job.attempts>1)throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
-    const processed=await (marking||require('./marking').markVideo)(body,{ffmpeg:env.MEDIA_FFMPEG,ffprobe:env.MEDIA_FFPROBE,fontFile:env.MEDIA_FONT_FILE,ai_label:policy.rules.ai_label,preview_label:policy.rules.preview_label,variant:i.variant,policy_sha256:policy.sha256});
-    if(!Buffer.isBuffer(processed.body)||processed.receipt?.output_sha256!==sha(processed.body)||processed.receipt?.source_sha256!==sha(body))throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+    let checkpoint=r.output_checkpoint_json?checked(r.output_checkpoint_json,r.output_checkpoint_sha256):null;
+    if(!checkpoint){
+     if(job.attempts>1)throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
+     const processed=await (marking||require('./marking').markVideo)(body,{ffmpeg:env.MEDIA_FFMPEG,ffprobe:env.MEDIA_FFPROBE,fontFile:env.MEDIA_FONT_FILE,ai_label:policy.rules.ai_label,preview_label:policy.rules.preview_label,variant:i.variant,policy_sha256:policy.sha256});
+     if(!Buffer.isBuffer(processed.body)||processed.receipt?.output_sha256!==sha(processed.body)||processed.receipt?.source_sha256!==sha(body)||processed.receipt?.policy_sha256!==policy.sha256||processed.receipt?.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+     await source(ctx,i);await db.withTransaction(fenced);
+     const reserved=r.source_kind==='SUPPLY_ASSET'
+      ?await supply.reserveAsset(ctx,{party_id:i.party_id,purpose:f.purpose,media_type:'video/mp4',body:processed.body,operation_key:r.id})
+      :await production.reserveFile(ctx,{party_id:i.party_id,project_id:f.project_id,media_type:'video/mp4',body:processed.body,operation_key:r.id});
+     const record=reserved.asset||reserved.record,out=record.data||record;
+     if(record.current_status!=='UPLOADING')throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
+     checkpoint={request_sha256:r.request_sha256,file_id:record.id,object_key:out.object_key,byte_size:processed.body.length,receipt:processed.receipt};
+     // Save exact expected output before any upload. Recovery only reads this object.
+     await db.withTransaction(async tx=>{const live=await fenced(tx);if(live.output_checkpoint_json)throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);await tx.execute('UPDATE media_tasks SET output_checkpoint_json=?,output_checkpoint_sha256=? WHERE id=?',[JSON.stringify(checkpoint),digest(checkpoint),r.id]);});
+     const saved=await call('put',out.object_key,c=>storage.put({key:out.object_key,body:processed.body,contentType:'video/mp4',isPrivate:true},c));
+     if(saved.key!==out.object_key||saved.sha256!==sha(processed.body)||saved.size!==processed.body.length)throw error('PRIVATE_CONTENT_MISMATCH',503);
+    }
+    if(checkpoint.request_sha256!==r.request_sha256||checkpoint.receipt.source_sha256!==f.content_sha256||checkpoint.receipt.policy_sha256!==policy.sha256||checkpoint.receipt.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+    const [[record]]=await db.execute('SELECT * FROM '+(r.source_kind==='SUPPLY_ASSET'?'supply_assets':'production_records')+' WHERE id=?',[checkpoint.file_id]);
+    if(!record||!['UPLOADING','READY'].includes(record.current_status))throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
+    const out=r.source_kind==='SUPPLY_ASSET'?record:checked(record.data_json,record.data_sha256);
+    if(out.object_key!==checkpoint.object_key||out.content_sha256!==checkpoint.receipt.output_sha256||out.byte_size!==checkpoint.byte_size||(r.source_kind==='SUPPLY_ASSET'?record.owner_party_id!==i.party_id:record.project_id!==f.project_id))throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+    const stored=await call('get',checkpoint.object_key,c=>storage.getBuffer(checkpoint.object_key,c));
+    if(!Buffer.isBuffer(stored)||stored.length!==checkpoint.byte_size||sha(stored)!==checkpoint.receipt.output_sha256)throw error('PRIVATE_CONTENT_MISMATCH',503);
     await source(ctx,i);await db.withTransaction(fenced);
-    let reserved;if(r.source_kind==='SUPPLY_ASSET')reserved=await supply.reserveAsset(ctx,{party_id:i.party_id,purpose:f.purpose,media_type:'video/mp4',body:processed.body,operation_key:r.id});
-    else reserved=await production.reserveFile(ctx,{party_id:i.party_id,project_id:f.project_id,media_type:'video/mp4',body:processed.body,operation_key:r.id});
-    const record=reserved.asset||reserved.record,out=record.data||record;if(out.current_status==='READY'||record.current_status==='READY')throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
-    const saved=await call('put',out.object_key,c=>storage.put({key:out.object_key,body:processed.body,contentType:'video/mp4',isPrivate:true},c));if(saved.key!==out.object_key||saved.sha256!==sha(processed.body)||saved.size!==processed.body.length)throw error('PRIVATE_CONTENT_MISMATCH',503);
-    const stored=await call('get',out.object_key,c=>storage.getBuffer(out.object_key,c));if(!Buffer.isBuffer(stored)||sha(stored)!==sha(processed.body))throw error('PRIVATE_CONTENT_MISMATCH',503);
-    if(r.source_kind==='SUPPLY_ASSET')await supply.finishAsset(ctx,record.id,true);else await production.finishFile(ctx,{record_id:record.id,party_id:i.party_id,success:true});
-    result={...processed.receipt,file_id:record.id};
+    if(record.current_status==='UPLOADING'){
+     if(r.source_kind==='SUPPLY_ASSET')await supply.finishAsset(ctx,record.id,true);
+     else await production.finishFile(ctx,{record_id:record.id,party_id:i.party_id,success:true});
+    }
+    result={...checkpoint.receipt,file_id:record.id};
    }
    const current=await source(ctx,i);if(current.id!==f.id||current.content_sha256!==f.content_sha256)throw error('MEDIA_SOURCE_CHANGED',409);
    await db.withTransaction(async tx=>{await fenced(tx);const [[active]]=await tx.execute("SELECT id FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!active)throw error('ACCOUNT_NOT_ACTIVE',403);const livePolicy=await P.load(tx,i.policy.id);if(livePolicy.sha256!==i.policy.sha256)throw error('MEDIA_CONFIGURATION_CHANGED',409);await tx.execute("UPDATE media_tasks SET current_status='EXECUTED',result_json=?,result_sha256=? WHERE id=?",[JSON.stringify(result),digest(result),r.id]);});

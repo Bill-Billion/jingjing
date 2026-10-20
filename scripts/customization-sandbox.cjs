@@ -75,7 +75,7 @@ async function main() {
       await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+7200000)', [auth.secure.digest('token', token), record.account_id]);
       people[role] = { ctx, ...record, token }; checkRunning();
     }
-    for (const [role, action] of [['operator','CUSTOMIZATION_INTAKE'],['publisher','CUSTOMIZATION_TEMPLATE_PUBLISH'],['merchant','CUSTOMIZATION_INTAKE'],['reviewer','TRADE_REVIEW']]) {
+    for (const [role, action] of [['operator','CUSTOMIZATION_INTAKE'],['publisher','CUSTOMIZATION_TEMPLATE_PUBLISH'],['merchant','CUSTOMIZATION_INTAKE'],['reviewer','TRADE_REVIEW'],['reviewer','FINANCE_REVIEW']]) {
       await maintainOperatorGrant(db, { account_id:people[role].account_id, action, enabled:true, expires_at:null, expected_version:0, authority_ref:'synthetic:story-handoff', reason:'仅本机合成联调，非正式运营授权' });
     }
     const family = await repo.publishTemplate(people.publisher.ctx, { category_code:'synthetic_family', template_version:1, source_ref:'synthetic:story-handoff-only', operation_key:randomUUID(), template_snapshot:{ title:'测试用家庭故事', description:'纯合成联调模板，不是已批准商品规格；不填真实身份或材料。', fields:[{ key:'story', label:'想记录的故事', type:'TEXT', required:true, max_length:4000 }, { key:'tone', label:'表达方式', type:'CHOICE', required:true, options:['温暖','轻松'] }] } });
@@ -94,6 +94,8 @@ async function main() {
     const {createRuleContent}=require(path.join(backend,'src/modules/governance/content'));
     const ruleId=randomUUID(),rule=createRuleContent({id:ruleId,rule_key:'synthetic.customization',version:'1',terms:{explicit:'仅本机测试，非正式收费及权利条款',customization_finance:{model:'V5_SELF_OPERATED',platform_party_id:merchant.party_id,rounding:'HALF_UP_PLATFORM_REMAINDER',rules:{version:'synthetic-finance-1',settlement_at:'2020-01-01T00:00:00.000Z',release_condition:'DELIVERY_ACCEPTED',terms:'仅合成资料：比例不代表正式成本或毛利',lines:[{line_id:'production',shares:[{party_id:people.merchant.personal_party_id,role:'PRODUCER',bps:6667},{party_id:merchant.party_id,role:'PLATFORM',bps:3333}],deductions:[]}]}}}});
     await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'synthetic.customization','1',JSON.stringify(rule),'2020-01-01 00:00:00',people.publisher.account_id,'EFFECTIVE']);
+    const previewRuleId=randomUUID(),previewRule=createRuleContent({id:previewRuleId,rule_key:'synthetic.marketplace.preview',version:'1',terms:{marketplace_finance:{model:'V5_TWO_LAYER',product_type:'STOCK_VIDEO',fee_base:'NET_PAID',platform_party_id:merchant.party_id,platform_bps:1800,referral_bps:720,rounding:'HALF_UP_PLATFORM_REMAINDER'}}});
+    await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[previewRuleId,'synthetic.marketplace.preview','1',JSON.stringify(previewRule),'2020-01-01 00:00:00',people.publisher.account_id,'EFFECTIVE']);
     const trade=require(path.join(backend,'src/modules/trade/repository')).createTradeRepository(db,{resolvePrincipal,customizationMerchantPartyId:merchant.party_id,requireV5Products:true});
     let spec=await trade.createSpec(people.merchant.ctx,{party_id:merchant.party_id,previous_spec_id:null,title:'合成定制商品：不是正式价格',provider_party_id:merchant.party_id,line_kind:'PRODUCTION',unit_minor:10001,currency:'CNY',product_profile:{version:'V5',type:'PRIVATE_CUSTOMIZATION'},specification:{version:'synthetic-1',service_tier:'仅合成测试',sample_seconds:23,final_seconds:119,revision_limit:2,deliverables:['合成文件'],terms:'不得用于真实收费、制作或权利承诺'},operation_key:randomUUID()});
     spec=await trade.review(people.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'合成测试规格',operation_key:randomUUID()});
@@ -110,8 +112,12 @@ async function main() {
       ['POST',/^\/api\/v1\/trade\/quotes$/],
       ['POST',new RegExp('^/api/v1/trade/records/'+uuid+'/reviews$')],
       ['POST',new RegExp('^/api/v1/trade/quotes/'+uuid+'/acceptance$')],
+      // Read-only finance trial: real role/rule checks, no money mutation routes.
+      ['GET',/^\/api\/v1\/finance\/marketplace-preview$/],
       ['GET',/^\/(health|ready)$/],
       ['GET',/^\/api\/v1\/(me|me\/parties|customization-categories)$/],
+      // Account/My pages refresh the selected identity; the real API checks membership.
+      ['GET',new RegExp('^/api/v1/parties/'+uuid+'$')],
       ['GET',new RegExp('^/api/v1/customization-requests(?:/'+uuid+')?$')],
       ['POST',/^\/api\/v1\/customization-requests$/],
       ['PATCH',new RegExp('^/api/v1/customization-requests/'+uuid+'$')],
@@ -133,7 +139,7 @@ async function main() {
     const base_url = 'http://127.0.0.1:' + server.address().port + '/api/v1';
     await fs.mkdir(out, { recursive:true });
     const accounts = Object.fromEntries(Object.entries(people).map(([role, p]) => [role, { account_id:p.account_id, party_id:p.personal_party_id, bearer_token:p.token }]));
-    await fs.writeFile(path.join(out, 'access.json'), JSON.stringify({ synthetic_only:true, base_url, accounts, templates:{ family:family.template_version_id, life:life.template_version_id, blocked:blocked.template_version_id }, requests:{ draft:draft.id, submitted:submitted.id, supplement:supplementDraft.id, quote:quoteStory.id }, trade:{merchant_party_id:merchant.party_id,specification_id:spec.id,rule_id:ruleId,quote_id:quoted.id} }, null, 2), { mode:0o600 });
+    await fs.writeFile(path.join(out, 'access.json'), JSON.stringify({ synthetic_only:true, base_url, accounts, templates:{ family:family.template_version_id, life:life.template_version_id, blocked:blocked.template_version_id }, requests:{ draft:draft.id, submitted:submitted.id, supplement:supplementDraft.id, quote:quoteStory.id }, trade:{merchant_party_id:merchant.party_id,specification_id:spec.id,rule_id:ruleId,quote_id:quoted.id}, finance_preview:{rule_id:previewRuleId,supplier_party_id:people.merchant.personal_party_id,net_minor:10000} }, null, 2), { mode:0o600 });
     await fs.writeFile(path.join(out, 'status.json'), JSON.stringify({ status:'RUNNING', synthetic_only:true, host:'127.0.0.1', port:server.address().port, expires_in_minutes:60, database:name }, null, 2));
     checkRunning();
     starting=false;

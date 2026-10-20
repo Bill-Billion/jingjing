@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.30.0-rc.1
+  version: 0.30.1-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -23872,6 +23872,9 @@ paths:
           enum:
           - PROFILE
           - ARTIST_MATERIALS
+          - PRIVATE_STORY
+          - TRANSACTIONS
+          - CONTENT
       - name: cursor
         in: query
         required: false
@@ -51758,6 +51761,9 @@ components:
               enum:
               - PROFILE
               - ARTIST_MATERIALS
+              - PRIVATE_STORY
+              - TRANSACTIONS
+              - CONTENT
             items:
               type: array
               items:
@@ -51772,6 +51778,9 @@ components:
               enum:
               - ACCOUNT_PROFILE_ONLY
               - OWN_MATERIAL_METADATA_ONLY
+              - OWN_CONTENT_METADATA_ONLY
+              - OWN_CURRENT_STORY_TEXT_ONLY
+              - OWN_BUYER_ORDER_INDEX_ONLY
           required:
           - category
           - items

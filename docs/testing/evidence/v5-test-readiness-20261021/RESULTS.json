@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-21",
+  "purpose": "Prepare October 22 joint testing",
+  "backend_base": "5871d43a645b5a99b959a75e91a908b95c71918e",
+  "frontend_commit": "7d4668fe284880f7b8958d80c989d0d292ebc0ac",
+  "frontend_ui_source": "731ef464d9501dc7f841a08942ecd33b0f88d992",
+  "integration": "28662ab39950ad6a2f0b3c4ca372df9a65195b96",
+  "full_backend": {
+    "tests": 920,
+    "pass": 919,
+    "fail": 0,
+    "skipped": 1,
+    "log_sha256": "28ef7230d695688ac6406708e49c9183afb86859d651e255434ddd47a1495e08"
+  },
+  "privacy_final": {
+    "tests": 46,
+    "pass": 46,
+    "fail": 0,
+    "skipped": 0,
+    "log_sha256": "1184df1b4904cc6a89a16b550690847d4b5f29097f9b54bb03536e6fa140dced"
+  },
+  "media_final": {
+    "tests": 15,
+    "pass": 15,
+    "fail": 0,
+    "skipped": 0,
+    "log_sha256": "7fd1cdb39219ac4fede2113bd80b73d0ffe184dab6f9b3957b955d816dbcfbb8"
+  },
+  "mock_checks": 115,
+  "browser_checks": {
+    "story": 13,
+    "cross_app_web": 32
+  },
+  "contract_response_cases": 16,
+  "sources": {
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/execution.js": "70419c07db0d95f1e4f559a32cef5c480ed0d88882b37bdb2358ef27755481b6",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/closure.js": "8fa3d15dc7766d121351af4407bb1a2e47e8ed572323818019d40abf1c86b80c",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/personal-copy.js": "839e4e7212674dc75bd123519410c1f755e7c4d88ecd77dd1dfd13120b8045f9",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/media/service.js": "91da65a0d6cd575d204685c10e33a770997a02f372e8fce89e347d773d881daf",
+    "晶晶日上工程交接包/01_源码/backend_server/migrations/mysql-runtime/0165_media_output_checkpoints.sql": "ae22e08cb232dd2bb09f0b78c6f8a020c8c502dabbfa62e4cead4027efc9bc4b",
+    "晶晶日上工程交接包/01_源码/backend_server/test/privacy-execution.integration.test.cjs": "b4f738230c1b0814e5bb2285f63118b44649586946854b286dbf54c40007ef12",
+    "晶晶日上工程交接包/01_源码/backend_server/test/media.integration.test.cjs": "65cd07967f6c9e36eff1934916ceeb8b3f092cd75fd18a3cb8a56ca16f3fcf23",
+    "contracts/openapi.yaml": "88fe7f837aee1c4675bba715eb8a80454eff0afd3387fdfe2ab4d81d7ef2ddff",
+    "scripts/customization-sandbox.cjs": "4ebacbcd44a70f228819fd221513a60df41111af1d742c55c2a42cb342051b90",
+    "scripts/customization-round2-smoke.cjs": "da2f6d106abbc402ed97d19f3f3873cd28f08a4379305efd1852563b2edc1e59",
+    "scripts/joint-test-data.cjs": "76b3c7004f4743c2d385f1fd75bd0c281f489bab186b47a29326298e384ec6ae",
+    "scripts/joint-test-scenarios.json": "ad033bba403ece04a27b76cb89b033e247c2607a45de8e205707b00b3f99ee74"
+  },
+  "notes": [
+    "Full run started before one additional stock-closure scenario was added; the final privacy suite includes that scenario and passed all 46 checks. Business code was unchanged.",
+    "Initial failures: wrong fixture method and COUNT type assertions; suspended-account recovery expected a specific error, actual safe response was generic BLOCKED. Assertions corrected without removing ACTIVE checks.",
+    "Initial browser run expected obsolete order notice; test selectors updated. Story fixture now includes teammate finance-preview and party-refresh additions.",
+    "No real SMS, payment, OSS, moderation, production database, external listener or native-device acceptance.",
+    "Separate mock groups use separate databases, not one cross-group business order.",
+    "Source records and multi-party copies/erasure, wider moderation formats and unknown upstream submissions retain explicit remaining scope."
+  ],
+  "remote_checks": "CHECK_AFTER_STAGE_PUSH",
+  "peer_review": "NOT_CONFIRMED",
+  "merged": false,
+  "deployed": false,
+  "cleanup": {
+    "mock_instances": "STOPPED",
+    "joint_browser_instance": "STOPPED",
+    "loopback_ports_5000_5173_33316_58666_60232": "NO_LISTENERS",
+    "temporary_drive_J": "REMOVED",
+    "historical_isolated_databases": {
+      "count": 21,
+      "created_dates": [
+        "2026-10-16",
+        "2026-10-20"
+      ],
+      "action": "PRESERVED_NOT_OWNED_BY_THIS_RUN"
+    }
+  }
+}

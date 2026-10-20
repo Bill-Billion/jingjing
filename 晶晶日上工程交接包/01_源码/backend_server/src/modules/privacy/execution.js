@@ -35,7 +35,7 @@ async function closureBlockers(tx,account){
  }
  const p=await one(tx,"SELECT id FROM parties WHERE kind='PERSON' AND personal_account_id=? FOR UPDATE",[account.id]);
  if(p){
-  if(await one(tx,"SELECT id FROM trade_records WHERE (buyer_party_id=? OR merchant_party_id=?) AND ((kind='ORDER' AND current_status NOT IN ('CANCELLED','REFUNDED')) OR (kind IN ('PAYMENT','REFUND') AND current_status NOT IN ('SUCCEEDED','FAILED','CANCELLED','REJECTED'))) LIMIT 1 FOR SHARE",[p.id,p.id]))blocks.push('TRADE_OBLIGATIONS_REVIEW_REQUIRED');
+  if(await require('./closure').hasTradeObligations(tx,p.id))blocks.push('TRADE_OBLIGATIONS_REVIEW_REQUIRED');
   // No universal zero-balance inference from a missing/unrecognized wallet row.
   const money=await require('../wallet/cash').overview(tx,p.id);
   if(money.recorded_balance_minor!==0||await one(tx,"SELECT id FROM wallet_records WHERE owner_party_id=? AND kind IN ('RECHARGE','CASH_SPEND','REFUND') AND current_status NOT IN ('SUCCEEDED','FAILED','CANCELLED','RELEASED','REFUNDED','SPENT') LIMIT 1 FOR SHARE",[p.id]))blocks.push('WALLET_SETTLEMENT_REVIEW_REQUIRED');
@@ -178,10 +178,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
    return db.withTransaction(async tx=>{
     const {a,request}=await access(tx,ctx,{...i,operations:false}),s=decode(request.request_json,request.request_sha256);
     if(!['QUERY','COPY'].includes(s.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-    if(!['PROFILE','ARTIST_MATERIALS'].includes(i.category)||!s.scopes.some(v=>v==='ALL'||v===i.category))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-    if(i.category==='PROFILE')return {category:i.category,items:[{account_id:a.id,display_name:a.display_name,object_version:a.object_version}],next_cursor:null,coverage:'ACCOUNT_PROFILE_ONLY'};
-    const [rows]=await tx.execute("SELECT s.id,s.purpose,s.media_type,s.byte_size,s.content_sha256,s.current_status FROM supply_assets s JOIN parties p ON p.id=s.owner_party_id WHERE p.personal_account_id=? AND p.kind='PERSON' AND s.purpose='AVATAR_MATERIAL' AND s.id>? ORDER BY s.id LIMIT ?",[a.id,i.after||'',i.limit+1]);
-    return {category:i.category,items:rows.slice(0,i.limit),next_cursor:rows.length>i.limit?rows[i.limit-1].id:null,coverage:'OWN_MATERIAL_METADATA_ONLY'};
+    return require('./personal-copy').exportPersonalCopy(tx,a,s,i);
    });
   },
  };
