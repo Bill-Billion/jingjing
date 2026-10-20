@@ -1,3 +1,5 @@
+> 2026-10-20最新协作入口：[下一步分工与同版本联调](docs/collaboration/V5_NEXT_COLLABORATION_PLAN.md)。本分支包含最新后端；队友前两轮页面见PR26，尚未自动合入本分支或共同版本。先联调故事到未付款订单，真实服务和全部资料清理分别验收。
+
 本轮继续补本人撤回与具体模型删除：4个新增接口及动作进度已写入并通过本机整体检查；详见[当前状态](docs/status/CORE_CURRENT.md)和[队友接法](docs/collaboration/V5_PRIVACY_HANDOFF.md)。这不表示账号注销或所有资料清除已完成。
 
 # 当前：个人信息申请基础开发与剩余业务核验
