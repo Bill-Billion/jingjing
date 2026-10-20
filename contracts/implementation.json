@@ -1,5 +1,5 @@
 {
-  "version": "0.27.0-rc.1",
+  "version": "0.28.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -432,7 +432,11 @@
     "reviewPrivacyResponse",
     "reopenPrivacyRequest",
     "getPrivacyResponseHistory",
-    "downloadPrivacyResponseFile"
+    "downloadPrivacyResponseFile",
+    "getPrivacyModelAssets",
+    "getPrivacyActions",
+    "withdrawPrivacyConsent",
+    "requestPrivacyModelDeletion"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -756,5 +760,10 @@
     "status": "ISOLATED_TESTS",
     "evidence": "docs/testing/evidence/v5-privacy/RESULTS.json",
     "limits": "Request workflow and preferences only. Actual deletion/closure, holiday calendar, formal retention policy and clients remain separately gated."
+  },
+  "privacy_actions": {
+    "status": "ISOLATED_TESTS",
+    "evidence": "docs/testing/evidence/v5-privacy-actions/RESULTS.json",
+    "limits": "Owner withdrawal and registered production-model deletion only. Live provider, account closure, source files and in-flight creation cleanup are not accepted."
   }
 }

@@ -89,6 +89,32 @@ function createProductionRepository(db,{resolvePrincipal=async()=>null}={}){
   if(asset&&i.operation==='DELETE_LONG_LIVED')await save(tx,a,asset,'DELETING',asset.data,'DIGITAL_ASSET_DELETE_REQUESTED');
   return save(tx,a,request,'QUEUED',{...request.data,job_id:job.id},'GENERATION_QUEUED');
  });},
+ async requestPersonalDeletion(ctx,input){
+  shape(input,['asset_id','expected_version','operation_key']);id(input.asset_id);version(input.expected_version);
+  return db.withTransaction(async tx=>{
+   const a=await actor(tx,ctx),asset=await locked(tx,input.asset_id,'DIGITAL_ASSET'),p=await project(tx,asset);
+   const consent=checked(await one(tx,"SELECT * FROM supply_records WHERE id=? AND kind='CONSENT' FOR SHARE",[asset.data.consent_id]));
+   if(!await one(tx,"SELECT id FROM parties WHERE id=? AND kind='PERSON' AND personal_account_id=? FOR SHARE",[consent.data.consent.subject_party_id,a.id]))throw error('PRIVACY_TARGET_NOT_FOUND',404);
+   if(consent.data.consent.avatar_id!==asset.data.avatar_id||!p.data.consent_ids.includes(consent.id))throw error('DIGITAL_ASSET_MISMATCH',409);
+   return command(tx,a,'PERSONAL_DELETE_MODEL',input,async()=>{
+    match(asset,input.expected_version);
+    if(consent.current_status!=='WITHDRAWN')throw error('CONSENT_WITHDRAWAL_REQUIRED',409);
+    // Reuse existing deletion; a new key cannot create another external request.
+    if(['DELETING','DELETED'].includes(asset.current_status)){
+     const [rows]=await tx.execute("SELECT * FROM production_records WHERE project_id=? AND kind='GENERATION' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.operation'))='DELETE_LONG_LIVED' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.asset_id'))=? FOR SHARE",[p.id,asset.id]);
+     if(rows.length!==1)throw error('DELETION_RECONCILIATION_REQUIRED',409);
+     const existing=dto(rows[0]);if(existing.data.consent_id!==consent.id||existing.data.avatar_id!==asset.data.avatar_id)throw error('DIGITAL_ASSET_MISMATCH',409);
+     return existing;
+    }
+    if(!['READY','DELETE_REQUIRED'].includes(asset.current_status))throw error('DIGITAL_ASSET_NOT_DELETABLE',409);
+    const {provider_code,environment,config_revision}=asset.data;ref(provider_code);ref(environment);ref(config_revision);
+    const request=await insert(tx,a,'GENERATION',p.id,p.order_id,'QUEUED',{operation:'DELETE_LONG_LIVED',avatar_id:asset.data.avatar_id,asset_id:asset.id,consent_id:consent.id,provider_code,environment,config_revision,script_version_id:null,upstream_task_id:null,job_id:null,result:null});
+    const job=await require('../../infrastructure/jobs/repository').createJobRepository(db).enqueue({task_type:'PRODUCTION_DIGITAL_HUMAN',business_key:request.id,provider:provider_code,payload_ref:request.id,max_attempts:20},tx);
+    await save(tx,a,asset,'DELETING',asset.data,'PERSONAL_DELETION_REQUESTED');
+    return save(tx,a,request,'QUEUED',{...request.data,job_id:job.id},'GENERATION_QUEUED');
+   });
+  });
+ },
  async markConsentWithdrawal(consentId){id(consentId);const [rows]=await db.execute("SELECT id FROM production_records WHERE kind='DIGITAL_ASSET' AND current_status='READY' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.consent_id'))=?",[consentId]);for(const row of rows)await db.withTransaction(async tx=>{const r=await locked(tx,row.id,'DIGITAL_ASSET'),c=await one(tx,"SELECT current_status FROM supply_records WHERE id=? AND kind='CONSENT' FOR SHARE",[consentId]);if(c?.current_status==='WITHDRAWN'&&r.current_status==='READY')await save(tx,{id:null,request_id:randomUUID()},r,'DELETE_REQUIRED',r.data,'CONSENT_WITHDRAWN_DELETE_REQUIRED');});},
  async generationJob(ctx,{record_id,party_id}){const r=await api.read(ctx,{record_id,party_id});if(r.kind!=='GENERATION')throw error('PRODUCTION_NOT_FOUND',404);const jobs=require('../../infrastructure/jobs/repository').createJobRepository(db),job=await jobs.get(r.data.job_id);if(!job)throw error('GENERATION_JOB_NOT_FOUND',503);return {record_id:r.id,job_id:job.id,current_status:job.status,attempts:job.attempts,last_error:job.last_error};},
  async retryGeneration(ctx,input){shape(input,['record_id','reason_ref','operation_key']);ref(input.reason_ref);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await locked(tx,input.record_id,'GENERATION'),p=await project(tx,r);await reviewer(tx,a,p);return command(tx,a,'RETRY_GENERATION',input,async()=>{await require('../../infrastructure/jobs/repository').createJobRepository(db).manualRetry(r.data.job_id,{actor_ref:a.id,reason_ref:input.reason_ref,additional_attempts:20},tx);return save(tx,a,r,'QUEUED',r.data,'GENERATION_RETRY_REQUESTED');});});},

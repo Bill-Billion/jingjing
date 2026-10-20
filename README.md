@@ -1,3 +1,5 @@
+本轮继续补本人撤回与具体模型删除：4个新增接口及动作进度已写入并通过本机整体检查；详见[当前状态](docs/status/CORE_CURRENT.md)和[队友接法](docs/collaboration/V5_PRIVACY_HANDOFF.md)。这不表示账号注销或所有资料清除已完成。
+
 # 当前：个人信息申请基础开发与剩余业务核验
 
 本分支core/v5-privacy-protection在worktrees/privacy开发。个人申请、处理与独立复核、私有答复、偏好和通知已实现并做隔离检查；实际删除/注销和素材审查标识仍未全部完成。当前未上传，不宣称已合并或正式启用。

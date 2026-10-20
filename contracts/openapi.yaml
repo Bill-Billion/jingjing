@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.27.0-rc.1
+  version: 0.28.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -23147,6 +23147,246 @@ paths:
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
       description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
         or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests/{request_id}/model-assets:
+    get:
+      operationId: getPrivacyModelAssets
+      summary: 查看与本人授权关联的已登记模型
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyModelListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅申请本人可操作；不接受机构身份。仅覆盖制作模块已登记模型，不代表账号清除完成。供应商未启用或结果未确认时不得展示删除成功。
+  /api/v1/privacy/requests/{request_id}/actions:
+    get:
+      operationId: getPrivacyActions
+      summary: 查看撤回及具体模型的实际处理进展
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyActionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅申请本人可操作；不接受机构身份。仅覆盖制作模块已登记模型，不代表账号清除完成。供应商未启用或结果未确认时不得展示删除成功。
+  /api/v1/privacy/requests/{request_id}/consent-withdrawals:
+    post:
+      operationId: withdrawPrivacyConsent
+      summary: 本人撤回指定授权并登记处理记录
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyConsentWithdrawalInput'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅申请本人可操作；不接受机构身份。仅覆盖制作模块已登记模型，不代表账号清除完成。供应商未启用或结果未确认时不得展示删除成功。
+  /api/v1/privacy/requests/{request_id}/model-deletions:
+    post:
+      operationId: requestPrivacyModelDeletion
+      summary: 本人申请删除已撤回授权的具体模型
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyModelDeletionInput'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅申请本人可操作；不接受机构身份。仅覆盖制作模块已登记模型，不代表账号清除完成。供应商未启用或结果未确认时不得展示删除成功。
 components:
   securitySchemes:
     bearerAuth:
@@ -23377,6 +23617,230 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    PrivacyConsentWithdrawalInput:
+      type: object
+      additionalProperties: false
+      properties:
+        consent_id:
+          type: string
+          format: uuid
+        consent_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - consent_id
+      - consent_version
+      - reason
+    PrivacyModelDeletionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        asset_id:
+          type: string
+          format: uuid
+        asset_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+      required:
+      - asset_id
+      - asset_version
+    PrivacyActionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            request_completion:
+              type: string
+              enum:
+              - NOT_CONFIRMED
+            object_version:
+              type: integer
+              minimum: 1
+              maximum: 4294967294
+            action_id:
+              type: string
+              format: uuid
+            action_kind:
+              type: string
+              enum:
+              - CONSENT_WITHDRAWAL
+              - MODEL_DELETION
+            target_id:
+              type: string
+              format: uuid
+          required:
+          - request_id
+          - request_completion
+          - object_version
+          - action_id
+          - action_kind
+          - target_id
+      required:
+      - meta
+      - data
+    PrivacyModelListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            request_completion:
+              type: string
+              enum:
+              - NOT_CONFIRMED
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  asset_id:
+                    type: string
+                    format: uuid
+                  asset_version:
+                    type: integer
+                    minimum: 1
+                    maximum: 4294967294
+                  asset_status:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                  consent_id:
+                    type: string
+                    format: uuid
+                  consent_version:
+                    type: integer
+                    minimum: 1
+                    maximum: 4294967294
+                  consent_status:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                  avatar_id:
+                    type: string
+                    format: uuid
+                required:
+                - asset_id
+                - asset_version
+                - asset_status
+                - consent_id
+                - consent_version
+                - consent_status
+                - avatar_id
+              maxItems: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+            coverage:
+              type: string
+              enum:
+              - PRODUCTION_MODELS_ONLY
+          required:
+          - request_id
+          - request_completion
+          - items
+          - next_cursor
+          - coverage
+      required:
+      - meta
+      - data
+    PrivacyActionListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            request_completion:
+              type: string
+              enum:
+              - NOT_CONFIRMED
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  action_id:
+                    type: string
+                    format: uuid
+                  action_kind:
+                    type: string
+                    enum:
+                    - CONSENT_WITHDRAWAL
+                    - MODEL_DELETION
+                  target_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum:
+                    - CONSENT_WITHDRAWN
+                    - NEEDS_ATTENTION
+                    - MODEL_DELETED
+                    - WAITING_PROVIDER
+                    - QUEUED
+                  job_status:
+                    type:
+                    - string
+                    - 'null'
+                    enum:
+                    - null
+                    - PENDING
+                    - RUNNING
+                    - RETRY
+                    - FAILED
+                    - BLOCKED
+                    - SUCCEEDED
+                required:
+                - action_id
+                - action_kind
+                - target_id
+                - status
+                - job_status
+              maxItems: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+          required:
+          - request_id
+          - request_completion
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
     PrivacyCreateRequest:
       type: object
       additionalProperties: false
