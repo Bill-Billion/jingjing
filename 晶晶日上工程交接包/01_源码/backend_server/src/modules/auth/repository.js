@@ -19,11 +19,15 @@ function createAuthRepository(db,{secret,sms,settings={}}) {
  }
  const subject=p=>secure.digest('phone',p);
  function challengeData(row){return {challenge_id:row.id,current_status:'SENT',expires_at:new Date(Number(row.expires_ms)).toISOString(),resend_after:new Date(Number(row.resend_ms)).toISOString()};}
- async function resolve(token,{allowRevoked=false}={}) {
+ async function resolve(token,{allowRevoked=false,allowInactiveStatus=false}={}) {
   if(typeof token!=='string'||! /^[A-Za-z0-9_-]{43}$/.test(token))throw error('AUTHENTICATION_REQUIRED',401);
   const now=await timestamp(db),tokenHash=secure.digest('token',token);
   const row=await one(db,'SELECT a.*,s.expires_ms,s.revoked FROM auth_sessions s JOIN identity_accounts a ON a.id=s.account_id WHERE s.token_hash=?',[tokenHash]);
   if(!row||(!allowRevoked&&Number(row.revoked))||Number(row.expires_ms)<=now)throw error('AUTHENTICATION_REQUIRED',401);
+  // Both branches reject access. Preserve the existing suspended-account error
+  // while permanently closed accounts cannot reuse an old session.
+  if(row.current_status==='CLOSED')throw error('AUTHENTICATION_REQUIRED',401);
+  if(row.current_status!=='ACTIVE'&&!(allowInactiveStatus===true&&['SUSPENDED','DELETION_PENDING'].includes(row.current_status)))throw error('ACCOUNT_NOT_ACTIVE',403);
   return {...row,token_hash:tokenHash};
  }
  return Object.freeze({secure,

@@ -1,0 +1,20 @@
+CREATE TABLE privacy_executions (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ request_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ action_code VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ target_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ proposed_by CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ reviewed_by CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ current_status ENUM('PROPOSED','APPROVED','REJECTED','QUEUED','EXECUTED') NOT NULL DEFAULT 'PROPOSED',
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ payload_json JSON NOT NULL,
+ payload_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ result_json JSON NULL,
+ result_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ job_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ FOREIGN KEY(request_id) REFERENCES privacy_requests(id),
+ FOREIGN KEY(proposed_by) REFERENCES identity_accounts(id),
+ FOREIGN KEY(reviewed_by) REFERENCES identity_accounts(id),
+ INDEX privacy_execution_request(request_id,id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

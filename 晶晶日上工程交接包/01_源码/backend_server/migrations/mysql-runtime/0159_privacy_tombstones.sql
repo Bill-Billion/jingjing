@@ -1,0 +1,11 @@
+CREATE TABLE privacy_tombstones (
+ asset_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ execution_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL UNIQUE,
+ content_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ object_key VARCHAR(512) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ current_status ENUM('ERASURE_PENDING','CURRENT_OBJECT_ABSENT') NOT NULL,
+ backup_status ENUM('REVIEW_REQUIRED','REVIEWED') NOT NULL DEFAULT 'REVIEW_REQUIRED',
+ backup_evidence_ref VARCHAR(128) NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ FOREIGN KEY(execution_id) REFERENCES privacy_executions(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

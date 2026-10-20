@@ -10,8 +10,8 @@ async function audit(tx,a,r,event,purchase=false){const key=purchase?r.order_id:
 async function save(tx,a,r,data,event,status){const isPurchase=!!r.order_id,next={...r,data,object_version:r.object_version+1,data_sha256:digest(data),...(status?{current_status:status}:{})};await tx.execute('UPDATE '+(isPurchase?'stock_purchases':'stock_listings')+' SET data_json=?,data_sha256=?,object_version=?'+(isPurchase?'':',current_status=?')+' WHERE '+(isPurchase?'order_id':'id')+'=?',[JSON.stringify(data),next.data_sha256,next.object_version,...(isPurchase?[]:[next.current_status]),isPurchase?r.order_id:r.id]);await audit(tx,a,next,event,isPurchase);return next;}
 async function command(tx,a,op,input,fn){const key=digest([a.id,op,ref(input.operation_key)]),hash=digest(input);try{await tx.execute('INSERT INTO stock_commands(id,fingerprint) VALUES (?,?)',[key,hash]);}catch(e){if(e.code!=='ER_DUP_ENTRY')throw e;const old=await A.one(tx,'SELECT * FROM stock_commands WHERE id=?',[key]);if(old.fingerprint!==hash)throw error('IDEMPOTENCY_CONFLICT',409);if(!old.result_json)throw error('IDEMPOTENCY_IN_PROGRESS',409);if(A.sha(old.result_json)!==old.result_sha256)throw error('STORED_CONTENT_MISMATCH',503);return JSON.parse(old.result_json);}const r=await fn(),text=JSON.stringify(r);await tx.execute('UPDATE stock_commands SET result_json=?,result_sha256=? WHERE id=?',[text,A.sha(text),key]);return r;}
 async function reviewer(tx,a,r,action){if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action}))throw error('STOCK_REVIEW_FORBIDDEN',403);if(r&&(r.created_by===a.id||await A.one(tx,"SELECT id FROM party_memberships WHERE account_id=? AND party_id=? AND current_status='ACTIVE'",[a.id,r.seller_party_id])))throw error('SELF_REVIEW_FORBIDDEN',403);}
-async function video(tx,key,seller){const a=await A.one(tx,'SELECT * FROM supply_assets WHERE id=? FOR SHARE',[id(key)]);if(!a||a.owner_party_id!==seller||a.current_status!=='READY'||a.purpose!=='WORK_CONTENT'||a.media_type!=='video/mp4')throw error('STOCK_VIDEO_NOT_READY',409);return a;}
-async function validateRights(tx,r,a){
+async function video(tx,key,seller){await require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',key);const a=await A.one(tx,'SELECT * FROM supply_assets WHERE id=? FOR SHARE',[id(key)]);if(!a||a.owner_party_id!==seller||a.current_status!=='READY'||a.purpose!=='WORK_CONTENT'||a.media_type!=='video/mp4')throw error('STOCK_VIDEO_NOT_READY',409);return a;}
+async function validateRights(tx,r,a){if(r.id)await require('../privacy/restrictions').assertUnrestricted(tx,'STOCK_LISTING',r.id);
  await A.activeParty(tx,r.seller_party_id);const at=await A.now(tx),snap=[];
  const seller=await A.person(tx,r.data.seller_person_id);require('../artists/policy').adult(seller,at);
  await A.authorize(tx,a||{id:r.created_by},seller,r.seller_party_id,'SUBMIT_LISTING');
@@ -24,6 +24,7 @@ async function validateRights(tx,r,a){
  if(r.data.rights_snapshot&&digest(snap)!==digest(r.data.rights_snapshot))throw error('STOCK_RIGHTS_CHANGED',409);
  await A.assets(tx,r.data.rights_evidence_ids,r.seller_party_id,['RIGHTS_EVIDENCE','CONSENT_EVIDENCE']);
  const full=await video(tx,r.data.file_id,r.seller_party_id),preview=await video(tx,r.data.preview_file_id,r.seller_party_id);
+ await require('../media/policy').receipt(tx,full,'MODERATE_FILE');await require('../media/policy').receipt(tx,preview,'MODERATE_FILE');await require('../media/policy').receipt(tx,full,'MARK_VIDEO',{variant:'final'});await require('../media/policy').receipt(tx,preview,'MARK_VIDEO',{variant:'preview'});
  if(full.content_sha256===preview.content_sha256)throw error('STOCK_SEPARATE_PREVIEW_REQUIRED',409);
  if(r.data.files&&(full.content_sha256!==r.data.files.full_sha256||preview.content_sha256!==r.data.files.preview_sha256))throw error('STORED_CONTENT_MISMATCH',503);
  return {rights_snapshot:snap,files:{full_sha256:full.content_sha256,preview_sha256:preview.content_sha256}};
@@ -42,5 +43,15 @@ async function financial(tx,order){
  const next=await save(tx,null,p,d,event);if(issued){d.notification_event_id=await audit(tx,null,next,'STOCK_DELIVERY_AVAILABLE',true);await tx.execute('UPDATE stock_purchases SET data_json=?,data_sha256=? WHERE order_id=?',[JSON.stringify(d),digest(d),p.order_id]);}
 }
 async function refundAllowed(tx,order,allocations){if(!order.data.quote.stock_video)return;const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR SHARE',[order.id]));if(allocations.length!==1||allocations[0].line_id!=='stock'||allocations[0].amount_minor!==order.data.quote.total_minor)throw error('STOCK_FULL_REFUND_REQUIRED',409);if(p.data.granted_at&&!p.data.cases.some(c=>c.resolution?.decision==='REFUND'))throw error('STOCK_REFUND_REVIEW_REQUIRED',409);}
-async function usable(tx,order,p){if(order.current_status!=='PAID'||p.data.status!=='ACTIVE'||p.data.current_case_id)throw error('STOCK_LICENSE_NOT_ACTIVE',409);const r=await listing(tx,p.listing_id);if(r.data.rights_hold===true)throw error('STOCK_RIGHTS_HOLD',409);const file=await video(tx,p.data.listing_snapshot.file_id,order.merchant_party_id);if(file.content_sha256!==p.data.listing_snapshot.files.full_sha256)throw error('STORED_CONTENT_MISMATCH',503);return file;}
+async function usable(tx,order,p){await require('../privacy/restrictions').assertUnrestricted(tx,'STOCK_LISTING',p.listing_id);await currentPurchaseConsent(tx,order,p);if(order.current_status!=='PAID'||p.data.status!=='ACTIVE'||p.data.current_case_id)throw error('STOCK_LICENSE_NOT_ACTIVE',409);const r=await listing(tx,p.listing_id);if(r.data.rights_hold===true)throw error('STOCK_RIGHTS_HOLD',409);const file=await video(tx,p.data.listing_snapshot.file_id,order.merchant_party_id);if(file.content_sha256!==p.data.listing_snapshot.files.full_sha256)throw error('STORED_CONTENT_MISMATCH',503);return file;}
+// Further downloads recheck the consent captured by the purchase, without
+// rewriting the purchased licence, issuing refunds, or applying new seller tiers.
+async function currentPurchaseConsent(tx,order,p){
+ const at=await A.now(tx);
+ for(const x of p.data.listing_snapshot.participants){
+  const person=await A.person(tx,x.person_id);await A.activeParty(tx,person.owner_party_id);
+  const c=await A.load(tx,x.consent_id,'CONSENT');
+  if(c.person_id!==person.id||c.avatar_id!==x.avatar_id||c.current_status!=='APPROVED'||c.data.grantee_party_id!==order.merchant_party_id||!['STOCK_LICENSE','PUBLIC_DISPLAY'].every(v=>c.data.purposes.includes(v))||!require('../artists/policy').active(c.data,at))throw error('STOCK_SALE_CONSENT_REQUIRED',409);
+ }
+}
 module.exports={checked,listing,purchase,listingDTO,audit,save,command,reviewer,video,validateRights,listed,publicDTO,bind,paymentAllowed,financial,refundAllowed,usable};

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.29.0-rc.1
+  version: 0.30.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -23445,6 +23445,682 @@ paths:
               $ref: '#/components/schemas/PrivacyModelDeletionInput'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
       description: 仅申请本人可操作；不接受机构身份。仅覆盖制作模块已登记模型，不代表账号清除完成。供应商未启用或结果未确认时不得展示删除成功。
+  /api/v1/privacy/requests/{request_id}/executions:
+    get:
+      operationId: listPrivacyExecutions
+      summary: 查看具体处理进度
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema: &seven_paths_001
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema: *seven_paths_001
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+    post:
+      operationId: proposePrivacyExecution
+      summary: 拟定具体处理并等待复核
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"[1-9][0-9]*"$
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyExecutionProposal'
+  /api/v1/privacy/requests/{request_id}/executions/{execution_id}/execute:
+    post:
+      operationId: applyPrivacyExecution
+      summary: 执行已复核的具体处理
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"[1-9][0-9]*"$
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      - name: execution_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyExecutionConfirmation'
+  /api/v1/privacy/operations/requests/{request_id}/executions:
+    get:
+      operationId: listPrivacyExecutionsForHandler
+      summary: 查看具体处理进度
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      - name: cursor
+        in: query
+        required: false
+        schema: *seven_paths_001
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+    post:
+      operationId: proposePrivacyExecutionForHandler
+      summary: 拟定具体处理并等待复核
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"[1-9][0-9]*"$
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyExecutionProposal'
+  /api/v1/privacy/operations/requests/{request_id}/executions/{execution_id}/execute:
+    post:
+      operationId: applyPrivacyExecutionForHandler
+      summary: 执行已复核的具体处理
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"[1-9][0-9]*"$
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      - name: execution_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyExecutionConfirmation'
+  /api/v1/privacy/operations/requests/{request_id}/executions/{execution_id}/review:
+    post:
+      operationId: reviewPrivacyExecution
+      summary: 独立复核具体处理方案
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"[1-9][0-9]*"$
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      - name: execution_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyExecutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyExecutionReview'
+  /api/v1/privacy/requests/{request_id}/data:
+    get:
+      operationId: exportPrivacyData
+      summary: 读取本人指定范围的资料副本
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      - name: category
+        in: query
+        required: true
+        schema:
+          enum:
+          - PROFILE
+          - ARTIST_MATERIALS
+      - name: cursor
+        in: query
+        required: false
+        schema: *seven_paths_001
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyDataExportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+  /api/v1/media/tasks:
+    post:
+      operationId: createMediaTask
+      summary: 提交私有文件审核或标识处理
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaTaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaTaskInput'
+  /api/v1/media/tasks/{task_id}:
+    get:
+      operationId: getMediaTask
+      summary: 查看本人的文件处理结果
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: task_id
+        in: path
+        required: true
+        schema: *seven_paths_001
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaTaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+  /api/v1/media/operations/tasks/{task_id}:
+    get:
+      operationId: getMediaTaskForReview
+      summary: 运营查看文件审核结果
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaTaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 必须具备对应内容审核权限；禁止本人或所属机构自批。未知机审结果与未启用服务不允许借此冒充通过。
+  /api/v1/media/operations/tasks/{task_id}/review:
+    post:
+      operationId: reviewMediaTask
+      summary: 独立复核机审标记为待复核的文件
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaTaskResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 必须具备对应内容审核权限；禁止本人或所属机构自批。未知机审结果与未启用服务不允许借此冒充通过。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision:
+                  enum:
+                  - APPROVE
+                  - REJECT
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                result_sha256:
+                  type: string
+                  pattern: ^[a-f0-9]{64}$
+              required:
+              - decision
+              - reason
+              - result_sha256
 components:
   securitySchemes:
     bearerAuth:
@@ -50976,3 +51652,276 @@ components:
       - settlements
       - credit_funding
       - cash_required_minor
+
+    PrivacyExecutionData:
+      type: object
+      additionalProperties: false
+      properties:
+        id: &seven_schemas_001
+          type: string
+          format: uuid
+        request_id: *seven_schemas_001
+        action: &seven_schemas_002
+          type: string
+          enum:
+          - PROFILE_CORRECTION
+          - FILE_ERASURE
+          - ACCOUNT_CLOSURE
+          - RESTRICT_CONTENT
+          - RELEASE_CONTENT
+        target_id: *seven_schemas_001
+        object_version:
+          type: integer
+          minimum: 1
+        current_status:
+          enum:
+          - PROPOSED
+          - APPROVED
+          - REJECTED
+          - QUEUED
+          - EXECUTED
+        proposal_sha256: &seven_schemas_003
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        policy_rule_id: *seven_schemas_001
+        job_status:
+          type:
+          - string
+          - 'null'
+        result: &seven_schemas_006
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        request_completion:
+          const: NOT_CONFIRMED
+      required:
+      - id
+      - request_id
+      - action
+      - target_id
+      - object_version
+      - current_status
+      - proposal_sha256
+      - policy_rule_id
+      - job_status
+      - result
+      - request_completion
+    PrivacyExecutionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/PrivacyExecutionData'
+      required:
+      - meta
+      - data
+    PrivacyExecutionListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/PrivacyExecutionData'
+              maxItems: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    PrivacyDataExportResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            category:
+              enum:
+              - PROFILE
+              - ARTIST_MATERIALS
+            items:
+              type: array
+              items:
+                type: object
+              maxItems: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+            coverage:
+              enum:
+              - ACCOUNT_PROFILE_ONLY
+              - OWN_MATERIAL_METADATA_ONLY
+          required:
+          - category
+          - items
+          - next_cursor
+          - coverage
+      required:
+      - meta
+      - data
+    PrivacyExecutionProposal:
+      type: object
+      additionalProperties: false
+      properties:
+        action: *seven_schemas_002
+        target_id: *seven_schemas_001
+        policy_rule_id: *seven_schemas_001
+        details:
+          type: object
+          additionalProperties: false
+          properties:
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 1000
+            display_name:
+              type: string
+              minLength: 1
+              maxLength: 80
+            target_kind:
+              enum:
+              - ASSET
+              - ARTIST_LISTING
+              - STOCK_LISTING
+              - NOTICE
+              - PRODUCTION_VERSION
+          required:
+          - reason
+      required:
+      - action
+      - target_id
+      - policy_rule_id
+      - details
+    PrivacyExecutionReview:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        proposal_sha256: *seven_schemas_003
+        scope_verified:
+          type: boolean
+        retention_verified:
+          type: boolean
+      required:
+      - decision
+      - reason
+      - proposal_sha256
+      - scope_verified
+      - retention_verified
+    PrivacyExecutionConfirmation:
+      type: object
+      additionalProperties: false
+      properties:
+        confirmed:
+          const: true
+      required:
+      - confirmed
+    MediaTaskInput:
+      type: object
+      additionalProperties: false
+      properties:
+        task_kind: &seven_schemas_004
+          enum:
+          - MARK_VIDEO
+          - MODERATE_FILE
+        source_kind: &seven_schemas_005
+          enum:
+          - SUPPLY_ASSET
+          - PRODUCTION_VERSION
+        source_id: *seven_schemas_001
+        variant:
+          enum:
+          - preview
+          - final
+        policy_rule_id: *seven_schemas_001
+      required:
+      - task_kind
+      - source_kind
+      - source_id
+      - variant
+      - policy_rule_id
+    MediaTaskData:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        task_kind:
+          enum:
+          - MARK_VIDEO
+          - MODERATE_FILE
+        source_kind:
+          enum:
+          - SUPPLY_ASSET
+          - PRODUCTION_VERSION
+        source_id:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - QUEUED
+          - EXECUTED
+          - BLOCKED
+        job_status:
+          type:
+          - string
+          - 'null'
+        result:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        result_sha256:
+          type:
+          - string
+          - 'null'
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - id
+      - task_kind
+      - source_kind
+      - source_id
+      - current_status
+      - job_status
+      - result
+      - result_sha256
+    MediaTaskResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/MediaTaskData'
+      required:
+      - meta
+      - data

@@ -1,7 +1,8 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
- privacy:['test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
+ media:['test/media-marking.test.cjs','test/media.integration.test.cjs'],
+ privacy:['test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
  'manual-sample':['test/manual-sample.integration.test.cjs'],
  participation:['test/fixed-income-release.integration.test.cjs','test/participation-amendment.integration.test.cjs','test/project-income.integration.test.cjs','test/participation-policy.test.cjs','test/participation.integration.test.cjs'],
  redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs'],

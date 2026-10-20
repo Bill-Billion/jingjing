@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-20",
+  "branch": "core/v5-privacy-protection",
+  "base_commit": "694dd25",
+  "result": "LOCAL_CHECKS_PASSED",
+  "full_regression": {
+    "tests": 915,
+    "pass": 914,
+    "fail": 0,
+    "skipped": 1,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "full_regression_source": "node backend_server/scripts/run-tests.cjs; isolated MySQL and test network guard",
+  "focused_final": {
+    "privacy_execution_and_recovery": {
+      "tests": 20,
+      "pass": 20,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    "media_with_independent_review": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    },
+    "account_api": {
+      "tests": 25,
+      "pass": 25,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0
+    }
+  },
+  "contract_version": "0.30.0-rc.1",
+  "contract_result": "see CONTRACT.json",
+  "real_ffmpeg_rendering": "PASS; generated and decoded preview/final video; visible label pixels and embedded metadata verified",
+  "cloud_moderation": "SYNTHETIC_ADAPTER_ONLY; NOT_CALLED",
+  "object_storage": "ISOLATED_FAKE_TRANSPORT; REAL_OSS_NOT_CALLED",
+  "recovery": "REAL_EARLIER_BACKUP_RESTORED_TO_EMPTY_ISOLATED_MYSQL; latest erasure register replayed before access",
+  "legacy_skip": "No sanitized legacy SQLite snapshot; migration comparison not accepted",
+  "frontend": {
+    "PR24": {
+      "head": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+      "state": "OPEN",
+      "merged": false
+    },
+    "PR26": {
+      "head": "888a649f86847beb04805a98123d910872850630",
+      "state": "OPEN",
+      "merged": false,
+      "checks_success": 6
+    },
+    "new_page_tests_this_batch": false,
+    "prior_page_fix": "731ef46 remains separate"
+  },
+  "production_enabled": false,
+  "data_governance": {
+    "backend_dependencies": 19,
+    "flows": 8,
+    "policy_or_legal_approval": false
+  },
+  "limits": [
+    "Not whole-product or all-data erasure acceptance",
+    "Personal automatic copy is bounded; other categories use reviewed copies",
+    "No native device test or real external service calls",
+    "Closed-account access and deletion of all data are distinct",
+    "OSS versions, physical backups and log lifecycle remain external acceptance conditions"
+  ]
+}

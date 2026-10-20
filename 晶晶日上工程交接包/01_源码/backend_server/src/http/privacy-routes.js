@@ -19,6 +19,14 @@ function createPrivacyRouter(options){const router=express.Router(),repo=createP
  router.post('/operations/requests/:request_id/response',wrap(async(req,res)=>reply(req,res,await repo.propose(req,input(req,['result'])))));
  router.post('/operations/requests/:request_id/review',wrap(async(req,res)=>reply(req,res,await repo.review(req,input(req,['decision','reason','proposal_sha256','evidence_verified','third_party_data_redacted','remaining_actions_checked'])))));
  router.post('/requests/:request_id/reopen',wrap(async(req,res)=>reply(req,res,await repo.reopen(req,input(req,['reason'])))));
+ for(const prefix of ['/requests','/operations/requests']){
+  const operations=prefix.includes('operations');
+  router.get(prefix+'/:request_id/executions',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.executions(req,{request_id:id(req.params.request_id),operations,after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
+  router.post(prefix+'/:request_id/executions',wrap(async(req,res)=>reply(req,res,await repo.proposeExecution(req,{...input(req,['action','target_id','policy_rule_id','details']),operations}))));
+  router.post(prefix+'/:request_id/executions/:execution_id/execute',wrap(async(req,res)=>reply(req,res,await repo.execute(req,{...input(req,['confirmed']),execution_id:id(req.params.execution_id),operations}))));
+ }
+ router.post('/operations/requests/:request_id/executions/:execution_id/review',wrap(async(req,res)=>reply(req,res,await repo.reviewExecution(req,{...input(req,['decision','reason','proposal_sha256','scope_verified','retention_verified']),execution_id:id(req.params.execution_id)}))));
+ router.get('/requests/:request_id/data',wrap(async(req,res)=>{shape(req.query,['category','cursor','limit']);reply(req,res,await repo.exportData(req,{request_id:id(req.params.request_id),category:req.query.category,after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
  return router;
 }
 module.exports={createPrivacyRouter};

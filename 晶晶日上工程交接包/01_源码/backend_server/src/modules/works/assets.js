@@ -20,10 +20,11 @@ function createSupplyAssets({db,repository,env={},storageFactory}){
   async read(ctx,id,partyId){return metadata(await repository.assetAccess(ctx,id,partyId));},
   async download(ctx,id,partyId){
    const asset=await repository.assetAccess(ctx,id,partyId);
+   await db.withTransaction(tx=>require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',id));
    const body=await call('get',asset.object_key,context=>storage.getBuffer(asset.object_key,context));
    if(!Buffer.isBuffer(body)||body.length!==asset.byte_size||createHash('sha256').update(body).digest('hex')!==asset.content_sha256)throw error('PRIVATE_CONTENT_MISMATCH',503);
    // Recheck permission after transport; never redirect to a public or signed URL.
-   await repository.assetAccess(ctx,id,partyId);return {body,metadata:metadata(asset)};
+   await repository.assetAccess(ctx,id,partyId);await db.withTransaction(tx=>require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',id));return {body,metadata:metadata(asset)};
   },
  });
 }

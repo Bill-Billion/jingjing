@@ -1,5 +1,5 @@
 {
-  "version": "0.29.0-rc.1",
+  "version": "0.30.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -437,7 +437,19 @@
     "getPrivacyActions",
     "withdrawPrivacyConsent",
     "requestPrivacyModelDeletion",
-    "getPrivacyModelCreations"
+    "getPrivacyModelCreations",
+    "listPrivacyExecutions",
+    "proposePrivacyExecution",
+    "applyPrivacyExecution",
+    "listPrivacyExecutionsForHandler",
+    "proposePrivacyExecutionForHandler",
+    "applyPrivacyExecutionForHandler",
+    "reviewPrivacyExecution",
+    "exportPrivacyData",
+    "createMediaTask",
+    "getMediaTask",
+    "getMediaTaskForReview",
+    "reviewMediaTask"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -771,5 +783,30 @@
     "status": "ISOLATED_TESTS",
     "evidence": "docs/testing/evidence/v5-personal-tasks/RESULTS.json",
     "limits": "Owner-only production creation status; no provider identifiers; registered model status is not usability, deletion, account closure or whole-request completion."
+  },
+  "privacy_execution_and_media": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listPrivacyExecutions",
+      "proposePrivacyExecution",
+      "applyPrivacyExecution",
+      "listPrivacyExecutionsForHandler",
+      "proposePrivacyExecutionForHandler",
+      "applyPrivacyExecutionForHandler",
+      "reviewPrivacyExecution",
+      "exportPrivacyData",
+      "createMediaTask",
+      "getMediaTask",
+      "getMediaTaskForReview",
+      "reviewMediaTask"
+    ],
+    "production_enabled": false,
+    "limits": [
+      "复制自动接口仅账号展示名及本人素材元数据，其他范围走已审阅副本流程",
+      "仅本人AVATAR_MATERIAL自动删除当前对象，历史版本和备份另核对",
+      "有待结清钱账或机构负责人交接时拒绝注销",
+      "正式媒体规则、云审核及存储需单独启用验证",
+      "实际视频标识不代表法律合规审查完成"
+    ]
   }
 }

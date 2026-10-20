@@ -16,7 +16,7 @@ function createArtistAssetsRepository(db,{resolvePrincipal=async()=>null}={}){
  async finishAsset(ctx,key,success){return db.withTransaction(async tx=>{const a=await actor(tx,ctx),hint=await C.one(tx,'SELECT person_id,acting_party_id FROM artist_asset_links WHERE asset_id=?',[id(key)]);if(!hint)throw error('ARTIST_ASSET_NOT_FOUND',404);const p=await C.person(tx,hint.person_id,'FOR UPDATE'),r=await C.one(tx,'SELECT * FROM supply_assets WHERE id=? FOR UPDATE',[key]);if(r.created_by!==a.id)throw error('ARTIST_ASSET_NOT_FOUND',404);if(r.current_status!=='UPLOADING')return r;
   if(success){await C.authorize(tx,a,p,hint.acting_party_id,'MANAGE_MATERIALS');P.adult(p,await C.now(tx));}const status=success?'READY':'FAILED';await tx.execute('UPDATE supply_assets SET current_status=? WHERE id=?',[status,key]);await C.audit(tx,a,p,key,'ASSET_'+status,1,{sha256:r.content_sha256});return {...r,current_status:status};
  });},
- async assetAccess(ctx,key,partyId){return db.withTransaction(async tx=>{const {r}=await access(tx,ctx,key,partyId);if(r.current_status!=='READY')throw error('PRIVATE_MATERIAL_NOT_READY',409);return r;});},
+ async assetAccess(ctx,key,partyId){return db.withTransaction(async tx=>{await require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',key);const {r}=await access(tx,ctx,key,partyId);if(r.current_status!=='READY')throw error('PRIVATE_MATERIAL_NOT_READY',409);return r;});},
  });
 }
 module.exports={createArtistAssetsRepository};

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-20",
-  "scope": "服务器直接运行依赖；客户端组件由队友补同版本证据",
+  "scope": "本侧服务器及本分支客户端依赖清单；队友PR24/26运行时SDK时序另验，不把依赖安装当已传输或已合规",
   "source": "晶晶日上工程交接包/01_源码/backend_server/package-lock.json",
   "items": [
     {
@@ -33,9 +33,10 @@
       "name": "@alicloud/green20220302",
       "locked_version": "3.4.4",
       "declared_range": "^3.4.4",
-      "purpose_from_code": "旧内容审核接入候选",
+      "purpose_from_code": "可选文件机审适配器，默认关闭；旧调度层另保留历史入口",
       "source_references": [
-        "services/providers/aliyunClient.js"
+        "services/providers/aliyunClient.js",
+        "src/modules/media/moderation-provider.js"
       ],
       "privacy_policy_reference": null,
       "personal_information_assessment_reference": null,
@@ -47,9 +48,10 @@
       "name": "@alicloud/openapi-client",
       "locked_version": "0.4.15",
       "declared_range": "^0.4.15",
-      "purpose_from_code": "按下列源码引用进一步核对具体用途",
+      "purpose_from_code": "可选文件机审适配器，默认关闭；旧调度层另保留历史入口",
       "source_references": [
-        "services/providers/aliyunClient.js"
+        "services/providers/aliyunClient.js",
+        "src/modules/media/moderation-provider.js"
       ],
       "privacy_policy_reference": null,
       "personal_information_assessment_reference": null,
@@ -319,10 +321,196 @@
     }
   ],
   "pending": [
-    "逐项确认实际传输字段、目的与接收方",
-    "甲方提供正式政策/适用主体及个人信息影响评估依据",
-    "按日志类别给出保留依据和期限，不能全局编造统一期限",
-    "队友补App及网页SDK实际初始化、权限和同意时序",
-    "等保与备案须提供适用性及实际材料，未据清单作合规结论"
-  ]
+    "甲方确认正式隐私联系人、投诉渠道、主体及分类保留依据（EXT-PRIVACY-20261020）",
+    "甲方确认真实机审产品及地域、服务代码、第三方保留条款；本轮未收费调用",
+    "队友补PR24/26及后续App/网页同版本SDK初始化、同意与权限时序证据",
+    "部署前验证日志平台保留与清除、OSS版本及备份到期清理；不能由应用删除当前对象代替",
+    "正式AI标识文本、元数据要求和产品适用范围需审核，当前通用字段不作为法律合规结论"
+  ],
+  "verified_controls": [
+    "结构化日志只接受预定字段，原始正文、密钥、短信内容和私有URL不写日志",
+    "新媒体审核仅传内容/私有对象标识和任务编号，不传手机号/设备号；服务未验证不调用",
+    "每个后台任务绑定原文件摘要、处理规则、存储和审核配置，排队后撤权仍拒绝",
+    "恢复库保持隔离；重新应用最新删除及注销记录后才能进入下一步独立恢复审阅"
+  ],
+  "flows": [
+    {
+      "name": "短信登录",
+      "sources": [
+        "src/modules/providers/sms.js",
+        "src/modules/providers/sms-transport.js",
+        "src/modules/auth/repository.js"
+      ],
+      "recipient": "已配置短信供应商",
+      "fields": [
+        "测试或登录手机号",
+        "审核通过的签名和模板编号",
+        "短期验证码参数"
+      ],
+      "gate": "服务配置与验证记录；发送频率限制；测试授权另管理",
+      "retention": "验证码哈希、会话与限流分开；正式保留期限待甲方",
+      "live_status": "本轮未发送短信"
+    },
+    {
+      "name": "私有文件存储",
+      "sources": [
+        "src/modules/providers/private-storage.js",
+        "src/modules/works/assets.js"
+      ],
+      "recipient": "已配置OSS私有桶",
+      "fields": [
+        "文件字节",
+        "服务器生成的私有对象键",
+        "内容类型"
+      ],
+      "gate": "归属权限、私有ACL、禁止覆盖、服务验证记录",
+      "retention": "当前对象删除结果与历史版本/备份分别核对",
+      "live_status": "本轮使用隔离存储测试"
+    },
+    {
+      "name": "文件内容机审",
+      "sources": [
+        "src/modules/media/moderation-provider.js",
+        "src/modules/media/service.js"
+      ],
+      "recipient": "可选阿里云内容审核，未代替甲方选定产品",
+      "fields": [
+        "文本内容或私有OSS桶/对象/地域",
+        "合成任务编号",
+        "服务代码"
+      ],
+      "gate": "默认关闭；生效规则明确供应商；配置与服务验证均一致",
+      "retention": "本地只保存判定和请求编号，不保存原始风险正文；第三方保留待产品条款确认",
+      "live_status": "未开通实测；请求和返回使用合成替身测试"
+    },
+    {
+      "name": "视频水印与AI标识",
+      "sources": [
+        "src/modules/media/marking.js",
+        "src/modules/media/service.js"
+      ],
+      "recipient": "本机FFmpeg进程，随后私有OSS",
+      "fields": [
+        "授权源视频",
+        "已审核标识文本",
+        "规则摘要"
+      ],
+      "gate": "只读本地文件协议、限制大小/时长、退出后清临时目录、输出回读和摘要核对",
+      "retention": "临时文件在finally清理；产物随私有文件规则处理",
+      "live_status": "本地真实转码已验证；正式标识内容和元数据格式仍待审核"
+    },
+    {
+      "name": "数字人制作与删除",
+      "sources": [
+        "src/modules/production/provider.js",
+        "src/modules/production/handlers.js",
+        "src/modules/privacy/actions.js"
+      ],
+      "recipient": "按制作订单绑定的供应商",
+      "fields": [
+        "已授权素材或模型引用",
+        "操作类型",
+        "供应商任务编号"
+      ],
+      "gate": "原授权、账号及规则再次检查；撤回后只核对原任务/登记删除",
+      "retention": "具体模型删除证据不等于所有供应商副本已清理",
+      "live_status": "真实产品权限另验"
+    },
+    {
+      "name": "账号及隐私处理",
+      "sources": [
+        "src/modules/privacy/execution.js",
+        "src/modules/privacy/erasure.js",
+        "src/operations/privacy-recovery.js"
+      ],
+      "recipient": "本系统数据库、经权限核验的本人或运营人员",
+      "fields": [
+        "本人请求",
+        "具体处理方案",
+        "独立复核记录",
+        "最小处理结果",
+        "恢复清理登记"
+      ],
+      "gate": "申请范围、归属、规则版本、独立复核和并发版本检查",
+      "retention": "历史钱账合同保持原文；EXT-PRIVACY-20261020待正式依据",
+      "live_status": "隔离数据库与本机HTTP通过，未启用生产"
+    },
+    {
+      "name": "结构化运行日志",
+      "sources": [
+        "src/infrastructure/observability.js",
+        "src/modules/providers/adapter.js"
+      ],
+      "recipient": "服务器标准输出及部署方日志收集器",
+      "fields": [
+        "请求编号",
+        "账号/机构编号",
+        "供应商请求编号",
+        "任务编号",
+        "状态码",
+        "耗时",
+        "固定错误码"
+      ],
+      "gate": "字段白名单；不记录请求体/原始服务错误/私有链接",
+      "retention": "日志收集器尚需按正式分类保留策略配置，未虚构期限",
+      "live_status": "脱敏已测试，真实日志平台未验"
+    },
+    {
+      "name": "备份与恢复",
+      "sources": [
+        "src/operations/backup.js",
+        "src/operations/privacy-recovery.js",
+        "scripts/release-tools.cjs"
+      ],
+      "recipient": "授权运维持有的私有备份文件",
+      "fields": [
+        "加密数据库备份",
+        "独立清理登记中的账号及对象引用"
+      ],
+      "gate": "加密、摘要校验、空目标、恢复隔离、最新清理登记复核；工具仅本机隔离库",
+      "retention": "备份轮换及OSS版本永久清理由正式运维策略执行",
+      "live_status": "隔离恢复测试；未操作真实备份"
+    }
+  ],
+  "client_inventory": {
+    "web": {
+      "source": "晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json",
+      "dependencies": {
+        "element-plus": "^2.14.6",
+        "pinia": "^4.0.3",
+        "vue": "^3.5.42",
+        "vue-router": "^5.3.1"
+      },
+      "note": "UI框架清单不证明无运行时第三方调用；PR26同版本运行检查由双方继续"
+    },
+    "app": {
+      "source": "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/pubspec.yaml",
+      "review_groups": {
+        "network": [
+          "dio",
+          "cached_network_image",
+          "video_player",
+          "webview_flutter"
+        ],
+        "device_files": [
+          "image_picker",
+          "file_picker",
+          "screenshot",
+          "share_plus"
+        ],
+        "local_preferences": [
+          "shared_preferences"
+        ],
+        "external_open": [
+          "url_launcher"
+        ]
+      },
+      "pending": [
+        "真机权限弹窗先后",
+        "登录凭据和退出后的本地清除",
+        "远程图片/视频/网页的实际接收方",
+        "分享和文件导出明确用户动作触发"
+      ]
+    }
+  }
 }

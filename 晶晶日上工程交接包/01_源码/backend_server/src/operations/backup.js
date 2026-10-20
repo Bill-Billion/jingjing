@@ -31,5 +31,6 @@ async function restore(db,payload,{expected_sha256}={}){verify(payload);if(F.has
  // Restore deleted/reserved identifier high-water marks only after the row transaction commits.
  // The persistent quarantine remains in place if this final step fails.
  await db.withConnection(async c=>{for(const t of payload.tables)if(t.auto_increment!==null)await c.query('ALTER TABLE '+F.name(t.name)+' AUTO_INCREMENT='+t.auto_increment);});
+ await db.execute("DELETE FROM platform_schema_metadata WHERE schema_key IN ('privacy_erasure_status','privacy_erasure_review')");
  return result;}
 module.exports={backup,manifest,verify,seal,unseal,writeEncrypted,readEncrypted,restore,capture};

@@ -61,12 +61,20 @@ jobs:
       - name: 按锁定版本安装服务器依赖
         working-directory: 晶晶日上工程交接包/01_源码/backend_server
         run: npm ci --no-audit --no-fund
+      - name: 准备真实视频处理检查工具
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+          node scripts/check-data-governance.cjs
       - name: 启动一次性测试数据库
         run: node scripts/ci-mysql.cjs start
       - name: 运行检查并保存结果
         working-directory: 晶晶日上工程交接包/01_源码/backend_server
         env:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+          JX_TEST_FFMPEG: /usr/bin/ffmpeg
+          JX_TEST_FFPROBE: /usr/bin/ffprobe
+          JX_TEST_FONT: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
         run: npm run test:ci
       - name: 校验真实隔离HTTP返回与接口文档一致
         run: |
@@ -105,6 +113,8 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/fixed-income-release-http-fixtures.json --report .local/ci-evidence/fixed-income-release-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-http-fixtures.json --report .local/ci-evidence/privacy-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-actions-http-fixtures.json --report .local/ci-evidence/privacy-actions-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-privacy-http.json --report .local/ci-evidence/privacy-execution-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-media-http.json --report .local/ci-evidence/media-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop

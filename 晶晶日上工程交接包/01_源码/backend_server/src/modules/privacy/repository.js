@@ -2,7 +2,7 @@
 const {randomUUID}=require('node:crypto'),{id,ref,label,version,error}=require('../party/policy'),{digest}=require('../governance/content'),{authorizeOperator}=require('../governance/operator-access'),P=require('./policy');
 const one=async(tx,sql,args=[])=>(await tx.execute(sql,args))[0][0],parse=v=>typeof v==='string'?JSON.parse(v):v;
 function checked(v,h){const d=parse(v);if(digest(d)!==h)throw error('STORED_CONTENT_MISMATCH',503);return d;}
-function createPrivacyRepository(db,{resolvePrincipal=async()=>null,calendar={},calendarVersion=null}={}){
+function createPrivacyRepository(db,{resolvePrincipal=async()=>null,calendar={},calendarVersion=null,env={},storageFactory}={}){
  async function actor(tx,ctx,lock="FOR SHARE"){const principal=await resolvePrincipal(ctx);if(!principal)throw error('AUTHENTICATION_REQUIRED',401);const a=await one(tx,'SELECT * FROM identity_accounts WHERE subject_ref=? '+lock,[ref(principal.subject_ref)]);if(!a||a.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE');return a;}
  async function operator(tx,a,action='PRIVACY_HANDLE'){if(!await authorizeOperator(tx,{account_id:a.id,action}))throw error('PRIVACY_FORBIDDEN');}
  async function load(tx,key){const r=await one(tx,'SELECT * FROM privacy_requests WHERE id=? FOR UPDATE',[id(key)]);if(!r)throw error('PRIVACY_REQUEST_NOT_FOUND',404);return r;}
@@ -27,6 +27,8 @@ function createPrivacyRepository(db,{resolvePrincipal=async()=>null,calendar={},
  async savePreferences(ctx,i){const d=P.preferences(i.preferences);return db.withTransaction(async tx=>{const a=await actor(tx,ctx,'FOR UPDATE');const old=await one(tx,'SELECT * FROM privacy_preferences WHERE account_id=? FOR UPDATE',[a.id]);return command(tx,a,'PREFERENCES',i,async()=>{if(!Number.isSafeInteger(i.expected_version)||i.expected_version<0||(old?.object_version||0)!==i.expected_version)throw error('VERSION_CONFLICT',412);const next=i.expected_version+1;if(next>=4294967295)throw error('OBJECT_VERSION_EXHAUSTED',409);await tx.execute('INSERT INTO privacy_preferences(account_id,object_version,data_json,data_sha256) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE object_version=VALUES(object_version),data_json=VALUES(data_json),data_sha256=VALUES(data_sha256)',[a.id,next,JSON.stringify(d),digest(d)]);return {object_version:next,...d};});});}
  };
  Object.assign(api, require('./actions').createPrivacyActions({db, resolvePrincipal, actor, load, owned, command, change, match, decode:checked}));
+ const store=require('./erasure').storageFor(db,{env,storageFactory});
+ Object.assign(api,require('./execution').createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode:checked,storageDescriptor:store.descriptor}));
  return api;
 }
 module.exports={createPrivacyRepository};

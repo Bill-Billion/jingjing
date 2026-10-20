@@ -21,7 +21,7 @@ async function qualification(tx,party,rule){
  return {...q,types:q.active?P.TYPES.filter(t=>rule.data.rule.minimum_levels[t]!==null&&q.level>=rule.data.rule.minimum_levels[t]):[],source_ids:chosen.source_ids};
 }
 async function publisher(tx,r){const rule=await liveRule(tx,r.data.rule_id);if(r.data.notice.type==='OFFICIAL'){await operator(tx,{id:r.created_by},'NOTICE_OFFICIAL');return {official:true};}const q=await qualification(tx,r.owner_party_id,rule);if(!q.active||!q.types.includes(r.data.notice.type))throw error('NOTICE_PUBLISHER_NOT_ELIGIBLE',409);return q;}
-async function liveNotice(tx,key){const r=await load(tx,key,'NOTICE','FOR SHARE'),now=await A.now(tx);if(r.current_status!=='PUBLISHED'||r.data.notice.valid_from>now||r.data.notice.valid_until<=now)throw error('NOTICE_NOT_OPEN',409);await publisher(tx,r);return r;}
+async function liveNotice(tx,key){await require('../privacy/restrictions').assertUnrestricted(tx,'NOTICE',key);const r=await load(tx,key,'NOTICE','FOR SHARE'),now=await A.now(tx);if(r.current_status!=='PUBLISHED'||r.data.notice.valid_from>now||r.data.notice.valid_until<=now)throw error('NOTICE_NOT_OPEN',409);await publisher(tx,r);return r;}
 async function artist(tx,a,s,acting,action='SUBMIT_COOPERATION'){
  const p=await A.person(tx,s.person_id);require('../artists/policy').adult(p,await A.now(tx));await A.authorize(tx,a,p,acting,action);await A.avatar(tx,s.avatar_id,p);return p;
 }
