@@ -27,7 +27,8 @@ test('server derives required story from saved product, not a client-selected fl
  const lines=[{product_profile:custom,line_kind:'PRODUCTION'}];
  assert.throws(()=>products.quote(lines,{}),{code:'CUSTOMIZATION_SOURCE_REQUIRED'});
  products.quote(lines,{customization_source:{request_id:'checked separately'}});
- for(const type of products.TYPES.filter(t=>['MANUAL_SAMPLE','STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(t)))assert.throws(()=>products.quote([{product_profile:{version:'V5',type}}],{}),{code:'PRODUCT_FLOW_NOT_IMPLEMENTED'});
+ const sample={product_profile:{version:'V5',type:'MANUAL_SAMPLE'},line_kind:'PRODUCTION',quantity:1};assert.throws(()=>products.quote([sample],{}),{code:'CUSTOMIZATION_SOURCE_REQUIRED'});assert.throws(()=>products.quote([{...sample,quantity:2}],{customization_source:{}}),{code:'MANUAL_SAMPLE_ONE_SERVICE_REQUIRED'});products.quote([sample],{customization_source:{request_id:'verified by repository'}});
+ for(const type of products.TYPES.filter(t=>['STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(t)))assert.throws(()=>products.quote([{product_profile:{version:'V5',type}}],{}),{code:'PRODUCT_FLOW_NOT_IMPLEMENTED'});
 });
 test('legacy and V5 products cannot be mixed to weaken rules',()=>{
  assert.throws(()=>products.quote([{product_profile:custom},{}],{customization_source:{}}),{code:'MIXED_PRODUCT_PROFILES'});

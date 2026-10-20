@@ -2,7 +2,7 @@
 const {id,ref,label,shape,error}=require('../party/policy');
 const instant=v=>{if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(v)||!Number.isFinite(Date.parse(v))||new Date(v).toISOString()!==v)throw error('INVALID_INSTANT',400);return v;};
 const {copy}=require('../trade/policy');
-const DELEGATED_ACTIONS=Object.freeze(['READ_PROFILE','MANAGE_MATERIALS','MANAGE_AVATARS','SUBMIT_LISTING','SUBMIT_COOPERATION','MANAGE_AUDITIONS']);
+const DELEGATED_ACTIONS=Object.freeze(['COMMISSION_PRODUCTION','READ_PROFILE','MANAGE_MATERIALS','MANAGE_AVATARS','SUBMIT_LISTING','SUBMIT_COOPERATION','MANAGE_AUDITIONS']);
 function list(v,validate,max=30){if(!Array.isArray(v)||!v.length||v.length>max||new Set(v).size!==v.length)throw error('INVALID_ARTIST_LIST',400);v.forEach(validate);return [...v];}
 function period(v){instant(v.valid_from);instant(v.valid_until);if(v.valid_from>=v.valid_until)throw error('INVALID_ARTIST_PERIOD',400);return v;}
 function active(v,now){return v.valid_from<=now&&now<v.valid_until;}

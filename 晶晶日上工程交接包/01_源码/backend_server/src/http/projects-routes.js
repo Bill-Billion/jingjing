@@ -12,6 +12,11 @@ function createProjectsRouter({db,resolvePrincipal,env={},storageFactory,provide
  const expected=req=>{const v=req.get('If-Match');if(!v)throw error('EXPECTED_VERSION_REQUIRED',428);if(!/^"[1-9][0-9]*"$/.test(v))throw error('INVALID_VERSION',400);return version(Number(v.slice(1,-1)));};
  const reply=(req,res,data)=>res.status(200).set('Cache-Control','no-store').type('application/json').end(JSON.stringify({meta:{request_id:req.requestId,actor:{account_id:req.account.id},acting_party:req.actingParty||null},data}));
  function post(path,method,fields,{party=true,existing=false}={}){router.post(path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);reply(req,res,await repo[method](req,{...req.body,operation_key:ref(req.get('Idempotency-Key')),...(party?{party_id:acting(req)}:{}),...(existing?{record_id:id(req.params.record_id),expected_version:expected(req)}:{})}));}));}
+ post('/projects/:record_id/income-agreements','incomeAgreement',['revenue','evidence_asset_id'],{existing:true});
+ post('/income-agreements/:record_id/review','reviewIncomeAgreement',['decision','reason','verification'],{party:false,existing:true});
+ post('/income-agreements/:record_id/confirmation','confirmIncomeAgreement',['content_sha256','decision','reason'],{existing:true});
+ post('/participations/:record_id/amendments','amendParticipation',['candidate_id','cast','terms','fee_minor','old_retained_minor','rule_id','evidence_asset_id','reason'],{existing:true});
+ post('/participations/:record_id/activation','activateParticipationAmendment',['content_sha256'],{existing:true});
  post('/projects/:record_id/revision','reopenParticipationProject',['reason','evidence_asset_id'],{existing:true});
  post('/candidates/:record_id/participations','participation',['cast','terms','rule_id','evidence_asset_id'],{existing:true});
  post('/participations/:record_id/review','reviewParticipation',['decision','reason','verification'],{party:false,existing:true});

@@ -9,7 +9,7 @@ const {createJobRepository}=require('../../infrastructure/jobs/repository');
 const one=async(tx,sql,args=[]) => (await tx.execute(sql,args))[0][0];
 const copy=value=>JSON.parse(canonical(value));
 const readActions={PROFILE:['SUPPLY_REVIEW_PROFILE'],WORK_VERSION:['SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONTENT'],CONSENT:['SUPPLY_REVIEW_CONSENT'],AVATAR:['SUPPLY_REVIEW_CONSENT']};
-function createSupplyRepository(db,{resolvePrincipal=async()=>null,verifyProjectSource=async()=>false,maxAssetBytes=8*1024*1024}={}){
+function createSupplyRepository(db,{resolvePrincipal=async()=>null,verifyProjectSource=async()=>false,maxAssetBytes=8*1024*1024,requireV5Products=false}={}){
  const jobs=createJobRepository(db);
  async function actor(tx,ctx){const principal=await resolvePrincipal(ctx);if(!principal)throw error('AUTHENTICATION_REQUIRED',401);const a=await one(tx,'SELECT * FROM identity_accounts WHERE subject_ref=? FOR SHARE',[ref(principal.subject_ref)]);if(!a||a.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE');return {...a,request_id:ref(principal.request_id||randomUUID())};}
  async function party(tx,a,partyId,write=false){
@@ -83,7 +83,7 @@ function createSupplyRepository(db,{resolvePrincipal=async()=>null,verifyProject
   },
   async reviewProfile(ctx,input){return reviewSimple(ctx,input,'PROFILE','SUPPLY_REVIEW_PROFILE');},
   async createVersion(ctx,input){input=copy(input);shape(input,['party_id','work_id','previous_version_id','title','kind','source_version_id','project_id','content_asset_id','evidence_ids','credits','operation_key']);
-   return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await party(tx,a,input.party_id,true);await eligible(tx,input.party_id);return cmd(tx,a,'VERSION_CREATE',input.party_id,input,async()=>{
+   return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await party(tx,a,input.party_id,true);await require('./intake-policy').requireIntake(tx,a.id,requireV5Products);await eligible(tx,input.party_id);return cmd(tx,a,'VERSION_CREATE',input.party_id,input,async()=>{
     let previous=null,workId=input.work_id===null?randomUUID():id(input.work_id);
     if(input.work_id!==null){const found=await one(tx,"SELECT * FROM supply_records WHERE kind='WORK_VERSION' AND stream_ref=? ORDER BY revision DESC LIMIT 1 FOR UPDATE",[workId]);if(!found||found.owner_party_id!==input.party_id)throw error('SUPPLY_NOT_FOUND',404);previous=data(found);}
     if((previous?.id||null)!==input.previous_version_id)throw error('PREVIOUS_VERSION_MISMATCH',409);
@@ -97,6 +97,7 @@ function createSupplyRepository(db,{resolvePrincipal=async()=>null,verifyProject
   },
   async changeVersion(ctx,input){input=copy(input);shape(input,['party_id','record_id','action','expected_version','reason','operation_key']);if(!['SUBMIT','WITHDRAW'].includes(input.action))throw error('INVALID_WORK_ACTION',400);
    return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await party(tx,a,input.party_id,true);const row=await load(tx,input.record_id,'WORK_VERSION','FOR UPDATE');if(row.owner_party_id!==input.party_id)throw error('SUPPLY_NOT_FOUND',404);
+    if(input.action==='SUBMIT')await require('./intake-policy').requireIntake(tx,a.id,requireV5Products);
     return cmd(tx,a,'VERSION_'+input.action,row.id,input,async()=>{match(row,input.expected_version);let next;
      if(input.action==='SUBMIT'){await eligible(tx,input.party_id);await assets(tx,[row.data.version.content.content_asset_id],input.party_id,['WORK_CONTENT']);await assets(tx,row.data.version.content.evidence_ids,input.party_id,['RIGHTS_EVIDENCE']);next=policy.submitVersion(row.data.version,{expected_version:row.object_version,recorded_at:await now(tx)});}
      else next=policy.withdrawVersion(row.data.version,{expected_version:row.object_version,reason:input.reason,recorded_at:await now(tx)});

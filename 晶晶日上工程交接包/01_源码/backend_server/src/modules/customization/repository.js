@@ -199,6 +199,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
    });
   },
 
+  ...require('./manual-sample').methods({db,actor,member,load,creator,match,command,detail,audit}),
   async create(ctx,input){
    const i=inputCopy(input,['party_id','template_version_id','answers','operation_key']);id(i.party_id);id(i.template_version_id);P.operationKey(i.operation_key);
    return db.withTransaction(async tx=>{

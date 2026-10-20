@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.25.0-rc.1
+  version: 0.26.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -5223,6 +5223,7 @@ paths:
           - RELEASE
           - EXTERNAL_EVENT
           - PARTICIPATION
+          - INCOME_AGREEMENT
       - name: cursor
         in: query
         required: false
@@ -21987,6 +21988,454 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/projects/{record_id}/income-agreements:
+    post:
+      operationId: createProjectIncomeAgreement
+      summary: 提出项目发行收入分配约定
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectIncomeCreateRequest'
+  /api/v1/projects/income-agreements/{record_id}/review:
+    post:
+      operationId: reviewProjectIncomeAgreement
+      summary: 独立审核项目收入约定
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectIncomeReviewRequest'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/projects/income-agreements/{record_id}/confirmation:
+    post:
+      operationId: confirmProjectIncomeAgreement
+      summary: 各方确认同一版收入约定
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipationConfirmRequest'
+  /api/v1/projects/participations/{record_id}/amendments:
+    post:
+      operationId: amendPaidParticipation
+      summary: 提出已付款合同改价或换角
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipationAmendRequest'
+  /api/v1/projects/participations/{record_id}/activation:
+    post:
+      operationId: activatePaidParticipationAmendment
+      summary: 各方确认后启用新约定并保留旧合同钱账
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipationActivateRequest'
+  /api/v1/customization-requests/{request_id}/manual-sample:
+    post:
+      operationId: bindManualSample
+      summary: 绑定需要平台代做样片的艺人及形象
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManualSampleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualSampleBindRequest'
+    get:
+      operationId: getManualSample
+      summary: 本人、获授权机构或平台查看样片委托及制作编号
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManualSampleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/customization-requests/{request_id}/manual-sample/confirmation:
+    post:
+      operationId: confirmManualSample
+      summary: 艺人本人确认样片用途与所有权
+      tags:
+      - customization
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Isolated implementation. Internal approval is not an external publication or payment.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManualSampleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualSampleConfirmRequest'
+  /api/v1/production/projects/{record_id}/manual-sample-content:
+    get:
+      operationId: downloadManualSampleOwnedContent
+      summary: 艺人本人领取已付清并验收的私有成片
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -26006,6 +26455,9 @@ components:
               - previous_edition_id
               - reason
               - evidence_asset_id
+            current_income_id:
+              type: string
+              format: uuid
           required:
           - title
           - scope
@@ -26816,6 +27268,7 @@ components:
       - $ref: '#/components/schemas/ProjectReleaseRecord'
       - $ref: '#/components/schemas/ProjectExternalEventRecord'
       - $ref: '#/components/schemas/ProjectParticipationRecord'
+      - $ref: '#/components/schemas/ProjectIncomeRecord'
     ProjectRecordResponse:
       type: object
       additionalProperties: false
@@ -29602,6 +30055,8 @@ components:
           $ref: '#/components/schemas/RedemptionDiscount'
         participation:
           $ref: '#/components/schemas/ParticipationTradeSnapshot'
+        manual_sample:
+          $ref: '#/components/schemas/ManualSampleSnapshot'
       required:
       - lines
       - installments
@@ -36962,8 +37417,9 @@ components:
             - SUBMIT_LISTING
             - SUBMIT_COOPERATION
             - MANAGE_AUDITIONS
+            - COMMISSION_PRODUCTION
           minItems: 1
-          maxItems: 6
+          maxItems: 7
         valid_from:
           type: string
           format: date-time
@@ -37588,8 +38044,9 @@ components:
             - SUBMIT_LISTING
             - SUBMIT_COOPERATION
             - MANAGE_AUDITIONS
+            - COMMISSION_PRODUCTION
           minItems: 1
-          maxItems: 6
+          maxItems: 7
         valid_from:
           type: string
           format: date-time
@@ -39957,6 +40414,11 @@ components:
           type: string
           format: date-time
         buyer_account_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        artist_account_id:
           type: string
           format: uuid
       required:
@@ -40213,6 +40675,8 @@ components:
           required:
           - room_id
           - cutoff_sha256
+        manual_sample:
+          $ref: '#/components/schemas/ManualSampleSnapshot'
       required:
       - additional_creative_changes
       - project_id
@@ -47931,6 +48395,19 @@ components:
           anyOf:
           - $ref: '#/components/schemas/ParticipationRevenue'
           - type: 'null'
+        income_agreement:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+              format: uuid
+            content_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+          required:
+          - id
+          - content_sha256
       required:
       - agreements
       - revenue
@@ -48139,6 +48616,8 @@ components:
                 type: string
                 format: uuid
               maxItems: 100
+            amendment:
+              $ref: '#/components/schemas/ParticipationAmendment'
           required:
           - candidate_id
           - candidate_sha256
@@ -48165,3 +48644,533 @@ components:
       - object_version
       - content_sha256
       - data
+    ManualSampleBindRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        cast:
+          $ref: '#/components/schemas/CustomizationCastInput'
+        merchant_party_id:
+          type: string
+          format: uuid
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - cast
+      - merchant_party_id
+      - territory
+      - terms
+    ManualSampleConfirmRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - content_sha256
+    ManualSampleData:
+      type: object
+      additionalProperties: false
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        submission_id:
+          type: string
+          format: uuid
+        submission_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        commissioner_party_id:
+          type: string
+          format: uuid
+        rights_owner_party_id:
+          type: string
+          format: uuid
+        merchant_party_id:
+          type: string
+          format: uuid
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        ownership:
+          const: ARTIST_RETAINS_OWNERSHIP
+        cast:
+          $ref: '#/components/schemas/CustomizationCastInput'
+        confirmation:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              account_id:
+                type: string
+                format: uuid
+              confirmed_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              confirmed_at:
+                type: string
+                format: date-time
+            required:
+            - account_id
+            - confirmed_sha256
+            - confirmed_at
+          - type: 'null'
+      required:
+      - request_id
+      - submission_id
+      - submission_sha256
+      - commissioner_party_id
+      - rights_owner_party_id
+      - merchant_party_id
+      - territory
+      - terms
+      - ownership
+      - cast
+      - confirmation
+    ManualSampleSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        submission_id:
+          type: string
+          format: uuid
+        submission_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        commissioner_party_id:
+          type: string
+          format: uuid
+        rights_owner_party_id:
+          type: string
+          format: uuid
+        merchant_party_id:
+          type: string
+          format: uuid
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        ownership:
+          const: ARTIST_RETAINS_OWNERSHIP
+        cast:
+          $ref: '#/components/schemas/CustomizationCastInput'
+        confirmation:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              account_id:
+                type: string
+                format: uuid
+              confirmed_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              confirmed_at:
+                type: string
+                format: date-time
+            required:
+            - account_id
+            - confirmed_sha256
+            - confirmed_at
+          - type: 'null'
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - request_id
+      - submission_id
+      - submission_sha256
+      - commissioner_party_id
+      - rights_owner_party_id
+      - merchant_party_id
+      - territory
+      - terms
+      - ownership
+      - cast
+      - confirmation
+      - content_sha256
+    ManualSampleResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            object_version:
+              type: integer
+              minimum: 1
+            content_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+            data:
+              $ref: '#/components/schemas/ManualSampleData'
+            projects:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  current_status:
+                    enum:
+                    - IN_REVIEW
+                    - READY
+                    - IN_PROGRESS
+                    - ACCEPTED
+                    - REJECTED
+                    - CHANGES_REQUESTED
+                required:
+                - id
+                - current_status
+              maxItems: 100
+          required:
+          - request_id
+          - object_version
+          - content_sha256
+          - data
+      required:
+      - meta
+      - data
+    ProjectIncomeCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        revenue:
+          $ref: '#/components/schemas/ParticipationRevenue'
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - revenue
+      - evidence_asset_id
+    ProjectIncomeReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        verification:
+          type: object
+          additionalProperties: false
+          properties:
+            rights_verified:
+              type: boolean
+            terms_verified:
+              type: boolean
+            evidence_verified:
+              type: boolean
+          required:
+          - rights_verified
+          - terms_verified
+          - evidence_verified
+      required:
+      - decision
+      - reason
+      - verification
+    ProjectIncomeRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          const: INCOME_AGREEMENT
+        project_id:
+          type: string
+          format: uuid
+        owner_party_id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - APPROVED
+          - REJECTED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            revenue:
+              $ref: '#/components/schemas/ParticipationRevenue'
+            evidence_asset_id:
+              type: string
+              format: uuid
+            previous_agreement_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            confirmers:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  after_party_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  party_id:
+                    type: string
+                    format: uuid
+                  responsibility:
+                    type: string
+                    maxLength: 8000
+                required:
+                - after_party_ids
+                - party_id
+                - responsibility
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  reviewer_account_id:
+                    type: string
+                    format: uuid
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 8000
+                  verification:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      rights_verified:
+                        type: boolean
+                      terms_verified:
+                        type: boolean
+                      evidence_verified:
+                        type: boolean
+                    required:
+                    - rights_verified
+                    - terms_verified
+                    - evidence_verified
+                required:
+                - reviewer_account_id
+                - decision
+                - reason
+                - verification
+              - type: 'null'
+          required:
+          - revenue
+          - evidence_asset_id
+          - previous_agreement_id
+          - confirmers
+          - review
+      required:
+      - id
+      - kind
+      - project_id
+      - owner_party_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ParticipationAmendRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        candidate_id:
+          type: string
+          format: uuid
+        cast:
+          $ref: '#/components/schemas/ParticipationCast'
+        terms:
+          $ref: '#/components/schemas/ParticipationTerms'
+        fee_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        old_retained_minor:
+          anyOf:
+          - type: integer
+            minimum: 0
+            maximum: 900000000000
+          - type: 'null'
+        rule_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        evidence_asset_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - candidate_id
+      - cast
+      - terms
+      - fee_minor
+      - old_retained_minor
+      - rule_id
+      - evidence_asset_id
+      - reason
+    ParticipationActivateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - content_sha256
+    ParticipationAmendment:
+      type: object
+      additionalProperties: false
+      properties:
+        previous_agreement_id:
+          type: string
+          format: uuid
+        previous_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        kind:
+          enum:
+          - PRICE_OR_TERMS
+          - RECAST
+        source_funding:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              order_id:
+                type: string
+                format: uuid
+              buyer_party_id:
+                type: string
+                format: uuid
+              merchant_party_id:
+                type: string
+                format: uuid
+              financial_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              net_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+            required:
+            - order_id
+            - buyer_party_id
+            - merchant_party_id
+            - financial_sha256
+            - net_minor
+          maxItems: 100
+        settlements:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              order_id:
+                type: string
+                format: uuid
+              buyer_party_id:
+                type: string
+                format: uuid
+              merchant_party_id:
+                type: string
+                format: uuid
+              financial_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              net_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              retained_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+            required:
+            - order_id
+            - buyer_party_id
+            - merchant_party_id
+            - financial_sha256
+            - net_minor
+            - retained_minor
+          maxItems: 100
+        credit_funding:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              order_id:
+                type: string
+                format: uuid
+            required:
+            - order_id
+          maxItems: 100
+        cash_required_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required:
+      - previous_agreement_id
+      - previous_sha256
+      - reason
+      - kind
+      - source_funding
+      - settlements
+      - credit_funding
+      - cash_required_minor

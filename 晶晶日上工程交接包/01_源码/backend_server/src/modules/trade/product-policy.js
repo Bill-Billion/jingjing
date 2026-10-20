@@ -17,7 +17,7 @@ function specification(value,previous,lineKind,required=false){
  const next=profile(value),old=profile(previous);
  if(old&&(!next||old.type!==next.type))throw error('PRODUCT_PROFILE_CANNOT_CHANGE',409);
  if(required&&!next)throw error('PRODUCT_PROFILE_REQUIRED',409);
- if(next?.type==='PRIVATE_CUSTOMIZATION'&&lineKind!=='PRODUCTION')throw error('PRODUCT_LINE_KIND_MISMATCH',400);
+ if(['PRIVATE_CUSTOMIZATION','MANUAL_SAMPLE'].includes(next?.type)&&lineKind!=='PRODUCTION')throw error('PRODUCT_LINE_KIND_MISMATCH',400);
  return next;
 }
 function quote(lines,{customization_source,requireV5Products=false,artist_service_source}){
@@ -29,7 +29,8 @@ function quote(lines,{customization_source,requireV5Products=false,artist_servic
  if(typed.length!==lines.length||typed.some(p=>p.type!==typed[0].type))throw error('MIXED_PRODUCT_PROFILES',409);
  if(require('../artists/service-policy').TYPES.includes(typed[0].type)){if(!artist_service_source||customization_source||lines.length!==1||lines[0].quantity!==1||lines[0].line_kind!=='OTHER')throw error('ARTIST_SERVICE_SOURCE_REQUIRED',409);return;}
  if(artist_service_source)throw error('ARTIST_PRODUCT_MISMATCH',409);
- if(typed[0].type!=='PRIVATE_CUSTOMIZATION')throw error('PRODUCT_FLOW_NOT_IMPLEMENTED',409);
+ if(!['PRIVATE_CUSTOMIZATION','MANUAL_SAMPLE'].includes(typed[0].type))throw error('PRODUCT_FLOW_NOT_IMPLEMENTED',409);
+ if(typed[0].type==='MANUAL_SAMPLE'&&(lines.length!==1||lines[0].quantity!==1))throw error('MANUAL_SAMPLE_ONE_SERVICE_REQUIRED',409);
  if(!customization_source)throw error('CUSTOMIZATION_SOURCE_REQUIRED',409);
  if(lines.some(l=>l.line_kind!=='PRODUCTION'))throw error('PRODUCT_LINE_KIND_MISMATCH',400);
 }

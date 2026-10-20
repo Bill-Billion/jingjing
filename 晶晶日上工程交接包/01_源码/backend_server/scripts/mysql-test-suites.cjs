@@ -1,7 +1,8 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
- participation:['test/participation-policy.test.cjs','test/participation.integration.test.cjs'],
+ 'manual-sample':['test/manual-sample.integration.test.cjs'],
+ participation:['test/fixed-income-release.integration.test.cjs','test/participation-amendment.integration.test.cjs','test/project-income.integration.test.cjs','test/participation-policy.test.cjs','test/participation.integration.test.cjs'],
  redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs'],
  cocreation:['test/cocreation-policy.test.cjs','test/cocreation.integration.test.cjs'],
  engagement:['test/engagement-policy.test.cjs','test/engagement.integration.test.cjs'],
@@ -20,7 +21,7 @@ module.exports=Object.freeze({
  gigs:['test/gigs-policy.test.cjs','test/gigs.integration.test.cjs'],
  trade:['test/trade-providers.test.cjs','test/trade-policy.test.cjs','test/trade.integration.test.cjs'],
  licensing:['test/license-policy.test.cjs','test/licensing.integration.test.cjs'],
- supply:['test/works-version-policy.test.cjs','test/consent-policy.test.cjs','test/supply.integration.test.cjs'],
+ supply:['test/script-intake.integration.test.cjs','test/works-version-policy.test.cjs','test/consent-policy.test.cjs','test/supply.integration.test.cjs'],
  governance:['test/governance-content.test.cjs','test/governance.integration.test.cjs','test/governance-service.integration.test.cjs'],
  mysql:['test/mysql-config.test.cjs','test/mysql.integration.test.cjs'],
  worker:['test/worker.integration.test.cjs','test/worker.test.cjs'],

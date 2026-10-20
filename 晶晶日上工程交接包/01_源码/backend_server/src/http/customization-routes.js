@@ -64,6 +64,9 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
     }
     reply(req, res, { items: data.items, next_cursor });
   }
+  router.post('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['cast','merchant_party_id','territory','terms']);reply(req,res,await repo.bindManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
+  router.post('/customization-requests/:request_id/manual-sample/confirmation',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['content_sha256']);reply(req,res,await repo.confirmManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
+  router.get('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.manualSample(req,{request_id:id(req.params.request_id),party_id:acting(req)}));}));
   router.get('/customization-categories', wrap(async (req, res) => {
     shape(req.query, []); operator(req);
     reply(req, res, await repo.categories(req));

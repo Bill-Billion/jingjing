@@ -98,6 +98,11 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-http-fixtures.json --report .local/ci-evidence/redemption-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-checkout-http-fixtures.json --report .local/ci-evidence/redemption-checkout-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-lottery-http-fixtures.json --report .local/ci-evidence/redemption-lottery-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/manual-sample-http-fixtures.json --report .local/ci-evidence/manual-sample-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/script-intake-http-fixtures.json --report .local/ci-evidence/script-intake-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/project-income-http-fixtures.json --report .local/ci-evidence/project-income-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/participation-amendment-http-fixtures.json --report .local/ci-evidence/participation-amendment-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/fixed-income-release-http-fixtures.json --report .local/ci-evidence/fixed-income-release-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop
