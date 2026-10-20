@@ -32,6 +32,14 @@ function createProductionRepository(db,{resolvePrincipal=async()=>null}={}){
  async function command(tx,a,op,input,fn){const key=digest([a.id,op,ref(input.operation_key)]),hash=digest(input);try{await tx.execute('INSERT INTO production_commands(id,fingerprint) VALUES (?,?)',[key,hash]);}catch(e){if(e.code!=='ER_DUP_ENTRY')throw e;const old=await one(tx,'SELECT * FROM production_commands WHERE id=?',[key]);if(old.fingerprint!==hash)throw error('IDEMPOTENCY_CONFLICT',409);if(!old.result_id)throw error('IDEMPOTENCY_IN_PROGRESS',409);return load(tx,old.result_id,null,'FOR SHARE');}const r=await fn();await tx.execute('UPDATE production_commands SET result_id=? WHERE id=?',[r.id,key]);return r;}
  const match=(r,v)=>{if(r.object_version!==version(v))throw error('VERSION_CONFLICT',412);};
  const usable=require('./eligibility').productionUsable;
+ // Withdrawal stops new work, but must not hide an asset created by an earlier request.
+ // Only a verified CREATE association may take this query-only recovery path.
+ async function creationWithdrawn(tx,r,p){
+  if(r.data.operation!=='CREATE_LONG_LIVED')return false;
+  const c=checked(await one(tx,"SELECT * FROM supply_records WHERE id=? AND kind='CONSENT' FOR SHARE",[r.data.consent_id]));
+  if(!p.data.consent_ids.includes(c.id)||c.data.consent.avatar_id!==r.data.avatar_id)throw error('AVATAR_CONSENT_MISMATCH',409);
+  return c.current_status==='WITHDRAWN';
+ }
  async function mutate(ctx,input,op,role,fn){input=policy.copy(input);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await locked(tx,input.record_id),p=await project(tx,r);if(role==='reviewer')await reviewer(tx,a,p);else await access(tx,a,p,input.party_id,role);return command(tx,a,op,input,async()=>{match(r,input.expected_version);return fn(tx,a,r,p,input);});});}
  const api={
  async create(ctx,input){shape(input,['party_id','order_id','line_id','script_version_id','license_project_id','assignee_account_id','purpose','territory','consent_ids','evidence_asset_id','fulfillment','operation_key']);input=policy.copy(input);id(input.assignee_account_id);ref(input.line_id);label(input.purpose,100);label(input.territory,100);if(!Array.isArray(input.consent_ids)||input.consent_ids.length>20||new Set(input.consent_ids).size!==input.consent_ids.length)throw error('INVALID_CONSENTS',400);input.consent_ids.forEach(id);
@@ -118,15 +126,28 @@ function createProductionRepository(db,{resolvePrincipal=async()=>null}={}){
  async markConsentWithdrawal(consentId){id(consentId);const [rows]=await db.execute("SELECT id FROM production_records WHERE kind='DIGITAL_ASSET' AND current_status='READY' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.consent_id'))=?",[consentId]);for(const row of rows)await db.withTransaction(async tx=>{const r=await locked(tx,row.id,'DIGITAL_ASSET'),c=await one(tx,"SELECT current_status FROM supply_records WHERE id=? AND kind='CONSENT' FOR SHARE",[consentId]);if(c?.current_status==='WITHDRAWN'&&r.current_status==='READY')await save(tx,{id:null,request_id:randomUUID()},r,'DELETE_REQUIRED',r.data,'CONSENT_WITHDRAWN_DELETE_REQUIRED');});},
  async generationJob(ctx,{record_id,party_id}){const r=await api.read(ctx,{record_id,party_id});if(r.kind!=='GENERATION')throw error('PRODUCTION_NOT_FOUND',404);const jobs=require('../../infrastructure/jobs/repository').createJobRepository(db),job=await jobs.get(r.data.job_id);if(!job)throw error('GENERATION_JOB_NOT_FOUND',503);return {record_id:r.id,job_id:job.id,current_status:job.status,attempts:job.attempts,last_error:job.last_error};},
  async retryGeneration(ctx,input){shape(input,['record_id','reason_ref','operation_key']);ref(input.reason_ref);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await locked(tx,input.record_id,'GENERATION'),p=await project(tx,r);await reviewer(tx,a,p);return command(tx,a,'RETRY_GENERATION',input,async()=>{await require('../../infrastructure/jobs/repository').createJobRepository(db).manualRetry(r.data.job_id,{actor_ref:a.id,reason_ref:input.reason_ref,additional_attempts:20},tx);return save(tx,a,r,'QUEUED',r.data,'GENERATION_RETRY_REQUESTED');});});},
- async jobContext(job){return db.withTransaction(async tx=>{const r=await locked(tx,job.payload_ref,'GENERATION'),p=await project(tx,r);if(r.data.job_id!==job.id)throw error('GENERATION_JOB_MISMATCH',409);if(r.data.operation!=='DELETE_LONG_LIVED'){await usable(tx,p);if(r.data.operation==='RENDER'&&(p.data.current.SCRIPT!==r.data.script_version_id||p.data.accepted.SCRIPT!==r.data.script_version_id))throw error('SCRIPT_VERSION_CHANGED',409);}const asset=r.data.asset_id?await load(tx,r.data.asset_id,'DIGITAL_ASSET','FOR SHARE'):null;if(r.data.operation==='RENDER'&&asset?.current_status!=='READY')throw error('DIGITAL_ASSET_NOT_READY',409);return {request:r,project:p,asset};});},
+ async jobContext(job,{recover=false}={}){return db.withTransaction(async tx=>{
+  const r=await locked(tx,job.payload_ref,'GENERATION'),p=await project(tx,r);
+  if(r.data.job_id!==job.id)throw error('GENERATION_JOB_MISMATCH',409);
+  const withdrawn=await creationWithdrawn(tx,r,p);
+  if(r.data.operation!=='DELETE_LONG_LIVED'&&!(recover&&withdrawn)){
+   if(withdrawn)throw error('PRODUCTION_CONSENT_NOT_AVAILABLE',409);
+   await usable(tx,p);
+   if(r.data.operation==='RENDER'&&(p.data.current.SCRIPT!==r.data.script_version_id||p.data.accepted.SCRIPT!==r.data.script_version_id))throw error('SCRIPT_VERSION_CHANGED',409);
+  }
+  const asset=r.data.asset_id?await load(tx,r.data.asset_id,'DIGITAL_ASSET','FOR SHARE'):null;
+  if(r.data.operation==='RENDER'&&asset?.current_status!=='READY')throw error('DIGITAL_ASSET_NOT_READY',409);
+  return {request:r,project:p,asset};
+ });},
  async saveJobObservation(job,result){return db.withTransaction(async tx=>{const r=await locked(tx,job.payload_ref,'GENERATION'),p=await project(tx,r);const lease=await one(tx,"SELECT id FROM platform_jobs WHERE id=? AND status='RUNNING' AND lease_owner=? AND lease_token=? AND lease_until>CURRENT_TIMESTAMP(6) FOR SHARE",[job.id,job.lease_owner,job.lease_token]);if(!lease)throw error('LEASE_LOST',409);if(r.current_status==='SUCCEEDED')return r;
-  const a={id:null,request_id:randomUUID()};if(r.data.operation!=='DELETE_LONG_LIVED'){await usable(tx,p);if(r.data.operation==='RENDER'&&(p.data.current.SCRIPT!==r.data.script_version_id||p.data.accepted.SCRIPT!==r.data.script_version_id))throw error('SCRIPT_VERSION_CHANGED',409);}
+  if(r.data.job_id!==job.id)throw error('GENERATION_JOB_MISMATCH',409);
+  const a={id:null,request_id:randomUUID()},withdrawn=await creationWithdrawn(tx,r,p);if(r.data.operation!=='DELETE_LONG_LIVED'&&!withdrawn){await usable(tx,p);if(r.data.operation==='RENDER'&&(p.data.current.SCRIPT!==r.data.script_version_id||p.data.accepted.SCRIPT!==r.data.script_version_id))throw error('SCRIPT_VERSION_CHANGED',409);}
   if(result.status==='PENDING')return save(tx,a,r,'PENDING',{...r.data,upstream_task_id:ref(result.task_id)},'PROVIDER_PENDING');
   if(result.status!=='SUCCEEDED')throw error('UNVERIFIED_GENERATION_RESULT',503);
-  let saved=result;if(r.data.operation==='CREATE_LONG_LIVED'){if(result.asset_type!=='LONG_LIVED_AVATAR')throw error('LONG_LIVED_ASSET_REQUIRED',409);ref(result.asset_ref);const asset=await insert(tx,a,'DIGITAL_ASSET',p.id,p.order_id,'READY',{avatar_id:r.data.avatar_id,consent_id:r.data.consent_id,provider_code:r.data.provider_code,environment:r.data.environment,config_revision:r.data.config_revision,upstream_asset_ref:result.asset_ref,asset_type:'LONG_LIVED_AVATAR'});saved={asset_id:asset.id,asset_type:'LONG_LIVED_AVATAR'};}
+  let saved=result;if(r.data.operation==='CREATE_LONG_LIVED'){if(result.asset_type!=='LONG_LIVED_AVATAR')throw error('LONG_LIVED_ASSET_REQUIRED',409);ref(result.asset_ref);const asset=await insert(tx,a,'DIGITAL_ASSET',p.id,p.order_id,withdrawn?'DELETE_REQUIRED':'READY',{avatar_id:r.data.avatar_id,consent_id:r.data.consent_id,provider_code:r.data.provider_code,environment:r.data.environment,config_revision:r.data.config_revision,upstream_asset_ref:result.asset_ref,asset_type:'LONG_LIVED_AVATAR'});saved={asset_id:asset.id,asset_type:'LONG_LIVED_AVATAR'};}
   if(r.data.operation==='DELETE_LONG_LIVED'){if(result.deleted!==true)throw error('DELETION_NOT_CONFIRMED',409);const asset=await load(tx,r.data.asset_id,'DIGITAL_ASSET');await save(tx,a,asset,'DELETED',asset.data,'UPSTREAM_DELETION_CONFIRMED');saved={deleted:true};}
   if(r.data.operation==='RENDER'){ref(result.result_ref);saved={result_ref:result.result_ref,delivery_state:'AWAITING_PRIVATE_IMPORT_AND_REVIEW'};}
-  return save(tx,a,r,'SUCCEEDED',{...r.data,result:saved},'PROVIDER_RESULT_VERIFIED');
+  return save(tx,a,r,'SUCCEEDED',{...r.data,result:saved},withdrawn?'WITHDRAWN_CREATION_QUARANTINED':'PROVIDER_RESULT_VERIFIED');
  });},
  async evidence(ctx,{record_id}){return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await reviewer(tx,a,null);const p=await locked(tx,record_id,'PROJECT'),row=await one(tx,"SELECT * FROM supply_assets WHERE id=? AND current_status='READY' FOR SHARE",[p.data.evidence_asset_id]);if(!row)throw error('EVIDENCE_NOT_READY',409);return row;});},
  };

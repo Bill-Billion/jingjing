@@ -25,7 +25,7 @@ test('production actual HTTP: private versions, explicit acceptance and payment 
  const quote=await reviewTrade(await trade.quote(producer.ctx,{party_id:producer.personal_party_id,buyer_party_id:buyer.personal_party_id,lines:[{line_id:'film',spec_id:spec.id,quantity:1}],installments:[{key:'first',trigger:'ORDER_ACCEPTED',allocations:[{line_id:'film',amount_minor:4000}],apple_product_id:null},{key:'last',trigger:'FINAL_ACCEPTED',allocations:[{line_id:'film',amount_minor:6000}],apple_product_id:null}],channel:'ALIPAY',transaction_model:'DIRECT_SUPPLIER',rule_id:ruleId,expires_at:'2099-01-01T00:00:00.000Z',payment_window_minutes:30,license_reservation_id:null,operation_key:key()}));
  const order=await trade.accept(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id,expected_version:quote.object_version,quote_sha256:quote.content_sha256,operation_key:key()}),config={provider:'ALIPAY',environment:'SANDBOX',app_id:'test.app',merchant_id:'test.merchant',merchant_party_id:producer.personal_party_id,config_revision:'test'};
  async function pay(step){const p=await trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:order.id,installment_key:step,operation_key:key()},config);await trade.applyPayment({...config,payment_id:p.id,currency:'CNY',amount_minor:p.data.amount_minor,transaction_id:'test.'+p.id,status:'SUCCEEDED',product_id:null,app_account_token:null});return p;}
- let enabled=false,submits=0,queries=0;const upstream=new Map(),provider={async descriptor(){return {provider_code:'synthetic.long-lived',environment:'SANDBOX',config_revision:'test'};},async assertReady(){if(!enabled)throw Error('not configured');},async readiness(){return {current_status:enabled?'SERVICE_READY':'NOT_ENABLED',reason_code:enabled?null:'PROVIDER_NOT_IMPLEMENTED',...await this.descriptor()};},async submit(input){submits++;upstream.set(input.request_key,input);return {request_key:input.request_key,status:'PENDING',task_id:'task.'+input.request_key};},async query(input){queries++;assert.ok(upstream.has(input.request_key));return {request_key:input.request_key,status:'SUCCEEDED',asset_type:'LONG_LIVED_AVATAR',asset_ref:'synthetic.asset',result_ref:'synthetic.result',deleted:true};}};
+ let enabled=false,submits=0,queries=0,submitHook=null,queryHook=null,providerRevision='test';const upstream=new Map(),provider={async descriptor(){return {provider_code:'synthetic.long-lived',environment:'SANDBOX',config_revision:providerRevision};},async assertReady(){if(!enabled)throw Error('not configured');},async readiness(){return {current_status:enabled?'SERVICE_READY':'NOT_ENABLED',reason_code:enabled?null:'PROVIDER_NOT_IMPLEMENTED',...await this.descriptor()};},async submit(input){submits++;upstream.set(input.request_key,input);if(submitHook)await submitHook(input);return {request_key:input.request_key,status:'PENDING',task_id:'task.'+input.request_key};},async query(input){queries++;assert.ok(upstream.has(input.request_key));if(queryHook)await queryHook(input);return {request_key:input.request_key,status:'SUCCEEDED',asset_type:'LONG_LIVED_AVATAR',asset_ref:'synthetic.asset',result_ref:'synthetic.result',deleted:true};}};
  server=createAccountApi({db,secret,supplyStorageFactory:storageFactory,productionProviderFactory:()=>provider}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1/production',fixtures=[];
  async function api(method,url,person=producer,body,party=person?.personal_party_id,headers={}){const r=await fetch(base+url,{method,headers:{...(person?{Authorization:'Bearer '+person.token}:{}),...(party?{'X-Acting-Party':party}:{}),...(method==='POST'?{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':key()}:{}),...headers},...(body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)})});return {status:r.status,body:(r.headers.get('content-type')||'').includes('application/json')?await r.json():Buffer.from(await r.arrayBuffer())};}
  const take=(r,schema='ProductionRecordResponse')=>{assert.equal(r.status,200,JSON.stringify(r.body));fixtures.push({schema,value:r.body});return r.body.data;};
@@ -59,6 +59,87 @@ test('production actual HTTP: private versions, explicit acceptance and payment 
   const deletion=take(await api('POST','/projects/'+p.id+'/generation',producer,{operation:'DELETE_LONG_LIVED',avatar_id:avatar.id,asset_id:mapped.id,consent_id:consent.id},producer.personal_party_id,{'If-Match':'"'+p.object_version+'"'}));await worker.tick();await db.execute('UPDATE platform_jobs SET next_run_at=CURRENT_TIMESTAMP(6) WHERE id=?',[deletion.data.job_id]);await worker.tick();assert.equal((await get(mapped.id)).current_status,'DELETED');
   const retryOp=key();const retried=take(await api('POST','/generations/'+render.id+'/retry',reviewer,{reason_ref:'synthetic.audit'},null,{'Idempotency-Key':retryOp}));assert.equal(retried.current_status,'QUEUED');take(await api('POST','/generations/'+render.id+'/retry',reviewer,{reason_ref:'synthetic.audit'},null,{'Idempotency-Key':retryOp}));await worker.tick();assert.equal((await jobs.get(render.data.job_id)).status,'BLOCKED');assert.equal(submits,3);
   enabled=false;
+ });
+ await t.test('withdrawal during creation preserves late assets for deletion without new creation',async st=>{
+  enabled=true;
+  const jobs=require('../src/infrastructure/jobs/repository').createJobRepository(db);
+  const repo=require('../src/modules/production/repository').createProductionRepository(db);
+  const handlers=require('../src/modules/production/handlers').createProductionHandlers(db,{provider});
+  const worker=require('../src/worker/runner').createWorker({repository:jobs,handlers});
+  const create=async()=>{const p=await get(project.id);return take(await api('POST','/projects/'+p.id+'/generation',producer,
+   {operation:'CREATE_LONG_LIVED',avatar_id:avatar.id,asset_id:null,consent_id:consent.id},producer.personal_party_id,{'If-Match':'"'+p.object_version+'"'}));};
+  const withdraw=async()=>{const [[r]]=await db.execute('SELECT object_version FROM supply_records WHERE id=?',[consent.id]);
+   await supply.withdrawConsent(producer.ctx,{record_id:consent.id,expected_version:r.object_version,reason:'Synthetic withdrawal during creation',operation_key:key()});};
+  // Restore only this isolated consent fixture between independent scenarios.
+  // Production exposes no operation that reinstates a withdrawn consent.
+  const restore=()=>db.execute("UPDATE supply_records SET current_status='APPROVED' WHERE id=?",[consent.id]);
+  async function tick(request){const before=await jobs.get(request.data.job_id);
+   await db.execute('UPDATE platform_jobs SET next_run_at=CURRENT_TIMESTAMP(6) WHERE id=?',[before.id]);
+   for(let n=0;n<12;n++){await worker.tick();const after=await jobs.get(before.id);if(after.attempts>before.attempts)return after;}
+   assert.fail('creation/deletion job did not run');}
+  const retry=async request=>take(await api('POST','/generations/'+request.id+'/retry',reviewer,{reason_ref:'synthetic.withdrawal.review'},null));
+  const startSubmits=submits,startQueries=queries;
+  let request;
+  try{
+   await st.test('withdrawal during first external send still records the pending task',async()=>{
+    request=await create();submitHook=async input=>{if(input.request_key===request.data.job_id)await withdraw();};
+    assert.equal((await tick(request)).status,'RETRY');submitHook=null;
+    assert.equal((await get(request.id)).current_status,'PENDING');assert.equal(submits,startSubmits+1);
+   });
+   await st.test('a changed provider identity cannot query the old model',async()=>{
+    providerRevision='different-account';assert.equal((await tick(request)).status,'BLOCKED');
+    assert.equal((await jobs.get(request.data.job_id)).last_error,'GENERATION_CONFIGURATION_CHANGED');
+    assert.equal(queries,startQueries);providerRevision='test';await retry(request);
+   });
+   await st.test('failed audit rolls back the late model and original result together',async()=>{
+    await db.withConnection(c=>c.query("CREATE TRIGGER withdrawn_creation_fail BEFORE INSERT ON production_audit FOR EACH ROW BEGIN IF NEW.event_code='WITHDRAWN_CREATION_QUARANTINED' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic rollback'; END IF; END"));
+    try{assert.equal((await tick(request)).status,'BLOCKED');}
+    finally{await db.withConnection(c=>c.query('DROP TRIGGER withdrawn_creation_fail'));}
+    const record=await get(request.id);assert.equal(record.data.result,null);
+    const [[count]]=await db.execute("SELECT COUNT(*) AS n FROM production_records WHERE kind='DIGITAL_ASSET' AND current_status<>'DELETED' AND project_id=?",[project.id]);assert.equal(Number(count.n),0);
+    await retry(request);
+   });
+   let asset;
+   await st.test('recovery queries once more and quarantines the late model instead of making it usable',async()=>{
+    assert.equal((await tick(request)).status,'SUCCEEDED');assert.equal(submits,startSubmits+1);assert.equal(queries,startQueries+2);
+    const record=await get(request.id);asset=await get(record.data.result.asset_id);assert.equal(asset.current_status,'DELETE_REQUIRED');
+    assert.equal(asset.data.config_revision,'test');
+    const p=await get(project.id),render=await api('POST','/projects/'+p.id+'/generation',producer,
+     {operation:'RENDER',avatar_id:avatar.id,asset_id:asset.id,consent_id:consent.id},producer.personal_party_id,{'If-Match':'"'+p.object_version+'"'});
+    assert.notEqual(render.status,200);
+    // Duplicate observations need a live matching lease; a completed job cannot recreate the asset.
+    const oldJob=await jobs.get(request.data.job_id);await assert.rejects(()=>repo.saveJobObservation(oldJob,{status:'SUCCEEDED'}),e=>e.code==='LEASE_LOST');
+   });
+   await st.test('the late model is visible to its subject and uses the existing personal deletion path',async()=>{
+    const privacyBase='http://127.0.0.1:'+server.address().port+'/api/v1/privacy';
+    const call=async(method,url,body,version)=>{const response=await fetch(privacyBase+url,{method,headers:{Authorization:'Bearer '+producer.token,
+     ...(body?{'Content-Type':'application/json','Idempotency-Key':key()}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body?{body:JSON.stringify(body)}:{})});
+     assert.equal(response.status,200);return (await response.json()).data;};
+    const pr=await call('POST','/requests',{type:'DELETE',scopes:['DIGITAL_MODELS'],details:'Synthetic late model cleanup'});
+    const list=await call('GET','/requests/'+pr.id+'/model-assets');assert.ok(list.items.some(x=>x.asset_id===asset.id&&x.asset_status==='DELETE_REQUIRED'));
+    assert.ok(!JSON.stringify(list).includes('synthetic.asset'));
+    const action=await call('POST','/requests/'+pr.id+'/model-deletions',{asset_id:asset.id,asset_version:asset.object_version},pr.object_version);
+    const [[row]]=await db.execute('SELECT result_record_id FROM privacy_actions WHERE id=?',[action.action_id]);
+    const deletion=await get(row.result_record_id);await tick(deletion);await tick(deletion);
+    const actions=await call('GET','/requests/'+pr.id+'/actions');assert.equal(actions.items[0].status,'MODEL_DELETED');assert.equal(actions.request_completion,'NOT_CONFIRMED');
+   });
+   await st.test('withdrawal while a result query is in flight also quarantines the resulting model',async()=>{
+    await restore();const racing=await create();await tick(racing);const sent=submits;
+    queryHook=async input=>{if(input.request_key===racing.data.job_id)await withdraw();};
+    try{assert.equal((await tick(racing)).status,'SUCCEEDED');}finally{queryHook=null;}
+    const record=await get(racing.id),late=await get(record.data.result.asset_id);assert.equal(late.current_status,'DELETE_REQUIRED');assert.equal(submits,sent);
+    const ownRepo=require('../src/modules/production/repository').createProductionRepository(db,{resolvePrincipal});
+    const deletion=await ownRepo.requestPersonalDeletion(producer.ctx,{asset_id:late.id,expected_version:late.object_version,operation_key:key()});
+    await tick(deletion);await tick(deletion);assert.equal((await get(late.id)).current_status,'DELETED');
+   });
+   await st.test('withdrawal before first dispatch sends nothing, and ambiguous recovery never resubmits',async()=>{
+    await restore();const unsent=await create();await withdraw();const sent=submits,queried=queries;
+    assert.equal((await tick(unsent)).status,'BLOCKED');assert.equal(submits,sent);assert.equal(queries,queried);
+    assert.equal((await jobs.get(unsent.data.job_id)).last_error,'PRODUCTION_CONSENT_NOT_AVAILABLE');
+    await retry(unsent);assert.equal((await tick(unsent)).status,'BLOCKED');assert.equal(submits,sent);assert.equal(queries,queried+1);
+    assert.equal((await get(unsent.id)).data.result,null);
+   });
+  }finally{submitHook=null;queryHook=null;providerRevision='test';enabled=false;await restore();}
  });
  await t.test('new sample invalidates previous confirmation; feedback versions are not overwritten',async()=>{const old=sample;await accept(await get(sample.id),'REQUEST_CHANGES');assert.equal((await get(project.id)).data.change_requests,1);sample=await deliver('SAMPLE');assert.equal((await get(project.id)).data.accepted.SAMPLE,undefined);assert.equal((await api('POST','/versions/'+old.id+'/feedback',buyer,{decision:'ACCEPT',note:'old',checklist:checks('SAMPLE')},buyer.personal_party_id,{'If-Match':'"'+(await get(old.id)).object_version+'"'})).status,409);await accept(sample);});
  await t.test('concurrent decisions use version check; only buyer can accept',async()=>{const rough=await deliver('ROUGH_CUT'),body={decision:'ACCEPT',note:'concurrent',checklist:checks('ROUGH_CUT')},headers={'If-Match':'"'+rough.object_version+'"'};assert.equal((await api('POST','/versions/'+rough.id+'/feedback',producer,body,producer.personal_party_id,headers)).status,403);const results=await Promise.all([1,2].map(()=>api('POST','/versions/'+rough.id+'/feedback',buyer,body,buyer.personal_party_id,headers)));assert.deepEqual(results.map(x=>x.status).sort(),[200,412]);take(results.find(x=>x.status===200));});

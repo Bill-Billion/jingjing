@@ -6,7 +6,7 @@ function createProductionHandlers(db,{env={},provider=createProductionProvider(d
  const repo=createProductionRepository(db);
  async function run(job,ctx,recover){
   try{
-   const state=await repo.jobContext(job),r=state.request;if(r.current_status==='SUCCEEDED')return {status:'SUCCEEDED',result_ref:r.id};
+   const state=await repo.jobContext(job,{recover}),r=state.request;if(r.current_status==='SUCCEEDED')return {status:'SUCCEEDED',result_ref:r.id};
    await provider.assertReady();const config=await provider.descriptor();if(['provider_code','environment','config_revision'].some(k=>config[k]!==r.data[k]))return {status:'BLOCKED',error_code:'GENERATION_CONFIGURATION_CHANGED'};
    const input={request_key:job.id,operation:r.data.operation,project_id:r.project_id,avatar_id:r.data.avatar_id,consent_id:r.data.consent_id,script_version_id:r.data.script_version_id,upstream_asset_ref:state.asset?.data.upstream_asset_ref||null,task_id:job.provider_task_id||r.data.upstream_task_id};
    // Repeat delivery reconciles using the durable request key; never resubmit on unknown outcome.
