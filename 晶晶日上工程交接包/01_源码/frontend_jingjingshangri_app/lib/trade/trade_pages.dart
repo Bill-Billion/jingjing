@@ -490,7 +490,7 @@ class _TradeDetailState extends State<_TradeDetail> {
       supplyCard('订单 ${shortSupplyId(r.id)}',
           [tradeStatus(r), appNotice('款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')]),
       if (r.quote['customization'] != null)
-        appNotice('本轮已形成原交易订单，合同内容已保存、尚未签署。定制付款与制作办理在后续轮次开放；以服务器实际收款记录为准。'),
+        appNotice('订单已生成，合同内容已保存。请核对下方实际收款记录；生成订单不代表已付款或签署。当前页面尚未开放定制付款和开工办理。'),
       if (r.quote['commercial'] != null)
         supplyCard('关联商业约定', [
           tradeFact('接单约定编号', r.quote['commercial']['offer_id']),

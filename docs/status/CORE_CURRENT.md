@@ -1,3 +1,13 @@
+# 本侧独立修复：前两轮页面说明已校正，尚未上传
+
+2026-10-20，Core从队友888a649建立core/v5-r02-page-clarity，负责本次必要文案修复；队友原PR26和认领不变。报价说明改为已确认的先预览再补至90%，App/网页订单去除开发阶段用语。54项相关检查及网页类型检查通过，没有改变付款开关。
+
+下一步本侧按阶段同步这个可独立取用的补丁；队友继续后续页面并审阅此修复，报价规则选择和金额输入仍需改进。未推送、未互审、未合入、未部署。本侧后端进度见worktrees/privacy，不能把本目录旧后端状态当最新。
+
+[修复内容与证据](../reviews/20261020/CORE_PAGE_COPY_FIX.md)。
+
+---
+
 # 前端同步核对：Core最新后端已上传，页面进度独立记录
 
 2026-10-20已实际fetch并核对：Core最新为 `core/v5-backend-completion / 8d6ed8a`，[PR25](https://github.com/Bill-Billion/jingjing/pull/25)四项自动检查通过；第5—12轮分支已上传，隐私与素材审核仍由Core继续，未合入或启用。当前Core原记录见[远端CORE_CURRENT](https://github.com/Bill-Billion/jingjing/blob/8d6ed8ab0fba8530a90d4334c79fbcc5d58879e9/docs/status/CORE_CURRENT.md)。
