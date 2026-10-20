@@ -52,7 +52,7 @@ test('personal withdrawal and model deletion use real transactions and durable p
         ...(version===undefined?{}:{'If-Match':'"'+version+'"'}), ...(party?{'X-Acting-Party':party}:{})},
         ...(body===undefined?{}:{body:JSON.stringify(body)})});
       const value = await response.json();
-      const schema = response.status!==200 ? 'ErrorResponse' : url.includes('/model-assets') ? 'PrivacyModelListResponse'
+      const schema = response.status!==200 ? 'ErrorResponse' : url.includes('/model-creations') ? 'PrivacyModelCreationListResponse' : url.includes('/model-assets') ? 'PrivacyModelListResponse'
         : url.includes('/actions') ? 'PrivacyActionListResponse' : /\/(consent-withdrawals|model-deletions)$/.test(url) ? 'PrivacyActionResponse' : 'PrivacyRequestResponse';
       fixtures.push({method,path:new URL(base+url).pathname,schema,value});
       return {status:response.status,...value};
@@ -158,6 +158,59 @@ test('personal withdrawal and model deletion use real transactions and durable p
       await db.execute('UPDATE production_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(changed),digest(changed),row.id]);
       assert.equal((await call('GET',url('actions'))).status,503);
       await db.execute('UPDATE production_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),row.id]);
+    });
+    // Imported synthetic in-flight rows. Real creation/withdrawal races are covered
+    // by production.integration; this suite verifies the new personal HTTP boundary.
+    const pendingConsent=await consentFor(buyer), pendingProject=key();
+    const pendingProjectData={...projectData,consent_ids:[pendingConsent.id,foreignConsent.id]};
+    await db.execute("INSERT INTO production_records(id,kind,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,'PROJECT',?,?,'READY',?,?)",
+      [pendingProject,order.id,producer.account_id,JSON.stringify(pendingProjectData),digest(pendingProjectData)]);
+    async function creation(c=pendingConsent,operation='CREATE_LONG_LIVED'){
+      const id=key(),job=await jobs.enqueue({task_type:'PRODUCTION_DIGITAL_HUMAN',business_key:id,provider:'synthetic.delete',payload_ref:id,max_attempts:20});
+      const data={operation,avatar_id:c.data.consent.avatar_id,consent_id:c.id,asset_id:null,provider_code:'synthetic.delete',environment:'SANDBOX',config_revision:'synthetic-1',job_id:job.id,upstream_task_id:'private.task.ref',result:null};
+      await db.execute("INSERT INTO production_records(id,kind,project_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,'GENERATION',?,?,?,'QUEUED',?,?)",
+        [id,pendingProject,order.id,producer.account_id,JSON.stringify(data),digest(data)]);return {id,data,job};
+    }
+    const pendingA=await creation(),pendingB=await creation(),unrelated=await creation(foreignConsent),render=await creation(pendingConsent,'RENDER');
+    const pendingRequest=await create();const pendingUrl='/requests/'+pendingRequest.id+'/model-creations';
+    const listing=async()=>ok(await call('GET',pendingUrl));
+    await t.test('personal creation list shows only own training tasks and paginates without exposing provider details',async()=>{
+      const first=ok(await call('GET',pendingUrl+'?limit=1')),second=ok(await call('GET',pendingUrl+'?limit=1&cursor='+first.next_cursor));
+      assert.deepEqual([first.items[0].generation_id,second.items[0].generation_id].sort(),[pendingA.id,pendingB.id].sort());assert.equal(second.next_cursor,null);
+      const list=await listing();assert.equal(list.items.length,2);assert.equal(list.coverage,'PRODUCTION_MODEL_CREATIONS_ONLY');assert.equal(list.request_completion,'NOT_CONFIRMED');
+      for(const x of list.items){assert.equal(x.status,'QUEUED');assert.equal(x.asset_id,null);assert.equal(x.consent_version,pendingConsent.object_version);}
+      for(const secret of ['private.task.ref','synthetic.delete',pendingProject,unrelated.id,render.id])assert.ok(!JSON.stringify(list).includes(secret));
+      bad(await call('GET',pendingUrl,outsider),'PRIVACY_REQUEST_NOT_FOUND');bad(await call('GET',pendingUrl,reviewer),'PRIVACY_REQUEST_NOT_FOUND');
+      bad(await call('GET',pendingUrl,buyer,undefined,undefined,key(),buyer.personal_party_id),'ACTING_PARTY_NOT_ALLOWED');
+      bad(await call('GET',pendingUrl+'?limit=0'),'INVALID_LIMIT');
+      const copy=await create('COPY');bad(await call('GET','/requests/'+copy.id+'/model-creations'),'PRIVACY_ACTION_SCOPE_MISMATCH');
+    });
+    await t.test('waiting and blocked creation remain distinct from a registered or deleted model',async()=>{
+      await db.execute("UPDATE platform_jobs SET status='RETRY' WHERE id=?",[pendingA.job.id]);
+      await db.execute("UPDATE platform_jobs SET status='BLOCKED' WHERE id=?",[pendingB.job.id]);
+      const list=await listing();assert.equal(list.items.find(x=>x.generation_id===pendingA.id).status,'WAITING_PROVIDER');assert.equal(list.items.find(x=>x.generation_id===pendingB.id).status,'NEEDS_ATTENTION');
+    });
+    await t.test('a subject can discover consent before any model exists and withdraw through the existing action',async()=>{
+      const selected=(await listing()).items[0];
+      ok(await call('POST','/requests/'+pendingRequest.id+'/consent-withdrawals',buyer,{consent_id:selected.consent_id,consent_version:selected.consent_version,reason:'Withdraw before a model is registered'},pendingRequest.object_version));
+      assert.ok((await listing()).items.every(x=>x.consent_status==='WITHDRAWN'));assert.equal((await listing()).request_completion,'NOT_CONFIRMED');
+    });
+    let completedData;
+    await t.test('registered late result keeps the model deletion state and never closes the personal request',async()=>{
+      const id=key(),data={avatar_id:pendingConsent.data.consent.avatar_id,consent_id:pendingConsent.id,provider_code:'synthetic.delete',environment:'SANDBOX',config_revision:'synthetic-1',upstream_asset_ref:'private.model.ref',asset_type:'LONG_LIVED_AVATAR'};
+      await db.execute("INSERT INTO production_records(id,kind,project_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,'DIGITAL_ASSET',?,?,?,'DELETE_REQUIRED',?,?)",[id,pendingProject,order.id,producer.account_id,JSON.stringify(data),digest(data)]);
+      completedData={...pendingA.data,result:{asset_id:id,asset_type:'LONG_LIVED_AVATAR'}};
+      await db.execute("UPDATE production_records SET current_status='SUCCEEDED',data_json=?,data_sha256=? WHERE id=?",[JSON.stringify(completedData),digest(completedData),pendingA.id]);
+      const item=(await listing()).items.find(x=>x.generation_id===pendingA.id);assert.equal(item.status,'MODEL_REGISTERED');assert.equal(item.asset_status,'DELETE_REQUIRED');assert.equal(item.asset_id,id);
+      assert.ok(!JSON.stringify(await listing()).includes('private.model.ref'));
+    });
+    await t.test('wrong task binding or foreign model cannot be exposed as a personal result',async()=>{
+      await db.execute('UPDATE platform_jobs SET payload_ref=? WHERE id=?',[unrelated.id,pendingB.job.id]);assert.equal((await call('GET',pendingUrl)).status,503);
+      await db.execute('UPDATE platform_jobs SET payload_ref=? WHERE id=?',[pendingB.id,pendingB.job.id]);
+      const missing={...completedData,result:null};await db.execute('UPDATE production_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(missing),digest(missing),pendingA.id]);assert.equal((await call('GET',pendingUrl)).status,503);
+      const changed={...completedData,result:{asset_id:foreign.id,asset_type:'LONG_LIVED_AVATAR'}};
+      await db.execute('UPDATE production_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(changed),digest(changed),pendingA.id]);assert.equal((await call('GET',pendingUrl)).status,503);
+      await db.execute('UPDATE production_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(completedData),digest(completedData),pendingA.id]);
     });
     const out=path.resolve(__dirname,'../../../..','.local/privacy-actions-http-fixtures.json');
     await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));

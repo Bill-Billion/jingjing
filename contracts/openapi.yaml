@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.28.0-rc.1
+  version: 0.29.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -23147,6 +23147,64 @@ paths:
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
       description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
         or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests/{request_id}/model-creations:
+    get:
+      operationId: getPrivacyModelCreations
+      summary: 查看本人的模型创建任务及登记结果
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyModelCreationListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅申请本人可操作；不接受机构身份。仅覆盖制作模块已登记模型，不代表账号清除完成。供应商未启用或结果未确认时不得展示删除成功。
   /api/v1/privacy/requests/{request_id}/model-assets:
     get:
       operationId: getPrivacyModelAssets
@@ -23689,6 +23747,109 @@ components:
           - action_id
           - action_kind
           - target_id
+      required:
+      - meta
+      - data
+    PrivacyModelCreationListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            request_completion:
+              type: string
+              enum:
+              - NOT_CONFIRMED
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  generation_id:
+                    type: string
+                    format: uuid
+                  consent_id:
+                    type: string
+                    format: uuid
+                  consent_version:
+                    type: integer
+                    minimum: 1
+                    maximum: 4294967294
+                  consent_status:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                  avatar_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum:
+                    - QUEUED
+                    - WAITING_PROVIDER
+                    - NEEDS_ATTENTION
+                    - MODEL_REGISTERED
+                  job_status:
+                    type: string
+                    enum:
+                    - PENDING
+                    - RUNNING
+                    - RETRY
+                    - SUCCEEDED
+                    - FAILED
+                    - BLOCKED
+                  asset_id:
+                    type:
+                    - string
+                    - 'null'
+                    format: uuid
+                  asset_version:
+                    type:
+                    - integer
+                    - 'null'
+                    minimum: 1
+                    maximum: 4294967294
+                  asset_status:
+                    type:
+                    - string
+                    - 'null'
+                    minLength: 1
+                    maxLength: 40
+                required:
+                - generation_id
+                - consent_id
+                - consent_version
+                - consent_status
+                - avatar_id
+                - status
+                - job_status
+                - asset_id
+                - asset_version
+                - asset_status
+              maxItems: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+            coverage:
+              type: string
+              enum:
+              - PRODUCTION_MODEL_CREATIONS_ONLY
+          required:
+          - request_id
+          - request_completion
+          - items
+          - next_cursor
+          - coverage
       required:
       - meta
       - data

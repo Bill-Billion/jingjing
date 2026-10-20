@@ -106,6 +106,50 @@ function createPrivacyActions({db, resolvePrincipal, actor, load, owned, command
           coverage: 'PRODUCTION_MODELS_ONLY', request_completion: 'NOT_CONFIRMED'};
       });
     },
+    async modelCreations(ctx, input) {
+      page(input);
+      return withRequest(ctx, input, async (tx, account, request) => {
+        const [rows] = await tx.execute(`SELECT g.* FROM production_records g
+          JOIN supply_records c ON c.id=JSON_UNQUOTE(JSON_EXTRACT(g.data_json,'$.consent_id')) AND c.kind='CONSENT'
+          JOIN parties p ON p.id=JSON_UNQUOTE(JSON_EXTRACT(c.data_json,'$.consent.subject_party_id'))
+          WHERE g.kind='GENERATION' AND JSON_UNQUOTE(JSON_EXTRACT(g.data_json,'$.operation'))='CREATE_LONG_LIVED'
+            AND p.kind='PERSON' AND p.personal_account_id=? AND g.id>?
+          ORDER BY g.id LIMIT ?`, [account.id, input.after || '', input.limit + 1]);
+        const items = [];
+        for (const raw of rows.slice(0, input.limit)) {
+          // Match the producer's project -> generation lock order. Never lock a
+          // generation first and wait on its project while a worker does the reverse.
+          const hint = checked(raw);
+          const project = checked(await one(tx, "SELECT * FROM production_records WHERE id=? AND kind='PROJECT' FOR SHARE", [hint.project_id]));
+          const generation = checked(await one(tx, "SELECT * FROM production_records WHERE id=? AND kind='GENERATION' FOR SHARE", [raw.id]));
+          const consent = await ownConsent(tx, account.id, generation.data.consent_id);
+          const job = await one(tx, 'SELECT * FROM platform_jobs WHERE id=? FOR SHARE', [generation.data.job_id]);
+          if (generation.data.operation !== 'CREATE_LONG_LIVED' || generation.project_id !== project.id ||
+              generation.data.avatar_id !== consent.data.consent.avatar_id ||
+              !project.data.consent_ids.includes(consent.id) || project.order_id !== generation.order_id ||
+              !job || job.task_type !== 'PRODUCTION_DIGITAL_HUMAN' || job.payload_ref !== generation.id ||
+              job.provider !== generation.data.provider_code) throw error('STORED_CONTENT_MISMATCH', 503);
+          let asset = null;
+          if (generation.current_status === 'SUCCEEDED') {
+            let resultId;
+            try { resultId = id(generation.data.result?.asset_id); } catch { throw error('STORED_CONTENT_MISMATCH', 503); }
+            asset = checked(await one(tx, "SELECT * FROM production_records WHERE id=? AND kind='DIGITAL_ASSET' FOR SHARE", [resultId]));
+            if (generation.data.result.asset_type !== 'LONG_LIVED_AVATAR' || asset.data.asset_type !== 'LONG_LIVED_AVATAR' || asset.project_id !== generation.project_id || asset.order_id !== generation.order_id ||
+                asset.data.consent_id !== consent.id || asset.data.avatar_id !== generation.data.avatar_id ||
+                ['provider_code','environment','config_revision'].some(k => asset.data[k] !== generation.data[k])) {
+              throw error('STORED_CONTENT_MISMATCH', 503);
+            }
+          } else if (generation.data.result !== null || job.status === 'SUCCEEDED') throw error('STORED_CONTENT_MISMATCH', 503);
+          const status = asset ? 'MODEL_REGISTERED' : ['BLOCKED','FAILED'].includes(job.status) ? 'NEEDS_ATTENTION'
+            : ['RUNNING','RETRY'].includes(job.status) || generation.current_status === 'PENDING' ? 'WAITING_PROVIDER' : 'QUEUED';
+          items.push({generation_id:generation.id, consent_id:consent.id, consent_version:consent.object_version,
+            consent_status:consent.current_status, avatar_id:generation.data.avatar_id, status, job_status:job.status,
+            asset_id:asset?.id || null, asset_version:asset?.object_version || null, asset_status:asset?.current_status || null});
+        }
+        return {request_id:request.id, items, next_cursor:rows.length > input.limit ? rows[input.limit - 1].id : null,
+          coverage:'PRODUCTION_MODEL_CREATIONS_ONLY', request_completion:'NOT_CONFIRMED'};
+      });
+    },
     async actions(ctx, input) {
       page(input);
       return withRequest(ctx, input, async (tx, account, request) => {

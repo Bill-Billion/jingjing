@@ -1,5 +1,5 @@
 {
-  "version": "0.28.0-rc.1",
+  "version": "0.29.0-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -436,7 +436,8 @@
     "getPrivacyModelAssets",
     "getPrivacyActions",
     "withdrawPrivacyConsent",
-    "requestPrivacyModelDeletion"
+    "requestPrivacyModelDeletion",
+    "getPrivacyModelCreations"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -764,6 +765,11 @@
   "privacy_actions": {
     "status": "ISOLATED_TESTS",
     "evidence": "docs/testing/evidence/v5-privacy-actions/RESULTS.json",
-    "limits": "Owner withdrawal and registered production-model deletion only. Live provider, account closure, source files and in-flight creation cleanup are not accepted."
+    "limits": "Owner withdrawal and registered production-model deletion; withdrawn in-flight creation reconciliation is recorded separately. Live provider, account closure and source file cleanup remain unverified."
+  },
+  "privacy_model_creations": {
+    "status": "ISOLATED_TESTS",
+    "evidence": "docs/testing/evidence/v5-personal-tasks/RESULTS.json",
+    "limits": "Owner-only production creation status; no provider identifiers; registered model status is not usability, deletion, account closure or whole-request completion."
   }
 }
