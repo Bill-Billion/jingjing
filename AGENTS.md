@@ -1,4 +1,4 @@
-当前第9轮在worktrees/full-flow、core/v5-r09-operations-growth收尾。先读docs/status/CORE_CURRENT.md和docs/collaboration/V5_R09_HANDOFF.md；代码、测试、上传、双方审阅、合入和启用各自记录。先补第7轮会话/补差并完成第9轮，再按12轮计划做第10轮。下面保留旧阶段背景，不覆盖最新CURRENT。
+当前第10轮多人共创在 `worktrees/full-flow`、`core/v5-r10-cocreation` 收尾。先读 `docs/status/CORE_CURRENT.md` 与 `docs/collaboration/V5_R10_HANDOFF.md`。满20人按用户确认发一份不可提现服务额度，实际使用接第11轮；共12轮。代码、测试、上传、页面联调、双方审阅、合入和正式启用分别记录。下文旧轮次只保留历史背景，以最新CURRENT为准。
 
 # 项目协作指令
 

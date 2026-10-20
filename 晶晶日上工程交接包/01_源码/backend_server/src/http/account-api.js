@@ -146,6 +146,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/notices',require('./notices-routes').createNoticesRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/stock',require('./stock-routes').createStockRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/engagement',require('./engagement-routes').createEngagementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/cocreation',require('./cocreation-routes').createCocreationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/wallet',require('./wallet-routes').createWalletRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/auditions',require('./auditions-routes').createAuditionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
