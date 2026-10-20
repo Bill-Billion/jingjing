@@ -104,3 +104,9 @@ request_completion目前固定NOT_CONFIRMED，代表整份申请未获完整执�
 还会返回generation_id、avatar_id、consent_status、job_status，以及可空的asset_id/asset_version/asset_status。需要删除时用这份具体模型信息调用原有删除接口。撤回与删除仍须本人明确确认，不由列表读取自动执行。整个申请的request_completion仍固定NOT_CONFIRMED。
 
 coverage为PRODUCTION_MODEL_CREATIONS_ONLY，表示此列表只覆盖制作模块登记的模型创建，不是全账户资料清单，也不覆盖所有其他模块或第三方平台。空列表不能表示所有资料已清理。旧模型列表和动作查询保持不变；新增接口没有新数据库迁移。本侧已测试，当前尚未上传，队友获取同一版本后再接隐私页面。
+
+## 档案素材原授权核验补充
+
+档案制作与工作人员取素材现在逐份检查最新形象/声音版本绑定的原授权。另一份有效授权不会自动恢复已撤回的旧版本，须由本人通过原接口明确提交新版本。版本失效时拒绝继续使用，不回退到更早版本；旧档案与付款仍保留。读取文件后再次核验，途中撤回不会把文件返回给工作人员。
+
+这批无新接口、字段、错误码或迁移，页面无需同步修改调用。仍用ARTIST_CONSENT_REQUIRED、ARTIST_VARIANT_NOT_USABLE、ARCHIVE_VERSION_REQUIRED和PRIVATE_MATERIAL_NOT_READY等既有错误。页面应提示核对本人授权/当前版本，不要提示反复付款重试。拒绝使用不代表文件已经删除，也不是全账户资料已清理。[证据](../testing/evidence/v5-source-consent/RESULTS.json)。

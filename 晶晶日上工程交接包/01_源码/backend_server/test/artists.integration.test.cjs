@@ -92,9 +92,59 @@ test('artist rights and delegated access in isolated MySQL',{skip:!process.env.J
   assert.ok(ok(await call('GET','/people/'+person.id+'/records?kind=CONSENT')).items.some(x=>x.id===consent.id));
   ok(await call('GET','/reviews?kind=CONSENT',reviewer,undefined,null));bad(await call('GET','/reviews?kind=CONSENT',stranger,undefined,null),'ARTIST_REVIEW_FORBIDDEN');
  });
- await t.test('paid creation delivers a private archive, not a fabricated long-lived model',async()=>{
-  const paid=await serviceOrder('AVATAR_CREATION');const delivered=ok(await call('POST','/people/'+person.id+'/services/'+paid.service.id+'/results',reviewer,{outcome:'ARCHIVE_DELIVERED',archive_asset_id:material.id,reason:'synthetic archive independently checked'},null,headers(paid.service)));
-  assert.equal(delivered.data.delivery.type,'DIGITAL_ARCHIVE');const info=ok(await call('GET','/people/'+person.id)).avatars.find(x=>x.id===avatar.id);assert.equal(info.data.archive_status,'DELIVERED');assert.equal(info.data.long_lived_model_status,'NOT_ENABLED');
+ await t.test('archive material consent stays tied to the exact latest submitted versions',async t=>{
+  const paid=await serviceOrder('AVATAR_CREATION');
+  const declare=async()=>{
+   let r=ok(await call('POST','/people/'+person.id+'/consents',artist,{avatar_id:avatar.id,consent:{features:['FACE','VOICE'],purposes:['PRIVATE_ARCHIVE'],grantee_party_id:artist.personal_party_id,territories:['CN'],valid_from:from,valid_until:until,terms:'synthetic archive-only consent',evidence_asset_ids:[evidence.id]}},artist.personal_party_id,headers()));
+   return ok(await review(r));
+  };
+  const variant=async(c,previous,file,kind='LOOK')=>ok(await call('POST','/people/'+person.id+'/variants',artist,{avatar_id:avatar.id,kind,variant:{previous_version_id:previous,display_name:'explicit replacement',material_asset_ids:[file.id],consent_id:c.id}},artist.personal_party_id,headers()));
+  const withdraw=async r=>ok(await call('POST','/people/'+person.id+'/records/'+r.id+'/withdrawals',artist,{reason:'stop this material use'},artist.personal_party_id,headers(r)));
+  const deliver=file=>call('POST','/people/'+person.id+'/services/'+paid.service.id+'/results',reviewer,{outcome:'ARCHIVE_DELIVERED',archive_asset_id:file.id,reason:'synthetic archive independently checked'},null,headers(paid.service));
+  const fetchMaterial=async file=>fetch(base+'/people/'+person.id+'/records/'+paid.service.id+'/assets/'+file.id+'/content',{headers:{Authorization:'Bearer '+reviewer.token}});
+  const originalConsent=await declare(),oldFile=ok(await upload('AVATAR_MATERIAL'));
+  const oldVersion=await variant(originalConsent,look.id,oldFile);
+  let newConsent,newFile,newVersion,voiceConsent,voice;
+  await t.test('operator can read an authorized current material before withdrawal',async()=>{
+   const response=await fetchMaterial(oldFile);assert.equal(response.status,200);assert.ok((await response.arrayBuffer()).byteLength>0);
+  });
+  await t.test('withdrawal blocks reads and delivery despite another valid consent',async()=>{
+   await withdraw(originalConsent);
+   const response=await fetchMaterial(oldFile);assert.equal(response.status,409);assert.equal((await response.json()).error.code,'ARTIST_CONSENT_REQUIRED');
+   bad(await deliver(oldFile),'ARTIST_CONSENT_REQUIRED');
+   const unchanged=ok(await call('GET','/people/'+person.id+'/services/'+paid.service.id));assert.equal(unchanged.current_status,'READY');assert.equal(unchanged.data.delivery,null);assert.equal(unchanged.order.financial.net_minor,6000);
+  });
+  await t.test('new consent alone cannot reauthorize the old version; explicit replacement can',async()=>{
+   newConsent=await declare();bad(await deliver(oldFile),'ARTIST_CONSENT_REQUIRED');
+   newFile=ok(await upload('AVATAR_MATERIAL'));newVersion=await variant(newConsent,oldVersion.id,newFile);
+   assert.equal((await fetchMaterial(oldFile)).status,404);assert.equal((await fetchMaterial(newFile)).status,200);
+   bad(await deliver(oldFile),'ARCHIVE_VERSION_REQUIRED');
+  });
+  await t.test('voice uses its own original authorization, not the face consent',async()=>{
+   voiceConsent=await declare();voice=await variant(voiceConsent,null,newFile,'VOICE');await withdraw(voiceConsent);
+   bad(await deliver(newFile),'ARTIST_CONSENT_REQUIRED');assert.equal((await fetchMaterial(newFile)).status,409);
+   voice=await variant(newConsent,voice.id,newFile,'VOICE');
+  });
+  await t.test('expiry or missing material fails closed without falling back to history',async()=>{
+   const row=(await db.execute('SELECT data_json FROM artist_records WHERE id=?',[newConsent.id]))[0][0],original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;
+   const expired={...original,valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2020-02-01T00:00:00.000Z'};
+   await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(expired),digest(expired),newConsent.id]);
+   try {bad(await deliver(newFile),'ARTIST_CONSENT_REQUIRED');}finally{await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(original),digest(original),newConsent.id]);}
+   await db.execute("UPDATE supply_assets SET current_status='FAILED' WHERE id=?",[newFile.id]);
+   try {bad(await deliver(newFile),'PRIVATE_MATERIAL_NOT_READY');}finally{await db.execute("UPDATE supply_assets SET current_status='READY' WHERE id=?",[newFile.id]);}
+  });
+  await t.test('delivery contains only current explicitly authorized versions and keeps the old record',async()=>{
+   const delivered=ok(await deliver(newFile));assert.equal(delivered.data.delivery.type,'DIGITAL_ARCHIVE');
+   assert.deepEqual(delivered.data.delivery.archive.versions.map(v=>v.id),[newVersion.id,voice.id]);
+   assert.equal(ok(await call('GET','/people/'+person.id+'/records/'+oldVersion.id)).data.consent_id,originalConsent.id);
+   const info=ok(await call('GET','/people/'+person.id)).avatars.find(x=>x.id===avatar.id);assert.equal(info.data.archive_status,'DELIVERED');assert.equal(info.data.long_lived_model_status,'NOT_ENABLED');
+  });
+  await t.test('withdrawal during file transfer prevents response bytes from reaching the operator',async()=>{
+   const guarded=require('../src/modules/works/assets').createSupplyAssets({db,repository:{assetAccess:(ctx,asset_id)=>repo.reviewAsset(ctx,{person_id:person.id,record_id:paid.service.id,asset_id})},storageFactory:()=>({getBuffer:async objectKey=>{await withdraw(newConsent);return bytes.get(objectKey);}})});
+   await assert.rejects(guarded.download(reviewer.ctx,newFile.id),{code:'ARTIST_CONSENT_REQUIRED'});
+   assert.equal(ok(await call('GET','/people/'+person.id+'/services/'+paid.service.id)).current_status,'DELIVERED');
+   ok(await call('GET','/assets/'+newFile.id)); // Subject still owns the historical file; no false physical-deletion claim.
+  });
  });
  await t.test('versioned updates reject stale changes and audit failure rolls back both data and request key',async()=>{
   const stale=await call('POST','/people/'+person.id+'/services/'+hosted.service.id+'/reminder',artist,{enabled:true},artist.personal_party_id,headers({object_version:1}));bad(stale,'VERSION_CONFLICT');
