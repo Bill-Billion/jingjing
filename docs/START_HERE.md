@@ -1,16 +1,15 @@
-# 从这里开始：当前是第10轮多人共创后端交付收尾
+# 从这里开始：第11轮兑换、用券和抽奖交付收尾
 
-先看 [本侧当前进度](status/CORE_CURRENT.md)、[队友页面工作](status/EXPERIENCE_CURRENT.md)、[本轮接法与验收](collaboration/V5_R10_HANDOFF.md)。最新上传版本和检查状态以CURRENT为准，不根据旧标题推断。
+先读[本侧当前进度](status/CORE_CURRENT.md)、[双方具体接法](collaboration/V5_R11_HANDOFF.md)、[页面工作](status/EXPERIENCE_CURRENT.md)和[主线进度](status/MAINLINE_PROGRESS.md)。上传、测试和合入以CURRENT实际记录为准，不从轮次标题推断完成。
 
-完整工作目录 `worktrees/full-flow`，完整开发分支 `core/v5-r10-cocreation`；此前订单、履约和钱包依赖尚未全部合入共同版本。获取前先保存自己的未提交改动；不强推、不清空、不直接push main。
+实际目录 `worktrees/full-flow`，完整分支 `core/v5-r11-redemption`，基线edfd20d；前置钱包、奖励和共创未全部合入integration，完整依赖在本分支。保留自己和队友未提交改动，不强推、不直接推main、不自动合并。
 
-总体是12轮：[逐轮计划](reviews/v5-d1-intake/07_ROUND_PLAN.md)。本侧负责服务器、数据库、规则和隔离测试；队友负责App、MCN和运营网页，实际接手须本人确认。每轮集中交付，实际审阅后才安排合并，正式部署另验。
+总计划12轮：[逐轮安排](reviews/v5-d1-intake/07_ROUND_PLAN.md)。本侧负责后端和主要测试，队友负责App及运营网页，是否接手由本人确认。下一轮第12轮为非标出演、发行和全范围交付候选检查；真实服务、页面和手机验收仍分别完成。
 
-- [需求来源与分析](reviews/v5-d1-intake/00_READ_FIRST.md)
-- [当前任务表](tasks/board.json)
-- [主线详细进展](status/MAINLINE_PROGRESS.md)
-- [用户确认及未决规则](collaboration/DECISIONS.md)
-- [按阶段集中交付](collaboration/STAGED_DELIVERY.md)
-- [历史阅读入口原文](archive/v5-r09-entry-history/20261019_BEFORE_R09_START_HERE.md)
+- [需求对照](reviews/v5-d1-intake/00_READ_FIRST.md)
+- [同一份任务表](tasks/board.json)
+- [已确认与未决规则](collaboration/DECISIONS.md)
+- [阶段集中交付方式](collaboration/STAGED_DELIVERY.md)
+- [旧入口原文](archive/v5-r11-entry-history/20261020_BEFORE_R11_START_HERE.md)
 
-本轮支付模拟不代表正式服务接通；星光和城市榜未知数值不硬编码；月冠军同分与刷票处理按用户确认规则执行。更多长期要求见仓库AGENTS.md。
+权益全额抵扣不是现金付款，面试机会不是出演权，合成抽奖/付款/文件不能视为正式活动可用。儿童实际处理仍关闭。
