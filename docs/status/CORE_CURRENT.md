@@ -15,3 +15,5 @@
 [页面接法](../collaboration/V5_PRIVACY_HANDOFF.md)；[任务记录](../tasks/records/CORE-v5-privacy-20261020.md)；[素材复核](../reviews/v5-r12/MATERIAL_GOVERNANCE_GAPS.md)。
 
 验证：通知补丁前30组通过，综合855通过/1缺旧库样本跳过；补丁后隐私15项、通知20项通过；最终32组接口检查2850份返回通过。见[测试证据](../testing/evidence/v5-privacy/RESULTS.json)。本批在本地保存，尚未到完整保护流程的集中交付点。
+
+本地保存补记：功能提交 `a29873718bb723f295713c0f54940a2517109d70`，未上传；隔离测试数据库已停止，未部署。后续继续实际处理及素材缺口，仍按阶段集中交付。
