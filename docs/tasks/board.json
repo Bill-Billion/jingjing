@@ -4685,7 +4685,7 @@
           "title": "个人信息权利、青少年与消费保护—服务端与规则",
           "suggested_owner": "chengcongcong222",
           "claimed_by": "chengcongcong222",
-          "claim_status": "本侧认领剩余个人信息请求闭环",
+          "claim_status": "本侧已认领并补齐个人信息请求基础",
           "work": "查询复制更正删除/注销请求、15工作日平台目标、留存例外；撤回跨上传/商品/生成/分发；年龄/监护/误充、限额冷静期、举报申诉和偏好。",
           "contract": "privacy_request、retention_hold、withdrawal_event、provider_deletion_result、teen_policy、spend_limit、complaint",
           "dependencies": [
@@ -4696,7 +4696,8 @@
             "DEC-11",
             "DEC-13",
             "DEC-15",
-            "EXT-07"
+            "EXT-07",
+            "EXT-PRIVACY-20261020"
           ],
           "acceptance_ids": [
             "ACC-DEL-23.01",
@@ -4705,17 +4706,17 @@
             "ACC-DEL-23.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "65f8938eaf6236d3718703b64efc045cee84fb96",
           "end_sha": null,
-          "implementation": "正在准备请求和偏好模块；尚未接入运行程序或通过测试",
-          "tests": "未执行",
+          "implementation": "六类请求、本人查看、处理与独立复核、私有答复、历史、异议及偏好已实现；实际删除注销和投诉业务效果仍需继续",
+          "tests": "通知补丁前30组通过、综合855通过/1缺样本跳过；补丁后隐私15项、通知20项通过；最终32组接口2850份返回通过",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 1,
           "planned_internal_completion_milestone": 6,
           "dependency_note": "每段接入年龄/撤回/隐私保护，不等第六段才写。",
-          "plan_status": "已认领，继续实现",
+          "plan_status": "请求基础通过本机检查，继续实际处理；未完成全包验收",
           "scope_supplement_ids": [
             "SUP-10",
             "SUP-15",
@@ -4742,9 +4743,9 @@
             "tests": "20组本机通过；本轮26项；综合585通过/1缺样本跳过；合成联调18步",
             "evidence": "docs/testing/evidence/v5-r04/RESULTS.json"
           },
-          "branch": "core/v5-backend-completion",
-          "publication": "未上传",
-          "evidence": "docs/tasks/records/CORE-v5-backend-completion-20261020.md"
+          "branch": "core/v5-privacy-protection",
+          "publication": "本批未上传",
+          "evidence": "docs/tasks/records/CORE-v5-privacy-20261020.md"
         },
         {
           "id": "UX-DEL-23",
@@ -4807,7 +4808,7 @@
           "title": "私有素材、内容审核与AI标识全链—服务端与规则",
           "suggested_owner": "chengcongcong222",
           "claimed_by": "chengcongcong222",
-          "claim_status": "已认领第三轮相关部分，原已完成部分保留，非整包完成",
+          "claim_status": "本侧认领缺口复核",
           "work": "上传/生成/发布/下载共用素材审查结果、显隐标识和失败阻断；私有访问、用途、生命周期；SDK清单版本、PIA引用、日志策略和服务证据。",
           "contract": "media_asset、review_result、label_result、access_decision、sdk_inventory、pia_reference",
           "dependencies": [
@@ -4827,15 +4828,15 @@
           "pr": null,
           "start_sha": null,
           "end_sha": null,
-          "implementation": "未开始",
-          "tests": "未执行",
+          "implementation": "完成源码复核和19项服务器依赖登记；新版自动审核与真实文件标识仍缺实现",
+          "tests": "未将文档核对当成功能测试",
           "peer_review": "未审阅",
           "integration": "未合入",
           "production": "未启用",
           "planned_start_milestone": 1,
           "planned_internal_completion_milestone": 6,
           "dependency_note": "私有上传、审核、标识随每条链实现；大文件与撤回等全链第六段收口。",
-          "plan_status": "建议安排，尚未认领；验收未执行",
+          "plan_status": "继续开发，不因甲方未补隐私材料而移出范围",
           "scope_supplement_ids": [
             "SUP-16",
             "SUP-19",
@@ -4869,7 +4870,9 @@
             "integration": "未合入",
             "tests": "20组本机通过；本轮26项；综合585通过/1缺样本跳过；合成联调18步",
             "evidence": "docs/testing/evidence/v5-r04/RESULTS.json"
-          }
+          },
+          "branch": "core/v5-privacy-protection",
+          "evidence": "docs/reviews/v5-r12/MATERIAL_GOVERNANCE_GAPS.md"
         },
         {
           "id": "UX-DEL-24",

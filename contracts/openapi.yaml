@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.26.0-rc.1
+  version: 0.27.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -23,6 +23,7 @@ tags:
 - name: governance
 - name: operations
 - name: artists
+- name: privacy
 x-baseline-id: JX-R06-EXECUTION-BASELINE-20260921
 x-review-status: PENDING_EXPERIENCE_REVIEW
 paths:
@@ -7515,6 +7516,7 @@ paths:
           - SUPPLY
           - LICENSE
           - GIGS
+          - PRIVACY
       - name: record_id
         in: path
         required: true
@@ -7582,6 +7584,7 @@ paths:
           - SUPPLY
           - LICENSE
           - GIGS
+          - PRIVACY
       - name: record_id
         in: path
         required: true
@@ -7760,6 +7763,7 @@ paths:
           - SUPPLY
           - LICENSE
           - GIGS
+          - PRIVACY
       - name: record_id
         in: path
         required: true
@@ -22436,6 +22440,713 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/privacy/preferences:
+    get:
+      operationId: getPrivacyPreferences
+      summary: 查看我的隐私偏好
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyPreferencesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+    patch:
+      operationId: savePrivacyPreferences
+      summary: 保存我的隐私偏好
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyPreferencesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyPreferencesInput'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests:
+    post:
+      operationId: createPrivacyRequest
+      summary: 提交个人信息申请或投诉
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyCreateRequest'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+    get:
+      operationId: listPrivacyRequests
+      summary: 查看我的申请
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests/{request_id}:
+    get:
+      operationId: getPrivacyRequest
+      summary: 查看申请进度及结果
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/operations/requests:
+    get:
+      operationId: listPrivacyRequestsForHandler
+      summary: 工作人员查看申请列表
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/operations/requests/{request_id}:
+    get:
+      operationId: getPrivacyRequestForHandler
+      summary: 工作人员查看申请及待审答复
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/operations/requests/{request_id}/start:
+    post:
+      operationId: startPrivacyRequest
+      summary: 开始处理个人信息申请
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyEmptyRequest'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/operations/requests/{request_id}/response:
+    post:
+      operationId: proposePrivacyResponse
+      summary: 提交答复供独立复核
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyProposeRequest'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/operations/requests/{request_id}/review:
+    post:
+      operationId: reviewPrivacyResponse
+      summary: 独立复核个人信息答复
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyReviewRequest'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests/{request_id}/reopen:
+    post:
+      operationId: reopenPrivacyRequest
+      summary: 对处理结果提出异议
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivacyReopenRequest'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests/{request_id}/history:
+    get:
+      operationId: getPrivacyResponseHistory
+      summary: 查看历次正式答复
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/requests/{request_id}/evidence/{asset_id}/content:
+    get:
+      operationId: downloadPrivacyResponseFile
+      summary: 本人领取已审核的私有答复材料
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
 components:
   securitySchemes:
     bearerAuth:
@@ -22666,6 +23377,468 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    PrivacyCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          enum:
+          - QUERY
+          - COPY
+          - CORRECT
+          - DELETE
+          - CLOSE_ACCOUNT
+          - COMPLAINT
+        scopes:
+          type: array
+          items:
+            enum:
+            - PROFILE
+            - ARTIST_MATERIALS
+            - PRIVATE_STORY
+            - CONTRACTS
+            - TRANSACTIONS
+            - DIGITAL_MODELS
+            - CONTENT
+            - ALL
+          maxItems: 8
+          minItems: 1
+          uniqueItems: true
+        details:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - type
+      - scopes
+      - details
+    PrivacyPreferencesInput:
+      type: object
+      additionalProperties: false
+      properties:
+        personalization:
+          type: boolean
+        marketing:
+          type: boolean
+        rest_reminder_minutes:
+          type: integer
+          anyOf:
+          - const: 0
+          - minimum: 15
+            maximum: 240
+      required:
+      - personalization
+      - marketing
+      - rest_reminder_minutes
+    PrivacyPreferencesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            object_version:
+              type: integer
+              minimum: 0
+            personalization:
+              type: boolean
+            marketing:
+              type: boolean
+            rest_reminder_minutes:
+              type: integer
+              anyOf:
+              - const: 0
+              - minimum: 15
+                maximum: 240
+          required:
+          - object_version
+          - personalization
+          - marketing
+          - rest_reminder_minutes
+      required:
+      - meta
+      - data
+    PrivacyRetention:
+      type: object
+      additionalProperties: false
+      properties:
+        scope:
+          enum:
+          - PROFILE
+          - ARTIST_MATERIALS
+          - PRIVATE_STORY
+          - CONTRACTS
+          - TRANSACTIONS
+          - DIGITAL_MODELS
+          - CONTENT
+        object_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+        basis:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        policy_rule_id:
+          type: string
+          format: uuid
+        review_on:
+          type: string
+          format: date
+      required:
+      - scope
+      - object_ref
+      - basis
+      - policy_rule_id
+      - review_on
+    PrivacyResponseProposal:
+      type: object
+      additionalProperties: false
+      properties:
+        response:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        outcome:
+          enum:
+          - INFORMATION_PROVIDED
+          - CORRECTION_RECORDED
+          - DELETION_REQUESTED
+          - RETENTION_EXPLAINED
+          - ACCOUNT_CLOSURE_REQUESTED
+          - COMPLAINT_RESPONSE
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+          minItems: 1
+          uniqueItems: true
+        retentions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrivacyRetention'
+          maxItems: 30
+        remaining_actions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 1000
+          maxItems: 30
+      required:
+      - response
+      - outcome
+      - evidence_asset_ids
+      - retentions
+      - remaining_actions
+    PrivacyReviewedResult:
+      type: object
+      additionalProperties: false
+      properties:
+        response:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        outcome:
+          enum:
+          - INFORMATION_PROVIDED
+          - CORRECTION_RECORDED
+          - DELETION_REQUESTED
+          - RETENTION_EXPLAINED
+          - ACCOUNT_CLOSURE_REQUESTED
+          - COMPLAINT_RESPONSE
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+          minItems: 1
+          uniqueItems: true
+        retentions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrivacyRetention'
+          maxItems: 30
+        remaining_actions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 1000
+          maxItems: 30
+        files:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              content_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              byte_size:
+                type: integer
+                minimum: 1
+              media_type:
+                type: string
+                minLength: 1
+                maxLength: 100
+            required:
+            - id
+            - content_sha256
+            - byte_size
+            - media_type
+          maxItems: 20
+        verification:
+          type: object
+          additionalProperties: false
+          properties:
+            method:
+              const: INDEPENDENT_MANUAL_REVIEW
+            reviewer_account_id:
+              type: string
+              format: uuid
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+          - method
+          - reviewer_account_id
+          - reason
+        execution_status:
+          enum:
+          - EXECUTION_PENDING
+          - MANUAL_RESPONSE_VERIFIED
+      required:
+      - response
+      - outcome
+      - evidence_asset_ids
+      - retentions
+      - remaining_actions
+      - files
+      - verification
+      - execution_status
+    PrivacyRequestData:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        account_id:
+          type: string
+          format: uuid
+        request:
+          $ref: '#/components/schemas/PrivacyCreateRequest'
+        current_status:
+          enum:
+          - RECEIVED
+          - PROCESSING
+          - AWAITING_REVIEW
+          - FOLLOW_UP
+          - RESPONDED
+          - REOPENED
+        object_version:
+          type: integer
+          minimum: 1
+        response_due_on:
+          type: string
+          format: date
+        calendar_version:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 128
+          - type: 'null'
+        deadline_basis:
+          enum:
+          - REVIEWED_CALENDAR
+          - WEEKDAY_ESTIMATE_NEEDS_CALENDAR
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/PrivacyReviewedResult'
+          - type: 'null'
+        proposal:
+          anyOf:
+          - $ref: '#/components/schemas/PrivacyResponseProposal'
+          - type: 'null'
+        proposal_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[a-f0-9]{64}$
+          - type: 'null'
+        events:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              event_code:
+                type: string
+                minLength: 1
+                maxLength: 60
+              object_version:
+                type: integer
+                minimum: 1
+              message:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              created_at:
+                type: string
+                format: date-time
+            required:
+            - id
+            - event_code
+            - object_version
+            - message
+            - created_at
+          maxItems: 10000
+      required:
+      - id
+      - account_id
+      - request
+      - current_status
+      - object_version
+      - response_due_on
+      - calendar_version
+      - deadline_basis
+      - result
+      - events
+    PrivacyRequestResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/PrivacyRequestData'
+      required:
+      - meta
+      - data
+    PrivacyListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/PrivacyRequestData'
+              maxItems: 100
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    PrivacyHistoryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            responses:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  object_version:
+                    type: integer
+                    minimum: 1
+                  result:
+                    $ref: '#/components/schemas/PrivacyReviewedResult'
+                required:
+                - object_version
+                - result
+              maxItems: 10000
+          required:
+          - request_id
+          - responses
+      required:
+      - meta
+      - data
+    PrivacyEmptyRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    PrivacyProposeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        result:
+          $ref: '#/components/schemas/PrivacyResponseProposal'
+      required:
+      - result
+    PrivacyReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        proposal_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        evidence_verified:
+          type: boolean
+        third_party_data_redacted:
+          type: boolean
+        remaining_actions_checked:
+          type: boolean
+      required:
+      - decision
+      - reason
+      - proposal_sha256
+      - evidence_verified
+      - third_party_data_redacted
+      - remaining_actions_checked
+    PrivacyReopenRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
     EngagementRecord:
       type: object
       additionalProperties: false
@@ -23676,6 +24849,7 @@ components:
           - SUPPLY
           - LICENSE
           - GIGS
+          - PRIVACY
         record_id:
           type: string
           format: uuid
@@ -23754,6 +24928,7 @@ components:
           - SUPPLY
           - LICENSE
           - GIGS
+          - PRIVACY
         record_id:
           type: string
           format: uuid
@@ -23941,6 +25116,7 @@ components:
           - SUPPLY
           - LICENSE
           - GIGS
+          - PRIVACY
         record_id:
           type: string
           format: uuid
@@ -24051,6 +25227,7 @@ components:
                 - SUPPLY
                 - LICENSE
                 - GIGS
+                - PRIVACY
               record_id:
                 type: string
                 format: uuid

@@ -1,0 +1,4 @@
+"use strict";
+const test=require('node:test'),assert=require('node:assert/strict'),P=require('../src/modules/privacy/policy');
+test('15-working-day platform target uses reviewed exception dates without inventing a retention term',()=>{assert.equal(P.dueDate(new Date('2026-10-19T02:00:00.000Z')),'2026-11-09');assert.equal(P.dueDate(new Date('2026-10-19T02:00:00.000Z'),{'2026-10-20':false}),'2026-11-10');assert.equal(P.dueDate(new Date('2026-10-19T02:00:00.000Z'),{'2026-10-24':true}),'2026-11-06');});
+test('duplicate scopes and fake executed outcome are rejected',()=>{assert.throws(()=>P.request({type:'COPY',scopes:['PROFILE','PROFILE'],details:'copy'}),{code:'INVALID_PRIVACY_REQUEST'});assert.throws(()=>P.result({response:'done',outcome:'DELETED',evidence_asset_ids:[],retentions:[],remaining_actions:[]}),{code:'INVALID_PRIVACY_OUTCOME'});});

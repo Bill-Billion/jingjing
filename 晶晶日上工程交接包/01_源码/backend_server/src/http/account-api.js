@@ -138,6 +138,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   contentReply(req,res,data);
  }));
  app.use('/api/v1',require('./customization-routes').createCustomizationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
+ app.use('/api/v1/privacy',require('./privacy-routes').createPrivacyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/operations',require('./business-operations-routes').createBusinessOperationsRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/finance',require('./settlement-routes').createSettlementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/projects',require('./projects-routes').createProjectsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
