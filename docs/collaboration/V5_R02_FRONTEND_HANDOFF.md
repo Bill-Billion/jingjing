@@ -1,3 +1,5 @@
+> 本轮已上传[PR26](https://github.com/Bill-Billion/jingjing/pull/26)，功能版本27f23a7远端八项检查通过；具体证据及后续文档版本的最新检查以[发布记录](../testing/evidence/v5-r02-frontend/PUBLICATION.json)为准。双方进度已在[对方PR25](https://github.com/Bill-Billion/jingjing/pull/25#issuecomment-6285727970)同步。
+
 # 第二轮前端：补齐故事、确认报价，找到未付款订单
 
 2026-10-20，前端负责人 Bill-Billion。完整分支 `ux/v5-r02-story-quote-frontend` 从第一轮 `8e77ff0` 继续，所需后端已包含在 `core/v5-r04-customization-delivery / c93fe96`。只比较第一轮之后的增量，不重复申请旧后端链。实际检查、上传和待审状态见[前端CURRENT](../status/EXPERIENCE_CURRENT.md)。

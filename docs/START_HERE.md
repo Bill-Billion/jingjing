@@ -1,8 +1,8 @@
-# 当前双方同步：前端第二轮进行中，第一轮已请求对方审阅
+# 当前双方同步：第二轮前端已交付，远端检查通过，等待实际审阅
 
-前端在PR24之后接补件、重提、正式历史、平台报价与未付款订单，实际状态看[前端CURRENT](status/EXPERIENCE_CURRENT.md)。第一轮我方已审Core接口并复验，Core审PR24已实际请求但尚无结果，见[交叉审阅](collaboration/V5_R01_CROSS_REVIEW.md)。
+从[第二轮前端交接](collaboration/V5_R02_FRONTEND_HANDOFF.md)和[前端CURRENT](status/EXPERIENCE_CURRENT.md)接手。[PR26](https://github.com/Bill-Billion/jingjing/pull/26)提供补件、重提、历史、平台报价和未付款订单；本机App289/网页209及同一故事32组跨端通过。功能版本27f23a7远端检查全部通过，检查版本与后续文档版本的最新状态以PR和发布记录为准。
 
-Core远端已上传第5—12轮与[后端补齐PR25](https://github.com/Bill-Billion/jingjing/pull/25)，当前摘要看[Core同步](status/CORE_CURRENT.md)。本轮前端仍用R04已有接口；没有合并共同版本或启用生产。下方保留旧入口，历史中的“前端待接”不覆盖这里和前端CURRENT。
+第一轮我方Core审查已复验，Core审PR24已实际请求但尚无结果，见[交叉审阅](collaboration/V5_R01_CROSS_REVIEW.md)。双方状态已在[对方PR25](https://github.com/Bill-Billion/jingjing/pull/25#issuecomment-6285727970)同步，Core最新后端摘要见[Core同步](status/CORE_CURRENT.md)。本轮前端保持R04底座，没有合并共同版本或启用生产。下方旧“前端待接”是历史。
 
 ---
 

@@ -1,8 +1,8 @@
-# 当前推进：第二轮前端；第一轮审阅两边分别记录
+# 当前推进：第二轮前端已上传，第一轮审阅待对方结果
 
-2026-10-20，第一轮App故事到运营受理已在PR24交付，六项检查通过；本前端已审Core第一轮并复验，已实际请求Core检查PR24，对方结果待返回。[审阅证据](../collaboration/V5_R01_CROSS_REVIEW.md)。
+2026-10-20，第二轮已在[PR26](https://github.com/Bill-Billion/jingjing/pull/26)交付。用户可补资料、正式重提、核对报价并找回同一未付款未签署订单；本机App289、网页209、跨端32组通过，功能版本27f23a7远端检查全部通过。[本轮交接](../collaboration/V5_R02_FRONTEND_HANDOFF.md) · [前端CURRENT](EXPERIENCE_CURRENT.md)。
 
-第二轮前端接补件、重提、历史、平台报价、独立复核与未付款订单，使用原R04底座。Core最新后端另已上传至PR25，不能将后端轮次计为前端完成。[前端当前状态](EXPERIENCE_CURRENT.md) · [Core远端核对](CORE_CURRENT.md) · [本轮任务](../tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)。共同版本仍28662ab；未合入或部署。下方保留历史。
+第一轮我方Core审查已完成，已请求Core审PR24，实际结果仍待；双方进度已通过[对方PR25评论](https://github.com/Bill-Billion/jingjing/pull/25#issuecomment-6285727970)同步。Core后续轮次不计作页面完成。共同版本仍28662ab，未合入或部署。下方保留历史。
 
 ---
 

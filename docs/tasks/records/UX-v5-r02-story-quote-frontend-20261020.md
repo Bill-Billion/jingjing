@@ -21,4 +21,4 @@
 
 ## 当前结果
 
-第二轮范围已实现并通过本机验收：App289、网页209项，分析、类型检查及产品构建通过；同一故事32组跨端通过，原R01 App13/网页16组回归通过。补件响应丢失后原键原体原版本恢复，正式历史和未付款未签署订单均实际核对。修正了五处入口、缓存与并发问题，见[本轮证据](../../testing/evidence/v5-r02-frontend/RESULTS.json)及[前端交接](../../collaboration/V5_R02_FRONTEND_HANDOFF.md)。测试随机库、凭据、临时App构建与缓存和本次服务已清理。集中上传及远端结果另行记录；未合并、未部署或调用真实付款。
+第二轮范围已实现并通过本机验收：App289、网页209项，分析、类型检查及产品构建通过；同一故事32组跨端通过，原R01 App13/网页16组回归通过。补件响应丢失后原键原体原版本恢复，正式历史和未付款未签署订单均实际核对。修正了五处入口、缓存与并发问题，见[本轮证据](../../testing/evidence/v5-r02-frontend/RESULTS.json)及[前端交接](../../collaboration/V5_R02_FRONTEND_HANDOFF.md)。测试随机库、凭据、临时App构建与缓存和本次服务已清理。已集中上传[PR26](https://github.com/Bill-Billion/jingjing/pull/26)，功能版本27f23a7八项远端检查通过，已下载核对App289/网页209及后端20组、综合586通过/1项缺脱敏旧库样本跳过。已向chengcongcong222请求实际审阅，双方状态已在[对方PR25评论](https://github.com/Bill-Billion/jingjing/pull/25#issuecomment-6285727970)同步；对方审阅仍待返回，未合并、未部署或调用真实付款。

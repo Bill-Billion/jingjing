@@ -10,4 +10,4 @@
 - `WEB_LOCAL_SUMMARY.json`：网页完整209项、类型检查及产品构建；四个受影响专项另有独立运行日志。
 - `REVIEW.json`：本轮五项状态、并发和入口问题的修正范围。
 
-App最终289项、静态分析及产品构建见 `APP_LOCAL_SUMMARY.json`；同一故事32组跨端见 `CROSS_RESULTS.json`，第一轮App13/网页16组回归另列。截图稳定重拍及390金额可读性见 `VISUAL_QA.json`。随机库、凭据、测试构建、编译缓存和本次服务清理见 `CLEANUP.json`。汇总为 `RESULTS.json`；远端检查在上传后独立记录，不以本机结果替代。原生真机、真实支付/电子签/生成服务及最新十二轮整包后端运行不包含在本次测试内。共同版本和生产仍未变更。
+App最终289项、静态分析及产品构建见 `APP_LOCAL_SUMMARY.json`；同一故事32组跨端见 `CROSS_RESULTS.json`，第一轮App13/网页16组回归另列。截图稳定重拍及390金额可读性见 `VISUAL_QA.json`。随机库、凭据、测试构建、编译缓存和本次服务清理见 `CLEANUP.json`。汇总为 `RESULTS.json`；功能版本27f23a7的八项远端检查通过，见 `PUBLICATION.json`、`REMOTE_FRONTEND_SUMMARY.json` 和 `REMOTE_BACKEND_SUMMARY.json`；App289、网页209，后端20组通过，综合586通过/1项缺脱敏旧库样本跳过。后续文档提交的最新检查以PR Checks为准，不以本机结果替代。原生真机、真实支付/电子签/生成服务及最新十二轮整包后端运行不包含在本次测试内。共同版本和生产仍未变更。

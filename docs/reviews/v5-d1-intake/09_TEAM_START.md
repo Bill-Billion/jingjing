@@ -1,8 +1,8 @@
-# 双方当前入口：第一轮已交付，前端正接第二轮
+# 双方当前入口：第二轮前端已交付，实际审阅仍待办
 
-2026-10-20前端负责人Bill-Billion已从PR24继续实现补件、正式重提、报价和未付款订单；下文“第一轮页面待接/第二轮未开工”为历史状态。以[前端CURRENT](../../status/EXPERIENCE_CURRENT.md)和[第二轮任务](../../tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)为准。
+2026-10-20，Bill-Billion已交付第一轮PR24及第二轮[PR26](https://github.com/Bill-Billion/jingjing/pull/26)。补件、重提、历史、报价复核和未付款订单有同一故事跨端证据，本机App289/网页209及32组串联通过，功能版本27f23a7远端检查全部通过。从[第二轮前端交接](../../collaboration/V5_R02_FRONTEND_HANDOFF.md)及[前端CURRENT](../../status/EXPERIENCE_CURRENT.md)接手。
 
-我方Core接口审阅和隔离复验已完成；PR24已实际向chengcongcong222请求审阅，对方结果尚待。见[第一轮交叉审阅](../../collaboration/V5_R01_CROSS_REVIEW.md)。Core最新已上传第5—12轮及PR25，见[远端同步摘要](../../status/CORE_CURRENT.md)；后端自验不替代页面接线。
+我方Core接口审查及复验已完成，已请求chengcongcong222实际审PR24，对方结果尚待；[审阅记录](../../collaboration/V5_R01_CROSS_REVIEW.md)。双方状态已在[对方PR25评论](https://github.com/Bill-Billion/jingjing/pull/25#issuecomment-6285727970)同步；Core后续进展见[摘要](../../status/CORE_CURRENT.md)。下文“页面待接/第二轮未开工”是历史，未合入或启用生产。
 
 ---
 

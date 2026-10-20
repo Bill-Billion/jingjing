@@ -1,16 +1,16 @@
-## 本前端当前施工：第二轮补件、报价与未付款订单
-
-2026-10-20，本工作树为 `ux/v5-r02-story-quote-frontend`，从已交付PR24/8e77ff0继续，后端底座保持R04/c93fe96。App与网页按原第二轮接补件、正式历史、平台报价、独立复核和未付款未签署订单；原付款/制作后续轮次不计入本轮。第一轮我方审查已复验，PR24已实际转待审并请求chengcongcong222，Core对前端的结果仍待返回。详见[审阅记录](docs/collaboration/V5_R01_CROSS_REVIEW.md)与[第二轮任务](docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)。下方Core第四轮施工描述是本目录后端依赖的历史，最新后端已至PR25，不能将其写成页面同步完成。
-
 # 项目协作指令
+
+## 本前端当前阶段：第二轮已交付并通过远端检查
+
+2026-10-20，本工作树为 `ux/v5-r02-story-quote-frontend`，已交付[PR26](https://github.com/Bill-Billion/jingjing/pull/26)。功能版本27f23a7本机App289/网页209和同一故事跨端32组通过，八项远端检查通过；本轮含补件、历史、平台报价、独立复核与未付款未签署订单，仍用R04/c93fe96底座。第一轮我方Core审查已复验，PR24和PR26均已向chengcongcong222实际请求审阅，结果待返回；无合入或部署。详见[第一轮审阅](docs/collaboration/V5_R01_CROSS_REVIEW.md)、[第二轮交接](docs/collaboration/V5_R02_FRONTEND_HANDOFF.md)与CURRENT。后端后续已上传PR25，不将后端轮次当页面完成。
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。
 
-## 当前施工：第四轮定制制作后端交接
+## 后端第四轮依赖快照（历史施工背景）
 
 实际在worktrees/full-flow的core/v5-r04-customization-delivery；先读[第四轮交接](docs/collaboration/V5_R04_HANDOFF.md)、CURRENT及测试证据。本侧后端已自验，实际上传和远端检查以CURRENT为准；页面/队友审阅/合入/正式启用未完成。首次预览与90%付款先后尚待用户答复，正式商品不得自选默认；儿童实际处理继续关闭。共12轮，下一轮第5轮现成视频。继续集中交付、不新增重复串联申请；不把历史已上传分支当共同版本。
 
-## 本前端当前阶段：第一轮故事提交与运营受理
+## 第一轮前端交付背景（当前状态以第二轮为准）
 
 2026-10-17，本前端在 `ux/v5-r01-story-frontend`、起点 `c93fe96` 接手 `UX-DEL-14` 的第一轮部分。App 已接文字品类表单、草稿恢复与保存、正式提交和状态；网页已接故事收件、提交快照和开始受理。导航按 V5 迁移，本机串联与功能版本06622db远端检查通过；[PR24](https://github.com/Bill-Billion/jingjing/pull/24)是本轮增量草稿审阅入口。完整跨端结果以[本轮前端交接](docs/collaboration/V5_R01_FRONTEND_HANDOFF.md)为准；实际双方审阅、上传、合入、原生包和正式启用分别记录，不能由代码、后端自验或辅助代理检查替代。此阶段不包括补件报价、附件上传、付款、完整试镜或其他轮页面。
 

@@ -1,12 +1,12 @@
-> 2026-10-20本机验收更新：第二轮App289项、网页209项、分析与产品构建通过；同一故事跨端32组、第一轮App13/网页16组回归通过，随机测试库及临时会话已清理。正在集中交付，远端检查另行核对。[本轮交接](../collaboration/V5_R02_FRONTEND_HANDOFF.md) · [实际结果](../testing/evidence/v5-r02-frontend/RESULTS.json)。
+# 第二轮前端已上传，远端检查通过，等待实际审阅
 
-# 第二轮前端施工中；第一轮已交付并实际请求审阅
+2026-10-20，Bill-Billion已交付[PR26](https://github.com/Bill-Billion/jingjing/pull/26)，功能版本 `27f23a7`，分支 `ux/v5-r02-story-quote-frontend`。比较起点为第一轮8e77ff0，后端依赖仍为R04/c93fe96。用户可补资料、保存恢复、正式重提、查历史、核对报价并确认/找回同一未付款未签署订单；运营可补件、重新受理、平台报价和独立复核，财务只读试算另列。
 
-2026-10-20，Bill-Billion在 `ux/v5-r02-story-quote-frontend` 从第一轮8e77ff0继续，使用R04/c93fe96已有第二轮接口。正在接补件保存/重提/历史、平台报价、独立复核、确认未付款订单和财务只读试算；完成检查后集中交付，本段不提前报已上传。
+本机App289、网页209项，分析/类型检查与产品构建通过；同一故事跨端32组、第一轮App13/网页16组回归通过，随机库、临时会话与本次服务已清理。[实际结果](../testing/evidence/v5-r02-frontend/RESULTS.json)。功能版本27f23a7远端检查全部通过，以[发布记录](../testing/evidence/v5-r02-frontend/PUBLICATION.json)和PR Checks为准。
 
-第一轮[PR24](https://github.com/Bill-Billion/jingjing/pull/24)六项远端检查通过，已转待审并向chengcongcong222请求审阅。我方对Core第一轮检查及复验已完成，见[实际审阅记录](../collaboration/V5_R01_CROSS_REVIEW.md)；对方审阅前端仍待结果。
+第一轮我方Core接口审查已复验，PR24已实际请求chengcongcong222，对方结果仍待返回。[交叉审阅](../collaboration/V5_R01_CROSS_REVIEW.md)。已在[对方PR25评论](https://github.com/Bill-Billion/jingjing/pull/25#issuecomment-6285727970)同步当前前端状态，不将已发送写成对方已读或批准。
 
-Core最新已上传PR25，后续代码未纳入本轮底座，不把后端进度当作页面完成。第二轮范围和验收见[任务记录](../tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)。下方保留此前记录。
+[本轮接法和下一步](../collaboration/V5_R02_FRONTEND_HANDOFF.md)。Core后续已上传至PR25，本轮没有导入第5—12轮代码或运行其最新整包；真机、附件及真实服务另验。共同版本仍28662ab，未合入、部署或正式启用。下方保留历史。
 
 ---
 
