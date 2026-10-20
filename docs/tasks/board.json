@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-17",
+  "updated_on": "2026-10-20",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -2319,7 +2319,7 @@
       "id": "JX-V5-D1-PLAN",
       "package_version": "20261016-D1",
       "reviewed_on_local_date": "2026-10-15",
-      "status": "SECOND_ROUND_BACKEND_PUBLISHED_FRONTEND_PENDING",
+      "status": "R02_FRONTEND_LOCAL_VERIFIED_PEER_REVIEW_PENDING",
       "analysis_owner": "chengcongcong222",
       "analysis_branch": "core/v5-d1-planning",
       "code_anchor": "25e6d29f81fd882edc203b732a48fe90d15f8c9f",
@@ -3053,8 +3053,8 @@
           "package": "DEL-07",
           "title": "报价合同、各商品收银与退款恢复—App与Web",
           "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
-          "claimed_by": null,
-          "claim_status": "未认领",
+          "claimed_by": "Bill-Billion",
+          "claim_status": "已认领第二轮相关部分；非整包完成",
           "work": "统一收银壳但按商品展示付款条件；接原生支付/回跳与失败恢复，不在客户端直接置paid。",
           "contract": "order_kind、quote_version、payment_plan、payment_attempt、receipt、refund_case、price_change",
           "dependencies": [
@@ -3075,9 +3075,9 @@
             "ACC-DEL-07.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
           "end_sha": null,
-          "implementation": "未开始",
+          "implementation": "第二轮相关部分正在实现；非整包完成",
           "tests": "未执行",
           "peer_review": "未审阅",
           "integration": "未合入",
@@ -3100,7 +3100,22 @@
             "V5-R05",
             "V5-R07",
             "V5-R11"
-          ]
+          ],
+          "round2_progress": {
+            "branch": "ux/v5-r02-story-quote-frontend",
+            "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+            "backend_dependency": "core/v5-r04-customization-delivery/c93fe96",
+            "scope": "V5-R02：报价确认及未付款未签署订单；不含付款接入",
+            "implementation": "本轮范围已写好；非整包完成",
+            "tests": "App289/网页209通过，App分析及两端产品构建通过；同一故事跨端32组，第一轮App13/网页16组回归通过；清理通过",
+            "peer_review": "我方对Core第一轮审查完成，已请求Core审PR24；对方结果待返回",
+            "integration": "未合入",
+            "production": "未启用",
+            "record": "docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md",
+            "evidence": "docs/testing/evidence/v5-r02-frontend/RESULTS.json",
+            "handoff": "docs/collaboration/V5_R02_FRONTEND_HANDOFF.md",
+            "publication": "本机通过，集中上传待执行"
+          }
         },
         {
           "id": "CORE-DEL-08",
@@ -3167,8 +3182,8 @@
           "package": "DEL-08",
           "title": "V5分账规则、历史订单与财务校验迁移—App与Web",
           "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
-          "claimed_by": null,
-          "claim_status": "未认领",
+          "claimed_by": "Bill-Billion",
+          "claim_status": "已认领第二轮相关部分；非整包完成",
           "work": "报价/订单/MCN/财务展示同一版本的计算明细；不把所有余额当现金可提现；异常需待核查。",
           "contract": "fee_rule_version、fee_base、mcn_supply_share、referral_share、settlement_batch、adjustment",
           "dependencies": [
@@ -3187,9 +3202,9 @@
             "ACC-DEL-08.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
           "end_sha": null,
-          "implementation": "未开始",
+          "implementation": "第二轮相关部分正在实现；非整包完成",
           "tests": "未执行",
           "peer_review": "未审阅",
           "integration": "未合入",
@@ -3207,7 +3222,22 @@
             "V5-R04",
             "V5-R05",
             "V5-R07"
-          ]
+          ],
+          "round2_progress": {
+            "branch": "ux/v5-r02-story-quote-frontend",
+            "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+            "backend_dependency": "core/v5-r04-customization-delivery/c93fe96",
+            "scope": "V5-R02：报价订单中固定财务约定、新旧口径及服务器只读试算",
+            "implementation": "本轮范围已写好；非整包完成",
+            "tests": "App289/网页209通过，App分析及两端产品构建通过；同一故事跨端32组，第一轮App13/网页16组回归通过；清理通过",
+            "peer_review": "我方对Core第一轮审查完成，已请求Core审PR24；对方结果待返回",
+            "integration": "未合入",
+            "production": "未启用",
+            "record": "docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md",
+            "evidence": "docs/testing/evidence/v5-r02-frontend/RESULTS.json",
+            "handoff": "docs/collaboration/V5_R02_FRONTEND_HANDOFF.md",
+            "publication": "本机通过，集中上传待执行"
+          }
         },
         {
           "id": "CORE-DEL-09",
@@ -3710,7 +3740,7 @@
           "title": "定制品类与动态故事采集—App与Web",
           "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
           "claimed_by": "Bill-Billion",
-          "claim_status": "已认领第一轮部分",
+          "claim_status": "已认领第二轮相关部分；非整包完成",
           "work": "爱情婚礼、家族、人生、创业、宠物等真实动态表单；保存恢复、必填错误、补件、素材用途/授权提醒。",
           "contract": "story_schema_version、story_card、attachment_ref、submission、supplement_request",
           "dependencies": [
@@ -3750,7 +3780,22 @@
             "docs/collaboration/V5_R01_FRONTEND_HANDOFF.md",
             "docs/testing/evidence/v5-r01-frontend/RESULTS.json"
           ],
-          "r01_verified_sha": "06622db4c1ae163ce2b178c221e51cc2cba42b82"
+          "r01_verified_sha": "06622db4c1ae163ce2b178c221e51cc2cba42b82",
+          "round2_progress": {
+            "branch": "ux/v5-r02-story-quote-frontend",
+            "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+            "backend_dependency": "core/v5-r04-customization-delivery/c93fe96",
+            "scope": "V5-R02：文字补件草稿、逐项回复、正式重提及历史；R01已交付记录保留",
+            "implementation": "本轮范围已写好；非整包完成",
+            "tests": "App289/网页209通过，App分析及两端产品构建通过；同一故事跨端32组，第一轮App13/网页16组回归通过；清理通过",
+            "peer_review": "我方对Core第一轮审查完成，已请求Core审PR24；对方结果待返回",
+            "integration": "未合入",
+            "production": "未启用",
+            "record": "docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md",
+            "evidence": "docs/testing/evidence/v5-r02-frontend/RESULTS.json",
+            "handoff": "docs/collaboration/V5_R02_FRONTEND_HANDOFF.md",
+            "publication": "本机通过，集中上传待执行"
+          }
         },
         {
           "id": "CORE-DEL-15",
@@ -3817,8 +3862,8 @@
           "package": "DEL-15",
           "title": "真人承制、报价里程碑与交付—App与Web",
           "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
-          "claimed_by": null,
-          "claim_status": "未认领",
+          "claimed_by": "Bill-Billion",
+          "claim_status": "已认领第二轮相关部分；非整包完成",
           "work": "定制商城、报价确认、制作进度、版本反馈及成片管理；沿用现有接口，不另起一套custom production数据库事实。",
           "contract": "story_ref、production_project、order_line_id、stage_plan、deliverable_version、acceptance",
           "dependencies": [
@@ -3842,9 +3887,9 @@
             "ACC-DEL-15.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
           "end_sha": null,
-          "implementation": "未开始",
+          "implementation": "第二轮相关部分正在实现；非整包完成",
           "tests": "未执行",
           "peer_review": "未审阅",
           "integration": "未合入",
@@ -3861,7 +3906,22 @@
             "V5-R02",
             "V5-R04",
             "V5-R10"
-          ]
+          ],
+          "round2_progress": {
+            "branch": "ux/v5-r02-story-quote-frontend",
+            "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+            "backend_dependency": "core/v5-r04-customization-delivery/c93fe96",
+            "scope": "V5-R02：从受理故事进入平台报价、独立复核及关联订单；不含制作交付",
+            "implementation": "本轮范围已写好；非整包完成",
+            "tests": "App289/网页209通过，App分析及两端产品构建通过；同一故事跨端32组，第一轮App13/网页16组回归通过；清理通过",
+            "peer_review": "我方对Core第一轮审查完成，已请求Core审PR24；对方结果待返回",
+            "integration": "未合入",
+            "production": "未启用",
+            "record": "docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md",
+            "evidence": "docs/testing/evidence/v5-r02-frontend/RESULTS.json",
+            "handoff": "docs/collaboration/V5_R02_FRONTEND_HANDOFF.md",
+            "publication": "本机通过，集中上传待执行"
+          }
         },
         {
           "id": "CORE-DEL-16",
@@ -4968,8 +5028,8 @@
           "package": "DEL-26",
           "title": "运营CMS总工作台与规则发布—App与Web",
           "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
-          "claimed_by": null,
-          "claim_status": "未认领",
+          "claimed_by": "Bill-Billion",
+          "claim_status": "已认领第二轮相关部分；非整包完成",
           "work": "沿用共同Web组件，运营和MCN入口、菜单、权限与数据边界独立；客服处理和业务总档案，剧本仅A端管理。",
           "contract": "operator_scope、configuration_draft、publish_approval、effective_version、work_queue",
           "dependencies": [
@@ -4985,9 +5045,9 @@
             "ACC-DEL-26.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
           "end_sha": null,
-          "implementation": "未开始",
+          "implementation": "第二轮相关部分正在实现；非整包完成",
           "tests": "未执行",
           "peer_review": "未审阅",
           "integration": "未合入",
@@ -5020,7 +5080,22 @@
             "V5-R10",
             "V5-R11",
             "V5-R12"
-          ]
+          ],
+          "round2_progress": {
+            "branch": "ux/v5-r02-story-quote-frontend",
+            "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+            "backend_dependency": "core/v5-r04-customization-delivery/c93fe96",
+            "scope": "V5-R02：收件员补件、平台报价及独立复核权限与界面",
+            "implementation": "本轮范围已写好；非整包完成",
+            "tests": "App289/网页209通过，App分析及两端产品构建通过；同一故事跨端32组，第一轮App13/网页16组回归通过；清理通过",
+            "peer_review": "我方对Core第一轮审查完成，已请求Core审PR24；对方结果待返回",
+            "integration": "未合入",
+            "production": "未启用",
+            "record": "docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md",
+            "evidence": "docs/testing/evidence/v5-r02-frontend/RESULTS.json",
+            "handoff": "docs/collaboration/V5_R02_FRONTEND_HANDOFF.md",
+            "publication": "本机通过，集中上传待执行"
+          }
         },
         {
           "id": "CORE-DEL-27",
@@ -5320,8 +5395,8 @@
           "package": "DEL-29",
           "title": "集成验收、迁移恢复与发布证据—App与Web",
           "suggested_owner": "FrontendLead（待填写实际GitHub账号）",
-          "claimed_by": null,
-          "claim_status": "未认领",
+          "claimed_by": "Bill-Billion",
+          "claim_status": "已认领第二轮相关部分；非整包完成",
           "work": "跨端完整场景、Flutter分析/测试与Android/iOS构建真机、Web正式构建/权限；安装包、视觉与接口提交对应。",
           "contract": "acceptance_run、source_sha、environment、artifact_hash、provider_evidence、release_decision",
           "dependencies": [
@@ -5370,9 +5445,9 @@
             "ACC-DEL-29.04"
           ],
           "pr": null,
-          "start_sha": null,
+          "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
           "end_sha": null,
-          "implementation": "未开始",
+          "implementation": "第二轮相关部分正在实现；非整包完成",
           "tests": "未执行",
           "peer_review": "未审阅",
           "integration": "未合入",
@@ -5399,7 +5474,22 @@
             "V5-R10",
             "V5-R11",
             "V5-R12"
-          ]
+          ],
+          "round2_progress": {
+            "branch": "ux/v5-r02-story-quote-frontend",
+            "start_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+            "backend_dependency": "core/v5-r04-customization-delivery/c93fe96",
+            "scope": "V5-R02：同一故事跨App/网页联调、恢复与权限检查；不含原生真机和上线",
+            "implementation": "本轮范围已写好；非整包完成",
+            "tests": "App289/网页209通过，App分析及两端产品构建通过；同一故事跨端32组，第一轮App13/网页16组回归通过；清理通过",
+            "peer_review": "我方对Core第一轮审查完成，已请求Core审PR24；对方结果待返回",
+            "integration": "未合入",
+            "production": "未启用",
+            "record": "docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md",
+            "evidence": "docs/testing/evidence/v5-r02-frontend/RESULTS.json",
+            "handoff": "docs/collaboration/V5_R02_FRONTEND_HANDOFF.md",
+            "publication": "本机通过，集中上传待执行"
+          }
         }
       ],
       "evidence": [
@@ -7373,6 +7463,25 @@
         "verified_commit": "06622db4c1ae163ce2b178c221e51cc2cba42b82",
         "review_pr": "https://github.com/Bill-Billion/jingjing/pull/24",
         "publication_evidence": "docs/testing/evidence/v5-r01-frontend/PUBLICATION.json"
+      },
+      "remote_backend_sync": {
+        "verified_on": "2026-10-20",
+        "branch": "core/v5-backend-completion",
+        "sha": "8d6ed8ab0fba8530a90d4334c79fbcc5d58879e9",
+        "pr": "https://github.com/Bill-Billion/jingjing/pull/25",
+        "state": "已上传，四项自动检查通过，尚未实际审阅/合入/启用",
+        "entry": "https://github.com/Bill-Billion/jingjing/blob/8d6ed8ab0fba8530a90d4334c79fbcc5d58879e9/docs/status/CORE_CURRENT.md",
+        "note": "Core后续轮次以其远端原记录为准；本工作目录Core任务快照停在R04，不能以此否认后续提交，亦不当作前端完成。"
+      },
+      "r01_peer_review": {
+        "frontend_pr": "https://github.com/Bill-Billion/jingjing/pull/24",
+        "frontend_sha": "8e77ff007878f4a8f419412b9ef6a7865c8d7c0a",
+        "frontend_ready_for_review": true,
+        "requested_reviewer": "chengcongcong222",
+        "requested_on": "2026-10-20",
+        "core_review_of_frontend": "已实际请求，等待对方审阅；尚无批准",
+        "frontend_review_of_core": "已完成本轮范围的源码审阅及隔离复验，无阻塞发现；证据docs/collaboration/V5_R01_CROSS_REVIEW.md",
+        "integration": "未合入"
       }
     }
   ]

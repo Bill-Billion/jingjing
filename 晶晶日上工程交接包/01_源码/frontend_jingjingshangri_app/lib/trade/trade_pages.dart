@@ -176,21 +176,35 @@ class _TradeListState extends State<_TradeList> {
 }
 
 class TradeRecordPage extends StatelessWidget {
-  const TradeRecordPage({super.key, required this.recordId, this.section});
+  const TradeRecordPage(
+      {super.key,
+      required this.recordId,
+      this.section,
+      this.customizationSourceCurrent});
   final String recordId;
   final String? section;
+  final bool? customizationSourceCurrent;
   @override
   Widget build(BuildContext context) => TradeGate(
       returnRoute:
           '/trade/record?recordId=$recordId${section == null ? '' : '&section=$section'}',
-      builder: (s) => _TradeDetail(session: s, id: recordId, section: section));
+      builder: (s) => _TradeDetail(
+          session: s,
+          id: recordId,
+          section: section,
+          customizationSourceCurrent: customizationSourceCurrent));
 }
 
 class _TradeDetail extends StatefulWidget {
-  const _TradeDetail({required this.session, required this.id, this.section});
+  const _TradeDetail(
+      {required this.session,
+      required this.id,
+      this.section,
+      this.customizationSourceCurrent});
   final AccountSession session;
   final String id;
   final String? section;
+  final bool? customizationSourceCurrent;
   @override
   State<_TradeDetail> createState() => _TradeDetailState();
 }
@@ -235,8 +249,9 @@ class _TradeDetailState extends State<_TradeDetail> {
         ps =
             (await api.all('PAYMENT')).where((p) => p.orderId == r.id).toList();
         rs = (await api.all('REFUND')).where((p) => p.orderId == r.id).toList();
-        if (tradeRows(r.quote['lines'])
-            .any((l) => l['line_kind'] == 'PRODUCTION')) {
+        if (r.quote['customization'] == null &&
+            tradeRows(r.quote['lines'])
+                .any((l) => l['line_kind'] == 'PRODUCTION')) {
           try {
             projects = (await ProductionApi(widget.session).all())
                 .where((p) => p.orderId == r.id)
@@ -353,6 +368,15 @@ class _TradeDetailState extends State<_TradeDetail> {
             r.status == 'APPROVED'
                 ? '买方确认后形成订单，付款和签署另行办理。'
                 : '仅独立审核通过且在有效期内的指定买方可以确认。'),
+      if (d['customization'] != null)
+        supplyCard('对应的正式故事', [
+          tradeFact('需求编号', shortSupplyId(d['customization']['request_id'])),
+          tradeFact(
+              '正式提交编号', shortSupplyId(d['customization']['submission_id'])),
+          if (widget.customizationSourceCurrent == false)
+            appNotice('这份报价对应历史故事版本，不可确认新订单。'),
+          appNotice('报价固定到这一版正式故事，故事正文不会复制到交易列表。'),
+        ]),
       if (d['commercial'] != null)
         supplyCard('原商业接单约定', [
           tradeFact('约定编号', d['commercial']['offer_id']),
@@ -434,6 +458,23 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeFact('规则编号', d['rule_id']),
         if (d['review'] != null) tradeFact('独立审核理由', d['review']['reason'])
       ]),
+      if (d['customization_finance'] != null)
+        supplyCard('固定定制财务约定', [
+          tradeFact('约定模式', '平台自营定制'),
+          tradeFact('平台签约主体',
+              shortSupplyId(d['customization_finance']['platform_party_id'])),
+          tradeFact('财务条款版本', d['customization_finance']['rules']['version']),
+          tradeFact('结算时间',
+              tradeDate(d['customization_finance']['rules']['settlement_at'])),
+          tradeFact('释放款项条件', '交付确认后，仍须满足财务核验条件'),
+          ContractText(value: d['customization_finance']['rules']['terms']),
+          ExpansionTile(title: const Text('查看全部固定分配、扣费与规则原文'), children: [
+            ContractText(
+                value: d['customization_finance'],
+                fieldLabels: tradeContractLabels),
+          ]),
+          appNotice('这里是报价时保存的约定。未收款不产生到账；账面应付、可打款和已到账分别核对。'),
+        ]),
       if (!order &&
           r.status == 'ACCEPTED' &&
           (r.orderId ?? d['order_id']) != null)
@@ -448,6 +489,8 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       supplyCard('订单 ${shortSupplyId(r.id)}',
           [tradeStatus(r), appNotice('款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')]),
+      if (r.quote['customization'] != null)
+        appNotice('本轮已形成原交易订单，合同内容已保存、尚未签署。定制付款与制作办理在后续轮次开放；以服务器实际收款记录为准。'),
       if (r.quote['commercial'] != null)
         supplyCard('关联商业约定', [
           tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
@@ -466,8 +509,9 @@ class _TradeDetailState extends State<_TradeDetail> {
                       context, '/gigs/records?kind=COMMISSION'),
               outline: true)
         ]),
-      if (tradeRows(r.quote['lines'])
-          .any((l) => l['line_kind'] == 'PRODUCTION'))
+      if (r.quote['customization'] == null &&
+          tradeRows(r.quote['lines'])
+              .any((l) => l['line_kind'] == 'PRODUCTION'))
         supplyCard('制作进度', [
           if (productionNotice != null) appNotice(productionNotice!),
           if (projects.isEmpty) appNotice('尚无可读取的关联制作项目。开工由商家按原订单与审核依据办理。'),
@@ -536,7 +580,8 @@ class _TradeDetailState extends State<_TradeDetail> {
               outline: true)
       ]),
       ...quoteView(r, order: true),
-      if (r.isBuyer(api.owner()) &&
+      if (r.quote['customization'] == null &&
+          r.isBuyer(api.owner()) &&
           ['OPEN', 'PARTIALLY_PAID'].contains(r.status))
         supplyCard('办理付款记录', [
           appNotice('当前客户端不能发起实际支付。可以建立并核对原付款记录，真实结果以服务器核对为准。未开通渠道将返回暂不可用。'),
@@ -856,6 +901,7 @@ class _TradeDetailState extends State<_TradeDetail> {
         locked: locked,
         footer: r?.kind == 'QUOTE' &&
                 r!.status == 'APPROVED' &&
+                widget.customizationSourceCurrent != false &&
                 r.isBuyer(api.owner())
             ? FilledButton(
                 onPressed: locked ||

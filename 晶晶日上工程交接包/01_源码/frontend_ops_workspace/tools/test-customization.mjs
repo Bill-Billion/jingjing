@@ -104,6 +104,55 @@ try {
       const s=state(),router=createRouter({history:createMemoryHistory(),routes:[...customizationRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(path);await router.isReady();const html=await renderToString(createSSRApp({render:()=>h(RouterView)}).use(s.pinia).use(router)),nav=html.match(/<nav\b[^>]*aria-label="工作区导航"[^>]*>([\s\S]*?)<\/nav>/)?.[1];assert.ok(nav);const links=[...nav.matchAll(/<a\b([^>]*)>/g)];assert.deepEqual(links.filter(([,a])=>a.includes('aria-current="page"')).map(([,a])=>a.match(/href="([^"]+)"/)[1]),['/operations/customization']);for(const title of ['账号与机构','合同与规则','制作项目','经营报表'])assert.ok(nav.includes(title));s.stop()
     }
   })
+  const items = () => [{field_key:'story',reason:'请说明发生时间 <script>test</script>',instruction:'补充年份、地点以及为什么重要'}]
+  const context = (v=3,status=null) => ({request_id:id(10),object_version:v,supplement:status?{id:id(20),base_submission_id:id(11),items:items(),current_status:status,requested_by:who.accountId,requested_at:time,response:status==='RESPONDED'?{submission_id:id(21),responses:{story:'已在故事中补充年份'},submitted_at:time}:null}:null,draft:null,allowed_actions:status==='OPEN'?['READ']:['READ','REQUEST_SUPPLEMENT']})
+  test('补件上下文和写入只带账号，无用户草稿；严格原版本及逐项要求',async()=>{
+    const calls=[];globalThis.fetch=async(url,o)=>{calls.push({url,o});return response(o.method==='POST'?context(4,'OPEN'):context())}
+    await api.getSupplement(who,id(10));await api.requestSupplement(who,{id:id(10),version:3,key:'original-supplement',items:items()})
+    assert.ok(calls[0].url.endsWith('/supplement'));assert.ok(calls[1].url.endsWith('/supplements'));assert.equal(calls[1].o.headers['If-Match'],'"3"');assert.equal(calls[1].o.headers['Idempotency-Key'],'original-supplement');assert.deepEqual(JSON.parse(calls[1].o.body),{items:items()});assert.ok(calls.every(c=>c.o.headers['X-Acting-Party']===undefined&&c.o.cache==='no-store'))
+    for(const bad of [{...context(),draft:{answers:{story:'私人草稿'},responses:{}}},{...context(3,'OPEN'),allowed_actions:['READ','REQUEST_SUPPLEMENT']},{...context(),allowed_actions:['READ','SAVE_SUPPLEMENT']}])assert.equal(api.isSupplementContext(bad),false)
+    for(const bad of [[],[...items(),...items()],[{...items()[0],field_key:'constructor'}],[{...items()[0],reason:' '}],[{...items()[0],instruction:'😀'.repeat(1001)}]])assert.equal(api.validSupplementItems(bad,template()),false)
+    assert.equal(api.validSupplementItems([{...items()[0],field_key:'missing'}],template()),false)
+  })
+  test('补件可写权限来自当前上下文，禁止未受理、开放补件、重复字段和重复提交',async()=>{
+    const s=state();s.ui.detail=record('INTAKE',3);s.ui.supplement=context();s.ui.supplementItems=items();assert.equal(s.ui.canSupplement,true)
+    s.ui.supplement=context(3,'OPEN');assert.equal(s.ui.canSupplement,false);s.ui.supplement=context(2);assert.equal(s.ui.canSupplement,false);s.ui.supplement=context();s.ui.supplementItems=[...items(),...items()];assert.equal(s.ui.canSupplement,false);s.ui.supplementItems=items()
+    const late=defer();let posts=0;globalThis.fetch=async(url,o)=>o.method==='POST'?(posts++,await late.promise):response(record('INTAKE',4));const first=s.ui.supplementRequest();await s.ui.supplementRequest();assert.equal(posts,1);late.resolve(response(context(4,'OPEN')));await first;assert.equal(s.ui.pending,null);assert.equal(s.ui.supplement.supplement.current_status,'OPEN');assert.equal(s.ui.canSupplement,false);s.stop()
+  })
+  test('补件未知结果保留原逐项正文、版本与键，先核对后重放不跟随后改输入',async()=>{
+    const s=state(),calls=[];s.ui.detail=record('INTAKE',3);s.ui.supplement=context();s.ui.supplementItems=items();let posts=0
+    globalThis.fetch=async(url,o)=>{calls.push({url,o});if(o.method==='POST'&&++posts===1)throw Error('unknown after commit');return response(url.endsWith('/supplement')?context(4,'OPEN'):o.method==='POST'?context(4,'OPEN'):record('INTAKE',4))}
+    await s.ui.supplementRequest();assert.ok(s.ui.pending);s.ui.supplementItems[0].reason='later edit';await s.ui.retryPending();assert.equal(posts,1);await s.ui.checkPending();assert.equal(s.ui.pending.checked,true);await s.ui.retryPending();assert.equal(s.ui.pending,null)
+    const writes=calls.filter(c=>c.o.method==='POST');assert.equal(writes.length,2);assert.equal(writes[0].o.headers['Idempotency-Key'],writes[1].o.headers['Idempotency-Key']);assert.equal(writes[0].o.headers['If-Match'],writes[1].o.headers['If-Match']);assert.equal(writes[0].o.body,writes[1].o.body);assert.deepEqual(JSON.parse(writes[1].o.body),{items:items()});s.stop()
+  })
+  test('补件412保留输入、重读故事与上下文，明确核对后才允许再发',async()=>{
+    const s=state();s.ui.detail=record('INTAKE',3);s.ui.supplement=context();s.ui.supplementItems=items();let posts=0
+    globalThis.fetch=async(url,o)=>o.method==='POST'?(posts++,failure(412,'VERSION_CONFLICT')):response(url.endsWith('/supplement')?context(5):record('INTAKE',5))
+    await s.ui.supplementRequest();assert.equal(posts,1);assert.deepEqual(s.ui.supplementItems,items());assert.equal(s.ui.detail.object_version,5);assert.equal(s.ui.supplement.object_version,5);assert.equal(s.ui.pending,null);assert.equal(s.ui.conflicted,true);assert.equal(s.ui.canSupplement,false);s.ui.reconfirmed=true;assert.equal(s.ui.canSupplement,true);s.stop()
+  })
+  test('补件、历史与报价读取失权清除所有私人上下文和编辑输入，迟到响应不恢复',async()=>{
+    for(const status of [401,403,404]){const s=state();s.ui.detail=record('INTAKE',3);s.ui.supplement=context();s.ui.supplementItems=items();s.ui.history=[{id:id(11)}];s.ui.quotes=[{id:id(30)}];globalThis.fetch=async()=>failure(status,'CUSTOMIZATION_FORBIDDEN');await s.ui.readSupplement(id(10));assert.equal(s.ui.supplement,null);assert.deepEqual(s.ui.history,[]);assert.deepEqual(s.ui.quotes,[]);assert.equal(s.ui.supplementItems[0].reason,'');s.stop()}
+    const s=state(),late=defer();s.ui.detail=record('INTAKE',3);globalThis.fetch=()=>late.promise;const p=s.ui.readSupplement(id(10));s.session.revision++;late.resolve(response(context()));await p;assert.equal(s.ui.supplement,null);s.stop()
+  })
+  test('正式历史保留原版本和要求回复，分页游标原样传递；摘要不接受私有正文',async()=>{
+    const hist={id:id(11),submission_number:1,submitted_by:id(3),submitted_at:time,content_sha256:'a'.repeat(64)},ver={request_id:id(10),submission_number:2,submission:record().submission,supplement_response:{supplement_id:id(20),base_submission_id:id(9),items:items(),responses:{story:'正式说明 <img onerror=test>'},requested_by:who.accountId,requested_at:time}},calls=[]
+    globalThis.fetch=async(url,o)=>{calls.push({url,o});return response(url.includes('?')?{items:[hist],next_cursor:'cursor+/='}:ver)}
+    await api.listSubmissions(who,id(10),'cursor+/=');assert.ok(calls[0].url.includes('cursor=cursor%2B%2F%3D'));assert.ok(api.isSubmissionVersion(await api.getSubmission(who,id(10),id(11))));assert.ok(calls.every(c=>c.o.headers['X-Acting-Party']===undefined))
+    assert.equal(api.isSubmissionVersion({...ver,supplement_response:{...ver.supplement_response,responses:{story:''}}}),false)
+    globalThis.fetch=async()=>response({items:[{...hist,answers:{story:'private'}}],next_cursor:null});await assert.rejects(api.listSubmissions(who,id(10)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+  })
+  test('故事报价摘要不含正文和价格；旧故事只显示来源状态而不推导付款',async()=>{
+    const quote={id:id(30),submission_id:id(11),source_content_sha256:'a'.repeat(64),source_is_current:false,current_status:'APPROVED',object_version:2,content_sha256:'b'.repeat(64),order_id:null}
+    globalThis.fetch=async()=>response({items:[quote],next_cursor:null});const page=await api.listCustomizationQuotes(who,id(10));assert.equal(page.items[0].source_is_current,false);assert.equal(page.items[0].order_id,null)
+    globalThis.fetch=async()=>response({items:[{...quote,story:'私人内容'}],next_cursor:null});await assert.rejects(api.listCustomizationQuotes(who,id(10)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+    assert.equal(loginRedirect(`/trade/quotes/new?customizationRequest=${id(10)}`),`/trade/quotes/new?customizationRequest=${id(10)}`);for(const bad of [`/trade/quotes/new?customizationRequest=${id(10)}&grant=OWNER`,'/trade/quotes/new?customizationRequest=bad'])assert.equal(loginRedirect(bad),'/workspace');assert.equal(loginRedirect('/finance/marketplace-preview'),'/finance/marketplace-preview')
+  })
+  test('运营真实页面补件和历史只渲染正式纯文本，原故事入口自动带来源而不允许手填',async()=>{
+    const s=state(),router=createRouter({history:createMemoryHistory(),routes:[...customizationRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(`/operations/customization/${id(10)}`);await router.isReady();s.ui.detail=record('INTAKE',3);s.ui.supplement=context(3,'RESPONDED');s.ui.supplementItems=items();const html=await renderToString(createSSRApp({render:()=>h(RouterView)}).use(s.pinia).use(router));assert.ok(html.includes('&lt;script&gt;test&lt;/script&gt;'));assert.ok(html.includes('用户正式回复：已在故事中补充年份'));assert.ok(html.includes('data-testid="customization-supplement-field-0"'));assert.ok(html.includes(`/trade/quotes/new?customizationRequest=${id(10)}`));assert.ok(html.includes('data-testid="customization-load-history"'));assert.ok(html.includes('草稿'));s.stop()
+  })
+  test('同故事刷新新版提交清除旧报价来源标记和历史选择，同时保留未发送补件输入',async()=>{
+    const s=state();s.ui.detail=record('INTAKE',3);s.ui.supplement=context();s.ui.supplementItems=items();s.ui.quotes=[{id:id(30),source_is_current:true}];s.ui.quotesCursor='old-quotes';s.ui.history=[{id:id(11)}];s.ui.historyVersion={submission_number:1};const fresh=record('SUBMITTED',5);fresh.submission.id=id(21);fresh.submission.content_sha256='b'.repeat(64);globalThis.fetch=async()=>response(fresh);await s.ui.read(id(10));assert.equal(s.ui.detail.submission.id,id(21));assert.deepEqual(s.ui.quotes,[]);assert.equal(s.ui.quotesCursor,null);assert.equal(s.ui.historyVersion,null);assert.equal(s.ui.supplement,null);assert.deepEqual(s.ui.supplementItems,items());s.stop()
+  })
   for(const {name,run} of tests){await run();console.log('✓ '+name)}
   console.log(`\n${tests.length} customization checks passed.`)
 } finally {

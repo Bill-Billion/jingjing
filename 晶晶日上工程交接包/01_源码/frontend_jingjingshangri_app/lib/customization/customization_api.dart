@@ -10,6 +10,12 @@ class StoryPageResult {
   final String? cursor;
 }
 
+class StoryRelatedPage<T> {
+  const StoryRelatedPage(this.items, this.cursor);
+  final List<T> items;
+  final String? cursor;
+}
+
 class StoryPending {
   const StoryPending(this.method, this.path, this.operation);
   final String method, path;
@@ -122,6 +128,8 @@ class CustomizationApi {
         : [
             ('PATCH', '$storyCollection/$id'),
             ('POST', '$storyCollection/$id/submissions'),
+            ('PATCH', '$storyCollection/$id/supplement'),
+            ('POST', '$storyCollection/$id/supplement-submissions'),
           ];
     for (final command in commands) {
       final operation = session.pending(
@@ -188,4 +196,91 @@ class CustomizationApi {
         version: pending.operation['version'],
         id: pending.path == storyCollection ? null : pending.path.split('/')[4],
       );
+
+  Future<Map<String, dynamic>> _readRelated(String id, String suffix,
+      {String? cursor}) async {
+    if (!storyId(id)) throw const AccountError(400, 'INVALID_ID');
+    final party = participant(),
+        epoch = session.epoch,
+        account = session.account?['id'];
+    final raw = await session
+        .read('$storyCollection/$id/$suffix', actingParty: party, query: {
+      if (suffix == 'submissions' || suffix == 'quotes') 'limit': 20,
+      if (cursor != null) 'cursor': cursor,
+    });
+    check(epoch, account, party);
+    return raw;
+  }
+
+  Future<StorySupplementContext> supplement(StoryRequest record) async =>
+      StorySupplementContext(
+          await _readRelated(record.id, 'supplement'), record);
+
+  Future<StorySupplementContext> saveSupplement(
+          StoryRequest record,
+          StorySupplementContext context,
+          Map<String, String> answers,
+          Map<String, String> responses) =>
+      _writeSupplement(
+          record,
+          {
+            'answers': answers,
+            'responses': responses,
+          },
+          context.version);
+
+  Future<StorySupplementContext> _writeSupplement(
+      StoryRequest record, Map<String, dynamic> body, int version) async {
+    final party = participant(),
+        epoch = session.epoch,
+        account = session.account?['id'];
+    final raw = await session.write(
+        'PATCH', '$storyCollection/${record.id}/supplement',
+        actingParty: party,
+        body: body,
+        version: version,
+        validate: (r) => StorySupplementContext(r, record));
+    check(epoch, account, party);
+    return StorySupplementContext(raw, record);
+  }
+
+  Future<StorySupplementContext> retrySupplement(
+          StoryRequest record, StoryPending pending) =>
+      _writeSupplement(record, storyMap(pending.operation['body']),
+          pending.operation['version']);
+
+  Future<StoryRequest> submitSupplement(
+          StoryRequest record, StorySupplementContext context) =>
+      _write('POST', '$storyCollection/${record.id}/supplement-submissions', {},
+          version: context.version, id: record.id);
+
+  StoryRelatedPage<T> _relatedPage<T>(Map<String, dynamic> raw, String? cursor,
+      T Function(dynamic) parse, String Function(T) id) {
+    storyRequire(raw['items'] is List &&
+        raw['items'].length <= 100 &&
+        (raw['next_cursor'] == null ||
+            raw['next_cursor'] is String &&
+                raw['next_cursor'].isNotEmpty &&
+                raw['next_cursor'] != cursor));
+    final rows = (raw['items'] as List).map(parse).toList();
+    storyRequire(rows.map(id).toSet().length == rows.length);
+    return StoryRelatedPage(rows, raw['next_cursor']);
+  }
+
+  Future<StoryRelatedPage<StorySubmissionSummary>> history(String id,
+          {String? cursor}) async =>
+      _relatedPage(await _readRelated(id, 'submissions', cursor: cursor),
+          cursor, StorySubmissionSummary.new, (r) => r.id);
+
+  Future<StorySubmissionVersion> submission(
+      String id, String submissionId) async {
+    if (!storyId(submissionId)) throw const AccountError(400, 'INVALID_ID');
+    return StorySubmissionVersion(
+        await _readRelated(id, 'submissions/$submissionId'), id, submissionId);
+  }
+
+  Future<StoryRelatedPage<StoryQuoteSummary>> quotes(String id,
+          {String? cursor}) async =>
+      _relatedPage(await _readRelated(id, 'quotes', cursor: cursor), cursor,
+          StoryQuoteSummary.new, (r) => r.id);
 }

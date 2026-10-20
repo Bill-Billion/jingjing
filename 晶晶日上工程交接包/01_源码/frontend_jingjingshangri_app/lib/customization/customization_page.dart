@@ -8,9 +8,10 @@ import '../account/app_visual.dart';
 import '../pages/login/login_page.dart';
 import '../trade/trade_widgets.dart';
 import 'customization_api.dart';
+import 'customization_followup.dart';
 import 'customization_models.dart';
 
-/// R01: the buyer's private draft and immutable formal story submission.
+/// Private story drafts, supplement replies and immutable formal submissions.
 class CustomizationPage extends StatelessWidget {
   const CustomizationPage({super.key, this.requestId, this.createNew = false});
   final String? requestId;
@@ -264,15 +265,23 @@ class _StoryEditorState extends State<_StoryEditor> {
   List<StoryCategory> categories = [];
   StoryCategory? selected;
   StoryRequest? record, latest;
+  StorySupplementContext? supplement, latestSupplement;
   final answers = <String, String>{};
+  final responses = <String, String>{};
   final controllers = <String, TextEditingController>{};
+  final responseControllers = <String, TextEditingController>{};
   Map<String, String> fieldErrors = {};
   String? error, notice;
   bool busy = false, dirty = false, conflict = false, denied = false;
   StoryTemplate? get template => record?.template ?? selected?.template;
   StoryPending? get pending =>
       denied ? null : api.pending(id: record?.id ?? widget.id);
-  bool get editable => !denied && (record == null || record!.allows('SAVE'));
+  bool get supplementOpen => supplement?.open == true;
+  bool get editable =>
+      !denied &&
+      (record == null ||
+          record!.allows('SAVE') ||
+          supplementOpen && supplement!.allows('SAVE_SUPPLEMENT'));
   bool get locked => busy || pending != null;
   @override
   void initState() {
@@ -283,6 +292,9 @@ class _StoryEditorState extends State<_StoryEditor> {
   @override
   void dispose() {
     for (final controller in controllers.values) {
+      controller.dispose();
+    }
+    for (final controller in responseControllers.values) {
       controller.dispose();
     }
     super.dispose();
@@ -311,6 +323,29 @@ class _StoryEditorState extends State<_StoryEditor> {
     dirty = false;
     conflict = false;
     latest = null;
+    latestSupplement = null;
+    fieldErrors = {};
+  }
+
+  void applySupplement(StorySupplementContext? value) {
+    supplement = value;
+    responses
+      ..clear()
+      ..addAll(value?.responses ?? {});
+    for (final controller in responseControllers.values) {
+      controller.dispose();
+    }
+    responseControllers.clear();
+    if (value?.open == true) {
+      replaceAnswers(value!.answers ?? record!.answers);
+      for (final item in value.items) {
+        responseControllers[item.key] =
+            TextEditingController(text: responses[item.key] ?? '');
+      }
+    }
+    dirty = false;
+    conflict = false;
+    latestSupplement = null;
     fieldErrors = {};
   }
 
@@ -320,9 +355,11 @@ class _StoryEditorState extends State<_StoryEditor> {
       for (final detail in value.details)
         detail['field']!: storyReason(detail['reason']),
     };
-    if (value.status == 412) {
+    if (value.status == 412 ||
+        value.code == 'CUSTOMIZATION_FORMAL_VERSION_CHANGED') {
       conflict = true;
       latest = null;
+      latestSupplement = null;
     }
     if ([401, 403, 404].contains(value.status)) {
       denied = true;
@@ -331,6 +368,7 @@ class _StoryEditorState extends State<_StoryEditor> {
       selected = null;
       categories = [];
       replaceAnswers({});
+      applySupplement(null);
       fieldErrors = {};
       notice = null;
     }
@@ -344,10 +382,13 @@ class _StoryEditorState extends State<_StoryEditor> {
     try {
       if (widget.id != null) {
         final result = await api.record(widget.id!);
+        final context =
+            result.status == 'DRAFT' ? null : await api.supplement(result);
         if (mounted) {
           setState(() {
             denied = false;
             applyRecord(result);
+            applySupplement(context);
           });
         }
       } else {
@@ -411,6 +452,13 @@ class _StoryEditorState extends State<_StoryEditor> {
         problems['answers.${field.key}'] = storyReason('REQUIRED');
       }
     }
+    if (supplementOpen) {
+      for (final item in supplement!.items) {
+        if ((responses[item.key] ?? '').trim().isEmpty) {
+          problems['responses.${item.key}'] = '请对这一项要求写出明确回复；保持原内容也需要说明原因。';
+        }
+      }
+    }
     setState(() => fieldErrors = problems);
     return problems.isEmpty;
   }
@@ -422,8 +470,10 @@ class _StoryEditorState extends State<_StoryEditor> {
     }
     if (submit &&
         !await confirm(
-          '正式把故事交给平台？',
-          '平台将收到当前故事内容。提交后本轮不能直接修改；提交不会收款，也不表示授权通过或制作开工。',
+          supplementOpen ? '正式提交这次补充？' : '正式把故事交给平台？',
+          supplementOpen
+              ? '平台将收到当前故事和逐项回复，保存为一次新的正式提交，等待重新受理。保存草稿不会代替正式重提。'
+              : '平台将收到当前故事内容。提交后本轮不能直接修改；提交不会收款，也不表示授权通过或制作开工。',
         )) {
       return;
     }
@@ -435,6 +485,37 @@ class _StoryEditorState extends State<_StoryEditor> {
       fieldErrors = {};
     });
     try {
+      if (supplementOpen) {
+        var current = supplement!;
+        if (dirty) {
+          current =
+              await api.saveSupplement(record!, current, completeAnswers(), {
+            for (final item in current.items)
+              item.key: responses[item.key] ?? '',
+          });
+          if (!mounted) return;
+          setState(() => applySupplement(current));
+        }
+        if (submit && current.allows('SUBMIT_SUPPLEMENT')) {
+          final submitted = await api.submitSupplement(record!, current);
+          if (!mounted) return;
+          setState(() {
+            applyRecord(submitted);
+            applySupplement(null);
+          });
+          final context = await api.supplement(submitted);
+          if (!mounted) return;
+          setState(() {
+            applyRecord(submitted);
+            applySupplement(context);
+          });
+        }
+        if (mounted) {
+          setState(() => notice =
+              submit ? '补充已正式送交，等待平台重新查看；不表示内容已审核通过。' : '补充草稿已保存，尚未送交平台。');
+        }
+        return;
+      }
       StoryRequest current;
       if (record == null) {
         current = await api.create(selected!, completeAnswers());
@@ -448,7 +529,16 @@ class _StoryEditorState extends State<_StoryEditor> {
       if (submit && current.allows('SUBMIT')) {
         current = await api.submit(current);
         if (!mounted) return;
-        setState(() => applyRecord(current));
+        setState(() {
+          applyRecord(current);
+          applySupplement(null);
+        });
+        final context = await api.supplement(current);
+        if (!mounted) return;
+        setState(() {
+          applyRecord(current);
+          applySupplement(context);
+        });
       }
       if (mounted) {
         setState(
@@ -472,10 +562,28 @@ class _StoryEditorState extends State<_StoryEditor> {
       error = null;
     });
     try {
+      if (original.path.endsWith('/supplement')) {
+        final result = await api.retrySupplement(record!, original);
+        if (mounted) {
+          setState(() {
+            applySupplement(result);
+            notice = '已核对原补充草稿保存结果，尚未送交平台。';
+          });
+        }
+        return;
+      }
       final result = await api.retry(original);
+      if (!mounted) return;
+      setState(() {
+        applyRecord(result);
+        applySupplement(null);
+      });
+      final context =
+          result.status == 'DRAFT' ? null : await api.supplement(result);
       if (mounted) {
         setState(() {
           applyRecord(result);
+          applySupplement(context);
           notice = '已核对原操作结果。${storyStatuses[result.status]}。';
         });
       }
@@ -495,12 +603,16 @@ class _StoryEditorState extends State<_StoryEditor> {
     });
     try {
       final result = await api.record(id);
+      final context =
+          result.status == 'DRAFT' ? null : await api.supplement(result);
       if (!mounted) return;
       setState(() {
         if (!dirty && !conflict) {
           applyRecord(result);
+          applySupplement(context);
         } else {
           latest = result;
+          latestSupplement = context;
           conflict = true;
           notice = '当前版本已读取。本页输入仍然保留，请核对后选择如何继续。';
         }
@@ -610,16 +722,26 @@ class _StoryEditorState extends State<_StoryEditor> {
   List<Widget> comparison() => latest == null
       ? []
       : [
-          _section('服务器当前版本 · ${latest!.version}', [
+          _section(
+              '服务器当前版本 · ${latestSupplement?.version ?? latest!.version}', [
             _note('当前状态：${storyStatuses[latest!.status]}。下列内容用于与本页保留的输入核对。'),
             for (final field in latest!.template.fields)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: SelectableText(
-                  '${field.label}\n${latest!.answers[field.key]?.isNotEmpty == true ? latest!.answers[field.key] : '（未填写）'}',
+                  '${field.label}\n${(latestSupplement?.answers ?? latest!.answers)[field.key]?.isNotEmpty == true ? (latestSupplement?.answers ?? latest!.answers)[field.key] : '（未填写）'}',
                 ),
               ),
-            if (latest!.allows('SAVE') &&
+            for (final item
+                in latestSupplement?.items ?? <StorySupplementItem>[])
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: SelectableText(
+                      '当前补充要求：${item.data['instruction']}\n当前回复：${latestSupplement!.responses[item.key] ?? '（未填写）'}')),
+            if ((latest!.allows('SAVE') ||
+                    latestSupplement?.open == true &&
+                        latestSupplement!.allows('SAVE_SUPPLEMENT') &&
+                        latestSupplement!.id == supplement?.id) &&
                 latest!.templateId == record?.templateId)
               OutlinedButton(
                 key: const ValueKey('story-keep-local'),
@@ -627,6 +749,8 @@ class _StoryEditorState extends State<_StoryEditor> {
                     ? null
                     : () => setState(() {
                           record = latest;
+                          supplement = latestSupplement;
+                          latestSupplement = null;
                           latest = null;
                           conflict = false;
                           dirty = true;
@@ -636,10 +760,13 @@ class _StoryEditorState extends State<_StoryEditor> {
                 child: const Text('保留本页内容，按当前版本继续保存'),
               ),
             TextButton(
+              key: const ValueKey('story-adopt-current'),
               onPressed: busy
                   ? null
                   : () => setState(() {
+                        final context = latestSupplement;
                         applyRecord(latest!);
+                        applySupplement(context);
                         error = null;
                         notice = '已采用服务器当前版本。';
                       }),
@@ -653,7 +780,11 @@ class _StoryEditorState extends State<_StoryEditor> {
     final children = <Widget>[
       _eyebrow('人工定制 / 故事需求'),
       _heading(
-        record != null && record!.status != 'DRAFT' ? '故事已交给平台' : '写下你的故事',
+        supplementOpen
+            ? '还需要你补充一些内容'
+            : record != null && record!.status != 'DRAFT'
+                ? '故事已交给平台'
+                : '写下你的故事',
       ),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!, icon: Icons.error_outline),
@@ -714,13 +845,50 @@ class _StoryEditorState extends State<_StoryEditor> {
                     : '工作人员已开始受理。受理不表示报价批准、收款、权利授权或制作开工。',
           ),
           Text('故事品类：${record!.template.title}'),
-          Text('当前版本：${record!.version}'),
+          Text('当前版本：${supplement?.version ?? record!.version}'),
           if (record!.data['submitted_at'] != null)
             Text('正式提交：${_date(record!.data['submitted_at'])}'),
           if (record!.data['intake_at'] != null)
             Text('开始受理：${_date(record!.data['intake_at'])}'),
         ]),
       if (!denied && template != null) ...[
+        if (supplement?.id != null)
+          _section(supplementOpen ? '平台请你逐项补充' : '最近一次补充已送交', [
+            _note(supplementOpen
+                ? '按要求完善下面的原故事，并逐项写明回复。可以先保存草稿，正式重提后平台才会收到本次修改。'
+                : '这次回复已经正式提交，仍需平台重新查看；补充结束不表示审核通过。'),
+            if (fieldErrors['responses'] != null)
+              appNotice(fieldErrors['responses']!, icon: Icons.error_outline),
+            for (final item in supplement!.items) ...[
+              Text(template!.fields.firstWhere((f) => f.key == item.key).label,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600)),
+              _note('原因：${item.data['reason']}'),
+              _note('请补充：${item.data['instruction']}'),
+              if (supplementOpen)
+                TextField(
+                  key: ValueKey('story-response-${item.key}'),
+                  controller: responseControllers[item.key],
+                  enabled: editable && !locked && !conflict,
+                  minLines: 2,
+                  maxLines: 5,
+                  maxLength: 2000,
+                  decoration: InputDecoration(
+                      labelText: '这一项的回复',
+                      errorText: fieldErrors['responses.${item.key}']),
+                  onChanged: (value) => setState(() {
+                    responses[item.key] = value;
+                    dirty = true;
+                    fieldErrors.remove('responses.${item.key}');
+                    notice = null;
+                  }),
+                )
+              else
+                SelectableText(
+                    '正式回复：${supplement!.responses[item.key] ?? '—'}'),
+              const SizedBox(height: 16),
+            ],
+          ]),
         const SizedBox(height: 8),
         _section(template!.title, [
           if (template!.description.isNotEmpty) _note(template!.description),
@@ -745,9 +913,33 @@ class _StoryEditorState extends State<_StoryEditor> {
       ],
       if (record != null && !conflict)
         TextButton(
+          key: const ValueKey('story-progress-refresh'),
           onPressed: locked ? null : compareCurrent,
           child: const Text('重新读取当前进度'),
         ),
+      if (record != null && record!.status != 'DRAFT')
+        _section('正式记录与报价', [
+          OutlinedButton(
+              key: const ValueKey('story-history'),
+              onPressed: locked || dirty
+                  ? null
+                  : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => CustomizationFollowupPage(
+                              requestId: record!.id, history: true))),
+              child: const Text('查看正式提交历史')),
+          FilledButton(
+              key: const ValueKey('story-quotes'),
+              onPressed: locked || dirty
+                  ? null
+                  : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => CustomizationFollowupPage(
+                              requestId: record!.id))),
+              child: const Text('查看这份需求的报价与订单')),
+        ]),
       _note('故事提交后由平台对接。报价、合同、授权和制作将在后续步骤分别确认。'),
     ];
     Future<void> goBack() async {
@@ -797,7 +989,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                           child: OutlinedButton(
                             key: const ValueKey('story-save'),
                             onPressed: locked || conflict ? null : save,
-                            child: const Text('保存业务草稿'),
+                            child: Text(supplementOpen ? '保存补充草稿' : '保存业务草稿'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -807,11 +999,14 @@ class _StoryEditorState extends State<_StoryEditor> {
                             onPressed: locked ||
                                     conflict ||
                                     !template!.submissionAvailable ||
-                                    (record != null &&
-                                        !record!.allows('SUBMIT'))
+                                    (supplementOpen
+                                        ? !supplement!
+                                            .allows('SUBMIT_SUPPLEMENT')
+                                        : record != null &&
+                                            !record!.allows('SUBMIT'))
                                 ? null
                                 : () => save(submit: true),
-                            child: const Text('正式提交需求'),
+                            child: Text(supplementOpen ? '正式重提补充' : '正式提交需求'),
                           ),
                         ),
                       ],

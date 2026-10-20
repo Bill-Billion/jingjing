@@ -1,3 +1,11 @@
+# 双方当前入口：第一轮已交付，前端正接第二轮
+
+2026-10-20前端负责人Bill-Billion已从PR24继续实现补件、正式重提、报价和未付款订单；下文“第一轮页面待接/第二轮未开工”为历史状态。以[前端CURRENT](../../status/EXPERIENCE_CURRENT.md)和[第二轮任务](../../tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)为准。
+
+我方Core接口审阅和隔离复验已完成；PR24已实际向chengcongcong222请求审阅，对方结果尚待。见[第一轮交叉审阅](../../collaboration/V5_R01_CROSS_REVIEW.md)。Core最新已上传第5—12轮及PR25，见[远端同步摘要](../../status/CORE_CURRENT.md)；后端自验不替代页面接线。
+
+---
+
 # 当前双方同步：第一轮前端已交付待实际审阅
 
 2026-10-17，前端 Bill-Billion 已接App动态故事、草稿、正式提交和网页受理，新五栏已迁移。完整入口为 `ux/v5-r01-story-frontend`，依赖 Core第四轮 `c93fe96`；[接法、复验与限制](../../collaboration/V5_R01_FRONTEND_HANDOFF.md)、[前端实际状态](../../status/EXPERIENCE_CURRENT.md)。本轮已在[PR24](https://github.com/Bill-Billion/jingjing/pull/24)集中交付，功能版本 `06622db` 远端检查通过；不等于对方已审阅、已合入或正式启用。下一步前端继续第二轮页面，Core复核共享修复并支持联调；不把后端四轮当作四轮页面完成。

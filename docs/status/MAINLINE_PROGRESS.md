@@ -1,3 +1,11 @@
+# 当前推进：第二轮前端；第一轮审阅两边分别记录
+
+2026-10-20，第一轮App故事到运营受理已在PR24交付，六项检查通过；本前端已审Core第一轮并复验，已实际请求Core检查PR24，对方结果待返回。[审阅证据](../collaboration/V5_R01_CROSS_REVIEW.md)。
+
+第二轮前端接补件、重提、历史、平台报价、独立复核与未付款订单，使用原R04底座。Core最新后端另已上传至PR25，不能将后端轮次计为前端完成。[前端当前状态](EXPERIENCE_CURRENT.md) · [Core远端核对](CORE_CURRENT.md) · [本轮任务](../tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)。共同版本仍28662ab；未合入或部署。下方保留历史。
+
+---
+
 # 后端前四轮可接入，第一轮前端已交付待实际审阅
 
 2026-10-17。Core已交付前四轮后端；Bill-Billion 本轮完成第一轮App故事和运营收件页面、新五栏及本机串联，分支 `ux/v5-r01-story-frontend`，后端完整依赖 `c93fe96`。双方现在可以按[前端交接](../collaboration/V5_R01_FRONTEND_HANDOFF.md)操作同一套合成资料；Core的实际最新进展仍见[Core当前状态](CORE_CURRENT.md)。

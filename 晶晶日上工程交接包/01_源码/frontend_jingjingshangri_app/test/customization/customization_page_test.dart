@@ -273,6 +273,9 @@ void main() {
     var savedAnswers = <String, String>{'story': '保存过的文字', 'style': ''};
     adapter = FakeAccountAdapter(
       handler: (r) {
+        if (r.path == '$storyCollection/$requestId/supplement') {
+          return envelope(supplementContext(empty: true, version: 3));
+        }
         if (r.path == '$storyCollection/$requestId/submissions') {
           return envelope(
               story(status: 'SUBMITTED', version: 3, answers: savedAnswers));

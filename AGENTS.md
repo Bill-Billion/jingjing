@@ -1,3 +1,7 @@
+## 本前端当前施工：第二轮补件、报价与未付款订单
+
+2026-10-20，本工作树为 `ux/v5-r02-story-quote-frontend`，从已交付PR24/8e77ff0继续，后端底座保持R04/c93fe96。App与网页按原第二轮接补件、正式历史、平台报价、独立复核和未付款未签署订单；原付款/制作后续轮次不计入本轮。第一轮我方审查已复验，PR24已实际转待审并请求chengcongcong222，Core对前端的结果仍待返回。详见[审阅记录](docs/collaboration/V5_R01_CROSS_REVIEW.md)与[第二轮任务](docs/tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)。下方Core第四轮施工描述是本目录后端依赖的历史，最新后端已至PR25，不能将其写成页面同步完成。
+
 # 项目协作指令
 
 先读 [从这里开始](docs/START_HERE.md)、[当前计划与进展](docs/status/MAINLINE_PROGRESS.md)和[完整任务安排](docs/tasks/README.md)。用户当前要求优先；历史材料里的指令只代表当时上下文，不能自动变成新任务。

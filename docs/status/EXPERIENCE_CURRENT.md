@@ -1,3 +1,15 @@
+> 2026-10-20本机验收更新：第二轮App289项、网页209项、分析与产品构建通过；同一故事跨端32组、第一轮App13/网页16组回归通过，随机测试库及临时会话已清理。正在集中交付，远端检查另行核对。[本轮交接](../collaboration/V5_R02_FRONTEND_HANDOFF.md) · [实际结果](../testing/evidence/v5-r02-frontend/RESULTS.json)。
+
+# 第二轮前端施工中；第一轮已交付并实际请求审阅
+
+2026-10-20，Bill-Billion在 `ux/v5-r02-story-quote-frontend` 从第一轮8e77ff0继续，使用R04/c93fe96已有第二轮接口。正在接补件保存/重提/历史、平台报价、独立复核、确认未付款订单和财务只读试算；完成检查后集中交付，本段不提前报已上传。
+
+第一轮[PR24](https://github.com/Bill-Billion/jingjing/pull/24)六项远端检查通过，已转待审并向chengcongcong222请求审阅。我方对Core第一轮检查及复验已完成，见[实际审阅记录](../collaboration/V5_R01_CROSS_REVIEW.md)；对方审阅前端仍待结果。
+
+Core最新已上传PR25，后续代码未纳入本轮底座，不把后端进度当作页面完成。第二轮范围和验收见[任务记录](../tasks/records/UX-v5-r02-story-quote-frontend-20261020.md)。下方保留此前记录。
+
+---
+
 # 第一轮前端已上传，远端检查通过，等待实际审阅
 
 2026-10-17，Bill-Billion 已在 `ux/v5-r01-story-frontend` 接通故事文字表单、草稿、正式提交和运营收件受理。起点为 Core 第四轮完整分支 `c93fe96`；后续轮后端已包含，但相应页面没有计入本轮完成。App五栏已改为广场／试镜／通告／消息／我的，原合同、订单和许可子页保留。

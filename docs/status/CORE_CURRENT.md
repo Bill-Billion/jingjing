@@ -1,3 +1,11 @@
+# 前端同步核对：Core最新后端已上传，页面进度独立记录
+
+2026-10-20已实际fetch并核对：Core最新为 `core/v5-backend-completion / 8d6ed8a`，[PR25](https://github.com/Bill-Billion/jingjing/pull/25)四项自动检查通过；第5—12轮分支已上传，隐私与素材审核仍由Core继续，未合入或启用。当前Core原记录见[远端CORE_CURRENT](https://github.com/Bill-Billion/jingjing/blob/8d6ed8ab0fba8530a90d4334c79fbcc5d58879e9/docs/status/CORE_CURRENT.md)。
+
+本前端保留R04底座接第二轮，未导入后续代码；第一轮已经PR24交付，且已请求Core审阅。双方当前以[前端实际进度](EXPERIENCE_CURRENT.md)及[第一轮审阅](../collaboration/V5_R01_CROSS_REVIEW.md)核对，不能由后端检查推定页面完成。下方是本工作目录R04及此前的历史快照。
+
+---
+
 # 第四轮后端已集中上传，远端检查通过
 
 本阶段共12轮，本侧已做到第4轮后端，尚不能称为前4轮App全部完成。本轮完整分支 `core/v5-r04-customization-delivery`，起点 `0cf4bce`，包含前3轮必要代码。共同版本仍 `28662ab`；页面、另一方实际审阅、合入和正式启用分别等待。负责人 chengcongcong222，队友前端未代认领。

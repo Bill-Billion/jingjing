@@ -1,3 +1,11 @@
+# 当前双方同步：前端第二轮进行中，第一轮已请求对方审阅
+
+前端在PR24之后接补件、重提、正式历史、平台报价与未付款订单，实际状态看[前端CURRENT](status/EXPERIENCE_CURRENT.md)。第一轮我方已审Core接口并复验，Core审PR24已实际请求但尚无结果，见[交叉审阅](collaboration/V5_R01_CROSS_REVIEW.md)。
+
+Core远端已上传第5—12轮与[后端补齐PR25](https://github.com/Bill-Billion/jingjing/pull/25)，当前摘要看[Core同步](status/CORE_CURRENT.md)。本轮前端仍用R04已有接口；没有合并共同版本或启用生产。下方保留旧入口，历史中的“前端待接”不覆盖这里和前端CURRENT。
+
+---
+
 # 当前双方同步：第一轮页面可复验，后端前四轮可接入
 
 先看[第一轮前端交接](collaboration/V5_R01_FRONTEND_HANDOFF.md)和[前端实际状态](status/EXPERIENCE_CURRENT.md)。App故事到运营受理已完成本机真实串联，新五栏已迁移，功能版本 `06622db` 全部远端检查通过；本轮增量已在[PR24](https://github.com/Bill-Billion/jingjing/pull/24)交付；实际交叉审阅、共同版本和正式启用仍分别待办。Core前四轮接口继续见下方交接；第二轮页面接着按原顺序推进。

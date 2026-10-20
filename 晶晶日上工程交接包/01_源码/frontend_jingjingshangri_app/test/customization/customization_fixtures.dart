@@ -7,6 +7,8 @@ const secondRequestId = '88888888-8888-4888-8888-888888888888';
 const templateId = '99999999-9999-4999-8999-999999999999';
 const secondTemplateId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const submissionId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+const supplementId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+const nextSubmissionId = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 
 Map<String, dynamic> template({bool second = false, bool attachment = false}) =>
     {
@@ -53,6 +55,7 @@ Map<String, dynamic> category({
 Map<String, dynamic> story({
   String id = requestId,
   String status = 'DRAFT',
+  String formalId = submissionId,
   int version = 1,
   Map<String, String> answers = const {'story': '保存过的文字', 'style': ''},
   bool attachment = false,
@@ -69,7 +72,7 @@ Map<String, dynamic> story({
       'submission': status == 'DRAFT'
           ? null
           : {
-              'id': submissionId,
+              'id': formalId,
               'answers': answers,
               'template_snapshot': template(attachment: attachment),
               'content_sha256': 'c' * 64,
@@ -108,3 +111,86 @@ Future<AccountSession> storySession(FakeAccountAdapter adapter) async {
   session.select(identity(personId));
   return session;
 }
+
+Map<String, dynamic> supplementContext({
+  int version = 4,
+  bool open = true,
+  bool empty = false,
+  Map<String, String> answers = const {'story': '补充草稿文字', 'style': ''},
+  Map<String, String> responses = const {'story': '补充说明'},
+}) =>
+    {
+      'request_id': requestId,
+      'object_version': version,
+      'supplement': empty
+          ? null
+          : {
+              'id': supplementId,
+              'base_submission_id': submissionId,
+              'items': [
+                {
+                  'field_key': 'story',
+                  'reason': '背景不够明确',
+                  'instruction': '补充故事的发生时间与人物关系。'
+                },
+              ],
+              'current_status': open ? 'OPEN' : 'RESPONDED',
+              'requested_by': orgId,
+              'requested_at': '2026-10-20T01:00:00.000Z',
+              'response': open
+                  ? null
+                  : {
+                      'submission_id': nextSubmissionId,
+                      'responses': responses,
+                      'submitted_at': '2026-10-20T03:00:00.000Z',
+                    },
+            },
+      'draft':
+          !empty && open ? {'answers': answers, 'responses': responses} : null,
+      'allowed_actions': [
+        'READ',
+        if (!empty && open) ...['SAVE_SUPPLEMENT', 'SUBMIT_SUPPLEMENT']
+      ],
+    };
+
+Map<String, dynamic> historySummary(
+        {String id = submissionId, int number = 1}) =>
+    {
+      'id': id,
+      'submission_number': number,
+      'submitted_by': accountId,
+      'submitted_at': '2026-10-20T03:00:00.000Z',
+      'content_sha256': 'c' * 64,
+    };
+
+Map<String, dynamic> submissionVersion({bool supplemented = true}) => {
+      'request_id': requestId,
+      'submission_number': supplemented ? 2 : 1,
+      'submission': {
+        ...story(status: 'SUBMITTED')['submission'],
+        'id': supplemented ? nextSubmissionId : submissionId,
+      },
+      'supplement_response': supplemented
+          ? {
+              'supplement_id': supplementId,
+              'base_submission_id': submissionId,
+              'items': supplementContext()['supplement']['items'],
+              'responses': {'story': '当时的正式回复'},
+              'requested_by': orgId,
+              'requested_at': '2026-10-20T01:00:00.000Z',
+            }
+          : null,
+    };
+
+Map<String, dynamic> storyQuoteSummary(String id,
+        {String? orderId, bool current = true}) =>
+    {
+      'id': id,
+      'submission_id': submissionId,
+      'source_content_sha256': 'c' * 64,
+      'source_is_current': current,
+      'current_status': orderId == null ? 'APPROVED' : 'ACCEPTED',
+      'object_version': 2,
+      'content_sha256': 'c' * 64,
+      'order_id': orderId,
+    };

@@ -2,6 +2,7 @@ import type {RouteRecordRaw} from 'vue-router'
 const component=()=>import('@/views/FinanceView.vue')
 const page=(path:string,name:string,view:string,title:string):RouteRecordRaw=>({path,name,component,meta:{financeView:view,title}})
 export const financeRoutes:RouteRecordRaw[]=[
+ page('/finance/marketplace-preview','finance-marketplace-preview','preview','撮合规则只读试算'),
  page('/finance/agreements/new','finance-new','new','建立结算约定版本'),
  page('/finance/agreements/:recordId/confirm','finance-agreement-confirm','confirm-agreement','结算约定各方确认'),
  page('/finance/agreements/:recordId/settlements/new','finance-settlement','settlement','生成期间结算单'),
