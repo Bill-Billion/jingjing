@@ -29,7 +29,7 @@
 
 ## 队友如何接接口
 
-统一接口文件 `contracts/openapi.yaml`，版本 `0.23.0-rc.1`。本轮新增26个操作，全库379个。下表统一省略 `/api/v1/cocreation` 前缀。登录沿用原方式；个人/机构操作传 `X-Acting-Party`。规则与审核操作不传身份头，使用运营权限 `COCREATION_REVIEW`；恢复既有制作还需要 `PRODUCTION_REVIEW`。可同时由发起人或运营执行的读取和核定允许不传身份头，此时必须有运营权限。
+统一接口文件 `contracts/openapi.yaml`，版本 `0.23.0-rc.1`。本轮新增27个操作，全库380个。下表统一省略 `/api/v1/cocreation` 前缀。登录沿用原方式；个人/机构操作传 `X-Acting-Party`。规则与审核操作不传身份头，使用运营权限 `COCREATION_REVIEW`；恢复既有制作还需要 `PRODUCTION_REVIEW`。可同时由发起人或运营执行的读取和核定允许不传身份头，此时必须有运营权限。
 
 写操作沿用 `Idempotency-Key`；修改既有记录传 `If-Match: "当前版本号"`。请求失败不自动换键重新建订单。响应仍为 `meta + data`，通用记录详情在 `data.data`，房间概况直接在 `data`；不要从数据库字段推导接口。测试例子见[实际合成返回](../testing/evidence/v5-r10/FRONTEND_FIXTURES.json)，其中编号只属于当次临时测试库。
 
@@ -44,7 +44,7 @@
 |延期、取消、恢复|POST/GET `/rooms/{record_id}/cases`；POST `/cases/{record_id}/review`|kind为EXTEND/RESUME/CANCEL；延期传新截止日，其余new_deadline明确传null；审核记录版本与房间版本都校验|
 |核对退款结果|POST `/rooms/{record_id}/sync`|审批取消不等于已退款；只有原付款系统确认退款后才显示已退款|
 |制作方取材|GET `/rooms/{record_id}/materials`；GET `/members/{record_id}/assets/{asset_id}`|制作方分页读取；文件通过受控二进制下载，不返回可公开访问的地址|
-|个人片段|POST `/rooms/{record_id}/snippets`；POST `/snippets/{record_id}/review`；GET `/snippets`；GET `/snippets/{record_id}/file`|制作方传member_id/file_id/final_version_id/note；独立审核确认四项检查；收款、成片验收和有效授权全部满足才下载|
+|个人片段|POST `/rooms/{record_id}/snippets`；POST `/snippets/{record_id}/review`；GET `/snippets`；GET `/snippets/{record_id}/file`|制作方传member_id/file_id/final_version_id/note；独立审核员先通过 `/snippets/{record_id}/review-file` 查看待审文件（不传身份头），再确认四项检查；收款、成片验收和有效授权全部满足才下载|
 |额度与运营待办|GET `/benefits`；GET `/queue?kind=RULE/ROOM/CASE/SNIPPET`|服务额度不进入现金余额；运营列表可分页；不要把待审核片段当可用成果|
 
 房间返回 `joined_count` 为已参加人数，`eligible_count` 为当前满足全部条件的人数，不能混用。`cutoff` 是已锁定的成团依据，退出不会改写历史人数；继续制作使用经审核保留的人员。截止后不再接收新报名或改资料。本轮核定入口由发起人或运营主动调用，尚无自动定时关房任务；同时记录截止时间和实际核验时间，核验时已失效的授权不会算入，不能把它当精确回溯任意过去时刻的权利凭据。
