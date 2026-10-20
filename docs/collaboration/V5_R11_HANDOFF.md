@@ -2,6 +2,8 @@
 
 2026-10-20。总计划12轮，本轮第11轮。本侧负责服务器、数据库、业务规则和主要测试；队友负责App与运营网页，接手和页面进度待本人确认。完整分支 `core/v5-r11-redemption`，工作目录 `worktrees/full-flow`。本轮需要第8轮晶钻账、第9轮奖励及第10轮共创额度；完整依赖已放在本分支，不能只摘本轮提交放到旧integration运行。上传、检查和合入状态统一看[当前进度](../status/CORE_CURRENT.md)。
 
+已集中上传功能及交接版本0a2ee63，[GitHub检查](https://github.com/Bill-Billion/jingjing/actions/runs/39366145979)全部通过，报告已下载核对。完整分支包含前置未合入代码，页面联调、独立审阅和合入仍未完成；不新增重复串联申请，不改PR24。186份合成接口样例见 `docs/testing/evidence/v5-r11/FRONTEND_FIXTURES.json`，其中记录编号仅供示例，不能当真实测试账号数据直接调用。
+
 ## 用户怎样完成业务
 
 |用户要办的事|按什么顺序操作|怎样才算真的办成|
