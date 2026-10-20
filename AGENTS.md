@@ -1,8 +1,8 @@
 # 项目协作指令
 
-当前V5第11轮在 `worktrees/full-flow`、`core/v5-r11-redemption` 交付收尾。先读 `docs/START_HERE.md`、`docs/status/CORE_CURRENT.md` 和 `docs/collaboration/V5_R11_HANDOFF.md`。总计划12轮，下一轮非标出演、发行及全范围交付候选检查。当前用户授权优先；轮次、上传、检查、页面、审阅、合入和启用分别记录。
+当前V5第12轮在 `worktrees/full-flow`、`core/v5-r12-participation-release`。先读 `docs/START_HERE.md`、`docs/status/CORE_CURRENT.md` 与 `docs/collaboration/V5_R12_HANDOFF.md`。本批参演约定及发行收入后端已实现；整套V5尚未通过交付候选验收，代码缺口、页面和外部条件见 `docs/reviews/v5-r12/FULL_SCOPE_REVIEW.md`。不因轮次到12就宣称全部完成。
 
-V5导航目标为广场/试镜/通告/消息/我的，私人定制与现货分开，机构批量经营走PC；儿童实际处理关闭。用户已确认本轮制作金限人工定制/做剧、分期按抵扣后金额、全额抵扣开工核销。未知商品/价格/概率/权益条件不替甲方编造。完整决定见DECISIONS。历史入口已存档 `docs/archive/v5-r11-entry-history/20261020_BEFORE_R11_AGENTS.md`，下面保留长期工程与合作要求，旧画册/导航细节以最新V5对照为准。
+当前用户授权优先。业务决定、代码、隔离测试、页面、实际审阅、上传、合入与正式启用分开记录。V5导航为广场/试镜/通告/消息/我的，机构批量经营走PC；儿童实际处理关闭。制作金限人工定制/做剧，分期按抵扣后金额，全额抵扣开工核销；其余决定见DECISIONS。旧入口存档 `docs/archive/v5-r12-entry-history/20261020_BEFORE_R12_AGENTS.md`。下面长期工程约束保留，历史图册与导航细节以最新V5对照为准。
 
 ## 长期要求：先让人看懂，再补技术细节
 

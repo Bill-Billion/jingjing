@@ -5,14 +5,20 @@ const {createPrivateStorage}=require('../modules/providers/private-storage');
 const {createReadinessRepository}=require('../modules/providers/readiness');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createProjectsRouter({db,resolvePrincipal,env={},storageFactory,providerFactory}){
- const router=express.Router(),repo=createProjectsRepository(db,{resolvePrincipal}),caps=new WeakMap();
+ const router=express.Router(),repo=createProjectsRepository(db,{resolvePrincipal,requireV5Products:require('../modules/trade/product-policy').requirement(env.TRADE_REQUIRE_V5_PRODUCTS)}),caps=new WeakMap();
  const storage=storageFactory?storageFactory():createPrivateStorage({env,repository:createReadinessRepository(db),authorize:async({operation,key,context})=>caps.get(context)?.key===key&&caps.get(context)?.operation===operation});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}return req.actingParty=id(v);};
  const expected=req=>{const v=req.get('If-Match');if(!v)throw error('EXPECTED_VERSION_REQUIRED',428);if(!/^"[1-9][0-9]*"$/.test(v))throw error('INVALID_VERSION',400);return version(Number(v.slice(1,-1)));};
  const reply=(req,res,data)=>res.status(200).set('Cache-Control','no-store').type('application/json').end(JSON.stringify({meta:{request_id:req.requestId,actor:{account_id:req.account.id},acting_party:req.actingParty||null},data}));
  function post(path,method,fields,{party=true,existing=false}={}){router.post(path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);reply(req,res,await repo[method](req,{...req.body,operation_key:ref(req.get('Idempotency-Key')),...(party?{party_id:acting(req)}:{}),...(existing?{record_id:id(req.params.record_id),expected_version:expected(req)}:{})}));}));}
- post('/projects','create',["title", "scope"],{party:true,existing:false});
+ post('/projects/:record_id/revision','reopenParticipationProject',['reason','evidence_asset_id'],{existing:true});
+ post('/candidates/:record_id/participations','participation',['cast','terms','rule_id','evidence_asset_id'],{existing:true});
+ post('/participations/:record_id/review','reviewParticipation',['decision','reason','verification'],{party:false,existing:true});
+ post('/participations/:record_id/confirmation','confirmParticipation',['content_sha256','decision','reason'],{existing:true});
+ post('/participations/:record_id/milestones','participationMilestone',['installment_key','evidence_asset_id','reason'],{existing:true});
+ post('/participations/:record_id/withdrawal','withdrawParticipation',['reason'],{existing:true});
+ post('/projects','create',["title", "scope", "business_version"],{party:true,existing:false});
  post('/projects/:record_id/roles','role',["title", "capacity", "pricing", "amount_minor", "terms"],{party:true,existing:true});
  post('/roles/:record_id/invitations','invite',["invitee_party_id"],{party:true,existing:true});
  post('/roles/:record_id/applications','apply',["avatar_id", "consent_id", "amount_minor", "note"],{party:true,existing:true});
@@ -27,6 +33,7 @@ function createProjectsRouter({db,resolvePrincipal,env={},storageFactory,provide
  post('/records/:record_id/reviews','review',["decision", "reason", "verification"],{party:false,existing:true});
  post('/projects/:record_id/releases','submitRelease',["channel_id", "prior_release_id", "material_asset_ids", "note"],{party:true,existing:true});
  post('/releases/:record_id/external-events','reportExternal',["outcome", "external_reference", "occurred_at", "evidence_asset_id", "note"],{party:true,existing:true});
+ router.get('/participations/:record_id/progress',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.participationProgress(req,{record_id:id(req.params.record_id),party_id:acting(req,false)}));}));
  router.get('/projects',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.listProjects(req,{party_id:acting(req,false),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
  router.get('/catalogue',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.catalogue(req));}));
  router.get('/records/:record_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.read(req,{record_id:id(req.params.record_id),party_id:acting(req,false)}));}));
