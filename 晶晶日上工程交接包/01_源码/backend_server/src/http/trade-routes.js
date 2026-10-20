@@ -16,7 +16,7 @@ function createTradeRouters({db,resolvePrincipal,env={},providersFactory,storage
  post('/specifications','createSpec',['previous_spec_id','title','provider_party_id','line_kind','unit_minor','currency','specification','product_profile'],{party:true});
  post('/quotes','quote',['buyer_party_id','lines','installments','channel','transaction_model','rule_id','expires_at','payment_window_minutes','license_reservation_id','commercial_offer_id','customization_source','customization_change_source','artist_service_source'],{party:true});
  post('/records/:record_id/reviews','review',['decision','reason'],{existing:true});
- post('/quotes/:record_id/acceptance','accept',['quote_sha256'],{party:true,existing:true});
+ post('/quotes/:record_id/acceptance','accept',['quote_sha256','reward_selection'],{party:true,existing:true});
  post('/orders/:record_id/cancellation','cancel',['reason'],{party:true,existing:true});
  post('/payments','startPayment',['order_id','installment_key'],{party:true,target:service});
  post('/payments/:record_id/reconciliation','reconcilePayment',['transaction_id'],{party:true,target:service});

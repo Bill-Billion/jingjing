@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.23.0-rc.1
+  version: 0.24.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -20148,6 +20148,1441 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/stock:
+    post:
+      operationId: redemptionCreateStock
+      summary: 登记真实奖励库存
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionCreateStockRequest'
+  /api/v1/redemption/stock/{record_id}/review:
+    post:
+      operationId: redemptionReviewStock
+      summary: 独立审核或停发奖励
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionReviewStockRequest'
+  /api/v1/redemption/exchanges:
+    post:
+      operationId: redemptionExchange
+      summary: 用晶钻兑换一份权益
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionExchangeRequest'
+  /api/v1/redemption/grants/{record_id}/bind:
+    post:
+      operationId: redemptionBind
+      summary: 绑定本人数字人
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionBindRequest'
+  /api/v1/redemption/grants/{record_id}/deliveries:
+    post:
+      operationId: redemptionProposeDelivery
+      summary: 提出面试或曝光安排
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionProposeDeliveryRequest'
+  /api/v1/redemption/deliveries/{record_id}/review:
+    post:
+      operationId: redemptionReviewDelivery
+      summary: 独立审核兑现安排
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionReviewDeliveryRequest'
+  /api/v1/redemption/grants/{record_id}/confirmation:
+    post:
+      operationId: redemptionAcknowledge
+      summary: 本人确认或拒绝安排
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionAcknowledgeRequest'
+  /api/v1/redemption/grants/{record_id}/finish:
+    post:
+      operationId: redemptionFinish
+      summary: 记录实际兑现结果
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionFinishRequest'
+  /api/v1/redemption/grants/{record_id}/remedies:
+    post:
+      operationId: redemptionRequestRemedy
+      summary: 申请无法兑现的处理
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionRequestRemedyRequest'
+  /api/v1/redemption/remedies/{record_id}/review:
+    post:
+      operationId: redemptionReviewRemedy
+      summary: 审核顺延或晶钻退回
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionReviewRemedyRequest'
+  /api/v1/redemption/catalog:
+    get:
+      operationId: redemptionCatalog
+      summary: 查看已审核的固定兑换
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/grants:
+    get:
+      operationId: redemptionMyGrants
+      summary: 查看本人的权益
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/grants/{record_id}:
+    get:
+      operationId: redemptionGrant
+      summary: 查询本人的最新权益状态
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/queue:
+    get:
+      operationId: redemptionQueue
+      summary: 运营查看待处理奖励
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          enum:
+          - STOCK
+          - GRANT
+          - SCHEDULE
+          - REMEDY
+          - COUPON_HOLD
+          - POOL
+          - DRAW
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/exposures:
+    get:
+      operationId: redemptionExposures
+      summary: 查看当前有效曝光名单
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: city
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/grants/{record_id}/checkout:
+    post:
+      operationId: redemptionHoldCoupon
+      summary: 选券并查看用券后的总价和分期
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionHoldCouponRequest'
+  /api/v1/redemption/holds/{record_id}/release:
+    post:
+      operationId: redemptionReleaseCoupon
+      summary: 释放尚未确认订单的券
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionReleaseCouponRequest'
+  /api/v1/redemption/service-credits:
+    post:
+      operationId: redemptionClaimServiceCredit
+      summary: 领取共创服务额度
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionClaimServiceCreditRequest'
+  /api/v1/redemption/pools:
+    post:
+      operationId: redemptionCreatePool
+      summary: 登记奖池规则和成本
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionCreatePoolRequest'
+    get:
+      operationId: redemptionPools
+      summary: 查看公开奖池
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/pools/{record_id}/review:
+    post:
+      operationId: redemptionReviewPool
+      summary: 分别审核规则与成本
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionReviewPoolRequest'
+  /api/v1/redemption/pools/{record_id}/retirement:
+    post:
+      operationId: redemptionRetirePool
+      summary: 停用奖池并保留历史
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionRetirePoolRequest'
+  /api/v1/redemption/draws:
+    post:
+      operationId: redemptionDraw
+      summary: 扣除晶钻并一次性记录全部抽奖结果
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedemptionDrawRequest'
+    get:
+      operationId: redemptionMyDraws
+      summary: 查看我的抽奖记录
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/pools/{record_id}:
+    get:
+      operationId: redemptionPool
+      summary: 查看公开规则和实际概率
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/draws/{record_id}:
+    get:
+      operationId: redemptionDrawRecord
+      summary: 读取已有结果，不重新抽奖
+      description: 第11轮权益与抽奖接口；付款、权益核销和实际兑现分开记录。页面、独立审阅和正式启用另验。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际服务器记录；不能用兑换成功代表已使用制作金或已获得出演权。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 有版本记录的当前版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/redemption/records/{record_id}/evidence/{asset_id}:
+    get:
+      operationId: redemptionEvidence
+      summary: 独立审核员读取本条记录关联的私有证据
+      description: 只允许持有对应审核权限的非自审人员。下载前后检查授权，核对文件内容；不返回公开链接。
+      tags:
+      - redemption
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -26964,6 +28399,7 @@ components:
             type: string
             enum:
             - OPEN
+            - REWARD_FUNDED
             - PARTIALLY_PAID
             - PAID
             - PARTIALLY_REFUNDED
@@ -27291,7 +28727,7 @@ components:
                   - OTHER
                 unit_minor:
                   type: integer
-                  minimum: 1
+                  minimum: 0
                   maximum: 900000000000
                 currency:
                   const: CNY
@@ -27338,7 +28774,7 @@ components:
                   maximum: 10000
                 total_minor:
                   type: integer
-                  minimum: 1
+                  minimum: 0
                   maximum: 900000000000
               required:
               - title
@@ -27371,7 +28807,7 @@ components:
                   - OTHER
                 unit_minor:
                   type: integer
-                  minimum: 1
+                  minimum: 0
                   maximum: 900000000000
                 currency:
                   const: CNY
@@ -27427,7 +28863,7 @@ components:
                   maximum: 10000
                 total_minor:
                   type: integer
-                  minimum: 1
+                  minimum: 0
                   maximum: 900000000000
               required:
               - title
@@ -27442,7 +28878,7 @@ components:
               - product_profile
         installments:
           type: array
-          minItems: 1
+          minItems: 0
           maxItems: 20
           items:
             type: object
@@ -27491,7 +28927,7 @@ components:
             - apple_product_id
         total_minor:
           type: integer
-          minimum: 1
+          minimum: 0
           maximum: 900000000000
         currency:
           const: CNY
@@ -27629,6 +29065,8 @@ components:
           - free_points_reward_enabled
         cocreation:
           $ref: '#/components/schemas/CocreationQuoteSnapshot'
+        discount:
+          $ref: '#/components/schemas/RedemptionDiscount'
       required:
       - lines
       - installments
@@ -27641,6 +29079,35 @@ components:
       - payment_window_minutes
       - license_reservation_id
       - review
+      allOf:
+      - if:
+          properties:
+            total_minor:
+              const: 0
+        then:
+          required:
+          - discount
+          properties:
+            installments:
+              maxItems: 0
+            discount:
+              properties:
+                coverage:
+                  const: FULL
+            lines:
+              maxItems: 1
+              items:
+                properties:
+                  unit_minor:
+                    const: 0
+                  total_minor:
+                    const: 0
+                  quantity:
+                    const: 1
+        else:
+          properties:
+            installments:
+              minItems: 1
     TradeOrderData:
       type: object
       additionalProperties: false
@@ -28455,6 +29922,19 @@ components:
         quote_sha256:
           type: string
           pattern: ^[a-f0-9]{64}$
+        reward_selection:
+          type: object
+          additionalProperties: false
+          properties:
+            hold_id:
+              type: string
+              format: uuid
+            adjusted_quote_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+          required:
+          - hold_id
+          - adjusted_quote_sha256
       required:
       - quote_sha256
     TradeReasonRequest:
@@ -43117,6 +44597,7 @@ components:
           - DAILY_CHECKIN
           - REVIEW
           - SHARE
+          - REWARD
         source_ref:
           type: string
           maxLength: 191
@@ -43880,3 +45361,1715 @@ components:
       required:
       - decision
       - reason
+
+    RedemptionTemplate:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 500
+        source_ref:
+          type: string
+          minLength: 1
+          maxLength: 500
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+        kind:
+          enum:
+          - PRODUCTION_CREDIT
+          - PRODUCTION_FREE
+          - SERVICE_CREDIT
+          - INTERVIEW
+          - EXPOSURE
+        valid_days:
+          type: integer
+          minimum: 1
+          maximum: 730
+        exchange_points:
+          anyOf:
+          - type: integer
+            minimum: 1
+            maximum: 100000000
+          - type: 'null'
+        capacity:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+        available_until:
+          type: string
+          format: date-time
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        production:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              face_minor:
+                type: integer
+                minimum: 1
+                maximum: 100000000
+              minimum_minor:
+                type: integer
+                minimum: 1
+                maximum: 100000000
+              spec_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                minItems: 1
+                maxItems: 100
+                uniqueItems: true
+            required:
+            - face_minor
+            - minimum_minor
+            - spec_ids
+          - type: 'null'
+        interview:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              channel:
+                enum:
+                - OPEN
+                - PRIORITY
+              project_ref:
+                type: string
+                minLength: 1
+                maxLength: 200
+              batch_ref:
+                type: string
+                minLength: 1
+                maxLength: 200
+              min_halo:
+                enum:
+                - 1
+                - 2
+              purpose:
+                type: string
+                minLength: 1
+                maxLength: 200
+              territory:
+                type: string
+                minLength: 1
+                maxLength: 200
+              extension_days:
+                type: integer
+                minimum: 1
+                maximum: 90
+              fallback_points:
+                type: integer
+                minimum: 1
+                maximum: 100000000
+            required:
+            - channel
+            - project_ref
+            - batch_ref
+            - min_halo
+            - purpose
+            - territory
+            - extension_days
+            - fallback_points
+          - type: 'null'
+        exposure:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              placement:
+                type: string
+                minLength: 1
+                maxLength: 100
+              duration_days:
+                const: 7
+              fallback_points:
+                type: integer
+                minimum: 1
+                maximum: 100000000
+            required:
+            - placement
+            - duration_days
+          - type: 'null'
+        service_code:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - version
+      - source_ref
+      - title
+      - kind
+      - valid_days
+      - exchange_points
+      - capacity
+      - available_until
+      - terms
+      - production
+      - interview
+      - exposure
+
+    RedemptionRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - STOCK
+          - GRANT
+          - SCHEDULE
+          - REMEDY
+          - COUPON_HOLD
+          - POOL
+          - DRAW
+        owner_party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          type: string
+          minLength: 1
+          maxLength: 100
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RedemptionStockData'
+          - $ref: '#/components/schemas/RedemptionGrantData'
+          - $ref: '#/components/schemas/RedemptionScheduleData'
+          - $ref: '#/components/schemas/RedemptionRemedyData'
+          - $ref: '#/components/schemas/RedemptionHoldData'
+          - $ref: '#/components/schemas/RedemptionPoolData'
+          - $ref: '#/components/schemas/RedemptionDrawData'
+        effective_status:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - id
+      - kind
+      - owner_party_id
+      - parent_id
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+      allOf:
+      - if:
+          properties:
+            kind:
+              const: STOCK
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionStockData'
+      - if:
+          properties:
+            kind:
+              const: GRANT
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionGrantData'
+      - if:
+          properties:
+            kind:
+              const: SCHEDULE
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionScheduleData'
+      - if:
+          properties:
+            kind:
+              const: REMEDY
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionRemedyData'
+      - if:
+          properties:
+            kind:
+              const: COUPON_HOLD
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionHoldData'
+      - if:
+          properties:
+            kind:
+              const: POOL
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionPoolData'
+      - if:
+          properties:
+            kind:
+              const: DRAW
+        then:
+          properties:
+            data:
+              $ref: '#/components/schemas/RedemptionDrawData'
+
+    RedemptionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RedemptionRecord'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  anyOf:
+                  - $ref: '#/components/schemas/RedemptionRecord'
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      object_version:
+                        type: integer
+                        minimum: 1
+                        maximum: 100000000
+                      template:
+                        $ref: '#/components/schemas/RedemptionTemplate'
+                      template_sha256:
+                        type: string
+                        pattern: ^[a-f0-9]{64}$
+                      remaining:
+                        type: integer
+                        minimum: 0
+                        maximum: 100000000
+                    required:
+                    - id
+                    - object_version
+                    - template
+                    - template_sha256
+                    - remaining
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      person_id:
+                        type: string
+                        format: uuid
+                      avatar_id:
+                        type: string
+                        format: uuid
+                      placement:
+                        type: string
+                        minLength: 1
+                        maxLength: 100
+                      starts_at:
+                        type: string
+                        format: date-time
+                      ends_at:
+                        type: string
+                        format: date-time
+                      source:
+                        const: EARNED_REWARD_NOT_PAID_AD
+                    required:
+                    - person_id
+                    - avatar_id
+                    - placement
+                    - starts_at
+                    - ends_at
+                    - source
+                  - $ref: '#/components/schemas/RedemptionPoolView'
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+          - $ref: '#/components/schemas/RedemptionPoolView'
+      required:
+      - meta
+      - data
+
+    RedemptionCreateStockRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        template:
+          $ref: '#/components/schemas/RedemptionTemplate'
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 10
+      required:
+      - template
+      - evidence_asset_ids
+
+    RedemptionReviewStockRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+          - RETIRE
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+
+    RedemptionExchangeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        stock_id:
+          type: string
+          format: uuid
+        template_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - stock_id
+      - template_sha256
+
+    RedemptionBindRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        avatar_id:
+          type: string
+          format: uuid
+        cast:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              person_id:
+                type: string
+                format: uuid
+              avatar_id:
+                type: string
+                format: uuid
+              supply_consent_id:
+                type: string
+                format: uuid
+              artist_consent_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                minItems: 1
+                maxItems: 2
+              look_version_id:
+                type: string
+                format: uuid
+              voice_version_id:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              usage:
+                enum:
+                - EXISTING_MATERIAL
+                - NEW_GENERATION
+            required:
+            - person_id
+            - avatar_id
+            - supply_consent_id
+            - artist_consent_ids
+            - look_version_id
+            - voice_version_id
+            - usage
+          - type: 'null'
+        profile_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+      required:
+      - person_id
+      - avatar_id
+      - cast
+      - profile_id
+
+    RedemptionProposeDeliveryRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - starts_at
+      - ends_at
+      - reference
+      - evidence_asset_id
+
+    RedemptionReviewDeliveryRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+
+    RedemptionAcknowledgeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        accepted:
+          type: boolean
+      required:
+      - accepted
+
+    RedemptionFinishRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        outcome:
+          enum:
+          - INTERVIEWED
+          - NOT_SELECTED
+          - EXPOSURE_COMPLETED
+        evidence_asset_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - outcome
+      - evidence_asset_id
+      - reason
+
+    RedemptionRequestRemedyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+
+    RedemptionReviewRemedyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - REJECT
+          - EXTEND_ONCE
+          - RETURN_POINTS
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - decision
+      - reason
+      - evidence_asset_id
+
+    RedemptionStockData:
+      type: object
+      additionalProperties: false
+      properties:
+        template:
+          $ref: '#/components/schemas/RedemptionTemplate'
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        issued:
+          type: integer
+          minimum: 0
+          maximum: 100000000
+        review:
+          type: object
+          additionalProperties: false
+          properties:
+            by:
+              type: string
+              format: uuid
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+          - by
+          - reason
+      required:
+      - template
+      - evidence_asset_ids
+      - issued
+
+    RedemptionGrantData:
+      type: object
+      additionalProperties: false
+      properties:
+        template:
+          $ref: '#/components/schemas/RedemptionTemplate'
+        template_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        source:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: array
+            items:
+              type: string
+              minLength: 1
+              maxLength: 2000
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        hold_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        binding:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              person_id:
+                type: string
+                format: uuid
+              avatar_id:
+                type: string
+                format: uuid
+              cast:
+                anyOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    person_id:
+                      type: string
+                      format: uuid
+                    avatar_id:
+                      type: string
+                      format: uuid
+                    supply_consent_id:
+                      type: string
+                      format: uuid
+                    artist_consent_ids:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      minItems: 1
+                      maxItems: 2
+                    look_version_id:
+                      type: string
+                      format: uuid
+                    voice_version_id:
+                      anyOf:
+                      - type: string
+                        format: uuid
+                      - type: 'null'
+                    usage:
+                      enum:
+                      - EXISTING_MATERIAL
+                      - NEW_GENERATION
+                  required:
+                  - person_id
+                  - avatar_id
+                  - supply_consent_id
+                  - artist_consent_ids
+                  - look_version_id
+                  - voice_version_id
+                  - usage
+                - type: 'null'
+              profile_id:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - person_id
+            - avatar_id
+            - cast
+            - profile_id
+          - type: 'null'
+        delivery:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              schedule_id:
+                type: string
+                format: uuid
+              starts_at:
+                type: string
+                format: date-time
+              ends_at:
+                type: string
+                format: date-time
+              reference:
+                type: string
+                minLength: 1
+                maxLength: 1000
+              confirmed_at:
+                type: string
+                format: date-time
+              outcome:
+                enum:
+                - INTERVIEWED
+                - NOT_SELECTED
+                - EXPOSURE_COMPLETED
+              evidence_asset_id:
+                type: string
+                format: uuid
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              by:
+                type: string
+                format: uuid
+              completed_at:
+                type: string
+                format: date-time
+            required:
+            - schedule_id
+            - starts_at
+            - ends_at
+            - reference
+          - type: 'null'
+        extension_used:
+          type: boolean
+        performance_rights_granted:
+          const: false
+        cashable:
+          const: false
+        transferable:
+          const: false
+        fulfillment_party_id:
+          type: string
+          format: uuid
+        checkout_hold_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        used_order_id:
+          type: string
+          format: uuid
+        used_at:
+          type: string
+          format: date-time
+        cocreation_benefit_id:
+          type: string
+          format: uuid
+        source_problem:
+          enum:
+          - SERVICE_CREDIT_SOURCE_REVOKED
+      required:
+      - template
+      - template_sha256
+      - source
+      - issued_at
+      - expires_at
+      - hold_id
+      - binding
+      - delivery
+      - extension_used
+      - performance_rights_granted
+      - cashable
+      - transferable
+
+    RedemptionScheduleData:
+      type: object
+      additionalProperties: false
+      properties:
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        evidence_asset_id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - INTERVIEW
+          - EXPOSURE
+        person_id:
+          type: string
+          format: uuid
+        placement:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 100
+          - type: 'null'
+        review:
+          type: object
+          additionalProperties: false
+          properties:
+            by:
+              type: string
+              format: uuid
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+          - by
+          - reason
+      required:
+      - starts_at
+      - ends_at
+      - reference
+      - evidence_asset_id
+      - kind
+      - person_id
+      - placement
+
+    RedemptionRemedyData:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        previous_status:
+          type: string
+          minLength: 1
+          maxLength: 100
+        resolution:
+          type: object
+          additionalProperties: false
+          properties:
+            decision:
+              enum:
+              - REJECT
+              - EXTEND_ONCE
+              - RETURN_POINTS
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+            evidence_asset_id:
+              type: string
+              format: uuid
+            by:
+              type: string
+              format: uuid
+          required:
+          - decision
+          - reason
+          - evidence_asset_id
+          - by
+      required:
+      - reason
+      - previous_status
+
+    RedemptionDiscount:
+      type: object
+      additionalProperties: false
+      properties:
+        hold_id:
+          type: string
+          format: uuid
+        grant_id:
+          type: string
+          format: uuid
+        original_quote_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        original_total_minor:
+          type: integer
+          minimum: 0
+        original_lines:
+          type: array
+          minItems: 1
+          maxItems: 30
+          items:
+            oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                provider_party_id:
+                  type: string
+                  format: uuid
+                line_kind:
+                  type: string
+                  enum:
+                  - LICENSE
+                  - PRODUCTION
+                  - OTHER
+                unit_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+                currency:
+                  const: CNY
+                specification:
+                  $ref: '#/components/schemas/TradeSpecification'
+                product_profile:
+                  $ref: '#/components/schemas/TradeProductProfile'
+                review:
+                  anyOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      decision:
+                        type: string
+                        enum:
+                        - APPROVED
+                        - REJECTED
+                      reason:
+                        type: string
+                        minLength: 1
+                        maxLength: 2000
+                      account_id:
+                        type: string
+                        format: uuid
+                    required:
+                    - decision
+                    - reason
+                    - account_id
+                  - type: 'null'
+                line_id:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                spec_id:
+                  type: string
+                  format: uuid
+                spec_version:
+                  type: integer
+                  minimum: 1
+                  maximum: 100000
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                total_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+              required:
+              - title
+              - provider_party_id
+              - line_kind
+              - unit_minor
+              - currency
+              - specification
+              - review
+              - line_id
+              - spec_id
+              - spec_version
+              - quantity
+              - total_minor
+            - type: object
+              additionalProperties: false
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                provider_party_id:
+                  type: string
+                  format: uuid
+                line_kind:
+                  type: string
+                  enum:
+                  - LICENSE
+                  - PRODUCTION
+                  - OTHER
+                unit_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+                currency:
+                  const: CNY
+                specification:
+                  $ref: '#/components/schemas/AuditionSpecification'
+                product_profile:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    version:
+                      const: V5
+                    type:
+                      const: AUDITION
+                  required:
+                  - version
+                  - type
+                review:
+                  anyOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      decision:
+                        type: string
+                        enum:
+                        - APPROVED
+                        - REJECTED
+                      reason:
+                        type: string
+                        minLength: 1
+                        maxLength: 2000
+                      account_id:
+                        type: string
+                        format: uuid
+                    required:
+                    - decision
+                    - reason
+                    - account_id
+                  - type: 'null'
+                line_id:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                spec_id:
+                  type: string
+                  format: uuid
+                spec_version:
+                  type: integer
+                  minimum: 1
+                  maximum: 100000
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                total_minor:
+                  type: integer
+                  minimum: 1
+                  maximum: 900000000000
+              required:
+              - title
+              - provider_party_id
+              - line_kind
+              - unit_minor
+              - currency
+              - specification
+              - line_id
+              - quantity
+              - total_minor
+              - product_profile
+        discount_minor:
+          type: integer
+          minimum: 0
+        rule_snapshot:
+          $ref: '#/components/schemas/RedemptionTemplate'
+        refund_forfeit:
+          const: true
+        cashable:
+          const: false
+        coverage:
+          enum:
+          - FULL
+          - PARTIAL
+        source_kind:
+          enum:
+          - PRODUCTION_CREDIT
+          - PRODUCTION_FREE
+          - SERVICE_CREDIT
+      required:
+      - hold_id
+      - grant_id
+      - original_quote_sha256
+      - original_total_minor
+      - original_lines
+      - discount_minor
+      - rule_snapshot
+      - refund_forfeit
+      - cashable
+      - coverage
+      - source_kind
+
+    RedemptionHoldData:
+      type: object
+      additionalProperties: false
+      properties:
+        quote_id:
+          type: string
+          format: uuid
+        quote_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        grant_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+        order_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        adjusted_quote:
+          anyOf:
+          - $ref: '#/components/schemas/TradeQuoteData'
+          - type: 'null'
+        adjusted_quote_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[a-f0-9]{64}$
+          - type: 'null'
+      required:
+      - quote_id
+      - quote_sha256
+      - grant_id
+      - expires_at
+      - order_id
+      - adjusted_quote
+      - adjusted_quote_sha256
+
+    RedemptionHoldCouponRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        quote_id:
+          type: string
+          format: uuid
+      required:
+      - quote_id
+
+    RedemptionReleaseCouponRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+
+
+    RedemptionRetirePoolRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+
+
+    RedemptionPoolView:
+      type: object
+      additionalProperties: false
+      properties:
+        id: &RedemptionPoolView_001
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        current_status:
+          enum:
+          - PUBLISHED
+          - RETIRED
+        config:
+          $ref: '#/components/schemas/RedemptionLotteryConfig'
+        bindings:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              stock_id:
+                anyOf:
+                - *RedemptionPoolView_001
+                - type: 'null'
+              point_back:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+            required:
+            - key
+            - stock_id
+            - point_back
+        distribution:
+          $ref: '#/components/schemas/RedemptionLotteryDistribution'
+        starts_at: &RedemptionPoolView_002
+          type: string
+          format: date-time
+        ends_at: *RedemptionPoolView_002
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        rules_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[a-f0-9]{64}$
+          - type: 'null'
+        prize_promises:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              stock_id: *RedemptionPoolView_001
+              template:
+                $ref: '#/components/schemas/RedemptionTemplate'
+            required:
+            - key
+            - stock_id
+            - template
+        inventory_policy:
+          const: PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE
+      required:
+      - id
+      - object_version
+      - current_status
+      - config
+      - bindings
+      - distribution
+      - starts_at
+      - ends_at
+      - terms
+      - rules_sha256
+      - prize_promises
+      - inventory_policy
+
+
+    RedemptionDrawRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        pool_id:
+          type: string
+          format: uuid
+        rules_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        count:
+          enum:
+          - 1
+          - 10
+      required:
+      - pool_id
+      - rules_sha256
+      - count
+
+
+    RedemptionLotteryDistribution:
+      type: object
+      additionalProperties: false
+      properties:
+        algorithm:
+          type: string
+          minLength: 1
+          maxLength: 100
+        forced_tenth_branch_probability: &RedemptionLotteryDistribution_001
+          type: string
+          pattern: ^\d+\.\d+$
+          description: 公开计算值用十进制文字保存，避免数据库浮点误差；不是抽奖权重。
+        independent_ten_miss_probability: *RedemptionLotteryDistribution_001
+        expected_single_cost_minor: *RedemptionLotteryDistribution_001
+        expected_ten_cost_minor: *RedemptionLotteryDistribution_001
+        prizes:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              kind:
+                enum:
+                - INTERVIEW_OPEN
+                - INTERVIEW_PRIORITY
+                - PRODUCTION_CREDIT
+                - PRODUCTION_FREE
+                - EXPOSURE
+                - POINT_BACK
+                - NONE
+              weight:
+                type: integer
+                minimum: 1
+                maximum: 10000
+              estimated_cost_minor:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+              single_probability: *RedemptionLotteryDistribution_001
+              forced_tenth_probability: *RedemptionLotteryDistribution_001
+              tenth_probability: *RedemptionLotteryDistribution_001
+              expected_count_per_ten: *RedemptionLotteryDistribution_001
+              average_probability_per_ten_slot: *RedemptionLotteryDistribution_001
+            required:
+            - key
+            - kind
+            - weight
+            - estimated_cost_minor
+            - single_probability
+            - forced_tenth_probability
+            - tenth_probability
+            - expected_count_per_ten
+            - average_probability_per_ten_slot
+      required:
+      - algorithm
+      - forced_tenth_branch_probability
+      - independent_ten_miss_probability
+      - expected_single_cost_minor
+      - expected_ten_cost_minor
+      - prizes
+
+
+    RedemptionDrawData:
+      type: object
+      additionalProperties: false
+      properties:
+        pool_id: &RedemptionDrawData_001
+          type: string
+          format: uuid
+        rules_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        rule_snapshot:
+          $ref: '#/components/schemas/RedemptionPoolView'
+        at:
+          type: string
+          format: date-time
+        count:
+          enum:
+          - 1
+          - 10
+        points:
+          enum:
+          - 300
+          - 2700
+        hold_id:
+          anyOf:
+          - *RedemptionDrawData_001
+          - type: 'null'
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              ticket:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+              total:
+                type: integer
+                minimum: 1
+                maximum: 10000
+              index:
+                type: integer
+                minimum: 0
+                maximum: 9
+              kind:
+                enum:
+                - INTERVIEW_OPEN
+                - INTERVIEW_PRIORITY
+                - PRODUCTION_CREDIT
+                - PRODUCTION_FREE
+                - EXPOSURE
+                - POINT_BACK
+                - NONE
+              guaranteed_slot:
+                type: boolean
+              grant_id:
+                anyOf:
+                - *RedemptionDrawData_001
+                - type: 'null'
+              point_earning_id:
+                anyOf:
+                - *RedemptionDrawData_001
+                - type: 'null'
+              point_back:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+            required:
+            - key
+            - ticket
+            - total
+            - index
+            - kind
+            - guaranteed_slot
+            - grant_id
+            - point_earning_id
+            - point_back
+      required:
+      - pool_id
+      - rules_sha256
+      - rule_snapshot
+      - at
+      - count
+      - points
+      - hold_id
+      - results
+
+
+    RedemptionReviewPoolRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        channel:
+          enum:
+          - RULES
+          - FINANCE
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        evidence_asset_id:
+          type: string
+          format: uuid
+      required:
+      - channel
+      - decision
+      - reason
+      - evidence_asset_id
+
+
+    RedemptionClaimServiceCreditRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        benefit_id: &RedemptionClaimServiceCreditRequest_001
+          type: string
+          format: uuid
+        stock_id: *RedemptionClaimServiceCreditRequest_001
+      required:
+      - benefit_id
+      - stock_id
+
+
+    RedemptionPoolData:
+      type: object
+      additionalProperties: false
+      properties:
+        config:
+          $ref: '#/components/schemas/RedemptionLotteryConfig'
+        bindings:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              stock_id:
+                anyOf:
+                - &RedemptionPoolData_002
+                  type: string
+                  format: uuid
+                - type: 'null'
+              point_back:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+            required:
+            - key
+            - stock_id
+            - point_back
+        distribution:
+          $ref: '#/components/schemas/RedemptionLotteryDistribution'
+        starts_at: &RedemptionPoolData_001
+          type: string
+          format: date-time
+        ends_at: *RedemptionPoolData_001
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        rules_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[a-f0-9]{64}$
+          - type: 'null'
+        prize_promises:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              stock_id: *RedemptionPoolData_002
+              template:
+                $ref: '#/components/schemas/RedemptionTemplate'
+            required:
+            - key
+            - stock_id
+            - template
+        cost_limit_single_minor:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        cost_limit_ten_minor:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        evidence_asset_ids:
+          type: array
+          items: *RedemptionPoolData_002
+        reviews:
+          type: object
+          additionalProperties: false
+          properties:
+            RULES: &RedemptionPoolData_003
+              type: object
+              additionalProperties: false
+              properties:
+                by: *RedemptionPoolData_002
+                decision:
+                  enum:
+                  - APPROVE
+                  - REJECT
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                evidence_asset_id: *RedemptionPoolData_002
+              required:
+              - by
+              - decision
+              - reason
+              - evidence_asset_id
+            FINANCE: *RedemptionPoolData_003
+          required: []
+        retirement:
+          type: object
+          additionalProperties: false
+          properties:
+            by: *RedemptionPoolData_002
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+          - by
+          - reason
+      required:
+      - config
+      - bindings
+      - distribution
+      - starts_at
+      - ends_at
+      - terms
+      - rules_sha256
+      - prize_promises
+      - cost_limit_single_minor
+      - cost_limit_ten_minor
+      - evidence_asset_ids
+      - reviews
+
+
+    RedemptionCreatePoolRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        config:
+          $ref: '#/components/schemas/RedemptionLotteryConfig'
+        bindings:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              stock_id:
+                anyOf:
+                - &RedemptionCreatePoolRequest_002
+                  type: string
+                  format: uuid
+                - type: 'null'
+              point_back:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+            required:
+            - key
+            - stock_id
+            - point_back
+        starts_at: &RedemptionCreatePoolRequest_001
+          type: string
+          format: date-time
+        ends_at: *RedemptionCreatePoolRequest_001
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        cost_limit_single_minor:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        cost_limit_ten_minor:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        evidence_asset_ids:
+          type: array
+          items: *RedemptionCreatePoolRequest_002
+      required:
+      - config
+      - bindings
+      - starts_at
+      - ends_at
+      - terms
+      - cost_limit_single_minor
+      - cost_limit_ten_minor
+      - evidence_asset_ids
+
+
+    RedemptionLotteryConfig:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 100
+        single_points:
+          const: 300
+        ten_points:
+          const: 2700
+        algorithm:
+          const: NINE_THEN_CONDITIONAL_TENTH_V1
+        prizes:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+                minLength: 1
+                maxLength: 100
+              kind:
+                enum:
+                - INTERVIEW_OPEN
+                - INTERVIEW_PRIORITY
+                - PRODUCTION_CREDIT
+                - PRODUCTION_FREE
+                - EXPOSURE
+                - POINT_BACK
+                - NONE
+              weight:
+                type: integer
+                minimum: 1
+                maximum: 10000
+              estimated_cost_minor:
+                type: integer
+                minimum: 0
+                maximum: 100000000
+            required:
+            - key
+            - kind
+            - weight
+            - estimated_cost_minor
+          minItems: 1
+          maxItems: 50
+      required:
+      - version
+      - single_points
+      - ten_points
+      - algorithm
+      - prizes
