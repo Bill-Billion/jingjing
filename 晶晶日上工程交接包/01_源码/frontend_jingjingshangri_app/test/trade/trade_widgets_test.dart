@@ -19,6 +19,31 @@ Future<void> recoveryFrames(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('已确认报价无需翻过长条款即可打开原订单，不重复确认', (tester) async {
+    final quote = tradeData('QUOTE', status: 'ACCEPTED');
+    quote['data']['order_id'] = orderId; // Actual accepted-quote HTTP shape.
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith(quoteId)) return envelope(quote);
+      if (r.path.endsWith(orderId)) return envelope(tradeData('ORDER'));
+      if (r.path == '/api/v1/trade/records') {
+        return envelope({'items': [], 'next_cursor': null});
+      }
+      return adapter.defaultReply(r);
+    });
+    final session = (await tester.runAsync(() => buyerSession(adapter)))!;
+    await nav.openApp(tester, session,
+        route: '/trade/record?recordId=$quoteId');
+    final action = find.text('查看已形成订单');
+    expect(action.hitTestable(), findsOneWidget);
+    expect(find.text('确认报价形成订单'), findsNothing);
+    await tester.tap(action);
+    await nav.frames(tester);
+    expect(find.text('订单详情'), findsOneWidget);
+    expect(
+        adapter.requests.where((r) => r.path.endsWith('/acceptance')), isEmpty);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('报价确认留在可见安全区，规格折叠且发送原hash形成订单', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {

@@ -7,7 +7,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// 正式签名：读取 android/key.properties（已被 .gitignore 忽略）；缺失时回退 debug 签名，保证他人/CI 可构建
+// 正式包只使用正式证书；无证书时输出未签名包，绝不回退调试签名。
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 val hasReleaseKeystore = keystorePropertiesFile.exists()
@@ -48,11 +48,11 @@ android {
 
     buildTypes {
         release {
-            // 有正式证书用正式签名，否则回退 debug（开发/CI 环境）
+            // 本地模拟器使用 debug；release 无正式证书时保持未签名。
             signingConfig = if (hasReleaseKeystore) {
                 signingConfigs.getByName("release")
             } else {
-                signingConfigs.getByName("debug")
+                null
             }
         }
     }

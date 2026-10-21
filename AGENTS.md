@@ -1,3 +1,5 @@
+当前安卓模拟测试目录为 `worktrees/android-test`，分支 `core/v5-android-functional-test`，从integration/5fba043开始。先读docs/status/CORE_CURRENT.md及docs/testing/ANDROID_LOCAL_TEST_20261021.md；用户已授权本侧配置模拟器、测试、修复和记录，随后双方人工测试。后续V5页面缺口不得用旧页面或接口测试冒充验收。以下旧入口保留历史。
+
 当前集中测试目录为 `worktrees/joint-test`，分支 `core/v5-joint-functional-test`。2026-10-21用户授权本侧拉取前端、功能测试、修复、记录及合并；下一阶段由双方人工测试。本轮可经本侧实际验证后合入integration，不冒称队友审阅；不推main、不部署、不启用收费服务。
 
 # 项目协作指令

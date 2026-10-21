@@ -1,3 +1,9 @@
+# 本轮从安卓模拟测试开始
+
+当前目录worktrees/android-test、分支core/v5-android-functional-test。[本轮结果及人工操作说明](testing/ANDROID_LOCAL_TEST_20261021.md)，[当前状态和分工](status/CORE_CURRENT.md)。用户已授权本侧配置、测试、修复并记录，随后双方人工测试。旧阶段的合入记录如下，不代表本批已上传。
+
+---
+
 > 合并后补记：已核实PR28合入integration/5fba043。下一阶段双方从共同分支开始人工测试。该核验补记本地保存，远端实际交付状态同时见PR28说明。
 
 > 本轮集中交付：[PR28](https://github.com/Bill-Billion/jingjing/pull/28)。本文件记录随代码上传时的验证结果；实际合并状态以该申请及远端integration为准。申请合入后双方从integration继续，不再拼分支。人工测试与正式上线仍未完成。
