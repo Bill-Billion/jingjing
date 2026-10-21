@@ -1,5 +1,6 @@
 // Isolated real API/MySQL + Vue checks. External transports remain synthetic.
 import assert from 'node:assert/strict';
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
@@ -20,7 +21,7 @@ const button=(p,name)=>p.getByRole('button',{name,exact:true});
 function response(p,method,path){const wait=p.waitForResponse(r=>r.request().method()===method&&new URL(r.url()).pathname==='/api/v1'+path);wait.catch(()=>{});return wait;}
 async function value(reply,status=200){assert.equal(reply.status(),status);const body=await reply.json();return status===200?body.data:body.error;}
 async function check(name,fn){console.log('CHECK '+name);try{await fn();results.push({name,status:'PASS'});console.log('PASS '+name);}catch(e){results.push({name,status:'FAIL',error:redact(e.message)});throw e;}}
-async function go(p,path){active=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();await p.getByRole('heading',{level:1}).waitFor();await p.getByText(/^正在读取身份与(?:交易|制作)记录…$/).waitFor({state:'hidden'});}
+async function go(p,path){active=p;await p.goto(base+path);await ensureWorkspaceNavigation(p);await p.getByRole('heading',{level:1}).waitFor();await p.getByText(/^正在读取身份与(?:交易|制作)记录…$/).waitFor({state:'hidden'});}
 async function shot(p,name){await p.screenshot({path:resolve(out,name+'.png'),fullPage:true});}
 async function login(name){const person=state.accounts[name],context=await browser.newContext({viewport:{width:1440,height:1000},locale:'zh-CN'}),p=active=await context.newPage();p.setDefaultTimeout(15000);
  p.on('pageerror',e=>errors.push(redact(e.message)));p.on('request',r=>{const path=new URL(r.url()).pathname;if(r.method()==='POST'&&path.startsWith('/api/v1/trade/'))writes.push({actor:name,path,key:r.headers()['idempotency-key'],version:r.headers()['if-match']||null,body:r.postData()});});

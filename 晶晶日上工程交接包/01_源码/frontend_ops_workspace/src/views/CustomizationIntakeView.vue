@@ -48,7 +48,7 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
 </script>
 
 <template>
-  <div class="supply-workspace operations-workspace customization-workspace" data-design="V5-R02-story-supplement-quote">
+  <div class="supply-workspace operations-workspace customization-workspace editorial-workspace" data-design="V5-R02-story-supplement-quote">
     <header class="supply-header">
       <RouterLink to="/workspace" class="supply-brand">晶晶日上</RouterLink><span>运营与合作方工作台</span>
       <div class="account-actions"><span class="account-name">{{ session.account?.display_name || '当前账号' }}</span><button @click="session.logout().then(() => router.push('/login'))">退出</button></div>

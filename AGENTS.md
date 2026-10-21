@@ -1,4 +1,7 @@
+当前本侧工作为合入PR30新版视觉并重测；目录worktrees/android-test、分支core/v5-android-functional-test。先读docs/status/CORE_CURRENT.md和docs/testing/EDITORIAL_MERGE_20261021.md。以下双方旧入口保留来源；视觉以队友2026-10-21纠正的先锋电影刊物为准。
+
 当前安卓模拟测试目录为 `worktrees/android-test`，分支 `core/v5-android-functional-test`，从integration/5fba043开始。先读docs/status/CORE_CURRENT.md及docs/testing/ANDROID_LOCAL_TEST_20261021.md；用户已授权本侧配置模拟器、测试、修复和记录，随后双方人工测试。后续V5页面缺口不得用旧页面或接口测试冒充验收。以下旧入口保留历史。
+当前前端工作为 `ux/v5-r01-r02-editorial`，从integration/5fba043起步。2026-10-21用户明确要求先按“先锋电影刊物”原设计修正前两轮页面，保留业务与接口，逐页截图、检查、远端交付后再第三轮。当前状态以本流EXPERIENCE_CURRENT和任务记录为准；下面Core集中测试目录是历史交接，不是此工作树。
 
 当前集中测试目录为 `worktrees/joint-test`，分支 `core/v5-joint-functional-test`。2026-10-21用户授权本侧拉取前端、功能测试、修复、记录及合并；下一阶段由双方人工测试。本轮可经本侧实际验证后合入integration，不冒称队友审阅；不推main、不部署、不启用收费服务。
 
@@ -31,11 +34,11 @@
 - 每次新增、更换或删除入口，检查所有受影响入口及返回路径；内部有效链接不能404。越权或不存在的业务记录仍按接口约定拒绝，不能为隐藏错误而放松权限。
 - 当前路线和具体验收方式见[导航与新版页面验收](docs/ux/navigation-acceptance.md)。
 
-## 页面视觉依据（2026-10-17按V5更新，保留原图册组件）
+## 页面视觉依据（2026-10-21按用户纠正更新）
 
 - 当前业务与信息结构优先依据已确认V5、D1与[已保存的Figma画面](docs/reviews/v5-d1-intake/figma-evidence/README.md)。历史图册 `acd5f99 / design/full-ui-20260929` 继续提供未冲突的组件、字级与间距参考；按其manifest采用最终图片，不能恢复旧五栏或覆盖V5流程。
 - 本轮live Figma MCP因无编辑权限拒绝访问，未通过其他通道绕过该拒绝。按已存画面和现有组件实施；不得声称本轮验证了live Figma、原型连线或逐像素一致。已有存证是2026-10-15的只读画布分区截图，不是本轮新获取。
-- App保留暖白、铜橙和内容型布局，网页保留浅色深绿、克制工作台布局。生成的图片必须匹配对应原图用途与风格；不采用偏离原图的纸雕、额外营销横幅或虚构作品/人物资料。
+- 前两轮App按“先锋电影刊物”原设计使用纸灰、墨黑、朱红、宋体标题、细线和方形控件。旧暖白铜橙组件不能覆盖新原稿；网页受影响工作区继承同一语言，缺PC原稿处明确为适配。不得新增虚构作品、人物或装饰营销横幅。
 - 每个页面记录图册映射，实际检查相关视口、主菜单与返回路径，保存真实界面证据。未开发业务不能用图册示例冒充已实现。具体尺寸与验收要求见[原图册实现标准](docs/ux/gallery-implementation-standard.md)。
 
 ## 分工与协作

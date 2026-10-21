@@ -21,11 +21,24 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
             child: Scaffold(
                 bottomNavigationBar: footer == null
                     ? null
-                    : SafeArea(
-                        top: false,
-                        child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                            child: footer)),
+                    : DecoratedBox(
+                        decoration: const BoxDecoration(
+                            color: AccountTheme.canvas,
+                            border: Border(
+                                top: BorderSide(color: AccountTheme.border))),
+                        child: SafeArea(
+                            top: false,
+                            child: Center(
+                                heightFactor: 1,
+                                child: ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 560),
+                                    child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            18, 10, 18, 12),
+                                        child: SizedBox(
+                                            width: double.infinity,
+                                            child: footer)))))),
                 appBar: AppBar(
                     title: Text(title),
                     leading: BackButton(onPressed: () {
@@ -43,14 +56,7 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
                     })),
                 body: SafeArea(
                     child: Center(
-                        child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 760),
-                            child: ListView(
-                                padding: const EdgeInsets.all(16),
-                                children: [
-                                  ...children,
-                                  const SizedBox(height: 24)
-                                ])))))));
+                        child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 560), child: ListView(padding: const EdgeInsets.fromLTRB(18, 20, 18, 0), children: [...children, const SizedBox(height: 24)])))))));
 
 class TradeGate extends StatelessWidget {
   const TradeGate(
@@ -71,7 +77,7 @@ class TradeGate extends StatelessWidget {
             key: ValueKey('${s.epoch}:${s.partyId}:$returnRoute'),
             child: builder(s))
         : tradeScaffold(context, '订单与报价', [
-            supplyCard('先确认办事身份', [
+            tradeSection('先确认办事身份', [
               supplyNote(!s.isLoggedIn
                   ? '登录后选择负责人身份，查看自己的报价、订单与付款记录。'
                   : s.tradeAccessDenied
@@ -99,45 +105,78 @@ class TradeGate extends StatelessWidget {
   }
 }
 
+Widget tradeHeading(String title, {String? eyebrow}) => Padding(
+    padding: const EdgeInsets.only(bottom: 20),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (eyebrow != null) ...[
+        Text(eyebrow,
+            style: const TextStyle(
+                fontSize: 12, color: AccountTheme.accent, height: 1.5)),
+        const SizedBox(height: 14),
+      ],
+      Text(title,
+          style: const TextStyle(
+              fontFamily: 'EditorialSerif',
+              fontSize: 32,
+              height: 1.25,
+              fontWeight: FontWeight.w700)),
+    ]));
+
+/// Paper sections follow the ruled, card-free layout of the film editorial.
+Widget tradeSection(String title, List<Widget> children) => Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    padding: const EdgeInsets.symmetric(vertical: 18),
+    decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AccountTheme.border))),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 12),
+      ...children,
+    ]));
+
 Widget tradeFact(String label, Object? value, {bool accent = false}) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
+    padding: const EdgeInsets.symmetric(vertical: 8),
     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
           flex: 2,
           child: Text(label,
-              style: const TextStyle(fontSize: 16, color: AccountTheme.muted))),
+              style: const TextStyle(fontSize: 14, color: AccountTheme.muted))),
       const SizedBox(width: 12),
       Expanded(
           flex: 3,
           child: SelectableText('${value ?? '—'}',
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   height: 1.5,
                   color: accent ? AccountTheme.accent : AccountTheme.text,
                   fontWeight: accent ? FontWeight.w600 : FontWeight.normal)))
     ]));
 Widget tradeBanner(String title, String body,
         {IconData icon = Icons.hourglass_empty}) =>
-    Card(
-        color: AccountTheme.accent.withValues(alpha: .06),
+    Container(
+        margin: const EdgeInsets.only(bottom: 18),
+        color: AccountTheme.text,
         child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Icon(icon, color: AccountTheme.accent, size: 40),
-              const SizedBox(width: 16),
+              Icon(icon, color: AccountTheme.accent, size: 20),
+              const SizedBox(width: 12),
               Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                     Text(title,
                         style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w700)),
+                            color: AccountTheme.canvas,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
                     Text(body,
                         style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             height: 1.6,
-                            color: AccountTheme.muted))
+                            color: Color(0xFFD9D5CB)))
                   ]))
             ])));
 Widget tradeStatus(TradeRecord r) =>

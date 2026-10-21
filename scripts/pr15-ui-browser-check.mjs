@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Real Vue + PR15 isolated HTTP/MySQL browser acceptance. Never use production. */
 import assert from 'node:assert/strict'
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
@@ -62,7 +63,7 @@ async function api(person, method, route, body, { party = person.personalPartyId
   return parsed.data
 }
 async function ready(page) { await page.getByText('正在读取身份与交易记录…', { exact: true }).waitFor({ state: 'hidden' }) }
-async function go(page, route) { await page.goto(base + route); await page.locator('.workspace-nav').waitFor(); if (route.startsWith('/trade/')) await ready(page) }
+async function go(page, route) { await page.goto(base + route); await ensureWorkspaceNavigation(page); if (route.startsWith('/trade/')) await ready(page) }
 const post = (page, route) => page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/trade' + route)
 async function data(response) { const parsed = await response.json(); assert(response.ok(), `UI HTTP ${response.status()} ${parsed.error?.code || ''}`); return parsed.data }
 async function shot(page, name) {
@@ -132,7 +133,7 @@ async function run() {
     const r = post(p, '/quotes/' + quote.id + '/acceptance'); await p.getByRole('button', { name: '确认报价并建立订单', exact: true }).click(); order = await data(await r)
     assert.equal(order.current_status, 'OPEN'); assert.equal(order.data.contract.signing_method, 'NOT_SIGNED')
     await p.getByRole('button', { name: '先核对原记录', exact: true }).waitFor()
-    await p.locator('.workspace-nav').getByRole('link', { name: '我的作品', exact: true }).click()
+    await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link', { name: '我的作品', exact: true }).click()
     await p.getByText('原操作结果尚未核对', { exact: false }).first().waitFor(); assert(new URL(p.url()).pathname.endsWith(quote.id))
     await p.getByRole('button', { name: '先核对原记录', exact: true }).click(); await p.waitForURL('**/trade/orders/' + order.id)
     assert.equal(seen.length, 1); assert.deepEqual(JSON.parse(seen[0].body), { quote_sha256: quote.content_sha256 }); p.off('request', observe)
@@ -210,7 +211,7 @@ async function run() {
   await check('共用菜单全部入口稳定，无旧壳；窄屏与登录返回进入新路由', async () => {
     const p = buyer.page; await go(p, '/trade/orders')
     const links = await p.locator('.workspace-nav a').evaluateAll(nodes => nodes.map(n => ({ label: n.textContent.trim(), href: n.getAttribute('href') })))
-    for (const link of links) { await p.locator('.workspace-nav').getByRole('link', { name: link.label, exact: true }).click(); await p.waitForURL('**' + link.href); assert.equal(await p.locator('.workspace-nav a').count(), links.length); assert.equal(await p.locator('.workspace-nav a[aria-current="page"]').count(), 1); assert.equal(await p.getByRole('heading', { name: '页面不存在', exact: true }).count(), 0) }
+    for (const link of links) { await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link', { name: link.label, exact: true }).click(); await p.waitForURL('**' + link.href); assert.equal(await p.locator('.workspace-nav a').count(), links.length); assert.equal(await p.locator('.workspace-nav a[aria-current="page"]').count(), 1); assert.equal(await p.getByRole('heading', { name: '页面不存在', exact: true }).count(), 0) }
     await p.setViewportSize({ width: 390, height: 844 }); await go(p, '/trade/orders/' + order.id); await shot(p, 'order-mobile')
     assert(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
     await go(p, '/trade/payments/' + payment.id); await shot(p, 'payment-mobile')
