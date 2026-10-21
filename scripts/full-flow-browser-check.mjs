@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
@@ -31,7 +32,7 @@ try {
     const api=j.productionId?'/production/records/'+j.productionId:'/trade/records/'+(j.orderId||j.quoteId);
     const r=response(p,'GET',api);await p.goto(web+path);const reply=await r;assert.equal(reply.status(),200);
     const business=(await reply.json()).data;assert.equal(business.id,j.productionId||j.orderId||j.quoteId);
-    await p.getByRole('heading',{level:1}).waitFor();await p.locator('.workspace-nav').waitFor();
+    await p.getByRole('heading',{level:1}).waitFor();await ensureWorkspaceNavigation(p);
     await p.getByText(/^正在读取身份与(?:交易|制作)记录…$/).waitFor({state:'hidden'});
     await p.locator('.supply-card').first().waitFor();
     await p.getByText(business.id,{exact:true}).first().waitFor({state:'attached'});

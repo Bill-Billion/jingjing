@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Normal browser UI → isolated real HTTP/MySQL. Business writes never bypass UI. */
 import assert from 'node:assert/strict'
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir,stat} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {createHash} from 'node:crypto'
@@ -76,7 +77,7 @@ async function login(name,{second=false}={}){
  const a={...person,page:p,context,token};if(!second)actors[name]=a;return a
 }
 async function ready(p=page){await p.getByText('正在读取实际记录…',{exact:true}).waitFor({state:'hidden'});await p.getByTestId('ops-refresh').waitFor({state:'visible'});await p.waitForTimeout(120)}
-async function go(p,path){page=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path==='/operations/customization'||path.startsWith('/operations/customization/'))await p.getByTestId('customization-refresh').waitFor();else if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
+async function go(p,path){page=p;await p.goto(base+path);await ensureWorkspaceNavigation(p);if(path==='/operations/customization'||path.startsWith('/operations/customization/'))await p.getByTestId('customization-refresh').waitFor();else if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
 async function shot(p,name,gallery){if(new URL(p.url()).pathname.startsWith('/operations/'))await ready(p);const actual=await p.locator('[data-gallery]').first().getAttribute('data-gallery');if(gallery)assert.equal(actual,gallery);const file='screenshots/pr20-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,gallery:gallery||actual,viewport:p.viewportSize()});await save()}
 const fill=(p,key,v)=>p.getByTestId(key).fill(String(v))
 async function notificationPage(p,cursor,action){
@@ -138,7 +139,7 @@ async function action(a,c,action,name,{unknown=false}={}){
  rows=await comments(a,c.domain,c.record_id,{operator});assert.equal(rows.find(x=>x.id===c.id).body,null)
  assert.equal(await p.getByText(current.body,{exact:true}).count(),0);await shot(p,name+'-recovered-desktop',operator?'WEB-32-02-v2':'WEB-32-02-v2');return out
 }
-async function blockedNavigation(p){const before=new URL(p.url()).pathname;await p.locator('.workspace-nav').getByRole('link',{name:'合同与规则',exact:true}).click();assert.equal(new URL(p.url()).pathname,before);await p.getByText('原请求结果尚未核实，请先核对并恢复原操作后再离开。',{exact:true}).waitFor()}
+async function blockedNavigation(p){const before=new URL(p.url()).pathname;await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link',{name:'合同与规则',exact:true}).click();assert.equal(new URL(p.url()).pathname,before);await p.getByText('原请求结果尚未核实，请先核对并恢复原操作后再离开。',{exact:true}).waitFor()}
 const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v
 function reportValid(r){
  assert.equal(r.current_status,'SUCCEEDED');assert(r.result);assert.equal(sha(JSON.stringify(canonical(r.result))),r.content_sha256)

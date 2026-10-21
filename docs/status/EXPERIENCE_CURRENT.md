@@ -6,7 +6,7 @@
 
 本机App289、网页210、第一轮实际浏览器13、第二轮同一故事32组均通过；最终36张只读截图及6张流程状态已逐页检查，额外18组网页响应式检查通过。原稿对照和修正前后在[视觉验收](../testing/evidence/v5-editorial/index.html)，技术结果及边界见[说明](../testing/evidence/v5-editorial/README.md)。
 
-当前本机已验证，正在集中上传；远端PR/检查和真实Core审阅仍待记录。用户要求此批远端交付后继续第三轮人物与机构受托页面；尚未开始第三轮实施。无合并、部署或正式外部服务启用。
+已上传[PR30](https://github.com/Bill-Billion/jingjing/pull/30)，已请求chengcongcong222审阅，尚无实际审阅结论。首次远端App通过；网页旧脚本未展开窄屏菜单而失败，现已按真实用户点击适配并完成7组、105项本机浏览器回归；正在推送重验。[故障与修正证据](../testing/evidence/v5-editorial/CI_NAVIGATION_FIX.json)。用户要求此批远端交付后继续第三轮人物与机构受托页面；尚未开始第三轮实施。无合并、部署或正式外部服务启用。
 
 ---
 
