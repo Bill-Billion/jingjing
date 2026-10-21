@@ -22,7 +22,7 @@ async function press(page,target){for(let n=0;n<50;n++){const b=await target.cou
 try{
  if(scope==='web'){
   if(process.env.ARTISTS_PREFLIGHT_RESULTS){const prior=JSON.parse(await readFile(process.env.ARTISTS_PREFLIGHT_RESULTS,'utf8'));assert.equal(prior.result,'PASS');serviceId=prior.results.find(r=>r.service_id)?.service_id}
-  else {const response=await fetch(f.base_url+'/artists/people/'+f.person_id+'/services',{method:'POST',headers:{Authorization:'Bearer '+f.accounts.artist.bearer_token,'X-Acting-Party':f.accounts.artist.party_id,'Idempotency-Key':randomUUID(),'Content-Type':'application/json'},body:JSON.stringify({avatar_id:f.avatar_id,spec_id:f.specs.AVATAR_CREATION,renewal_reminder:false})});assert(response.ok(),'Fresh synthetic fixture must allow one creation request');serviceId=(await response.json()).data.id}
+  else {const response=await fetch(f.base_url+'/artists/people/'+f.person_id+'/services',{method:'POST',headers:{Authorization:'Bearer '+f.accounts.artist.bearer_token,'X-Acting-Party':f.accounts.artist.party_id,'Idempotency-Key':randomUUID(),'Content-Type':'application/json'},body:JSON.stringify({avatar_id:f.avatar_id,spec_id:f.specs.AVATAR_CREATION,renewal_reminder:false})});assert(response.ok,'Fresh synthetic fixture must allow one creation request');serviceId=(await response.json()).data.id}
   assert(serviceId)
   const p=await webPage('merchant','/trade/quotes/new?artistService='+serviceId),writes=[],privateSourceReads=[]
   p.on('request',r=>{if(r.method()==='GET'&&r.url().includes('/artists/people/'))privateSourceReads.push(new URL(r.url()).pathname)})

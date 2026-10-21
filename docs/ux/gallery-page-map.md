@@ -1,5 +1,21 @@
 # 页面设计来源与实际对应关系
 
+## 2026-10-21：第三轮延续原稿，接真实人物与机构受托
+
+当前基准是PR29合入后的integration/b8775fe，已含前两轮刊物视觉和Core安卓/订单修复。下方旧暖白铜橙记录为历史。第三轮实际逐页图和说明见[第三轮验收](../testing/evidence/v5-r03-frontend/README.md)。
+
+|本轮页面|App实际入口|原稿依据与适配|
+|---|---|---|
+|真人列表、档案与数字人|`/my-humans`、`/artists/person?personId=…`|27-avatar-top：34我的艺人、36数字人详情；真实资料为空时不填示例肖像|
+|本人明确同意、私有材料、造型/声音版本|`/artists/form?mode=CONSENT/VARIANT&personId=…`、`/artists/records`及`/artists/record`|27-avatar-top：35、37；按实际接口逐项脸声、用途、期限和材料，不把私人保存当公开授权|
+|本人机构委托、机构获托名单|`/artists/form?mode=DELEGATION&personId=…`与档案记录|28-avatar-extra：42我的MCN合作；仅本人选择已接受关系和允许代办范围|
+|免费认证、补件、异议及L2审核服务|`/artists/form?mode=HALO/SUPPLEMENT/APPEAL/SERVICE&personId=…`|30-cert-growth、31-cert-extra：43、44；L2按真人办理，L3不可购，付费不等于通过|
+|创建服务、托管和原订单|`/artists/service`、`/artists/form?mode=SERVICE&personId=…`、`/trade/record`|27的37、28的38及原54/56交易语言；具体服务取已审商品，费用和原服务冻结在同一订单|
+|公开艺人目录及受控预览|`/artists/catalog`，旧`/discover`等兼容进入|公开范围继承41设置；目录布局是适配，撤权后旧预览再次核权|
+|PC本人/获托/运营页面|`/artists/people`、`/artists/people/:person/records/:record`、`/artists/reviews/:kind`|采用同一纸灰墨黑朱红宋体语言；没有PC原稿逐像素对应声明。共用菜单新增2项，共43项|
+
+原稿中的照片、姓名和价格是示例；本轮截图只用隔离合成身份、真实接口商品和1像素权限占位图。实名、儿童实际处理、长期模型、自动扣款的关闭状态如实保留。
+
 ## 2026-10-21：前两轮按先锋电影刊物纠正视觉
 
 用户已明确纠正此前沿用旧暖白铜橙组件的选择。本轮以[原Figma存证](../reviews/v5-d1-intake/figma-evidence/README.md)为视觉基准，纸灰、墨黑、朱红、宋体标题、细线分隔和方形控件；已接流程及接口保留。下方2026-10-17/20内容保留为历史说明，不能再用它覆盖此基准。实际逐页对照、适配说明及截图见[视觉验收](../testing/evidence/v5-editorial/README.md)。
