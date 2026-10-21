@@ -1,3 +1,9 @@
+# 前端已交付视觉修正，继续第三轮人物与机构受托
+
+前两轮视觉修正[PR30](https://github.com/Bill-Billion/jingjing/pull/30)/273d0d0已通过远端8项检查，Core审阅已请求、未返回。42张逐页截图和原稿对照已交付；当前ux/v5-r03-artists-frontend明确继承该尚未合入的视觉代码，开始接新artists接口及服务订单，尚未完成第三轮验收。实际状态见[Experience](EXPERIENCE_CURRENT.md)。
+
+---
+
 ## 2026-10-21：按原设计纠正前两轮视觉
 
 Bill-Billion在ux/v5-r01-r02-editorial从integration/5fba043接手用户明确纠正。原稿改为真实施工基准，移除沿用铜橙圆角组件的旧规定；业务与接口保留。本机App289/网页210及13+32真实页面检查通过，36张最终只读截图+6张流程状态已核对，网页复核页窄屏溢出已修。已上传[PR30](https://github.com/Bill-Billion/jingjing/pull/30)并请求Core审阅；首轮网页检查暴露旧脚本未展开菜单，已适配并本机7组回归通过，待远端重验。第三轮需在此批远端检查通过后接入。当前状态及截图见[Experience](EXPERIENCE_CURRENT.md)和[视觉验收](../testing/evidence/v5-editorial/README.md)。

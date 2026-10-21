@@ -1,3 +1,5 @@
+当前前端第三轮为 `ux/v5-r03-artists-frontend`，显式依赖已远端验证的视觉修正PR30/273d0d0，尚未合入integration。本人/受托机构/运营必须分别接新的artists接口，保持先锋电影刊物视觉；不得复用旧mock数字人入口。当前任务记录为docs/tasks/records/UX-v5-r03-artists-frontend-20261021.md。
+
 当前前端工作为 `ux/v5-r01-r02-editorial`，从integration/5fba043起步。2026-10-21用户明确要求先按“先锋电影刊物”原设计修正前两轮页面，保留业务与接口，逐页截图、检查、远端交付后再第三轮。当前状态以本流EXPERIENCE_CURRENT和任务记录为准；下面Core集中测试目录是历史交接，不是此工作树。
 
 当前集中测试目录为 `worktrees/joint-test`，分支 `core/v5-joint-functional-test`。2026-10-21用户授权本侧拉取前端、功能测试、修复、记录及合并；下一阶段由双方人工测试。本轮可经本侧实际验证后合入integration，不冒称队友审阅；不推main、不部署、不启用收费服务。

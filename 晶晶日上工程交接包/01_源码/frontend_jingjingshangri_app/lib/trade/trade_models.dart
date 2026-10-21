@@ -85,6 +85,19 @@ const tradeContractLabels = {
   'sha256': '保存指纹',
   'avatar_id': '数字人编号',
   'consent_id': '本人同意编号',
+  'artist_service': '原数字人服务请求',
+  'service_id': '服务请求编号',
+  'person_id': '真人档案编号',
+  'service_sha256': '原服务内容指纹',
+  'service': '数字人服务约定',
+  'unit': '计费单位',
+  'rule_version': '原服务规则版本',
+  'source_ref': '规则来源',
+  'retry_limit': '约定重试次数',
+  'hosting_months': '托管月数',
+  'halo_level': '认证等级',
+  'failure_policy': '未交付退款约定',
+  'price_minor': '服务金额（人民币分）',
   'customization': '原故事正式版本',
   'request_id': '故事需求编号',
   'submission_id': '正式提交编号',
@@ -200,13 +213,50 @@ void _allocations(dynamic v) {
   }
 }
 
+const artistServiceNames = {
+  'AVATAR_CREATION': '首次创建数字人档案',
+  'AVATAR_HOSTING': '数字人托管',
+  'HALO_REVIEW': '认证资料审核',
+};
+void validateTradeSpecification(dynamic value) => _spec(value);
 void _spec(dynamic value) {
   final d = tradeMap(value);
   tradeRequire(_text(d['version'], 128) &&
       _text(d['service_tier'], 100) &&
       _text(d['terms']));
-  for (final k in ['sample_seconds', 'final_seconds', 'revision_limit']) {
-    tradeRequire(d[k] is int && d[k] >= 0 && d[k] <= 100000);
+  if (d.containsKey('service')) {
+    final v = tradeMap(d['service']);
+    tradeRequire(d.length == 5 &&
+        v.length == 8 &&
+        artistServiceNames.containsKey(v['kind']) &&
+        _text(v['rule_version'], 128) &&
+        _text(v['source_ref'], 128) &&
+        v['retry_limit'] is int &&
+        v['retry_limit'] >= 0 &&
+        v['retry_limit'] <= 100 &&
+        v['failure_policy'] == 'REFUND_UNDELIVERED');
+    switch (v['kind']) {
+      case 'AVATAR_CREATION':
+        tradeRequire(v['unit'] == 'PERSON_FIRST' &&
+            v['hosting_months'] == null &&
+            v['halo_level'] == null);
+      case 'AVATAR_HOSTING':
+        tradeRequire(v['unit'] == 'AVATAR_MONTH' &&
+            v['hosting_months'] is int &&
+            v['hosting_months'] >= 1 &&
+            v['hosting_months'] <= 120 &&
+            v['halo_level'] == null &&
+            v['retry_limit'] == 0);
+      case 'HALO_REVIEW':
+        tradeRequire(v['unit'] == 'HALO_APPLICATION' &&
+            [2, 3].contains(v['halo_level']) &&
+            v['hosting_months'] == null &&
+            v['retry_limit'] == 0);
+    }
+  } else {
+    for (final k in ['sample_seconds', 'final_seconds', 'revision_limit']) {
+      tradeRequire(d[k] is int && d[k] >= 0 && d[k] <= 100000);
+    }
   }
   tradeRequire(d['deliverables'] is List &&
       d['deliverables'].isNotEmpty &&
@@ -272,6 +322,12 @@ void _quote(Map<String, dynamic> d) {
         l['total_minor'] == l['unit_minor'] * l['quantity'] &&
         l['currency'] == 'CNY');
     _spec(l['specification']);
+    if (l['specification']['service'] != null) {
+      tradeRequire(l['product_profile'] is Map &&
+          l['product_profile']['version'] == 'V5' &&
+          l['product_profile']['type'] ==
+              l['specification']['service']['kind']);
+    }
     total += l['total_minor'] as int;
   }
   tradeRequire(total == d['total_minor'] &&
@@ -286,6 +342,45 @@ void _quote(Map<String, dynamic> d) {
       allocated.update(a['line_id'], (v) => v + (a['amount_minor'] as int),
           ifAbsent: () => a['amount_minor'] as int);
     }
+  }
+  if (d['artist_service'] != null) {
+    final a = tradeMap(d['artist_service']);
+    tradeRequire(a.length == 8 && (a['kind'] == 'HALO_REVIEW' ? a['avatar_id'] == null : isContractId('${a['avatar_id']}')) &&
+        ['service_id', 'person_id', 'spec_id']
+            .every((k) => isContractId('${a[k]}')) &&
+        RegExp(r'^[a-f0-9]{64}$').hasMatch('${a['service_sha256']}') &&
+        artistServiceNames.containsKey(a['kind']) &&
+        tradeMinor(a['price_minor']) &&
+        d['customization'] == null &&
+        d['customization_finance'] == null &&
+        d['commercial'] == null &&
+        d['license_reservation_id'] == null &&
+        d['transaction_model'] == 'PLATFORM_PRINCIPAL' &&
+        lines.length == 1 &&
+        installments.length == 1 &&
+        installments.single['trigger'] == 'ORDER_ACCEPTED');
+    _spec(a['specification']);
+    final l = lines.single,
+        ls = tradeMap(l['specification']),
+        frozen = tradeMap(a['specification']);
+    final actualDeliverables = ls['deliverables'] as List,
+        frozenDeliverables = frozen['deliverables'] as List;
+    tradeRequire(l['spec_id'] == a['spec_id'] &&
+        l['quantity'] == 1 &&
+        l['total_minor'] == a['price_minor'] &&
+        l['product_profile']?['type'] == a['kind'] &&
+        frozen['service']?['kind'] == a['kind'] &&
+        ['version', 'service_tier', 'terms'].every((k) => ls[k] == frozen[k]) &&
+        actualDeliverables.length == frozenDeliverables.length &&
+        List.generate(actualDeliverables.length,
+                (i) => actualDeliverables[i] == frozenDeliverables[i])
+            .every((equal) => equal) &&
+        ls['service'] is Map &&
+        (frozen['service'] as Map)
+            .keys
+            .every((k) => ls['service'][k] == frozen['service'][k]));
+  } else {
+    tradeRequire(lines.every((l) => l['specification']['service'] == null));
   }
   tradeRequire(
       installments.map((i) => i['key']).toSet().length == installments.length &&
@@ -423,6 +518,12 @@ class TradeRecord {
         }
       case 'SPEC':
         _spec(d['specification']);
+        if (d['specification']['service'] != null) {
+          tradeRequire(d['product_profile'] is Map &&
+              d['product_profile']['version'] == 'V5' &&
+              d['product_profile']['type'] ==
+                  d['specification']['service']['kind']);
+        }
         tradeRequire(tradeMinor(d['unit_minor']) && d['currency'] == 'CNY');
     }
     return TradeRecord._(r);

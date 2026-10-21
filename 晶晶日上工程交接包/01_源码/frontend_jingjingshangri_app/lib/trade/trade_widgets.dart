@@ -209,3 +209,33 @@ Future<bool> tradeConfirm(
                 ])).then((v) => v == true);
 String tradeDate(dynamic v) =>
     DateTime.tryParse('$v')?.toLocal().toString().split('.').first ?? '$v';
+
+List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
+  final service = spec['service'];
+  if (service is! Map) {
+    return [
+      tradeFact('样片 / 成片',
+          '${spec['sample_seconds']} 秒 / ${spec['final_seconds']} 秒'),
+      tradeFact('修改次数', spec['revision_limit'])
+    ];
+  }
+  return [
+    tradeFact('服务对象', artistServiceNames[service['kind']]),
+    if (service['hosting_months'] != null)
+      tradeFact('托管月数', '${service['hosting_months']} 个月；首次核实收款后起算，续期接已有期限，以服务记录为准'),
+    if (service['halo_level'] != null)
+      tradeFact('认证审核', 'L${service['halo_level']}；付费不等于审核通过'),
+    if (service['kind'] == 'AVATAR_CREATION')
+      tradeFact('约定重试', '${service['retry_limit']} 次；档案交付不代表长期模型训练成功'),
+    tradeFact('未交付处理', '按原订单办理未交付退款，待退款与到账分别核对'),
+    tradeFact(
+        '服务规则 / 来源', '${service['rule_version']} / ${service['source_ref']}'),
+  ];
+}
+
+List<Widget> tradeArtistFacts(Map<String, dynamic> source) => [
+  tradeFact('服务', artistServiceNames[source['kind']]),
+  tradeFact('真人档案', source['person_id']),
+  tradeFact('具体数字人', source['avatar_id'] ?? '认证申请不绑定数字人'),
+  tradeFact('原服务请求', source['service_id']),
+];

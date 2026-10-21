@@ -205,7 +205,7 @@ class _AppShellState extends State<AppShell> {
         _heading('发现与合作'),
         _entry(
           '艺人与视频',
-          '公开艺人和现成视频目录正在接入。',
+          '查看已审核的公开艺人；现成视频目录仍待接入。',
           Icons.people_outline,
           () => _open('/discover'),
         ),
