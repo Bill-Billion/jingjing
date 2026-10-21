@@ -1,0 +1,99 @@
+{
+  "synthetic_only": true,
+  "real_backend": true,
+  "native_device_verified": false,
+  "request_id": "eef44fc0-5cf9-4e6b-8a2a-1f5d53df637f",
+  "submission_sha256": "b01685a44fd8c697ec74fbdb069374ceb474403cfb26fca7ac81a367299b34d8",
+  "checks": [
+    "广场显示五个V5主入口",
+    "必填私有附件未开放时正式提交禁用",
+    "切换品类使用真实模板的不同问题",
+    "必填缺失显示字段提示，未发提交请求",
+    "App真实保存不完整业务草稿",
+    "从我的找回刚保存的草稿",
+    "重新打开草稿恢复已保存文字",
+    "清空后保存真实替换原答案，不恢复旧值",
+    "实际页面填写的完整故事与选项已保存",
+    "正式提交真实写入同一需求，保存原模板与完整答案",
+    "App显示平台待查看，不能继续保存或重复提交",
+    "写入携带原操作幂等键和正确版本",
+    "浏览器无未处理页面异常"
+  ],
+  "passed": 13,
+  "complete": true,
+  "failure": null,
+  "page_errors": [],
+  "screenshots": [
+    "app-square-390.png",
+    "app-required-attachment-blocked-390.png",
+    "app-restored-draft-390.png",
+    "app-story-draft-390.png",
+    "app-story-submitted-390.png"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/customization-categories",
+      "bearer_present": true,
+      "acting_party_present": false,
+      "if_match": null,
+      "key_present": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/customization-requests",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": null,
+      "key_present": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customization-requests",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": null,
+      "key_present": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customization-requests/eef44fc0-5cf9-4e6b-8a2a-1f5d53df637f",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": null,
+      "key_present": false
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/customization-requests/eef44fc0-5cf9-4e6b-8a2a-1f5d53df637f",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": "\"1\"",
+      "key_present": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/customization-requests/eef44fc0-5cf9-4e6b-8a2a-1f5d53df637f",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": "\"2\"",
+      "key_present": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/customization-requests/eef44fc0-5cf9-4e6b-8a2a-1f5d53df637f/submissions",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": "\"3\"",
+      "key_present": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/customization-requests/eef44fc0-5cf9-4e6b-8a2a-1f5d53df637f/supplement",
+      "bearer_present": true,
+      "acting_party_present": true,
+      "if_match": null,
+      "key_present": false
+    }
+  ]
+}
