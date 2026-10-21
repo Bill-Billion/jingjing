@@ -11,6 +11,13 @@ async function main(){
  async function request(method,route,role='artist',body,party=a.accounts[role].party_id,version){const res=await fetch(a.base_url+route,{method,headers:{Authorization:'Bearer '+a.accounts[role].bearer_token,...(party?{'X-Acting-Party':party}:{}),...(body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':randomUUID()}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:res.status,json:await res.json()};}
  const check=(name,condition)=>{assert.ok(condition,name);results.push(name);};
  try{
+ const relationPath='/gigs/records?kind=RELATION&limit=20',origin='http://127.0.0.1:5500';
+ const preflight=await fetch(a.base_url+relationPath,{method:'OPTIONS',headers:{Origin:origin,'Access-Control-Request-Method':'GET','Access-Control-Request-Headers':'authorization,x-acting-party'}});
+ check('App分页关系查询的真实CORS预检可通过',preflight.status===204&&preflight.headers.get('access-control-allow-origin')===origin);
+ const relations=await request('GET',relationPath);
+ check('实际双方接受的合成机构关系具有完整字段',relations.status===200&&relations.json.data.items.some(x=>x.current_status==='ACTIVE'&&x.object_version===2&&Object.keys(x.data).length===9));
+ const relationWrite=await request('POST',relationPath,'artist',{});
+ check('关系只读白名单仍拒绝写入',relationWrite.status===403&&relationWrite.json.error.code==='LOCAL_FIXTURE_ROUTE_DISABLED');
  let r=await request('GET','/artists/services','artist',undefined,null);check('外部实名未启用但合成商品可查看',r.status===200&&r.json.data.identity.current_status==='NOT_ENABLED'&&r.json.data.offers.items.length===3);
  r=await request('GET','/artists/people/'+a.person_id);check('本人可找回真人和数字人',r.status===200&&r.json.data.avatars.some(x=>x.id===a.avatar_id));
  r=await request('GET','/artists/people','agency',undefined,a.agency_party_id);check('机构看到实际获托艺人',r.status===200&&r.json.data.items.some(x=>x.id===a.person_id));

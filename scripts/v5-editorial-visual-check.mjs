@@ -144,7 +144,7 @@ try {
    await shot(page,'web-finance-result-'+width,ref)
   }
   const menu=page.locator('.workspace-nav a')
-  assert.equal(await menu.count(),41,'All 41 workspace entrances remain')
+  assert.equal(await menu.count(),43,'All 43 workspace entrances remain')
   if(width===390) {
    await page.getByRole('button',{name:'工作区导航 展开'}).click()
    assert(await menu.first().isVisible(),'Collapsed menu opens')

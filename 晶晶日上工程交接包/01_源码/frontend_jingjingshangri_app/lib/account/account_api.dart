@@ -26,6 +26,9 @@ class AccountApi {
         (jsonDecode(key) as List)[3]
             .toString()
             .startsWith('/api/v1/customization-requests') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/artists/') ||
         (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/') ||
         (jsonDecode(key) as List)[3]
             .toString()
@@ -116,6 +119,15 @@ class AccountApi {
                   .startsWith('/api/v1/operations/'))
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
+  List<Map<String, dynamic>> artistsPending({String? token, String? party}) => [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/artists/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _random = Random.secure();
 
   String _newKey() =>
@@ -134,6 +146,7 @@ class AccountApi {
   }) {
     final writing = method != 'GET';
     final supply = path.startsWith('/api/v1/customization-requests') ||
+        path.startsWith('/api/v1/artists/') ||
         path.startsWith('/api/v1/supply/') ||
         path.startsWith('/api/v1/licensing/') ||
         path.startsWith('/api/v1/trade/') ||
@@ -272,7 +285,8 @@ class AccountApi {
       final retrySeconds =
           int.tryParse(response.headers.value('retry-after') ?? '');
       throw AccountError(status, code,
-          details: safeAccountErrorDetails(error is Map ? error['details'] : null),
+          details:
+              safeAccountErrorDetails(error is Map ? error['details'] : null),
           resultId: error is Map &&
                   error['details'] is Map &&
                   error['details']['record_id'] is String
@@ -288,7 +302,8 @@ class AccountApi {
                   [
                     'IDEMPOTENCY_IN_PROGRESS',
                     'COMMIT_OUTCOME_UNKNOWN',
-                    'UPLOAD_RECONCILIATION_REQUIRED'
+                    'UPLOAD_RECONCILIATION_REQUIRED',
+                    'ASSET_UPLOAD_RECONCILIATION_REQUIRED'
                   ].contains(code)));
     } on DioException {
       throw const AccountError(0, 'NETWORK_UNKNOWN', uncertain: true);
@@ -341,7 +356,9 @@ class AccountApi {
 
 class AccountError implements Exception {
   const AccountError(this.status, this.code,
-      {this.uncertain = false, this.retryAt, this.resultId,
+      {this.uncertain = false,
+      this.retryAt,
+      this.resultId,
       this.details = const []});
   final int status;
   final String code;

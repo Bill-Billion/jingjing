@@ -367,6 +367,7 @@ class _TradeDetailState extends State<_TradeDetail> {
             r.status == 'APPROVED'
                 ? '买方确认后形成订单，付款和签署另行办理。'
                 : '仅独立审核通过且在有效期内的指定买方可以确认。'),
+      if (d['artist_service'] != null) tradeSection('对应的真人与服务', tradeArtistFacts(tradeMap(d['artist_service']))),
       if (d['customization'] != null)
         tradeSection('对应的正式故事', [
           tradeFact('需求编号', shortSupplyId(d['customization']['request_id'])),
@@ -426,9 +427,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                   tradeSection('服务规格 · ${l['title']}', [
                     tradeFact('档位 / 版本',
                         '${l['specification']['service_tier']} / ${l['specification']['version']}'),
-                    tradeFact('样片 / 成片',
-                        '${l['specification']['sample_seconds']} 秒 / ${l['specification']['final_seconds']} 秒'),
-                    tradeFact('修改次数', l['specification']['revision_limit']),
+                    ...tradeSpecificationFacts(tradeMap(l['specification'])),
                     tradeFact(
                         '交付内容',
                         (l['specification']['deliverables'] as List)
@@ -489,6 +488,7 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       tradeSection('订单 ${shortSupplyId(r.id)}',
           [tradeStatus(r), appNotice('款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')]),
+      if (r.quote['artist_service'] != null) tradeSection('对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
       if (r.quote['customization'] != null)
         appNotice('订单已生成，合同内容已保存。请核对下方实际收款记录；生成订单不代表已付款或签署。当前页面尚未开放定制付款和开工办理。'),
       if (r.quote['commercial'] != null)
@@ -683,6 +683,7 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       tradeBanner('合同内容已保存，尚未签署', '这是本订单返回的合同快照，用于留存与核对。',
           icon: Icons.description_outlined),
+      if (r.quote['artist_service'] != null) tradeSection('对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
       tradeSection('合同信息', [
         tradeFact('合同编号', c['id']),
         tradeFact('买方', r.buyer),
@@ -710,9 +711,7 @@ class _TradeDetailState extends State<_TradeDetail> {
           tradeFact('服务', line['title']),
           tradeFact('档位 / 版本',
               '${line['specification']['service_tier']} / ${line['specification']['version']}'),
-          tradeFact('样片 / 成片',
-              '${line['specification']['sample_seconds']} 秒 / ${line['specification']['final_seconds']} 秒'),
-          tradeFact('修改次数', line['specification']['revision_limit']),
+          ...tradeSpecificationFacts(tradeMap(line['specification'])),
           tradeFact('交付内容',
               (line['specification']['deliverables'] as List).join('、')),
           const Divider(),
@@ -938,6 +937,8 @@ class _TradeDetailState extends State<_TradeDetail> {
                                 () => api.accept(r),
                                 facts: [
                                   tradeFact('总价', tradeMoney(r.amount)),
+                                  if (r.data['artist_service'] != null)
+                                    ...tradeArtistFacts(tradeMap(r.data['artist_service'])),
                                   const Text('确认后保存合同内容，尚未签署；付款和许可另行办理。')
                                 ]),
                     child: const Text('确认报价形成订单'))

@@ -265,7 +265,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('旧命名入口转到规划中的新五入口或明确未开放页', (tester) async {
+  testWidgets('旧命名入口转到五个主栏目或已有业务身份门', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     await tester
@@ -318,9 +318,7 @@ void main() {
       nav.pushNamed(route);
       await frames(tester);
       expect(
-          find.text(['/my-works', '/wallet', '/chat'].contains(route)
-              ? '先确认办事身份'
-              : '暂未开放'),
+          find.text(route == '/my-humans' ? '从你的本人档案开始' : '先确认办事身份'),
           findsOneWidget,
           reason: route);
       expect(find.text('页面不存在'), findsNothing, reason: route);

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
@@ -24,6 +25,88 @@ void main() {
     expect(tradeParseYuan('1e3'), null);
     expect(tradeParseYuan('9000000000.01'), null);
     expect(tradeMinor(1.0), false);
+  });
+  test('数字人创建托管认证独立规格，冻结原服务与价格且不填影视秒数', () {
+    Map<String, dynamic> serviceQuote(String kind) {
+      final q = jsonDecode(jsonEncode(tradeData('QUOTE'))) as Map<String, dynamic>, d = q['data'] as Map<String, dynamic>;
+      final amount = kind == 'AVATAR_CREATION'
+          ? 6000
+          : kind == 'AVATAR_HOSTING'
+              ? 8700
+              : 1000;
+      final spec = <String, dynamic>{
+        'version': '已审1',
+        'service_tier': '原服务档位',
+        'deliverables': ['档案或服务结果'],
+        'terms': '原约定',
+        'service': {
+          'kind': kind,
+          'unit': kind == 'AVATAR_CREATION'
+              ? 'PERSON_FIRST'
+              : kind == 'AVATAR_HOSTING'
+                  ? 'AVATAR_MONTH'
+                  : 'HALO_APPLICATION',
+          'rule_version': '规则1',
+          'source_ref': '原来源',
+          'retry_limit': kind == 'AVATAR_CREATION' ? 2 : 0,
+          'hosting_months': kind == 'AVATAR_HOSTING' ? 3 : null,
+          'halo_level': kind == 'HALO_REVIEW' ? 2 : null,
+          'failure_policy': 'REFUND_UNDELIVERED'
+        }
+      };
+      final line = d['lines'][0] as Map<String, dynamic>;
+      line.addAll({
+        'product_profile': {'version': 'V5', 'type': kind},
+        'line_kind': 'OTHER',
+        'unit_minor': amount,
+        'total_minor': amount,
+        'specification': spec
+      });
+      d.addAll({
+        'total_minor': amount,
+        'transaction_model': 'PLATFORM_PRINCIPAL',
+        'installments': [
+          {
+            'key': 'service',
+            'trigger': 'ORDER_ACCEPTED',
+            'allocations': [
+              {'line_id': line['line_id'], 'amount_minor': amount}
+            ],
+            'apple_product_id': null
+          }
+        ],
+        'artist_service': {
+          'service_id': quoteId,
+          'person_id': orderId,
+          'avatar_id': kind == 'HALO_REVIEW' ? null : paymentId,
+          'service_sha256': 'a' * 64,
+          'kind': kind,
+          'spec_id': line['spec_id'],
+          'specification': jsonDecode(jsonEncode(spec)),
+          'price_minor': amount
+        }
+      });
+      return q;
+    }
+
+    for (final kind in artistServiceNames.keys) {
+      expect(TradeRecord.parse(serviceQuote(kind), personId).kind, 'QUOTE');
+    }
+    for (final alter in <void Function(Map<String, dynamic>)>[
+      (d) => d['artist_service']['price_minor']++,
+      (d) => d['artist_service']['person_id'] = 'invalid',
+      (d) => d['lines'][0]['specification']['sample_seconds'] = 0,
+      (d) => d['lines'][0]['specification']['service']['retry_limit'] = 1,
+      (d) => d['lines'][0]['product_profile']['type'] = 'PRIVATE_CUSTOMIZATION',
+      (d) => d.remove('artist_service'),
+      (d) => d['transaction_model'] = 'DIRECT_SUPPLIER',
+      (d) => d['installments'][0]['trigger'] = 'SAMPLE_ACCEPTED',
+    ]) {
+      final q = serviceQuote('AVATAR_HOSTING');
+      alter(q['data']);
+      expect(
+          () => TradeRecord.parse(q, personId), throwsA(isA<AccountError>()));
+    }
   });
   test('真实DTO无需动作、昵称或创建时间，合同直接读取内嵌未签署快照', () {
     for (final k in ['QUOTE', 'ORDER', 'PAYMENT', 'REFUND', 'LEGACY']) {

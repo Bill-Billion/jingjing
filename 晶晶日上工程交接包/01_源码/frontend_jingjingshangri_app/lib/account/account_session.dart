@@ -21,6 +21,24 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  bool artistsAccessDenied = false;
+  List<Map<String, dynamic>> get artistsPending =>
+      api.artistsPending(token: _token, party: partyId);
+  void denyArtists() {
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    artistsAccessDenied = true;
+    notifyListeners();
+  }
+
+  Future<void> retryArtistsAccess() async {
+    await loadParties();
+    await refreshParty();
+    artistsAccessDenied = false;
+    notifyListeners();
+  }
+
   bool operationsAccessDenied = false;
   final operationsTargets = <String, Map<String, String>>{};
   List<Map<String, dynamic>> get operationsPending =>
@@ -219,6 +237,7 @@ class AccountSession extends ChangeNotifier {
 
   void _clear() {
     api.clearSupplyOperations();
+    artistsAccessDenied = false;
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;
@@ -269,6 +288,11 @@ class AccountSession extends ChangeNotifier {
       _check(started);
       return result;
     } on AccountError catch (error) {
+      if ([403, 404].contains(error.status) &&
+          path.startsWith('/api/v1/artists/') &&
+          started == _epoch) {
+        denyArtists();
+      }
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/operations/') &&
           started == _epoch) {
@@ -368,7 +392,10 @@ class AccountSession extends ChangeNotifier {
       return bytes;
     } on AccountError catch (e) {
       if (started == _epoch) {
-        if (path.startsWith('/api/v1/finance/') &&
+        if (path.startsWith('/api/v1/artists/') &&
+            [403, 404].contains(e.status)) {
+          denyArtists();
+        } else if (path.startsWith('/api/v1/finance/') &&
             [403, 404].contains(e.status)) {
           denyFinance();
         } else if (path.startsWith('/api/v1/gigs/') &&
@@ -442,6 +469,7 @@ class AccountSession extends ChangeNotifier {
     if (value['party']['id'] == partyId) return;
     partyNotice = null;
     api.clearSupplyOperations();
+    artistsAccessDenied = false;
     supplyAccessDenied = false;
     licensingAccessDenied = false;
     tradeAccessDenied = false;

@@ -8,6 +8,7 @@ const links = [
   { to: '/contracts', label: '合同与规则', icon: Document },
   { to: '/supply/profiles', label: '供给申请', icon: FolderOpened },
   { to: '/supply/works', label: '我的作品', icon: Collection },
+  { to: '/artists/people', label: '真人与数字人', icon: User },
   { to: '/licensing/catalog', label: '选剧本', icon: Reading },
   { to: '/licensing/products', label: '许可商品', icon: Tickets },
   { to: '/licensing/reservations', label: '许可办理', icon: Document },
@@ -34,6 +35,7 @@ const links = [
   { to: '/operations/customization', label: '故事收件与受理', icon: Document },
 ]
 const reviews = [
+  { to: '/artists/reviews/CONSENT', label: '艺人资料核验' },
   { to: '/operations/moderation', label: '留言独立管理' },
   { to: '/operations/audit', label: '操作审计' },
   { to: '/finance/reviews/agreements', label: '独立财务核验' },
@@ -49,6 +51,8 @@ const reviews = [
   { to: '/projects/reviews/plans', label: '项目独立核验' },
 ]
 function active(target: string) {
+  if (target === '/artists/people') return route.path.startsWith('/artists/') && !route.path.startsWith('/artists/reviews/')
+  if (target === '/artists/reviews/CONSENT') return route.path.startsWith('/artists/reviews/')
   if (target === '/operations/notifications') return /^\/operations\/(?:notifications|(?:operator\/)?objects)(\/|$)/.test(route.path)
   if (target === '/operations/reports') return /^\/operations\/(?:operator\/)?reports(\/|$)/.test(route.path)
 

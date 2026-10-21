@@ -59,7 +59,7 @@ let unauthorized: ((token: string) => void) | null = null
 export function onUnauthorized(handler: (token: string) => void) { unauthorized = handler }
 
 export function outcomeUnknown(error: unknown): boolean {
-  return error instanceof ApiError && (error.status === 0 || error.status >= 500 || error.code === 'UNEXPECTED_RESPONSE_SHAPE' || error.code === 'COMMIT_OUTCOME_UNKNOWN' || error.code === 'IDEMPOTENCY_IN_PROGRESS')
+  return error instanceof ApiError && (error.status === 0 || error.status >= 500 || error.code === 'UNEXPECTED_RESPONSE_SHAPE' || error.code === 'COMMIT_OUTCOME_UNKNOWN' || error.code === 'IDEMPOTENCY_IN_PROGRESS' || error.code === 'ASSET_UPLOAD_RECONCILIATION_REQUIRED' || error.code === 'IDENTITY_RECONCILIATION_REQUIRED' || error.code === 'IDENTITY_OUTCOME_UNKNOWN')
 }
 
 export function asApiError(e: unknown): ApiError {

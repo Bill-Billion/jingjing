@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'account/account_theme.dart';
+import 'artists/artists_pages.dart';
+import 'artists/artists_forms.dart';
 import 'account/account_page.dart';
 import 'contracts/contract_page.dart';
 import 'supply/supply_page.dart';
@@ -112,10 +114,12 @@ class JingjingShangriApp extends StatelessWidget {
         '/finance/dispute/new' => FinanceFormPage(
             mode: 'DISPUTE', id: uri.queryParameters['recordId'] ?? ''),
         '/finance/notifications' => const FinanceNotificationsPage(),
-        '/identity' || '/my-humans' => const AppUnavailablePage(
-            title: '数字人资料',
-            description: '本人脸部、声音与用途授权页面暂未开放。账号身份、本人同意与实名认证是不同事项。'),
-        '/discover' || '/humans' || '/human-detail' => const GigDiscoveryPage(),
+        '/identity' || '/my-humans' || '/artists' => const ArtistPeoplePage(),
+        '/artists/person' => ArtistPersonPage(personId: uri.queryParameters['personId'] ?? ''),
+        '/artists/records' => ArtistRecordsPage(personId: uri.queryParameters['personId'] ?? '', kind: uri.queryParameters['kind'] ?? 'CONSENT'),
+        '/artists/record' || '/artists/service' => ArtistRecordPage(personId: uri.queryParameters['personId'] ?? '', recordId: uri.queryParameters['recordId'] ?? ''),
+        '/artists/form' => ArtistFormPage(mode: uri.queryParameters['mode'] ?? '', personId: uri.queryParameters['personId'], avatarId: uri.queryParameters['avatarId'], recordId: uri.queryParameters['recordId']),
+        '/discover' || '/humans' || '/human-detail' || '/artists/catalog' => const ArtistCataloguePage(),
         '/orders' => licenseKinds.containsKey(uri.queryParameters['kind'])
             ? LicenseRecordsPage(kind: uri.queryParameters['kind']!)
             : TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),

@@ -1,3 +1,7 @@
+当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
+
+当前前端第三轮为 `ux/v5-r03-artists-frontend`，已同步共同版本integration/b8775fe。PR30/273d0d0已由chengcongcong222实际审阅通过，并随PR29合入；保留其安卓配置与已确认报价的固定订单入口修复。本人/受托机构/运营分别接新artists接口，保持先锋电影刊物视觉；当前任务见docs/tasks/records/UX-v5-r03-artists-frontend-20261021.md。以下前端与Core旧入口保留为历史。
+
 当前本侧工作为合入PR30新版视觉并重测；目录worktrees/android-test、分支core/v5-android-functional-test。先读docs/status/CORE_CURRENT.md和docs/testing/EDITORIAL_MERGE_20261021.md。以下双方旧入口保留来源；视觉以队友2026-10-21纠正的先锋电影刊物为准。
 
 当前安卓模拟测试目录为 `worktrees/android-test`，分支 `core/v5-android-functional-test`，从integration/5fba043开始。先读docs/status/CORE_CURRENT.md及docs/testing/ANDROID_LOCAL_TEST_20261021.md；用户已授权本侧配置模拟器、测试、修复和记录，随后双方人工测试。后续V5页面缺口不得用旧页面或接口测试冒充验收。以下旧入口保留历史。
@@ -26,7 +30,7 @@
 
 ## 前端导航与新版页面验收（2026-10-17按V5更新）
 
-- 网页各工作区使用同一份主菜单，本轮含故事收件共41项。故事列表及详情均高亮 `/operations/customization`；不能因切换合同、账号、作品或审核页面而丢失其他入口。菜单显示不授予业务权限。
+- 网页各工作区使用同一份主菜单，本轮含故事收件与第三轮艺人入口共43项（保留原41项）。故事列表及详情均高亮 `/operations/customization`；不能因切换合同、账号、作品或审核页面而丢失其他入口。菜单显示不授予业务权限。
 - App顶层采用广场、试镜、通告、消息、我的，对应 `/square`、`/audition`、`/notices`、`/messages`、`/my`。五栏在同一主壳切换，表单和详情使用返回，不复制底栏到所有子页。旧首页、入戏、培育、成角是历史名称，不再作为当前五栏目标。
 - 故事列表为 `/customization`，新建为 `/customization/new`，详情为 `/customization/<UUID>`。`/operations/notifications` 是通知子页；通告保留 `/projects/catalogue`、`/gigs` 等已有业务入口，不能用它们冒充完整六类通告或线下试镜。旧名兼容映射以 `lib/app.dart` 和导航验收说明为准。
 - 所有正式入口只进入当前新版页面；旧名称可兼容映射，但不得回到旧展示壳或调用旧业务页面。登录、退出、返回、直达链接和未知地址都要检查。
