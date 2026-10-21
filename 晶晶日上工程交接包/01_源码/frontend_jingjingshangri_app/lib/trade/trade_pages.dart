@@ -479,11 +479,6 @@ class _TradeDetailState extends State<_TradeDetail> {
           ]),
           appNotice('这里是报价时保存的约定。未收款不产生到账；账面应付、可打款和已到账分别核对。'),
         ]),
-      if (!order &&
-          r.status == 'ACCEPTED' &&
-          (r.orderId ?? d['order_id']) != null)
-        tradeButton(
-            '查看已形成订单', locked ? null : () => open(r.orderId ?? d['order_id'])),
       if (!order) appNotice('按当前报价内容确认。后续改价不会覆盖本次原约定。'),
     ];
   }
@@ -874,6 +869,7 @@ class _TradeDetailState extends State<_TradeDetail> {
   @override
   Widget build(BuildContext context) {
     final r = record;
+    final linkedOrderId = r?.orderId ?? (r?.data['order_id'] as String?);
     return tradeScaffold(
         context,
         widget.section == 'contract'
@@ -921,25 +917,32 @@ class _TradeDetailState extends State<_TradeDetail> {
         ],
         locked: locked,
         footer: r?.kind == 'QUOTE' &&
-                r!.status == 'APPROVED' &&
-                widget.customizationSourceCurrent != false &&
-                r.isBuyer(api.owner())
+                r!.status == 'ACCEPTED' &&
+                linkedOrderId != null
             ? FilledButton(
-                onPressed: locked ||
-                        !DateTime.parse(r.data['expires_at'])
-                            .isAfter(DateTime.now())
-                    ? null
-                    : () => mutate(
-                            '确认本报价与原约定',
-                            '/api/v1/trade/quotes/${r.id}/acceptance',
-                            () => api.accept(r),
-                            facts: [
-                              tradeFact('总价', tradeMoney(r.amount)),
-                              if (r.data['artist_service'] != null) ...tradeArtistFacts(tradeMap(r.data['artist_service'])),
-                              const Text('确认后保存合同内容，尚未签署；付款和许可另行办理。')
-                            ]),
-                child: const Text('确认报价形成订单'))
-            : null);
+                onPressed: locked ? null : () => open(linkedOrderId),
+                child: const Text('查看已形成订单'))
+            : r?.kind == 'QUOTE' &&
+                    r!.status == 'APPROVED' &&
+                    widget.customizationSourceCurrent != false &&
+                    r.isBuyer(api.owner())
+                ? FilledButton(
+                    onPressed: locked ||
+                            !DateTime.parse(r.data['expires_at'])
+                                .isAfter(DateTime.now())
+                        ? null
+                        : () => mutate(
+                                '确认本报价与原约定',
+                                '/api/v1/trade/quotes/${r.id}/acceptance',
+                                () => api.accept(r),
+                                facts: [
+                                  tradeFact('总价', tradeMoney(r.amount)),
+                                  if (r.data['artist_service'] != null)
+                                    ...tradeArtistFacts(tradeMap(r.data['artist_service'])),
+                                  const Text('确认后保存合同内容，尚未签署；付款和许可另行办理。')
+                                ]),
+                    child: const Text('确认报价形成订单'))
+                : null);
   }
 }
 

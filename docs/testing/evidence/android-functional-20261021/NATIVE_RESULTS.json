@@ -1,0 +1,103 @@
+{
+  "status": "PASS",
+  "native_business_scenarios": 3,
+  "framework_teardown_not_counted": true,
+  "android_version": "15",
+  "api_level": 35,
+  "device": "JX_API35 / emulator-5554",
+  "rendering": "software; not a performance benchmark",
+  "screenshots": [
+    {
+      "file": "screenshots/android-identity-selected.png",
+      "sha256": "13c715871d9010ef28e630e119f62acc683bfceb4ae083df2744db51a0ee73df"
+    },
+    {
+      "file": "screenshots/android-identity-switch.png",
+      "sha256": "5957cb12ae1f5bfcddb40c5f1fcf346cac6292d74b7bd3e3d1a77282239c857e"
+    },
+    {
+      "file": "screenshots/android-logged-in-my.png",
+      "sha256": "3ea58dbcde698736001ea7833f7d5b9ac87e0f606bf99b5f79ec10dd7e185920"
+    },
+    {
+      "file": "screenshots/android-login-empty.png",
+      "sha256": "a195cd977aa9f1cbbdc2877ec80e310e240ca609c122bdc9fb0698c92ab8c3a9"
+    },
+    {
+      "file": "screenshots/android-order-unpaid.png",
+      "sha256": "86b1aff86dce26f2d0297b2d8974768a23ebdfee2d6ebd34f7fe55429f3cd17b"
+    },
+    {
+      "file": "screenshots/android-quote-confirm.png",
+      "sha256": "c40eff35592ba4fecd898160c8bfa30cab053f37b8085065726a076972fff2aa"
+    },
+    {
+      "file": "screenshots/android-story-draft.png",
+      "sha256": "a46b7482689037ba7e1a49dc34fc61898a054db08df054f1a40352e3c3433022"
+    },
+    {
+      "file": "screenshots/android-story-submitted.png",
+      "sha256": "d34fa697aa44a303a492f3a2bb81196a2c08fa5a85f3117db2d3de40571b886d"
+    },
+    {
+      "file": "screenshots/android-tab-0.png",
+      "sha256": "7fd91be50c3c6aab3c1013b6ca16245a75b7103da1055c0c5f2efa0c51e7bb62"
+    },
+    {
+      "file": "screenshots/android-tab-1.png",
+      "sha256": "033ee392bb75253d456abc0b64a6153527365c3d0a186d134f50e73048e55264"
+    },
+    {
+      "file": "screenshots/android-tab-2.png",
+      "sha256": "90f1a9da870a953395d8a30482f025693b5476566034753ba9c4a086ca1ffd4d"
+    },
+    {
+      "file": "screenshots/android-tab-3.png",
+      "sha256": "1c74919b11ac3fb4af0f0fdd2aa7592a1053e8cf43c26816a59a15bb2fa1a616"
+    },
+    {
+      "file": "screenshots/android-tab-4.png",
+      "sha256": "36084ca554f61144fe41a423c891b671909f5728436603cab7daed4efe9dff77"
+    }
+  ],
+  "business_report": {
+    "native_screenshot_files": [
+      "android-tab-0.png",
+      "android-tab-1.png",
+      "android-tab-2.png",
+      "android-tab-3.png",
+      "android-tab-4.png",
+      "android-login-empty.png",
+      "android-story-draft.png",
+      "android-story-submitted.png",
+      "android-identity-selected.png",
+      "android-identity-switch.png",
+      "android-logged-in-my.png",
+      "android-quote-confirm.png",
+      "android-order-unpaid.png"
+    ],
+    "synthetic_logged_in": true,
+    "other_identity_count": 1,
+    "native_quote_order_verified": {
+      "action": "OPENED_EXISTING_ORDER",
+      "order_id": "70a2b0b2-2ac0-4f5a-8150-f55078628d73",
+      "received_minor": 0,
+      "signing_method": "NOT_SIGNED"
+    }
+  },
+  "synthetic_login": true,
+  "real_loopback_http_mysql": true,
+  "real_sms_or_payment": false,
+  "coverage": [
+    "五入口、设置、返回、登录空态",
+    "必填及附件限制、草稿保存、正式提交、个人机构四次切换",
+    "已确认报价固定底部入口、同一未付款未签署订单核对"
+  ],
+  "first_quote_creation_evidence": "FIRST_ORDER_SCENARIO.log (earlier overall run failed identity locator; quote scenario passed individually)",
+  "limits": [
+    "最终全组复测读取已确认的同一订单；首次确认生成订单已在前次原生单场景通过",
+    "补件重提本轮为接口及既有页面回归，未新增安卓操作证据",
+    "后续V5未交付页面未作原生完整链通过声明",
+    "软件渲染不用于测性能，安卓真机及真实提供方另验"
+  ]
+}

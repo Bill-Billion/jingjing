@@ -83,6 +83,7 @@ async function main() {
     const blocked = await repo.publishTemplate(people.publisher.ctx, { category_code:'synthetic_attachment', template_version:1, source_ref:'synthetic:story-handoff-only', operation_key:randomUUID(), template_snapshot:{ title:'测试用必填附件场景', description:'本轮不可提交，用于验证不能假传材料。', fields:[{ key:'proof', label:'私有材料', type:'PRIVATE_ATTACHMENT', required:true }] } });
     checkRunning();
     const buyer = people.buyer;
+    await party.createOrganization(buyer.ctx,{display_name:'合成客户甲的测试机构',operation_key:randomUUID()});
     const draft = await repo.create(buyer.ctx, { party_id:buyer.personal_party_id, template_version_id:family.template_version_id, answers:{ story:'还没写完的合成故事' }, operation_key:randomUUID() });
     const prepared = await repo.create(buyer.ctx, { party_id:buyer.personal_party_id, template_version_id:life.template_version_id, answers:{ moment:'虚构的毕业重逢', message:'这里只是合成测试文字' }, operation_key:randomUUID() });
     const submitted = await repo.submit(buyer.ctx, { request_id:prepared.id, party_id:buyer.personal_party_id, expected_version:prepared.object_version, operation_key:randomUUID() });
@@ -115,7 +116,8 @@ async function main() {
       // Read-only finance trial: real role/rule checks, no money mutation routes.
       ['GET',/^\/api\/v1\/finance\/marketplace-preview$/],
       ['GET',/^\/(health|ready)$/],
-      ['GET',/^\/api\/v1\/(me|me\/parties|customization-categories)$/],
+      ['GET',/^\/api\/v1\/(me|me\/parties|me\/invitations|customization-categories)$/],
+      ['GET',new RegExp('^/api/v1/parties/'+uuid+'/members$')],
       // Account/My pages refresh the selected identity; the real API checks membership.
       ['GET',new RegExp('^/api/v1/parties/'+uuid+'$')],
       ['GET',new RegExp('^/api/v1/customization-requests(?:/'+uuid+')?$')],

@@ -11,6 +11,7 @@ const _synthetic = bool.fromEnvironment('R01_SYNTHETIC_ONLY');
 const _apiOrigin = String.fromEnvironment('R01_API_ORIGIN');
 const _buyerToken = String.fromEnvironment('R01_BUYER_TOKEN');
 const _buyerId = String.fromEnvironment('R01_BUYER_ACCOUNT_ID');
+const _buyerPartyId = String.fromEnvironment('R01_BUYER_PARTY_ID');
 const _appPort = int.fromEnvironment('R01_APP_PORT', defaultValue: 5000);
 
 Future<void> main() async {
@@ -63,6 +64,9 @@ Future<void> main() async {
     await session.login(
         'local-synthetic-buyer', 'local-bootstrap', 'local-only');
     await session.loadParties();
+    final owner = session.parties
+        .singleWhere((row) => row['party']['id'] == _buyerPartyId);
+    session.select(owner);
     if (!session.isLoggedIn || session.partyId == null) {
       throw StateError('Fixture has no active identity');
     }
