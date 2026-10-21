@@ -36,6 +36,12 @@ export const statuses:Record<string,string> = {IN_REVIEW:'待独立审核',PUBLI
 export function tradeStatus(r:Pick<TradeRecord,'kind'|'current_status'>) { if(r.current_status==='APPROVED')return r.kind==='REFUND'?'退款已批准，尚未退款':'报价已审，等待买方确认';if(r.current_status==='SUCCEEDED')return r.kind==='REFUND'?'退款已核实':'付款已核实到账';return statuses[r.current_status]||r.current_status }
 export const money = (minor:number) => { const n=BigInt(minor),abs=n<0n?-n:n;return `${n<0n?'-':''}¥${(abs/100n).toLocaleString('zh-CN')}.${String(abs%100n).padStart(2,'0')}` }
 export const amountInput = (v:string,min=1,max=900000000000) => {const n=minorInteger(v);return n!==null && n>=min && n<=max?n:null}
+// Parse user-facing yuan as decimal text; never round extra decimals or use floating multiplication.
+export function yuanInput(v:string):number|null {
+ const text=v.trim(); if(!/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(text))return null
+ const [whole,fraction='']=text.split('.'); const minor=BigInt(whole!)*100n+BigInt(fraction.padEnd(2,'0'))
+ return minor>=1n&&minor<=900000000000n?Number(minor):null
+}
 const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v)
 const text=(v:unknown,max=2000):v is string=>typeof v==='string'&&v.trim().length>0&&v.length<=max
 const integer=(v:unknown,min=1,max=900000000000)=>Number.isSafeInteger(v)&&Number(v)>=min&&Number(v)<=max

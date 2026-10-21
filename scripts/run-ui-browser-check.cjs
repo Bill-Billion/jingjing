@@ -20,21 +20,24 @@ async function freePort(value) {
 }
 function launch(spec, env, log) {
   const fd=fs.openSync(log,'w'); let child;
-  try { child=spawn(process.execPath,[spec.file,...(spec.args||[])],{cwd:spec.cwd,env,stdio:['ignore',fd,fd],windowsHide:true}); }
+  try { child=spawn(process.execPath,[spec.file,...(spec.args||[])],{cwd:spec.cwd,env,stdio:spec.cleanupIpc?['ignore',fd,fd,'ipc']:['ignore',fd,fd],windowsHide:true}); }
   finally { fs.closeSync(fd); }
   let ended=false;
   const done=new Promise(resolve=>{
     child.once('error',()=>{ended=true;resolve({code:1,signal:null});});
     child.once('exit',(code,signal)=>{ended=true;resolve({code,signal});});
   });
-  return {child,done,alive:()=>!ended};
+  return {child,done,alive:()=>!ended,cleanupIpc:!!spec.cleanupIpc};
 }
 async function stop(handle) {
   if (!handle || !handle.alive()) return;
-  handle.child.kill('SIGTERM');
+  // Windows kill(SIGTERM) terminates immediately and cannot run database cleanup.
+  if(handle.cleanupIpc && handle.child.connected) handle.child.send({type:'JX_TEST_SHUTDOWN'});
+  else handle.child.kill('SIGTERM');
   let timer;
   const exited=await Promise.race([handle.done.then(()=>true),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),5000);})]).finally(()=>clearTimeout(timer));
-  if (!exited) { handle.child.kill('SIGKILL'); await handle.done; }
+  if (!exited) { handle.child.kill('SIGKILL'); await handle.done; if(handle.cleanupIpc) throw Error('TEST_DATABASE_CLEANUP_TIMEOUT'); }
+  if(handle.cleanupIpc && (await handle.done).code!==0) throw Error('TEST_DATABASE_CLEANUP_FAILED');
 }
 async function healthy(url) {
   try { const r=await fetch(url+'/health',{signal:AbortSignal.timeout(1000)}); return r.status===200 && (await r.json()).data?.current_status==='UP'; }
@@ -50,7 +53,7 @@ async function runSession(options) {
   const signal=()=>{interrupted=true;};
   process.on('SIGINT',signal); process.on('SIGTERM',signal);
   try {
-    apiProcess=launch(api,env,path.join(logDir,'api.log'));
+    apiProcess=launch({...api,cleanupIpc:true},env,path.join(logDir,'api.log'));
     webProcess=launch(web,env,path.join(logDir,'web.log'));
     const deadline=Date.now()+timeoutMs; let ready=false;
     while(Date.now()<deadline) {

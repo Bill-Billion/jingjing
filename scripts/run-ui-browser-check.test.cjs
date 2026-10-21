@@ -6,7 +6,7 @@ const fixture=path.join(__dirname,'test-fixtures/ui-session.cjs');
 async function port() {const s=net.createServer();await new Promise(r=>s.listen(0,'127.0.0.1',r));const p=s.address().port;await new Promise(r=>s.close(r));return p;}
 async function options(t,changes={}) {
  const folder=fs.mkdtempSync(path.join(os.tmpdir(),'jx-ui-session-'));
- t.after(()=>{assert.equal(path.dirname(folder),os.tmpdir());assert(path.basename(folder).startsWith('jx-ui-session-'));fs.rmSync(folder,{recursive:true,force:true});});
+ t.after(()=>{assert.equal(path.dirname(folder),path.resolve(os.tmpdir()));assert(path.basename(folder).startsWith('jx-ui-session-'));fs.rmSync(folder,{recursive:true,force:true});});
  const apiUrl=`http://127.0.0.1:${await port()}`,webUrl=`http://127.0.0.1:${await port()}`,statePath=path.join(folder,'state.json');
  const child=args=>({file:fixture,args});
  return {apiUrl,webUrl,statePath,logDir:folder,timeoutMs:2000,checkTimeoutMs:2000,
@@ -14,12 +14,12 @@ async function options(t,changes={}) {
 }
 async function isFree(url) {const s=net.createServer();await new Promise((r,j)=>{s.once('error',j);s.listen(Number(new URL(url).port),'127.0.0.1',r);});await new Promise(r=>s.close(r));}
 test('完整检查后关闭实际进程，下一组可复用同一网页端口',async t=>{
- const a=await options(t);await runSession(a);await isFree(a.apiUrl);await isFree(a.webUrl);
+ const a=await options(t);await runSession(a);assert(!fs.existsSync(a.statePath),'API cleanup must run before test succeeds');await isFree(a.apiUrl);await isFree(a.webUrl);
  const b=await options(t);b.webUrl=a.webUrl;b.web.args[1]=a.webUrl;b.check.args[1]=a.webUrl;
  await runSession(b);await isFree(b.apiUrl);await isFree(b.webUrl);
 });
 test('浏览器检查失败仍清理两个服务',async t=>{
- const a=await options(t);a.check.args=['fail'];await assert.rejects(runSession(a),/BROWSER_CHECK_FAILED/);await isFree(a.apiUrl);await isFree(a.webUrl);
+ const a=await options(t);a.check.args=['fail'];await assert.rejects(runSession(a),/BROWSER_CHECK_FAILED/);assert(!fs.existsSync(a.statePath),'Failure must also finish API cleanup');await isFree(a.apiUrl);await isFree(a.webUrl);
 });
 test('网页提前退出立即报错，不误把旧服务当新服务',async t=>{
  const a=await options(t);a.web.args=['exit'];await assert.rejects(runSession(a),/TEST_SERVICE_EXITED_BEFORE_READY/);await isFree(a.apiUrl);

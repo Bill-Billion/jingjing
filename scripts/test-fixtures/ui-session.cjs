@@ -14,5 +14,7 @@ if(role==='check') {
  server.listen(Number(new URL(url).port),'127.0.0.1',()=>{
   if(role==='api')fs.writeFileSync(state,JSON.stringify({testOnly:true,apiUrl:url,pid:process.pid}),{flag:'wx'});
  });
- for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{server.closeAllConnections();server.close(()=>process.exit(0));});
+ for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{server.closeAllConnections();server.close(()=>{if(role==='api'&&fs.existsSync(state))fs.unlinkSync(state);process.exit(0);});});
 }
+
+if(process.send) process.on('message', m=>{if(m?.type==='JX_TEST_SHUTDOWN')process.emit('SIGTERM');});

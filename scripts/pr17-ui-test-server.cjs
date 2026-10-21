@@ -497,3 +497,6 @@ for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, async () => {
   try { await startupPromise.catch(() => {}); await cleanup(); console.log('PR17_CLEANED own_schema_state_ports_private_bytes=true'); process.exit(0); }
   catch (_) { console.error('PR17_CLEANUP_FAILED'); process.exit(1); }
 });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });

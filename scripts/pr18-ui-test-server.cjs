@@ -504,3 +504,6 @@ async function main() {
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { Promise.resolve(startupPromise).catch(() => {}).then(cleanup).then(() => process.exit(0), () => { console.error(`PR18 cleanup failed for own schema ${schema}`); process.exit(1); }); });
 startupPromise = main();
 startupPromise.catch(async e => { console.error(`PR18 launcher failed during ${phase}: ${e.code || e.name}${e.name === 'AssertionError' ? ' ' + e.message : ''}`); await cleanup().catch(() => console.error(`PR18 cleanup failed for own schema ${schema}`)); process.exit(1); });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });

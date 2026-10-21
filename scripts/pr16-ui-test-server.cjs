@@ -133,7 +133,7 @@ async function makeMedia() {
   };
   await fs.mkdir(path.dirname(statePath), { recursive: true });
   mediaDir = await fs.mkdtemp(path.resolve(__dirname, '../.local/pr16-ui-media-')); await fs.chmod(mediaDir, 0o700);
-  const ffmpeg = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg']; let executable;
+  const ffmpeg = [process.env.JX_TEST_FFMPEG, '/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg'].filter(Boolean); let executable;
   for (const file of ffmpeg) { try { await fs.access(file); executable = file; break; } catch {} }
   assert(executable, 'Existing ffmpeg is required; no dependency is installed by this fixture.');
   for (const [name, rgb, label] of [['preview', [31, 77, 64], 'PREVIEW'], ['final', [125, 58, 31], 'FINAL FILE']]) {
@@ -643,7 +643,7 @@ async function main() {
   const state = await snapshot(); state.controlToken = controlToken;
   const handle = await fs.open(statePath, 'wx', 0o600); stateOwned = true;
   try { await handle.writeFile(JSON.stringify(state, null, 2)); } finally { await handle.close(); }
-  assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600);
+  await require('./test-fixtures/private-state.cjs').protectPrivateState(statePath);
   console.log(`Isolated PR #16 API ready: ${apiUrl}; control: ${controlUrl}; ${checks.length} targeted check groups passed. Private state: ${statePath}`);
 }
 
@@ -657,3 +657,6 @@ startupPromise.catch(async e => {
   console.error(`PR #16 test launcher failed during ${phase}: ${e.code || e.name}${e.name === 'AssertionError' ? ' ' + e.message : ''}`);
   await cleanup().catch(() => console.error(`PR #16 cleanup failed; inspect local schema ${schema}.`)); process.exit(1);
 });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });

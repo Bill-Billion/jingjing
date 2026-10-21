@@ -201,7 +201,7 @@ try {
   for (let n = 0; n < 3; n++) {
     await merchant.getByTestId('trade-quote-installment-key-' + n).fill(['first', 'interim', 'last'][n])
     await merchant.getByTestId('trade-quote-allocation-line-' + n + '-0').selectOption('production')
-    await merchant.getByTestId('trade-quote-allocation-amount-' + n + '-0').fill(String([3000, 6000, 1001][n]))
+    await merchant.getByTestId('trade-quote-allocation-amount-' + n + '-0').fill(['30.00', '60.00', '10.01'][n])
   }
   await merchant.getByTestId('trade-quote-channel').selectOption('ALIPAY')
   const expiry = new Date(Date.now() + 1800000)

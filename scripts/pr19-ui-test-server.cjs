@@ -130,7 +130,7 @@ async function makeMedia() {
   };
   await fs.mkdir(path.dirname(statePath), { recursive: true });
   mediaDir = await fs.mkdtemp(path.resolve(__dirname, '../.local/pr19-ui-media-')); await fs.chmod(mediaDir, 0o700);
-  const ffmpeg = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg']; let executable;
+  const ffmpeg = [process.env.JX_TEST_FFMPEG, '/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg'].filter(Boolean); let executable;
   for (const file of ffmpeg) { try { await fs.access(file); executable = file; break; } catch {} }
   assert(executable, 'Existing ffmpeg is required; no dependency is installed by this fixture.');
   for (const [name, rgb, label] of [['preview', [31, 77, 64], 'PREVIEW'], ['final', [125, 58, 31], 'FINAL FILE']]) {
@@ -566,7 +566,7 @@ async function main() {
   checks.push('Actual confirmation and PAID-evidence review each commit then lose one503 reply; original key/body/version exact replay creates only one confirmation/payment journal and keeps recipient projection; changed payload409/stale review412; concurrent2000 requests reserve only one against3000, and simultaneous reviews return200/412; untouched App/Web REQUESTED review races ready; UI loopback CORS only');
   creation.common = { payerPartyId: payerOrganizationId, recipientPartyId: recipient.personalPartyId, customerPartyId: customer.personalPartyId, payerEvidenceId: assets.payerProof.id, recipientDestinationId: assets.recipientProof.id, ruleId,
     statement: statementBody(), receipt: receiptBody(1000), adjustment: adjustmentBody(), reviewVerification: verification, paymentEnvironment: 'SANDBOX', automaticPayout: 'NOT_IMPLEMENTED', originalHashMeaning: 'IMMUTABLE_SOURCE_SNAPSHOT_NOT_PROJECTED_JSON_HASH' };
-  phase = 'private runtime state'; await saveState(); assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600);
+  phase = 'private runtime state'; await saveState(); await require('./test-fixtures/private-state.cjs').protectPrivateState(statePath);
   const safe = JSON.stringify(await snapshot()); assert.equal(safe.includes(controlToken), false); for (const p of Object.values(people)) assert.equal(safe.includes(p.token), false);
   console.log(`Isolated PR19 API ready: ${apiUrl}; control ${controlUrl}; PID ${process.pid}; schema ${schema}; ${checks.length} actual check groups; private runtime ${statePath}`);
 }
@@ -574,3 +574,6 @@ async function main() {
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { Promise.resolve(startupPromise).catch(() => {}).then(cleanup).then(() => process.exit(0), () => { console.error(`PR19 cleanup failed for own schema ${schema}`); process.exit(1); }); });
 startupPromise = main();
 startupPromise.catch(async e => { console.error(`PR19 launcher failed during ${phase}: ${e.code || e.name}${e.name === 'AssertionError' ? ' ' + e.message : ''}`); await cleanup().catch(() => console.error(`PR19 cleanup failed for own schema ${schema}`)); process.exit(1); });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });

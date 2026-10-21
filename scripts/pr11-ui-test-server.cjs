@@ -185,6 +185,10 @@ for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
 });
 main().catch(async e => {
   console.error(`PR #11 test launcher failed: ${e.code || e.name}`);
+  console.error(String(e.stack||'').split('\n').slice(1,4).join('\n'));
   await cleanup().catch(() => {});
   process.exit(1);
 });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });
