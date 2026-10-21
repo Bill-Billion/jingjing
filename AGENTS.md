@@ -1,3 +1,5 @@
+当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
+
 当前前端第三轮为 `ux/v5-r03-artists-frontend`，已同步共同版本integration/b8775fe。PR30/273d0d0已由chengcongcong222实际审阅通过，并随PR29合入；保留其安卓配置与已确认报价的固定订单入口修复。本人/受托机构/运营分别接新artists接口，保持先锋电影刊物视觉；当前任务见docs/tasks/records/UX-v5-r03-artists-frontend-20261021.md。以下前端与Core旧入口保留为历史。
 
 当前本侧工作为合入PR30新版视觉并重测；目录worktrees/android-test、分支core/v5-android-functional-test。先读docs/status/CORE_CURRENT.md和docs/testing/EDITORIAL_MERGE_20261021.md。以下双方旧入口保留来源；视觉以队友2026-10-21纠正的先锋电影刊物为准。

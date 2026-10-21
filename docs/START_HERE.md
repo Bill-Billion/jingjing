@@ -1,3 +1,5 @@
+当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
+
 # 当前入口：原稿视觉已进入共同版本，第三轮已集中交付
 
 前两轮已按“先锋电影刊物”原设计修正，[PR30](https://github.com/Bill-Billion/jingjing/pull/30)/273d0d0远端8项检查成功，同事chengcongcong222已实际审阅通过；代码随[PR29](https://github.com/Bill-Billion/jingjing/pull/29)进入共同版本integration/b8775fe。原稿、前后对照和42张截图见[视觉验收](testing/evidence/v5-editorial/index.html)。同事的安卓与整合复验见[整合测试](testing/EDITORIAL_MERGE_20261021.md)。
