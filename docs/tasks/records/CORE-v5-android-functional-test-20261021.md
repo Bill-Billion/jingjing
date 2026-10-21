@@ -30,3 +30,5 @@
 ## 集中上传记录
 
 2026-10-21，本批实现9d4b26d已上传[PR29](https://github.com/Bill-Billion/jingjing/pull/29)，基于integration/5fba043；远端检查已启动，实际结果见申请最新提交。正式构建配置待队友实际审阅，未合并或部署。本轮随机测试库、临时会话、测试API、MySQL和模拟器已停止并核对清理结果；下次人工测试重建资料即可。
+
+最终核验：远端提交7c7aca2的6项检查全部成功，PR仍OPEN，未合入。证明见[远端核验记录](../../testing/evidence/android-functional-20261021/REMOTE_CHECKS.json)。这一补记本地保存、下阶段统一同步；PR29正文已同步最终结果。

@@ -10,7 +10,7 @@
 
 本轮临时测试API、数据库、会话与模拟器已关闭清理；安装工具保留供下次启动。
 
-本批已集中上传至[PR29](https://github.com/Bill-Billion/jingjing/pull/29)，实现提交9d4b26d；远端自动检查已启动，结果以该申请最新提交为准。待队友审阅正式构建配置，尚未合入integration；没有部署。下面旧记录保留各自历史时间。[详细结果、问题、人工步骤与各条线限制](../testing/ANDROID_LOCAL_TEST_20261021.md)。
+本批已集中上传至[PR29](https://github.com/Bill-Billion/jingjing/pull/29)，实现提交9d4b26d、远端最新提交7c7aca2。已核实该提交6项远端检查全部成功，含上传与申请的重复检查；待队友实际审阅正式构建配置，尚未合入integration，没有部署。最终核验补记本地保存、下阶段统一同步；PR说明已同步实际结果。下面旧记录保留各自历史时间。[详细结果、问题、人工步骤与各条线限制](../testing/ANDROID_LOCAL_TEST_20261021.md)。
 
 ---
 
