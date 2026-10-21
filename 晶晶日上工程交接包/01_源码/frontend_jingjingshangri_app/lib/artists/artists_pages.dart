@@ -775,6 +775,11 @@ class _CatalogueState extends State<_Catalogue> {
         setState(() {
           error = artistError(e);
           previews.clear();
+          // The server no longer confirms this listing is public (for example,
+          // consent withdrawn or hosting expired). Hide its cached details too.
+          if ([401, 403, 404, 409].contains(e.status)) {
+            rows.removeWhere((item) => item['listing_id'] == r['listing_id']);
+          }
         });
       }
     } catch (_) {

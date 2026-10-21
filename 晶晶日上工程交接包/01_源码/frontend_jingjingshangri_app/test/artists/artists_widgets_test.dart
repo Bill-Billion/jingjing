@@ -72,6 +72,46 @@ Future<void> input(WidgetTester t, String key, String value) async {
 }
 
 void main() {
+  for (final code in ['ARTIST_CONSENT_REQUIRED', 'ARTIST_HOSTING_REQUIRED']) {
+    testWidgets('公开预览因$code被拒后清除过期公开资料', (t) async {
+      final a = artistAdapter(override: (r) {
+        if (r.path == '$artistRoot/catalog') {
+          return envelope({
+            'items': [
+              {
+                'listing_id': listingKey,
+                'person_id': personKey,
+                'avatar_id': avatarKey,
+                'display_name': '已撤回的公开名称',
+                'city': '测试城市',
+                'introduction': '不应继续展示的公开简介',
+                'tags': ['测试'],
+                'audition_public': true,
+                'preview_asset_ids': [assetKey],
+                'halo_level': 1,
+              }
+            ],
+            'next_cursor': null,
+          });
+        }
+        if (r.path ==
+            '$artistRoot/catalog/$listingKey/assets/$assetKey/content') {
+          return envelope({'code': code}, status: 409, error: true);
+        }
+        return null;
+      });
+      final s = (await t.runAsync(() => artistSession(a)))!;
+      await host(t, s, const ArtistCataloguePage());
+      await show(t, find.text('已撤回的公开名称'));
+      expect(find.text('已撤回的公开名称'), findsOneWidget);
+      await press(t, find.text('读取这份获准预览'));
+      expect(find.text('已撤回的公开名称'), findsNothing);
+      expect(find.text('不应继续展示的公开简介'), findsNothing);
+      expect(find.text('读取这份获准预览'), findsNothing);
+      expect(s.isLoggedIn, true);
+      expect(t.takeException(), isNull);
+    });
+  }
   testWidgets('本人建档不自填核验结果，完整输入才发送并进入结果页', (t) async {
     final a = artistAdapter(), s = await t.runAsync(() => artistSession(a));
     await host(t, s!, const ArtistFormPage(mode: 'PERSON'));
