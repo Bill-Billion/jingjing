@@ -60,41 +60,16 @@ class CustomizationPage extends StatelessWidget {
   }
 }
 
-Widget _heading(String text) => Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 28,
-          height: 1.3,
-          fontWeight: FontWeight.w700,
-          fontFamily: 'Songti SC',
-        ),
-      ),
-    );
+Widget _heading(String text) => tradeHeading(text);
 Widget _eyebrow(String text) => Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Text(
         text,
         style: const TextStyle(fontSize: 12, color: AccountTheme.accent),
       ),
     );
-Widget _section(String title, List<Widget> children) => Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            ...children,
-          ],
-        ),
-      ),
-    );
+Widget _section(String title, List<Widget> children) =>
+    tradeSection(title, children);
 Widget _note(String text) => Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
@@ -219,25 +194,29 @@ class _StoryListState extends State<_StoryList> {
             _note('可以先选择品类，写下一段故事。没写完也能保存。'),
           ]),
         for (final row in rows)
-          Card(
+          Container(
+            decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AccountTheme.border))),
             child: ListTile(
               key: ValueKey('story-open-${row.id}'),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
+                horizontal: 0,
+                vertical: 14,
               ),
               title: Text(
                 row.title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
               ),
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   '编号 ${row.id.substring(0, 8)} · ${storyStatuses[row.status]}${row.status == 'DRAFT' ? ' · 可继续填写' : '\n提交于 ${_date(row.data['submitted_at'])}'}',
-                  style: const TextStyle(height: 1.6),
+                  style: const TextStyle(
+                      fontSize: 12, color: AccountTheme.muted, height: 1.6),
                 ),
               ),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: const Icon(Icons.north_east, size: 18),
               onTap:
                   row.allows('READ') && !busy ? () => open(id: row.id) : null,
             ),
@@ -816,22 +795,41 @@ class _StoryEditorState extends State<_StoryEditor> {
             ),
           ]),
         for (final category in categories)
-          Card(
-            child: ListTile(
-              key: ValueKey('customization-category-${category.code}'),
-              leading: Icon(
-                selected?.id == category.id
-                    ? Icons.check_circle
-                    : Icons.radio_button_unchecked,
-                color: selected?.id == category.id
-                    ? AccountTheme.accent
-                    : AccountTheme.muted,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Material(
+              color: selected?.id == category.id
+                  ? AccountTheme.text
+                  : const Color(0xFFE6E2D8),
+              child: ListTile(
+                key: ValueKey('customization-category-${category.code}'),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                leading: Icon(
+                  selected?.id == category.id ? Icons.check : Icons.add,
+                  size: 20,
+                  color: selected?.id == category.id
+                      ? AccountTheme.canvas
+                      : AccountTheme.text,
+                ),
+                title: Text(category.template.title,
+                    style: TextStyle(
+                        color: selected?.id == category.id
+                            ? AccountTheme.canvas
+                            : AccountTheme.text,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600)),
+                subtitle: Text(
+                  '${category.template.description}${category.template.submissionAvailable ? '' : '\n可保存文字，暂不可正式提交'}',
+                  style: TextStyle(
+                      color: selected?.id == category.id
+                          ? const Color(0xFFD9D5CB)
+                          : AccountTheme.muted,
+                      fontSize: 12,
+                      height: 1.5),
+                ),
+                onTap: locked ? null : () => choose(category),
               ),
-              title: Text(category.template.title),
-              subtitle: Text(
-                '${category.template.description}${category.template.submissionAvailable ? '' : '\n可保存文字，暂不可正式提交'}',
-              ),
-              onTap: locked ? null : () => choose(category),
             ),
           ),
       ],
@@ -969,9 +967,9 @@ class _StoryEditorState extends State<_StoryEditor> {
           body: SafeArea(
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 760),
+                constraints: const BoxConstraints(maxWidth: 560),
                 child: ListView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
                   children: [...children, const SizedBox(height: 24)],
                 ),
               ),
@@ -979,37 +977,51 @@ class _StoryEditorState extends State<_StoryEditor> {
           ),
           bottomNavigationBar: !editable || template == null
               ? null
-              : SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            key: const ValueKey('story-save'),
-                            onPressed: locked || conflict ? null : save,
-                            child: Text(supplementOpen ? '保存补充草稿' : '保存业务草稿'),
+              : DecoratedBox(
+                  decoration: const BoxDecoration(
+                      color: AccountTheme.canvas,
+                      border:
+                          Border(top: BorderSide(color: AccountTheme.border))),
+                  child: SafeArea(
+                    top: false,
+                    child: Center(
+                      heightFactor: 1,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 560),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(18, 10, 18, 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton(
+                                  key: const ValueKey('story-save'),
+                                  onPressed: locked || conflict ? null : save,
+                                  child: Text(
+                                      supplementOpen ? '保存补充草稿' : '保存业务草稿'),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: FilledButton(
+                                  key: const ValueKey('story-submit'),
+                                  onPressed: locked ||
+                                          conflict ||
+                                          !template!.submissionAvailable ||
+                                          (supplementOpen
+                                              ? !supplement!
+                                                  .allows('SUBMIT_SUPPLEMENT')
+                                              : record != null &&
+                                                  !record!.allows('SUBMIT'))
+                                      ? null
+                                      : () => save(submit: true),
+                                  child: Text(
+                                      supplementOpen ? '正式重提补充' : '正式提交需求'),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: FilledButton(
-                            key: const ValueKey('story-submit'),
-                            onPressed: locked ||
-                                    conflict ||
-                                    !template!.submissionAvailable ||
-                                    (supplementOpen
-                                        ? !supplement!
-                                            .allows('SUBMIT_SUPPLEMENT')
-                                        : record != null &&
-                                            !record!.allows('SUBMIT'))
-                                ? null
-                                : () => save(submit: true),
-                            child: Text(supplementOpen ? '正式重提补充' : '正式提交需求'),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

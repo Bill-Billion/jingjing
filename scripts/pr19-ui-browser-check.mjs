@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Normal browser UI against synthetic isolated HTTP/MySQL; no business API writes. */
 import assert from 'node:assert/strict'
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir,stat} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {createHash,randomUUID} from 'node:crypto'
@@ -33,7 +34,7 @@ async function data(r){const j=await r.json();assert(r.ok(),`UI HTTP ${r.status(
 async function apiRead(a,path,acting=true){const r=await fetch(state.apiUrl+'/api/v1'+path,{headers:{Authorization:'Bearer '+a.token,...(acting?{'X-Acting-Party':pid(a)}:{})}});const j=await r.json();assert(r.ok,`GET ${r.status} ${j.error?.code||''}`);return j.data}
 async function readRecord(r,a=actors.payer){return apiRead(a,'/finance/records/'+r.id,a!==actors.independentReviewer)}
 async function ready(p){await p.getByText('正在读取身份与财务记录…',{exact:true}).waitFor({state:'hidden'});await p.getByTestId('finance-refresh').waitFor({state:'visible'});await p.waitForTimeout(100)}
-async function go(p,path){activePage=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path.startsWith('/finance/')){await ready(p);const party=p.getByTestId('finance-party');if(await party.count()){const actor=Object.values(actors).find(a=>a.page===p);if(actor&&await party.inputValue()!==pid(actor)){await party.selectOption(pid(actor));await ready(p)}}}else await p.getByRole('heading',{level:1}).waitFor()}
+async function go(p,path){activePage=p;await p.goto(base+path);await ensureWorkspaceNavigation(p);if(path.startsWith('/finance/')){await ready(p);const party=p.getByTestId('finance-party');if(await party.count()){const actor=Object.values(actors).find(a=>a.page===p);if(actor&&await party.inputValue()!==pid(actor)){await party.selectOption(pid(actor));await ready(p)}}}else await p.getByRole('heading',{level:1}).waitFor()}
 const fill=(p,key,v)=>p.getByTestId(key).fill(String(v)),choose=async(p,key,v)=>{const l=p.getByTestId(key);if(await l.evaluate(n=>n.tagName)==='SELECT')await l.selectOption(String(v));else await l.fill(String(v))}
 async function shot(p,name,gallery){await ready(p);const actual=await p.locator('[data-gallery]').getAttribute('data-gallery');if(gallery)assert.equal(actual,gallery);const file='screenshots/pr19-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,gallery:gallery||actual,viewport:p.viewportSize()});await save()}
 async function remember(name,r){refs[name]=r;await save();return r}

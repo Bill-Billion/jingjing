@@ -7933,7 +7933,7 @@
   "joint_functional_test_20261021": {
     "owner": "chengcongcong222",
     "branch": "core/v5-joint-functional-test",
-    "status": "PUBLISHED_CHECKS_PENDING",
+    "status": "INTEGRATED_MACHINE_VERIFIED",
     "scope": "同一版本整合前后端；实际页面、业务、权限和模拟资料测试；修复、记录并经检查合入integration",
     "authorization": "用户2026-10-21明确委托本侧主要测试、合并与修复，人工测试留下一阶段",
     "sources": {
@@ -7966,6 +7966,82 @@
     "human_review": "NEXT_PHASE_NOT_RUN",
     "pr": "https://github.com/Bill-Billion/jingjing/pull/28",
     "live_merge_state": "查看PR28与origin/integration，本文为上传时记录",
-    "remote_first_failure": "d62d537: shared quote form old unit in gigs SSR test; fixture and exact amount assertion corrected"
+    "remote_first_failure": "d62d537: shared quote form old unit in gigs SSR test; fixture and exact amount assertion corrected",
+    "integration_commit": "5fba043c2d2e7fa51cd58168a71a2131ed391f43",
+    "merged_at": "2026-10-21T04:00:47Z",
+    "remote_checks": "8 SUCCESS at f8ad194",
+    "deployment": "NOT_RUN",
+    "post_merge_record_publication": "LOCAL_COMMIT_NEXT_STAGE_SYNC; PR28 body already updated"
+  },
+  "android_functional_test_20261021": {
+    "owner": "chengcongcong222",
+    "branch": "core/v5-android-functional-test",
+    "base": "5fba043",
+    "status": "已上传PR29；本机自验及远端6项检查通过；待实际审阅和双方人工测试",
+    "goal": "本侧先在电脑安卓模拟器逐业务线测试、修复并记录，再交给双方人工测试",
+    "scope": [
+      "D盘安装开发工具和安卓模拟器",
+      "当前新版App实际运行及业务线测试",
+      "隔离模拟服务及资料；缺失页面明确登记",
+      "安装包构建问题修复、证据与人工操作清单"
+    ],
+    "dependencies": [
+      "共同版本integration 5fba043",
+      "本机安卓工具、可用虚拟化",
+      "已有前端页面及隔离数据库"
+    ],
+    "acceptance": "实际运行安卓App；各业务线分别记录原生通过、网页已测、接口已测、缺页面或环境阻塞，不把模拟付款记为真实可用",
+    "production_enabled": false,
+    "peer_tasks": "未代队友认领",
+    "record": "docs/tasks/records/CORE-v5-android-functional-test-20261021.md",
+    "native_scenarios": 3,
+    "native_screenshots": 13,
+    "peer_reviewed": false,
+    "merged": false,
+    "pull_request": 29,
+    "implementation_commit": "9d4b26d",
+    "uploaded": true,
+    "remote_checked_commit": "7c7aca21d356b82300c51bc0ba8016c088a1f069",
+    "remote_checks_passed": 6,
+    "final_verification_note": "本地保存，下阶段统一同步；PR说明已同步"
+  },
+  "manual_android_session_20261021": {
+    "owner": "chengcongcong222",
+    "status": "已准备并打开可见安卓App，等待用户人工操作；会话约至2026-10-21 17:20",
+    "base_head": "59d5928",
+    "business_acceptance_passed": false,
+    "real_services_enabled": false,
+    "record": "docs/tasks/records/CORE-manual-android-start-20261021.md"
+  },
+  "frontend_editorial_correction_20261021": {
+    "owner": "Bill-Billion",
+    "branch": "ux/v5-r01-r02-editorial",
+    "base": "integration/5fba043",
+    "status": "pushed_ci_recheck_pending",
+    "scope": "按先锋电影刊物原设计修正前两轮已做页面；保留现有接口和流程，逐页截图与回归后集中交付，再继续第三轮",
+    "record": "docs/tasks/records/UX-v5-r01-r02-editorial-20261021.md",
+    "third_round": "not_started_pending_visual_delivery",
+    "original_prs": {
+      "24": "closed_code_integrated_via_PR28",
+      "26": "closed_code_integrated_via_PR28"
+    },
+    "evidence": "docs/testing/evidence/v5-editorial/RESULTS.json",
+    "visual_comparison": "docs/testing/evidence/v5-editorial/index.html",
+    "pr": "https://github.com/Bill-Billion/jingjing/pull/30",
+    "core_review": "requested_chengcongcong222_not_yet_reviewed",
+    "remote_initial_head": "1ea039f525926b604c5e1761010fc75af29b6e5b"
+  },
+  "editorial_integration_20261021": {
+    "owner": "chengcongcong222",
+    "status": "本地复测通过，待集中上传与本次远端检查",
+    "frontend_commit": "273d0d0",
+    "core_start": "0ad9585",
+    "integration_base": "5fba043",
+    "pr": 29,
+    "absorbed_pr": 30,
+    "scope": "合并前两轮视觉纠正与安卓修复，重测App、运营网页、跨端及安卓原生",
+    "record": "docs/testing/EDITORIAL_MERGE_20261021.md",
+    "tested_merge": "050d160",
+    "evidence": "docs/testing/evidence/editorial-integration-20261021/RESULTS.json"
   }
 }

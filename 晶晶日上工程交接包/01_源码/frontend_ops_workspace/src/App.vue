@@ -6,6 +6,7 @@
  */
 import { RouterView, useRouter } from 'vue-router'
 import { watch } from 'vue'
+import '@/styles/editorial.css'
 import { useSessionStore } from '@/stores/session'
 const session = useSessionStore()
 const router = useRouter()

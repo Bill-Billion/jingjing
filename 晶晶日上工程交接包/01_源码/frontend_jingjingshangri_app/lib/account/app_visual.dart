@@ -75,8 +75,10 @@ Widget appNotice(String text, {IconData icon = Icons.info_outline}) =>
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: const Color(0xFFF0E8DE),
-            borderRadius: BorderRadius.circular(10)),
+            color: const Color(0xFFE5E1D7),
+            border: const Border(
+                top: BorderSide(color: AccountTheme.border),
+                bottom: BorderSide(color: AccountTheme.border))),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Icon(icon, color: AccountTheme.accent, size: 24),
           const SizedBox(width: 12),
@@ -98,8 +100,7 @@ class _UploadBorder extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path()
-      ..addRRect(RRect.fromRectAndRadius(
-          Offset.zero & size, const Radius.circular(10)));
+      ..addRRect(RRect.fromRectAndRadius(Offset.zero & size, Radius.zero));
     final paint = Paint()
       ..color = AccountTheme.border
       ..style = PaintingStyle.stroke

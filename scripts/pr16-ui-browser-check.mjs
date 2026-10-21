@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Vue UI with actual PR16 isolated HTTP/MySQL. Synthetic external transports only. */
 import assert from 'node:assert/strict'
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
@@ -37,7 +38,7 @@ async function api(person, method, route, body, { party = person.actingPartyId |
   const r = await fetch(state.apiUrl + '/api/v1' + route, { method, headers: { Authorization: `Bearer ${person.token}`, 'Content-Type': 'application/json', 'Idempotency-Key': key, ...(party ? { 'X-Acting-Party': party } : {}), ...(version ? { 'If-Match': `"${version}"` } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }); const parsed = await r.json(); assert(r.ok, `${method} ${route}: ${r.status} ${parsed.error?.code || ''}`); return parsed.data
 }
 const id = key => typeof state.records[key] === 'string' ? state.records[key] : state.records[key].id
-async function go(page, route) { await page.goto(base + route); await page.locator('.workspace-nav').waitFor(); await page.getByRole('heading', { level: 1 }).waitFor(); await page.getByText('正在读取身份与制作记录…',{exact:true}).waitFor({state:'hidden'}) }
+async function go(page, route) { await page.goto(base + route); await ensureWorkspaceNavigation(page); await page.getByRole('heading', { level: 1 }).waitFor(); await page.getByText('正在读取身份与制作记录…',{exact:true}).waitFor({state:'hidden'}) }
 const post = (page, route) => page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/production' + route)
 async function data(r) { const j = await r.json(); assert(r.ok(), `UI ${r.status()} ${j.error?.code || ''}`); return j.data }
 async function shot(page, name) { await page.getByText('正在读取身份与制作记录…',{exact:true}).waitFor({state:'hidden'}); const file = `screenshots/pr16-web-${name}.png`; await page.screenshot({ path: resolve(evidence, file), fullPage: true }); screenshots.push({ file, viewport: page.viewportSize() }) }
@@ -72,7 +73,7 @@ async function run() {
     const p=seller.page;await go(p,`/production/projects/${project.id}/assignment`);await set(p,'production-new-assignee',state.accounts.producerMember.accountId);await p.getByTestId('production-assignment-reason').fill('仅合成测试：继续指派制作方当前成员。');await shot(p,'assignment-desktop')
     const seen=[],observe=r=>{if(r.method()==='POST'&&r.url().endsWith('/assignment'))seen.push({key:r.headers()['idempotency-key'],body:r.postData(),version:r.headers()['if-match']})};p.on('request',observe)
     await control('/response-loss?operation=assignment&mode=503');const first=post(p,`/projects/${project.id}/assignment`);await p.getByRole('button',{name:'保存负责人变更',exact:true}).click();assert.equal((await first).status(),503)
-    await p.getByRole('button',{name:'先核对原记录',exact:true}).waitFor();await p.locator('.workspace-nav').getByRole('link',{name:'我的作品',exact:true}).click();assert(new URL(p.url()).pathname.endsWith('/assignment'))
+    await p.getByRole('button',{name:'先核对原记录',exact:true}).waitFor();await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link',{name:'我的作品',exact:true}).click();assert(new URL(p.url()).pathname.endsWith('/assignment'))
     await p.getByRole('button',{name:'先核对原记录',exact:true}).click();const r=post(p,`/projects/${project.id}/assignment`);await p.getByRole('button',{name:'使用原编号重试',exact:true}).click();project=await data(await r);assert.equal(project.data.assignee_account_id,state.accounts.producerMember.accountId);assert.equal(seen.length,2);assert.deepEqual(seen[0],seen[1]);p.off('request',observe)
   })
   await check('实际被指派成员上传私有文本、提交不可覆盖剧本版、独立审片',async()=>{
@@ -113,7 +114,7 @@ async function run() {
   await check('角色撤权清除私有证据，所有主入口稳定且窄屏不溢出',async()=>{
     const rp=reviewer.page;await go(rp,'/production/reviews/projects/'+id('webReviewProject'));await control('/reviewer-permission?action=PRODUCTION_REVIEW&enabled=false');await rp.getByTestId('production-read-evidence').click();await rp.getByRole('alert').waitFor();assert.equal(await rp.getByTestId('production-contract-hash').count(),0);await control('/reviewer-permission?action=PRODUCTION_REVIEW&enabled=true')
     const p=buyer.page;await go(p,'/production/projects');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({label:n.textContent.trim(),href:n.getAttribute('href')})))
-    for(const link of links){await p.locator('.workspace-nav').getByRole('link',{name:link.label,exact:true}).click();await p.waitForURL(u=>u.pathname===link.href);assert.equal(await p.locator('.workspace-nav a').count(),links.length);assert.equal(await p.locator('.workspace-nav a[aria-current="page"]').count(),1);assert.equal(await p.getByRole('heading',{name:'页面不存在',exact:true}).count(),0)}
+    for(const link of links){await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link',{name:link.label,exact:true}).click();await p.waitForURL(u=>u.pathname===link.href);assert.equal(await p.locator('.workspace-nav a').count(),links.length);assert.equal(await p.locator('.workspace-nav a[aria-current="page"]').count(),1);assert.equal(await p.getByRole('heading',{name:'页面不存在',exact:true}).count(),0)}
     await p.setViewportSize({width:390,height:844});for(const route of ['/production/projects','/production/versions/'+id('webHistoryNewSample'),'/production/projects/'+id('webHistoryProject')]){await go(p,route);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await shot(p,'mobile-'+(route==='/production/projects'?'project-list':route.includes('/versions/')?'version':'project-detail'))}
   })
   await check('未登录直达制作项目，正常短信登录返回同一新版',async()=>{const a=await login('outsider','/production/projects');await a.page.getByRole('heading',{name:'我参与的制作项目',exact:true}).waitFor();assert.equal(new URL(a.page.url()).pathname,'/production/projects')})

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Vue UI with actual PR18 isolated HTTP/MySQL. Synthetic external transports only. */
 import assert from 'node:assert/strict'
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
@@ -42,7 +43,7 @@ async function api(person, method, route, body, { party = person.actingPartyId |
   const r = await fetch(state.apiUrl + '/api/v1' + route, { method, headers: { Authorization: `Bearer ${person.token}`, 'Content-Type': 'application/json', 'Idempotency-Key': key, ...(party ? { 'X-Acting-Party': party } : {}), ...(version ? { 'If-Match': `"${version}"` } : {}) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }); const parsed = await r.json(); assert(r.ok, `${method} ${route}: ${r.status} ${parsed.error?.code || ''}`); return parsed.data
 }
 const id = key => typeof state.records[key] === 'string' ? state.records[key] : state.records[key].id
-async function go(page, route) { activePage = page; await page.goto(base + route); await page.locator('.workspace-nav').waitFor(); await page.getByRole('heading', { level: 1 }).waitFor(); await page.getByText(/^正在读取身份与(?:制作|项目)记录…$/).waitFor({state:'hidden'}) }
+async function go(page, route) { activePage = page; await page.goto(base + route); await ensureWorkspaceNavigation(page); await page.getByRole('heading', { level: 1 }).waitFor(); await page.getByText(/^正在读取身份与(?:制作|项目)记录…$/).waitFor({state:'hidden'}) }
 const handled = promise => { promise.catch(() => {}); return promise }
 const post = (page, route) => handled(page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/projects' + route))
 async function data(r) { const j = await r.json(); assert(r.ok(), `UI ${r.status()} ${j.error?.code || ''}`); return j.data }

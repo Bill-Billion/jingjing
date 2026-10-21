@@ -23,6 +23,7 @@ try {
     R01_API_ORIGIN: api.origin,
     R01_BUYER_TOKEN: buyer.bearer_token,
     R01_BUYER_ACCOUNT_ID: buyer.account_id,
+    R01_BUYER_PARTY_ID: buyer.party_id,
   }), { mode: 0o600 });
   console.log('Prepared ignored R01 browser definitions. Use test/support/r01_browser_main.dart on loopback port 5000.');
 } catch {

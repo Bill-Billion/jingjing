@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
+import 'package:jingjingshangri_app/account/account_theme.dart';
 import 'package:jingjingshangri_app/customization/customization_api.dart';
 import 'package:jingjingshangri_app/customization/customization_page.dart';
 
@@ -315,8 +316,8 @@ void main() {
     await tester.ensureVisible(answer);
     await tester.pumpAndSettle();
     expect(tester.widget<SelectableText>(answer).data, '保存并正式提交');
-    expect(tester.widget<SelectableText>(answer).style?.color,
-        const Color(0xFF252923));
+    expect(
+        tester.widget<SelectableText>(answer).style?.color, AccountTheme.text);
     expect(
         tester
             .widget<SelectableText>(

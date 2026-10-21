@@ -13,6 +13,17 @@ val newBuildDir: Directory =
         .get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 
+// file_picker 11.0.3 skips KGP on AGP 9 although this project disables built-in Kotlin.
+// Keep local Android builds consistent with the existing acceptance build workflow.
+subprojects {
+    if (name == "file_picker") {
+        pluginManager.apply("org.jetbrains.kotlin.android")
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
+}
+
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)

@@ -7,6 +7,7 @@
  * Example: PR14_UI_STATE_FILE=.local/pr14-ui-runtime.json node scripts/pr14-ui-browser-check.mjs
  */
 import assert from 'node:assert/strict'
+import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
@@ -116,7 +117,7 @@ async function runPendingNavigation() {
   await page.getByRole('button', { name: '预留权利并保存本次合同', exact: true }).click()
   const first = await take(await firstResponse)
   await page.getByRole('button', { name: '重试原操作', exact: true }).waitFor()
-  await page.locator('.workspace-nav').getByRole('link', { name: '项目与绑定', exact: true }).click()
+  await ensureWorkspaceNavigation(page); await page.locator('.workspace-nav').getByRole('link', { name: '项目与绑定', exact: true }).click()
   await page.getByText('原操作的结果还未核对，暂不能切换页面。', { exact: false }).first().waitFor()
   assert.equal(new URL(page.url()).pathname, route)
   assert.equal(requests.length, 1)
@@ -130,7 +131,7 @@ async function runPendingNavigation() {
   assert.equal(requests[0].body, requests[1].body)
   assert.equal(again.current_status, 'HELD')
   page.off('request', observe)
-  await page.locator('.workspace-nav').getByRole('link', { name: '项目与绑定', exact: true }).click()
+  await ensureWorkspaceNavigation(page); await page.locator('.workspace-nav').getByRole('link', { name: '项目与绑定', exact: true }).click()
   await page.waitForURL('**/licensing/projects')
   // Capture final folded contract and the valid adaptation entry, without replaying other mutations.
   for (const [route, file] of [[`/licensing/grants/${state.records.grant.id}`, 'pr14-web-license-desktop.png'], [`/licensing/bindings/${state.records.binding.id}`, 'pr14-web-project-binding-desktop.png']]) {
@@ -237,7 +238,7 @@ async function runAdaptation() {
   assert.equal(draft.data.version.content.project_id, project.id)
   assert.equal(draft.data.version.reviews.length, 0)
   await shot(page, 'pr14-web-adaptation-saved.png')
-  await page.locator('.workspace-nav').getByRole('link', { name: '我的作品', exact: true }).click()
+  await ensureWorkspaceNavigation(page); await page.locator('.workspace-nav').getByRole('link', { name: '我的作品', exact: true }).click()
   await page.waitForURL('**/supply/works')
   assert.equal(await page.locator('.workspace-nav a').count(), menus)
   // A missing binding never grants permission merely because the buyer has a profile.
@@ -246,7 +247,7 @@ async function runAdaptation() {
   const save = page.getByRole('button', { name: '保存草稿', exact: true })
   if (await save.count()) assert(await save.isDisabled())
   assert.equal(await page.getByRole('heading', { name: '页面不存在', exact: true }).count(), 0)
-  await page.locator('.workspace-nav').getByRole('link', { name: '项目与绑定', exact: true }).click()
+  await ensureWorkspaceNavigation(page); await page.locator('.workspace-nav').getByRole('link', { name: '项目与绑定', exact: true }).click()
   await page.waitForURL('**/licensing/projects')
   assert.equal(await page.locator('.workspace-nav a').count(), menus)
 }
@@ -259,11 +260,7 @@ try {
   const owner = actors.owner, buyer = actors.otherOwner, reviewer = actors.reviewer, member = actors.member
   await check('全部旧新工作区菜单在桌面与390宽稳定显示、正确高亮及跳转', async () => {
     const page = buyer.page
-    async function openNavigation() {
-      const toggle = page.getByTestId('customization-menu-toggle')
-      if (await toggle.isVisible() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
-      await page.locator('.workspace-nav').waitFor()
-    }
+    async function openNavigation() { await ensureWorkspaceNavigation(page) }
     const links = await page.locator('.workspace-nav a').evaluateAll(nodes => nodes.map(node => ({ href: node.getAttribute('href'), label: node.textContent.trim() })))
     assert(links.length >= 11, 'Six previous menus plus at least five licensing menus must be present')
     assert.equal(new Set(links.map(link => link.href)).size, links.length)
@@ -286,7 +283,7 @@ try {
     await go(buyer.page, '/not-a-real-pr14-route', '页面不存在')
     await buyer.page.getByRole('button', { name: '回到工作台', exact: true }).click()
     await buyer.page.waitForURL('**/workspace')
-    await buyer.page.locator('.workspace-nav').waitFor()
+    await ensureWorkspaceNavigation(buyer.page)
   })
   let reservation, evidenceRow, grant, project, readingRow, createdProduct
   const newProductTitle = `浏览器新许可 ${suffix}（合成测试）`
@@ -506,7 +503,7 @@ try {
     assert(await owner.page.getByRole('button', { name: '重新核验并读取带水印正文', exact: true }).isDisabled())
     assert.equal(await owner.page.locator('.controlled-reader').count(), 0)
     await go(member.page, '/licensing/readings/' + readingRow.id)
-    await member.page.locator('.workspace-nav').waitFor()
+    await ensureWorkspaceNavigation(member.page)
     await waitText(member.page, '当前身份')
     assert.equal(await member.page.locator('.controlled-reader').count(), 0)
   })
