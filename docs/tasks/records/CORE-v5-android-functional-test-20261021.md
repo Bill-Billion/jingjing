@@ -26,3 +26,7 @@
 本轮未调用真实短信/付款/OSS，不是实际手机测试。未构建正式发布包；正式签名与网络配置须经队友实际审阅后再合入。阶段集中上传与检查状态以docs/status/CORE_CURRENT.md为准。
 
 [证据目录](../../testing/evidence/android-functional-20261021/README.md)
+
+## 集中上传记录
+
+2026-10-21，本批实现9d4b26d已上传[PR29](https://github.com/Bill-Billion/jingjing/pull/29)，基于integration/5fba043；远端检查已启动，实际结果见申请最新提交。正式构建配置待队友实际审阅，未合并或部署。本轮随机测试库、临时会话、测试API、MySQL和模拟器已停止并核对清理结果；下次人工测试重建资料即可。

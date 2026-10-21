@@ -1,6 +1,6 @@
 # 本轮从安卓模拟测试开始
 
-当前目录worktrees/android-test、分支core/v5-android-functional-test。[本轮结果及人工操作说明](testing/ANDROID_LOCAL_TEST_20261021.md)，[当前状态和分工](status/CORE_CURRENT.md)。用户已授权本侧配置、测试、修复并记录，随后双方人工测试。旧阶段的合入记录如下，不代表本批已上传。
+当前目录worktrees/android-test、分支core/v5-android-functional-test。[本轮结果及人工操作说明](testing/ANDROID_LOCAL_TEST_20261021.md)，[当前状态和分工](status/CORE_CURRENT.md)。用户已授权本侧配置、测试、修复并记录，随后双方人工测试。本批已集中上传[PR29](https://github.com/Bill-Billion/jingjing/pull/29)，待实际审阅；旧阶段合入记录如下，不代表本批已合入。
 
 ---
 
