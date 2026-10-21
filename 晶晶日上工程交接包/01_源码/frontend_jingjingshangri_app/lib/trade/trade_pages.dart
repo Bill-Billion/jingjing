@@ -15,7 +15,7 @@ import '../gigs/gig_widgets.dart';
 import '../production/production_api.dart';
 import '../production/production_models.dart';
 
-// Gallery: APP-13-01-v2. This route remains a return-based child of the five-tab shell.
+// Film editorial, pages 54–56. Details return to the shared five-tab shell.
 class TradeRecordsPage extends StatelessWidget {
   const TradeRecordsPage({super.key, this.kind = 'ORDER'});
   final String kind;
@@ -108,8 +108,7 @@ class _TradeListState extends State<_TradeList> {
       context,
       '订单与报价',
       [
-        Text('订单与报价', style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 8),
+        tradeHeading('订单目录', eyebrow: '每一笔约定，都有进度'),
         Text(
             '当前身份：${widget.session.party?['display_name'] ?? shortSupplyId(api.owner())}',
             style: const TextStyle(fontSize: 16, color: AccountTheme.muted)),
@@ -131,7 +130,7 @@ class _TradeListState extends State<_TradeList> {
                   }),
         const SizedBox(height: 16),
         for (final op in widget.session.tradePending)
-          supplyCard('有操作结果待核实', [
+          tradeSection('有操作结果待核实', [
             appNotice('原请求内容与编号已保留，先恢复核对，再办理新的操作。'),
             if (op['resultId'] != null) tradeFact('已知结果编号', op['resultId']),
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path'])),
@@ -139,13 +138,13 @@ class _TradeListState extends State<_TradeList> {
         if (error != null) supplyNote(error!, error: true),
         if (busy) const LinearProgressIndicator(),
         if (!busy && items.isEmpty && error == null)
-          supplyCard('暂无${tradeKinds[kind]}',
+          tradeSection('暂无${tradeKinds[kind]}',
               [supplyNote('当前身份还没有这类记录。报价由服务提供方在网页建立并经独立审核。')]),
         for (final r in items)
-          supplyCard(r.title, [
+          tradeSection(r.title, [
             Row(children: [
               const Icon(Icons.description_outlined,
-                  size: 40, color: AccountTheme.accent),
+                  size: 20, color: AccountTheme.text),
               const SizedBox(width: 16),
               Expanded(
                   child: Text('${tradeKinds[r.kind]} ${shortSupplyId(r.id)}',
@@ -369,7 +368,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                 ? '买方确认后形成订单，付款和签署另行办理。'
                 : '仅独立审核通过且在有效期内的指定买方可以确认。'),
       if (d['customization'] != null)
-        supplyCard('对应的正式故事', [
+        tradeSection('对应的正式故事', [
           tradeFact('需求编号', shortSupplyId(d['customization']['request_id'])),
           tradeFact(
               '正式提交编号', shortSupplyId(d['customization']['submission_id'])),
@@ -378,7 +377,7 @@ class _TradeDetailState extends State<_TradeDetail> {
           appNotice('报价固定到这一版正式故事，故事正文不会复制到交易列表。'),
         ]),
       if (d['commercial'] != null)
-        supplyCard('原商业接单约定', [
+        tradeSection('原商业接单约定', [
           tradeFact('约定编号', d['commercial']['offer_id']),
           gigScopeFacts(gigMap(d['commercial']['scope'])),
           gigCommissionFacts(gigMap(d['commercial']['commission'])),
@@ -395,7 +394,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                       '/gigs/record?recordId=${d['commercial']['offer_id']}'),
               outline: true),
         ]),
-      supplyCard('交易双方', [
+      tradeSection('交易双方', [
         tradeFact('提供方', shortSupplyId(r.merchant)),
         tradeFact('买方', r.buyer == null ? '—' : shortSupplyId(r.buyer!)),
         const Divider(),
@@ -405,7 +404,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                 ? '由服务提供方直接履约'
                 : '平台作为交易主体')
       ]),
-      supplyCard('报价明细', [
+      tradeSection('报价明细', [
         for (final l in r.lines) ...[
           tradeFact(l['title'], tradeMoney(l['total_minor']), accent: true),
           tradeFact(
@@ -414,29 +413,35 @@ class _TradeDetailState extends State<_TradeDetail> {
         ],
         tradeFact('总计', tradeMoney(d['total_minor']), accent: true)
       ]),
-      Card(
+      Container(
+          decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AccountTheme.border))),
           child: ExpansionTile(
+              tilePadding: EdgeInsets.zero,
               title: const Text('合同规格'),
               subtitle: const Text('查看交付规格与修改约定'),
-              childrenPadding: const EdgeInsets.all(16),
+              childrenPadding: EdgeInsets.zero,
               children: [
-            for (final l in r.lines)
-              supplyCard('服务规格 · ${l['title']}', [
-                tradeFact('档位 / 版本',
-                    '${l['specification']['service_tier']} / ${l['specification']['version']}'),
-                tradeFact('样片 / 成片',
-                    '${l['specification']['sample_seconds']} 秒 / ${l['specification']['final_seconds']} 秒'),
-                tradeFact('修改次数', l['specification']['revision_limit']),
-                tradeFact('交付内容',
-                    (l['specification']['deliverables'] as List).join('\n')),
-                ExpansionTile(title: const Text('完整服务条款'), children: [
-                  Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: ContractText(value: l['specification']['terms']))
-                ]),
-              ]),
-          ])),
-      supplyCard('付款节点', [
+                for (final l in r.lines)
+                  tradeSection('服务规格 · ${l['title']}', [
+                    tradeFact('档位 / 版本',
+                        '${l['specification']['service_tier']} / ${l['specification']['version']}'),
+                    tradeFact('样片 / 成片',
+                        '${l['specification']['sample_seconds']} 秒 / ${l['specification']['final_seconds']} 秒'),
+                    tradeFact('修改次数', l['specification']['revision_limit']),
+                    tradeFact(
+                        '交付内容',
+                        (l['specification']['deliverables'] as List)
+                            .join('\n')),
+                    ExpansionTile(title: const Text('完整服务条款'), children: [
+                      Padding(
+                          padding: const EdgeInsets.all(12),
+                          child:
+                              ContractText(value: l['specification']['terms']))
+                    ]),
+                  ]),
+              ])),
+      tradeSection('付款节点', [
         for (final i in tradeRows(d['installments'], max: 20)) ...[
           tradeFact(
               tradeTriggers[i['trigger']]!,
@@ -451,7 +456,7 @@ class _TradeDetailState extends State<_TradeDetail> {
           const Divider(),
         ]
       ]),
-      supplyCard('原约定与审核', [
+      tradeSection('原约定与审核', [
         tradeFact('有效至', tradeDate(d['expires_at'])),
         tradeFact('付款窗口', '${d['payment_window_minutes']} 分钟'),
         tradeFact('渠道', d['channel'] == 'ALIPAY' ? '支付宝' : 'Apple'),
@@ -459,7 +464,7 @@ class _TradeDetailState extends State<_TradeDetail> {
         if (d['review'] != null) tradeFact('独立审核理由', d['review']['reason'])
       ]),
       if (d['customization_finance'] != null)
-        supplyCard('固定定制财务约定', [
+        tradeSection('固定定制财务约定', [
           tradeFact('约定模式', '平台自营定制'),
           tradeFact('平台签约主体',
               shortSupplyId(d['customization_finance']['platform_party_id'])),
@@ -487,12 +492,12 @@ class _TradeDetailState extends State<_TradeDetail> {
   List<Widget> orderView(TradeRecord r) {
     final f = r.data['financial'];
     return [
-      supplyCard('订单 ${shortSupplyId(r.id)}',
+      tradeSection('订单 ${shortSupplyId(r.id)}',
           [tradeStatus(r), appNotice('款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')]),
       if (r.quote['customization'] != null)
         appNotice('订单已生成，合同内容已保存。请核对下方实际收款记录；生成订单不代表已付款或签署。当前页面尚未开放定制付款和开工办理。'),
       if (r.quote['commercial'] != null)
-        supplyCard('关联商业约定', [
+        tradeSection('关联商业约定', [
           tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
           tradeButton(
               '查看商业接单约定',
@@ -512,7 +517,7 @@ class _TradeDetailState extends State<_TradeDetail> {
       if (r.quote['customization'] == null &&
           tradeRows(r.quote['lines'])
               .any((l) => l['line_kind'] == 'PRODUCTION'))
-        supplyCard('制作进度', [
+        tradeSection('制作进度', [
           if (productionNotice != null) appNotice(productionNotice!),
           if (projects.isEmpty) appNotice('尚无可读取的关联制作项目。开工由商家按原订单与审核依据办理。'),
           for (final p in projects) ...[
@@ -548,7 +553,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                       }),
               outline: true)
         ]),
-      supplyCard('订单付款', [
+      tradeSection('订单付款', [
         tradeButton(
             '查看本订单结算约定',
             locked
@@ -566,7 +571,7 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeFact('已核实退款', tradeMoney(f['refunded_minor'])),
         tradeFact('净收款', tradeMoney(f['net_minor']))
       ]),
-      supplyCard('合同与许可', [
+      tradeSection('合同与许可', [
         tradeButton(
             '查看原合同内容', locked ? null : () => open(r.id, section: 'contract')),
         appNotice('合同内容已保存，尚未签署。付款不代替签约、身份和权属核验。'),
@@ -583,7 +588,7 @@ class _TradeDetailState extends State<_TradeDetail> {
       if (r.quote['customization'] == null &&
           r.isBuyer(api.owner()) &&
           ['OPEN', 'PARTIALLY_PAID'].contains(r.status))
-        supplyCard('办理付款记录', [
+        tradeSection('办理付款记录', [
           appNotice('当前客户端不能发起实际支付。可以建立并核对原付款记录，真实结果以服务器核对为准。未开通渠道将返回暂不可用。'),
           for (final i in tradeRows(r.quote['installments'], max: 20)) ...[
             Text(tradeTriggers[i['trigger']]!,
@@ -625,11 +630,11 @@ class _TradeDetailState extends State<_TradeDetail> {
                               ])),
           ],
         ]),
-      supplyCard('订单留言', [
+      tradeSection('订单留言', [
         operationCommentLink(context, 'TRADE', r.id, '订单留言',
             enabled: !locked, returned: load)
       ]),
-      supplyCard('原付款与售后退款', [
+      tradeSection('原付款与售后退款', [
         if (payments.isEmpty) supplyNote('尚无付款记录。'),
         for (final p in payments)
           ListTile(
@@ -658,7 +663,7 @@ class _TradeDetailState extends State<_TradeDetail> {
               ].contains(p.status)))
         tradeButton('取消未付款订单', locked ? null : cancel, outline: true),
       if (r.data['cancel_reason'] != null)
-        supplyCard('取消理由', [ContractText(value: r.data['cancel_reason'])]),
+        tradeSection('取消理由', [ContractText(value: r.data['cancel_reason'])]),
     ];
   }
 
@@ -683,13 +688,13 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       tradeBanner('合同内容已保存，尚未签署', '这是本订单返回的合同快照，用于留存与核对。',
           icon: Icons.description_outlined),
-      supplyCard('合同信息', [
+      tradeSection('合同信息', [
         tradeFact('合同编号', c['id']),
         tradeFact('买方', r.buyer),
         tradeFact('服务方', r.merchant),
         tradeFact('保存时间', tradeDate(c['created_at']))
       ]),
-      supplyCard('已成交报价与付款节点', [
+      tradeSection('已成交报价与付款节点', [
         appNotice('价格、交付规格、修改与退款约定以保存内容为准。'),
         for (final line in r.lines) ...[
           tradeFact(line['title'], tradeMoney(line['total_minor']),
@@ -705,7 +710,7 @@ class _TradeDetailState extends State<_TradeDetail> {
               tradeMoney(tradeRows(installment['allocations'])
                   .fold(0, (sum, row) => sum + (row['amount_minor'] as int)))),
       ]),
-      supplyCard('规格 / 交付 / 修改 / 退款条款', [
+      tradeSection('规格 / 交付 / 修改 / 退款条款', [
         for (final line in r.lines) ...[
           tradeFact('服务', line['title']),
           tradeFact('档位 / 版本',
@@ -719,23 +724,28 @@ class _TradeDetailState extends State<_TradeDetail> {
         ],
         appNotice('具体责任与退款条件请展开完整保存合同核对。'),
       ]),
-      supplyCard('采用规则与版本', [
+      tradeSection('采用规则与版本', [
         for (final rule in c['rule_contents'])
           tradeFact('规则 / 版本', '${rule['rule_key']} / ${rule['version']}'),
       ]),
-      Card(
+      Container(
+          decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AccountTheme.border))),
           child: ExpansionTile(
-        key: const Key('trade-contract-content'),
-        title: const Text('展开完整保存合同'),
-        subtitle: const Text('查看全部原约定、规则和保存内容'),
-        childrenPadding: const EdgeInsets.all(16),
-        children: [ContractText(value: c, fieldLabels: tradeContractLabels)],
-      )),
+            key: const Key('trade-contract-content'),
+            tilePadding: EdgeInsets.zero,
+            title: const Text('展开完整保存合同'),
+            subtitle: const Text('查看全部原约定、规则和保存内容'),
+            childrenPadding: const EdgeInsets.symmetric(vertical: 16),
+            children: [
+              ContractText(value: c, fieldLabels: tradeContractLabels)
+            ],
+          )),
     ];
   }
 
   List<Widget> paymentView(TradeRecord r) => [
-        supplyCard('本次金额', [
+        tradeSection('本次金额', [
           Text(tradeMoney(r.amount),
               style: const TextStyle(
                   fontSize: 36,
@@ -745,7 +755,7 @@ class _TradeDetailState extends State<_TradeDetail> {
           tradeFact('付款节点', r.data['installment_key']),
           tradeFact('付款编号', r.id)
         ]),
-        supplyCard('付款渠道', [
+        tradeSection('付款渠道', [
           tradeFact('渠道', r.data['provider'] == 'ALIPAY' ? '支付宝' : 'Apple'),
           tradeFact('环境', r.data['environment'] == 'SANDBOX' ? '测试环境' : '正式环境')
         ]),
@@ -756,7 +766,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                 : '请先核对这笔付款，不要重复支付。客户端不能发起实际支付。',
             icon: Icons.receipt_long_outlined),
         if (r.data['provider'] == 'APPLE')
-          supplyCard('核对 Apple 交易', [
+          tradeSection('核对 Apple 交易', [
             appNotice('请填写这笔真实付款的 Apple 交易编号；没有交易编号时请等待，不填写示例编号。'),
             TextField(
                 controller: transaction,
@@ -797,7 +807,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                     ? '服务器已核实退款；后续许可使用仍需核对退款影响。'
                     : '申请、批准和执行均不代表已实际退款，最终以服务器核对为准。',
             icon: Icons.receipt_long_outlined),
-        supplyCard('退款申请', [
+        tradeSection('退款申请', [
           tradeFact('退款编号', r.id),
           tradeFact('原付款', r.data['payment_id']),
           tradeFact('金额', tradeMoney(r.amount), accent: true),
@@ -805,7 +815,7 @@ class _TradeDetailState extends State<_TradeDetail> {
             tradeFact('明细 ${a['line_id']}', tradeMoney(a['amount_minor'])),
           tradeFact('原因', r.data['reason'])
         ]),
-        supplyCard('独立审核', [
+        tradeSection('独立审核', [
           tradeFact(
               '审核结论',
               r.data['review'] == null
@@ -839,7 +849,7 @@ class _TradeDetailState extends State<_TradeDetail> {
   List<Widget> legacyView(TradeRecord r) => [
         tradeBanner(tradeStatuses[r.status]!, '历史材料仅用于保留与核对，不追认为支付渠道已确认到账。',
             icon: Icons.history),
-        supplyCard('历史原始依据', [
+        tradeSection('历史原始依据', [
           tradeFact('来源系统', r.data['source_system']),
           tradeFact('原订单编号', r.data['source_order_id']),
           for (final l in tradeRows(r.data['original_lines'])) ...[
@@ -854,8 +864,8 @@ class _TradeDetailState extends State<_TradeDetail> {
             const Divider(),
           ]
         ]),
-        supplyCard('原条款', [ContractText(value: r.data['original_terms'])]),
-        supplyCard('历史材料审核', [
+        tradeSection('原条款', [ContractText(value: r.data['original_terms'])]),
+        tradeSection('历史材料审核', [
           tradeFact('附件编号', r.data['evidence_asset_id']),
           appNotice('私有附件仅供独立审核人员在网页按权限下载。'),
           if (r.data['review'] != null)
@@ -873,10 +883,22 @@ class _TradeDetailState extends State<_TradeDetail> {
                 ? '交易详情'
                 : '${tradeKinds[r.kind]}详情',
         [
+          if (r != null)
+            tradeHeading(
+                widget.section == 'contract'
+                    ? '这次约定的原文'
+                    : switch (r.kind) {
+                        'QUOTE' => '这份报价',
+                        'ORDER' => '这次约定',
+                        'PAYMENT' => '付款记录',
+                        'REFUND' => '售后与退款',
+                        _ => '保留原来的约定',
+                      },
+                eyebrow: '${tradeKinds[r.kind]} / ${shortSupplyId(r.id)}'),
           if (busy) const LinearProgressIndicator(),
           if (error != null) supplyNote(error!, error: true),
           for (final op in widget.session.tradePending)
-            supplyCard('操作结果待核实', [
+            tradeSection('操作结果待核实', [
               appNotice('请恢复原请求核对，不要修改原内容或重复建立付款。'),
               if (op['resultId'] != null) tradeFact('已知结果编号', op['resultId']),
               tradeButton(

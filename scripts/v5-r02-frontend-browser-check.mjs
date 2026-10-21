@@ -19,7 +19,7 @@ assert(/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(requestId || ''), 'U
 const web = process.env.CUSTOMIZATION_WEB_URL || 'http://127.0.0.1:5173'
 const app = process.env.CUSTOMIZATION_APP_URL || 'http://127.0.0.1:5000'
 assert.equal(new URL(web).origin, 'http://127.0.0.1:5173')
-assert.equal(new URL(app).origin, 'http://127.0.0.1:5000')
+assert(['http://127.0.0.1:5000', 'http://127.0.0.1:5500'].includes(new URL(app).origin), 'Local App acceptance port only')
 const output = resolve(process.env.CUSTOMIZATION_EVIDENCE_DIR || join(root, 'output/playwright/v5-r02'))
 await mkdir(output, { recursive: true })
 const checks = [], errors = [], writes = [], screenshots = [], contexts = []
@@ -209,6 +209,7 @@ try {
   await merchant.getByTestId('trade-quote-expires').fill(localExpiry)
   await merchant.getByTestId('trade-quote-window').fill('30')
   await shot(merchant, 'web-story-quote-form-desktop', true)
+  if (process.env.CUSTOMIZATION_VISUAL_CAPTURE === '1') { await merchant.setViewportSize({ width: 390, height: 844 }); await shot(merchant, 'web-story-quote-form-390', true); await merchant.setViewportSize({ width: 1440, height: 1000 }) }
   waiting = response(merchant, 'POST', '/trade/quotes')
   await merchant.getByTestId('trade-quote-submit').click()
   const quoted = await received(await waiting); quoteId = quoted.id
@@ -217,6 +218,7 @@ try {
   const reviewer = await webPage('reviewer', '/trade/reviews/quotes/' + quoteId)
   await reviewer.getByTestId('trade-review-decision').selectOption('APPROVED')
   await reviewer.getByTestId('trade-review-reason').fill('仅合成验收：独立核对同一故事版本和明确规格、价格、财务条款。')
+  if (process.env.CUSTOMIZATION_VISUAL_CAPTURE === '1') { await shot(reviewer, 'web-independent-quote-pending-desktop', true); await reviewer.setViewportSize({ width: 390, height: 844 }); await shot(reviewer, 'web-independent-quote-pending-390', true); await reviewer.setViewportSize({ width: 1440, height: 1000 }) }
   waiting = response(reviewer, 'POST', '/trade/records/' + quoteId + '/reviews')
   await reviewer.getByTestId('trade-review-submit').click()
   const approved = await received(await waiting)
@@ -227,6 +229,7 @@ try {
   user = await appPage('/customization/' + requestId)
   await press(user, button(user, '查看这份需求的报价与订单'))
   await press(user, button(user, '查看规格、价格与条款'))
+  if (process.env.CUSTOMIZATION_VISUAL_CAPTURE === '1') { await topApp(user); await shot(user, 'app-quote-detail-390') }
   await press(user, button(user, '确认报价形成订单'))
   await user.getByRole('alertdialog').waitFor()
   waiting = response(user, 'POST', '/trade/quotes/' + quoteId + '/acceptance')

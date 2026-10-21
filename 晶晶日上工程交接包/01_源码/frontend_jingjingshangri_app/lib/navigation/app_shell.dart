@@ -50,7 +50,13 @@ class _AppShellState extends State<AppShell> {
   final _visited = <int>{};
   (int, String?, String?)? _sessionContext;
   static const _labels = ['广场', '试镜', '通告', '消息', '我的'];
-  static const _routes = ['/square', '/audition', '/notices', '/messages', '/my'];
+  static const _routes = [
+    '/square',
+    '/audition',
+    '/notices',
+    '/messages',
+    '/my'
+  ];
   static const _icons = [
     Icons.grid_view_outlined,
     Icons.video_camera_front_outlined,
@@ -90,24 +96,74 @@ class _AppShellState extends State<AppShell> {
 
   Widget _entry(
           String title, String description, IconData icon, VoidCallback open) =>
-      Card(
-          child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Icon(icon, color: AccountTheme.accent, size: 32),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Text(description,
-                style:
-                    const TextStyle(color: AccountTheme.muted, height: 1.5))),
-        trailing: const Icon(Icons.chevron_right, color: AccountTheme.muted),
-        onTap: open,
-      ));
+      Material(
+          color: AccountTheme.canvas,
+          child: InkWell(
+              onTap: open,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: const BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: AccountTheme.border))),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                            Text(title,
+                                style: const TextStyle(
+                                    fontFamily: AccountTheme.serif,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 6),
+                            Text(description,
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AccountTheme.muted,
+                                    height: 1.6)),
+                          ])),
+                      const SizedBox(width: 16),
+                      const Icon(Icons.north_east,
+                          size: 20, color: AccountTheme.text),
+                    ]),
+              )));
 
   Widget _heading(String title) => Padding(
-      padding: const EdgeInsets.fromLTRB(0, 12, 0, 16),
+      padding: const EdgeInsets.only(top: 28, bottom: 4),
       child: Text(title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)));
+          style: const TextStyle(
+              fontFamily: AccountTheme.serif,
+              fontSize: 23,
+              fontWeight: FontWeight.w700)));
+
+  Widget _storyFeature() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        const Divider(color: AccountTheme.text, height: 16),
+        const Padding(
+            padding: EdgeInsets.only(top: 18, bottom: 12),
+            child: Text('平台制作 / 由专员对接',
+                style: TextStyle(fontSize: 11, color: AccountTheme.accent))),
+        const Text('让故事\n与你有关',
+            style: TextStyle(
+                fontFamily: AccountTheme.serif,
+                fontSize: 42,
+                fontWeight: FontWeight.w700,
+                height: 1.18)),
+        const SizedBox(height: 18),
+        Image.asset('assets/images/editorial-rain.webp',
+            height: 205,
+            fit: BoxFit.cover,
+            excludeFromSemantics: true,
+            alignment: const Alignment(0, -.25)),
+        Container(
+            color: AccountTheme.text,
+            padding: const EdgeInsets.all(14),
+            child: const Text('写下自己的故事，交由平台制作专员接收。',
+                style: TextStyle(
+                    color: AccountTheme.canvas, fontSize: 13, height: 1.6))),
+      ]);
 
   List<Widget> _currentTools() => [
         _heading('已有业务'),
@@ -132,8 +188,7 @@ class _AppShellState extends State<AppShell> {
       ];
 
   List<Widget> _home(AccountSession session) => [
-        const ManuscriptHero(
-            title: '让故事与你有关', subtitle: '写下自己的故事，\n由平台制作专员接收。'),
+        _storyFeature(),
         const SizedBox(height: 16),
         _entry(
           '把我的故事拍成片',
@@ -166,7 +221,7 @@ class _AppShellState extends State<AppShell> {
       ];
 
   List<Widget> _audition() => [
-        supplyBusinessIntro('找到适合这段故事的人', '公开可约艺人、含交通的总价和预约接拒流程正在接入。'),
+        supplyBusinessIntro('试镜', '公开可约艺人、含交通的总价和预约接拒流程正在接入。'),
         appNotice('试镜预约暂未开放。预约、艺人接受、付款核实和后续出演授权会分别确认。'),
         _entry(
           '已有订单',
@@ -183,7 +238,7 @@ class _AppShellState extends State<AppShell> {
       ];
 
   List<Widget> _notices() => [
-        supplyBusinessIntro('通告与合作', '剧、商演、商单、活动、招募和平台通告将分别提供发布与投稿入口。'),
+        supplyBusinessIntro('通告', '剧、商演、商单、活动、招募和平台通告将分别提供发布与投稿入口。'),
         appNotice('六类通告与单向投稿正在接入。下面保留已有业务入口，各自按原约定办理。'),
         _entry(
           '公开项目与角色',
@@ -225,9 +280,6 @@ class _AppShellState extends State<AppShell> {
   Widget supplyBusinessIntro(String title, String description) => Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(title,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 10),
         Text(description,
             style: const TextStyle(
                 fontSize: 14, color: AccountTheme.muted, height: 1.6)),
@@ -250,7 +302,7 @@ class _AppShellState extends State<AppShell> {
               ])
                 Expanded(
                     child: InkWell(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.zero,
                         onTap: () => _open(item.$3),
                         child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -279,34 +331,42 @@ class _AppShellState extends State<AppShell> {
               onPressed: () => _open('/login'), child: const Text('手机号登录')),
           const SizedBox(height: 24),
         ] else ...[
-          Card(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(children: [
-                    const CircleAvatar(
-                        radius: 28,
-                        backgroundColor: Color(0xFFF0E8DE),
-                        child: Icon(Icons.person_outline,
-                            size: 32, color: AccountTheme.accent)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Text(session.account?['display_name'] ?? '我的账号',
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w700)),
-                          const SizedBox(height: 6),
-                          const Text('我的账号',
-                              style: TextStyle(
-                                  fontSize: 12, color: AccountTheme.muted)),
-                        ])),
-                    IconButton(
-                        tooltip: '复制账号编号',
-                        onPressed: () => Clipboard.setData(
-                            ClipboardData(text: session.account?['id'] ?? '')),
-                        icon: const Icon(Icons.copy_outlined, size: 20)),
-                  ]))),
+          Container(
+              color: AccountTheme.text,
+              padding: const EdgeInsets.fromLTRB(20, 22, 16, 22),
+              child:
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                const Text('我',
+                    style: TextStyle(
+                        fontFamily: AccountTheme.serif,
+                        color: AccountTheme.canvas,
+                        fontSize: 86,
+                        fontWeight: FontWeight.w700,
+                        height: 1.15)),
+                const SizedBox(width: 20),
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text(session.account?['display_name'] ?? '我的账号',
+                          style: const TextStyle(
+                              color: AccountTheme.canvas,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 8),
+                      const Text('把每一次出场，留成作品。',
+                          style: TextStyle(
+                              color: AccountTheme.canvas,
+                              fontSize: 11,
+                              height: 1.7)),
+                    ])),
+                IconButton(
+                    tooltip: '复制账号编号',
+                    onPressed: () => Clipboard.setData(
+                        ClipboardData(text: session.account?['id'] ?? '')),
+                    icon: const Icon(Icons.copy_outlined,
+                        size: 18, color: AccountTheme.canvas)),
+              ])),
           Card(
               child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -337,10 +397,10 @@ class _AppShellState extends State<AppShell> {
         _entry('业务通知', '查看当前账号和办事身份获准的业务变化。', Icons.notifications_outlined,
             () => _open('/operations/notifications')),
         _heading('我的故事'),
-        _entry('我的故事与草稿', '找回草稿、查看提交内容和受理进度。',
-            Icons.drafts_outlined, () => _open('/customization')),
-        _entry('发起制作需求', '选一个品类，先写下你的故事。',
-            Icons.edit_note_outlined, () => _open('/customization/new')),
+        _entry('我的故事与草稿', '找回草稿、查看提交内容和受理进度。', Icons.drafts_outlined,
+            () => _open('/customization')),
+        _entry('发起制作需求', '选一个品类，先写下你的故事。', Icons.edit_note_outlined,
+            () => _open('/customization/new')),
         _menuGrid(),
         _heading('商单与直接合作'),
         _entry('商单通知', '查看商单暂停与直接合作结束记录', Icons.notifications_outlined,
@@ -399,9 +459,9 @@ class _AppShellState extends State<AppShell> {
         children: [
           if (index == 0)
             Padding(
-                padding: const EdgeInsets.only(bottom: 24),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.zero,
                     onTap: () => _open('/account'),
                     child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -431,15 +491,19 @@ class _AppShellState extends State<AppShell> {
         child: Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
-          centerTitle: false,
+          centerTitle: _selected == 0,
+          titleSpacing: 16,
+          toolbarHeight: _selected > 0 && _selected < 4 ? 78 : 56,
           title: Text(_selected == 0 ? '晶晶日上' : _labels[_selected],
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+              style: TextStyle(
+                  fontFamily: AccountTheme.serif,
+                  fontSize: _selected > 0 && _selected < 4 ? 42 : 20,
+                  fontWeight: FontWeight.w700)),
           actions: [
             IconButton(
                 tooltip: _selected == 4 ? '设置与帮助' : '通知',
-                onPressed: () =>
-                    _open(_selected == 4 ? '/settings' : '/operations/notifications'),
+                onPressed: () => _open(
+                    _selected == 4 ? '/settings' : '/operations/notifications'),
                 icon: Icon(_selected == 4
                     ? Icons.settings_outlined
                     : Icons.notifications_outlined)),
@@ -447,7 +511,7 @@ class _AppShellState extends State<AppShell> {
       body: SafeArea(
           child: Center(
               child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 760),
+                  constraints: const BoxConstraints(maxWidth: 560),
                   child: KeyedSubtree(
                       key: ValueKey(_sessionContext),
                       child: IndexedStack(
@@ -461,30 +525,37 @@ class _AppShellState extends State<AppShell> {
                                           enabled: index == _selected,
                                           child: _section(index, session)))
                                   : const SizedBox.shrink())))))),
-      bottomNavigationBar: NavigationBar(
-          animationDuration: MediaQuery.disableAnimationsOf(context)
-              ? Duration.zero
-              : const Duration(milliseconds: 140),
-          height: 72,
-          elevation: 0,
-          backgroundColor: AccountTheme.surface,
-          indicatorColor: Colors.transparent,
-          selectedIndex: _selected,
-          onDestinationSelected: _select,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: List.generate(
-              5,
-              (i) => NavigationDestination(
-                  key: Key('app-tab-$i'),
-                  icon: Icon(_icons[i]),
-                  selectedIcon: Icon([
-                    Icons.grid_view,
-                    Icons.video_camera_front,
-                    Icons.article,
-                    Icons.chat_bubble,
-                    Icons.person
-                  ][i]),
-                  label: _labels[i]))),
+      bottomNavigationBar: DecoratedBox(
+          decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: AccountTheme.border))),
+          child: NavigationBar(
+              animationDuration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 140),
+              height: 64,
+              elevation: 0,
+              backgroundColor: AccountTheme.canvas,
+              indicatorColor: Colors.transparent,
+              selectedIndex: _selected,
+              onDestinationSelected: _select,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: List.generate(
+                  5,
+                  (i) => NavigationDestination(
+                      key: Key('app-tab-$i'),
+                      icon: Icon(_icons[i]),
+                      selectedIcon: Stack(clipBehavior: Clip.none, children: [
+                        Icon(_icons[i]),
+                        const Positioned(
+                            bottom: -20,
+                            left: 10,
+                            child: SizedBox(
+                                width: 3,
+                                height: 3,
+                                child:
+                                    ColoredBox(color: AccountTheme.vermilion))),
+                      ]),
+                      label: _labels[i])))),
     ));
   }
 }
@@ -661,7 +732,7 @@ class _ChildPage extends StatelessWidget {
           body: SafeArea(
               child: Center(
                   child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 760),
+                      constraints: const BoxConstraints(maxWidth: 560),
                       child: ListView(
                           padding: const EdgeInsets.all(16),
                           children: children))))));

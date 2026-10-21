@@ -14,7 +14,7 @@ const fixture = JSON.parse(await readFile(process.env.CUSTOMIZATION_ACCESS_FILE,
 assert.equal(fixture.synthetic_only, true)
 assert.equal(new URL(fixture.base_url).hostname, '127.0.0.1')
 const base = process.env.CUSTOMIZATION_APP_URL || 'http://127.0.0.1:5000'
-assert.equal(new URL(base).origin, 'http://127.0.0.1:5000')
+assert(['http://127.0.0.1:5000', 'http://127.0.0.1:5500'].includes(new URL(base).origin), 'Local App acceptance port only')
 const output = resolve(process.env.CUSTOMIZATION_EVIDENCE_DIR || join(root, 'output/playwright/v5-r01-app-final'))
 await mkdir(output, { recursive: true })
 const verifyIntake = process.argv.includes('--verify-intake')

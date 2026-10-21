@@ -1,9 +1,9 @@
-> 本轮集中交付：[PR28](https://github.com/Bill-Billion/jingjing/pull/28)。本文件记录随代码上传时的验证结果；实际合并状态以该申请及远端integration为准。申请合入后双方从integration继续，不再拼分支。人工测试与正式上线仍未完成。
+# 从这里开始：前两轮视觉修正，再接第三轮人物业务
 
-# 从这里开始：前后端统一版本的集中测试
+当前前端分支ux/v5-r01-r02-editorial，起点integration/5fba043。用户2026-10-21明确要求按“先锋电影刊物”原设计修正前两轮已做页面；本机实现、功能回归和逐页视觉检查已通过，正在集中交付远端。
 
-当前目录worktrees/joint-test，分支core/v5-joint-functional-test；本侧已经按用户授权拉取前端，整合后端，实际测试并修复。先看[测试结果、问题清单及人工下一步](testing/JOINT_FUNCTIONAL_TEST_20261021.md)，再看[本侧状态](status/CORE_CURRENT.md)和[队友状态](status/EXPERIENCE_CURRENT.md)。上传和合并的最新核验在本侧状态中。
+- [打开原设计、修正前后和逐页截图](testing/evidence/v5-editorial/index.html)；[验收说明与技术结果](testing/evidence/v5-editorial/README.md)。
+- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[本轮任务](tasks/records/UX-v5-r01-r02-editorial-20261021.md)、[主线进展](status/MAINLINE_PROGRESS.md)。
+- 第三轮按[人物与机构受托交接](collaboration/V5_R03_HANDOFF.md)继续，当前共同版本已含真实接口；其中旧分支起点说明是历史，不再自行拼未审分支。第三轮未开始实施，不把已有供给/剧本许可页面算成新人物页面。
 
-本次包括队友PR24/26以及最新后端完整依赖。上一版要求分别拼接前后端的做法已被这个统一版本替代。人工测试仍在下一阶段；真实支付、OSS及原生安卓未验，后续V5新页面仍有缺口。
-
-[如何重建测试资料](testing/JOINT_TEST_20261022.md)；[主线历史](status/MAINLINE_PROGRESS.md)。本次不部署、不启用真实外部服务、不上传口令或临时数据库。
+PR24/26已关闭，其代码通过[PR28](https://github.com/Bill-Billion/jingjing/pull/28)进入共同版本。本轮保留队友文案、元输入及后端整合。双方人工测试操作仍见[共同功能测试](testing/JOINT_FUNCTIONAL_TEST_20261021.md)，Core状态见[本侧状态](status/CORE_CURRENT.md)。本轮不推main、不部署，真实手机和外部服务单列。

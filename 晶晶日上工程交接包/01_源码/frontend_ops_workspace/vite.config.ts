@@ -17,6 +17,13 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // App and workbench share the supplied OFL font without a second binary.
+    fs: {
+      allow: [
+        fileURLToPath(new URL('.', import.meta.url)),
+        fileURLToPath(new URL('../frontend_jingjingshangri_app/assets/fonts', import.meta.url)),
+      ],
+    },
     /**
      * 开发代理。
      * 为什么用代理而不是让前端直连后端：后端对跨域来源是白名单制

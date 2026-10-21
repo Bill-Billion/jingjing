@@ -6,6 +6,7 @@ import 'package:jingjingshangri_app/account/account_page.dart';
 import 'package:jingjingshangri_app/app.dart';
 import 'package:jingjingshangri_app/pages/wallet/wallet_page.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
+import 'package:jingjingshangri_app/account/account_theme.dart';
 import 'package:jingjingshangri_app/pages/login/login_page.dart';
 import 'package:jingjingshangri_app/pages/profile/profile_page.dart';
 import 'package:jingjingshangri_app/services/user_provider.dart';
@@ -339,7 +340,7 @@ void main() {
     await close(tester);
   });
 
-  testWidgets('邀请弹窗白底，账号或截止时间未填完整时灰置且不发送', (tester) async {
+  testWidgets('邀请弹窗采用纸面底色，账号或截止时间未填完整时灰置且不发送', (tester) async {
     final adapter = FakeAccountAdapter();
     final session = AccountSession(api: adapter.createApi());
     await tester
@@ -353,7 +354,7 @@ void main() {
     await tester.tap(find.text('填写账号编号和截止时间'));
     await frames(tester);
     final context = tester.element(find.byType(AlertDialog));
-    expect(Theme.of(context).dialogTheme.backgroundColor, Colors.white);
+    expect(Theme.of(context).dialogTheme.backgroundColor, AccountTheme.canvas);
     FilledButton send() =>
         tester.widget<FilledButton>(find.widgetWithText(FilledButton, '发送邀请'));
     expect(send().onPressed, isNull);
@@ -498,7 +499,7 @@ void main() {
     await pump(tester, session, const MainScaffold(initialTab: 4));
     await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
-    expect(find.text('让故事与你有关'), findsOneWidget);
+    expect(find.text('让故事\n与你有关'), findsOneWidget);
     expect(
         find.descendant(
             of: find.byType(NavigationBar), matching: find.text('试镜')),

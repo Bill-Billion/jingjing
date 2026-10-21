@@ -11,6 +11,7 @@ const _synthetic = bool.fromEnvironment('R01_SYNTHETIC_ONLY');
 const _apiOrigin = String.fromEnvironment('R01_API_ORIGIN');
 const _buyerToken = String.fromEnvironment('R01_BUYER_TOKEN');
 const _buyerId = String.fromEnvironment('R01_BUYER_ACCOUNT_ID');
+const _appPort = int.fromEnvironment('R01_APP_PORT', defaultValue: 5000);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,8 @@ Future<void> main() async {
   if (!_synthetic ||
       Uri.base.scheme != 'http' ||
       !['127.0.0.1', 'localhost'].contains(Uri.base.host) ||
-      Uri.base.port != 5000 ||
+      !const [5000, 5500].contains(_appPort) ||
+      Uri.base.port != _appPort ||
       apiOrigin?.scheme != 'http' ||
       apiOrigin?.host != '127.0.0.1' ||
       _buyerToken.isEmpty ||
