@@ -20,7 +20,7 @@ function mysqlReady(db) {
   return async () => {
     await db.execute('SELECT 1');
     const schema = await status(db);
-    return schema.migrations.length > 0 && schema.migrations.every((migration) => migration.status === 'APPLIED');
+    return schema.migrations.length > 0 && schema.migrations.every((migration) => migration.status === 'APPLIED') && await require('../infrastructure/database/recovery-guard').recoveryAllowed(db);
   };
 }
 module.exports = { createOperationsRouter, mysqlReady };

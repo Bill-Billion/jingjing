@@ -7,5 +7,6 @@ const root=path.resolve(__dirname,'..');
 const files=fs.readdirSync(path.join(root,'test')).filter(n=>/\.test\.(cjs|mjs|js)$/.test(n)).sort().map(n=>'test/'+n);
 if (!files.length) throw new Error('No backend test files found');
 const env={...process.env,NODE_OPTIONS:[process.env.NODE_OPTIONS,'--require ./scripts/test-network-guard.cjs'].filter(Boolean).join(' ')};
-const result=spawnSync(process.execPath,['--test',...files],{cwd:root,env,stdio:'inherit',windowsHide:true});
+// Bound simultaneous isolated databases and HTTP servers; do not scale load to host CPU count.
+const result=spawnSync(process.execPath,['--test','--test-concurrency=4',...files],{cwd:root,env,stdio:'inherit',windowsHide:true});
 process.exit(result.status===null?1:result.status);

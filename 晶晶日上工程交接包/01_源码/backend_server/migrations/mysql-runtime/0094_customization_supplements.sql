@@ -1,0 +1,27 @@
+CREATE TABLE customization_supplements (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ request_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ base_submission_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ opened_version INT UNSIGNED NOT NULL,
+ items_json JSON NOT NULL,
+ items_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ draft_answers_json JSON NOT NULL,
+ draft_answers_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ responses_json JSON NOT NULL,
+ responses_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ current_status ENUM('OPEN','RESPONDED') NOT NULL DEFAULT 'OPEN',
+ open_slot TINYINT GENERATED ALWAYS AS (CASE WHEN current_status='OPEN' THEN 1 ELSE NULL END) STORED,
+ requested_by CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ requested_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ response_submission_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ responded_at DATETIME(3) NULL,
+ UNIQUE KEY customization_one_open_supplement(request_id,open_slot),
+ UNIQUE KEY customization_supplement_history(request_id,opened_version),
+ FOREIGN KEY(request_id) REFERENCES customization_requests(id),
+ FOREIGN KEY(base_submission_id) REFERENCES customization_submissions(id),
+ FOREIGN KEY(response_submission_id) REFERENCES customization_submissions(id),
+ FOREIGN KEY(requested_by) REFERENCES identity_accounts(id),
+ CHECK(opened_version>0),
+ CHECK((current_status='OPEN' AND response_submission_id IS NULL AND responded_at IS NULL) OR
+       (current_status='RESPONDED' AND response_submission_id IS NOT NULL AND responded_at IS NOT NULL))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart' show FontLoader;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
+import 'support/historical_layout_host.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:jingjingshangri_app/theme/app_theme.dart';
@@ -70,9 +70,12 @@ Future<void> _shoot(
   addTearDown(tester.view.reset);
 
   final up = user ?? UserProvider();
+  final session =
+      await historicalLayoutSession(tester, loggedIn: up.isLoggedIn);
   await tester.pumpWidget(
-    ChangeNotifierProvider<UserProvider>.value(
-      value: up,
+    HistoricalLayoutProviders(
+      user: up,
+      session: session,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
@@ -93,8 +96,9 @@ Future<void> _shoot(
     await tester.pump(const Duration(milliseconds: 100));
   }
 
-  final boundary = tester
-      .renderObject(find.byType(RepaintBoundary).first) as RenderRepaintBoundary;
+  expectCurrentShell(tester, page);
+  final boundary = tester.renderObject(find.byType(RepaintBoundary).first)
+      as RenderRepaintBoundary;
   late Uint8List bytes;
   await tester.runAsync(() async {
     final image = await boundary
@@ -112,7 +116,8 @@ Future<void> _shoot(
   final file = File('${dir.path}/$name.png');
   file.writeAsBytesSync(bytes);
   // ignore: avoid_print
-  print('SHOT ${file.path}  ${(w * pixelRatio).toInt()}x${(h * pixelRatio).toInt()}  ${bytes.length}B');
+  print(
+      'SHOT ${file.path}  ${(w * pixelRatio).toInt()}x${(h * pixelRatio).toInt()}  ${bytes.length}B');
 }
 
 void main() {

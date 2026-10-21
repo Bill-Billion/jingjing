@@ -1,0 +1,3713 @@
+{
+  "synthetic_only": true,
+  "selection": "Representative actual loopback responses; UUIDs only exist in the disposable test database.",
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "9a9c137d-9b3e-486a-b83e-77125cdcaff0",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c22a6891-dd85-4aa6-98f2-3c87f0a5ac56",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "b76786d804eab1adf1f48fc0984361826075bd5e696afbf606b19992a11300f3",
+          "data": {
+            "rule": {
+              "benefit": {
+                "credit_minor": 1000,
+                "description": "synthetic one service credit",
+                "service_code": "synthetic-personal-clip",
+                "valid_days": 30
+              },
+              "extension_days": 7,
+              "max_people": 40,
+              "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy.",
+              "source_ref": "synthetic:Q11",
+              "version": "synthetic-r10"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules/c22a6891-dd85-4aa6-98f2-3c87f0a5ac56/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "47500d04-a8f5-4bc8-90d7-708d2950c6e4",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules/c22a6891-dd85-4aa6-98f2-3c87f0a5ac56/review",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "992c0394-f3d9-4790-9b16-07ac5ced015d",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c22a6891-dd85-4aa6-98f2-3c87f0a5ac56",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "62002cf96a4a911bfd8327c3feca035b1c6c19cad26da8f779fefc7547d1c234",
+          "data": {
+            "rule": {
+              "benefit": {
+                "valid_days": 30,
+                "description": "synthetic one service credit",
+                "credit_minor": 1000,
+                "service_code": "synthetic-personal-clip"
+              },
+              "version": "synthetic-r10",
+              "max_people": 40,
+              "source_ref": "synthetic:Q11",
+              "extension_days": 7,
+              "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+            },
+            "review": {
+              "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "reason": "independent synthetic"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rules",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "6ae993bc-3494-452d-8f53-866d76ec361a",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "c22a6891-dd85-4aa6-98f2-3c87f0a5ac56",
+              "content_sha256": "62002cf96a4a911bfd8327c3feca035b1c6c19cad26da8f779fefc7547d1c234",
+              "rule": {
+                "benefit": {
+                  "valid_days": 30,
+                  "description": "synthetic one service credit",
+                  "credit_minor": 1000,
+                  "service_code": "synthetic-personal-clip"
+                },
+                "version": "synthetic-r10",
+                "max_people": 40,
+                "source_ref": "synthetic:Q11",
+                "extension_days": 7,
+                "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "4fb14228-6ca9-491a-8e76-746edcd043da",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "object_version": 1,
+          "current_status": "OPEN",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:21:34.915Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 0,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "828fddd3-7531-44e2-99c5-6d2826c0ddfb",
+          "actor": {
+            "account_id": "f2601cd0-afb0-46f9-8477-0f229bb0f580"
+          },
+          "acting_party": "02282028-7179-41a0-ad61-5287c23ccb61"
+        },
+        "error": {
+          "code": "COCREATION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/members",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "3b6a984d-154f-4214-af79-6d30101c3802",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "COCREATION_INVITATION_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "f88e3266-4752-4004-b0cf-251a9483ab52",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "object_version": 1,
+          "current_status": "OPEN",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:21:34.915Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 0,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "project_id": null,
+          "members": [],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/invitations",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "d057c842-b7d9-4034-9fae-201f3e3ee8d6",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "c7224763-98c0-4b24-89fd-ef3caded7ed6",
+          "kind": "INVITE",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+          "current_status": "INVITED",
+          "object_version": 1,
+          "content_sha256": "cbdfd86a11c768bb5a6da039d471523e6129eb030287a2c8bfd354302591a434",
+          "data": {
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "room_id": "d4bcc613-9e34-4316-8227-575427a4353f"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/members",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "3382e535-bc76-4c66-8452-451d410de2a5",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+          "kind": "MEMBER",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7b826371-7783-4aaf-9207-ec912c8dc162",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "c26f279b739c0806a34bb93d5364d8637a3e24f20170b95b2d06c6caf4a3218a",
+          "data": {
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "private_story": "PRIVATE 0",
+            "material_asset_ids": [
+              "35ea5e70-ab6d-4db8-ba7d-062687e3ab48"
+            ],
+            "sharing_allowed": true,
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+            "confirmed_at": "2026-10-20T02:11:35.005Z",
+            "withdrawal": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/members/ad1b66f4-070f-404c-890b-dc6e69ddd241",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "161041c9-984c-4a01-900c-275ea9a71b2f",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "ARTIST_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/members/ad1b66f4-070f-404c-890b-dc6e69ddd241",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "96a86f14-1ffe-454c-a0e6-b7f5cbd47074",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+          "kind": "MEMBER",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7b826371-7783-4aaf-9207-ec912c8dc162",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "c26f279b739c0806a34bb93d5364d8637a3e24f20170b95b2d06c6caf4a3218a",
+          "data": {
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "withdrawal": null,
+            "confirmed_at": "2026-10-20T02:11:35.005Z",
+            "private_story": "PRIVATE 0",
+            "sharing_allowed": true,
+            "material_asset_ids": [
+              "35ea5e70-ab6d-4db8-ba7d-062687e3ab48"
+            ],
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+          },
+          "cast": [
+            {
+              "usage": "EXISTING_MATERIAL",
+              "avatar_id": "b593dd36-39a2-4ba5-a0da-6e80b820ea5a",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "look_version_id": "1dcf527c-231f-460d-a191-8cb38338375b",
+              "voice_version_id": null,
+              "supply_consent_id": "2132e9f2-c6cf-4aa5-923e-50ed6f2bfdfb",
+              "artist_consent_ids": [
+                "55e4bdf0-4bee-4860-adbe-a0ea6806fd8c"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/members",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "0e69eae4-0266-4172-8605-a8c30455ad68",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+              "kind": "MEMBER",
+              "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "7b826371-7783-4aaf-9207-ec912c8dc162",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "c26f279b739c0806a34bb93d5364d8637a3e24f20170b95b2d06c6caf4a3218a",
+              "data": {
+                "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.005Z",
+                "private_story": "PRIVATE 0",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "35ea5e70-ab6d-4db8-ba7d-062687e3ab48"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/invitations",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "8009fb8a-9b33-4398-b556-72e17908ce6c",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "c7224763-98c0-4b24-89fd-ef3caded7ed6",
+              "kind": "INVITE",
+              "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "INVITED",
+              "object_version": 1,
+              "content_sha256": "cbdfd86a11c768bb5a6da039d471523e6129eb030287a2c8bfd354302591a434",
+              "data": {
+                "room_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+                "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "0fac8e1c-e1b3-44b1-8182-162419cf3605",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "title": "Synthetic shared film",
+              "deadline": "2026-10-20T02:21:34.915Z",
+              "current_status": "OPEN",
+              "object_version": 2
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/members",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "962559e7-b2f3-4767-b4fc-2a124f8cb72a",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "COCREATION_SOURCE_ALREADY_USED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/members/ad1b66f4-070f-404c-890b-dc6e69ddd241/assets/35ea5e70-ab6d-4db8-ba7d-062687e3ab48",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "17bee61a-5156-424e-9141-525c62edd0f4",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_PRODUCTION_NOT_ASSIGNED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/members/ad1b66f4-070f-404c-890b-dc6e69ddd241",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "366c7176-a5d0-4269-9460-d49bf770519a",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "INVALID_CUSTOMIZATION_CAST",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/members/ad1b66f4-070f-404c-890b-dc6e69ddd241",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "967e8e8e-963d-41fa-9e99-d3a7a7307d6c",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+          "kind": "MEMBER",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7b826371-7783-4aaf-9207-ec912c8dc162",
+          "current_status": "ACTIVE",
+          "object_version": 2,
+          "content_sha256": "2082cea37e05ef2bada563ea98a92aace4ed6b0832f4bab23f43f824f627eb7f",
+          "data": {
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "withdrawal": null,
+            "confirmed_at": "2026-10-20T02:11:36.429Z",
+            "private_story": "PRIVATE updated",
+            "sharing_allowed": true,
+            "material_asset_ids": [
+              "35ea5e70-ab6d-4db8-ba7d-062687e3ab48"
+            ],
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/close",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "2c4c7388-9cb2-4dd9-a34b-1c34eb5a2f85",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_CUTOFF_NOT_DUE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/close",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "a70723a2-c7ba-44e1-8105-f9bb9794056d",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "object_version": 24,
+          "current_status": "READY",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:21:34.915Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 21,
+            "eligible_count": 21,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 0,
+            "benefit_remaining": 0,
+            "payment_confirmed": true
+          },
+          "cutoff": {
+            "at": "2026-10-20T02:21:34.915Z",
+            "eligible_count": 21,
+            "benefit_eligible": true
+          },
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "b8c38118-ef56-4b92-a2b7-2df989da6a62",
+              "person_id": "044c11be-22c0-46fe-9ac8-5b82fe6492d3",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "0a3d79f8-5284-4260-8d34-079144c6a4e3",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "91be9fd4-d223-4d4b-adf6-2d172a2e7d42",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "8b4a4886-892f-4e7a-86d2-4816ef3e5c6b",
+              "person_id": "46e4d4bf-630c-4771-92b0-e0acdd7efac8",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c29f1dd4-005d-4ccc-a2b9-c9670e36614e",
+              "person_id": "5aded907-826f-4ecc-b99c-5c22f7a6f3a2",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "cd8cef98-05c2-40a4-ac77-3242cdddb8f7",
+              "person_id": "73f022f1-2227-458e-8ea5-0f47c250aa88",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "53fef4f2-c302-41d8-85a3-959170087062",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "1920d1b1-372c-489e-8c05-0382e275ed1e",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ca49d127-dba1-48a0-aade-98db0ef0d397",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "32cbad1d-2420-4cac-8371-da557044b021",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b9f533e4-7dea-4dcf-bb74-0e1f0025ee2e",
+              "person_id": "9fb9b95c-d107-4aa1-b3ad-4c4c9a4e6049",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "37384e60-bceb-43d8-9c24-17de2ff7c4f4",
+              "person_id": "c50d5799-bc91-4887-9b0a-bc93691da875",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "15105444-813a-4803-a315-5aac90f3649a",
+              "person_id": "c957559d-ec11-47ea-82b1-8f715ea0bf5e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b51975b1-d4be-47fe-868f-10d557c860c4",
+              "person_id": "d022a02f-afd7-4abb-9017-c51fb7f3c8c6",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "9c482de5-6d33-41b8-9f82-a50819d3e84c",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "658d8e41-42b6-456d-af7e-560b4814c645",
+              "person_id": "d7137397-23b7-4147-83dc-3de4e9f86e44",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c5c11177-6e83-4811-a11d-2ae6f5fbcbce",
+              "person_id": "e7e75dee-40f1-4417-b616-7b21cda2f6fe",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "64cfc3a2-bda8-4352-95c1-51ec8a794cf2",
+              "person_id": "e8005c09-e8e2-4985-a58c-a4312c716454",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "51700b9c-e3e7-46c2-8f97-19660eed55e8",
+              "person_id": "eacf1c45-3bb1-4566-87c9-b79df8269978",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "062e844f-98f6-422e-b70e-07af10ab23b7",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/benefits",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "b644a32b-9ee3-4e3d-b40f-a19c2d1a7495",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "89bd5dc7-3fb6-4d96-b745-520792ae1f30",
+              "kind": "BENEFIT",
+              "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "AVAILABLE",
+              "object_version": 1,
+              "content_sha256": "8a7b6c2119ba246576ef065225924de638e39966be404f84ac542b03f4955518",
+              "data": {
+                "units": 1,
+                "delivery": null,
+                "non_cash": true,
+                "issued_at": "2026-10-20T02:21:35.000Z",
+                "expires_at": "2026-11-19T02:21:35.000Z",
+                "valid_days": 30,
+                "description": "synthetic one service credit",
+                "credit_minor": 1000,
+                "service_code": "synthetic-personal-clip",
+                "referral_stackable": false
+              }
+            }
+          ],
+          "cash_withdrawal_enabled": false,
+          "redemption_round": 11
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "a15eb6c8-4ad9-4b7f-af8d-8f1025f7795b",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "object_version": 24,
+          "current_status": "READY",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:21:34.915Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 21,
+            "eligible_count": 21,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 0,
+            "benefit_remaining": 0,
+            "payment_confirmed": true
+          },
+          "cutoff": {
+            "at": "2026-10-20T02:21:34.915Z",
+            "eligible_count": 21,
+            "benefit_eligible": true
+          },
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "b8c38118-ef56-4b92-a2b7-2df989da6a62",
+              "person_id": "044c11be-22c0-46fe-9ac8-5b82fe6492d3",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "0a3d79f8-5284-4260-8d34-079144c6a4e3",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "91be9fd4-d223-4d4b-adf6-2d172a2e7d42",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "8b4a4886-892f-4e7a-86d2-4816ef3e5c6b",
+              "person_id": "46e4d4bf-630c-4771-92b0-e0acdd7efac8",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c29f1dd4-005d-4ccc-a2b9-c9670e36614e",
+              "person_id": "5aded907-826f-4ecc-b99c-5c22f7a6f3a2",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "cd8cef98-05c2-40a4-ac77-3242cdddb8f7",
+              "person_id": "73f022f1-2227-458e-8ea5-0f47c250aa88",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "53fef4f2-c302-41d8-85a3-959170087062",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "1920d1b1-372c-489e-8c05-0382e275ed1e",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ca49d127-dba1-48a0-aade-98db0ef0d397",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "32cbad1d-2420-4cac-8371-da557044b021",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b9f533e4-7dea-4dcf-bb74-0e1f0025ee2e",
+              "person_id": "9fb9b95c-d107-4aa1-b3ad-4c4c9a4e6049",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "37384e60-bceb-43d8-9c24-17de2ff7c4f4",
+              "person_id": "c50d5799-bc91-4887-9b0a-bc93691da875",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "15105444-813a-4803-a315-5aac90f3649a",
+              "person_id": "c957559d-ec11-47ea-82b1-8f715ea0bf5e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b51975b1-d4be-47fe-868f-10d557c860c4",
+              "person_id": "d022a02f-afd7-4abb-9017-c51fb7f3c8c6",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "9c482de5-6d33-41b8-9f82-a50819d3e84c",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "658d8e41-42b6-456d-af7e-560b4814c645",
+              "person_id": "d7137397-23b7-4147-83dc-3de4e9f86e44",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c5c11177-6e83-4811-a11d-2ae6f5fbcbce",
+              "person_id": "e7e75dee-40f1-4417-b616-7b21cda2f6fe",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "64cfc3a2-bda8-4352-95c1-51ec8a794cf2",
+              "person_id": "e8005c09-e8e2-4985-a58c-a4312c716454",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "51700b9c-e3e7-46c2-8f97-19660eed55e8",
+              "person_id": "eacf1c45-3bb1-4566-87c9-b79df8269978",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "062e844f-98f6-422e-b70e-07af10ab23b7",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/invitations",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "3ca69195-65bc-4f82-aee5-0dd8402d87c7",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_ENROLLMENT_CLOSED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "7a17f9fc-e782-44d2-87b7-79d398f5d735",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "kind": "PROJECT",
+          "project_id": null,
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "fe41c05164b8a6c6ea6fb3ccd1e3fab31e0aa8e9d4cb40f886f23a534727b3a4",
+          "data": {
+            "line_id": "film",
+            "buyer_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+            "merchant_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "script_version_id": "4b179143-3204-4915-a7e1-8a081e5b1ffa",
+            "license_project_id": null,
+            "assignee_account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+            "purpose": "PRIVATE",
+            "territory": "CN",
+            "consent_ids": [],
+            "evidence_asset_id": "f4161e9c-e3d3-4489-8337-8f7cf91f4cb4",
+            "specification": {
+              "terms": "synthetic non-commercial",
+              "version": "synthetic1",
+              "deliverables": [
+                "synthetic manual film"
+              ],
+              "service_tier": "test",
+              "final_seconds": 90,
+              "revision_limit": 1,
+              "sample_seconds": 20,
+              "customization_delivery": {
+                "version": "V5-Q05-Q06",
+                "source_ref": "synthetic:test-only",
+                "acceptance_hours": 168,
+                "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+                "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+              }
+            },
+            "quantity": 1,
+            "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+            "current": {},
+            "accepted": {},
+            "revisions": {},
+            "change_requests": 0,
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/ef9efe7d-55a9-42f1-8164-dac381bdec01/reviews",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "15ad2ed7-3ed2-4679-9187-22a86088aa02",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "kind": "PROJECT",
+          "project_id": null,
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "READY",
+          "object_version": 2,
+          "content_sha256": "f962c84d03a32761d640e938999ba73c258e221d08fa35e2116c0d04e9082a9f",
+          "data": {
+            "review": {
+              "decision": "APPROVED",
+              "reason": "synthetic independent",
+              "verification": {
+                "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+                "identity_verified": true,
+                "rights_verified": true,
+                "signatures_verified": true
+              },
+              "account_id": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "current": {},
+            "line_id": "film",
+            "purpose": "PRIVATE",
+            "accepted": {},
+            "quantity": 1,
+            "revisions": {},
+            "territory": "CN",
+            "consent_ids": [],
+            "specification": {
+              "terms": "synthetic non-commercial",
+              "version": "synthetic1",
+              "deliverables": [
+                "synthetic manual film"
+              ],
+              "service_tier": "test",
+              "final_seconds": 90,
+              "revision_limit": 1,
+              "sample_seconds": 20,
+              "customization_delivery": {
+                "version": "V5-Q05-Q06",
+                "source_ref": "synthetic:test-only",
+                "acceptance_hours": 168,
+                "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+                "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+              }
+            },
+            "buyer_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+            "change_requests": 0,
+            "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+            "evidence_asset_id": "f4161e9c-e3d3-4489-8337-8f7cf91f4cb4",
+            "merchant_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "script_version_id": "4b179143-3204-4915-a7e1-8a081e5b1ffa",
+            "license_project_id": null,
+            "assignee_account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/ef9efe7d-55a9-42f1-8164-dac381bdec01/fulfillment",
+      "schema": "CustomizationFulfillmentResponse",
+      "value": {
+        "meta": {
+          "request_id": "2c6f61da-f6f5-40d6-bcce-10a1e13e2578",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "object_version": 2,
+          "cast": [],
+          "state": "PLANNED",
+          "terms": {
+            "version": "V5-Q05-Q06",
+            "source_ref": "synthetic:test-only",
+            "acceptance_hours": 168,
+            "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+            "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+          },
+          "format": "v5-customization-fulfillment-v1",
+          "source": {
+            "request_id": "3b25098b-aa73-44b8-9deb-3be297cbdbcd",
+            "submission_id": "624d9b39-c503-4071-b4ce-099db7bdc99b",
+            "content_sha256": "eb305732f6f890f5e95d4c1b4697358ad78260a2ea57c91e70e315d06885e003"
+          },
+          "receipt": null,
+          "cocreation": {
+            "room_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+            "cutoff_sha256": "91b24e6de91510c835cef5e890c07f5df77ee609455a1bf01c6a607511637208"
+          },
+          "completion": null,
+          "started_at": null,
+          "cancellation": null,
+          "cast_snapshot": [],
+          "creative_changes": 0,
+          "uses_identifiable_people": true,
+          "additional_creative_changes": 0,
+          "cases": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/ef9efe7d-55a9-42f1-8164-dac381bdec01",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "631f81dd-8e2b-4f2e-a822-5104828b2f48",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "kind": "PROJECT",
+          "project_id": null,
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "READY",
+          "object_version": 2,
+          "content_sha256": "f962c84d03a32761d640e938999ba73c258e221d08fa35e2116c0d04e9082a9f",
+          "data": {
+            "review": {
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "synthetic independent",
+              "decision": "APPROVED",
+              "account_id": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "verification": {
+                "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+                "rights_verified": true,
+                "identity_verified": true,
+                "signatures_verified": true
+              }
+            },
+            "current": {},
+            "line_id": "film",
+            "purpose": "PRIVATE",
+            "accepted": {},
+            "quantity": 1,
+            "revisions": {},
+            "territory": "CN",
+            "consent_ids": [],
+            "specification": {
+              "terms": "synthetic non-commercial",
+              "version": "synthetic1",
+              "deliverables": [
+                "synthetic manual film"
+              ],
+              "service_tier": "test",
+              "final_seconds": 90,
+              "revision_limit": 1,
+              "sample_seconds": 20,
+              "customization_delivery": {
+                "version": "V5-Q05-Q06",
+                "source_ref": "synthetic:test-only",
+                "acceptance_hours": 168,
+                "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+                "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+              }
+            },
+            "buyer_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+            "change_requests": 0,
+            "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+            "evidence_asset_id": "f4161e9c-e3d3-4489-8337-8f7cf91f4cb4",
+            "merchant_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "script_version_id": "4b179143-3204-4915-a7e1-8a081e5b1ffa",
+            "license_project_id": null,
+            "assignee_account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/ef9efe7d-55a9-42f1-8164-dac381bdec01/start",
+      "schema": "CustomizationFulfillmentResponse",
+      "value": {
+        "meta": {
+          "request_id": "4479a37b-0a08-4621-96ec-74a0e788e7f3",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "object_version": 3,
+          "cast": [],
+          "state": "STARTED",
+          "terms": {
+            "version": "V5-Q05-Q06",
+            "source_ref": "synthetic:test-only",
+            "acceptance_hours": 168,
+            "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+            "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+          },
+          "format": "v5-customization-fulfillment-v1",
+          "source": {
+            "request_id": "3b25098b-aa73-44b8-9deb-3be297cbdbcd",
+            "submission_id": "624d9b39-c503-4071-b4ce-099db7bdc99b",
+            "content_sha256": "eb305732f6f890f5e95d4c1b4697358ad78260a2ea57c91e70e315d06885e003"
+          },
+          "receipt": null,
+          "cocreation": {
+            "room_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+            "cutoff_sha256": "91b24e6de91510c835cef5e890c07f5df77ee609455a1bf01c6a607511637208"
+          },
+          "completion": null,
+          "started_at": "2026-10-20T02:21:35.000Z",
+          "cancellation": null,
+          "cast_snapshot": [],
+          "creative_changes": 0,
+          "uses_identifiable_people": true,
+          "additional_creative_changes": 0,
+          "cases": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/materials",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "f494e276-c7b1-4faf-957c-424dfb2888c5",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "062e844f-98f6-422e-b70e-07af10ab23b7",
+              "kind": "MEMBER",
+              "owner_party_id": "d46751a5-5ebb-449b-ab1f-fdaa60fe70d9",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "8901cf17-ea8a-400b-b157-4f968c5bfce7",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "1b3e3e935492d96076fef8030166cdeacb7e8ada69494fd7d3e6440ceaa6486d",
+              "data": {
+                "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.144Z",
+                "private_story": "PRIVATE 2",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "5350a956-26a4-465e-97a1-2147dd623ae6"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "8a5d001b-899c-442d-a57a-5c18fa3acd33",
+                  "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+                  "look_version_id": "07d7b4e9-0313-4a09-aa4a-c2d0bc9d2de3",
+                  "voice_version_id": null,
+                  "supply_consent_id": "be8501de-062f-4726-99a0-624ca03e5daf",
+                  "artist_consent_ids": [
+                    "45458a37-d360-4f61-8298-86e0f25b222d"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "0a3d79f8-5284-4260-8d34-079144c6a4e3",
+              "kind": "MEMBER",
+              "owner_party_id": "583b91f8-54b5-409e-ba0a-2c855338df6e",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "6c48f78b-ddc6-4c22-929f-79e8e696b3a6",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "44043d2ea41348924d41ba714af19ae923c9e3cadf2b093e9e8d84a5118193d1",
+              "data": {
+                "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.209Z",
+                "private_story": "PRIVATE 4",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "2303e858-405a-4405-8f1e-bdbeed89d986"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "9bcb93d2-3c76-4ca9-8149-1bafff688913",
+                  "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+                  "look_version_id": "142f29a7-139d-451a-8419-8966a4fe5267",
+                  "voice_version_id": null,
+                  "supply_consent_id": "6f7f9129-6255-42f4-8906-d4b098cddb73",
+                  "artist_consent_ids": [
+                    "622ded75-b581-4198-8b4e-b20cb4eaab9b"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "15105444-813a-4803-a315-5aac90f3649a",
+              "kind": "MEMBER",
+              "owner_party_id": "660b9e04-3739-4e75-9b26-b70bfed459fc",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "2e033b09-b2cc-4a99-aed9-c900228e6cb1",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "fe5be6fc5557d1d8f11785072bdaa1ed2ba52416ea0ae17789952236938edc0e",
+              "data": {
+                "person_id": "c957559d-ec11-47ea-82b1-8f715ea0bf5e",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.745Z",
+                "private_story": "PRIVATE 14",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "86437202-d0b5-4660-b888-302d8c4a3a59"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "6ee0c329-d05b-4bc8-abed-1d095a7e6733",
+                  "person_id": "c957559d-ec11-47ea-82b1-8f715ea0bf5e",
+                  "look_version_id": "39f182a7-539d-47b2-b626-b1c098ed36d3",
+                  "voice_version_id": null,
+                  "supply_consent_id": "5374ea61-b38b-4aae-ab27-fb5c0fd332e5",
+                  "artist_consent_ids": [
+                    "4b459ab8-4291-410d-8860-79e7d189d439"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "1920d1b1-372c-489e-8c05-0382e275ed1e",
+              "kind": "MEMBER",
+              "owner_party_id": "8c36223f-8256-4005-ae0f-7708153a0447",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "581a9d59-9a90-43f8-9579-4c67fb27dedd",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "a192b76157431b8dc399bdd62b17bb7d12884d897c36f335da574f96551771f0",
+              "data": {
+                "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.244Z",
+                "private_story": "PRIVATE 5",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "ba39c824-a51b-4e43-b857-9c82bbd64bf2"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "2173e38c-e28e-40f7-927f-cb098e53b382",
+                  "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+                  "look_version_id": "5332e526-6973-4b41-bda4-2547ad8fa384",
+                  "voice_version_id": null,
+                  "supply_consent_id": "140ef8d4-a6e7-45fb-bda2-e016ab5ca141",
+                  "artist_consent_ids": [
+                    "d2701a20-1807-46de-a88f-b4ce0e255b3a"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "32cbad1d-2420-4cac-8371-da557044b021",
+              "kind": "MEMBER",
+              "owner_party_id": "fb69b72c-41dc-4469-a19c-297ad74126c7",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "78262b6c-b171-493c-b2dc-8406ea524056",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "115e891fa4741168f5ece1160f464cbabd3bb8eef87aa3ec7438929ddfebbae5",
+              "data": {
+                "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.115Z",
+                "private_story": "PRIVATE 1",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "1c0fac6b-a311-4a0a-8b30-2e0af7dfa0e1"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "4ecac88b-bf48-4894-a1a2-fe8811948a69",
+                  "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+                  "look_version_id": "fd81f017-2a5f-43a0-aebe-94d911d0c960",
+                  "voice_version_id": null,
+                  "supply_consent_id": "3554322f-78aa-41dc-9cda-332ec6d807b5",
+                  "artist_consent_ids": [
+                    "e45ef1be-5ccd-4674-9668-5869873d4abe"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "37384e60-bceb-43d8-9c24-17de2ff7c4f4",
+              "kind": "MEMBER",
+              "owner_party_id": "bf42777d-2123-49c3-9949-7aa8a3a8151c",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "32acaee5-4100-4d3b-9350-341743e20849",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "bee157728870873b39e8a91a026ad1a58a4b03e0afc92db6de54d6ee9ede745e",
+              "data": {
+                "person_id": "c50d5799-bc91-4887-9b0a-bc93691da875",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:36.253Z",
+                "private_story": "PRIVATE 20",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "184a3c7e-8f37-4ca6-86c7-14605607228e"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "baffad39-ed30-4fae-9a71-a7faf1ebf58b",
+                  "person_id": "c50d5799-bc91-4887-9b0a-bc93691da875",
+                  "look_version_id": "cb352d2d-6812-45a2-bb36-82bd7da21dd9",
+                  "voice_version_id": null,
+                  "supply_consent_id": "37df7874-9949-4dcc-8314-fb922807506d",
+                  "artist_consent_ids": [
+                    "60ed6fcf-2000-4854-a4b4-3fa0f25c854a"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "51700b9c-e3e7-46c2-8f97-19660eed55e8",
+              "kind": "MEMBER",
+              "owner_party_id": "6d14e8ea-3a93-4692-94ad-febfb47c5b22",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "fa4c4834-513f-4875-895b-b243110d3a2c",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "10b11535c8c57b7560917da0d7cfa182af5a41cdcd9f585bf0dfcea1b99c6db8",
+              "data": {
+                "person_id": "eacf1c45-3bb1-4566-87c9-b79df8269978",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.803Z",
+                "private_story": "PRIVATE 15",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "ffdd1dba-de35-429d-8419-0af8208285e1"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "a868118a-9d91-42ef-b5b4-2a99b1988ecb",
+                  "person_id": "eacf1c45-3bb1-4566-87c9-b79df8269978",
+                  "look_version_id": "58fa9181-185a-4a88-937b-eef3123205b6",
+                  "voice_version_id": null,
+                  "supply_consent_id": "436d0ff1-264a-4d91-a0d4-84d3d84324ce",
+                  "artist_consent_ids": [
+                    "63c75b49-df28-4c32-923f-ddbc3e187636"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "53fef4f2-c302-41d8-85a3-959170087062",
+              "kind": "MEMBER",
+              "owner_party_id": "7e20df16-9228-4c98-889b-65a175c28324",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "4eb91c5e-f2e1-4db7-81f2-d75bf61cfe6f",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "677d1e170271200628d566cd9e021cd5532204e43133811e3b31bd598c62ca10",
+              "data": {
+                "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.371Z",
+                "private_story": "PRIVATE 8",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "bd4fcab9-8105-46cd-8d8e-f1e7bf081511"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "aa959e90-afb1-40ec-be2f-89f3079a82a0",
+                  "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+                  "look_version_id": "c4c20b12-833c-4db7-a62b-0148267c89a3",
+                  "voice_version_id": null,
+                  "supply_consent_id": "15fef036-6d07-49e8-b8d6-4ce59cec881c",
+                  "artist_consent_ids": [
+                    "07e2d92e-f2c4-4b9c-8392-f6f6f068f2a7"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "64cfc3a2-bda8-4352-95c1-51ec8a794cf2",
+              "kind": "MEMBER",
+              "owner_party_id": "1be891c6-ed8a-4740-b1ac-df23c1f798a0",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "87c1bc8d-fd5d-4716-ae08-a36f086d8306",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "35c5c26db9379d2ebad5e24f9d48cd15fc2a4a009505d9d8e837779eeff2d1c8",
+              "data": {
+                "person_id": "e8005c09-e8e2-4985-a58c-a4312c716454",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:35.523Z",
+                "private_story": "PRIVATE 10",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "43854477-0333-4c78-80b2-c4f9a9f89769"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "65984d68-2bc8-4c44-9c72-6a327498ff7b",
+                  "person_id": "e8005c09-e8e2-4985-a58c-a4312c716454",
+                  "look_version_id": "4a9f7da9-18f0-4ab8-b050-cf562ce3efe1",
+                  "voice_version_id": null,
+                  "supply_consent_id": "39de9e3e-965d-4e24-89ab-d6d174a8851e",
+                  "artist_consent_ids": [
+                    "59ea17eb-985f-43c9-96b7-a5bcd9794de6"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "658d8e41-42b6-456d-af7e-560b4814c645",
+              "kind": "MEMBER",
+              "owner_party_id": "e0e79b55-3d29-4a2e-9639-4f516ffa7af5",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "af859476-24df-47cc-9605-87ee8c04750b",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "content_sha256": "74df934a92c5c09a1844bd82542d8d1f43c5e5bb679f81eca7151f649e0d22c8",
+              "data": {
+                "person_id": "d7137397-23b7-4147-83dc-3de4e9f86e44",
+                "withdrawal": null,
+                "confirmed_at": "2026-10-20T02:11:36.125Z",
+                "private_story": "PRIVATE 19",
+                "sharing_allowed": true,
+                "material_asset_ids": [
+                  "84a020ef-b5d6-4da9-af03-e16b20bec907"
+                ],
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              },
+              "cast": [
+                {
+                  "usage": "EXISTING_MATERIAL",
+                  "avatar_id": "c77cb249-d01b-4ba1-8067-d66cc8dc8c35",
+                  "person_id": "d7137397-23b7-4147-83dc-3de4e9f86e44",
+                  "look_version_id": "0111a91a-2577-40ae-83b3-6ae505b7dc80",
+                  "voice_version_id": null,
+                  "supply_consent_id": "081dbb79-bcd0-4068-b312-dc204798c811",
+                  "artist_consent_ids": [
+                    "e194e670-c9be-49a3-a659-52f9870c9721"
+                  ]
+                }
+              ]
+            }
+          ],
+          "next_cursor": "658d8e41-42b6-456d-af7e-560b4814c645"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/materials",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "b2f16a78-f39f-4377-8f50-1780de25f53f",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_PRODUCER_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/ef9efe7d-55a9-42f1-8164-dac381bdec01/files",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "3db2ba20-a895-4ef9-b920-bcbf5ecde2c3",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "id": "a699c4a3-04ad-4da3-9833-036dec64447d",
+          "kind": "FILE",
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "READY",
+          "object_version": 2,
+          "content_sha256": "383e30891aef4471b8ddff4ec05a8e632764b1311339c495833240e9842ebb2e",
+          "data": {
+            "byte_size": 46,
+            "media_type": "text/plain",
+            "object_key": "private/production/ef9efe7d-55a9-42f1-8164-dac381bdec01/aa23c1c5-5364-4835-9be4-55b574a95215",
+            "content_sha256": "c18ff5847272383410750227d04d354492ecddb1c6a2868f4d025f1b6328196c"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/ef9efe7d-55a9-42f1-8164-dac381bdec01/versions",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "049b95fc-efa9-4d7c-9e00-f110914f8cd3",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "id": "c0260663-6c23-4dda-a193-844adf899a32",
+          "kind": "VERSION",
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "8bab2f9685570d972a85b200864b8d6bbae8193c43983fb6115640b06ff6f507",
+          "data": {
+            "stage": "SCRIPT",
+            "revision": 1,
+            "file_id": "a699c4a3-04ad-4da3-9833-036dec64447d",
+            "preview_file_id": "a699c4a3-04ad-4da3-9833-036dec64447d",
+            "basis_version_id": null,
+            "note": "synthetic manual",
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/c0260663-6c23-4dda-a193-844adf899a32/reviews",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "cbf68ca4-1344-4cff-9bf6-acc525101a6d",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c0260663-6c23-4dda-a193-844adf899a32",
+          "kind": "VERSION",
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "6be59e35f0dc5ff94404c42a226b32a037c91f6e9341c3d1bf8886645bb8af3b",
+          "data": {
+            "note": "synthetic manual",
+            "stage": "SCRIPT",
+            "review": {
+              "decision": "APPROVED",
+              "reason": "synthetic independent",
+              "verification": {
+                "script_reviewed": true
+              },
+              "account_id": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "file_id": "a699c4a3-04ad-4da3-9833-036dec64447d",
+            "revision": 1,
+            "preview_file_id": "a699c4a3-04ad-4da3-9833-036dec64447d",
+            "basis_version_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/versions/c0260663-6c23-4dda-a193-844adf899a32/feedback",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "8d7e0d1e-224e-48a1-9064-6c6d1822003e",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "0999d2ca-8996-4bec-9756-57dc08b32f24",
+          "kind": "FEEDBACK",
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+          "current_status": "RECORDED",
+          "object_version": 1,
+          "content_sha256": "6d01e2562787f9e4297210211f103641d594aeee7f9f64324dca26652c6e9eaa",
+          "data": {
+            "version_id": "c0260663-6c23-4dda-a193-844adf899a32",
+            "stage": "SCRIPT",
+            "decision": "ACCEPT",
+            "note": "synthetic buyer confirms",
+            "checklist": {
+              "script_reviewed": true
+            },
+            "change_kind": null,
+            "acceptance_method": "BUYER_EXPLICIT"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/ef9efe7d-55a9-42f1-8164-dac381bdec01",
+      "schema": "ProductionRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "2b21d049-b176-46e0-9627-deb4f2d16dcb",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "kind": "PROJECT",
+          "project_id": null,
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "IN_PROGRESS",
+          "object_version": 5,
+          "content_sha256": "ffef88d4b08ab5b90c0b45ef5cf55b8ee2aab315cb571657c41223d8e4328f3c",
+          "data": {
+            "review": {
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "synthetic independent",
+              "decision": "APPROVED",
+              "account_id": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "verification": {
+                "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+                "rights_verified": true,
+                "identity_verified": true,
+                "signatures_verified": true
+              }
+            },
+            "current": {
+              "SCRIPT": "c0260663-6c23-4dda-a193-844adf899a32"
+            },
+            "line_id": "film",
+            "purpose": "PRIVATE",
+            "accepted": {
+              "SCRIPT": "c0260663-6c23-4dda-a193-844adf899a32"
+            },
+            "quantity": 1,
+            "revisions": {
+              "SCRIPT": 1
+            },
+            "territory": "CN",
+            "consent_ids": [],
+            "specification": {
+              "terms": "synthetic non-commercial",
+              "version": "synthetic1",
+              "deliverables": [
+                "synthetic manual film"
+              ],
+              "service_tier": "test",
+              "final_seconds": 90,
+              "revision_limit": 1,
+              "sample_seconds": 20,
+              "customization_delivery": {
+                "version": "V5-Q05-Q06",
+                "source_ref": "synthetic:test-only",
+                "acceptance_hours": 168,
+                "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+                "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+              }
+            },
+            "buyer_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+            "change_requests": 0,
+            "contract_sha256": "58d174111335b60e387c807af3a11bce566c8f0af8aa241fc10c81b38272579c",
+            "evidence_asset_id": "f4161e9c-e3d3-4489-8337-8f7cf91f4cb4",
+            "merchant_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+            "script_version_id": "4b179143-3204-4915-a7e1-8a081e5b1ffa",
+            "license_project_id": null,
+            "assignee_account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/snippets",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "ab23f120-dd0a-4a22-8e19-9158540da6cb",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "data": {
+          "id": "9c0bba72-94b5-4a6e-9e93-141bb89aac8f",
+          "kind": "SNIPPET",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "05f493c01a73f0dc0e81e1a2b8afb8c04d8bf4c8e5bd1e5493392483ce61f27a",
+          "data": {
+            "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+            "file_id": "f85dd011-f06f-4c1d-a81d-6de7870fc514",
+            "file_sha256": "86d1ceb141f05f0bbfd0867610a3e2027e6caa43748692620f1979ff8237736a",
+            "final_version_id": "16f2b219-9e5e-4b52-bceb-7dce80d1aa49",
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+            "sharing_allowed": true,
+            "note": "synthetic incomplete review",
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/snippets/9c0bba72-94b5-4a6e-9e93-141bb89aac8f/review",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "7140d18d-3cbf-4187-868c-b6220ea0e217",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "9c0bba72-94b5-4a6e-9e93-141bb89aac8f",
+          "kind": "SNIPPET",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "REJECTED",
+          "object_version": 2,
+          "content_sha256": "57be413d0fb8cc6ea310054dbb107d71ee7f486a894a40cc39f8d41b8b476a20",
+          "data": {
+            "note": "synthetic incomplete review",
+            "review": {
+              "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "reason": "missing content markings",
+              "verification": null
+            },
+            "file_id": "f85dd011-f06f-4c1d-a81d-6de7870fc514",
+            "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+            "file_sha256": "86d1ceb141f05f0bbfd0867610a3e2027e6caa43748692620f1979ff8237736a",
+            "sharing_allowed": true,
+            "final_version_id": "16f2b219-9e5e-4b52-bceb-7dce80d1aa49",
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/9c0bba72-94b5-4a6e-9e93-141bb89aac8f/file",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "4a631e82-fad4-407f-b25e-c03b2d8293de",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "COCREATION_SNIPPET_NOT_READY",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/00ef6cde-8147-4350-b192-0a220f6699ff/review-file",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "585573b0-7e94-4031-a3d3-0dce919dc078",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/00ef6cde-8147-4350-b192-0a220f6699ff/review-file",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "a49dcad4-32fd-48b3-b04a-572e4311635c",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "COCREATION_OPERATOR_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/snippets/00ef6cde-8147-4350-b192-0a220f6699ff/review",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "47ec1950-be92-479c-ae1e-169cc2851553",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "00ef6cde-8147-4350-b192-0a220f6699ff",
+          "kind": "SNIPPET",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "af29d7d204522e267721cebc75233444270e497f9f3d1e521e9cd5d83e976b45",
+          "data": {
+            "note": "synthetic personal-only cut",
+            "review": {
+              "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "reason": "independent synthetic",
+              "verification": {
+                "only_target_person": true,
+                "authorization_marked": true,
+                "ai_label_verified": true,
+                "content_reviewed": true
+              }
+            },
+            "file_id": "f85dd011-f06f-4c1d-a81d-6de7870fc514",
+            "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+            "file_sha256": "86d1ceb141f05f0bbfd0867610a3e2027e6caa43748692620f1979ff8237736a",
+            "sharing_allowed": true,
+            "final_version_id": "16f2b219-9e5e-4b52-bceb-7dce80d1aa49",
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "d1cd8382-0082-4d40-84f1-74defb6547ee",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "00ef6cde-8147-4350-b192-0a220f6699ff",
+              "kind": "SNIPPET",
+              "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "af29d7d204522e267721cebc75233444270e497f9f3d1e521e9cd5d83e976b45",
+              "data": {
+                "note": "synthetic personal-only cut",
+                "review": {
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "independent synthetic",
+                  "verification": {
+                    "content_reviewed": true,
+                    "ai_label_verified": true,
+                    "only_target_person": true,
+                    "authorization_marked": true
+                  }
+                },
+                "file_id": "f85dd011-f06f-4c1d-a81d-6de7870fc514",
+                "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+                "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+                "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+                "file_sha256": "86d1ceb141f05f0bbfd0867610a3e2027e6caa43748692620f1979ff8237736a",
+                "sharing_allowed": true,
+                "final_version_id": "16f2b219-9e5e-4b52-bceb-7dce80d1aa49",
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              }
+            },
+            {
+              "id": "9c0bba72-94b5-4a6e-9e93-141bb89aac8f",
+              "kind": "SNIPPET",
+              "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+              "current_status": "REJECTED",
+              "object_version": 2,
+              "content_sha256": "57be413d0fb8cc6ea310054dbb107d71ee7f486a894a40cc39f8d41b8b476a20",
+              "data": {
+                "note": "synthetic incomplete review",
+                "review": {
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "missing content markings",
+                  "verification": null
+                },
+                "file_id": "f85dd011-f06f-4c1d-a81d-6de7870fc514",
+                "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+                "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+                "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+                "file_sha256": "86d1ceb141f05f0bbfd0867610a3e2027e6caa43748692620f1979ff8237736a",
+                "sharing_allowed": true,
+                "final_version_id": "16f2b219-9e5e-4b52-bceb-7dce80d1aa49",
+                "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/00ef6cde-8147-4350-b192-0a220f6699ff/file",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "bdc3ba09-d2e5-4a94-96a6-00a0beb56225",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/16f2b219-9e5e-4b52-bceb-7dce80d1aa49/content",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "2b464ef2-6d84-45fe-93c2-668b7c47306d",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "PRODUCTION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/members/ad1b66f4-070f-404c-890b-dc6e69ddd241/withdraw",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "5f5f7e53-d084-4340-9213-29f13ae34881",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+          "kind": "MEMBER",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "7b826371-7783-4aaf-9207-ec912c8dc162",
+          "current_status": "WITHDRAWN",
+          "object_version": 3,
+          "content_sha256": "d9d8b127b451bc8eb824f5b4c0ff2b019e7a9eb2692a3a5e8e15f1b774cd8ded",
+          "data": {
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "withdrawal": {
+              "at": "2026-10-20T02:21:35.000Z",
+              "reason": "withdraw own future processing"
+            },
+            "confirmed_at": "2026-10-20T02:11:36.429Z",
+            "private_story": "PRIVATE updated",
+            "sharing_allowed": true,
+            "material_asset_ids": [
+              "35ea5e70-ab6d-4db8-ba7d-062687e3ab48"
+            ],
+            "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "05e3dced-df6f-48ba-8cd9-5aaf849262b1",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "object_version": 25,
+          "current_status": "PAUSED",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:21:34.915Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 20,
+            "eligible_count": 20,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 0,
+            "benefit_remaining": 0,
+            "payment_confirmed": true
+          },
+          "cutoff": {
+            "at": "2026-10-20T02:21:34.915Z",
+            "eligible_count": 21,
+            "benefit_eligible": true
+          },
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "members": [
+            {
+              "member_id": "b8c38118-ef56-4b92-a2b7-2df989da6a62",
+              "person_id": "044c11be-22c0-46fe-9ac8-5b82fe6492d3",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "0a3d79f8-5284-4260-8d34-079144c6a4e3",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "91be9fd4-d223-4d4b-adf6-2d172a2e7d42",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "8b4a4886-892f-4e7a-86d2-4816ef3e5c6b",
+              "person_id": "46e4d4bf-630c-4771-92b0-e0acdd7efac8",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c29f1dd4-005d-4ccc-a2b9-c9670e36614e",
+              "person_id": "5aded907-826f-4ecc-b99c-5c22f7a6f3a2",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "cd8cef98-05c2-40a4-ac77-3242cdddb8f7",
+              "person_id": "73f022f1-2227-458e-8ea5-0f47c250aa88",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "53fef4f2-c302-41d8-85a3-959170087062",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "1920d1b1-372c-489e-8c05-0382e275ed1e",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ca49d127-dba1-48a0-aade-98db0ef0d397",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "32cbad1d-2420-4cac-8371-da557044b021",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b9f533e4-7dea-4dcf-bb74-0e1f0025ee2e",
+              "person_id": "9fb9b95c-d107-4aa1-b3ad-4c4c9a4e6049",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "37384e60-bceb-43d8-9c24-17de2ff7c4f4",
+              "person_id": "c50d5799-bc91-4887-9b0a-bc93691da875",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "15105444-813a-4803-a315-5aac90f3649a",
+              "person_id": "c957559d-ec11-47ea-82b1-8f715ea0bf5e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b51975b1-d4be-47fe-868f-10d557c860c4",
+              "person_id": "d022a02f-afd7-4abb-9017-c51fb7f3c8c6",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": false,
+              "valid": false,
+              "reason_code": null
+            },
+            {
+              "member_id": "9c482de5-6d33-41b8-9f82-a50819d3e84c",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "658d8e41-42b6-456d-af7e-560b4814c645",
+              "person_id": "d7137397-23b7-4147-83dc-3de4e9f86e44",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c5c11177-6e83-4811-a11d-2ae6f5fbcbce",
+              "person_id": "e7e75dee-40f1-4417-b616-7b21cda2f6fe",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "64cfc3a2-bda8-4352-95c1-51ec8a794cf2",
+              "person_id": "e8005c09-e8e2-4985-a58c-a4312c716454",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "51700b9c-e3e7-46c2-8f97-19660eed55e8",
+              "person_id": "eacf1c45-3bb1-4566-87c9-b79df8269978",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "062e844f-98f6-422e-b70e-07af10ab23b7",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/00ef6cde-8147-4350-b192-0a220f6699ff/file",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "a5c84b0b-be79-4c08-8b1c-b324c5aa928c",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "COCREATION_PARTICIPATION_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/ef9efe7d-55a9-42f1-8164-dac381bdec01/files",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "5f5d12ae-587d-4d71-9205-a86871aa28b6",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "error": {
+          "code": "CUSTOMIZATION_PAUSED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/cases",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "6a8f4c78-98ff-46a2-8b24-10b5e398557a",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "a742dd76-43de-42ec-82b2-f5b850c0bcc0",
+          "kind": "CASE",
+          "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+          "current_status": "OPEN",
+          "object_version": 1,
+          "content_sha256": "8a969131454a8a0276dce5129bef37787195a8ca9304aa9fda3783070656c67e",
+          "data": {
+            "kind": "RESUME",
+            "reason": "make a new cut without withdrawn actor",
+            "new_deadline": null,
+            "room_version": 26,
+            "previous_status": "PAUSED",
+            "production_case_id": null,
+            "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+            "resolution": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/cases/a742dd76-43de-42ec-82b2-f5b850c0bcc0/review",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "0f927239-defc-49ee-99de-5b8bc0eb62a1",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "a742dd76-43de-42ec-82b2-f5b850c0bcc0",
+          "kind": "CASE",
+          "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+          "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "f832ad016da3461412f60b398c3002cb1b0dbfad302e8ec2d7c6422e4be70523",
+          "data": {
+            "kind": "RESUME",
+            "reason": "make a new cut without withdrawn actor",
+            "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+            "resolution": {
+              "decision": "APPROVE",
+              "reason": "independent rights verification",
+              "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "at": "2026-10-20T02:21:35.000Z"
+            },
+            "new_deadline": null,
+            "room_version": 26,
+            "previous_status": "PAUSED",
+            "production_case_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/857f358b-3b99-4438-8915-2d83c022022f/close",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "08b041d9-6ea5-4dc8-914f-2723e92a0dc9",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "857f358b-3b99-4438-8915-2d83c022022f",
+          "object_version": 11,
+          "current_status": "UNFORMED",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:31:35.000Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "865426acaec2735322048484b9559839191e3942f0bd54e3986a23f756f1079c",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 9,
+            "eligible_count": 9,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 1,
+            "benefit_remaining": 11,
+            "payment_confirmed": true
+          },
+          "cutoff": {
+            "at": "2026-10-20T02:31:35.000Z",
+            "eligible_count": 9,
+            "benefit_eligible": false
+          },
+          "order_id": "8438b093-2ade-4216-a4b6-b10ab2528bc8",
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "c14c959f-5897-4ee4-a69f-8f1eb7bb1ba2",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "8b4b561a-e3c7-49e4-a59c-94f6cb97abb7",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "a293ec5f-453f-403f-957b-803f91067716",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "251588b8-e5da-4b85-bbf0-04a7c8c285cb",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "a6b52cf9-60bf-443b-9c94-01a3e8822fcc",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "6b88a675-a080-4e0f-8f1f-3af59e31a6c1",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "1f74084d-5ec2-4696-8768-ae233c3f8588",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "7612b8ad-88fb-447f-bd39-ff62a3ca5925",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "8b92216a-3a8b-415a-9c32-e3504b5fb993",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/857f358b-3b99-4438-8915-2d83c022022f",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "f7546db4-8dbb-4c47-ae75-c57d2c09124b",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "857f358b-3b99-4438-8915-2d83c022022f",
+          "object_version": 15,
+          "current_status": "REFUND_REQUIRED",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-21T02:31:35.000Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "e57252d675da00630e8184efb26b66316fa4ea1ffb142a245b65d9f0ac1c5f8b",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 9,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": true
+          },
+          "cutoff": null,
+          "order_id": "8438b093-2ade-4216-a4b6-b10ab2528bc8",
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "c14c959f-5897-4ee4-a69f-8f1eb7bb1ba2",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "8b4b561a-e3c7-49e4-a59c-94f6cb97abb7",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "a293ec5f-453f-403f-957b-803f91067716",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "251588b8-e5da-4b85-bbf0-04a7c8c285cb",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "a6b52cf9-60bf-443b-9c94-01a3e8822fcc",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "6b88a675-a080-4e0f-8f1f-3af59e31a6c1",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "1f74084d-5ec2-4696-8768-ae233c3f8588",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "7612b8ad-88fb-447f-bd39-ff62a3ca5925",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "8b92216a-3a8b-415a-9c32-e3504b5fb993",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/857f358b-3b99-4438-8915-2d83c022022f/sync",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "d3e9f7c0-5aff-4e87-8916-1222479d60f9",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "857f358b-3b99-4438-8915-2d83c022022f",
+          "object_version": 16,
+          "current_status": "REFUNDED",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-21T02:31:35.000Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "e57252d675da00630e8184efb26b66316fa4ea1ffb142a245b65d9f0ac1c5f8b",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 9,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": "8438b093-2ade-4216-a4b6-b10ab2528bc8",
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "c14c959f-5897-4ee4-a69f-8f1eb7bb1ba2",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "8b4b561a-e3c7-49e4-a59c-94f6cb97abb7",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "a293ec5f-453f-403f-957b-803f91067716",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "251588b8-e5da-4b85-bbf0-04a7c8c285cb",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "a6b52cf9-60bf-443b-9c94-01a3e8822fcc",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "6b88a675-a080-4e0f-8f1f-3af59e31a6c1",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "1f74084d-5ec2-4696-8768-ae233c3f8588",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "7612b8ad-88fb-447f-bd39-ff62a3ca5925",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            },
+            {
+              "member_id": "8b92216a-3a8b-415a-9c32-e3504b5fb993",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": false,
+              "reason_code": "COCREATION_PARTICIPATION_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/857f358b-3b99-4438-8915-2d83c022022f/cases",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "c5d4d982-779f-4d01-a2ec-c42d3e2ef8a4",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "4a6688ae-1df6-4fe0-83fd-09af85f58672",
+              "kind": "CASE",
+              "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+              "parent_id": "857f358b-3b99-4438-8915-2d83c022022f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "536b7c4970e5f642d331a26a920e4cf158e1b31d17cdef933bf1ee1570a94d9e",
+              "data": {
+                "kind": "CANCEL",
+                "reason": "cannot form",
+                "project_id": null,
+                "resolution": {
+                  "at": "2026-10-20T02:31:36.000Z",
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "before start full refund",
+                  "decision": "APPROVE"
+                },
+                "new_deadline": null,
+                "room_version": 14,
+                "previous_status": "OPEN",
+                "production_case_id": null
+              }
+            },
+            {
+              "id": "7660348e-268e-4e2e-b747-366cd46b5862",
+              "kind": "CASE",
+              "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+              "parent_id": "857f358b-3b99-4438-8915-2d83c022022f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "815896c04bdaeffa25762f63a85f63ac6c5a1140ae93410b8e3f2e5928fa8027",
+              "data": {
+                "kind": "EXTEND",
+                "reason": "need more participants",
+                "project_id": null,
+                "resolution": {
+                  "at": "2026-10-20T02:31:36.000Z",
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "independent extension",
+                  "decision": "APPROVE"
+                },
+                "new_deadline": "2026-10-21T02:31:35.000Z",
+                "room_version": 12,
+                "previous_status": "UNFORMED",
+                "production_case_id": null
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/queue",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "1f96522d-1936-4a5e-99a6-d538baced1f2",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "4a6688ae-1df6-4fe0-83fd-09af85f58672",
+              "kind": "CASE",
+              "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+              "parent_id": "857f358b-3b99-4438-8915-2d83c022022f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "536b7c4970e5f642d331a26a920e4cf158e1b31d17cdef933bf1ee1570a94d9e",
+              "data": {
+                "kind": "CANCEL",
+                "reason": "cannot form",
+                "project_id": null,
+                "resolution": {
+                  "at": "2026-10-20T02:31:36.000Z",
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "before start full refund",
+                  "decision": "APPROVE"
+                },
+                "new_deadline": null,
+                "room_version": 14,
+                "previous_status": "OPEN",
+                "production_case_id": null
+              }
+            },
+            {
+              "id": "7660348e-268e-4e2e-b747-366cd46b5862",
+              "kind": "CASE",
+              "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+              "parent_id": "857f358b-3b99-4438-8915-2d83c022022f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "815896c04bdaeffa25762f63a85f63ac6c5a1140ae93410b8e3f2e5928fa8027",
+              "data": {
+                "kind": "EXTEND",
+                "reason": "need more participants",
+                "project_id": null,
+                "resolution": {
+                  "at": "2026-10-20T02:31:36.000Z",
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "independent extension",
+                  "decision": "APPROVE"
+                },
+                "new_deadline": "2026-10-21T02:31:35.000Z",
+                "room_version": 12,
+                "previous_status": "UNFORMED",
+                "production_case_id": null
+              }
+            },
+            {
+              "id": "a742dd76-43de-42ec-82b2-f5b850c0bcc0",
+              "kind": "CASE",
+              "owner_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7",
+              "parent_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "f832ad016da3461412f60b398c3002cb1b0dbfad302e8ec2d7c6422e4be70523",
+              "data": {
+                "kind": "RESUME",
+                "reason": "make a new cut without withdrawn actor",
+                "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+                "resolution": {
+                  "at": "2026-10-20T02:21:35.000Z",
+                  "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "reason": "independent rights verification",
+                  "decision": "APPROVE"
+                },
+                "new_deadline": null,
+                "room_version": 26,
+                "previous_status": "PAUSED",
+                "production_case_id": null
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "3ecc6824-67e3-4fb6-b23a-cbc99d27d924",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "error": {
+          "code": "COCREATION_NOT_READY",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/members/01d70dba-acf8-4282-b5ac-f8b579ed64d9",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "c64d1eed-40ad-4f5b-b8f4-6e693fbf16d8",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "data": {
+          "id": "01d70dba-acf8-4282-b5ac-f8b579ed64d9",
+          "kind": "MEMBER",
+          "owner_party_id": "ade6ee39-2721-495c-a434-e124e4340da8",
+          "parent_id": "e3f341e9-f4da-48ea-a1f3-cc02a6d7aa8b",
+          "created_by": "7b826371-7783-4aaf-9207-ec912c8dc162",
+          "current_status": "WITHDRAWN",
+          "object_version": 2,
+          "content_sha256": "8207d224d147f518dc2cdf1324a6abbcd0df31f2415d32a49d49c33eeac7eaf0",
+          "data": {
+            "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+            "withdrawal": {
+              "at": "2026-10-20T03:01:39.000Z",
+              "reason": "leave before closing"
+            },
+            "confirmed_at": "2026-10-20T03:01:39.000Z",
+            "private_story": "PRIVATE 0",
+            "sharing_allowed": true,
+            "material_asset_ids": [
+              "35ea5e70-ab6d-4db8-ba7d-062687e3ab48"
+            ],
+            "participation_sha256": "58d9de996a951afa53fe4dd58d19616570ddd547e61b52dd43a9c7b3123abb79"
+          },
+          "cast": [
+            {
+              "usage": "EXISTING_MATERIAL",
+              "avatar_id": "b593dd36-39a2-4ba5-a0da-6e80b820ea5a",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "look_version_id": "1dcf527c-231f-460d-a191-8cb38338375b",
+              "voice_version_id": null,
+              "supply_consent_id": "2132e9f2-c6cf-4aa5-923e-50ed6f2bfdfb",
+              "artist_consent_ids": [
+                "55e4bdf0-4bee-4860-adbe-a0ea6806fd8c"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/cases/a81389e8-249c-4b1c-b395-9ae20397e876/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "574d095e-e45c-4483-b962-9c6f7e65aed2",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "USE_CUSTOMIZATION_CASE_REVIEW",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/ef9efe7d-55a9-42f1-8164-dac381bdec01/case-resolution",
+      "schema": "CustomizationFulfillmentResponse",
+      "value": {
+        "meta": {
+          "request_id": "ac945247-2c1a-4c57-b045-5278ce588b4b",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "object_version": 13,
+          "cast": [],
+          "state": "REFUND_REQUIRED",
+          "terms": {
+            "version": "V5-Q05-Q06",
+            "source_ref": "synthetic:test-only",
+            "acceptance_hours": 168,
+            "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+            "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+          },
+          "format": "v5-customization-fulfillment-v1",
+          "source": {
+            "request_id": "3b25098b-aa73-44b8-9deb-3be297cbdbcd",
+            "submission_id": "624d9b39-c503-4071-b4ce-099db7bdc99b",
+            "content_sha256": "eb305732f6f890f5e95d4c1b4697358ad78260a2ea57c91e70e315d06885e003"
+          },
+          "receipt": null,
+          "cocreation": {
+            "room_id": "d4bcc613-9e34-4316-8227-575427a4353f",
+            "cutoff_sha256": "91b24e6de91510c835cef5e890c07f5df77ee609455a1bf01c6a607511637208"
+          },
+          "completion": null,
+          "started_at": "2026-10-20T02:21:35.000Z",
+          "cancellation": {
+            "case_id": "dd2e2f2e-c665-46b9-9de4-08be519e5203",
+            "reviewer": "3a501869-33a9-45de-9786-f8d145b0e183",
+            "approved_at": "2026-10-20T03:01:39.000Z",
+            "refund_minor": 10000,
+            "received_minor": 10000,
+            "retained_minor": 0,
+            "actual_refunded_minor": 0
+          },
+          "cast_snapshot": [],
+          "creative_changes": 0,
+          "uses_identifiable_people": true,
+          "additional_creative_changes": 0,
+          "cases": [
+            {
+              "id": "dd2e2f2e-c665-46b9-9de4-08be519e5203",
+              "current_status": "RESOLVED",
+              "created_by": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff",
+              "change_order_id": null,
+              "data": {
+                "kind": "CANCEL",
+                "reason": "stop this project",
+                "opened_at": "2026-10-20T03:01:39.000Z",
+                "resolution": {
+                  "at": "2026-10-20T03:01:39.000Z",
+                  "reason": "independent reviewed cancellation",
+                  "decision": "CANCEL",
+                  "reviewer": "3a501869-33a9-45de-9786-f8d145b0e183",
+                  "retained_minor": 0,
+                  "change_order_id": null
+                },
+                "evidence_asset_ids": [],
+                "opened_by_party_id": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/d4bcc613-9e34-4316-8227-575427a4353f/sync",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "89568785-3ca0-4503-9dae-5255192e0d32",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "data": {
+          "id": "d4bcc613-9e34-4316-8227-575427a4353f",
+          "object_version": 29,
+          "current_status": "REFUND_REQUIRED",
+          "title": "Synthetic shared film",
+          "deadline": "2026-10-20T02:21:34.915Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic one service credit",
+              "credit_minor": 1000,
+              "service_code": "synthetic-personal-clip"
+            },
+            "version": "synthetic-r10",
+            "max_people": 40,
+            "source_ref": "synthetic:Q11",
+            "extension_days": 7,
+            "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+          },
+          "participation_sha256": "627bec49a21f54c2b90d43a6ba547faec7f4402889bcdb50c0f9829aae58d3d5",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "c79d56e0-6482-4822-9787-7b9f658d1237",
+          "counts": {
+            "joined_count": 20,
+            "eligible_count": 20,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 0,
+            "benefit_remaining": 0,
+            "payment_confirmed": true
+          },
+          "cutoff": {
+            "at": "2026-10-20T02:21:34.915Z",
+            "eligible_count": 21,
+            "benefit_eligible": true
+          },
+          "order_id": "891dafae-5e9d-4286-8c87-ebb1e2e48197",
+          "project_id": "ef9efe7d-55a9-42f1-8164-dac381bdec01",
+          "members": [
+            {
+              "member_id": "b8c38118-ef56-4b92-a2b7-2df989da6a62",
+              "person_id": "044c11be-22c0-46fe-9ac8-5b82fe6492d3",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "0a3d79f8-5284-4260-8d34-079144c6a4e3",
+              "person_id": "04e51650-c068-48f4-8fd4-60a266eac00e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "91be9fd4-d223-4d4b-adf6-2d172a2e7d42",
+              "person_id": "3fbd5fc4-4b2a-40bc-850d-e522c5bcd962",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "8b4a4886-892f-4e7a-86d2-4816ef3e5c6b",
+              "person_id": "46e4d4bf-630c-4771-92b0-e0acdd7efac8",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c29f1dd4-005d-4ccc-a2b9-c9670e36614e",
+              "person_id": "5aded907-826f-4ecc-b99c-5c22f7a6f3a2",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "cd8cef98-05c2-40a4-ac77-3242cdddb8f7",
+              "person_id": "73f022f1-2227-458e-8ea5-0f47c250aa88",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "53fef4f2-c302-41d8-85a3-959170087062",
+              "person_id": "75c3ae94-6d61-4bed-a02f-26dfbb07a3c0",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "1920d1b1-372c-489e-8c05-0382e275ed1e",
+              "person_id": "79e1db20-ba18-4c28-bb12-3ec071e22768",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ca49d127-dba1-48a0-aade-98db0ef0d397",
+              "person_id": "801c7a71-9b83-49c7-b234-21d1fa889c21",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "32cbad1d-2420-4cac-8371-da557044b021",
+              "person_id": "993eb591-28a9-4a65-b07e-4b2988ecea99",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b9f533e4-7dea-4dcf-bb74-0e1f0025ee2e",
+              "person_id": "9fb9b95c-d107-4aa1-b3ad-4c4c9a4e6049",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "37384e60-bceb-43d8-9c24-17de2ff7c4f4",
+              "person_id": "c50d5799-bc91-4887-9b0a-bc93691da875",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "15105444-813a-4803-a315-5aac90f3649a",
+              "person_id": "c957559d-ec11-47ea-82b1-8f715ea0bf5e",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "b51975b1-d4be-47fe-868f-10d557c860c4",
+              "person_id": "d022a02f-afd7-4abb-9017-c51fb7f3c8c6",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "ad1b66f4-070f-404c-890b-dc6e69ddd241",
+              "person_id": "d0d6b558-58b4-4657-8d10-311cb1e94330",
+              "active": false,
+              "valid": false,
+              "reason_code": null
+            },
+            {
+              "member_id": "9c482de5-6d33-41b8-9f82-a50819d3e84c",
+              "person_id": "d44eb4fd-452b-485b-810b-aca76212f73b",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "658d8e41-42b6-456d-af7e-560b4814c645",
+              "person_id": "d7137397-23b7-4147-83dc-3de4e9f86e44",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "c5c11177-6e83-4811-a11d-2ae6f5fbcbce",
+              "person_id": "e7e75dee-40f1-4417-b616-7b21cda2f6fe",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "64cfc3a2-bda8-4352-95c1-51ec8a794cf2",
+              "person_id": "e8005c09-e8e2-4985-a58c-a4312c716454",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "51700b9c-e3e7-46c2-8f97-19660eed55e8",
+              "person_id": "eacf1c45-3bb1-4566-87c9-b79df8269978",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            },
+            {
+              "member_id": "062e844f-98f6-422e-b70e-07af10ab23b7",
+              "person_id": "f3864631-3bb5-4322-ab0c-251263f20b31",
+              "active": true,
+              "valid": true,
+              "reason_code": null
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "4df6ac9c-dd73-4990-af3c-019082c4f7e6",
+          "actor": {
+            "account_id": "7f23265e-3034-43f7-aa5e-65b20e7d906a"
+          },
+          "acting_party": "c79d56e0-6482-4822-9787-7b9f658d1237"
+        },
+        "error": {
+          "code": "ARTIST_CONSENT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/02914796-3d55-4e3b-8d1e-0b691c993fd1/members",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "182625bc-e0fb-4fa6-ba04-0db680f67fa6",
+          "actor": {
+            "account_id": "7b826371-7783-4aaf-9207-ec912c8dc162"
+          },
+          "acting_party": "ade6ee39-2721-495c-a434-e124e4340da8"
+        },
+        "error": {
+          "code": "INVALID_COCREATION_MATERIAL",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/89d4657f-0db7-47b4-9416-b0ad8fede8a0/cases",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "7afeb5d6-7785-4278-a6c9-10d37a4f4765",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_CANCELLED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules/c22a6891-dd85-4aa6-98f2-3c87f0a5ac56/review",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "5b2266f5-c946-4d90-890b-514ac3556039",
+          "actor": {
+            "account_id": "3a501869-33a9-45de-9786-f8d145b0e183"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c22a6891-dd85-4aa6-98f2-3c87f0a5ac56",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "7f23265e-3034-43f7-aa5e-65b20e7d906a",
+          "current_status": "RETIRED",
+          "object_version": 3,
+          "content_sha256": "04ef869da69fdf68e3dc72789dd2cea62918a833df1d18916b13aa733acf027f",
+          "data": {
+            "rule": {
+              "benefit": {
+                "valid_days": 30,
+                "description": "synthetic one service credit",
+                "credit_minor": 1000,
+                "service_code": "synthetic-personal-clip"
+              },
+              "version": "synthetic-r10",
+              "max_people": 40,
+              "source_ref": "synthetic:Q11",
+              "extension_days": 7,
+              "participation_terms": "Synthetic separate room authorization, only personal clips; no cash. Not a production policy."
+            },
+            "review": {
+              "by": "3a501869-33a9-45de-9786-f8d145b0e183",
+              "reason": "new policy will need a new reviewed version"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "83cfc4a6-3bd6-4420-ae02-32b98e110961",
+          "actor": {
+            "account_id": "d00dbcfd-c7e5-49eb-afd0-e77d5193f6ff"
+          },
+          "acting_party": "252c71b5-a771-41f9-bcbf-5a97b8bf17b7"
+        },
+        "error": {
+          "code": "COCREATION_RULE_NOT_EFFECTIVE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ]
+}

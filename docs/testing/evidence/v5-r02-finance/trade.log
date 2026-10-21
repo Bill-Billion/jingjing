@@ -1,0 +1,204 @@
+TAP version 13
+# Subtest: money uses integer minor units and rejects rounding
+ok 1 - money uses integer minor units and rejects rounding
+  ---
+  duration_ms: 1.2276
+  type: 'test'
+  ...
+# Subtest: installments must allocate exactly every line without hidden defaults
+ok 2 - installments must allocate exactly every line without hidden defaults
+  ---
+  duration_ms: 0.7594
+  type: 'test'
+  ...
+# Subtest: reserved refunds reduce line-specific available amount
+ok 3 - reserved refunds reduce line-specific available amount
+  ---
+  duration_ms: 0.2672
+  type: 'test'
+  ...
+# Subtest: provider proof must match channel environment app merchant order amount currency and Apple product
+ok 4 - provider proof must match channel environment app merchant order amount currency and Apple product
+  ---
+  duration_ms: 0.2753
+  type: 'test'
+  ...
+# Subtest: license gate honors snapshotted activation amount rather than inventing full prepayment
+ok 5 - license gate honors snapshotted activation amount rather than inventing full prepayment
+  ---
+  duration_ms: 2.8359
+  type: 'test'
+  ...
+# Subtest: product profiles reject unknown rules and fields without inventing a default
+ok 6 - product profiles reject unknown rules and fields without inventing a default
+  ---
+  duration_ms: 0.7161
+  type: 'test'
+  ...
+# Subtest: V5 activation configuration fails closed on typos
+ok 7 - V5 activation configuration fails closed on typos
+  ---
+  duration_ms: 0.3716
+  type: 'test'
+  ...
+# Subtest: reviewed V5 product descendants cannot drop or switch their classification
+ok 8 - reviewed V5 product descendants cannot drop or switch their classification
+  ---
+  duration_ms: 0.1965
+  type: 'test'
+  ...
+# Subtest: server derives required story from saved product, not a client-selected flow
+ok 9 - server derives required story from saved product, not a client-selected flow
+  ---
+  duration_ms: 0.4987
+  type: 'test'
+  ...
+# Subtest: legacy and V5 products cannot be mixed to weaken rules
+ok 10 - legacy and V5 products cannot be mixed to weaken rules
+  ---
+  duration_ms: 0.3841
+  type: 'test'
+  ...
+# {"provider_code":"alipay","capability_code":"order_payment","time":"2026-10-16T04:14:01.720Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"alipay","capability_code":"order_payment","time":"2026-10-16T04:14:01.725Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"alipay","capability_code":"order_payment","time":"2026-10-16T04:14:01.922Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"alipay","capability_code":"order_payment","time":"2026-10-16T04:14:01.922Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"alipay","capability_code":"order_payment","time":"2026-10-16T04:14:01.922Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"alipay","capability_code":"order_payment","time":"2026-10-16T04:14:01.923Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"apple","capability_code":"order_payment","time":"2026-10-16T04:14:02.063Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"apple","capability_code":"order_payment","time":"2026-10-16T04:14:02.231Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"apple","capability_code":"order_payment","time":"2026-10-16T04:14:02.231Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"apple","capability_code":"order_payment","error_code":"PROVIDER_CALL_FAILED","time":"2026-10-16T04:14:02.232Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"apple","capability_code":"order_payment","time":"2026-10-16T04:14:02.491Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"apple","capability_code":"order_payment","error_code":"PROVIDER_CALL_FAILED","time":"2026-10-16T04:14:02.492Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"alipay","capability_code":"order_payment","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-10-16T04:14:02.618Z","level":"warn","event":"provider_call_blocked"}
+# Subtest: real Alipay RSA2 notification validation rejects tampering and wrong merchant
+ok 11 - real Alipay RSA2 notification validation rejects tampering and wrong merchant
+  ---
+  duration_ms: 581.765
+  type: 'test'
+  ...
+# Subtest: Alipay query and refund always request signature verification
+ok 12 - Alipay query and refund always request signature verification
+  ---
+  duration_ms: 197.4536
+  type: 'test'
+  ...
+# Subtest: Apple verified transaction selects exact order and product, no latest receipt fallback
+ok 13 - Apple verified transaction selects exact order and product, no latest receipt fallback
+  ---
+  duration_ms: 309.0871
+  type: 'test'
+  ...
+# Subtest: Apple official verifier rejects malformed JWS; disabled configuration cannot dispatch
+ok 14 - Apple official verifier rejects malformed JWS; disabled configuration cannot dispatch
+  ---
+  duration_ms: 386.0759
+  type: 'test'
+  ...
+# Subtest: trade actual HTTP and isolated MySQL money, ownership and concurrency
+    # Subtest: independent review and immutable explicitly priced specification
+    ok 1 - independent review and immutable explicitly priced specification
+      ---
+      duration_ms: 174.635
+      type: 'test'
+      ...
+    # Subtest: unconfigured provider makes no payment attempt and cannot report success
+    ok 2 - unconfigured provider makes no payment attempt and cannot report success
+      ---
+      duration_ms: 12.5706
+      type: 'test'
+      ...
+    # Subtest: payment creation is idempotent and ownership enforced
+    ok 3 - payment creation is idempotent and ownership enforced
+      ---
+      duration_ms: 61.7837
+      type: 'test'
+      ...
+    # Subtest: unsigned notifications and client paid fields never mark paid
+    ok 4 - unsigned notifications and client paid fields never mark paid
+      ---
+      duration_ms: 9.1984
+      type: 'test'
+      ...
+    # Subtest: wrong amount currency merchant or environment rejected before receipt
+    ok 5 - wrong amount currency merchant or environment rejected before receipt
+      ---
+      duration_ms: 45.7652
+      type: 'test'
+      ...
+    # Subtest: concurrent verified observations credit once; out of order pending cannot erase receipt
+    ok 6 - concurrent verified observations credit once; out of order pending cannot erase receipt
+      ---
+      duration_ms: 66.7681
+      type: 'test'
+      ...
+    # Subtest: refund reservations prevent concurrent excessive refunds and require separate review
+    ok 7 - refund reservations prevent concurrent excessive refunds and require separate review
+      ---
+      duration_ms: 97.8076
+      type: 'test'
+      ...
+    # Subtest: unknown dispatch cannot be blindly submitted again
+    ok 8 - unknown dispatch cannot be blindly submitted again
+      ---
+      duration_ms: 85.8504
+      type: 'test'
+      ...
+    # Subtest: production acceptance cannot be claimed by client to unlock final payment
+    ok 9 - production acceptance cannot be claimed by client to unlock final payment
+      ---
+      duration_ms: 50.7496
+      type: 'test'
+      ...
+    # Subtest: verified late payments are retained for manual review
+    ok 10 - verified late payments are retained for manual review
+      ---
+      duration_ms: 78.9754
+      type: 'test'
+      ...
+    # Subtest: Apple purchase and full refund retain gross receipt and refund facts separately
+    ok 11 - Apple purchase and full refund retain gross receipt and refund facts separately
+      ---
+      duration_ms: 105.059
+      type: 'test'
+      ...
+    # Subtest: cancelled order preserves later verified cash and requires review
+    ok 12 - cancelled order preserves later verified cash and requires review
+      ---
+      duration_ms: 78.9064
+      type: 'test'
+      ...
+    # Subtest: two actual charges on one installment are retained without pretending order is normally paid
+    ok 13 - two actual charges on one installment are retained without pretending order is normally paid
+      ---
+      duration_ms: 114.1372
+      type: 'test'
+      ...
+    # Subtest: legacy 99 and 4901 amounts and reported status are preserved as reference only
+    ok 14 - legacy 99 and 4901 amounts and reported status are preserved as reference only
+      ---
+      duration_ms: 51.5107
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back order mutation and request key
+    ok 15 - audit failure rolls back order mutation and request key
+      ---
+      duration_ms: 21.5363
+      type: 'test'
+      ...
+    1..15
+ok 15 - trade actual HTTP and isolated MySQL money, ownership and concurrency
+  ---
+  duration_ms: 4517.7133
+  type: 'test'
+  ...
+1..15
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4855.6671

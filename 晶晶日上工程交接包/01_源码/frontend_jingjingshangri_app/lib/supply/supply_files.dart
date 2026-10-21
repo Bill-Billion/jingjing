@@ -104,6 +104,12 @@ class _SupplyFilesState extends State<SupplyFiles> {
         bytes = pending['bytes'] as Uint8List;
         type = pending['query']['media_type'] as String;
       } else {
+        // Finish the current Flutter edit before a platform file input takes
+        // focus. A frame closes the text-input connection with its value kept.
+        FocusManager.instance.primaryFocus?.unfocus();
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        widget.api.check(epoch, party);
         final selected = await FilePicker.pickFiles(
             type: FileType.custom,
             allowedExtensions: supplyMedia.keys.toList(),

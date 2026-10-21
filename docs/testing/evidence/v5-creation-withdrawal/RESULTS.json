@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-20",
+  "scope": "明确撤回后的在途模型创建查询、迟到模型登记待删除、现有本人删除流程",
+  "branch": "core/v5-privacy-protection",
+  "base_commit": "0756c144368b6a27815e9732b74f6987bcfa27d2",
+  "code_sha256": {
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/production/handlers.js": "e9480bcb3253d1644bdeffd195a1d41b3a9f65f407496fb8fbeb439e6e1fa38c",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/production/repository.js": "3b7e2b13811c9406d23ed88edaa1e310bce7e4ae6f4a657583888898e0f9790c",
+    "晶晶日上工程交接包/01_源码/backend_server/test/production.integration.test.cjs": "c160c1fcd42628e850e016dd2b8faa4b553f901d557d56da6cb69e63af6cbf22"
+  },
+  "checks": [
+    {
+      "name": "production",
+      "command": "node scripts/backend-check.cjs production",
+      "exit_code": 0,
+      "counts": {
+        "tests": 28,
+        "pass": 28,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "privacy",
+      "command": "node scripts/backend-check.cjs privacy",
+      "exit_code": 0,
+      "counts": {
+        "tests": 27,
+        "pass": 27,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "name": "worker",
+      "command": "node scripts/backend-check.cjs worker",
+      "exit_code": 0,
+      "counts": {
+        "tests": 21,
+        "pass": 21,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    }
+  ],
+  "passed_tests": 76,
+  "contracts": [
+    {
+      "name": "production",
+      "result": "PASS",
+      "runtime_response_cases": 81
+    },
+    {
+      "name": "actions",
+      "result": "PASS",
+      "runtime_response_cases": 38
+    }
+  ],
+  "contract_version": "0.28.0-rc.1",
+  "contract_change": false,
+  "database_migrations_added": false,
+  "frontend_runtime_rerun": false,
+  "full_regression_rerun": false,
+  "previous_full_regression": "869 passed / 1 skipped at f2c1709; not a claim about this patch",
+  "providers": "Only injected synthetic provider, no real service call",
+  "publication": "LOCAL_ONLY_NOT_REVIEWED_OR_MERGED",
+  "test_harness_note": "Initial nested test used the outer context and stalled; corrected nesting, reran successfully, removed its exact isolated schema jx_test_25992_<random>. No failed/incomplete run counted as passing.",
+  "cleanup": {
+    "isolated_mysql_stopped": true,
+    "port_33316_not_listening": true,
+    "J_drive_alias_removed": true,
+    "unrelated_processes_untouched": true
+  },
+  "collaboration_check": {
+    "result": "PASS",
+    "current_doc_links": 590
+  }
+}

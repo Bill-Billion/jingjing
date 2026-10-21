@@ -1,0 +1,35 @@
+{
+  "result": "PASS_WITH_LIMITS",
+  "date": "2026-10-19",
+  "branch": "core/v5-r07-auditions",
+  "base_commit": "d4931bdfcc45720b41b707490467d0644971fe49",
+  "integration_commit": "28662ab39950ad6a2f0b3c4ca372df9a65195b96",
+  "scope": "第七轮第一批后端：预约、履约取样、退款与订单内沟通；未宣称DEL-09/12整包完成",
+  "auditions_tests": 30,
+  "mysql_rerun_tests": 16,
+  "regression": {
+    "tests": 668,
+    "pass": 667,
+    "fail": 0,
+    "skipped": 1
+  },
+  "contracts": {
+    "groups": 19,
+    "runtime_responses": 1544,
+    "all_pass": true
+  },
+  "sandbox": {
+    "scenarios": 7,
+    "checks": 20,
+    "cleanup_verified": true,
+    "media_playback_verified": false
+  },
+  "initial_failure": "综合检查中，数据库迁移在APPLYING日志回执前断连，原代码未统一报告MIGRATION_OUTCOME_UNKNOWN；已修复并专项及综合复验。初次结果保留。",
+  "limits": [
+    "1项缺脱敏旧SQLite样本跳过，不代表迁移通过",
+    "真实支付/托管/清分/退款/OSS/短信未调用",
+    "商单专属会话与已付款试镜补差合同流程未完成，先补齐再进第8轮",
+    "前端、真机、真实媒体、队友审阅、合入和正式启用未完成"
+  ],
+  "publication": "本批已上传；功能版本7fa90b9远端全部检查通过，完整证据见PUBLICATION.json"
+}

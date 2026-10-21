@@ -1,0 +1,21 @@
+CREATE TABLE artist_records (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ person_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ kind ENUM('IDENTITY','APPEAL','LOOK','VOICE','CONSENT','DELEGATION','HALO','SERVICE','LISTING') NOT NULL,
+ avatar_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ counterparty_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ created_by CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ current_status VARCHAR(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ data_json JSON NOT NULL,
+ data_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ KEY person_records(person_id,kind,id),
+ KEY organization_records(counterparty_id,kind,current_status,id),
+ KEY avatar_records(avatar_id,kind,id),
+ FOREIGN KEY(person_id) REFERENCES artist_people(id),
+ FOREIGN KEY(avatar_id) REFERENCES supply_records(id),
+ FOREIGN KEY(counterparty_id) REFERENCES parties(id),
+ FOREIGN KEY(created_by) REFERENCES identity_accounts(id),
+ CHECK(object_version>0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

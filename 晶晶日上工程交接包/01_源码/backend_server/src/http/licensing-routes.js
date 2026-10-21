@@ -6,7 +6,7 @@ const {createPrivateStorage}=require('../modules/providers/private-storage');
 const {createReadinessRepository}=require('../modules/providers/readiness');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createLicensingRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=createLicensingRepository(db,{resolvePrincipal}),caps=new WeakMap();
+ const router=express.Router(),repo=createLicensingRepository(db,{resolvePrincipal,requireV5Products:require('../modules/trade/product-policy').requirement(env.TRADE_REQUIRE_V5_PRODUCTS)}),caps=new WeakMap();
  const storage=storageFactory?storageFactory():createPrivateStorage({env,repository:createReadinessRepository(db),authorize:async({operation,key,context})=>operation==='get'&&caps.get(context)===key});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}return req.actingParty=id(v);};

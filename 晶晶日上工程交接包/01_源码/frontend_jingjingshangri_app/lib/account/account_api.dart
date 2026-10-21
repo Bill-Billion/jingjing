@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -22,11 +23,27 @@ class AccountApi {
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/customization-requests') ||
         (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/') ||
         (jsonDecode(key) as List)[3]
             .toString()
             .startsWith('/api/v1/licensing/') ||
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/');
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/') ||
+        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/gigs/') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/production/') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/projects/') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/finance/') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/operations/');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -48,7 +65,57 @@ class AccountApi {
                   .startsWith('/api/v1/trade/'))
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
+  List<Map<String, dynamic>> gigsPending({String? token, String? party}) => [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/gigs/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _running = <String, Future<Map<String, dynamic>>>{};
+  List<Map<String, dynamic>> productionPending(
+          {String? token, String? party}) =>
+      [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/production/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
+  List<Map<String, dynamic>> projectsPending({String? token, String? party}) =>
+      [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/projects/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
+  List<Map<String, dynamic>> financePending({String? token, String? party}) => [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/finance/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
+  List<Map<String, dynamic>> operationsPending(
+          {String? token, String? party}) =>
+      [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3]
+                  .toString()
+                  .startsWith('/api/v1/operations/'))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   final _random = Random.secure();
 
   String _newKey() =>
@@ -63,12 +130,18 @@ class AccountApi {
     Map<String, dynamic>? query,
     int? version,
     Uint8List? bytes,
-    void Function(Map<String, dynamic>)? validate,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
     final writing = method != 'GET';
-    final supply = path.startsWith('/api/v1/supply/') ||
+    final supply = path.startsWith('/api/v1/customization-requests') ||
+        path.startsWith('/api/v1/supply/') ||
         path.startsWith('/api/v1/licensing/') ||
-        path.startsWith('/api/v1/trade/');
+        path.startsWith('/api/v1/trade/') ||
+        path.startsWith('/api/v1/gigs/') ||
+        path.startsWith('/api/v1/production/') ||
+        path.startsWith('/api/v1/projects/') ||
+        path.startsWith('/api/v1/finance/') ||
+        path.startsWith('/api/v1/operations/');
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null
@@ -115,10 +188,11 @@ class AccountApi {
             version: version,
             key: key,
             bytes: bytes)
-        .then((data) {
+        .then((data) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (data['id'] is String) resultId = data['id'];
-      validate?.call(data);
+      await validate?.call(data);
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       return data;
     }).then((data) {
       if (writing) {
@@ -198,6 +272,7 @@ class AccountApi {
       final retrySeconds =
           int.tryParse(response.headers.value('retry-after') ?? '');
       throw AccountError(status, code,
+          details: safeAccountErrorDetails(error is Map ? error['details'] : null),
           resultId: error is Map &&
                   error['details'] is Map &&
                   error['details']['record_id'] is String
@@ -221,7 +296,9 @@ class AccountApi {
   }
 
   Future<Uint8List> readBytes(String path,
-      {required String token, required String party}) async {
+      {required String token,
+      String? party,
+      Map<String, dynamic>? query}) async {
     final uri = Uri.tryParse(_dio.options.baseUrl);
     if (uri == null ||
         !uri.hasAuthority ||
@@ -230,12 +307,13 @@ class AccountApi {
     }
     try {
       final response = await _dio.get<List<int>>(path,
+          queryParameters: query,
           options: Options(
               responseType: ResponseType.bytes,
               followRedirects: false,
               headers: {
                 'Authorization': 'Bearer $token',
-                'X-Acting-Party': party
+                if (party != null) 'X-Acting-Party': party
               }));
       if (response.statusCode == 200 &&
           response.data != null &&
@@ -263,12 +341,14 @@ class AccountApi {
 
 class AccountError implements Exception {
   const AccountError(this.status, this.code,
-      {this.uncertain = false, this.retryAt, this.resultId});
+      {this.uncertain = false, this.retryAt, this.resultId,
+      this.details = const []});
   final int status;
   final String code;
   final bool uncertain;
   final DateTime? retryAt;
   final String? resultId;
+  final List<Map<String, String>> details;
   String get message {
     switch (code) {
       case 'ACCOUNT_API_NOT_CONFIGURED':
@@ -326,4 +406,31 @@ class AccountError implements Exception {
 
   @override
   String toString() => message;
+}
+
+/// Only fixed form identifiers and reasons are retained, never raw server text.
+List<Map<String, String>> safeAccountErrorDetails(dynamic value) {
+  if (value is! List) return const [];
+  const reasons = {
+    'REQUIRED',
+    'INVALID_CHOICE',
+    'TOO_LONG',
+    'INVALID_TYPE',
+    'ATTACHMENT_NOT_SUPPORTED',
+    'ATTACHMENT_SUBMISSION_NOT_READY',
+    'UNKNOWN_FIELD',
+    'TOO_LARGE',
+  };
+  final field = RegExp(r'^(answers|responses)(\.[a-z][a-z0-9_]{0,63})?$');
+  return List.unmodifiable([
+    for (final item in value.take(40))
+      if (item is Map &&
+          item['field'] is String &&
+          field.hasMatch(item['field']) &&
+          reasons.contains(item['reason']))
+        Map<String, String>.unmodifiable({
+          'field': item['field'] as String,
+          'reason': item['reason'] as String,
+        }),
+  ]);
 }

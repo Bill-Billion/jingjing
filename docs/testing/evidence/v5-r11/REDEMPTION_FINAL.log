@@ -1,0 +1,217 @@
+TAP version 13
+# Subtest: coupon checkout preserves original promises and real payment facts
+    # Subtest: one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+    ok 1 - one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+      ---
+      duration_ms: 441.349
+      type: 'test'
+      ...
+    # Subtest: unaccepted hold can be released, stale preview and unauthorized access rejected
+    ok 2 - unaccepted hold can be released, stale preview and unauthorized access rejected
+      ---
+      duration_ms: 162.9614
+      type: 'test'
+      ...
+    # Subtest: unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher
+    ok 3 - unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher
+      ---
+      duration_ms: 310.0515
+      type: 'test'
+      ...
+    # Subtest: full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+    ok 4 - full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+      ---
+      duration_ms: 1125.3311
+      type: 'test'
+      ...
+    # Subtest: co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+    ok 5 - co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+      ---
+      duration_ms: 480.7667
+      type: 'test'
+      ...
+    1..5
+ok 1 - coupon checkout preserves original promises and real payment facts
+  ---
+  duration_ms: 9084.9563
+  type: 'test'
+  ...
+# Subtest: V2 distribution includes ten-draw guarantee rather than advertising independent odds
+ok 2 - V2 distribution includes ten-draw guarantee rather than advertising independent odds
+  ---
+  duration_ms: 1.5011
+  type: 'test'
+  ...
+# Subtest: nine misses force only last draw, 2700 charged as one batch; single costs 300
+ok 3 - nine misses force only last draw, 2700 charged as one batch; single costs 300
+  ---
+  duration_ms: 0.868
+  type: 'test'
+  ...
+# Subtest: an earlier qualifying prize leaves tenth unchanged; exact random boundaries and invalid entropy
+ok 4 - an earlier qualifying prize leaves tenth unchanged; exact random boundaries and invalid entropy
+  ---
+  duration_ms: 1.1672
+  type: 'test'
+  ...
+# Subtest: incorrect sum, duplicate prize, disabled final interview, missing guarantee and fractional price reject
+ok 5 - incorrect sum, duplicate prize, disabled final interview, missing guarantee and fractional price reject
+  ---
+  duration_ms: 0.6319
+  type: 'test'
+  ...
+# Subtest: lottery actual HTTP: immutable odds, independent review, stock and atomic points
+    # Subtest: creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+    ok 1 - creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+      ---
+      duration_ms: 291.998
+      type: 'test'
+      ...
+    # Subtest: reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+    ok 2 - reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+      ---
+      duration_ms: 67.5824
+      type: 'test'
+      ...
+    # Subtest: retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+    ok 3 - retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+      ---
+      duration_ms: 155.7811
+      type: 'test'
+      ...
+    # Subtest: insufficient points rolls back draw, stock and command; retired version preserves old results
+    ok 4 - insufficient points rolls back draw, stock and command; retired version preserves old results
+      ---
+      duration_ms: 298.1109
+      type: 'test'
+      ...
+    # Subtest: ten guarantee survives mostly no-win pool and records actual conditional draws
+    ok 5 - ten guarantee survives mostly no-win pool and records actual conditional draws
+      ---
+      duration_ms: 152.0872
+      type: 'test'
+      ...
+    1..5
+ok 6 - lottery actual HTTP: immutable odds, independent review, stock and atomic points
+  ---
+  duration_ms: 7906.43
+  type: 'test'
+  ...
+# Subtest: new V2 price replaces legacy prices, thresholds and immutable copies
+ok 7 - new V2 price replaces legacy prices, thresholds and immutable copies
+  ---
+  duration_ms: 2.9489
+  type: 'test'
+  ...
+# Subtest: finite inventory, integer points, mandatory actual product and no zero-price invented defaults
+ok 8 - finite inventory, integer points, mandatory actual product and no zero-price invented defaults
+  ---
+  duration_ms: 0.3953
+  type: 'test'
+  ...
+# Subtest: expired grants cannot be used and display explicit expiration
+ok 9 - expired grants cannot be used and display explicit expiration
+  ---
+  duration_ms: 0.1571
+  type: 'test'
+  ...
+# Subtest: final interview disabled and exposure fixed to seven days
+ok 10 - final interview disabled and exposure fixed to seven days
+  ---
+  duration_ms: 0.2986
+  type: 'test'
+  ...
+# Subtest: personal production entitlement cannot silently fund a co-creation main order
+ok 11 - personal production entitlement cannot silently fund a co-creation main order
+  ---
+  duration_ms: 8.4671
+  type: 'test'
+  ...
+# Subtest: fixed redemption through actual HTTP and isolated MySQL transactions
+    # Subtest: independent stock approval, private evidence and unauthorized queue rejected
+    ok 1 - independent stock approval, private evidence and unauthorized queue rejected
+      ---
+      duration_ms: 136.7021
+      type: 'test'
+      ...
+    # Subtest: repeated exchange spends once; changed key payload rejected; another user cannot read
+    ok 2 - repeated exchange spends once; changed key payload rejected; another user cannot read
+      ---
+      duration_ms: 92.0054
+      type: 'test'
+      ...
+    # Subtest: last inventory races: exactly one grant, one debit, no overselling
+    ok 3 - last inventory races: exactly one grant, one debit, no overselling
+      ---
+      duration_ms: 70.0209
+      type: 'test'
+      ...
+    # Subtest: insufficient balance and underage gate roll back grant and stock together
+    ok 4 - insufficient balance and underage gate roll back grant and stock together
+      ---
+      duration_ms: 55.9662
+      type: 'test'
+      ...
+    # Subtest: retired inventory prevents new exchange but preserves prior entitlement
+    ok 5 - retired inventory prevents new exchange but preserves prior entitlement
+      ---
+      duration_ms: 31.1086
+      type: 'test'
+      ...
+    # Subtest: service failure refund returns original points exactly once
+    ok 6 - service failure refund returns original points exactly once
+      ---
+      duration_ms: 63.6055
+      type: 'test'
+      ...
+    # Subtest: exposure binds real public artist, independently schedules and requires holder confirmation
+    ok 7 - exposure binds real public artist, independently schedules and requires holder confirmation
+      ---
+      duration_ms: 186.7238
+      type: 'test'
+      ...
+    # Subtest: fulfilled exposure records proof and cannot be redeemed twice
+    ok 8 - fulfilled exposure records proof and cannot be redeemed twice
+      ---
+      duration_ms: 35.6415
+      type: 'test'
+      ...
+    # Subtest: verified production credit gets correct price; unrelated existing stock video cannot authorize template
+    ok 9 - verified production credit gets correct price; unrelated existing stock video cannot authorize template
+      ---
+      duration_ms: 83.3469
+      type: 'test'
+      ...
+    # Subtest: interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+    ok 10 - interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+      ---
+      duration_ms: 315.7592
+      type: 'test'
+      ...
+    # Subtest: points pending reversal blocks new exchange; remedy clears original debt before any available balance
+    ok 11 - points pending reversal blocks new exchange; remedy clears original debt before any available balance
+      ---
+      duration_ms: 129.3477
+      type: 'test'
+      ...
+    # Subtest: returning expired original points does not mint a fresh year of validity
+    ok 12 - returning expired original points does not mint a fresh year of validity
+      ---
+      duration_ms: 65.9493
+      type: 'test'
+      ...
+    1..12
+ok 12 - fixed redemption through actual HTTP and isolated MySQL transactions
+  ---
+  duration_ms: 8144.9598
+  type: 'test'
+  ...
+1..12
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9278.7451

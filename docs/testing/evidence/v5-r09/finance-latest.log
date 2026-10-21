@@ -1,0 +1,234 @@
+TAP version 13
+# Subtest: V5 splits MCN from supply income and referral only from platform
+ok 1 - V5 splits MCN from supply income and referral only from platform
+  ---
+  duration_ms: 2.5388
+  type: 'test'
+  ...
+# Subtest: exact supply fractions survive refunds, tiny totals and maximum money
+ok 2 - exact supply fractions survive refunds, tiny totals and maximum money
+  ---
+  duration_ms: 8.9912
+  type: 'test'
+  ...
+# Subtest: new terms require explicit version and artists confirm the recorded supply share
+ok 3 - new terms require explicit version and artists confirm the recorded supply share
+  ---
+  duration_ms: 0.7565
+  type: 'test'
+  ...
+# Subtest: finance uses allocation without misrepresenting fractional supply shares as integer GMV percentages
+ok 4 - finance uses allocation without misrepresenting fractional supply shares as integer GMV percentages
+  ---
+  duration_ms: 2.6728
+  type: 'test'
+  ...
+# Subtest: V5 two-layer previews, accepted MCN terms and real finance HTTP with synthetic order facts
+    # Subtest: preview is finance-only, uses approved rules and creates no order or money
+    ok 1 - preview is finance-only, uses approved rules and creates no order or money
+      ---
+      duration_ms: 79.6493
+      type: 'test'
+      ...
+    # Subtest: MCN invitation needs artist acceptance; omitted new rate records explicit 20 percent
+    ok 2 - MCN invitation needs artist acceptance; omitted new rate records explicit 20 percent
+      ---
+      duration_ms: 92.8112
+      type: 'test'
+      ...
+    # Subtest: synthetic historical order drives actual finance API; changing its source or rates is rejected
+    ok 3 - synthetic historical order drives actual finance API; changing its source or rates is rejected
+      ---
+      duration_ms: 195.877
+      type: 'test'
+      ...
+    # Subtest: zero receipt, partial and full refund conserve money and preserve the original MCN after termination
+    ok 4 - zero receipt, partial and full refund conserve money and preserve the original MCN after termination
+      ---
+      duration_ms: 250.6041
+      type: 'test'
+      ...
+    # Subtest: new relations take 10/30/fractional percent only after artist confirmation; old unversioned terms cannot be reinterpreted
+    ok 5 - new relations take 10/30/fractional percent only after artist confirmation; old unversioned terms cannot be reinterpreted
+      ---
+      duration_ms: 148.3341
+      type: 'test'
+      ...
+    1..5
+ok 5 - V5 two-layer previews, accepted MCN terms and real finance HTTP with synthetic order facts
+  ---
+  duration_ms: 5850.6925
+  type: 'test'
+  ...
+# Subtest: explicit 15 percent example is 15000 commission and 85000 supplier; not a default
+ok 6 - explicit 15 percent example is 15000 commission and 85000 supplier; not a default
+  ---
+  duration_ms: 15.8892
+  type: 'test'
+  ...
+# Subtest: integer rounding conserves minor units including negative reversals
+ok 7 - integer rounding conserves minor units including negative reversals
+  ---
+  duration_ms: 0.6346
+  type: 'test'
+  ...
+# Subtest: percentage totals, duplicate recipients and floating money are rejected
+ok 8 - percentage totals, duplicate recipients and floating money are rejected
+  ---
+  duration_ms: 0.2006
+  type: 'test'
+  ...
+# Subtest: license commission uses only its own line; production fee is separate
+ok 9 - license commission uses only its own line; production fee is separate
+  ---
+  duration_ms: 0.2648
+  type: 'test'
+  ...
+# Subtest: refund proportion and retained external cost are explicitly different
+ok 10 - refund proportion and retained external cost are explicitly different
+  ---
+  duration_ms: 0.2896
+  type: 'test'
+  ...
+# Subtest: balanced adjustments cannot invent funds or assign strangers
+ok 11 - balanced adjustments cannot invent funds or assign strangers
+  ---
+  duration_ms: 0.2907
+  type: 'test'
+  ...
+# Subtest: historical direct MCN commission includes MCN inside platform commission
+ok 12 - historical direct MCN commission includes MCN inside platform commission
+  ---
+  duration_ms: 1.491
+  type: 'test'
+  ...
+# Subtest: channel fees already in external statement cannot be deducted twice
+ok 13 - channel fees already in external statement cannot be deducted twice
+  ---
+  duration_ms: 0.1156
+  type: 'test'
+  ...
+# Subtest: finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 4071.0781
+      type: 'test'
+      ...
+    # Subtest: authentication, explicit rules and independent review are required
+    ok 2 - authentication, explicit rules and independent review are required
+      ---
+      duration_ms: 60.8999
+      type: 'test'
+      ...
+    # Subtest: rejected draft can be replaced while history stays; active agreement cannot change
+    ok 3 - rejected draft can be replaced while history stays; active agreement cannot change
+      ---
+      duration_ms: 133.4331
+      type: 'test'
+      ...
+    # Subtest: settlement review and every party confirmation precede available balance
+    ok 4 - settlement review and every party confirmation precede available balance
+      ---
+      duration_ms: 163.4172
+      type: 'test'
+      ...
+    # Subtest: settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+    ok 5 - settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+      ---
+      duration_ms: 28.7745
+      type: 'test'
+      ...
+    # Subtest: concurrent withdrawals reserve available amount once and exact retries reuse request
+    ok 6 - concurrent withdrawals reserve available amount once and exact retries reuse request
+      ---
+      duration_ms: 81.5738
+      type: 'test'
+      ...
+    # Subtest: request approval is not paid; only independent bank evidence books actual payout
+    ok 7 - request approval is not paid; only independent bank evidence books actual payout
+      ---
+      duration_ms: 89.3895
+      type: 'test'
+      ...
+    # Subtest: return and failed payouts keep facts and release reservation for a new request
+    ok 8 - return and failed payouts keep facts and release reservation for a new request
+      ---
+      duration_ms: 160.6604
+      type: 'test'
+      ...
+    # Subtest: disputes notify parties, freeze new payouts, retain replies and all decisions
+    ok 9 - disputes notify parties, freeze new payouts, retain replies and all decisions
+      ---
+      duration_ms: 56.7081
+      type: 'test'
+      ...
+    # Subtest: refund reduces future entitlement, preserves old settlement and actual payout
+    ok 10 - refund reduces future entitlement, preserves old settlement and actual payout
+      ---
+      duration_ms: 122.9358
+      type: 'test'
+      ...
+    # Subtest: adjustment is balanced, separately reviewed and forces new settlement confirmation
+    ok 11 - adjustment is balanced, separately reviewed and forces new settlement confirmation
+      ---
+      duration_ms: 107.8987
+      type: 'test'
+      ...
+    # Subtest: reconciliation compares verified facts without turning imported rows into money
+    ok 12 - reconciliation compares verified facts without turning imported rows into money
+      ---
+      duration_ms: 33.3378
+      type: 'test'
+      ...
+    # Subtest: external release statement is accrued revenue, not cash received or automatic payout
+    ok 13 - external release statement is accrued revenue, not cash received or automatic payout
+      ---
+      duration_ms: 109.2004
+      type: 'test'
+      ...
+    # Subtest: partial receipts, duplicate bank references and statement corrections never rewrite history
+    ok 14 - partial receipts, duplicate bank references and statement corrections never rewrite history
+      ---
+      duration_ms: 188.6308
+      type: 'test'
+      ...
+    # Subtest: record permissions, private proof integrity, stale membership and disabled automatic payout
+    ok 15 - record permissions, private proof integrity, stale membership and disabled automatic payout
+      ---
+      duration_ms: 34.1642
+      type: 'test'
+      ...
+    # Subtest: late customer payment review and unaccepted delivery block payouts even with prior agreement
+    ok 16 - late customer payment review and unaccepted delivery block payouts even with prior agreement
+      ---
+      duration_ms: 35.9807
+      type: 'test'
+      ...
+    # Subtest: notification cursor can retrieve newly recorded events, and different parties keep their own feed
+    ok 17 - notification cursor can retrieve newly recorded events, and different parties keep their own feed
+      ---
+      duration_ms: 20.3292
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back adjustment and idempotency reservation; stale review fails
+    ok 18 - audit failure rolls back adjustment and idempotency reservation; stale review fails
+      ---
+      duration_ms: 113.6901
+      type: 'test'
+      ...
+    1..18
+ok 14 - finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+  ---
+  duration_ms: 7859.3086
+  type: 'test'
+  ...
+1..14
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8195.2707

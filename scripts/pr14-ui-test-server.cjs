@@ -371,7 +371,7 @@ async function main() {
       id: a.id, ownerPartyId: a.owner_party_id, purpose: a.purpose,
     }])), verification: { passed: checks.length, checks },
   }, null, 2), { mode: 0o600, flag: 'wx' });
-  assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600);
+  await require('./test-fixtures/private-state.cjs').protectPrivateState(statePath);
   await fs.writeFile(path.resolve('.local/pr14-licensing-ui-http.json'), JSON.stringify({synthetic_only:true,cases:licensingFixtures},null,2),{mode:0o600});
   console.log(`Isolated PR #14 API ready: ${apiUrl}; ${checks.length} targeted checks passed. Private state: ${statePath}`);
 }
@@ -387,3 +387,6 @@ startupPromise.catch(async e => {
   await cleanup().catch(() => console.error(`PR #14 cleanup failed; inspect local schema ${schema}.`));
   process.exit(1);
 });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });

@@ -1,0 +1,149 @@
+{
+  "syntheticOnly": true,
+  "nativeAndroidRetest": false,
+  "complete": false,
+  "results": [
+    {
+      "name": "付款创建已成功但回复丢失：只恢复原请求，不生成第二笔",
+      "status": "PASS"
+    },
+    {
+      "name": "支付查询超时：不显示到账、不允许取消；原请求重试后只入账一次",
+      "status": "PASS"
+    },
+    {
+      "name": "退款申请回复丢失：恢复同一申请，未审核不能执行，不能退超原付款",
+      "status": "PASS"
+    },
+    {
+      "name": "审核员退款权限撤销后，旧页面与旧登录令牌不能继续操作",
+      "status": "PASS"
+    },
+    {
+      "name": "已批准退款执行后回复丢失：恢复原执行，不重复退款",
+      "status": "PASS"
+    },
+    {
+      "name": "退款查询超时、到账核对及再次核对：实际退款合计仍为100分",
+      "status": "PASS"
+    },
+    {
+      "name": "负责人机构权限撤销后清空旧订单，恢复后可重新读取",
+      "status": "PASS"
+    },
+    {
+      "name": "已验收但尾款未付时拒绝最终文件，无关用户始终无权读取",
+      "status": "PASS"
+    },
+    {
+      "name": "许可暂停后原私有样片不能继续读取，历史订单和许可仍保留",
+      "status": "FAIL",
+      "error": "Old private preview must be removed after license denial\n\n1 !== 0\n"
+    }
+  ],
+  "errors": [],
+  "facts": {
+    "paymentId": "6e70a821-49f0-4e14-9991-5ba7cfd98338",
+    "orderId": "95772e58-2c45-4220-bfdd-488f2d96195c",
+    "receivedMinor": 5500,
+    "refundId": "d1b6d21d-9fbb-4735-b70c-d63d0e508158",
+    "refundProviderCalls": 1,
+    "refundedMinor": 100,
+    "unpaidFinalVersionId": "6007fd46-0469-4708-93c2-0a58e637e2ca",
+    "suspendedLicenseCode": "PRODUCTION_LICENSE_NOT_READY"
+  },
+  "writes": [
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments",
+      "key": "8deda921-56b6-4087-a7b6-332c80b19838",
+      "version": null,
+      "body": "{\"order_id\":\"95772e58-2c45-4220-bfdd-488f2d96195c\",\"installment_key\":\"first\"}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments",
+      "key": "8deda921-56b6-4087-a7b6-332c80b19838",
+      "version": null,
+      "body": "{\"order_id\":\"95772e58-2c45-4220-bfdd-488f2d96195c\",\"installment_key\":\"first\"}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments/6e70a821-49f0-4e14-9991-5ba7cfd98338/reconciliation",
+      "key": "1352a8e1-ca23-4a8a-b93a-cb492bf7f33f",
+      "version": null,
+      "body": "{\"transaction_id\":null}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments/6e70a821-49f0-4e14-9991-5ba7cfd98338/reconciliation",
+      "key": "1352a8e1-ca23-4a8a-b93a-cb492bf7f33f",
+      "version": null,
+      "body": "{\"transaction_id\":null}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/payments/6e70a821-49f0-4e14-9991-5ba7cfd98338/reconciliation",
+      "key": "8d39f50a-356e-4452-9e37-40b6faa65ab6",
+      "version": null,
+      "body": "{\"transaction_id\":null}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds",
+      "key": "37bcd710-9aeb-4986-999d-5dbfaad7cd1b",
+      "version": null,
+      "body": "{\"payment_id\":\"6e70a821-49f0-4e14-9991-5ba7cfd98338\",\"allocations\":[{\"line_id\":\"film\",\"amount_minor\":100}],\"reason\":\"仅模拟部分退款，不发生真实资金变动\"}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds",
+      "key": "37bcd710-9aeb-4986-999d-5dbfaad7cd1b",
+      "version": null,
+      "body": "{\"payment_id\":\"6e70a821-49f0-4e14-9991-5ba7cfd98338\",\"allocations\":[{\"line_id\":\"film\",\"amount_minor\":100}],\"reason\":\"仅模拟部分退款，不发生真实资金变动\"}"
+    },
+    {
+      "actor": "independentReviewer",
+      "path": "/api/v1/trade/records/d1b6d21d-9fbb-4735-b70c-d63d0e508158/reviews",
+      "key": "045ecdc2-86dd-48b0-bdf7-7a351612734d",
+      "version": "\"1\"",
+      "body": "{\"decision\":\"APPROVED\",\"reason\":\"仅隔离资料独立核对\"}"
+    },
+    {
+      "actor": "independentReviewer",
+      "path": "/api/v1/trade/refunds/d1b6d21d-9fbb-4735-b70c-d63d0e508158/execution",
+      "key": "68fd1716-a85f-4570-b036-bc1221af48d4",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "independentReviewer",
+      "path": "/api/v1/trade/refunds/d1b6d21d-9fbb-4735-b70c-d63d0e508158/execution",
+      "key": "68fd1716-a85f-4570-b036-bc1221af48d4",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds/d1b6d21d-9fbb-4735-b70c-d63d0e508158/reconciliation",
+      "key": "3bc18529-cb74-41f0-ae61-70d015e1d2ba",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds/d1b6d21d-9fbb-4735-b70c-d63d0e508158/reconciliation",
+      "key": "3bc18529-cb74-41f0-ae61-70d015e1d2ba",
+      "version": null,
+      "body": "{}"
+    },
+    {
+      "actor": "payer",
+      "path": "/api/v1/trade/refunds/d1b6d21d-9fbb-4735-b70c-d63d0e508158/reconciliation",
+      "key": "ea21ad30-3bba-4b92-af6a-11092e1af2b0",
+      "version": null,
+      "body": "{}"
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: Old private preview must be removed after license denial\n\n1 !== 0\n\n    at file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/full-flow/scripts/full-flow-risks-browser-check.mjs:99:10\n    at async check (file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/full-flow/scripts/full-flow-risks-browser-check.mjs:22:62)\n    at async file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/full-flow/scripts/full-flow-risks-browser-check.mjs:94:2"
+}

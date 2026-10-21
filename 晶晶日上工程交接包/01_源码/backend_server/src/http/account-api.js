@@ -10,7 +10,7 @@ const {createSupplyRouter}=require('./supply-routes');
 const {createLicensingRouter}=require('./licensing-routes');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory,productionProviderFactory,artistIdentityProviderFactory}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
@@ -32,7 +32,17 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade/notifications',trade.callbacks);
  app.use('/api/v1/trade',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/notices',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/stock',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/redemption',express.json({limit:'128kb',strict:true}));
+ app.use('/api/v1/engagement',express.json({limit:'128kb',strict:true}));
+ app.use('/api/v1/wallet',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/auditions',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/supply',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/finance',express.json({limit:'128kb',strict:true}));
+ app.use('/api/v1/projects',express.json({limit:'128kb',strict:true}));
+ app.use('/api/v1/customization-requests',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/operations/customization-requests',express.json({limit:'64kb',strict:true}));
  app.use(express.json({limit:'16kb',strict:true}));
  app.use(createOperationsRouter({databaseReady:mysqlReady(db)}));
  const meta=req=>({request_id:req.requestId,actor:req.account?{account_id:req.account.id}:null,acting_party:req.actingParty||null});
@@ -62,7 +72,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1',(req,res,next)=>{
   Promise.resolve().then(async()=>{
    const header=req.get('Authorization');if(!header||!/^Bearer [A-Za-z0-9_-]{43}$/.test(header))throw error('AUTHENTICATION_REQUIRED',401);
-   req.token=header.slice(7);req.account=await auth.resolve(req.token,{allowRevoked:req.method==='DELETE'&&req.path==='/auth/sessions/current'});principals.set(req,{subject_ref:req.account.subject_ref,request_id:req.requestId});
+   req.token=header.slice(7);req.account=await auth.resolve(req.token,{allowRevoked:req.method==='DELETE'&&req.path==='/auth/sessions/current',allowInactiveStatus:req.method==='GET'&&req.path==='/me'});principals.set(req,{subject_ref:req.account.subject_ref,request_id:req.requestId});
   }).then(()=>next(),next);
  });
  app.get('/api/v1/me',wrap(async(req,res)=>{res.set('ETag','"'+req.account.object_version+'"');reply(req,res,auth.accountData(req.account));}));
@@ -127,8 +137,24 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
+ app.use('/api/v1',require('./customization-routes').createCustomizationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
+ app.use('/api/v1/media',require('./media-routes').createMediaRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/privacy',require('./privacy-routes').createPrivacyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/operations',require('./business-operations-routes').createBusinessOperationsRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
+ app.use('/api/v1/finance',require('./settlement-routes').createSettlementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/projects',require('./projects-routes').createProjectsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/production',require('./production-routes').createProductionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,providerFactory:productionProviderFactory,artistIdentityProviderFactory}));
+ app.use('/api/v1/gigs',require('./gigs-routes').createGigsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/trade',trade.router);
+ app.use('/api/v1/notices',require('./notices-routes').createNoticesRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/stock',require('./stock-routes').createStockRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/engagement',require('./engagement-routes').createEngagementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/redemption',require('./redemption-routes').createRedemptionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/cocreation',require('./cocreation-routes').createCocreationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/wallet',require('./wallet-routes').createWalletRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
+ app.use('/api/v1/auditions',require('./auditions-routes').createAuditionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/artists',require('./artist-routes').createArtistRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,identityProviderFactory:artistIdentityProviderFactory}));
  app.use('/api/v1/supply',createSupplyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use((req,res,next)=>next(error('NOT_FOUND',404)));
  app.use((e,req,res,next)=>{
@@ -136,12 +162,17 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   const client=Number.isInteger(e.status)&&e.status>=400&&e.status<500;
   const safeCode=typeof e.code==='string'&&/^[A-Z][A-Z0-9_]*$/.test(e.code);
   const status=e.type==='entity.parse.failed'?400:e.type==='entity.too.large'?413:client?e.status:503;
-  const code=e.type==='entity.parse.failed'?'INVALID_JSON':e.type==='entity.too.large'?'BODY_TOO_LARGE':((client&&safeCode)||['SMS_NOT_READY','SMS_CHALLENGE_UNAVAILABLE','COMMIT_OUTCOME_UNKNOWN'].includes(e.code)?e.code:'SERVICE_UNAVAILABLE');
+  const code=e.type==='entity.parse.failed'?'INVALID_JSON':e.type==='entity.too.large'?'BODY_TOO_LARGE':((client&&safeCode)||['SMS_NOT_READY','SMS_CHALLENGE_UNAVAILABLE','COMMIT_OUTCOME_UNKNOWN','CUSTODY_PROVIDER_NOT_CONNECTED'].includes(e.code)?e.code:'SERVICE_UNAVAILABLE');
   // Retry the original operation only; this flag never proves a failed commit or authorizes a new key.
   const retryable=['IDEMPOTENCY_IN_PROGRESS','COMMIT_OUTCOME_UNKNOWN','RATE_LIMITED'].includes(code);
   if(code==='RATE_LIMITED'&&Number.isSafeInteger(e.retryAfter)&&e.retryAfter>0)res.set('Retry-After',String(e.retryAfter));
-  const message=code==='RATE_LIMITED'?'请求过于频繁，请等待后重试':retryable?'操作结果尚未确认，请稍后重试原请求':status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查';
-  res.status(status).json({meta:meta(req),error:{code,message,retryable,details:[]}});
+  const message=code==='CUSTODY_PROVIDER_NOT_CONNECTED'?'资金托管服务尚未接通，暂不能充值':code==='RATE_LIMITED'?'请求过于频繁，请等待后重试':retryable?'操作结果尚未确认，请稍后重试原请求':status===503?'服务暂不可用，请稍后核对状态':'请求未通过校验或权限检查';
+  // Only known form roots/field identifiers and fixed reason codes may leave this boundary.
+  // Never reflect a story answer, SQL, provider response or arbitrary thrown details.
+  const formReasons=['REQUIRED','INVALID_CHOICE','TOO_LONG','INVALID_TYPE','ATTACHMENT_NOT_SUPPORTED','ATTACHMENT_SUBMISSION_NOT_READY','UNKNOWN_FIELD','TOO_LARGE'];
+  const details=code==='CUSTOMIZATION_VALIDATION_FAILED'&&Array.isArray(e.details)
+   ?e.details.slice(0,40).filter(d=>d&&typeof d.field==='string'&&/^(answers|responses)(?:\.[a-z][a-z0-9_]{0,63})?$/.test(d.field)&&formReasons.includes(d.reason)).map(d=>({field:d.field,reason:d.reason})):[];
+  res.status(status).json({meta:meta(req),error:{code,message,retryable,details}});
  });
  return app;
 }

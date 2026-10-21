@@ -42,7 +42,18 @@ function createPrivateStorage({env=process.env, repository, authorize=async()=>f
         if (typeof url !== 'string' || !url.startsWith('https://')) throw failure('INVALID_PRIVATE_URL');
         return {url,expires};
       },
-      async remove({key}) { const result=await getClient().delete(key); return {key,provider_request_id:result?.res?.headers?.['x-oss-request-id']}; },
+      async remove({key,expectedSha256}) {
+        if(!expectedSha256){const result=await getClient().delete(key);return {key,provider_request_id:result?.res?.headers?.['x-oss-request-id']};}
+        let exists=true;
+        try{
+          const before=await getClient().get(key);
+          if(!Buffer.isBuffer(before.content)||createHash('sha256').update(before.content).digest('hex')!==expectedSha256)throw failure('PRIVATE_CONTENT_MISMATCH');
+        }catch(e){if(e.code==='NoSuchKey'&&e.status===404)exists=false;else throw e;}
+        if(exists)await getClient().delete(key);
+        try{await getClient().head(key);}
+        catch(e){if(e.code==='NoSuchKey'&&e.status===404)return {key,current_object_absent:true,scope:'CURRENT_OBJECT_ONLY',versions_and_backups:'REVIEW_REQUIRED'};throw e;}
+        throw failure('PRIVATE_OBJECT_STILL_PRESENT');
+      },
     }});
   async function call(operation, input, context={}) {
     objectKey(input.key);
@@ -72,6 +83,10 @@ function createPrivateStorage({env=process.env, repository, authorize=async()=>f
       return call('sign',{key,expires},context);
     },
     remove(key,context) { return call('remove',{key},context); },
+    eraseCurrent(key,expectedSha256,context) {
+      if(!/^[a-f0-9]{64}$/.test(expectedSha256||''))throw failure('INVALID_CONTENT_DIGEST');
+      return call('remove',{key,expectedSha256},context);
+    },
     publicUrl() { throw failure('PRIVATE_ASSET_HAS_NO_PUBLIC_URL'); },
   });
 }

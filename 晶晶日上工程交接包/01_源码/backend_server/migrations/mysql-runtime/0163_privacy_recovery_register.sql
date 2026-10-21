@@ -1,0 +1,8 @@
+CREATE TABLE privacy_recovery_register (
+ id TINYINT UNSIGNED PRIMARY KEY,
+ data_json JSON NOT NULL,
+ data_sha256 CHAR(64) NOT NULL,
+ reviewer_ref VARCHAR(191) NOT NULL,
+ updated_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+ CONSTRAINT ck_privacy_recovery_singleton CHECK (id=1)
+) ENGINE=InnoDB;

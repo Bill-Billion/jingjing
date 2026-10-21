@@ -18,10 +18,11 @@ function main() {
   const suites = [
     ...Object.keys(require('./mysql-test-suites.cjs')).map(name=>({name,args:['scripts/test-mysql.js',name],allowedSkips:0})),
     { name: 'legacy-safety', args: ['scripts/test-legacy-safety.cjs'], allowedSkips: 0 },
-    { name: 'regression', args: ['scripts/run-tests.cjs'], allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
+    // The whole regression includes every module plus real lease timers; keep each focused suite at four minutes.
+    { name: 'regression', args: ['scripts/run-tests.cjs'], timeout: 600000, allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
   ];
   for (const suite of suites) {
-    const child = spawnSync(process.execPath, suite.args, { cwd: backend, env: process.env, encoding: 'utf8', timeout: 240000, maxBuffer: 16 * 1024 * 1024, windowsHide: true });
+    const child = spawnSync(process.execPath, suite.args, { cwd: backend, env: process.env, encoding: 'utf8', timeout: suite.timeout || 240000, maxBuffer: 16 * 1024 * 1024, windowsHide: true });
     const log = ((child.stdout || '') + (child.stderr || '')).split(root).join('<WORKTREE>');
     fs.writeFileSync(path.join(output, suite.name + '.log'), log);
     const result = assessResult({ exitCode: child.status, log, allowedSkips: suite.allowedSkips, allowLegacySkip: suite.name === 'regression' });

@@ -1,5 +1,7 @@
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
+import '../gigs/gig_models.dart' show gigCommercial;
+import '../finance/finance_models.dart' show financeRules;
 
 const tradeKinds = {
   'ORDER': '订单',
@@ -64,6 +66,44 @@ const tradeContractLabels = {
   'payment_window_minutes': '付款窗口（分钟）',
   'license_reservation_id': '关联许可预留编号',
   'order_id': '订单编号',
+  'commercial': '原商业约定',
+  'ranking_opt_in': '明确选择公开入榜',
+  'offer_id': '接单约定编号',
+  'offer_sha256': '接单约定指纹',
+  'gig_id': '商业需求编号',
+  'scope': '用途范围',
+  'purpose': '用途',
+  'territory': '地区',
+  'valid_until': '有效截止',
+  'valid_from': '开始时间',
+  'category': '商业类别',
+  'commission': '佣金约定',
+  'mcn_bps': 'MCN 分成（万分比）',
+  'platform_bps': '平台费用（万分比）',
+  'relation': '直接合作原约定',
+  'mcn_party_id': 'MCN 主体编号',
+  'sha256': '保存指纹',
+  'avatar_id': '数字人编号',
+  'consent_id': '本人同意编号',
+  'customization': '原故事正式版本',
+  'request_id': '故事需求编号',
+  'submission_id': '正式提交编号',
+  'customization_finance': '固定定制财务约定',
+  'model': '约定模式',
+  'V5_SELF_OPERATED': '平台自营定制',
+  'platform_party_id': '平台签约主体编号',
+  'rounding': '金额尾差约定',
+  'rules': '固定财务条款',
+  'rule_snapshot': '当时采用的规则原文',
+  'settlement_at': '约定结算时间',
+  'release_condition': '释放款项条件',
+  'shares': '逐方收入约定',
+  'deductions': '扣费约定',
+  'party_id': '收款主体编号',
+  'bps': '份额（万分比）',
+  'role': '收款方角色',
+  'effective_at': '规则生效时间',
+  'content': '固定规则原文',
 };
 const tradeStatuses = {
   'IN_REVIEW': '独立审核中',
@@ -93,6 +133,7 @@ const tradeStatuses = {
 };
 const tradeTriggers = {
   'ORDER_ACCEPTED': '确认订单后付款',
+  'CUSTOMIZATION_INTERIM_CONFIRMED': '定制中间补款条件确认后付款',
   'SAMPLE_ACCEPTED': '样片验收后付款',
   'FINAL_ACCEPTED': '成片验收后付款'
 };
@@ -174,6 +215,40 @@ void _spec(dynamic value) {
 }
 
 void _quote(Map<String, dynamic> d) {
+  if (d['customization'] != null) {
+    final source = tradeMap(d['customization']);
+    tradeRequire(isContractId('${source['request_id']}') &&
+        isContractId('${source['submission_id']}') &&
+        source['content_sha256'] is String &&
+        RegExp(r'^[a-f0-9]{64}$').hasMatch(source['content_sha256']));
+  }
+  if (d['customization_finance'] != null) {
+    try {
+      final finance = tradeMap(d['customization_finance']);
+      final snapshot = tradeMap(finance['rule_snapshot']);
+      tradeRequire(d['customization'] != null &&
+          finance['model'] == 'V5_SELF_OPERATED' &&
+          isContractId('${finance['platform_party_id']}') &&
+          finance['rounding'] == 'HALF_UP_PLATFORM_REMAINDER' &&
+          snapshot['current_status'] == 'EFFECTIVE' &&
+          DateTime.tryParse('${snapshot['effective_at']}') != null);
+      financeRules(finance['rules']);
+      tradeRequire(
+          finance['rules']['release_condition'] == 'DELIVERY_ACCEPTED');
+      ContractApi.validateRule(tradeMap(snapshot['content']));
+      tradeRequire(snapshot['content']['id'] == d['rule_id']);
+    } on AccountError {
+      tradeRequire(false);
+    }
+  }
+  if (d['commercial'] != null) {
+    try {
+      gigCommercial(d['commercial']);
+    } on AccountError {
+      tradeRequire(false);
+    }
+    tradeRequire(d['transaction_model'] == 'DIRECT_SUPPLIER');
+  }
   tradeRequire(d['currency'] == 'CNY' &&
       tradeMinor(d['total_minor']) &&
       ['ALIPAY', 'APPLE'].contains(d['channel']) &&
@@ -394,6 +469,16 @@ String tradeError(Object e, {bool writing = false}) {
   }
   if (e.code == 'LICENSE_PAYMENT_NOT_READY') {
     return '许可约定的生效付款金额尚未核实。付款仍须满足签署、身份及权属核验，不能代替许可办理。';
+  }
+  if (e.code == 'CUSTOMIZATION_PAYMENT_RULES_PENDING') {
+    return '定制付款条件尚未开放。这笔订单尚未付款，签署与制作需另行办理。';
+  }
+  if (e.code == 'CUSTOMIZATION_ORDER_EXISTS') {
+    return '这份故事已有一笔订单，请返回需求查看原订单，不要重建。';
+  }
+  if (['CUSTOMIZATION_SOURCE_CHANGED', 'CUSTOMIZATION_NOT_QUOTABLE']
+      .contains(e.code)) {
+    return '故事版本或受理进度已有变化，请返回需求核对当前版本、补充要求与报价。';
   }
   if (e.status == 503 || e.uncertain) {
     return writing

@@ -527,7 +527,7 @@ async function main() {
     unavailablePayment: { operationKey: unavailableKey, orderId: records.unconfiguredOrder.id, installmentKey: 'first', recordCreated: false } };
   await fs.mkdir(path.dirname(statePath), { recursive: true });
   await fs.writeFile(statePath, JSON.stringify(state, null, 2), { mode: 0o600, flag: 'wx' }); stateOwned = true;
-  assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600);
+  await require('./test-fixtures/private-state.cjs').protectPrivateState(statePath);
   console.log(`Isolated PR #15 API ready: ${apiUrl}; control: ${controlUrl}; ${checks.length} targeted checks passed. Private state: ${statePath}`);
 }
 
@@ -542,3 +542,6 @@ startupPromise.catch(async e => {
   await cleanup().catch(() => console.error(`PR #15 cleanup failed; inspect local schema ${schema}.`));
   process.exit(1);
 });
+
+// Private parent/child IPC only; no browser or network shutdown route.
+if(process.send) process.on('message', message=>{ if(message?.type==='JX_TEST_SHUTDOWN') process.emit('SIGTERM'); });

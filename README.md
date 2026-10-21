@@ -1,31 +1,25 @@
-# 晶晶日上 / 晶选片场
+> 2026-10-20最新协作入口：[下一步分工与同版本联调](docs/collaboration/V5_NEXT_COLLABORATION_PLAN.md)。本分支包含最新后端；队友前两轮页面见PR26，尚未自动合入本分支或共同版本。先联调故事到未付款订单，真实服务和全部资料清理分别验收。
 
-这是双方共同开发项目的仓库。按最新R0.6方案推进，原始材料保留；功能“写完”“测过”“正式能用”分别说明。
+本轮继续补本人撤回与具体模型删除：4个新增接口及动作进度已写入并通过本机整体检查；详见[当前状态](docs/status/CORE_CURRENT.md)和[队友接法](docs/collaboration/V5_PRIVACY_HANDOFF.md)。这不表示账号注销或所有资料清除已完成。
 
-第11份账号与机构、第12份合同与历史规则页面已进入共同版本，第12份的8项远端检查均通过。[第一批页面](docs/ux/pr12-ui/README.md) · [第一批界面验收](docs/ux/pr12-ui/design-qa.md)。页面通过测试与正式外部服务开通分别记录。
+# 当前：个人信息申请基础开发与剩余业务核验
 
-第13份对应的作者与作品资料页面已完成本地开发与联调：App与网页可申请作者资格、上传私有正文和证明、保存作品及新修订、提交与带理由撤回；网页分别审核供给资格、权属和内容。沿用暖白App和浅色深绿工作台，保留旧稿和旧意见，新稿不继承批准。[本批交付与截图](docs/ux/pr13-ui/README.md) · [界面验收](design-qa.md) · [本轮任务记录](docs/tasks/records/UX-PR13-SUPPLY-PAGES-20260929.md)。Vue供给18组、Flutter供给21项、后端供给35项及实际接口检查通过。前端提交`81a9727`与原后端统一通过[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)交付；最终交付版本`7abafab`的8项远端检查全部通过，用户已于2026-09-30将第13份合入`integration/90cb6a9`；尚未部署。正式存储和原生安装包仍待验收。
+本分支core/v5-privacy-protection在worktrees/privacy开发。个人申请、处理与独立复核、私有答复、偏好和通知已实现并做隔离检查；实际删除/注销和素材审查标识仍未全部完成。当前未上传，不宣称已合并或正式启用。
 
-第14份选本、许可办理、项目绑定和受控阅读已合入共同版本 `integration/5974f3f`，最终8项远端检查通过，尚未部署。App接目录、预留、历史合同、私有材料、许可与项目；网页增加商品审核、外部证据核验、发放与暂停、指定阅稿授权，两端可从有效绑定提交项目改稿。继续采用暖白App和浅色深绿工作台，新旧入口共用稳定导航。[本批交付与预览](docs/ux/pr14-ui/README.md) · [固定页面方案](docs/ux/pr14-ui/page-plan.md) · [验证记录](docs/ux/pr14-ui/ui-checks.md) · [原第14份申请](https://github.com/Bill-Billion/jingjing/pull/14)。真机测试已按用户要求取消。
+[当前进度](docs/status/CORE_CURRENT.md) · [队友接法](docs/collaboration/V5_PRIVACY_HANDOFF.md) · [甲方待补材料](docs/operations/EXTERNAL_READINESS.md)。前一批业务补齐已在PR25上传审阅，其功能提交65f8938及说明提交8d6ed8a均通过GitHub检查。
 
-第15份对应前端已在本地 `ux/pr15-pages` 完成：原图册7张App、11张网页最终图已有设计，按图接入商家规格与报价、买方确认、保存订单合同、付款核对、逐项退款、独立审核和历史依据。App125项、网页74项、实际浏览器App8组/网页11组通过；两端静态检查及构建通过。[本批页面与审查路径](docs/ux/pr15-ui/README.md) · [图册对照](docs/ux/pr15-ui/design-qa.md) · [实际检查](docs/ux/pr15-ui/ui-checks.md) · [原第15份申请](https://github.com/Bill-Billion/jingjing/pull/15)。用户已授权将功能 `f0441b3` 及本批文档统一追加到原第15份；[本轮交付与审查](docs/ux/pr15-ui/delivery-review-20261002.md)记录范围，本次远端版本与检查以申请页为准，未合并或部署。真实SDK与正式支付另行验收，制作与交付验收留给第16份，第16–17份分支未修改。
+---
 
-所有页面的视觉基准固定为已确认原图册 `acd5f99`，按manifest最终修订图核对结构、字体、间距、控件和导航。[全页面实现标准](docs/ux/gallery-implementation-standard.md) · [已开发页面与原图对应](docs/ux/gallery-page-map.md) · [共用视觉参数](docs/ux/gallery-visual-system.json)。第11–14份及本批第15份已开发两端均按该基准统一布局和控件，[逐页实拍与适配说明](docs/ux/pr14-ui/style-qa.md)单独留档；尚未开放业务随后续阶段接入，不把172张参考图写成172个业务页面已完成。
+以下保留前批说明。
 
-日常只需先看这三份：
+# 晶晶日上／晶选片场：当前开发交接
 
-- [我们各自做什么，现在从哪里开始](docs/collaboration/TEAM_ONBOARDING.md)
-- [现在做到哪里，下一步做什么](docs/status/MAINLINE_PROGRESS.md)
-- [全部工作安排及完成标准](docs/tasks/README.md)
+本侧在 `core/v5-backend-completion` 补齐剩余后端。代做样片、剧本入库权限、已付参演合同变更和独立项目收入已写完并通过本机隔离检查；个人信息处理与素材审查仍在继续。分支包含前12轮必要代码，尚未全部合入共同版本。
 
-页面整合遵守[导航与新版页面验收](docs/ux/navigation-acceptance.md)：网页工作区保持同一套菜单，App顶层固定首页、入戏、培育、成角、我的；正式入口不跳回旧版。尚未开放的业务按阶段接入，最终所有页面按最新规划和已确认图册替换，菜单和路由检查属于每批验收的一部分。
+- [现在做到哪里、下一步做什么](docs/status/CORE_CURRENT.md)
+- [队友如何接页面、怎样验收](docs/collaboration/V5_COMPLETION_HANDOFF.md)
+- [本批测试与限制](docs/testing/evidence/v5-completion/README.md)
+- [完整范围及剩余工作](docs/reviews/v5-r12/FULL_SCOPE_REVIEW.md)
+- [分阶段交付与分工](docs/collaboration/STAGED_DELIVERY.md)
 
-2026-09-30现场审查发现的菜单消失与APP旧版绕行已在当前工作分支本地修复，并完成[逐项点击与截图](docs/ux/pr13-ui/README.md#现场导航问题与修复2026-09-30)；这批新增修改已按用户授权追加到[第13份申请](https://github.com/Bill-Billion/jingjing/pull/13)，最终版本已随第13份进入共同版本`integration/90cb6a9`，8项远端检查全部通过。第14份已进入共同版本；第15份页面已本地完成，后续业务仍按各自阶段接入真实接口。
-
-交给Codex执行时，从 [开工说明](docs/START_HERE.md) 和 [项目指令](AGENTS.md) 开始。两个Codex也必须用直白中文汇报，不能让人先翻译缩写才能看懂分工。
-
-需要查细节时： [需求清单](docs/requirements/README.md) · [业务与技术设计](docs/architecture/TARGET_DESIGN.md) · [尚缺的外部条件](docs/operations/EXTERNAL_READINESS.md) · [上传和合并代码的方法](docs/collaboration/GIT_WORKFLOW.md) · [原始资料](docs/sources/README.md)。
-
-代码继续放在 [工程交接包](晶晶日上工程交接包/01_源码)，没有移动。旧README保存在[历史记录](docs/history/README_20260918.md)。
-
-技术补充：共同开发版本叫integration；各自在自己的任务分支工作。main只保留经过关键检查的版本，不能直接上传覆盖。文档检查命令是 `python scripts/collaboration_check.py`，只检查资料和任务记录，不代表App通过测试。
+本侧负责服务器和数据处理，队友负责App及网页。后端测过不等于页面已接好，更不等于真实服务已开通。历史入口保存在 [原README](docs/archive/v5-completion-entry-history/20261020_BEFORE_COMPLETION_README.md)。

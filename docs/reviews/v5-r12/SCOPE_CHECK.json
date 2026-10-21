@@ -1,0 +1,305 @@
+{
+  "basis": "V5 delivery_packages + current source inspection; module tests do not prove all acceptance scenarios",
+  "packages": [
+    {
+      "id": "DEL-00",
+      "title": "旧阶段归档、PR23合并与V5任务基线",
+      "source_refs": "本轮用户指令；队友审阅§比较基线、衔接顺序",
+      "inspection_target": "git:origin/integration",
+      "finding": "PR23及前置开发尚未合入，不能宣称双方已经在同一版本验收。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-01",
+      "title": "账号、主体、成员与三端访问",
+      "source_refs": "V5 §1.2—1.4、2.9；队友审阅L30、L126",
+      "inspection_target": "party/auth",
+      "finding": "服务器有权限和主体检查；机构/个人入口、失权清屏仍需队友在当前页面验证。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-02",
+      "title": "实名年龄、主角光环与认证收费",
+      "source_refs": "V5 §1.3、2.14、5.6；信用成长专项§1",
+      "inspection_target": "artists",
+      "finding": "有身份结果、年龄、光环收费流程；真实实名产品未验，儿童实际处理不开放。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-03",
+      "title": "多数字人、造型声音及基础创建托管",
+      "source_refs": "V5 §1.1、2.3、2.4、3.4",
+      "inspection_target": "artists/works",
+      "finding": "有本人档案、造型声音、同意与创建托管订单；长期模型必须真实外部结果，不能用模拟替代。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-04",
+      "title": "广场艺人目录、城市筛选与匹配",
+      "source_refs": "V5 §1.3、2.2、2.6、2.14",
+      "inspection_target": "artists/engagement",
+      "finding": "有审核公开资料和筛选；前端筛选组合及AI匹配真实效果未验，不算AI匹配已上线。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-05",
+      "title": "艺人视频商品上架与内容运营",
+      "source_refs": "V5 §2.1—2.3、2.12⑤",
+      "inspection_target": "stock/trade/product-policy.js",
+      "finding": "现货供给可走既有接口；MANUAL_SAMPLE仍由PRODUCT_FLOW_NOT_IMPLEMENTED拒绝，代做样片须补开发。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-06",
+      "title": "现成视频的购买、许可和受控下载",
+      "source_refs": "V5 §2.1、2.3、3.6；队友审阅L69—72",
+      "inspection_target": "stock",
+      "finding": "有许可、付款确认、私有下载、退款撤权；真实支付、文件质量及App购买体验未验。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-07",
+      "title": "报价合同、各商品收银与退款恢复",
+      "source_refs": "V5 §2.10、3.4、3.6；队友审阅L32、99",
+      "inspection_target": "trade",
+      "finding": "已有各轮收银和本轮参演报酬；代做样片50%/50%链未接通，不能拿私人定制30%/60%/10%代替。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-08",
+      "title": "V5分账规则、历史订单与财务校验迁移",
+      "source_refs": "V5 §3.2—3.8；队友审阅L56—65",
+      "inspection_target": "settlement",
+      "finding": "V5分层计算与历史快照有检查；真实清分、税票和财税责任依据待核验。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-09",
+      "title": "真实试镜预约、到场取样与清分",
+      "source_refs": "V5 §2.4、2.10、3.3",
+      "inspection_target": "auditions",
+      "finding": "有预约、接拒、材料、到场、争议、补差；真实到场与视频内容需人工证据，不能只看测试回执。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-10",
+      "title": "六类通告与发布资格",
+      "source_refs": "V5 §2.7、2.5；队友审阅L35、L88",
+      "inspection_target": "notices",
+      "finding": "按已确认等级控制发布；实际六类表单与运营界面待队友验证。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-11",
+      "title": "意向卡、反向投稿与客服转单",
+      "source_refs": "V5 §2.5、2.6、2.8、2.10",
+      "inspection_target": "notices/customization",
+      "finding": "有投稿和正式报价关联；页面上从意向到订单的路径仍需同版本联调。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-12",
+      "title": "订单会话、通知与客服权限",
+      "source_refs": "V5 §2.8、2.10；队友审阅L74",
+      "inspection_target": "auditions/gigs/conversations.js/operations",
+      "finding": "有订单资格会话、通知与评论；不等于已建通用聊天软件，页面、媒体及客服操作另验。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-13",
+      "title": "剧本商务供稿与运营入库",
+      "source_refs": "V5 §2.7；队友审阅L78",
+      "inspection_target": "works/licensing",
+      "finding": "保留旧许可和权利链；V5停止作者自助的入口及服务端限制需专门复核，不能仅凭页面隐藏判定已关闭。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-14",
+      "title": "定制品类与动态故事采集",
+      "source_refs": "V5 §2.12①—③；队友审阅L159—168",
+      "inspection_target": "customization",
+      "finding": "草稿、提交、受理、补资料有前轮证据；PR24之外页面范围未重新确认。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-15",
+      "title": "真人承制、报价里程碑与交付",
+      "source_refs": "V5 §2.12、3.4；队友审阅L67",
+      "inspection_target": "production/customization",
+      "finding": "有30%/60%/10%、正式预览、返修、下载和售后；真实制作质量、水印AI标识及用户体验另验。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-16",
+      "title": "多人共创、去重授权及10/20权益",
+      "source_refs": "V5 §2.12④、3.5；队友审阅L96",
+      "inspection_target": "cocreation",
+      "finding": "有本人授权、人数、额度、退组和片段；真实身份去重和多人页面需联调。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-17",
+      "title": "消费者储值与星探会员",
+      "source_refs": "V5 §2.5、3.1、2.14",
+      "inspection_target": "wallet",
+      "finding": "托管账、充值与资格有隔离检查；支付宝口头选择不等于资金托管产品已开通，真实充值保持关闭。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-18",
+      "title": "晶钻、消费成长与积分事件账",
+      "source_refs": "V5 §1.3、2.5、2.13；信用成长专项§4",
+      "inspection_target": "wallet",
+      "finding": "积分账、退款待冲回、到期和成长已测；评价/分享奖励按用户决定暂不开放。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-19",
+      "title": "艺人六榜、买家城市榜及成长评价",
+      "source_refs": "V5 §1.3、2.2、2.6、2.11；信用成长专项",
+      "inspection_target": "engagement",
+      "finding": "艺人榜、月冠军、投票处理有检查；未配置城市榜不排名，星光值不编造奖励。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-20",
+      "title": "一级推荐、7天归因及退款返佣",
+      "source_refs": "V5 §2.12④、3.3、3.5；队友审阅L95",
+      "inspection_target": "engagement/referrals.js",
+      "finding": "单层归因和退款冲回有检查；不能扩成多层分销或宣称真实返现已完成。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-21",
+      "title": "晶钻抽奖、十连保底及概率发布",
+      "source_refs": "V5 §2.13；抽奖V2专项",
+      "inspection_target": "redemption",
+      "finding": "真实抽取结果、保底、公示与库存有隔离检查；正式规则、奖品和成本审核未完成。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-22",
+      "title": "固定兑换、卡券制作金与中奖权益兑现",
+      "source_refs": "V5 §2.13；抽奖V2 §3—5；队友审阅L91—94",
+      "inspection_target": "redemption",
+      "finding": "抵扣、开工核销、面试曝光、补救已测；正式商品、资源位、批次未配置不启用。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-23",
+      "title": "个人信息权利、青少年与消费保护",
+      "source_refs": "V5 §2.14；合规包；队友审阅L98",
+      "inspection_target": "governance/artists/wallet",
+      "finding": "现有撤回、删除请求和年龄/消费门禁应逐场景验收；15工作日目标、留存例外及外部删除回执不能凭模块测试全判通过。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-24",
+      "title": "私有素材、内容审核与AI标识全链",
+      "source_refs": "V5 §2.3、2.14；合规包",
+      "inspection_target": "works/production/providers",
+      "finding": "私有访问和审核路径有检查；真实OSS、视频显隐标识、SDK清单和合规材料未验。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-25",
+      "title": "MCN独立PC经营与个人轻操作",
+      "source_refs": "V5 §2.9；队友审阅L37、L145",
+      "inspection_target": "party/artists/gigs",
+      "finding": "主体互认和委托权限有检查；机构PC批量经营、受派单和看板实际页面待队友验证。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-26",
+      "title": "运营CMS总工作台与规则发布",
+      "source_refs": "V5 §2.12、2.13、2.14、5.1",
+      "inspection_target": "operations/governance",
+      "finding": "已提供各域审核、规则和待办接口；完整运营工作台的页面覆盖和岗位可用性未验。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-27",
+      "title": "非标参演、项目发行与收入凭证",
+      "source_refs": "V5 §2.4、2.7、3.3；队友审阅L31、L67",
+      "inspection_target": "projects/participation-state.js/settlement",
+      "finding": "本轮新增本人参演约定、独立报酬和发行分配约束；已付款合同需先履行售后或变更审阅，不静默改价；真实发行与到账未验。 已付约定直接变更及纯固定片酬项目另签收入约定入口仍待补。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "PARTIAL_BACKEND_CHECKED_FOLLOWUP_REQUIRED",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-28",
+      "title": "五Tab迁移、原型缺陷与视觉接线",
+      "source_refs": "V5 §1.3、5.4；队友审阅L54、L151—168",
+      "inspection_target": "contracts/openapi.yaml",
+      "finding": "本轮不修改前端页面；PR24不能证明12轮全部页面完成，须逐入口对照原型。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    },
+    {
+      "id": "DEL-29",
+      "title": "集成验收、迁移恢复与发布证据",
+      "source_refs": "V5全纲；队友审阅§检查证据与衔接顺序",
+      "inspection_target": "test/release.integration.test.cjs",
+      "finding": "隔离数据库回归可检查；脱敏旧库样本、真实容量、Web/Android/iOS与真机未齐，不是正式发布候选。",
+      "frontend_verified_this_round": false,
+      "acceptance_status": "NEEDS_SCENARIO_ACCEPTANCE",
+      "scope_not_removed": true
+    }
+  ]
+}

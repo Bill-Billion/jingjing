@@ -1,0 +1,54 @@
+name: 安卓测试安装包（非正式发布）
+on:
+  push:
+    branches: ['core/sms-login-20261004']
+    paths: ['.github/workflows/android-acceptance.yml', 'scripts/prepare-android-acceptance.py']
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: '已授权的临时HTTPS测试地址；缺省包只用于安装检查'
+        required: false
+        default: 'https://not-configured.invalid'
+permissions:
+  contents: read
+concurrency:
+  group: android-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ACCEPTANCE_API_URL: ${{ inputs.api_url || 'https://not-configured.invalid' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: 准备固定Flutter与JDK
+        shell: bash
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME_17_X64/bin" >> "$GITHUB_PATH"
+          git clone --depth 1 --branch 3.47.5 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = '6a19cca56475dbfba1478ee68d7bd0c2ef891da1'
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/flutter/bin/flutter" config --no-analytics
+      - name: 准备独立测试包身份
+        run: python3 scripts/prepare-android-acceptance.py
+      - name: 构建安卓调试安装包
+        working-directory: 晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter build apk --debug --no-pub --dart-define-from-file="$GITHUB_WORKSPACE/.local/android-acceptance-config.json"
+      - name: 记录安装包哈希
+        run: |
+          mkdir -p .local/android-acceptance
+          cp 晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/app/outputs/flutter-apk/app-debug.apk .local/android-acceptance/jingjing-acceptance.apk
+          sha256sum .local/android-acceptance/jingjing-acceptance.apk > .local/android-acceptance/SHA256SUMS.txt
+          printf '%s\n' "$GITHUB_SHA" > .local/android-acceptance/source-commit.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: android-acceptance
+          path: .local/android-acceptance/
+          retention-days: 3
+          if-no-files-found: error

@@ -424,6 +424,1022 @@
         ],
         "reason": "test"
       }
+    },
+    {
+      "name": "Production record must declare current version",
+      "fixture": "ProductionRecordResponse",
+      "remove_path": [
+        "data",
+        "object_version"
+      ]
+    },
+    {
+      "name": "No made-up production success status",
+      "fixture": "ProductionRecordResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "FAKE_COMPLETED"
+    },
+    {
+      "name": "Unversioned acceptance rejected",
+      "schema": "ProductionFeedbackRequest",
+      "value": {
+        "decision": "ACCEPT",
+        "note": "test",
+        "checklist": null,
+        "paid": true
+      }
+    },
+    {
+      "name": "Unknown generation operation rejected",
+      "schema": "ProductionGenerationRequest",
+      "value": {
+        "operation": "IMAGE_TO_VIDEO_IS_LONG_LIVED",
+        "avatar_id": "11111111-1111-4111-8111-111111111111",
+        "asset_id": null,
+        "consent_id": "11111111-1111-4111-8111-111111111111"
+      }
+    },
+    {
+      "name": "private purpose is not a public project",
+      "schema": "ProjectCreateRequest",
+      "value": {
+        "title": "private",
+        "scope": {
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "language": "zh",
+          "valid_until": "2090-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "fractional cast money rejected",
+      "schema": "ProjectApplyRequest",
+      "value": {
+        "avatar_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "consent_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "amount_minor": 1.5,
+        "note": "synthetic"
+      }
+    },
+    {
+      "name": "confirmation cannot omit exact version hash",
+      "schema": "ProjectConfirmRequest",
+      "value": {
+        "decision": "APPROVED",
+        "reason": "synthetic"
+      }
+    },
+    {
+      "name": "gigs fractional rate rejected",
+      "schema": "GigCommissionTerms",
+      "value": {
+        "platform_bps": 1.5,
+        "mcn_bps": 0
+      }
+    },
+    {
+      "name": "gigs multi-level commission rejected",
+      "schema": "GigCommissionTerms",
+      "value": {
+        "platform_bps": 1000,
+        "mcn_bps": 500,
+        "downstream_bps": 100
+      }
+    },
+    {
+      "name": "gigs private use cannot become commercial scope",
+      "schema": "GigScope",
+      "value": {
+        "purpose": "PRIVATE",
+        "territory": "CN",
+        "valid_until": "2099-01-01T00:00:00.000Z"
+      }
+    },
+    {
+      "name": "gigs public ranking future source cannot be client event",
+      "schema": "GigRankingRequest",
+      "value": {
+        "rule_id": "11111111-1111-4111-8111-111111111111",
+        "as_of": "2026-09-28T00:00:00.000Z",
+        "clicks": 9000
+      }
+    },
+    {
+      "name": "finance fractional payout rejected",
+      "schema": "FinanceRequestpayoutRequest",
+      "value": {
+        "recipient_party_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "amount_minor": 0.1,
+        "destination_asset_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "note": "synthetic"
+      }
+    },
+    {
+      "name": "finance confirmation requires content hash",
+      "schema": "FinanceConfirmRequest",
+      "value": {
+        "decision": "APPROVED",
+        "reason": "synthetic"
+      }
+    },
+    {
+      "name": "finance client cannot claim direct paid balance",
+      "schema": "FinanceSettleRequest",
+      "value": {
+        "period_reference": "test",
+        "note": "test",
+        "paid_minor": 1000
+      }
+    },
+    {
+      "name": "finance automatic payout cannot be ready",
+      "fixture": "FinanceReadinessResponse",
+      "mutate_path": [
+        "data",
+        "automatic_payout",
+        "current_status"
+      ],
+      "replace_with": "PRODUCTION_VERIFIED"
+    },
+    {
+      "name": "finance percentage cannot be floating",
+      "schema": "FinanceShare",
+      "value": {
+        "party_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "bps": 1.5,
+        "role": "MCN"
+      }
+    },
+    {
+      "name": "finance manual proof must have outcome",
+      "schema": "FinancePayoutevidenceRequest",
+      "value": {
+        "amount_minor": 1000,
+        "external_reference": "synthetic",
+        "occurred_at": "2020-01-01T00:00:00.000Z",
+        "evidence_asset_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "note": "test"
+      }
+    },
+    {
+      "name": "comments cannot select author",
+      "schema": "OpsAddCommentRequest",
+      "value": {
+        "body": "text",
+        "reply_to": null,
+        "author_account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+      }
+    },
+    {
+      "name": "report requires environment",
+      "schema": "OpsReportRequest",
+      "value": {
+        "kind": "CASH",
+        "period_start": "2026-01-01T00:00:00Z",
+        "period_end": "2026-02-01T00:00:00Z"
+      }
+    },
+    {
+      "name": "profit is not cash report",
+      "schema": "OpsReportRequest",
+      "value": {
+        "kind": "PROFIT",
+        "environment": "PRODUCTION",
+        "period_start": "2026-01-01T00:00:00Z",
+        "period_end": "2026-02-01T00:00:00Z"
+      }
+    },
+    {
+      "name": "withdrawn comments cannot retain visible body",
+      "fixture": "OpsCommentResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "WITHDRAWN"
+    },
+    {
+      "name": "pending report cannot claim success",
+      "fixture": "OpsReportResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "SUCCEEDED"
+    },
+    {
+      "name": "Customization draft cannot claim money paid",
+      "schema": "CustomizationRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "synthetic-customization-request",
+          "actor": {
+            "account_id": "11111111-1111-4111-8111-111111111111"
+          },
+          "acting_party": "22222222-2222-4222-8222-222222222222"
+        },
+        "data": {
+          "id": "44444444-4444-4444-8444-444444444444",
+          "created_by": "11111111-1111-4111-8111-111111111111",
+          "party_id": "22222222-2222-4222-8222-222222222222",
+          "template_version_id": "33333333-3333-4333-8333-333333333333",
+          "template_snapshot": {
+            "title": "合成测试婚礼故事",
+            "description": "仅用于隔离测试，不是正式商品规格",
+            "fields": [
+              {
+                "key": "story",
+                "label": "想讲述的故事",
+                "type": "TEXT",
+                "required": true,
+                "max_length": 12000
+              },
+              {
+                "key": "tone",
+                "label": "希望的氛围",
+                "type": "CHOICE",
+                "required": false,
+                "options": [
+                  "温暖",
+                  "纪实"
+                ]
+              }
+            ]
+          },
+          "answers": {
+            "story": "",
+            "tone": ""
+          },
+          "current_status": "PAID",
+          "object_version": 1,
+          "submission": null,
+          "submitted_at": null,
+          "intake_at": null,
+          "intake_by": null,
+          "allowed_actions": [
+            "READ",
+            "SAVE",
+            "SUBMIT"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Customization unknown state input rejected",
+      "schema": "CreateCustomizationRequest",
+      "value": {
+        "template_version_id": "33333333-3333-4333-8333-333333333333",
+        "answers": {},
+        "current_status": "SUBMITTED"
+      }
+    },
+    {
+      "name": "Customization typed answer cannot contain attachment object",
+      "schema": "UpdateCustomizationRequest",
+      "value": {
+        "answers": {
+          "story": {
+            "asset_id": "44444444-4444-4444-8444-444444444444"
+          }
+        }
+      }
+    },
+    {
+      "name": "Customization null answer is not implicit old value",
+      "schema": "UpdateCustomizationRequest",
+      "value": {
+        "answers": {
+          "story": null
+        }
+      }
+    },
+    {
+      "name": "Customization submit cannot provide arbitrary authorization",
+      "schema": "CustomizationEmptyCommand",
+      "value": {
+        "approved": true
+      }
+    },
+    {
+      "name": "Customization ready category cannot carry blocked reason",
+      "schema": "CustomizationCategoryPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "synthetic-customization-request",
+          "actor": {
+            "account_id": "11111111-1111-4111-8111-111111111111"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "template_version_id": "33333333-3333-4333-8333-333333333333",
+              "category_code": "WEDDING",
+              "template_version": 1,
+              "template_snapshot": {
+                "title": "合成测试婚礼故事",
+                "description": "仅用于隔离测试，不是正式商品规格",
+                "fields": [
+                  {
+                    "key": "story",
+                    "label": "想讲述的故事",
+                    "type": "TEXT",
+                    "required": true,
+                    "max_length": 12000
+                  },
+                  {
+                    "key": "tone",
+                    "label": "希望的氛围",
+                    "type": "CHOICE",
+                    "required": false,
+                    "options": [
+                      "温暖",
+                      "纪实"
+                    ]
+                  }
+                ]
+              },
+              "submission_available": true,
+              "unavailable_reason": "ATTACHMENT_SUBMISSION_NOT_READY"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Customization draft cannot contain a submitted timestamp",
+      "schema": "CustomizationRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "synthetic-customization-request",
+          "actor": {
+            "account_id": "11111111-1111-4111-8111-111111111111"
+          },
+          "acting_party": "22222222-2222-4222-8222-222222222222"
+        },
+        "data": {
+          "id": "44444444-4444-4444-8444-444444444444",
+          "created_by": "11111111-1111-4111-8111-111111111111",
+          "party_id": "22222222-2222-4222-8222-222222222222",
+          "template_version_id": "33333333-3333-4333-8333-333333333333",
+          "template_snapshot": {
+            "title": "合成测试婚礼故事",
+            "description": "仅用于隔离测试，不是正式商品规格",
+            "fields": [
+              {
+                "key": "story",
+                "label": "想讲述的故事",
+                "type": "TEXT",
+                "required": true,
+                "max_length": 12000
+              },
+              {
+                "key": "tone",
+                "label": "希望的氛围",
+                "type": "CHOICE",
+                "required": false,
+                "options": [
+                  "温暖",
+                  "纪实"
+                ]
+              }
+            ]
+          },
+          "answers": {
+            "story": "",
+            "tone": ""
+          },
+          "current_status": "DRAFT",
+          "object_version": 1,
+          "submission": null,
+          "submitted_at": "2026-10-15T00:00:00Z",
+          "intake_at": null,
+          "intake_by": null,
+          "allowed_actions": [
+            "READ",
+            "SAVE",
+            "SUBMIT"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Customization intake requires submission and operator facts",
+      "schema": "CustomizationRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "synthetic-customization-request",
+          "actor": {
+            "account_id": "11111111-1111-4111-8111-111111111111"
+          },
+          "acting_party": "22222222-2222-4222-8222-222222222222"
+        },
+        "data": {
+          "id": "44444444-4444-4444-8444-444444444444",
+          "created_by": "11111111-1111-4111-8111-111111111111",
+          "party_id": "22222222-2222-4222-8222-222222222222",
+          "template_version_id": "33333333-3333-4333-8333-333333333333",
+          "template_snapshot": {
+            "title": "合成测试婚礼故事",
+            "description": "仅用于隔离测试，不是正式商品规格",
+            "fields": [
+              {
+                "key": "story",
+                "label": "想讲述的故事",
+                "type": "TEXT",
+                "required": true,
+                "max_length": 12000
+              },
+              {
+                "key": "tone",
+                "label": "希望的氛围",
+                "type": "CHOICE",
+                "required": false,
+                "options": [
+                  "温暖",
+                  "纪实"
+                ]
+              }
+            ]
+          },
+          "answers": {
+            "story": "",
+            "tone": ""
+          },
+          "current_status": "INTAKE",
+          "object_version": 1,
+          "submission": null,
+          "submitted_at": null,
+          "intake_at": null,
+          "intake_by": null,
+          "allowed_actions": [
+            "READ",
+            "SAVE",
+            "SUBMIT"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Customization summary cannot leak private story",
+      "schema": "CustomizationRequestPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "synthetic-customization-request",
+          "actor": {
+            "account_id": "11111111-1111-4111-8111-111111111111"
+          },
+          "acting_party": "22222222-2222-4222-8222-222222222222"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "44444444-4444-4444-8444-444444444444",
+              "party_id": "22222222-2222-4222-8222-222222222222",
+              "template_version_id": "33333333-3333-4333-8333-333333333333",
+              "current_status": "DRAFT",
+              "object_version": 1,
+              "submitted_at": null,
+              "intake_at": null,
+              "allowed_actions": [
+                "READ",
+                "SAVE",
+                "SUBMIT"
+              ],
+              "category_title": "合成测试婚礼故事",
+              "answers": {
+                "story": "must not leak"
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "supplement does not accept approval state",
+      "schema": "RequestCustomizationSupplement",
+      "value": {
+        "items": [
+          {
+            "field_key": "story",
+            "reason": "合成：时间线待补充",
+            "instruction": "补充时间顺序"
+          }
+        ],
+        "approved": true
+      }
+    },
+    {
+      "name": "supplement requires reason",
+      "schema": "RequestCustomizationSupplement",
+      "value": {
+        "items": [
+          {
+            "field_key": "story",
+            "reason": "",
+            "instruction": "补充"
+          }
+        ]
+      }
+    },
+    {
+      "name": "supplement draft does not accept quote price",
+      "schema": "SaveCustomizationSupplement",
+      "value": {
+        "answers": {},
+        "responses": {},
+        "price": 100
+      }
+    },
+    {
+      "name": "submission summary excludes story",
+      "schema": "CustomizationSubmissionSummary",
+      "value": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "submission_number": 1,
+        "submitted_by": "11111111-1111-4111-8111-111111111111",
+        "submitted_at": "2026-10-15T00:00:00Z",
+        "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "answers": {
+          "story": "private"
+        }
+      }
+    },
+    {
+      "name": "missing source hash",
+      "schema": "CustomizationQuoteSource",
+      "value": {
+        "request_id": "10000000-0000-0000-0000-000000000001",
+        "submission_id": "10000000-0000-0000-0000-000000000002"
+      }
+    },
+    {
+      "name": "mutable story forbidden",
+      "schema": "CustomizationQuoteSource",
+      "value": {
+        "request_id": "10000000-0000-0000-0000-000000000001",
+        "submission_id": "10000000-0000-0000-0000-000000000002",
+        "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "answers": {}
+      }
+    },
+    {
+      "name": "invalid source hash",
+      "schema": "CustomizationQuoteSource",
+      "value": {
+        "request_id": "10000000-0000-0000-0000-000000000001",
+        "submission_id": "10000000-0000-0000-0000-000000000002",
+        "content_sha256": "fake"
+      }
+    },
+    {
+      "name": "null story source",
+      "schema": "CustomizationQuoteSource",
+      "value": null
+    },
+    {
+      "name": "product profile missing type",
+      "schema": "TradeProductProfile",
+      "value": {
+        "version": "V5"
+      }
+    },
+    {
+      "name": "product profile unknown version",
+      "schema": "TradeProductProfile",
+      "value": {
+        "version": "V6",
+        "type": "PRIVATE_CUSTOMIZATION"
+      }
+    },
+    {
+      "name": "product profile unknown type",
+      "schema": "TradeProductProfile",
+      "value": {
+        "version": "V5",
+        "type": "OTHER"
+      }
+    },
+    {
+      "name": "product profile forged approval",
+      "schema": "TradeProductProfile",
+      "value": {
+        "version": "V5",
+        "type": "PRIVATE_CUSTOMIZATION",
+        "approved": true
+      }
+    },
+    {
+      "name": "product profile null",
+      "schema": "TradeProductProfile",
+      "value": null
+    },
+    {
+      "name": "wrong finance model",
+      "schema": "CustomizationFinanceSnapshot",
+      "value": {
+        "model": "MARKETPLACE",
+        "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "rules": {
+          "lines": [
+            {
+              "deductions": [],
+              "line_id": "production",
+              "shares": [
+                {
+                  "bps": 6667,
+                  "party_id": "f0d65688-a24a-42f2-80d0-12d82b6da08d",
+                  "role": "PRODUCER"
+                },
+                {
+                  "bps": 3333,
+                  "party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                  "role": "PLATFORM"
+                }
+              ]
+            }
+          ],
+          "release_condition": "DELIVERY_ACCEPTED",
+          "settlement_at": "2020-01-01T00:00:00.000Z",
+          "terms": "合成比例，仅验算，不是正式成本或毛利",
+          "version": "synthetic-finance-1"
+        },
+        "rule_snapshot": {
+          "content": {
+            "content_sha256": "5395a60f99ab7d404f5dd4f341749160730f738108eb44b0914af73fd97b8e13",
+            "format_version": "rule-content-v1",
+            "id": "3529eafa-03c3-43c1-9623-48c120988158",
+            "rule_key": "customization.synthetic",
+            "terms": {
+              "customization_finance": {
+                "model": "V5_SELF_OPERATED",
+                "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                "rules": {
+                  "lines": [
+                    {
+                      "deductions": [],
+                      "line_id": "production",
+                      "shares": [
+                        {
+                          "bps": 6667,
+                          "party_id": "f0d65688-a24a-42f2-80d0-12d82b6da08d",
+                          "role": "PRODUCER"
+                        },
+                        {
+                          "bps": 3333,
+                          "party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                          "role": "PLATFORM"
+                        }
+                      ]
+                    }
+                  ],
+                  "release_condition": "DELIVERY_ACCEPTED",
+                  "settlement_at": "2020-01-01T00:00:00.000Z",
+                  "terms": "合成比例，仅验算，不是正式成本或毛利",
+                  "version": "synthetic-finance-1"
+                }
+              },
+              "explicit": "Synthetic, no formal prices or rights"
+            },
+            "version": "1"
+          },
+          "current_status": "EFFECTIVE",
+          "effective_at": "2020-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "unknown rounding",
+      "schema": "CustomizationFinanceSnapshot",
+      "value": {
+        "model": "V5_SELF_OPERATED",
+        "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+        "rounding": "DEFAULT",
+        "rules": {
+          "lines": [
+            {
+              "deductions": [],
+              "line_id": "production",
+              "shares": [
+                {
+                  "bps": 6667,
+                  "party_id": "f0d65688-a24a-42f2-80d0-12d82b6da08d",
+                  "role": "PRODUCER"
+                },
+                {
+                  "bps": 3333,
+                  "party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                  "role": "PLATFORM"
+                }
+              ]
+            }
+          ],
+          "release_condition": "DELIVERY_ACCEPTED",
+          "settlement_at": "2020-01-01T00:00:00.000Z",
+          "terms": "合成比例，仅验算，不是正式成本或毛利",
+          "version": "synthetic-finance-1"
+        },
+        "rule_snapshot": {
+          "content": {
+            "content_sha256": "5395a60f99ab7d404f5dd4f341749160730f738108eb44b0914af73fd97b8e13",
+            "format_version": "rule-content-v1",
+            "id": "3529eafa-03c3-43c1-9623-48c120988158",
+            "rule_key": "customization.synthetic",
+            "terms": {
+              "customization_finance": {
+                "model": "V5_SELF_OPERATED",
+                "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                "rules": {
+                  "lines": [
+                    {
+                      "deductions": [],
+                      "line_id": "production",
+                      "shares": [
+                        {
+                          "bps": 6667,
+                          "party_id": "f0d65688-a24a-42f2-80d0-12d82b6da08d",
+                          "role": "PRODUCER"
+                        },
+                        {
+                          "bps": 3333,
+                          "party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                          "role": "PLATFORM"
+                        }
+                      ]
+                    }
+                  ],
+                  "release_condition": "DELIVERY_ACCEPTED",
+                  "settlement_at": "2020-01-01T00:00:00.000Z",
+                  "terms": "合成比例，仅验算，不是正式成本或毛利",
+                  "version": "synthetic-finance-1"
+                }
+              },
+              "explicit": "Synthetic, no formal prices or rights"
+            },
+            "version": "1"
+          },
+          "current_status": "EFFECTIVE",
+          "effective_at": "2020-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "missing approved rule",
+      "schema": "CustomizationFinanceSnapshot",
+      "value": {
+        "model": "V5_SELF_OPERATED",
+        "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "rules": {
+          "lines": [
+            {
+              "deductions": [],
+              "line_id": "production",
+              "shares": [
+                {
+                  "bps": 6667,
+                  "party_id": "f0d65688-a24a-42f2-80d0-12d82b6da08d",
+                  "role": "PRODUCER"
+                },
+                {
+                  "bps": 3333,
+                  "party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+                  "role": "PLATFORM"
+                }
+              ]
+            }
+          ],
+          "release_condition": "DELIVERY_ACCEPTED",
+          "settlement_at": "2020-01-01T00:00:00.000Z",
+          "terms": "合成比例，仅验算，不是正式成本或毛利",
+          "version": "synthetic-finance-1"
+        },
+        "rule_snapshot": null
+      }
+    },
+    {
+      "name": "fractional cent rounding refused",
+      "schema": "CustomizationRoundingEntry",
+      "value": {
+        "line_id": "production",
+        "platform_party_id": "907e1390-62b0-4add-82d8-afffb05ba6ca",
+        "rounding_diff_minor": 0.5
+      }
+    },
+    {
+      "name": "wrong-marketplace-model",
+      "schema": "MarketplaceAllocation",
+      "value": {
+        "fee_base": "NET_PAID",
+        "mcn_party_id": null,
+        "mcn_supply_bps": 0,
+        "model": "V5_SELF_OPERATED",
+        "platform_bps": 1800,
+        "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+        "product_type": "STOCK_VIDEO",
+        "referral_bps": 0,
+        "referrer_party_id": null,
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+      }
+    },
+    {
+      "name": "unknown-marketplace-type",
+      "schema": "MarketplaceAllocation",
+      "value": {
+        "fee_base": "NET_PAID",
+        "mcn_party_id": null,
+        "mcn_supply_bps": 0,
+        "model": "V5_TWO_LAYER",
+        "platform_bps": 1800,
+        "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+        "product_type": "PRIVATE_CUSTOMIZATION",
+        "referral_bps": 0,
+        "referrer_party_id": null,
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+      }
+    },
+    {
+      "name": "fractional-marketplace-rate",
+      "schema": "MarketplaceAllocation",
+      "value": {
+        "fee_base": "NET_PAID",
+        "mcn_party_id": null,
+        "mcn_supply_bps": 0,
+        "model": "V5_TWO_LAYER",
+        "platform_bps": 1800.5,
+        "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+        "product_type": "STOCK_VIDEO",
+        "referral_bps": 0,
+        "referrer_party_id": null,
+        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+        "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+      }
+    },
+    {
+      "name": "mcn-rate-below-agreed-range",
+      "schema": "McnV5Terms",
+      "value": {
+        "version": "V5",
+        "supply_share_bps": 999
+      }
+    },
+    {
+      "name": "mcn-rate-above-agreed-range",
+      "schema": "McnV5Terms",
+      "value": {
+        "version": "V5",
+        "supply_share_bps": 3001
+      }
+    },
+    {
+      "name": "preview-cannot-claim-payment",
+      "schema": "MarketplacePreviewResponse",
+      "value": {
+        "meta": {
+          "request_id": "56b447a9-4045-4a92-a3d2-9dfcbda8eeac",
+          "actor": {
+            "account_id": "3c55c407-f001-44da-8d8e-8e2c59c116cf"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "meaning": "PAID",
+          "rule_id": "b9ca7b27-9da3-4958-8549-97508562ca96",
+          "rule_content_sha256": "b4be4d0b6ba22b944db196b549cc1ccfb11c874946b7edc730f0cd562a0b1157",
+          "allocation": {
+            "fee_base": "NET_PAID",
+            "mcn_party_id": null,
+            "mcn_supply_bps": 0,
+            "model": "V5_TWO_LAYER",
+            "platform_bps": 1800,
+            "platform_party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+            "product_type": "STOCK_VIDEO",
+            "referral_bps": 0,
+            "referrer_party_id": null,
+            "rounding": "HALF_UP_PLATFORM_REMAINDER",
+            "supplier_party_id": "91810df9-e019-4bc8-8bdd-098be96252bb"
+          },
+          "amounts": {
+            "net_minor": 10000,
+            "entries": [
+              {
+                "role": "PLATFORM",
+                "party_id": "6d943500-2bf5-49fd-82c6-1d4378e39168",
+                "amount_minor": 1800
+              },
+              {
+                "role": "SUPPLIER",
+                "party_id": "91810df9-e019-4bc8-8bdd-098be96252bb",
+                "amount_minor": 8200
+              }
+            ],
+            "rounding_diff_minor": 0
+          },
+          "relation_reference": null
+        }
+      }
+    },
+    {
+      "name": "Artist identity cannot be set by display-name request",
+      "schema": "ArtistPerson",
+      "value": {
+        "id": "synthetic",
+        "identity_status": "VERIFIED"
+      }
+    },
+    {
+      "name": "Agency cannot request signing authority in finite delegation",
+      "schema": "ArtistDelegationInput",
+      "value": {
+        "organization_party_id": "00000000-0000-0000-0000-000000000001",
+        "relation_id": "00000000-0000-0000-0000-000000000002",
+        "actions": [
+          "SIGN_CONTRACT"
+        ],
+        "valid_from": "2026-01-01T00:00:00.000Z",
+        "valid_until": "2027-01-01T00:00:00.000Z",
+        "evidence_asset_ids": [
+          "00000000-0000-0000-0000-000000000003"
+        ],
+        "terms": "synthetic"
+      }
+    },
+    {
+      "name": "Artist page must not return verified identity fingerprint",
+      "fixture": "ArtistPersonResponse",
+      "mutate_path": [
+        "data",
+        "identity_key"
+      ],
+      "replace_with": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "Digital archive cannot claim long-lived model is ready",
+      "fixture": "ArtistAvatarResponse",
+      "mutate_path": [
+        "data",
+        "data",
+        "long_lived_model_status"
+      ],
+      "replace_with": "READY"
+    },
+    {
+      "name": "cocreation empty cast rejected",
+      "schema": "CocreationJoinRequest",
+      "value": {
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "cast": [],
+        "private_story": "",
+        "material_asset_ids": [
+          "00000000-0000-4000-8000-000000000002"
+        ],
+        "sharing_allowed": false,
+        "participation_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "agreed": true
+      }
+    },
+    {
+      "name": "cocreation self reported role rejected",
+      "schema": "CocreationCreateRoomRequest",
+      "value": {
+        "request_id": "00000000-0000-4000-8000-000000000001",
+        "rule_id": "00000000-0000-4000-8000-000000000002",
+        "producer_party_id": "00000000-0000-4000-8000-000000000003",
+        "title": "synthetic",
+        "deadline": "2026-12-01T00:00:00.000Z",
+        "purpose": "PRIVATE",
+        "territory": "CN",
+        "role": "OPERATOR"
+      }
+    },
+    {
+      "name": "redemption arbitrary balance amount forbidden",
+      "schema": "RedemptionExchangeRequest",
+      "value": {
+        "stock_id": "00000000-0000-4000-8000-000000000001",
+        "template_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "points": 1
+      }
+    },
+    {
+      "name": "redemption role guarantee not a fulfillment outcome",
+      "schema": "RedemptionFinishRequest",
+      "value": {
+        "outcome": "ROLE_GUARANTEED",
+        "evidence_asset_id": "00000000-0000-4000-8000-000000000001",
+        "reason": "synthetic"
+      }
     }
   ]
 }

@@ -1,0 +1,252 @@
+TAP version 13
+# Subtest: agency allowed actions exclude personal consent, contract signing and commission change
+ok 1 - agency allowed actions exclude personal consent, contract signing and commission change
+  ---
+  duration_ms: 0.6442
+  type: 'test'
+  ...
+# Subtest: invalid or ambiguous dates cannot grant rights
+ok 2 - invalid or ambiguous dates cannot grant rights
+  ---
+  duration_ms: 1.085
+  type: 'test'
+  ...
+# Subtest: hosting uses calendar months, clamps month end and preserves milliseconds
+ok 3 - hosting uses calendar months, clamps month end and preserves milliseconds
+  ---
+  duration_ms: 0.1458
+  type: 'test'
+  ...
+# Subtest: service quote requires its own scoped request, never a story or arbitrary legacy quote
+ok 4 - service quote requires its own scoped request, never a story or arbitrary legacy quote
+  ---
+  duration_ms: 1.148
+  type: 'test'
+  ...
+# Subtest: artist rights and delegated access in isolated MySQL
+    # Subtest: real person creation is personal only, idempotent, and never verified by client flags
+    ok 1 - real person creation is personal only, idempotent, and never verified by client flags
+      ---
+      duration_ms: 93.9074
+      type: 'test'
+      ...
+    # Subtest: provider not enabled is visible and creates no fake identity result
+    ok 2 - provider not enabled is visible and creates no fake identity result
+      ---
+      duration_ms: 20.616
+      type: 'test'
+      ...
+    # Subtest: trusted verification binds a real person; duplicate identity does not transfer ownership
+    ok 3 - trusted verification binds a real person; duplicate identity does not transfer ownership
+      ---
+      duration_ms: 42.6543
+      type: 'test'
+      ...
+    # Subtest: service purchase rejects a personal party mistakenly configured as platform merchant
+    ok 4 - service purchase rejects a personal party mistakenly configured as platform merchant
+      ---
+      duration_ms: 4.282
+      type: 'test'
+      ...
+    # Subtest: minor actual materials and avatar creation are blocked without guardian policy
+    ok 5 - minor actual materials and avatar creation are blocked without guardian policy
+      ---
+      duration_ms: 27.2278
+      type: 'test'
+      ...
+    # Subtest: one person can own multiple avatars; neither claims a long-lived model exists
+    ok 6 - one person can own multiple avatars; neither claims a long-lived model exists
+      ---
+      duration_ms: 45.2438
+      type: 'test'
+      ...
+    # Subtest: private materials belong to person and cannot be fetched by another account
+    ok 7 - private materials belong to person and cannot be fetched by another account
+      ---
+      duration_ms: 36.142
+      type: 'test'
+      ...
+    # Subtest: consent needs independent review; rejected and withdrawn rights cannot create versions
+    ok 8 - consent needs independent review; rejected and withdrawn rights cannot create versions
+      ---
+      duration_ms: 54.6699
+      type: 'test'
+      ...
+    # Subtest: paid hosting is linked to one avatar; duplicate sync never extends the paid term
+    ok 9 - paid hosting is linked to one avatar; duplicate sync never extends the paid term
+      ---
+      duration_ms: 144.3193
+      type: 'test'
+      ...
+    # Subtest: unpaid creation cannot be delivered and a second avatar cannot double-charge first creation
+    ok 10 - unpaid creation cannot be delivered and a second avatar cannot double-charge first creation
+      ---
+      duration_ms: 124.2676
+      type: 'test'
+      ...
+    # Subtest: creation retries use the purchased limit; failure leaves a refund obligation, never a fake refund
+    ok 11 - creation retries use the purchased limit; failure leaves a refund obligation, never a fake refund
+      ---
+      duration_ms: 75.5548
+      type: 'test'
+      ...
+    # Subtest: L1 and public directory need identity and reviewed independent public consent
+    ok 12 - L1 and public directory need identity and reviewed independent public consent
+      ---
+      duration_ms: 74.7914
+      type: 'test'
+      ...
+    # Subtest: L2 fee binds one application; supplemental review is same case and does not sell another fee
+    ok 13 - L2 fee binds one application; supplemental review is same case and does not sell another fee
+      ---
+      duration_ms: 172.8737
+      type: 'test'
+      ...
+    # Subtest: review inbox and owner record list restore actual work; stranger has no review access
+    ok 14 - review inbox and owner record list restore actual work; stranger has no review access
+      ---
+      duration_ms: 16.0715
+      type: 'test'
+      ...
+    # Subtest: archive material consent stays tied to the exact latest submitted versions
+        # Subtest: operator can read an authorized current material before withdrawal
+        ok 1 - operator can read an authorized current material before withdrawal
+          ---
+          duration_ms: 18.3094
+          type: 'test'
+          ...
+        # Subtest: withdrawal blocks reads and delivery despite another valid consent
+        ok 2 - withdrawal blocks reads and delivery despite another valid consent
+          ---
+          duration_ms: 30.5287
+          type: 'test'
+          ...
+        # Subtest: new consent alone cannot reauthorize the old version; explicit replacement can
+        ok 3 - new consent alone cannot reauthorize the old version; explicit replacement can
+          ---
+          duration_ms: 91.1864
+          type: 'test'
+          ...
+        # Subtest: voice uses its own original authorization, not the face consent
+        ok 4 - voice uses its own original authorization, not the face consent
+          ---
+          duration_ms: 68.9252
+          type: 'test'
+          ...
+        # Subtest: expiry or missing material fails closed without falling back to history
+        ok 5 - expiry or missing material fails closed without falling back to history
+          ---
+          duration_ms: 33.7712
+          type: 'test'
+          ...
+        # Subtest: delivery contains only current explicitly authorized versions and keeps the old record
+        ok 6 - delivery contains only current explicitly authorized versions and keeps the old record
+          ---
+          duration_ms: 25.3985
+          type: 'test'
+          ...
+        # Subtest: withdrawal during file transfer prevents response bytes from reaching the operator
+        ok 7 - withdrawal during file transfer prevents response bytes from reaching the operator
+          ---
+          duration_ms: 30.8595
+          type: 'test'
+          ...
+        1..7
+    ok 15 - archive material consent stays tied to the exact latest submitted versions
+      ---
+      duration_ms: 427.0521
+      type: 'test'
+      ...
+    # Subtest: versioned updates reject stale changes and audit failure rolls back both data and request key
+    ok 16 - versioned updates reject stale changes and audit failure rolls back both data and request key
+      ---
+      duration_ms: 20.8692
+      type: 'test'
+      ...
+    # Subtest: creator identity is not agency identity; verified service result is tied to the request and recovery uses same key
+    ok 17 - creator identity is not agency identity; verified service result is tied to the request and recovery uses same key
+      ---
+      duration_ms: 43.3276
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate avatar commands create one archive identifier
+    ok 18 - concurrent duplicate avatar commands create one archive identifier
+      ---
+      duration_ms: 22.2753
+      type: 'test'
+      ...
+    # Subtest: only selected public preview bytes and attached reviewer evidence are downloadable
+    ok 19 - only selected public preview bytes and attached reviewer evidence are downloadable
+      ---
+      duration_ms: 48.358
+      type: 'test'
+      ...
+    # Subtest: ranking listen reads authorized audio bytes before counting and deduplicates
+    ok 20 - ranking listen reads authorized audio bytes before counting and deduplicates
+      ---
+      duration_ms: 123.4197
+      type: 'test'
+      ...
+    # Subtest: renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order
+    ok 21 - renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order
+      ---
+      duration_ms: 107.2372
+      type: 'test'
+      ...
+    # Subtest: appeal records a challenge without silently reversing original decision or granting rights
+    ok 22 - appeal records a challenge without silently reversing original decision or granting rights
+      ---
+      duration_ms: 35.3042
+      type: 'test'
+      ...
+    # Subtest: agency cannot claim person and only artist can authorize finite actions
+    ok 23 - agency cannot claim person and only artist can authorize finite actions
+      ---
+      duration_ms: 48.7688
+      type: 'test'
+      ...
+    # Subtest: agency upload stays artist-owned; withdrawal denies new and replayed agency operations
+    ok 24 - agency upload stays artist-owned; withdrawal denies new and replayed agency operations
+      ---
+      duration_ms: 48.2829
+      type: 'test'
+      ...
+    # Subtest: expired hosting removes new listing eligibility but retains delivered archive and owned files
+    ok 25 - expired hosting removes new listing eligibility but retains delivered archive and owned files
+      ---
+      duration_ms: 25.701
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent hides directory immediately but keeps historical records and files
+    ok 26 - withdrawing public consent hides directory immediately but keeps historical records and files
+      ---
+      duration_ms: 29.8971
+      type: 'test'
+      ...
+    # Subtest: registered artist cannot bypass new identity/material rules through old supply entry
+    ok 27 - registered artist cannot bypass new identity/material rules through old supply entry
+      ---
+      duration_ms: 9.383
+      type: 'test'
+      ...
+    # Subtest: stored content tampering is rejected, not silently returned
+    ok 28 - stored content tampering is rejected, not silently returned
+      ---
+      duration_ms: 8.8669
+      type: 'test'
+      ...
+    1..28
+ok 5 - artist rights and delegated access in isolated MySQL
+  ---
+  duration_ms: 6958.2287
+  type: 'test'
+  ...
+1..5
+# tests 40
+# suites 0
+# pass 40
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7299.7558

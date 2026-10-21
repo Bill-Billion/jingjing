@@ -39,6 +39,6 @@ function createTradeProviders(db,env={},testDependencies={}) {
   };
  }
  const providers={ALIPAY:build('ALIPAY'),APPLE:build('APPLE')};
- return {get(code){if(!Object.hasOwn(providers,code))throw error('INVALID_PAYMENT_CHANNEL',400);return providers[code];},configuration};
+ return {get(code){if(code==='CUSTODY')throw error('CUSTODY_PROVIDER_NOT_CONNECTED',503);if(!Object.hasOwn(providers,code))throw error('INVALID_PAYMENT_CHANNEL',400);return providers[code];},configuration};
 }
 module.exports={createTradeProviders};

@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>晶晶日上 · 数字人经济12个月规模化总账与足额纳税深度报告</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23c8102e'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23d4af37' font-family='sans-serif'>晶</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@600;700;900&display=swap">
+<style>
+:root{--brand:#c8102e;--brand2:#d4af37;--ink:#1d2129;--muted:#6b7280;--bg:#f4f5f8;--card:#fff;--line:#e8e9ee;--good:#0e9f6e;--warn:#c8770a;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans SC",-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 60px}
+.hero{background:linear-gradient(135deg,#a50d26 0%,#c8102e 55%,#d83a1f 100%);color:#fff;border-radius:18px;padding:48px 44px;margin:26px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:rgba(212,175,55,.16)}
+.hero .tag{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(212,175,55,.5);color:#ffe9b0;padding:4px 14px;border-radius:20px;font-size:13px;margin-bottom:16px}
+.hero h1{font-family:"Noto Serif SC",serif;font-size:31px;line-height:1.35;margin-bottom:12px;position:relative}
+.hero p{opacity:.92;max-width:760px;position:relative}
+.hero .meta{margin-top:18px;font-size:13px;opacity:.82;position:relative}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:26px}
+nav.toc b{font-size:14px;color:var(--brand)}
+nav.toc .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+nav.toc a{font-size:13px;color:var(--ink);text-decoration:none;background:#f3f4f7;border:1px solid var(--line);padding:5px 12px;border-radius:18px}
+nav.toc a:hover{border-color:var(--brand);color:var(--brand)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 28px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px}
+.kpi .v{font-size:27px;font-weight:900;color:var(--brand);line-height:1.15}
+.kpi .v.gold{color:#9a7b16}
+.kpi .v.green{color:var(--good)}
+.kpi .l{font-size:12.5px;color:var(--muted);margin-top:5px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 34px;margin-bottom:22px}
+h2{font-family:"Noto Serif SC",serif;font-size:22px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+h2 .no{background:var(--brand);color:#fff;width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-family:sans-serif;flex:0 0 auto}
+.sub{color:var(--muted);font-size:13.5px;margin-bottom:20px}
+h3{font-size:16px;margin:24px 0 10px;padding-left:11px;border-left:4px solid var(--brand2)}
+p{margin-bottom:12px}
+.card{background:#fafbfc;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+.note{background:#fdf6ec;border:1px solid #f0d9b0;border-radius:11px;padding:13px 17px;font-size:13.8px;margin:14px 0;color:#6b4e16}
+.good{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+.danger{background:#fef2f2;border-color:#fecaca;color:#7f1d1d}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.8px}
+table.fixed{table-layout:fixed}
+th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#f7f8fa;font-weight:700}
+td .num,th .num{font-variant-numeric:tabular-nums}
+tr:nth-child(even) td{background:#fcfcfd}
+.table-scroll{overflow-x:auto;margin:14px 0;-webkit-overflow-scrolling:touch}
+.table-scroll table{min-width:720px;margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart{width:100%;height:340px;margin:16px 0}
+.chart.tall{height:400px}
+.flow{display:flex;align-items:stretch;gap:0;margin:18px 0;flex-wrap:nowrap}
+.fnode{flex:1;background:#fafbfc;border:1px solid var(--line);border-radius:11px;padding:13px 14px;font-size:13.3px}
+.fnode b{display:block;color:var(--brand);margin-bottom:3px;font-size:13.8px}
+.farrow{flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:0 6px;font-size:20px;color:var(--brand2)}
+ul.clean{list-style:none;margin:10px 0}
+ul.clean li{padding:6px 0 6px 26px;position:relative;border-bottom:1px dashed var(--line);font-size:14px}
+ul.clean li::before{content:"";position:absolute;left:4px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--brand2)}
+.src{font-size:12px;color:var(--muted);margin-top:8px}
+.src a{color:var(--brand);word-break:break-all}
+.bigq{font-family:"Noto Serif SC",serif;font-size:18px;color:var(--brand);margin:16px 0}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px}
+@media(max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.hero{padding:34px 24px}.hero h1{font-size:24px}section{padding:24px 20px}.flow{flex-direction:column}.farrow{width:100%;justify-content:center;padding:6px 0;font-size:0}.farrow::before{content:'↓';font-size:20px;color:var(--brand2)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+<span class="tag">深度调研 · 规模化总账 · 足额纳税口径</span>
+<h1>晶晶日上 · 数字人经济 12 个月规模化总账<br>与足额纳税深度报告</h1>
+<p>数字经纪人平台——撮合"人的数字资产"。本报告按合理、保守、可核验的假设，测算未来 12 个月上多少数字人、进多少 MCN、做多少样片、自营＋撮合＋创建托管的收入爬坡，以及在不依赖任何税收优惠、足额纳税后的年度净利与回本时点。</p>
+<div class="meta">整理日期：2026-10-07　|　母体：人生主角（北京）数字科技有限公司　|　平台品牌：晶晶日上　|　口径：首年（冷启动）基准情景，金额含税、单位元/万元</div>
+</div>
+
+<nav class="toc">
+<b>目录</b>
+<div class="links">
+<a href="#s1">①市场底座</a><a href="#s2">②生意位置</a><a href="#s3">③资产爬坡</a><a href="#s4">④销量分布</a>
+<a href="#s5">⑤收入爬坡</a><a href="#s6">⑥成本结构</a><a href="#s7">⑦足额纳税</a><a href="#s8">⑧年度总表</a>
+<a href="#s9">⑨回本现金流</a><a href="#s10">⑩敏感性与风险</a><a href="#s11">⑪结论</a>
+</div>
+</nav>
+
+<div class="kpis">
+<div class="kpi"><div class="v">2.46万</div><div class="l">年末累计数字人（个）</div></div>
+<div class="kpi"><div class="v">436</div><div class="l">年末累计入驻 MCN（家）</div></div>
+<div class="kpi"><div class="v">1.72万</div><div class="l">年末累计可售样片（个）</div></div>
+<div class="kpi"><div class="v gold">2,100万</div><div class="l">全年平台撮合 GMV</div></div>
+<div class="kpi"><div class="v gold">1,670万</div><div class="l">全年含税营业收入</div></div>
+<div class="kpi"><div class="v green">166.9万</div><div class="l">全年净利润（已足额纳税）</div></div>
+<div class="kpi"><div class="v">9.67%</div><div class="l">全年综合税负率</div></div>
+<div class="kpi"><div class="v green">第8月</div><div class="l">当月盈亏转正 / 第11月累计回本</div></div>
+</div>
+
+<!-- ====================== 第1章 市场底座 ====================== -->
+<section id="s1">
+<h2><span class="no">1</span>市场底座：数字人经济与 AI 内容的规模、增速</h2>
+<div class="sub">先厘清口径——不同机构因统计边界不同，数字从"几十亿"到"几千亿"不等，差异是口径、不是矛盾。</div>
+
+<h3>1.1 数字人产业：多口径对照</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:760px">
+<colgroup><col style="width:16%"><col style="width:16%"><col style="width:20%"><col style="width:16%"><col style="width:32%"></colgroup>
+<tr><th>口径</th><th>机构</th><th>2025 规模</th><th>带动产业</th><th>增速 / 备注</th></tr>
+<tr><td>狭义·AI 数字人</td><td>弗若斯特沙利文</td><td class="num">54.4 亿元</td><td>—</td><td>2021 仅 10.2 亿，21–25 CAGR <b>52%</b>；2030 预计 153.4 亿，25–30 CAGR 23%</td></tr>
+<tr><td>狭义·AI 数字人</td><td>中商产业研究院</td><td class="num">59.1 亿元</td><td>—</td><td>2024 约 41.2 亿（+85.3%）；2029 预计 250.5 亿</td></tr>
+<tr><td>广义·核心市场</td><td>中国互联网协会</td><td class="num">突破 480 亿</td><td class="num">超 6,400 亿</td><td>含虚拟主播、虚拟身份、内容与服务全链条</td></tr>
+<tr><td>产业规模</td><td>人民网 / 工信部</td><td class="num">突破 400 亿</td><td class="num">超 6,000 亿</td><td>数字人相关企业超 <b>114 万家</b>；工信部拟制定数字人身份标识标准</td></tr>
+<tr><td>全球（2026）</td><td>行业测算</td><td class="num">中国约 920 亿</td><td>全球 485 亿美元</td><td>中国增速约 41.5%，亚太贡献全球增量四成以上</td></tr>
+</table>
+</div>
+
+<h3>1.2 AI 内容 / 短剧：需求侧高速扩张</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:22%"><col style="width:30%"><col style="width:48%"></colgroup>
+<tr><th>赛道</th><th>规模</th><th>增速 / 用户 / 盈利</th></tr>
+<tr><td>AI 剧·漫剧（2026）</td><td class="num">1–5 月已超 220 亿，全年有望约 400 亿</td><td>同比 <b>+138%</b>；AI 短剧用户上半年突破 <b>6 亿</b>（DataEye）</td></tr>
+<tr><td>微短剧大盘</td><td class="num">2025 全年约 900–1,000 亿，2026 预计 1,200 亿</td><td>2025 同比 +98%；近一年翻倍；红果日活破 1 亿</td></tr>
+<tr><td>AI 漫剧</td><td class="num">2025 约 168 亿</td><td>用户 1.2 亿 → 2026 预计 2.8 亿</td></tr>
+<tr><td>盈利能力</td><td>—</td><td>部分类型 AI 短剧<b>净利率超 50%</b>；AI 把单部成本从百万级大幅拉低</td></tr>
+</table>
+</div>
+
+<div class="chart" id="c1"></div>
+
+<div class="note"><b>三个判断：</b>① 数字人是少数仍保持 40–50% 年增速的赛道，且工信部正在建"身份标识"标准——意味着"数字人是谁、归谁、谁授权"会成为基础设施，<b>经纪/确权/撮合</b>正是卡位环节；② AI 内容供给爆发（上半年上线数十万部），但<b>头部稀缺、出圈概率低</b>，海量数字人缺的是"被看见、接到戏、赚到钱"的通道；③ 平台撮合正处在"标准建立 + 需求井喷 + 供给分散"的窗口期。</div>
+<div class="src">来源：沙利文/网经社 <a href="http://www.100ec.cn/detail--6660501.html">100ec.cn</a>；中国经济网/互联网协会 <a href="http://www.ce.cn/cysc/newmain/yc/jsxw/202509/t20250915_2475099.shtml">ce.cn</a>；人民网/工信部 <a href="http://finance.people.com.cn/n1/2026/0124/c1004-40651859.html">people.com.cn</a>；人民日报《AI短剧半年超220亿》<a href="http://paper.people.com.cn/zgcsb/pad/content/202608/10/content_30174071.html">paper.people.com.cn</a>；新华网 <a href="https://www.news.cn/20251229/1b2ce0c7822d44aba460f4d5b925e62d/c.html">news.cn</a>；东方财富传媒深度 <a href="https://pdf.dfcfw.com/pdf/H3_AP202607211827219324_1.pdf">dfcfw.com</a>。</div>
+</section>
+
+<!-- ====================== 第2章 生意位置 ====================== -->
+<section id="s2">
+<h2><span class="no">2</span>我们在生意里的位置：数字经纪人平台</h2>
+<div class="sub">晶晶日上不生产、也不占有数字人，而是服务"人的数字资产"的创建、展示、撮合与结算——和房产经纪、艺人经纪同构，只是标的是"脸＋声音＋表演"的数字资产。</div>
+
+<h3>2.1 一句话商业模式</h3>
+<div class="card">
+<p style="margin-bottom:6px"><b>让每一个普通人、演员、MCN 都能把自己的数字人"上架经营"；让出品方（剧组、品牌、想当主角的个人）能快速找到、买到合适的数字人/定制片；平台提供工具与交易闭环，靠"自营制作＋撮合抽成＋创建托管"赚钱。</b></p>
+<p style="margin-bottom:0;font-size:13.5px;color:var(--muted)">口号：晶晶日上，做自己的人生主角。</p>
+</div>
+
+<h3>2.2 三类角色 + 平台</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:700px">
+<colgroup><col style="width:18%"><col style="width:34%"><col style="width:48%"></colgroup>
+<tr><th>角色</th><th>是谁</th><th>在平台上做什么</th></tr>
+<tr><td><b>艺人 / 数字人方</b></td><td>持有数字人的普通人、演员</td><td>创建数字人、做样片、上架广场、接邀约/商单、卖低价祝福、获得分账</td></tr>
+<tr><td><b>MCN 机构</b></td><td>批量签约/管理艺人的机构</td><td>机构工作台：批量管理、付费做样品、上架、选剧本、看结算（可身兼出品人，对公结算）</td></tr>
+<tr><td><b>出品人</b></td><td>出钱订剧/买片的剧组、品牌、个人</td><td>逛广场、发邀约、选数字人、定制下单、线下试镜、验收后放款</td></tr>
+<tr><td><b>平台</b></td><td>晶晶日上</td><td>提供创建/托管、货架、撮合、持牌清分、CMS 与风控，不参与 C 端交易、不碰资金池</td></tr>
+</table>
+</div>
+
+<h3>2.3 平台的三条收入线</h3>
+<div class="flow">
+<div class="fnode"><b>A 自营制作</b>帮 MCN/艺人做样片、给个人做定制片、承制做剧。手艺钱，全额确认收入，净毛利约 30%–50%</div>
+<div class="farrow">→</div>
+<div class="fnode"><b>B 撮合抽成（大头）</b>样片/授权/接戏成交后按比例抽佣。样片"一次制作、零边际成本、可无限卖"，销量越大抽成近纯利</div>
+<div class="farrow">→</div>
+<div class="fnode"><b>C 创建 / 托管</b>数字人创建费（一次性）＋托管订阅（按月）。随存量数字人累积，是稳定的经常性收入</div>
+</div>
+<div class="note good"><b>为什么撮合是大头：</b>自营受产能限制（一个团队一个月能做的片有限）；而样片一旦做好就是数字商品，卖给 1 个人和卖给 1 万个人，平台多付出的成本几乎为零。自营解决"冷启动和供给质量"，撮合承接"规模化利润"。</div>
+</section>
+
+<!-- ====================== 第3章 资产爬坡 ====================== -->
+<section id="s3">
+<h2><span class="no">3</span>12 个月资产爬坡：数字人、MCN、样片</h2>
+<div class="sub">增长由三台引擎驱动：MCN 批量入驻（一家带一批数字人）、共创片场裂变（一个人邀一群人上传数字人）、自然注册。</div>
+
+<h3>3.1 逐月资产表</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:640px">
+<colgroup><col style="width:14%"><col style="width:22%"><col style="width:22%"><col style="width:18%"><col style="width:24%"></colgroup>
+<tr><th>月份</th><th>当月新增数字人</th><th>累计数字人</th><th>累计 MCN</th><th>累计可售样片</th></tr>
+<tr><td>第1月</td><td class="num">200</td><td class="num">200</td><td class="num">3</td><td class="num">80</td></tr>
+<tr><td>第2月</td><td class="num">300</td><td class="num">500</td><td class="num">8</td><td class="num">214</td></tr>
+<tr><td>第3月</td><td class="num">450</td><td class="num">950</td><td class="num">16</td><td class="num">432</td></tr>
+<tr><td>第4月</td><td class="num">600</td><td class="num">1,550</td><td class="num">28</td><td class="num">747</td></tr>
+<tr><td>第5月</td><td class="num">800</td><td class="num">2,350</td><td class="num">44</td><td class="num">1,196</td></tr>
+<tr><td>第6月</td><td class="num">1,100</td><td class="num">3,450</td><td class="num">66</td><td class="num">1,850</td></tr>
+<tr><td>第7月</td><td class="num">1,500</td><td class="num">4,950</td><td class="num">96</td><td class="num">2,790</td></tr>
+<tr><td>第8月</td><td class="num">2,000</td><td class="num">6,950</td><td class="num">136</td><td class="num">4,107</td></tr>
+<tr><td>第9月</td><td class="num">2,700</td><td class="num">9,650</td><td class="num">188</td><td class="num">5,965</td></tr>
+<tr><td>第10月</td><td class="num">3,600</td><td class="num">13,250</td><td class="num">254</td><td class="num">8,552</td></tr>
+<tr><td>第11月</td><td class="num">4,800</td><td class="num">18,050</td><td class="num">336</td><td class="num">12,143</td></tr>
+<tr><td>第12月</td><td class="num">6,500</td><td class="num"><b>24,550</b></td><td class="num"><b>436</b></td><td class="num"><b>17,185</b></td></tr>
+</table>
+</div>
+
+<div class="chart tall" id="c2"></div>
+<div class="chart" id="c3"></div>
+
+<div class="note"><b>假设说明：</b>① 不是每个数字人都立刻有可售样片——样片渗透率（累计样片/累计数字人）从首月 40% 随平台工具成熟、模板丰富逐步提升到年末 70%；② 月均新增从 200 爬升到 6,500，是 S 曲线：早期靠自营和种子 MCN 跑通，中后期靠 MCN 批量与共创裂变放量；③ 该规模相对全国 114 万家数字人相关企业、6 亿 AI 短剧用户，渗透率仍极低，属"积极但不激进"。</div>
+</section>
+
+<!-- ====================== 第4章 销量分布 ====================== -->
+<section id="s4">
+<h2><span class="no">4</span>样片怎么卖：合理的头部长尾分布</h2>
+<div class="sub">这是本报告的关键——不采用"一个样片卖 1 万份"的极端举例，而按内容/创作者经济普遍的幂律分布估算首年真实动销。</div>
+
+<h3>4.1 首年（冷启动）样片销量四层分布</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:760px">
+<colgroup><col style="width:14%"><col style="width:20%"><col style="width:20%"><col style="width:22%"><col style="width:24%"></colgroup>
+<tr><th>分层</th><th>样片数（占比）</th><th>单样片首年平均销量</th><th>该层总销量（占比）</th><th>特征</th></tr>
+<tr><td><b>长尾</b></td><td class="num">12,030（70%）</td><td class="num">约 1 份</td><td class="num">12,633（10%）</td><td>主要用于个人展示、偶尔成交，当年 0–2 份</td></tr>
+<tr><td><b>腰部</b></td><td class="num">3,437（20%）</td><td class="num">约 7 份</td><td class="num">25,266（20%）</td><td>有一定特色、稳定零星出单</td></tr>
+<tr><td><b>头部</b></td><td class="num">1,375（8%）</td><td class="num">约 28 份</td><td class="num">37,900（30%）</td><td>形象/内容突出、进过剧或商单</td></tr>
+<tr><td><b>爆款</b></td><td class="num">344（2%）</td><td class="num">约 147 份</td><td class="num">50,532（40%）</td><td>首年最好的一批，被平台/渠道反复带出</td></tr>
+<tr><td colspan="2"><b>合计</b></td><td>—</td><td class="num"><b>126,331 份</b></td><td>与第5章样片 GMV 严格配平</td></tr>
+</table>
+</div>
+
+<div class="chart" id="c4"></div>
+
+<div class="card">
+<p style="margin-bottom:8px"><b>幂律的含义：70% 的样片只贡献 10% 的销量，而 2% 的爆款贡献 40%。</b></p>
+<p style="margin-bottom:0;font-size:13.8px">这与真实内容平台一致——绝大多数创作者是长尾、少数头部拿走大部分成交。因此平台必须<b>服务好海量长尾（低门槛、自动分账）、同时把资源向有潜力的头部集中（选角、流量、商单）</b>，让长尾里能不断跑出头部。</p>
+</div>
+
+<div class="note good"><b>规模效应与回本：</b>样片制作费约 1,000 元、定价 99 元时，艺人卖出约 13 份即回本；按上表，腰部样片首年即可回本，头部/爆款之后几乎纯赚。更关键的是<b>边际成本≈0</b>——样片多卖一份，艺人与平台都不再产生制作成本。"99 元×1 万份"不是首年假设，而是<b>成熟爆款在第二、三年的理论上限</b>：平台流量做大后，单个爆款样片年化销量可达数千乃至上万份，这部分抽成近纯利，是数字人经济真正的想象空间。</div>
+</section>
+
+<!-- ====================== 第5章 收入爬坡 ====================== -->
+<section id="s5">
+<h2><span class="no">5</span>12 个月收入爬坡：三条线逐月放量</h2>
+<div class="sub">单位：万元（含税）。自营＝自营样片＋定制片；撮合＝样片/授权/商单抽成；创建托管＝创建费＋托管订阅。</div>
+
+<div class="table-scroll">
+<table class="fixed" style="min-width:780px">
+<colgroup><col style="width:11%"><col style="width:16%"><col style="width:13%"><col style="width:15%"><col style="width:12%"><col style="width:12%"><col style="width:21%"></colgroup>
+<tr><th>月份</th><th>自营·样片</th><th>自营·定制</th><th>撮合抽成</th><th>创建</th><th>托管</th><th>当月营收合计</th></tr>
+<tr><td>1月</td><td class="num">5.6</td><td class="num">2.5</td><td class="num">0.51</td><td class="num">1.2</td><td class="num">0.12</td><td class="num"><b>9.93</b></td></tr>
+<tr><td>2月</td><td class="num">9.1</td><td class="num">4.0</td><td class="num">1.24</td><td class="num">1.8</td><td class="num">0.29</td><td class="num"><b>16.43</b></td></tr>
+<tr><td>3月</td><td class="num">14.3</td><td class="num">6.0</td><td class="num">2.50</td><td class="num">2.7</td><td class="num">0.55</td><td class="num"><b>26.06</b></td></tr>
+<tr><td>4月</td><td class="num">19.9</td><td class="num">8.5</td><td class="num">4.30</td><td class="num">3.6</td><td class="num">0.90</td><td class="num"><b>37.20</b></td></tr>
+<tr><td>5月</td><td class="num">27.3</td><td class="num">11.5</td><td class="num">7.09</td><td class="num">4.8</td><td class="num">1.36</td><td class="num"><b>52.05</b></td></tr>
+<tr><td>6月</td><td class="num">38.4</td><td class="num">15.0</td><td class="num">11.35</td><td class="num">6.6</td><td class="num">2.00</td><td class="num"><b>73.35</b></td></tr>
+<tr><td>7月</td><td class="num">53.0</td><td class="num">19.5</td><td class="num">17.58</td><td class="num">9.0</td><td class="num">2.87</td><td class="num"><b>101.95</b></td></tr>
+<tr><td>8月</td><td class="num">71.2</td><td class="num">24.5</td><td class="num">26.65</td><td class="num">12.0</td><td class="num">4.03</td><td class="num"><b>138.38</b></td></tr>
+<tr><td>9月</td><td class="num">96.3</td><td class="num">29.5</td><td class="num">39.85</td><td class="num">16.2</td><td class="num">5.60</td><td class="num"><b>187.45</b></td></tr>
+<tr><td>10月</td><td class="num">128.2</td><td class="num">33.0</td><td class="num">59.08</td><td class="num">21.6</td><td class="num">7.69</td><td class="num"><b>249.56</b></td></tr>
+<tr><td>11月</td><td class="num">169.7</td><td class="num">35.5</td><td class="num">87.16</td><td class="num">28.8</td><td class="num">10.47</td><td class="num"><b>331.63</b></td></tr>
+<tr><td>12月</td><td class="num">226.9</td><td class="num">37.5</td><td class="num">128.84</td><td class="num">39.0</td><td class="num">14.24</td><td class="num"><b>446.48</b></td></tr>
+<tr><td><b>全年</b></td><td class="num"><b>859.9</b></td><td class="num"><b>227.0</b></td><td class="num"><b>386.2</b></td><td class="num"><b>147.3</b></td><td class="num"><b>50.1</b></td><td class="num"><b>1,670.5</b></td></tr>
+</table>
+</div>
+
+<div class="chart tall" id="c5"></div>
+
+<div class="grid2">
+<div class="card"><b>首年收入结构</b>
+<p style="margin:8px 0 0;font-size:13.8px">自营制作（样片＋定制）<b>65.1%</b>、撮合抽成 <b>23.1%</b>、创建托管 <b>11.8%</b>。冷启动年以自营为主——平台帮大量新数字人代做样片、跑通供给。</p></div>
+<div class="card"><b>第二年的结构反转</b>
+<p style="margin:8px 0 0;font-size:13.8px">撮合随"存量样片 × 平台流量"累积放大、毛利率约 <b>85%</b>；自营受产能约束、毛利率 40–50%。进入第二年撮合将反超为主要利润来源。</p></div>
+</div>
+</section>
+
+<!-- ====================== 第6章 成本结构 ====================== -->
+<section id="s6">
+<h2><span class="no">6</span>成本结构：固定投入 + 随单变动</h2>
+<div class="sub">单位：万元。固定成本＝团队工资/办公/服务器/模板研发；变动成本＝自营制作、创建算力、撮合运营，随业务量走。</div>
+
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:24%"><col style="width:18%"><col style="width:14%"><col style="width:44%"></colgroup>
+<tr><th>成本项</th><th>全年金额</th><th>占比</th><th>说明</th></tr>
+<tr><td><b>固定成本</b></td><td class="num">581.0</td><td class="num">43.3%</td><td>技术/运营/商务/管理团队，工资、办公、服务器、模板与 SOP 研发；月投入 25 → 75 万随团队扩张</td></tr>
+<tr><td>自营·样片制作</td><td class="num">515.9</td><td class="num">38.4%</td><td>代做样片的算力/人工，单样片成本约 600 元（对应售价约 1,000，毛利约 40%）</td></tr>
+<tr><td>自营·定制片</td><td class="num">113.5</td><td class="num">8.5%</td><td>定制片交付成本，毛利约 50%</td></tr>
+<tr><td>创建算力</td><td class="num">73.7</td><td class="num">5.5%</td><td>新数字人创建/复刻的算力，约 30 元/人</td></tr>
+<tr><td>撮合运营</td><td class="num">57.9</td><td class="num">4.3%</td><td>撮合的支付/客服/合规，约为撮合营收 15%</td></tr>
+<tr><td><b>合计</b></td><td class="num"><b>1,342.0</b></td><td class="num">100%</td><td>—</td></tr>
+</table>
+</div>
+
+<div class="chart" id="c6"></div>
+
+<div class="note good"><b>三块业务的毛利率差异，决定了经营重心：</b>自营样片约 <b>40%</b>、定制片约 <b>50%</b>、撮合约 <b>85%</b>（样片零边际成本、抽成近纯利）。所以早期用自营把供给和口碑做起来，同时尽快把样片沉淀为可反复售卖的数字商品、把交易搬到平台上，让高毛利的撮合占比持续提升。</div>
+</section>
+
+<!-- ====================== 第7章 足额纳税 ====================== -->
+<section id="s7">
+<h2><span class="no">7</span>足额纳税总账：不靠任何优惠，生意仍成立</h2>
+<div class="sub">按一般纳税人、现代服务业、不享受任何税收优惠/返还的最保守口径测算。</div>
+
+<h3>7.1 税种与税率</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:22%"><col style="width:14%"><col style="width:64%"></colgroup>
+<tr><th>税种</th><th>税率</th><th>计税口径</th></tr>
+<tr><td>增值税</td><td class="num">6%</td><td>现代服务业一般纳税人，按不含税销售额计征（含税收入 ÷ 1.06 × 6%）</td></tr>
+<tr><td>附加税费</td><td class="num">12%</td><td>城建税 7%＋教育费附加 3%＋地方教育附加 2%，按增值税额计征</td></tr>
+<tr><td>企业所得税</td><td class="num">25%</td><td>按应纳税所得额（盈利）计征；<b>前期亏损月份不征、亏损可结转以后年度弥补</b></td></tr>
+<tr><td>分红个人所得税</td><td class="num">20%</td><td>净利润向自然人股东分红时代扣代缴（不分则不征）</td></tr>
+</table>
+</div>
+
+<h3>7.2 逐月纳税与净利（万元）</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:720px">
+<colgroup><col style="width:14%"><col style="width:17%"><col style="width:15%"><col style="width:17%"><col style="width:18%"><col style="width:19%"></colgroup>
+<tr><th>月份</th><th>增值税</th><th>附加税费</th><th>企业所得税</th><th>当月总税</th><th>当月净利</th></tr>
+<tr><td>1月</td><td class="num">0.56</td><td class="num">0.07</td><td class="num">0</td><td class="num">0.63</td><td class="num">-20.99</td></tr>
+<tr><td>2月</td><td class="num">0.93</td><td class="num">0.11</td><td class="num">0</td><td class="num">1.04</td><td class="num">-21.16</td></tr>
+<tr><td>3月</td><td class="num">1.47</td><td class="num">0.18</td><td class="num">0</td><td class="num">1.65</td><td class="num">-20.90</td></tr>
+<tr><td>4月</td><td class="num">2.11</td><td class="num">0.25</td><td class="num">0</td><td class="num">2.36</td><td class="num">-19.79</td></tr>
+<tr><td>5月</td><td class="num">2.95</td><td class="num">0.35</td><td class="num">0</td><td class="num">3.30</td><td class="num">-16.84</td></tr>
+<tr><td>6月</td><td class="num">4.15</td><td class="num">0.50</td><td class="num">0</td><td class="num">4.65</td><td class="num">-11.84</td></tr>
+<tr><td>7月</td><td class="num">5.77</td><td class="num">0.69</td><td class="num">0</td><td class="num">6.46</td><td class="num">-3.20</td></tr>
+<tr><td>8月</td><td class="num">7.83</td><td class="num">0.94</td><td class="num">0</td><td class="num">8.77</td><td class="num">+9.64</td></tr>
+<tr><td>9月</td><td class="num">10.61</td><td class="num">1.27</td><td class="num">0</td><td class="num">11.88</td><td class="num">+28.96</td></tr>
+<tr><td>10月</td><td class="num">14.13</td><td class="num">1.70</td><td class="num">0</td><td class="num">15.83</td><td class="num">+55.66</td></tr>
+<tr><td>11月</td><td class="num">18.77</td><td class="num">2.25</td><td class="num">18.27</td><td class="num">39.29</td><td class="num">+75.29</td></tr>
+<tr><td>12月</td><td class="num">25.27</td><td class="num">3.03</td><td class="num">37.37</td><td class="num">65.67</td><td class="num">+112.09</td></tr>
+<tr><td><b>全年</b></td><td class="num"><b>94.6</b></td><td class="num"><b>11.3</b></td><td class="num"><b>55.6</b></td><td class="num"><b>161.5</b></td><td class="num"><b>+166.9</b></td></tr>
+</table>
+</div>
+
+<div class="chart tall" id="c7"></div>
+
+<div class="note good"><b>核心结论：</b>即便一分钱税收优惠都不享受、足额纳税，首年（含前 7 个月亏损）仍实现净利约 <b>166.9 万元</b>，全年总税约 161.5 万、<b>综合税负率约 9.67%</b>。若全年净利全部分红，再代扣 20% 分红个税后，股东到手约 <b>133.5 万元</b>。企业所得税按年度汇算、全年盈亏互抵，故累计利润转正（第 11 月）后才计；且这只是冷启动年——第二年随高毛利撮合占比提升，净利率会进一步改善。</div>
+</section>
+
+<!-- ====================== 第8章 年度总表 ====================== -->
+<section id="s8">
+<h2><span class="no">8</span>12 个月规模化总账（逐月）</h2>
+<div class="sub">单位：万元。GMV＝平台撮合成交总额（样片＋商单，不全额计收入）；营收为平台确认的含税收入；总税＝增值税＋附加＋企业所得税。</div>
+<div class="table-scroll">
+<table class="fixed" style="min-width:900px">
+<colgroup><col style="width:10%"><col style="width:15%"><col style="width:15%"><col style="width:14%"><col style="width:15%"><col style="width:12%"><col style="width:12%"><col style="width:14%"></colgroup>
+<tr><th>月份</th><th>撮合 GMV</th><th>含税营收</th><th>总成本</th><th>税前利润</th><th>总税</th><th>净利润</th><th>累计净利</th></tr>
+<tr><td>1月</td><td class="num">2.5</td><td class="num">9.93</td><td class="num">30.29</td><td class="num">-20.99</td><td class="num">0.63</td><td class="num">-20.99</td><td class="num">-20.99</td></tr>
+<tr><td>2月</td><td class="num">6.2</td><td class="num">16.43</td><td class="num">36.55</td><td class="num">-21.16</td><td class="num">1.04</td><td class="num">-21.16</td><td class="num">-42.15</td></tr>
+<tr><td>3月</td><td class="num">12.7</td><td class="num">26.06</td><td class="num">45.31</td><td class="num">-20.90</td><td class="num">1.65</td><td class="num">-20.90</td><td class="num">-63.05</td></tr>
+<tr><td>4月</td><td class="num">22.1</td><td class="num">37.20</td><td class="num">54.64</td><td class="num">-19.79</td><td class="num">2.36</td><td class="num">-19.79</td><td class="num">-82.84</td></tr>
+<tr><td>5月</td><td class="num">36.9</td><td class="num">52.05</td><td class="num">65.59</td><td class="num">-16.84</td><td class="num">3.30</td><td class="num">-16.84</td><td class="num">-99.68</td></tr>
+<tr><td>6月</td><td class="num">59.7</td><td class="num">73.35</td><td class="num">80.54</td><td class="num">-11.84</td><td class="num">4.65</td><td class="num">-11.84</td><td class="num">-111.52</td></tr>
+<tr><td>7月</td><td class="num">93.4</td><td class="num">101.95</td><td class="num">98.69</td><td class="num">-3.20</td><td class="num">6.46</td><td class="num">-3.20</td><td class="num">-114.73</td></tr>
+<tr><td>8月</td><td class="num">142.9</td><td class="num">138.38</td><td class="num">119.97</td><td class="num">+9.64</td><td class="num">8.77</td><td class="num">+9.64</td><td class="num">-105.09</td></tr>
+<tr><td>9月</td><td class="num">215.5</td><td class="num">187.45</td><td class="num">146.61</td><td class="num">+28.96</td><td class="num">11.88</td><td class="num">+28.96</td><td class="num">-76.13</td></tr>
+<tr><td>10月</td><td class="num">321.8</td><td class="num">249.56</td><td class="num">178.08</td><td class="num">+55.66</td><td class="num">15.83</td><td class="num">+55.66</td><td class="num">-20.47</td></tr>
+<tr><td>11月</td><td class="num">477.5</td><td class="num">331.63</td><td class="num">217.04</td><td class="num">+93.56</td><td class="num">39.29</td><td class="num">+75.29</td><td class="num">+54.82</td></tr>
+<tr><td>12月</td><td class="num">708.7</td><td class="num">446.48</td><td class="num">268.72</td><td class="num">+149.46</td><td class="num">65.67</td><td class="num">+112.09</td><td class="num">+166.91</td></tr>
+<tr><td><b>全年</b></td><td class="num"><b>2,099.8</b></td><td class="num"><b>1,670.5</b></td><td class="num"><b>1,342.0</b></td><td class="num"><b>—</b></td><td class="num"><b>161.5</b></td><td class="num"><b>166.9</b></td><td>—</td></tr>
+</table>
+</div>
+<div class="note"><b>读法：</b>前 7 个月是投入期（累计亏损在 M7 触底约 114.7 万）；<b>M8 当月扭亏</b>；<b>M11 累计净利转正、提前回本</b>；M12 当月净利已达 112 万。</div>
+</section>
+
+<!-- ====================== 第9章 回本与现金流 ====================== -->
+<section id="s9">
+<h2><span class="no">9</span>回本节奏与现金流安全</h2>
+<div class="sub">撮合平台的现金流天然健康——先有交易、后有结算，平台不需要为 C 端交易垫资。</div>
+
+<div class="table-scroll">
+<table class="fixed" style="min-width:680px">
+<colgroup><col style="width:26%"><col style="width:20%"><col style="width:54%"></colgroup>
+<tr><th>关键节点</th><th>时点 / 金额</th><th>含义</th></tr>
+<tr><td>启动/周转资金需求</td><td class="num">约 115 万元</td><td>最大累计亏损约 114.7 万、在 M7 触底；准备约 115 万即可覆盖前 7 个月投入</td></tr>
+<tr><td>当月盈亏平衡</td><td class="num">第 8 月</td><td>M8 当月营收覆盖当月全部成本并盈利约 9.6 万</td></tr>
+<tr><td>累计净利回本</td><td class="num">第 11 月</td><td>M11 累计净利转正约 54.8 万，即把早期投入全部收回</td></tr>
+<tr><td>年末累计净利</td><td class="num">约 166.9 万</td><td>M12 末累计，且当月净利已达 112 万、仍在加速</td></tr>
+</table>
+</div>
+
+<div class="chart tall" id="c8"></div>
+
+<h3>9.1 现金流为什么安全</h3>
+<ul class="clean">
+<li><b>不为交易垫资：</b>买家付款先进入持牌机构监管账户，验收后 T+1 清分给卖家，平台不经手、不沉淀资金，不形成资金池。</li>
+<li><b>自营不垫制作费：</b>定制/承制订单采用预付款＋里程碑节点（如 30% 开工、阶段验收、尾款交付），制作前已有资金到位。</li>
+<li><b>成本可控：</b>变动成本随订单发生，固定成本按月、可随收入节奏调整团队扩张速度。</li>
+<li><b>亏损可税前弥补：</b>前期亏损按规定结转，减少盈利期企业所得税（本报告已体现）。</li>
+</ul>
+</section>
+
+<!-- ====================== 第10章 敏感性与风险 ====================== -->
+<section id="s10">
+<h2><span class="no">10</span>关键假设、敏感性与合规红线</h2>
+
+<h3>10.1 关键假设参数（可在模型/CMS 中调整）</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:680px">
+<colgroup><col style="width:40%"><col style="width:24%"><col style="width:36%"></colgroup>
+<tr><th>参数</th><th>基准值</th><th>说明</th></tr>
+<tr><td>样片渗透率（样片/数字人）</td><td class="num">40% → 70%</td><td>随工具与模板成熟逐步提升</td></tr>
+<tr><td>样片活跃率</td><td class="num">75%</td><td>存量样片中当期可被推荐/成交比例</td></tr>
+<tr><td>月动销（每活跃样片）</td><td class="num">1.0 → 3.5 份</td><td>随平台流量爬坡</td></tr>
+<tr><td>样片综合 ASP</td><td class="num">150 元</td><td>低价祝福/授权的综合客单价</td></tr>
+<tr><td>商单 ASP</td><td class="num">8,000 元</td><td>品牌/剧组商单综合客单价</td></tr>
+<tr><td>平台代做样片比例 / 单价 / 成本</td><td class="num">70%→45% / 1000 / 600</td><td>早期平台代做为主，后期艺人自助</td></tr>
+<tr><td>定制片单价 / 成本</td><td class="num">2,500 / 1,250</td><td>人生主角定制片，毛利约 50%</td></tr>
+<tr><td>数字人创建费 / 算力成本</td><td class="num">60 / 30 元</td><td>一次性创建</td></tr>
+<tr><td>托管付费率 / 月费</td><td class="num">20% / 29 元</td><td>经常性订阅收入</td></tr>
+<tr><td>撮合抽成（样片 / 商单）</td><td class="num">18% / 22%</td><td>平台佣金率</td></tr>
+</table>
+</div>
+
+<h3>10.2 三档情景（年净利，万元）</h3>
+<div class="table-scroll">
+<table class="fixed" style="min-width:680px">
+<colgroup><col style="width:22%"><col style="width:26%"><col style="width:52%"></colgroup>
+<tr><th>情景</th><th>全年净利润</th><th>说明</th></tr>
+<tr><td>保守（达成率 80%）</td><td class="num">约 46.4 万</td><td>盈亏平衡推迟约 1–2 个月，仍为正、不亏本金</td></tr>
+<tr><td><b>基准（100%）</b></td><td class="num"><b>约 166.9 万</b></td><td>M8 当月平衡、M11 累计回本</td></tr>
+<tr><td>乐观（达成率 120%）</td><td class="num">约 287.4 万</td><td>裂变与爆款提前放量，经营杠杆放大利润</td></tr>
+</table>
+</div>
+<div class="note"><b>经营杠杆：</b>固定成本占比约 43%，收入上行时利润弹性大（收入 +20%、净利 +72%）；收入下行时因变动成本同步下降、且平台不垫资，下行有底。</div>
+
+<h3>10.3 合规红线（不可逾越）</h3>
+<div class="danger note"><b>以下为硬边界：</b>
+① 不设资金池、不碰沉淀资金，全部走持牌清分；
+② 不刷虚假流水、不虚构交易，平台成交须真实；
+③ 数字人肖像、声音、表演须取得本人实名授权与 AI 生成/深度合成合规，落实标识与内容审核；
+④ 不做涉黄涉政、擦边陪侍等违规内容与服务；
+⑤ 落实未成年人保护、未成年人不得创建/交易；
+⑥ 分销/返佣层级与比例符合禁止传销规定，不以拉人头计酬。</div>
+</section>
+
+<!-- ====================== 第11章 结论 ====================== -->
+<section id="s11">
+<h2><span class="no">11</span>结论与下一步</h2>
+<div class="card">
+<p style="margin-bottom:10px"><b>一句话：</b>数字人经济是少数仍保持 40–50% 增速、且标准（身份标识）正在建立的赛道；晶晶日上以"数字经纪人"卡位，用自营制作解决冷启动、用撮合承接规模化利润。<b>即便不享任何优惠、足额纳税，首年即可在第 11 个月收回早期投入、全年净利约 167 万元</b>；第二年随存量样片与高毛利撮合放量，利润与估值有望显著抬升。</p>
+<p style="margin-bottom:0"><b>晶晶日上，做自己的人生主角。</b></p>
+</div>
+<h3>下一步（按优先级）</h3>
+<ul class="clean">
+<li>跑通 3–5 家种子 MCN 与一批高质量样片，沉淀可复用模板与 SOP；</li>
+<li>上线持牌清分结算、电子合同与自动分账，跑通真实交易闭环；</li>
+<li>建立榜单/广场与共创裂变，把资源向头部集中、让长尾跑出爆款；</li>
+<li>备齐 ICP、营业性演出、深度合成等资质，合规先行；</li>
+<li>用逐月模型按实际达成滚动复盘，动态调整团队与投放。</li>
+</ul>
+<div class="foot">晶晶日上 · 数字人经济 12 个月规模化总账与足额纳税深度报告　|　2026-10-07　|　本报告为商业测算，参数可核验、可调整，落地以工商/税务/法务最新规定为准</div>
+</section>
+
+</div><!-- /wrap -->
+<script>
+var PAL=['#c8102e','#d4af37','#e07b39','#3b6fb0','#7a5cab','#0e9f6e'];
+var MON=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+function base(extra){return Object.assign({color:PAL,grid:{left:54,right:26,top:56,bottom:40,containLabel:true},tooltip:{trigger:'axis'},textStyle:{fontFamily:'Noto Sans SC'}},extra||{});}
+function init(id,opt){var el=document.getElementById(id);if(!el)return;var c=echarts.init(el);c.setOption(opt);window.addEventListener('resize',function(){c.resize();});}
+
+/* c1 市场规模 */
+init('c1',base({
+ legend:{top:8},tooltip:{trigger:'axis'},
+ xAxis:{type:'category',data:['2021','2024','2025','2026','2030']},
+ yAxis:{type:'value',name:'亿元'},
+ series:[
+  {name:'AI数字人核心(沙利文)',type:'bar',data:[10.2,41.2,54.4,null,153.4]},
+  {name:'微短剧大盘',type:'bar',data:[null,500,1000,1200,null]},
+  {name:'AI剧·漫剧',type:'bar',data:[null,null,168,400,null]}
+ ]
+}));
+
+/* c2 累计数字人 + MCN */
+init('c2',base({
+ legend:{top:8},
+ xAxis:{type:'category',data:MON},
+ yAxis:[{type:'value',name:'数字人(个)'},{type:'value',name:'MCN(家)'}],
+ series:[
+  {name:'累计数字人',type:'bar',data:[200,500,950,1550,2350,3450,4950,6950,9650,13250,18050,24550],itemStyle:{color:'#c8102e'}},
+  {name:'累计MCN',type:'line',yAxisIndex:1,smooth:true,data:[3,8,16,28,44,66,96,136,188,254,336,436],itemStyle:{color:'#d4af37'},lineStyle:{width:3}}
+ ]
+}));
+
+/* c3 累计样片 */
+init('c3',base({
+ xAxis:{type:'category',data:MON},
+ yAxis:{type:'value',name:'样片(个)'},
+ series:[{name:'累计可售样片',type:'line',smooth:true,areaStyle:{opacity:.18},data:[80,214,432,747,1196,1850,2790,4107,5965,8552,12143,17185],itemStyle:{color:'#e07b39'},lineStyle:{width:3}}]
+}));
+
+/* c4 销量分布：样片占比 vs 销量占比 */
+init('c4',base({
+ legend:{top:8},
+ xAxis:{type:'category',data:['长尾(70%样片)','腰部(20%)','头部(8%)','爆款(2%)']},
+ yAxis:{type:'value',name:'占比 %',max:80},
+ series:[
+  {name:'样片数量占比',type:'bar',data:[70,20,8,2],itemStyle:{color:'#3b6fb0'},label:{show:true,position:'top',formatter:'{c}%'}},
+  {name:'贡献销量占比',type:'bar',data:[10,20,30,40],itemStyle:{color:'#c8102e'},label:{show:true,position:'top',formatter:'{c}%'}}
+ ]
+}));
+
+/* c5 收入堆叠 */
+init('c5',base({
+ legend:{top:8,type:'scroll'},
+ xAxis:{type:'category',data:MON},
+ yAxis:{type:'value',name:'万元'},
+ series:[
+  {name:'自营·样片',type:'bar',stack:'r',data:[5.6,9.1,14.3,19.9,27.3,38.4,53,71.2,96.3,128.2,169.7,226.9]},
+  {name:'自营·定制',type:'bar',stack:'r',data:[2.5,4,6,8.5,11.5,15,19.5,24.5,29.5,33,35.5,37.5]},
+  {name:'撮合抽成',type:'bar',stack:'r',data:[0.51,1.24,2.5,4.3,7.09,11.35,17.58,26.65,39.85,59.08,87.16,128.84]},
+  {name:'创建',type:'bar',stack:'r',data:[1.2,1.8,2.7,3.6,4.8,6.6,9,12,16.2,21.6,28.8,39]},
+  {name:'托管',type:'bar',stack:'r',data:[0.12,0.29,0.55,0.9,1.36,2,2.87,4.03,5.6,7.69,10.47,14.24]}
+ ]
+}));
+
+/* c6 成本结构（横向） */
+init('c6',base({
+ grid:{left:90,right:40,top:30,bottom:36,containLabel:true},
+ xAxis:{type:'value',name:'万元'},
+ yAxis:{type:'category',data:['撮合运营','创建算力','定制片','自营样片','固定团队']},
+ series:[{name:'全年成本',type:'bar',data:[57.9,73.7,113.5,515.9,581],itemStyle:{color:'#c8102e'},label:{show:true,position:'right'}}]
+}));
+
+/* c7 纳税堆叠 + 净利线 */
+init('c7',base({
+ legend:{top:8,type:'scroll'},
+ xAxis:{type:'category',data:MON},
+ yAxis:[{type:'value',name:'税(万元)'},{type:'value',name:'净利(万元)'}],
+ series:[
+  {name:'增值税',type:'bar',stack:'t',data:[0.56,0.93,1.47,2.11,2.95,4.15,5.77,7.83,10.61,14.13,18.77,25.27]},
+  {name:'附加税费',type:'bar',stack:'t',data:[0.07,0.11,0.18,0.25,0.35,0.5,0.69,0.94,1.27,1.7,2.25,3.03]},
+  {name:'企业所得税',type:'bar',stack:'t',data:[0,0,0,0,0,0,0,0,0,0,18.27,37.37]},
+  {name:'当月净利',type:'line',yAxisIndex:1,smooth:true,data:[-20.99,-21.16,-20.9,-19.79,-16.84,-11.84,-3.2,9.64,28.96,55.66,75.29,112.09],itemStyle:{color:'#0e9f6e'},lineStyle:{width:3}}
+ ]
+}));
+
+/* c8 累计净利曲线 */
+init('c8',base({
+ xAxis:{type:'category',data:MON},
+ yAxis:{type:'value',name:'累计净利(万元)'},
+ series:[{name:'累计净利润',type:'line',smooth:true,data:[-20.99,-42.15,-63.05,-82.84,-99.68,-111.52,-114.73,-105.09,-76.13,-20.47,54.82,166.91],
+  itemStyle:{color:'#c8102e'},lineStyle:{width:3},areaStyle:{opacity:.12},
+  markLine:{symbol:'none',data:[{yAxis:0,lineStyle:{color:'#0e9f6e',type:'dashed'},label:{formatter:'回本线'}}]},
+  markPoint:{symbolSize:52,data:[{coordAxis:'x',coord:['7月',-114.73],value:'谷底',itemStyle:{color:'#d4af37'}},{coord:['11月',54.82],value:'回本',itemStyle:{color:'#0e9f6e'}}]}
+ }]
+}));
+</script>
+</body>
+</html>

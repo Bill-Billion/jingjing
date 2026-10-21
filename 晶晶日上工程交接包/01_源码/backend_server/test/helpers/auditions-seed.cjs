@@ -1,0 +1,38 @@
+"use strict";
+const {randomUUID:key,randomBytes,createHash}=require('node:crypto');
+const {digest,createRuleContent}=require('../../src/modules/governance/content');
+async function seedAuditions(db){
+ const principals=new Map(),resolvePrincipal=async ctx=>principals.get(ctx),secret=randomBytes(32).toString('base64');
+ const parties=require('../../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal}),auth=require('../../src/modules/auth/repository').createAuthRepository(db,{secret});
+ const artists=require('../../src/modules/artists/repository').createArtistRepository(db,{resolvePrincipal});
+ const users=[];for(const display_name of ['synthetic seller','synthetic buyer','synthetic reviewer','synthetic outsider','synthetic buyer2']){const ctx={};principals.set(ctx,{subject_ref:'synthetic:'+key()});const u={ctx,...await parties.registerAccount(ctx,{display_name}),token:randomBytes(32).toString('base64url')};users.push(u);await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[auth.secure.digest('token',u.token),u.account_id]);}
+ const [seller,buyer,reviewer,outsider,buyer2]=users;
+ for(const action of ['ARTIST_REVIEW_RIGHTS','ARTIST_REVIEW_HALO','SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONTENT','TRADE_REVIEW','TRADE_REFUND','NOTICE_REVIEW','NOTICE_SUPPORT','NOTICE_OFFICIAL','OPERATIONS_AUDIT','FINANCE_REVIEW','AUDITION_REVIEW','AUDITION_SUPPORT'])await require('../../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:reviewer.account_id,action,enabled:true,expected_version:0,expires_at:null,authority_ref:'synthetic:stock',reason:'isolated test only'});
+ const bytes=new Map(),storageFactory=()=>({put:async i=>{bytes.set(i.key,i.body);return {key:i.key,sha256:createHash('sha256').update(i.body).digest('hex'),size:i.body.length};},getBuffer:async k=>bytes.get(k)});
+ const supply=require('../../src/modules/works/assets').createSupplyAssets({db,repository:require('../../src/modules/works/repository').createSupplyRepository(db,{resolvePrincipal}),storageFactory});
+ async function person(u,verify=true){const p=await artists.createPerson(u.ctx,{party_id:u.personal_party_id,display_name:'synthetic person',operation_key:key()});if(verify){const r=await artists.prepareIdentity(u.ctx,{person_id:p.id,party_id:u.personal_party_id,session_ref:'synthetic:'+key(),operation_key:key()});await artists.applyIdentity(r.id,{request_key:r.data.request_key,person_id:p.id,status:'VERIFIED',issuer:'synthetic-provider',subject_fingerprint:randomBytes(32).toString('hex'),age_band:'ADULT',valid_until:'2099-01-01T00:00:00.000Z',evidence_ref:'synthetic:identity',liveness_verified:true,phone_verified:true});}return p;}
+ seller.person=await person(seller);buyer.person=await person(buyer);buyer2.person=await person(buyer2);
+ const evidence=await supply.upload(seller.ctx,{party_id:seller.personal_party_id,purpose:'CONSENT_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic evidence only'),operation_key:key()});
+
+
+ const avatar=await artists.createAvatar(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,display_name:'synthetic audition avatar',operation_key:key()});
+ async function consent(purposes){let c=await artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:avatar.id,consent:{features:['FACE'],purposes,grantee_party_id:buyer.personal_party_id,territories:['CN'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'synthetic only',evidence_asset_ids:[evidence.id]},operation_key:key()});return artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:c.id,expected_version:c.object_version,decision:'APPROVE',reason:'synthetic independent',operation_key:key()});}
+ const publicConsent=await consent(['PUBLIC_DISPLAY']),sampleConsent=await consent(['AUDITION_SAMPLES']);
+ // Fixture of a previously reviewed certification; never a production certification shortcut.
+ const haloId=key(),haloData={level:2,valid_until:'2099-01-01T00:00:00.000Z',synthetic_only:true};
+ await db.execute("INSERT INTO artist_records(id,person_id,kind,created_by,current_status,data_json,data_sha256) VALUES (?,?,'HALO',?,'APPROVED',?,?)",[haloId,seller.person.id,reviewer.account_id,JSON.stringify(haloData),digest(haloData)]);
+ const ruleId=key(),rules={version:'synthetic-v1',accept_hours:24,acceptance_hours:48,photo_count:6,video_count:1,payment_window_minutes:30,terms:'synthetic test only; transport included; no performance rights'};
+ const content=createRuleContent({id:ruleId,rule_key:'audition.synthetic',version:'1',terms:{audition:rules,marketplace_finance:{model:'V5_TWO_LAYER',product_type:'AUDITION',fee_base:'NET_PAID',platform_party_id:outsider.personal_party_id,platform_bps:2200,referral_bps:660,rounding:'HALF_UP_PLATFORM_REMAINDER'}}});
+ await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'audition.synthetic','1',JSON.stringify(content),'2020-01-01 00:00:00',outsider.account_id,'EFFECTIVE']);
+ const auditions=require('../../src/modules/auditions/repository').createAuditionsRepository(db,{resolvePrincipal}),trade=require('../../src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal});
+ const future=n=>new Date(Date.now()+n*3600000).toISOString();const offer={person_id:seller.person.id,avatar_id:avatar.id,public_consent_id:publicConsent.id,rule_id:ruleId,title:'Synthetic audition',city:'synthetic-city',service_area:'synthetic district',mode:'OFFLINE',public_booking:true,public_price:true,unit_minor:10000,slots:[{starts_at:future(-24),ends_at:future(240)}],terms:'synthetic test only'};
+ const appointment={mode:'OFFLINE',city:'synthetic-city',venue:'Public studio',address:'Synthetic studio 1',starts_at:future(48),ends_at:future(49),purpose:'Synthetic film casting sample'};
+ const materials=require('../../src/modules/works/assets').createSupplyAssets({db,repository:require('../../src/modules/artists/assets').createArtistAssetsRepository(db,{resolvePrincipal}),storageFactory});
+ async function upload(type,body='synthetic '+key()){return materials.upload(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,purpose:type==='text/plain'?'REVIEW_EVIDENCE':'AVATAR_MATERIAL',media_type:type,body:Buffer.from(body),operation_key:key()});}
+ const photos=[];for(let i=0;i<6;i++)photos.push((await upload('image/jpeg')).id);const video=await upload('video/mp4'),arrival=await upload('text/plain');
+ const delivery={photos,videos:[video.id],consent_id:sampleConsent.id};
+ const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:seller.personal_party_id,config_revision:'test'};
+ async function payment(order,apply=true){const p=await trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:order.id,installment_key:'audition',operation_key:key()},config),proof={...config,payment_id:p.id,currency:'CNY',amount_minor:10000,transaction_id:'synthetic.'+p.id,status:'SUCCEEDED',product_id:null,app_account_token:null};if(apply)await trade.applyPayment(proof);return {payment:p,proof};}
+ return {principals,resolvePrincipal,secret,users,seller,buyer,reviewer,outsider,buyer2,parties,artists,bytes,storageFactory,supply,person,evidence,avatar,publicConsent,sampleConsent,haloId,ruleId,rules,offer,appointment,delivery,arrival,upload,trade,auditions,payment,config};
+}
+module.exports={seedAuditions};

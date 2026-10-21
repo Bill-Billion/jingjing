@@ -133,3 +133,14 @@ test('legacy photo upload returns a clear failure and never creates a record whe
  });
  assert.equal(result.status,503);assert.equal(result.body.code,'PRIVATE_STORAGE_UNAVAILABLE');assert.equal(writes,0);assert.equal(server.listening,true);
 });
+
+test('verified erasure confirms only the exact current object; access errors and changed bytes never pass',async()=>{
+ const body=Buffer.from('synthetic personal material'),hash=require('node:crypto').createHash('sha256').update(body).digest('hex');
+ for(const mode of ['present','already-absent','forbidden','changed','still-present']){
+  let removed=false,calls=0;const missing=()=>Object.assign(Error('synthetic missing'),{code:'NoSuchKey',status:404});
+  const client={get:async()=>{if(mode==='already-absent')throw missing();if(mode==='forbidden')throw Object.assign(Error('synthetic denied'),{code:'AccessDenied',status:403});return {content:mode==='changed'?Buffer.from('different'):body};},delete:async()=>{calls++;removed=true;},head:async()=>{if(mode==='still-present')return {};if(removed||mode==='already-absent')throw missing();return {};}};
+  const {api}=privateFixture({clientFactory:()=>client});
+  if(['present','already-absent'].includes(mode)){const r=await api.eraseCurrent('private/person/material',hash);assert.equal(r.current_object_absent,true);assert.equal(r.scope,'CURRENT_OBJECT_ONLY');assert.equal(r.versions_and_backups,'REVIEW_REQUIRED');assert.equal(calls,mode==='present'?1:0);}
+  else{await assert.rejects(api.eraseCurrent('private/person/material',hash));if(['forbidden','changed'].includes(mode))assert.equal(calls,0);}
+ }
+});

@@ -1,0 +1,203 @@
+TAP version 13
+# Subtest: wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+ok 1 - wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+  ---
+  duration_ms: 1.7855
+  type: 'test'
+  ...
+# Subtest: integer money conversion, rounding and cumulative proportional refund never use floating point
+ok 2 - integer money conversion, rounding and cumulative proportional refund never use floating point
+  ---
+  duration_ms: 0.3569
+  type: 'test'
+  ...
+# Subtest: payment alone, pending aftercare and unspecified periods never earn points
+ok 3 - payment alone, pending aftercare and unspecified periods never earn points
+  ---
+  duration_ms: 1.1099
+  type: 'test'
+  ...
+# Subtest: cumulative 300 yuan unlocks one year and contributes zero growth
+ok 4 - cumulative 300 yuan unlocks one year and contributes zero growth
+  ---
+  duration_ms: 8.7811
+  type: 'test'
+  ...
+# Subtest: large one-time topup cannot buy several membership years
+ok 5 - large one-time topup cannot buy several membership years
+  ---
+  duration_ms: 0.1618
+  type: 'test'
+  ...
+# Subtest: renewal counted once per membership year, expiration retains growth and topup restores
+ok 6 - renewal counted once per membership year, expiration retains growth and topup restores
+  ---
+  duration_ms: 0.3479
+  type: 'test'
+  ...
+# Subtest: sixth level requires independent current qualification in addition to growth
+ok 7 - sixth level requires independent current qualification in addition to growth
+  ---
+  duration_ms: 0.784
+  type: 'test'
+  ...
+# Subtest: refunded topups and future receipts do not falsely qualify
+ok 8 - refunded topups and future receipts do not falsely qualify
+  ---
+  duration_ms: 0.1144
+  type: 'test'
+  ...
+# Subtest: pending topup counts against limits and cooldown to prevent concurrent overspend
+ok 9 - pending topup counts against limits and cooldown to prevent concurrent overspend
+  ---
+  duration_ms: 0.6971
+  type: 'test'
+  ...
+# Subtest: earliest-expiring points first; holds and expired batches are excluded
+ok 10 - earliest-expiring points first; holds and expired batches are excluded
+  ---
+  duration_ms: 0.8268
+  type: 'test'
+  ...
+# Subtest: spending, expiry and free points do not change qualified consumption growth
+ok 11 - spending, expiry and free points do not change qualified consumption growth
+  ---
+  duration_ms: 0.2107
+  type: 'test'
+  ...
+# Subtest: refund plan accounts for already spent and expired points without negative balances or cash debt
+ok 12 - refund plan accounts for already spent and expired points without negative balances or cash debt
+  ---
+  duration_ms: 0.1596
+  type: 'test'
+  ...
+# Subtest: partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+ok 13 - partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+  ---
+  duration_ms: 0.2689
+  type: 'test'
+  ...
+# Subtest: daily recharge caps use the China business day, including the UTC date boundary
+ok 14 - daily recharge caps use the China business day, including the UTC date boundary
+  ---
+  duration_ms: 0.1313
+  type: 'test'
+  ...
+# Subtest: wallet ledger, custody boundary and order points in isolated MySQL
+    # Subtest: independent rule review, stale rule hash and client balance forgery rejected
+    ok 1 - independent rule review, stale rule hash and client balance forgery rejected
+      ---
+      duration_ms: 149.5436
+      type: 'test'
+      ...
+    # Subtest: other accounts, organizations, revoked identity and unopened custody are blocked
+    ok 2 - other accounts, organizations, revoked identity and unopened custody are blocked
+      ---
+      duration_ms: 35.4087
+      type: 'test'
+      ...
+    # Subtest: only matching verified custody receipt credits balance once; topup yields zero growth
+    ok 3 - only matching verified custody receipt credits balance once; topup yields zero growth
+      ---
+      duration_ms: 30.3973
+      type: 'test'
+      ...
+    # Subtest: new order captures original rule and payment without fulfillment earns nothing
+    ok 4 - new order captures original rule and payment without fulfillment earns nothing
+      ---
+      duration_ms: 132.087
+      type: 'test'
+      ...
+    # Subtest: aftercare deadline and unresolved case block points; mature order credits exactly once
+    ok 5 - aftercare deadline and unresolved case block points; mature order credits exactly once
+      ---
+      duration_ms: 59.1014
+      type: 'test'
+      ...
+    # Subtest: concurrent point reservations cannot overspend; exact replay and release are safe
+    ok 6 - concurrent point reservations cannot overspend; exact replay and release are safe
+      ---
+      duration_ms: 47.4129
+      type: 'test'
+      ...
+    # Subtest: verified refund continues even when points spent; growth reversed and shortage explicit
+    ok 7 - verified refund continues even when points spent; growth reversed and shortage explicit
+      ---
+      duration_ms: 66.0753
+      type: 'test'
+      ...
+    # Subtest: future points first recover refund shortfall; recovered debt does not erase new consumption growth
+    ok 8 - future points first recover refund shortfall; recovered debt does not erase new consumption growth
+      ---
+      duration_ms: 111.0304
+      type: 'test'
+      ...
+    # Subtest: expired batches cannot be used; materialized expiry preserves earned growth
+    ok 9 - expired batches cannot be used; materialized expiry preserves earned growth
+      ---
+      duration_ms: 25.4223
+      type: 'test'
+      ...
+    # Subtest: expired adult verification preserves balance history but disables displayed membership
+    ok 10 - expired adult verification preserves balance history but disables displayed membership
+      ---
+      duration_ms: 17.6559
+      type: 'test'
+      ...
+    # Subtest: sixth level requires private evidence and separate current operator review
+    ok 11 - sixth level requires private evidence and separate current operator review
+      ---
+      duration_ms: 41.7147
+      type: 'test'
+      ...
+    # Subtest: custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+    ok 12 - custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+      ---
+      duration_ms: 340.8907
+      type: 'test'
+      ...
+    # Subtest: wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+    ok 13 - wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+      ---
+      duration_ms: 9.999
+      type: 'test'
+      ...
+    # Subtest: automatic maintenance grants mature earnings; a lost lease cannot mutate points
+    ok 14 - automatic maintenance grants mature earnings; a lost lease cannot mutate points
+      ---
+      duration_ms: 124.4118
+      type: 'test'
+      ...
+    # Subtest: each fulfillment adapter requires its own actual completion source, not a paid flag
+    ok 15 - each fulfillment adapter requires its own actual completion source, not a paid flag
+      ---
+      duration_ms: 73.4432
+      type: 'test'
+      ...
+    # Subtest: free awards require published amounts and real events; concurrent check-in awards once without growth
+    ok 16 - free awards require published amounts and real events; concurrent check-in awards once without growth
+      ---
+      duration_ms: 37.4488
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back rule creation; stored digest corruption fails closed
+    ok 17 - audit failure rolls back rule creation; stored digest corruption fails closed
+      ---
+      duration_ms: 16.6618
+      type: 'test'
+      ...
+    1..17
+ok 15 - wallet ledger, custody boundary and order points in isolated MySQL
+  ---
+  duration_ms: 5832.4931
+  type: 'test'
+  ...
+1..15
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6005.2166

@@ -1,0 +1,122 @@
+{
+  "result": "BACKEND_AND_LOCAL_HANDOFF_CHECKS_PASS",
+  "date": "2026-10-16",
+  "base_commit": "441c68acacb49f2c3a67ec10ea841728f3d96d05",
+  "branch": "core/v5-r02-story-quote",
+  "integration_checked": "28662ab39950ad6a2f0b3c4ca372df9a65195b96",
+  "scope": "Self-operated customization financial snapshot, matching approved order terms, refund net amounts and platform rounding; not complete V5 finance.",
+  "customization": {
+    "pass": 69
+  },
+  "finance": {
+    "pass": 27
+  },
+  "trade": {
+    "pass": 30
+  },
+  "full_regression": {
+    "groups_passed": 18,
+    "tests": 518,
+    "pass": 517,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 1,
+    "todo": 0
+  },
+  "http": {
+    "result": "PASS",
+    "contract_version": "0.14.0-rc.3",
+    "contract_sha256": "9a983f448ae8f6ae10d2945cc607f96a87a8c8df653cad4d55dbe6d0e8d164f0",
+    "openapi_version": "3.1.1",
+    "operations": 175,
+    "schemas": 301,
+    "runtime_response_cases": 263,
+    "valid_fixtures": 93,
+    "negative_cases": 105,
+    "checks": 5357,
+    "failures": [],
+    "python": "3.10.11",
+    "tools": {
+      "openapi-spec-validator": "0.9.0",
+      "jsonschema": "4.26.0",
+      "PyYAML": "6.0.3"
+    },
+    "network_during_validation": "DISABLED",
+    "runtime_tests": "NOT_RUN",
+    "limits": "Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified."
+  },
+  "sandbox": {
+    "result": "PASS",
+    "checks": 11,
+    "scenarios": [
+      "platform sees pending quote",
+      "intake is not financial review",
+      "cannot accept before review",
+      "independent review",
+      "unpaid unsigned order",
+      "approved self-operated finance frozen in contract",
+      "reviewed product type frozen in order",
+      "repeated acceptance returns same order",
+      "story links to order",
+      "other buyer denied",
+      "fixture has no payment route"
+    ],
+    "synthetic_only": true,
+    "page_testing": "NOT_RUN"
+  },
+  "runtime_cleanup": {
+    "result": "PASS",
+    "closed_loopback_ports": [
+      33316,
+      54267
+    ],
+    "sandbox": {
+      "status": "STOPPED",
+      "synthetic_only": true,
+      "database_removed": true,
+      "credentials_removed": true,
+      "failed_steps": []
+    },
+    "public_entry_opened": false,
+    "paid_calls": false,
+    "production_access": false,
+    "retained_prior_failure_schemas": "Historical isolated worker-test schemas were not deleted."
+  },
+  "uploaded": false,
+  "peer_review": "PENDING",
+  "frontend_and_android": "NOT_RUN",
+  "production": "NOT_ENABLED",
+  "limits": [
+    "Receipt and refund facts are synthetic isolated database fixtures, not provider acceptance or real transfers.",
+    "New customization payment remains blocked.",
+    "MCN marketplace two-layer allocation, referral attribution and tax/channel reconciliation remain pending.",
+    "No formal costs, tax rates, prices or commissions were invented.",
+    "Missing sanitized legacy SQLite sample is not migration acceptance."
+  ],
+  "preservation": {
+    "legacy_tasks_unchanged": 41,
+    "unrelated_v5_tasks_unchanged": 59,
+    "scope_supplements_unchanged": 25,
+    "prototype_findings_unchanged": 16
+  },
+  "normalized_lf_sha256": {
+    "contracts/openapi.yaml": "ff21450ae2a484966a31bba956883aab4779fdfc887f8be1fc0f64106ccc0da1",
+    "scripts/customization-sandbox.cjs": "89d833539165eba968b4df700a21e1cea5543cdf05af14eb28a79ce1f25b25a2",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/customization/finance-policy.js": "649c02600cf7d10ed24d8170397b654e9c7f78928477cd870871e9bce22f654a",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/settlement/source.js": "f2f7bd1f9885e18010ddbe1be2201834e82bb6eca006f8f0aa5187402044c9cc",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/settlement/repository.js": "d0cf4da41925648da20ebc8e788506678b7f176583364a81204fbc6ab7d3477d",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/trade/repository.js": "3c874b7594e02398885e3d2ca07e160c4a4718410a05f0bfec1e06aa25546abe",
+    "晶晶日上工程交接包/01_源码/backend_server/test/customization-policy.test.cjs": "084173b3bd35c9387601c35895f72e46e80c49941584fa2d1de9c4df7b62aff6",
+    "晶晶日上工程交接包/01_源码/backend_server/test/customization-trade.integration.test.cjs": "f6065f4082cc42e3e0986482f2249b9374407e93722e1c69d7468a3802721bb7"
+  },
+  "documentation": {
+    "result": "PASS",
+    "original_files": 94,
+    "requirements": 60,
+    "in_scope": 59,
+    "tasks": 41,
+    "current_doc_links": 928,
+    "application_tests": "NOT_RUN",
+    "errors": []
+  }
+}

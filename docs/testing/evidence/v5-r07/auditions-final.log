@@ -1,0 +1,191 @@
+TAP version 13
+# Subtest: trial contact needs both acceptance and verified full payment
+ok 1 - trial contact needs both acceptance and verified full payment
+  ---
+  duration_ms: 0.6741
+  type: 'test'
+  ...
+# Subtest: unsafe venue and contact bait rejected; ordinary business text remains
+ok 2 - unsafe venue and contact bait rejected; ordinary business text remains
+  ---
+  duration_ms: 1.6501
+  type: 'test'
+  ...
+# Subtest: unknown counts and timers are never assigned silently
+ok 3 - unknown counts and timers are never assigned silently
+  ---
+  duration_ms: 0.1637
+  type: 'test'
+  ...
+# Subtest: audition booking, delivery, privacy and refunds in isolated MySQL
+    # Subtest: only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+    ok 1 - only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+      ---
+      duration_ms: 113.5056
+      type: 'test'
+      ...
+    # Subtest: visibility changes independent of public artist archive; price not leaked by catalog
+    ok 2 - visibility changes independent of public artist archive; price not leaked by catalog
+      ---
+      duration_ms: 62.4203
+      type: 'test'
+      ...
+    # Subtest: accepted private invitation exposes matching offers only; revoked invitation cannot book
+    ok 3 - accepted private invitation exposes matching offers only; revoked invitation cannot book
+      ---
+      duration_ms: 87.262
+      type: 'test'
+      ...
+    # Subtest: unsafe place refused and stale price cannot book
+    ok 4 - unsafe place refused and stale price cannot book
+      ---
+      duration_ms: 19.0676
+      type: 'test'
+      ...
+    # Subtest: unpaid order cannot accept or open conversation; independent venue review required
+    ok 5 - unpaid order cannot accept or open conversation; independent venue review required
+      ---
+      duration_ms: 135.8484
+      type: 'test'
+      ...
+    # Subtest: verified payment is idempotent and still needs artist acceptance
+    ok 6 - verified payment is idempotent and still needs artist acceptance
+      ---
+      duration_ms: 56.1172
+      type: 'test'
+      ...
+    # Subtest: accept opens conversation; duplicate decision returns same booking
+    ok 7 - accept opens conversation; duplicate decision returns same booking
+      ---
+      duration_ms: 35.101
+      type: 'test'
+      ...
+    # Subtest: contact requires separate consent and is never embedded in booking/order
+    ok 8 - contact requires separate consent and is never embedded in booking/order
+      ---
+      duration_ms: 30.9013
+      type: 'test'
+      ...
+    # Subtest: conversation deduplicates, rejects bait, and unauthorized support cannot read
+    ok 9 - conversation deduplicates, rejects bait, and unauthorized support cannot read
+      ---
+      duration_ms: 44.7455
+      type: 'test'
+      ...
+    # Subtest: departed safety case freezes contact and settlement without credit penalty
+    ok 10 - departed safety case freezes contact and settlement without credit penalty
+      ---
+      duration_ms: 53.2914
+      type: 'test'
+      ...
+    # Subtest: delivery requires correct count, authorization and arrival
+    ok 11 - delivery requires correct count, authorization and arrival
+      ---
+      duration_ms: 87.5192
+      type: 'test'
+      ...
+    # Subtest: actual private bytes required before receipt and acceptance
+    ok 12 - actual private bytes required before receipt and acceptance
+      ---
+      duration_ms: 272.1173
+      type: 'test'
+      ...
+    # Subtest: decline creates one refund request; verified provider refund required for refunded status
+    ok 13 - decline creates one refund request; verified provider refund required for refunded status
+      ---
+      duration_ms: 128.1293
+      type: 'test'
+      ...
+    # Subtest: unaccepted expiry cannot be accepted, goes through refund request
+    ok 14 - unaccepted expiry cannot be accepted, goes through refund request
+      ---
+      duration_ms: 105.4085
+      type: 'test'
+      ...
+    # Subtest: minor cannot create offer or buy even if client says otherwise
+    ok 15 - minor cannot create offer or buy even if client says otherwise
+      ---
+      duration_ms: 6.2947
+      type: 'test'
+      ...
+    # Subtest: legacy order comments cannot bypass dedicated conversation gate
+    ok 16 - legacy order comments cannot bypass dedicated conversation gate
+      ---
+      duration_ms: 8.5491
+      type: 'test'
+      ...
+    # Subtest: automated expiry is lease fenced and creates only one refund request
+    ok 17 - automated expiry is lease fenced and creates only one refund request
+      ---
+      duration_ms: 150.807
+      type: 'test'
+      ...
+    # Subtest: before departure cancellation is full refund even for safety reason
+    ok 18 - before departure cancellation is full refund even for safety reason
+      ---
+      duration_ms: 111.3768
+      type: 'test'
+      ...
+    # Subtest: unpaid cancellation uses trade and preserves cancelled appointment
+    ok 19 - unpaid cancellation uses trade and preserves cancelled appointment
+      ---
+      duration_ms: 55.2303
+      type: 'test'
+      ...
+    # Subtest: concurrent accept or decline produces one winner
+    ok 20 - concurrent accept or decline produces one winner
+      ---
+      duration_ms: 114.9551
+      type: 'test'
+      ...
+    # Subtest: reschedule needs other party plus independent venue review; support join/leave controls access
+    ok 21 - reschedule needs other party plus independent venue review; support join/leave controls access
+      ---
+      duration_ms: 221.9964
+      type: 'test'
+      ...
+    # Subtest: new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+    ok 22 - new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+      ---
+      duration_ms: 46.0547
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+    ok 23 - automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+      ---
+      duration_ms: 751.3901
+      type: 'test'
+      ...
+    # Subtest: same artist cannot accept two overlapping appointments and one can be rescheduled later
+    ok 24 - same artist cannot accept two overlapping appointments and one can be rescheduled later
+      ---
+      duration_ms: 196.1727
+      type: 'test'
+      ...
+    # Subtest: MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+    ok 25 - MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+      ---
+      duration_ms: 47.1609
+      type: 'test'
+      ...
+    # Subtest: withdrawn sample consent closes buyer file access without deleting artist archive
+    ok 26 - withdrawn sample consent closes buyer file access without deleting artist archive
+      ---
+      duration_ms: 15.9972
+      type: 'test'
+      ...
+    1..26
+ok 4 - audition booking, delivery, privacy and refunds in isolated MySQL
+  ---
+  duration_ms: 8118.1339
+  type: 'test'
+  ...
+1..4
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8309.1084

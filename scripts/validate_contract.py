@@ -9,6 +9,7 @@ from importlib.metadata import version
 import json
 from pathlib import Path
 import platform
+import re
 import sys
 from unittest.mock import patch
 
@@ -106,13 +107,33 @@ def validate(runtime_fixtures=None):
         check(not valid(schema, value), 'Rejected example: '+x['name'])
 
     for x in runtime_cases:
-        check(valid(x['schema'],x['value']), 'Actual HTTP response: '+x['schema'])
+        schema = x['schema']
+        if 'method' in x and 'path' in x:
+            matches = [item[x['method'].lower()] for route, item in spec['paths'].items()
+                       if x['method'].lower() in item and re.fullmatch(re.sub(r'\{[^}]+\}', '[^/]+', route), x['path'])]
+            check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
+            if len(matches) == 1 and schema != 'ErrorResponse':
+                schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
+        check(valid(schema,x['value']), 'Actual HTTP response: '+schema)
+
 
     # Candidate protocol invariants. These are not server behavioral tests.
     implemented_ids=set(json.loads((ROOT/'contracts/implementation.json').read_text(encoding='utf-8'))['isolated_tested_operations'])
     operations = []
     provider_callbacks={'receiveAppleTradeNotification','receiveAlipayTradeNotification'}
     public_ids = provider_callbacks | {'createSmsChallenge','createSession','getLiveness','getReadiness'}
+    customization_account_scopes = {
+        'listCustomizationCategories': 'ACCOUNT',
+        'getCustomizationRequest': 'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'getCustomizationSupplement':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'listCustomizationSubmissions':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'listCustomizationQuotes':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'getCustomizationSubmission':'ACCOUNT_OR_AUTHORIZED_REVIEWER',
+        'requestCustomizationSupplement':'AUTHORIZED_CUSTOMIZATION_OPERATOR',
+        'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
+        'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
+    }
+    # Newly reviewed operator-only endpoints use no acting-party header.
     for path, item in spec['paths'].items():
         for method, op in item.items():
             if method not in {'get','post','patch','put','delete'}:
@@ -127,15 +148,31 @@ def validate(runtime_fixtures=None):
             if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
                 check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
-            if method == 'patch':
+            if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest','requestCustomizationSupplement','submitCustomizationSupplement'}:
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
-            account_scoped_supply = {'listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
+            account_scoped_supply = {'listWalletRules','createWalletRule','reviewWalletRule','reviewWalletLevelSix','reviewAuditionDelivery','reviewAuditionOffer','reviewAuditionBooking','expireAudition','resolveAuditionCase','manageAuditionSupport','sendAuditionMessage','markAuditionMessagesRead','reviewAuditionReschedule','listAuditionCatalog','listAuditionRecords','getAuditionRecord','getAuditionContacts','getAuditionMessages','getAuditionItinerary','downloadAuditionMaterial','listNoticeRules','createNoticeRule','recordNoticeFinancialFact','createAnnouncement','reviewNoticeRecord','closeNoticeRecord','linkNoticeQuote','listNoticeRecords','getNoticeRecord','listNoticeCatalog','getNoticePublic','downloadNoticeMaterial','listStockListings','getStockListing','reviewStockListing','changeReviewedStockStatus','listStockCatalog','getStockOffer','downloadStockPreview','downloadStockReviewFile','downloadStockEvidence','getStockPurchase','resolveStockCase','getCustomizationFulfillment','getProductionStory','resolveCustomizationCase','downloadCustomizationCaseEvidence','getArtistServices','listArtistCatalogue','listArtistReviews','getArtistRecord','reviewArtistRecord','recordArtistServiceResult','downloadArtistReviewAsset','downloadArtistPublicPreview','previewMarketplaceFinance','listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
                 'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent',
-                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence'}
+                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadManualSampleOwnedContent','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob','reviewProjectOperation','listProjectCatalogue','listManagedProjects','getProjectRecord','listProjectRecords','listProjectConfirmations','getProjectReadiness','downloadProjectEvidence','createGigRule','retireGigRule','reviewGigRecord','suspendGig','createGigRanking','listGigRecords','getGigRecord','listGigCatalogue','getGigRanking','downloadGigEvidence','decideDisputeFinanceOperation','reviewFinanceOperation','listFinanceAgreements','listFinanceRecords','getFinanceRecord','listFinanceConfirmations','getFinanceReadiness','getFinanceBalances','listFinanceEntries','downloadFinanceEvidence','listBusinessComments','addBusinessComment','changeBusinessComment','listOperationsAudit','listBusinessAudit','requestBusinessReport','getBusinessReport','downloadBusinessReport','retryBusinessReport'}
+            account_scoped_supply.update({'withdrawPrivacyConsent', 'requestPrivacyModelDeletion', 'getPrivacyActions', 'getPrivacyModelAssets', 'getPrivacyModelCreations'})
+            account_scoped_supply.update({'applyPrivacyExecution', 'applyPrivacyExecutionForHandler', 'getMediaTask', 'proposePrivacyExecutionForHandler', 'listPrivacyExecutionsForHandler', 'listPrivacyExecutions', 'reviewPrivacyExecution', 'exportPrivacyData', 'proposePrivacyExecution'})
+            account_scoped_supply.update({'reviewMediaTask', 'getMediaTaskForReview'})
+            account_scoped_supply.update({'getPrivacyRequest', 'startPrivacyRequest', 'reviewPrivacyResponse', 'downloadPrivacyResponseFile', 'createPrivacyRequest', 'savePrivacyPreferences', 'getPrivacyPreferences', 'getPrivacyRequestForHandler', 'proposePrivacyResponse', 'listPrivacyRequestsForHandler', 'getPrivacyResponseHistory', 'reopenPrivacyRequest', 'listPrivacyRequests'})
+            account_scoped_supply.update({'reviewProjectIncomeAgreement','controlCommercialConversation', 'engagementProposeTie', 'engagementQueue', 'engagementCompetitionResult', 'listAuditionSupplements', 'engagementInteraction', 'listCommercialMessages', 'engagementRead', 'readCommercialMessage', 'engagementSyncGrowth', 'engagementReviewTie', 'engagementBuyerCityRank', 'engagementReviewRule', 'reviewAuditionSupplementRefund', 'engagementFinalize', 'engagementRankings', 'engagementExposures', 'engagementReviewRewardStock', 'engagementModerate', 'engagementCreateRule', 'engagementRedeemReward', 'engagementReferralSync', 'engagementExcludeOrder', 'engagementVoteReview', 'engagementCompetition', 'downloadCommercialMessageFile', 'getCommercialContacts', 'engagementRankingSnapshot', 'reviewAuditionSupplement', 'engagementReviewCandidate', 'engagementRankingIndex', 'sendCommercialMessage', 'moderateCommercialMessage', 'engagementCompetitions', 'downloadEngagementListen', 'engagementJudge', 'engagementResolveAppeal', 'engagementReviewCompetition'})
+            account_scoped_supply.update({'cocreationDownloadReviewFile', 'cocreationReviewCase', 'cocreationClose', 'cocreationQueue', 'cocreationReviewSnippet', 'cocreationRules', 'cocreationCreateRule', 'cocreationCases', 'cocreationRoom', 'cocreationReviewRule'})
+            account_scoped_supply.update({'reviewParticipationAgreement', 'getParticipationProgress'})
+            account_scoped_supply.update({'redemptionExposures', 'redemptionCatalog', 'redemptionEvidence', 'redemptionReviewPool', 'redemptionRetirePool', 'redemptionPools', 'redemptionPool', 'redemptionProposeDelivery', 'redemptionReviewStock', 'redemptionReviewDelivery', 'redemptionQueue', 'redemptionReviewRemedy', 'redemptionFinish'})
+            if op['operationId'] in customization_account_scopes:
+                check(op.get('x-actor-scope') == customization_account_scopes[op['operationId']],
+                      'Customization actor scope: '+path)
+                if op['operationId'] in {'getCustomizationRequest','getCustomizationSupplement','listCustomizationSubmissions','getCustomizationSubmission','listCustomizationQuotes'}:
+                    check(headers.get('X-Acting-Party',{}).get('required') is False,
+                          'Customization owner-or-operator read: '+path)
+                else:
+                    check('X-Acting-Party' not in headers, 'Customization account-scoped action: '+path)
             if op['operationId'] in account_scoped_supply:
                 check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
-            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks and path not in {
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
                     '/api/v1/me/parties','/api/v1/identity-verifications/current',
                     '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:
@@ -145,12 +182,20 @@ def validate(runtime_fixtures=None):
                 check(op['operationId'] in implemented_ids, 'Runtime evidence declared: '+op['operationId'])
             else:
                 check(op['operationId'] not in implemented_ids, 'Unimplemented boundary: '+op['operationId'])
+            if op['operationId'] in {'createCustomizationRequest','getCustomizationRequest',
+                    'updateCustomizationRequest','submitCustomizationRequest','intakeCustomizationRequest','getCustomizationSupplement','saveCustomizationSupplement','requestCustomizationSupplement','submitCustomizationSupplement'}:
+                check('ETag' in op['responses']['200'].get('headers',{}),
+                      'Customization object version header: '+path+' '+method)
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')
-                if op['operationId'] in {'downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence'} and code=='200':
-                    check(response['content']['application/octet-stream']['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
+                if op['operationId'] in {'downloadPrivacyResponseFile','redemptionEvidence','cocreationDownloadReviewFile','cocreationDownloadMaterial','cocreationDownloadSnippet','downloadEngagementReward','downloadEngagementListen','downloadCommercialMessageFile','downloadAuditionMaterial','downloadNoticeMaterial','downloadStockPreview','downloadStockReviewFile','downloadStockEvidence','downloadPurchasedStock','downloadCustomizationCaseEvidence','downloadArtistAsset','downloadArtistReviewAsset','downloadArtistPublicPreview','downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence','downloadManualSampleOwnedContent','downloadProductionContent','downloadProductionEvidence','downloadProjectEvidence','downloadGigEvidence','downloadFinanceEvidence'} and code=='200':
+                    check(response['content'].get('application/octet-stream',response['content'].get('audio/*',{}))['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
                     check('Cache-Control' in response.get('headers',{}), 'Private file no-store declared')
+                    continue
+                if op['operationId']=='downloadBusinessReport' and code=='200':
+                    check(response['content']['text/csv']['schema']=={'type':'string','format':'binary'}, 'Report CSV response')
+                    check('Cache-Control' in response.get('headers',{}), 'Report no-store declared')
                     continue
                 if op['operationId']=='receiveAlipayTradeNotification' and code=='200':
                     check(response['content']['text/plain']['schema'].get('const')=='success', 'Alipay acknowledgement')

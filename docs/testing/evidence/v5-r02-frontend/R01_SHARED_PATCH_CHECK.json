@@ -1,0 +1,42 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "checks": [
+    {
+      "name": "own current identity",
+      "status": 200,
+      "code": null,
+      "result": "PASS"
+    },
+    {
+      "name": "outsider cannot read buyer identity",
+      "status": 404,
+      "code": "PARTY_NOT_FOUND",
+      "result": "PASS"
+    },
+    {
+      "name": "explicit identity required",
+      "status": 400,
+      "code": "ACTING_PARTY_REQUIRED",
+      "result": "PASS"
+    },
+    {
+      "name": "header and path must match",
+      "status": 403,
+      "code": "ACTING_PARTY_MISMATCH",
+      "result": "PASS"
+    },
+    {
+      "name": "authentication required",
+      "status": 401,
+      "code": "AUTHENTICATION_REQUIRED",
+      "result": "PASS"
+    },
+    {
+      "name": "fixture still blocks mutation",
+      "status": 403,
+      "code": "LOCAL_FIXTURE_ROUTE_DISABLED",
+      "result": "PASS"
+    }
+  ]
+}

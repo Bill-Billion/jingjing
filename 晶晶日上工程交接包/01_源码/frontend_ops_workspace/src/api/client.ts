@@ -236,8 +236,8 @@ export async function probe(path: '/health' | '/ready'): Promise<{ ok: boolean; 
 }
 
 /** Private attachment transport: bytes stay in memory; no URL from the server is trusted. */
-export async function requestBytes(path: string, options: RequestOptions): Promise<Blob> {
-  const headers: Record<string, string> = { Accept: 'application/octet-stream', 'X-Request-Id': newRequestId() }
+export async function requestBytes(path: string, options: RequestOptions, contentType = 'application/octet-stream'): Promise<Blob> {
+  const headers: Record<string, string> = { Accept: contentType, 'X-Request-Id': newRequestId() }
   if (options.token) headers.Authorization = `Bearer ${options.token}`
   if (options.actingParty) headers['X-Acting-Party'] = options.actingParty
   let response: Response
@@ -251,7 +251,7 @@ export async function requestBytes(path: string, options: RequestOptions): Promi
     try { error = JSON.parse(raw)?.error } catch { /* Non-JSON gateway error. */ }
     throw toApiError(response.status, error, response.headers.get('X-Request-Id'), raw, retryAfterAt(response.headers.get('Retry-After')))
   }
-  if (response.headers.get('Content-Type')?.split(';')[0] !== 'application/octet-stream') throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '材料返回格式不正确，未下载。' })
+  if (response.headers.get('Content-Type')?.split(';')[0] !== contentType) throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '材料返回格式不正确，未下载。' })
   try { return await response.blob() }
   catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
 }
