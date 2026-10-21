@@ -76,7 +76,7 @@ async function login(name,{second=false}={}){
  const a={...person,page:p,context,token};if(!second)actors[name]=a;return a
 }
 async function ready(p=page){await p.getByText('正在读取实际记录…',{exact:true}).waitFor({state:'hidden'});await p.getByTestId('ops-refresh').waitFor({state:'visible'});await p.waitForTimeout(120)}
-async function go(p,path){page=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
+async function go(p,path){page=p;await p.goto(base+path);await p.locator('.workspace-nav').waitFor();if(path==='/operations/customization'||path.startsWith('/operations/customization/'))await p.getByTestId('customization-refresh').waitFor();else if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
 async function shot(p,name,gallery){if(new URL(p.url()).pathname.startsWith('/operations/'))await ready(p);const actual=await p.locator('[data-gallery]').first().getAttribute('data-gallery');if(gallery)assert.equal(actual,gallery);const file='screenshots/pr20-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,gallery:gallery||actual,viewport:p.viewportSize()});await save()}
 const fill=(p,key,v)=>p.getByTestId(key).fill(String(v))
 async function notificationPage(p,cursor,action){
@@ -265,11 +265,11 @@ async function run(){
   for(const kind of ['evidence','storage']){await control('/'+kind+'?enabled=false');const response=wait(p,'GET',path);await p.getByTestId('finance-proof-'+asset).click();assert.equal((await response).status(),503);await control('/'+kind+'?enabled=true')}
   const response=wait(p,'GET',path),download=handled(p.waitForEvent('download'));await p.getByTestId('finance-proof-'+asset).click();const raw=await response;assert.equal(raw.status(),200);assert.equal(raw.headers()['cache-control'],'no-store');assert.equal(raw.headers()['x-content-type-options'],'nosniff');const bytes=await readFile(await (await download).path()),known=Object.values(state.assets).find(a=>a.id===asset);assert.equal(bytes.length,known.byteSize);assert.equal(sha(bytes),known.contentSha256);verification.push({check:'actual private source proof rejects corruption/storage fault then exact restored download',record_id:g,asset_id:asset,byte_size:bytes.length,sha256:sha(bytes)});await shot(p,'source-proof-recovered-desktop')
  })
- await check('完整40主菜单每入口新版有效无404、高亮稳定及390宽通知留言报告',async()=>{
-  const a=actors.payer,p=a.page;await go(p,'/operations/notifications');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()})));assert.equal(links.length,40)
-  for(const link of links){await go(p,link.href);assert.equal(new URL(p.url()).pathname,link.href);assert.equal(await p.locator('.workspace-nav a').count(),40);assert.deepEqual(await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()}))),links);assert.equal(await p.locator('.workspace-nav a[aria-current=page]').filter({hasText:link.text}).count(),1);assert.equal(await p.getByText('页面未找到',{exact:true}).count(),0);assert.equal(await p.locator('.legacy-shell').count(),0)}
+ await check('完整41主菜单每入口新版有效无404、高亮稳定及390宽通知留言报告',async()=>{
+  const a=actors.payer,p=a.page;await go(p,'/operations/notifications');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()})));assert.equal(links.length,41)
+  for(const link of links){await go(p,link.href);assert.equal(new URL(p.url()).pathname,link.href);assert.equal(await p.locator('.workspace-nav a').count(),41);assert.deepEqual(await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()}))),links);assert.equal(await p.locator('.workspace-nav a[aria-current=page]').filter({hasText:link.text}).count(),1);assert.equal(await p.getByText('页面未找到',{exact:true}).count(),0);assert.equal(await p.locator('.legacy-shell').count(),0)}
   await p.setViewportSize({width:390,height:844});for(const [route,name,gallery] of [['/operations/notifications','notifications-390','WEB-32-01'],[commentRoute('PROJECTS',scenario.projectId),'comments-390','WEB-32-02-v2'],[reportRoute(facts.ownerSettlement.id,false),'report-390','WEB-33-02']]){await go(p,route);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot(p,name+'-narrow',gallery)}await p.setViewportSize({width:1440,height:1000})
-  verification.push({check:'all40 current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport',menu_count:links.length,menu:links})
+  verification.push({check:'all41 current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport',menu_count:links.length,menu:links})
  })
 }
 

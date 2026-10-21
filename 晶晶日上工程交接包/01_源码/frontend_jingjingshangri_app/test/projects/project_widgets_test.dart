@@ -17,23 +17,33 @@ Future<void> readyDecision(WidgetTester t) async {
 }
 
 void main() {
-  testWidgets('成角真实目录保留五tab；公开角色详情仅摘要且无底栏', (t) async {
+  testWidgets('通告进入已有公开项目；角色详情仅摘要且无底栏', (t) async {
     final a = projectsAdapter(), s = (await t.runAsync(() => buyerSession(a)))!;
-    await nav.openApp(t, s, route: '/roles');
+    await nav.openApp(t, s, route: '/notices');
     nav.expectFiveTabs();
+    await t.tap(find.text('公开项目与角色'));
+    await nav.frames(t);
+    expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('让好角色找到合适的你'), findsOneWidget);
     await reveal(t, find.text('查看项目'));
     await t.tap(find.text('查看项目'));
     await nav.frames(t);
     expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('角色总名额'), findsOneWidget);
-    expect(a.requests.any((r) => r.path == '/api/v1/projects/records/$roleKey'),
-        false);
+    expect(
+      a.requests.any((r) => r.path == '/api/v1/projects/records/$roleKey'),
+      false,
+    );
+    await t.tap(find.byType(BackButton));
+    await nav.frames(t);
+    expect(find.byType(NavigationBar), findsNothing);
     await t.tap(find.byType(BackButton));
     await nav.frames(t);
     nav.expectFiveTabs();
     expect(
-        t.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex, 3);
+      t.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      2,
+    );
     expect(t.takeException(), isNull);
   });
   testWidgets('本人方案确认需要完整阅读及意见，POST后以列表证明准确决定', (t) async {

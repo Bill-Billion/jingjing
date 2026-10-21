@@ -31,6 +31,7 @@ const links = [
   { to: '/finance/disputes', label: '争议与账务调整', icon: Reading },
   { to: '/operations/notifications', label: '业务通知与留言', icon: Document },
   { to: '/operations/reports', label: '经营报表', icon: Collection },
+  { to: '/operations/customization', label: '故事收件与受理', icon: Document },
 ]
 const reviews = [
   { to: '/operations/moderation', label: '留言独立管理' },

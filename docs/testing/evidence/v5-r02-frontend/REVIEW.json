@@ -1,0 +1,54 @@
+{
+  "scope": "R02 incremental frontend relative to 8e77ff0",
+  "review_side": "Internal focused review, not Core peer approval",
+  "findings": [
+    {
+      "priority": "P2",
+      "problem": "通用付款页仍接受新定制订单",
+      "location": "src/views/TradeView.vue",
+      "status": "FIXED_AND_SOURCE_REVIEWED",
+      "verification": "实际组件约束测试"
+    },
+    {
+      "priority": "P2",
+      "problem": "通用制作页仍接受新定制订单",
+      "location": "src/views/ProductionView.vue",
+      "status": "FIXED_AND_SOURCE_REVIEWED",
+      "verification": "实际组件约束测试"
+    },
+    {
+      "priority": "P2",
+      "problem": "未显式传入MCN关系时误拒服务器自动关系",
+      "location": "src/api/modules/finance.ts",
+      "status": "FIXED_AND_SOURCE_REVIEWED",
+      "verification": "省略关系与显式冲突分别测试"
+    },
+    {
+      "priority": "P2",
+      "problem": "同一故事刷新后旧报价来源标记仍为当前",
+      "location": "src/stores/customization.ts",
+      "status": "FIXED_AND_SOURCE_REVIEWED",
+      "verification": "刷新清理报价缓存回归"
+    },
+    {
+      "priority": "P2",
+      "problem": "两次读取可能混合不同正式稿与补件",
+      "location": "lib/customization/customization_models.dart",
+      "status": "FIXED_AND_SOURCE_REVIEWED",
+      "verification": "正式版本匹配及保留输入回归"
+    }
+  ],
+  "independent_web_tests": {
+    "customization": 23,
+    "trade": 21,
+    "finance": 27,
+    "production": 18
+  },
+  "app_final_checks": {
+    "tests_passed": 289,
+    "analysis": "PASS",
+    "product_build": "PASS"
+  },
+  "backend_or_contract_changes": false,
+  "core_actual_review": "REQUESTED_PENDING"
+}

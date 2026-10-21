@@ -32,7 +32,7 @@ void main() {
   testWidgets('header通知接真实列表，未读/全部和本人已读分开且保留五栏目返回', (t) async {
     final a = operationsAdapter(),
         s = (await t.runAsync(() => buyerSession(a)))!;
-    await nav.openApp(t, s, route: '/roles');
+    await nav.openApp(t, s, route: '/notices');
     expect(find.text('项目通知与留言暂未开放。'), findsNothing);
     nav.expectFiveTabs();
     await t.tap(find.byTooltip('通知'));
@@ -59,7 +59,7 @@ void main() {
                     ? envelope({'items': [], 'next_cursor': 8})
                     : null),
         s = (await t.runAsync(() => buyerSession(a)))!;
-    await nav.openApp(t, s, route: '/messages');
+    await nav.openApp(t, s, route: '/operations/notifications');
     expect(find.text('本页经过权限或已读筛选后为空，可继续读取更早记录。'), findsOneWidget);
     await press(t, '加载更多', outline: true);
     await press(t, '查看通知详情', outline: true);

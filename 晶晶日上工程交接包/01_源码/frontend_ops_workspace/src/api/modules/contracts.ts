@@ -53,7 +53,7 @@ const hash = (value: unknown): boolean => typeof value === 'string' && /^[a-f0-9
 const exact = (value: Record<string, unknown>, keys: string[]): boolean => Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key))
 const textObject = (value: unknown): value is TextObject => object(value) && Object.keys(value).length > 0
 
-function ruleContent(value: unknown): value is RuleContent {
+export function ruleContent(value: unknown): value is RuleContent {
   return object(value) && exact(value, ['format_version', 'id', 'rule_key', 'version', 'terms', 'content_sha256']) &&
     value.format_version === 'rule-content-v1' && string(value.id) && string(value.rule_key, 100) &&
     string(value.version) && textObject(value.terms) && hash(value.content_sha256)

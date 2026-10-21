@@ -97,3 +97,25 @@ export const statusLabels:Record<string,string>={IN_REVIEW:'待独立复核',REQ
 export const financeStatus=(r:Pick<FinanceRecord,'kind'|'current_status'>)=>r.kind==='PAYOUT'&&r.current_status==='APPROVED'?'已批准，尚未实际付款':r.kind==='PAYOUT_EVIDENCE'&&r.current_status==='IN_REVIEW'?'外部报告待独立核实，尚未记实付':statusLabels[r.current_status]||r.current_status
 
 export const financeReasons:Record<string,string>={FINANCE_AGREEMENT_NOT_APPROVED:'约定尚未独立复核通过',FINANCE_CONFIRMATIONS_REQUIRED:'约定各方准确版本确认尚未完成',FINANCE_DISPUTED:'存在待处理异议，暂停新付款',RETAINED_INCOME_NOT_PAYOUT:'商家保留金额，不再次转给自己',SETTLEMENT_DATE_NOT_REACHED:'尚未达到约定结算时间',CUSTOMER_PAYMENT_REVIEW_REQUIRED:'客户原付款待核实',REVENUE_NOT_RECEIVED:'渠道应收尚未实际到账',FINANCE_DELIVERY_NOT_ACCEPTED:'原制作交付尚未实际验收',CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED:'当前事实须重新生成结算单、独立复核并完成各方确认'}
+
+export interface MarketplaceAllocation { model:'V5_TWO_LAYER'; product_type:'STOCK_VIDEO'|'COMMERCIAL'|'AUDITION'; fee_base:'NET_PAID'; platform_party_id:string; platform_bps:number; supplier_party_id:string; mcn_party_id:string|null; mcn_supply_bps:number; referrer_party_id:string|null; referral_bps:number; rounding:'HALF_UP_PLATFORM_REMAINDER' }
+export interface MarketplacePreview {
+ meaning:'PREVIEW_ONLY_NOT_ORDER_OR_PAYABLE'; rule_id:string; rule_content_sha256:string; allocation:MarketplaceAllocation
+ amounts:{net_minor:number;entries:{role:'PLATFORM'|'SUPPLIER'|'MCN'|'REFERRER';party_id:string;amount_minor:number}[];rounding_diff_minor:number}
+ relation_reference:{id:string;version:number;sha256:string}|null
+}
+export interface MarketplacePreviewInput { rule_id:string; supplier_party_id:string; net_minor:number; relation_id?:string }
+export function isMarketplacePreview(v:unknown):v is MarketplacePreview {
+ if(!exact(v,['meaning','rule_id','rule_content_sha256','allocation','amounts','relation_reference'])||v.meaning!=='PREVIEW_ONLY_NOT_ORDER_OR_PAYABLE'||!validSupplyId(v.rule_id)||!hash(v.rule_content_sha256))return false
+ const a=v.allocation,m=v.amounts,r=v.relation_reference
+ if(!exact(a,['model','product_type','fee_base','platform_party_id','platform_bps','supplier_party_id','mcn_party_id','mcn_supply_bps','referrer_party_id','referral_bps','rounding'])||a.model!=='V5_TWO_LAYER'||!['STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(String(a.product_type))||a.fee_base!=='NET_PAID'||!validSupplyId(a.platform_party_id)||!validSupplyId(a.supplier_party_id)||!nullableId(a.mcn_party_id)||!nullableId(a.referrer_party_id)||!['platform_bps','mcn_supply_bps','referral_bps'].every(k=>amount(a[k],0,10000))||a.rounding!=='HALF_UP_PLATFORM_REMAINDER')return false
+ if(!exact(m,['net_minor','entries','rounding_diff_minor'])||!amount(m.net_minor)||!amount(m.rounding_diff_minor,-2,2)||!Array.isArray(m.entries)||m.entries.length<2||m.entries.length>4||new Set(m.entries.map(x=>obj(x)?x.role:null)).size!==m.entries.length||!m.entries.every(x=>exact(x,['role','party_id','amount_minor'])&&['PLATFORM','SUPPLIER','MCN','REFERRER'].includes(String(x.role))&&validSupplyId(x.party_id)&&signed(x.amount_minor)))return false
+ const entries=m.entries as MarketplacePreview['amounts']['entries']
+ if(entries.reduce((n,x)=>n+BigInt(x.amount_minor),0n)!==BigInt(m.net_minor)||!entries.some(x=>x.role==='PLATFORM'&&x.party_id===a.platform_party_id)||!entries.some(x=>x.role==='SUPPLIER'&&x.party_id===a.supplier_party_id)||entries.some(x=>x.role==='MCN'&&x.party_id!==a.mcn_party_id||x.role==='REFERRER'&&x.party_id!==a.referrer_party_id))return false
+ return r===null||exact(r,['id','version','sha256'])&&validSupplyId(r.id)&&amount(r.version,1)&&hash(r.sha256)
+}
+export async function marketplacePreview(i:SupplyIdentity,input:MarketplacePreviewInput,signal?:AbortSignal) {
+ if(i.partyId!==null||!validSupplyId(input.rule_id)||!validSupplyId(input.supplier_party_id)||!amount(input.net_minor)||input.relation_id!==undefined&&!validSupplyId(input.relation_id))throw new ApiError({status:400,code:'CLIENT_PREVIEW_INVALID',message:'请填写已批准规则、供给方和非负整数分金额，以财务账号读取试算。'})
+ const q=new URLSearchParams({rule_id:input.rule_id,supplier_party_id:input.supplier_party_id,net_minor:String(input.net_minor)});if(input.relation_id)q.set('relation_id',input.relation_id)
+ return checked(await request('/finance/marketplace-preview?'+q,options(i,signal)),i,(v):v is MarketplacePreview=>isMarketplacePreview(v)&&v.rule_id===input.rule_id&&v.allocation.supplier_party_id===input.supplier_party_id&&v.amounts.net_minor===input.net_minor&&(!input.relation_id||v.relation_reference?.id===input.relation_id))
+}

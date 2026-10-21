@@ -8,7 +8,6 @@ import 'package:jingjingshangri_app/navigation/app_shell.dart';
 import 'package:jingjingshangri_app/services/user_provider.dart';
 import '../account/fake_account_api.dart';
 import '../contracts/contract_fixtures.dart';
-import '../licensing/license_fixtures.dart';
 
 Future<void> frames(WidgetTester tester) async {
   for (var i = 0; i < 25; i++) {
@@ -38,7 +37,7 @@ Future<void> openApp(WidgetTester tester, AccountSession session,
 }
 
 void expectFiveTabs() {
-  for (final label in ['首页', '入戏', '培育', '成角', '我的']) {
+  for (final label in ['广场', '试镜', '通告', '消息', '我的']) {
     expect(
         find.descendant(
             of: find.byType(NavigationBar), matching: find.text(label)),
@@ -115,100 +114,67 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('入戏首次进入才读取，切换及详情返回保留已加载目录与位置', (tester) async {
+  testWidgets('通告不冒充旧目录，打开已有项目后返回保留栏目且不重复读取', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
-        handler: (r) => r.path.endsWith('/records')
-            ? envelope({
-                'items': [licenseData('PRODUCT')],
-                'next_cursor': null
-              })
-            : r.path.endsWith(productId)
-                ? envelope(licenseData('PRODUCT'))
-                : adapter.defaultReply(r));
+      handler: (r) => r.path == '/api/v1/projects/catalogue'
+          ? envelope({'items': [], 'next_cursor': null})
+          : adapter.defaultReply(r),
+    );
     final session = (await tester.runAsync(() => contractSession(adapter)))!;
-    await openApp(tester, session);
-    int catalogReads() =>
-        adapter.requests.where((r) => r.path.endsWith('/records')).length;
-    expect(catalogReads(), 0);
-    await tester.tap(find.byKey(const Key('app-tab-1')));
+    await openApp(tester, session, route: '/notices');
+    expectFiveTabs();
+    expect(find.textContaining('六类通告与单向投稿正在接入'), findsOneWidget);
+    int reads() => adapter.requests
+        .where((r) => r.path == '/api/v1/projects/catalogue')
+        .length;
+    expect(reads(), 0);
+    await tester.tap(find.text('公开项目与角色'));
     await frames(tester);
-    expect(catalogReads(), 1);
-    expect(find.text('回到那年夏天'), findsOneWidget);
-    await tester.drag(find.byType(ListView), const Offset(0, -180));
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(reads(), 1);
+    await tester.tap(find.byType(BackButton));
     await frames(tester);
-    final position = sectionScroll(tester).position.pixels;
-    expect(position, greaterThan(0));
-    for (final index in [4, 0, 2, 1, 1]) {
+    expectFiveTabs();
+    expect(
+      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      2,
+    );
+    for (final index in [4, 0, 2, 2]) {
       await tester.tap(find.byKey(Key('app-tab-$index')));
       await frames(tester);
     }
-    expect(catalogReads(), 1);
-    expect(sectionScroll(tester).position.pixels, closeTo(position, 0.1));
-    await tester.ensureVisible(find.text('查看剧本'));
-    await frames(tester);
-    final beforeDetail = sectionScroll(tester).position.pixels;
-    await tester.tap(find.text('查看剧本'));
-    await frames(tester);
-    expect(find.byType(NavigationBar), findsNothing);
-    await tester.tap(find.byType(BackButton));
-    await frames(tester);
-    expect(catalogReads(), 1);
-    expect(sectionScroll(tester).position.pixels, closeTo(beforeDetail, 0.1));
+    expect(reads(), 1);
     expect(
-        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
-        1);
-    expect(
-        ModalRoute.of(tester.element(find.byType(NavigationBar)))!
-            .settings
-            .name,
-        '/enter');
+      ModalRoute.of(tester.element(find.byType(NavigationBar)))!.settings.name,
+      '/notices',
+    );
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('隐藏栏目的私有状态在更换身份和退出时清空，再进入才重新读取', (tester) async {
-    late FakeAccountAdapter adapter;
-    adapter = FakeAccountAdapter(handler: (r) {
-      if (r.path.endsWith('/records')) {
-        final product = licenseData('PRODUCT');
-        (product['data'] as Map)['title'] =
-            r.headers['X-Acting-Party'] == personId ? '个人目录' : '机构目录';
-        return envelope({
-          'items': [product],
-          'next_cursor': null
-        });
-      }
-      return adapter.defaultReply(r);
-    });
+  testWidgets('隐藏我的身份在切换和退出时清空，消息主页不自动读取私密通知', (tester) async {
+    final adapter = FakeAccountAdapter();
     final session = (await tester.runAsync(() => contractSession(adapter)))!;
-    await openApp(tester, session, route: '/enter');
-    expect(find.text('机构目录'), findsOneWidget);
+    await openApp(tester, session, route: '/my');
+    expect(find.text('测试机构'), findsOneWidget);
     await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
-    final reads =
-        adapter.requests.where((r) => r.path.endsWith('/records')).length;
     session.select(identity(personId));
     await frames(tester);
-    expect(find.text('机构目录', skipOffstage: false), findsNothing);
-    expect(adapter.requests.where((r) => r.path.endsWith('/records')),
-        hasLength(reads));
-    await tester.tap(find.byKey(const Key('app-tab-1')));
-    await frames(tester);
-    expect(adapter.requests.where((r) => r.path.endsWith('/records')),
-        hasLength(reads + 1));
-    expect(find.text('个人目录'), findsOneWidget);
+    expect(find.text('测试机构', skipOffstage: false), findsNothing);
     await tester.tap(find.byKey(const Key('app-tab-4')));
     await frames(tester);
+    expect(find.text('我的个人身份'), findsOneWidget);
     await tester.runAsync(session.logout);
     await frames(tester);
-    expect(find.text('个人目录', skipOffstage: false), findsNothing);
+    expect(find.text('我的个人身份', skipOffstage: false), findsNothing);
     expect(find.text('手机号登录'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('app-tab-1')));
+    final before = adapter.requests.length;
+    await tester.tap(find.byKey(const Key('app-tab-3')));
     await frames(tester);
-    expect(find.textContaining('登录后选择办事身份'), findsOneWidget);
-    expect(adapter.requests.where((r) => r.path.endsWith('/records')),
-        hasLength(reads + 1));
+    expect(adapter.requests.length, before);
+    expect(find.text('系统与业务通知'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -246,7 +212,7 @@ void main() {
           ModalRoute.of(tester.element(find.byType(NavigationBar)))
               ?.settings
               .name,
-          ['/home', '/enter', '/cultivate', '/roles', '/my'][i]);
+          ['/square', '/audition', '/notices', '/messages', '/my'][i]);
       expect(tester.takeException(), isNull);
     }
     await tester.tap(find.byTooltip('设置与帮助'));
@@ -306,10 +272,11 @@ void main() {
         .runAsync(() => session.login('13800000000', invitationId, '123456'));
     await openApp(tester, session);
     const tabAliases = <String, int>{
-      '/theater': 1,
-      '/launch': 1,
-      '/role-market': 3,
-      '/projects': 3,
+      '/home': 0,
+      '/audition': 1,
+      '/cultivate': 2,
+      '/notices': 2,
+      '/messages': 3,
       '/profile': 4,
     };
     final nav = tester.state<NavigatorState>(find.byType(Navigator).last);
@@ -318,12 +285,25 @@ void main() {
       await frames(tester);
       expectFiveTabs();
       expect(
-          tester
-              .widget<NavigationBar>(find.byType(NavigationBar))
-              .selectedIndex,
-          entry.value,
-          reason: entry.key);
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        entry.value,
+        reason: entry.key,
+      );
       expect(tester.takeException(), isNull, reason: entry.key);
+      nav.pop();
+      await frames(tester);
+    }
+    for (final path in [
+      '/theater',
+      '/launch',
+      '/custom-request',
+      '/video-lib',
+    ]) {
+      nav.pushNamed(path);
+      await frames(tester);
+      expect(find.byType(NavigationBar), findsNothing, reason: path);
+      expect(find.text('页面不存在'), findsNothing, reason: path);
+      expect(tester.takeException(), isNull, reason: path);
       nav.pop();
       await frames(tester);
     }
@@ -353,11 +333,7 @@ void main() {
         adapter.requests
             .where((r) => r.path.startsWith('/api/'))
             .map((r) => r.path),
-        [
-          '/api/v1/auth/sessions',
-          '/api/v1/projects/catalogue',
-          '/api/v1/projects/catalogue'
-        ]); // Each project alias reads the current public directory.
+        ['/api/v1/auth/sessions']); // Identity-gated destinations do not read private data.
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
