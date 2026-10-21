@@ -1,6 +1,8 @@
+> 本轮集中交付：[PR28](https://github.com/Bill-Billion/jingjing/pull/28)。本文件记录随代码上传时的验证结果；实际合并状态以该申请及远端integration为准。申请合入后双方从integration继续，不再拼分支。人工测试与正式上线仍未完成。
+
 # 当前：前两轮页面已进入本侧集中测试版本
 
-2026-10-21。本侧已拉取队友PR24/8e77ff0、PR26/888a649，并纳入页面修正7d4668f；集中版本worktrees/joint-test、core/v5-joint-functional-test。已有页面本机功能验证通过，上传/合并待核验；人工手机验收未进行。
+2026-10-21。本侧已拉取队友PR24/8e77ff0、PR26/888a649，并纳入页面修正7d4668f；集中版本worktrees/joint-test、core/v5-joint-functional-test。已有页面本机功能验证通过，已集中上传PR28，合并状态见申请；人工手机验收未进行。
 
 本侧本次已修运营报价按元填写；API金额仍用分，队友无需改接口。原规则编号仍手填，建议队友后续优化选择名称/版本，本侧可补查询接口。新工作未代认领。
 
