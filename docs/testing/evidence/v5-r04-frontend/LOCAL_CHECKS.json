@@ -60,7 +60,43 @@
         "- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
         "✓ built in 1.05s"
       ]
+    },
+    {
+      "name": "网页完整测试／Node 22.5.1测试环境修复后",
+      "result": "PASS",
+      "checks": 255,
+      "groups": 12,
+      "runtime": "Node 22.5.1",
+      "log": ".local/r04-web-node22-final.log",
+      "sha256": "5777a6dd8210e451326c7012f2a3cb9c3e6edc391f97973bc6b19d3662265bc4",
+      "last_lines": [
+        "✓ PENDING_REVIEW个人和机构主体的有效OWNER仍实际读取本人或获托名单",
+        "",
+        "25 artists checks passed."
+      ]
+    },
+    {
+      "name": "网页完整测试／Node 26.3.0测试环境修复后",
+      "result": "PASS",
+      "checks": 255,
+      "groups": 12,
+      "runtime": "Node 26.3.0",
+      "log": ".local/r04-web-node26-final.log",
+      "sha256": "7026d065e678faf070d1f279dbe64d5f626b04ff422bc05813d199ce99ff05b8",
+      "last_lines": [
+        "✓ PENDING_REVIEW个人和机构主体的有效OWNER仍实际读取本人或获托名单",
+        "",
+        "25 artists checks passed."
+      ]
     }
   ],
-  "scope": "包含下载后刷新修复的最终验证；未运行历史全仓截图套件。"
+  "scope": "包含下载后刷新修复的最终验证；未运行历史全仓截图套件。",
+  "ci_test_harness_fix": {
+    "first_failed_head": "96421b32a19c256cfa575020c9d669266ed11feb",
+    "failed_job": "https://github.com/Bill-Billion/jingjing/actions/runs/39722338459/job/119638425239",
+    "cause": "新增SSR测试实际执行前已在finally恢复或删除sessionStorage模拟；Node26原生存储掩盖该生命周期错误",
+    "fix": "执行循环移入模拟环境try，全部执行完才清理；不修改业务代码",
+    "local_reproduction": "Node22.5.1同样ReferenceError: sessionStorage is not defined",
+    "remote_current": "https://github.com/Bill-Billion/jingjing/pull/33/checks"
+  }
 }
