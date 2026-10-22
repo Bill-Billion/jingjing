@@ -63,9 +63,20 @@ jobs:
         working-directory: 晶晶日上工程交接包/01_源码/backend_server
         run: npm ci --no-audit --no-fund
       - name: 准备真实视频处理检查工具
+        timeout-minutes: 8
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+          # Hosted runners often already contain these tools. Verify before touching apt.
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null || [ ! -r /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]; then
+            apt_options=(-o Acquire::Retries=1 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+            # Use existing package indexes first; an unrelated repository must not hang the whole job.
+            if ! timeout 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends ffmpeg fonts-dejavu-core; then
+              timeout 120s sudo apt-get "${apt_options[@]}" update
+              timeout 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends ffmpeg fonts-dejavu-core
+            fi
+          fi
+          ffmpeg -version
+          ffprobe -version
+          test -r /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           node scripts/check-data-governance.cjs
       - name: 启动一次性测试数据库
         run: node scripts/ci-mysql.cjs start

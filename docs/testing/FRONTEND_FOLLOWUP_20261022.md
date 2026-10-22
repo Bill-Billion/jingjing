@@ -53,3 +53,12 @@
 证据目录：[本轮结果](evidence/frontend-followup-20261022/)。完整新截图在本机output/playwright/v5-r04与v5-r05-r12，Git只存结果清单和代表图，避免再重复上传全部截图。合成令牌、测试库凭据、构建内嵌账号不入Git。旧工作树b5e2a07的第三轮合并后记录保留，第三轮已合并事实沿用但不覆盖本轮结果。
 
 服务器独立复验：设置JX_MYSQL_TEST_ENV_FILE为本机隔离MySQL配置，运行node scripts/backend-check.cjs customization-delivery、engagement、manual-sample、customization。网页在frontend_ops_workspace运行npm test及npm run build；App运行flutter test --concurrency=1和flutter analyze。运行接口验证前安装contracts/requirements-lock.txt到独立Python环境，再用scripts/validate_contract.py --runtime-fixtures读取本次实际HTTP返回。所有命令均需合法本地测试依赖，不接生产。
+
+
+## 首次远端检查遇到的环境故障及修复
+
+PR35首个上传提交3e500f1的App、接口规则和网页检查已有通过结果；数据库检查在2026-10-22 14:28 UTC进入apt-get update，14:48达到20分钟上限后取消，没有启动数据库或执行业务用例。依据为运行39795872962、任务119882912448及其超时注释。
+
+已调整测试工具准备：若ffmpeg、ffprobe和指定字体已存在则直接核验；缺项先使用已有软件索引安装，失败才刷新索引。安装与刷新均限时，仍须三个前提实际具备且数据治理检查通过才继续。没有跳过业务检查，也未调大整个作业时限。新提交远端结果另行记录。
+
+最后5项跨端操作在禁止浏览器外联时完成，部分中文备用字体缺失、截图出现方框；因此这5项只证明业务操作与同记录读取，不作为视觉验收。该限制已同步PR35；后续人工检查要另验中文显示。其他联网浏览器矩阵与代表图保留各自真实结果。
