@@ -1,6 +1,6 @@
 # 第5—12轮前端验收与复现
 
-2026-10-22，`ux/v5-r05-r12-frontend`。继承第四轮 `11abe25` / [PR33](https://github.com/Bill-Billion/jingjing/pull/33)，共同版本 `integration/2608ef7`，接口0.30.1-rc.1。[最终图册](index.html) · [汇总](RESULTS.json) · [完整报告](../../R05_R12_FRONTEND_20261022.md) · [后端阻断](../../../collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)。
+2026-10-22，`ux/v5-r05-r12-frontend`。继承第四轮 `11abe25` / [PR33](https://github.com/Bill-Billion/jingjing/pull/33)，共同版本 `integration/2608ef7`，接口0.30.1-rc.1。本批已上传[PR34](https://github.com/Bill-Billion/jingjing/pull/34)，远端检查按该申请当前提交核对。[最终图册](index.html) · [汇总](RESULTS.json) · [完整报告](../../R05_R12_FRONTEND_20261022.md) · [后端阻断](../../../collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)。
 
 本机App461项、Web13组297项、分析和两端普通网页构建通过。最终图册404张：App246、Web158；主App87场景174图，另有320/768各10场景及实际动作和表单；Web45页面/表单状态、90个尺寸场景，其中88通过、2个预期员工管理403。图片已实际查看，原稿、路由、哈希和采样边界见相应视觉记录。不同层级、重拍及Node版本计数重叠，不合计为独立业务。
 

@@ -4,7 +4,7 @@
 
 App461项、Web13组297项、分析及普通网页构建通过，404张最终截图（App246/Web158）与同记录跨端结果已保存。全额券取消释放、各方会签和冻结后清除私密内容等有实际读写。5次随机库及凭据、私有构建、临时媒体和本任务服务均清理。Android APK的Gradle下载网络阻塞、原生手机和真实服务验收单列。
 
-后端未全部完成；员工数据范围、首次安全上下文、原故事追加、托管及隐私等见[独立阻断与复验](../collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)。本侧辅助代理检查不代替同事实际审阅；未合入integration或main、未部署。远端检查须核对本批PR当前提交，不能引用PR33旧检查。
+后端未全部完成；员工数据范围、首次安全上下文、原故事追加、托管及隐私等见[独立阻断与复验](../collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)。本侧辅助代理检查不代替同事实际审阅；未合入integration或main、未部署。本批已上传[PR34](https://github.com/Bill-Billion/jingjing/pull/34)，远端检查须核对该申请当前提交，不能引用PR33旧检查。
 
 [图册](../testing/evidence/v5-r05-r12-frontend/index.html) · [最终报告](../testing/R05_R12_FRONTEND_20261022.md) · [任务与双方进度](../tasks/records/UX-v5-r05-r12-frontend-20261022.md) · [逐域交接](../collaboration/V5_R05_R12_FRONTEND_HANDOFF.md)。
 

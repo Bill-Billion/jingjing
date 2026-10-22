@@ -1,6 +1,6 @@
 # 第5—12轮前端集中交接
 
-2026-10-22，Experience / Bill-Billion。用户已明确授权继续制作第5—12轮，后端阻断单列。分支 `ux/v5-r05-r12-frontend` 继承第四轮 `11abe25` / PR33，共同版本仍为 `integration/2608ef7`；本批比较第5—12轮增量，不替代第四轮申请。
+2026-10-22，Experience / Bill-Billion。用户已明确授权继续制作第5—12轮，后端阻断单列。分支 `ux/v5-r05-r12-frontend` 继承第四轮 `11abe25` / PR33，共同版本仍为 `integration/2608ef7`；本批已上传[PR34](https://github.com/Bill-Billion/jingjing/pull/34)，以第四轮分支为base，比较第5—12轮增量，不替代第四轮申请。
 
 |轮次|App与网页已接范围|仍需按后端实际条件办理|
 |---|---|---|
