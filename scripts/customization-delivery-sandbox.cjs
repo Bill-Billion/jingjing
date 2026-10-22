@@ -66,8 +66,8 @@ async function main() {
     const mediaDir=process.env.DELIVERY_SYNTHETIC_MEDIA_DIR;
     let media;
     if(mediaDir){
-      const actual=await fs.realpath(path.resolve(mediaDir)),local=path.join(root,'.local')+path.sep;
-      if(!actual.startsWith(local))throw new Error('Synthetic clips must be inside this checkout .local');
+      const actual=await fs.realpath(path.resolve(mediaDir)),local=await fs.realpath(path.join(root,'.local')),relative=path.relative(local,actual);
+      if(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative))throw new Error('Synthetic clips must be inside this checkout .local');
       const full=await fs.readFile(path.join(actual,'full.mp4')),preview=await fs.readFile(path.join(actual,'preview.mp4'));
       if([full,preview].some(b=>b.length>1024*1024||b.length<16||b.toString('ascii',4,8)!=='ftyp')||full.equals(preview))throw new Error('Distinct bounded synthetic MP4 clips are required');
       media={full,preview};

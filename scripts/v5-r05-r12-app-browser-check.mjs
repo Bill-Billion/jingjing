@@ -8,7 +8,7 @@ const f=JSON.parse(await readFile(process.env.V5_ACCESS_FILE,'utf8'));
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
 const out=resolve('output/playwright/v5-r05-r12/app');await mkdir(out,{recursive:true});
 const {chromium}=createRequire(join(process.cwd(),'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
-const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const s=f.scenarios;
 const matrix=[
  ['05-catalog','stock_buyer','/stock/catalog','12-artist-stock-producer.png'],
