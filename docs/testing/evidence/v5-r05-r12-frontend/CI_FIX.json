@@ -1,0 +1,175 @@
+{
+  "synthetic_only": true,
+  "created_at": "2026-10-22T07:44:39.980711+00:00",
+  "base_head": "75c53a6c107e3b14a963424b27168234a581e62a",
+  "node": "v22.5.1",
+  "root_cause": "旧PR18浏览器用例给新V5项目沿用OTHER角色费订单，缺独立参演约定、所有原哈希会签及绑定的真实已付参演订单。",
+  "before": {
+    "total": 6,
+    "passed": 5,
+    "last_check": {
+      "label": "六层权利、准确制作与独立OTHER角色费来源全部明确，提交新方案",
+      "result": "FAIL",
+      "error": "UI 409 PARTICIPATION_AGREEMENT_REQUIRED"
+    },
+    "fixture": {
+      "pid": 41367,
+      "schema": "jx_test_41367_9ad2f9ff6f78",
+      "apiUrl": "http://127.0.0.1:3322"
+    }
+  },
+  "intermediate_attempt": {
+    "result": "TEST_SERVICE_EXITED_BEFORE_READY",
+    "code": "ARTIST_HOSTING_REQUIRED",
+    "reason": "真实关联艺人后，旧原制作种子同样需已付托管权益；已补Core原有服务/独立商品审核/订单/合成SANDBOX回执流程。"
+  },
+  "after": {
+    "result": "PASS",
+    "fixture_checks": 11,
+    "browser_checks": 14,
+    "passed": 14,
+    "page_errors": [],
+    "screenshots": 31,
+    "fixture": {
+      "pid": 48610,
+      "schema": "jx_test_48610_998a56c5d8f3",
+      "apiUrl": "http://127.0.0.1:3322"
+    },
+    "platform_plan_and_edition_self_read_confirmation": "PASS"
+  },
+  "changes": [
+    {
+      "file": "scripts/pr18-ui-test-server.cjs",
+      "sha256": "c9c500124617e4476ee1b0e4d329d09c470c6564a8da62351dc2df2f88d77471"
+    },
+    {
+      "file": "scripts/pr18-ui-browser-check.mjs",
+      "sha256": "8d6ad6a5ec5ee96c7acc3c5680d6bc360c73ca6ae8cd9d4b7d06eb6e7fa186bd"
+    }
+  ],
+  "product_source_changed": false,
+  "original_screenshots_unchanged": true,
+  "commit_or_push_performed": false,
+  "verification": [
+    "Node22语法检查两个测试文件通过",
+    "git diff --check通过",
+    "实际MySQL8.4.11/Node22.5.1/Chrome隔离stage18全部通过",
+    "原13项业务检查保留，新加1项实际V5前置；原UNKNOWN同key恢复、本人/独审及越权检查保留"
+  ],
+  "visual_focus": {
+    "viewed": 2,
+    "files": [
+      "screenshots/pr18-web-plan-platform-confirm-saved-desktop.png",
+      "screenshots/pr18-web-edition-platform-confirm-saved-desktop.png"
+    ],
+    "observation": "平台受益方本人读取、三方同版确认记录与禁重复提交状态实际可见，刊物布局正常。"
+  },
+  "evidence": {
+    "before": ".local/r05-r12-pr18-before.log",
+    "before_services": ".local/r05-r12-pr18-before-services",
+    "attempt1": ".local/r05-r12-pr18-attempt1.log",
+    "attempt1_api": ".local/r05-r12-pr18-attempt1-api.log",
+    "after": ".local/r05-r12-pr18-after.log",
+    "after_services": ".local/r05-r12-pr18-after-services",
+    "cleanup": ".local/r05-r12-pr18-after-cleanup.json",
+    "mysql_stop": ".local/r05-r12-pr18-mysql-stop.log",
+    "before_browser": "output/playwright/v5-r05-r12/ci-regression/pr18-before/web-browser-results.json",
+    "after_browser": "output/playwright/v5-r05-r12/ci-regression/pr18-after/web-browser-results.json"
+  },
+  "cleanup": {
+    "synthetic_only": true,
+    "checked_at": "2026-10-22T07:43:24.815Z",
+    "schemas": [
+      {
+        "run": "before",
+        "schema": "jx_test_41367_9ad2f9ff6f78",
+        "database_absent": true,
+        "fixture_pid": 41367,
+        "process_stopped": true
+      },
+      {
+        "run": "after",
+        "schema": "jx_test_48610_998a56c5d8f3",
+        "database_absent": true,
+        "fixture_pid": 48610,
+        "process_stopped": true
+      }
+    ],
+    "no_isolated_test_schemas_remaining": true,
+    "runtime_credentials_removed": true,
+    "state_file": ".local/pr18-ui-runtime.json",
+    "temporary_media_removed": true,
+    "ports": [
+      {
+        "port": 3322,
+        "available": true
+      },
+      {
+        "port": 3323,
+        "available": true
+      },
+      {
+        "port": 5207,
+        "available": true
+      }
+    ],
+    "mysql_shutdown_pending": false,
+    "shared_mysql_settings_retained": true,
+    "mysql": {
+      "status": "STOP_REQUESTED",
+      "version": "8.4.11",
+      "host": "127.0.0.1",
+      "port": 33316,
+      "port_available": true,
+      "stopped": true
+    },
+    "final_checked_at": "2026-10-22T07:44:07.676Z"
+  },
+  "limitations": [
+    "此补丁仅更新隔离测试前置，不重跑未受影响的297项Web单测或重拍原404张交付截图。",
+    "SANDBOX实际钱账使用明确合成的外部回执，不代表真实托管服务或真实扣款。"
+  ],
+  "result": "PASS_LOCAL_REGRESSION_FIX",
+  "initial_remote_failure": {
+    "head": "75c53a6c107e3b14a963424b27168234a581e62a",
+    "job": "https://github.com/Bill-Billion/jingjing/actions/runs/39739377643/job/119692984419",
+    "code": "409 PARTICIPATION_AGREEMENT_REQUIRED"
+  },
+  "root_verification": {
+    "actual_after_log_checks": [
+      "正常短信及机构OWNER建立项目，公开范围与授权日期明确",
+      "明确角色条款和总容量，定向邀请不是筛选或入组",
+      "本人公开脸声授权及报价，回应邀请成为APPLIED",
+      "发起方筛选未知结果保留原key、原内容、原版本，原请求恢复",
+      "获选者本人精确确认入组，不由发起方代签",
+      "现行V5参演前置：本人具体版本、独立读审、三方原哈希会签及原订单实收",
+      "六层权利、准确制作与原V5参演订单来源全部明确，提交新方案",
+      "独立核验不代会签，确认按前置顺序并以GET准确确认记录证明",
+      "真实单项开工条件和已付资金，由发起方按当前版本启动",
+      "已验收付清FINAL成片材料独立核验，再次准确会签",
+      "已核验渠道与新发行材料，内部审核只到可送出",
+      "外部凭据登记仍待审，独立核实后才记录真实提交",
+      "渠道登记与独立核验分人办理，不提供虚构平台接入",
+      "统一导航与窄屏、当前隐私边界、旧制作与商业菜单并存"
+    ],
+    "node_syntax_checks": "PASS",
+    "git_diff_check": "PASS",
+    "ports_rechecked_closed": [
+      33316,
+      3322,
+      3323,
+      5207,
+      5500,
+      5173,
+      50143,
+      54691
+    ],
+    "product_source_and_404_images": "UNCHANGED"
+  },
+  "remote_recheck": "见PR34当前提交检查；本记录只证明该测试修复的本机前后对照。",
+  "logs_sha256": {
+    ".local/r05-r12-pr18-before.log": "4979505cb7b52fba8d51c9007d74858788a045d0ea827904572feadde5435c69",
+    ".local/r05-r12-pr18-after.log": "2e500aebc0be5ccc48af4f955f5ccfe55619f8cfa2567a141f9e95e32530b7ad",
+    ".local/r05-r12-pr18-after-services/check.log": "f2fc0682737011f012a19d04a66045af74dc2dc4b8990f89b6b165a0a9bace55"
+  }
+}

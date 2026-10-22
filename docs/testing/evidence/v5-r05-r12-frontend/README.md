@@ -8,6 +8,7 @@
 
 |文件|证明范围|
 |---|---|
+|CI_FIX.json|首次远端旧项目用例缺参演约定的前后对照；补托管和三方会签/原参演钱账，11组前置+14组网页流程通过，产品与404图未改|
 |LOCAL_CHECKS.json|461/297、分析、普通产品构建及Gradle网络阻塞的日志摘要与SHA-256|
 |api/API_RESULTS.json|20项真实接口、状态、权限、余额与20人共创检查|
 |app/APP_RESULTS.json、APP_PARTIAL_320_RESULTS.json、APP_PARTIAL_768_RESULTS.json|最终87场景主矩阵、两宽度抽样及最终偏好标签补拍|
@@ -21,7 +22,7 @@
 |web/WEB_APP_ORDER_READ.json、WEB_COUPON_CANCEL_READBACK.json|同一App零现金订单/未付款出演订单的Web读取，以及取消后原券AVAILABLE读回|
 |web/WEB_INCOME_SIGNER_READ.json、WEB_INCOME_CROSS_READBACK.json|合法非项目所有者受益方读约定无需越权GET项目、双方确认同哈希读回|
 |SOURCE_SHA256.json、SCREENSHOTS.json、GALLERY_CHECK.json|交付源码/图片哈希与图册链接、筛选、搜索、390/1440宽度检查|
-|PRODUCT_TOKEN_SCAN.json、STAGED_TOKEN_SCAN.json、CLEANUP.json|普通产品与暂存凭据检查；5次随机实例全部清理，私有构建、临时媒体及本任务服务已移除/停止|
+|PRODUCT_TOKEN_SCAN.json、STAGED_TOKEN_SCAN.json、CLEANUP.json|普通产品与暂存凭据检查；V5五次夹具及旧项目回归复验均清理，私有构建、临时媒体及本任务服务已移除/停止|
 
 旧50143与新54691为不同合成实例，各自的跨端记录只在同一实例内核对。不得用另一实例的相同角色或场景名冒充同一业务。截图含真实合成ID与服务端合成文案，不含token。旧动作截图保留当时界面；受影响的最终页面已重拍，定位失败图和瞬时缺字收件图不纳入最终404张。
 
