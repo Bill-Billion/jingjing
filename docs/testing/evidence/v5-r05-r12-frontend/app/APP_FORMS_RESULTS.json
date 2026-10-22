@@ -1,0 +1,908 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "scope": "Four authorized form contexts plus actual earning batches and selected original order; UI selections and local row expansion only; never click a submit action",
+  "base_url": "http://127.0.0.1:54691/api/v1",
+  "results": [
+    {
+      "case": "05-new-selected",
+      "state": "EXPANDED_PENDING_VISUAL_REVIEW",
+      "route": "/stock/new",
+      "references": {
+        "person_id": "42abb177-6c48-4930-902f-cce39eced332",
+        "participants": 1
+      },
+      "note": "仅选择本人已授权真人及原作品人数；未填价格、期限或技术编号，未提交。规则缺目录时保留真实阻断。",
+      "screenshots": [
+        "05-new-selected-390-top.png",
+        "05-new-selected-390-fields-1.png",
+        "05-new-selected-390-fields-2.png"
+      ],
+      "final_action_visible": true,
+      "submitted": false
+    },
+    {
+      "case": "06-publish-selected",
+      "state": "EXPANDED_PENDING_VISUAL_REVIEW",
+      "route": "/notices/new",
+      "references": {
+        "rule_id": "ce94e560-34e0-4c1f-9a5f-5f8bcbf650a0",
+        "type": "DRAMA",
+        "eligibility_active": true
+      },
+      "note": "仅按本人实时资格选择已生效规则与实际允许的通告品类；业务日期和价格未预填，未提交。",
+      "screenshots": [
+        "06-publish-selected-390-top.png",
+        "06-publish-selected-390-fields-1.png",
+        "06-publish-selected-390-fields-2.png"
+      ],
+      "final_action_visible": true,
+      "submitted": false
+    },
+    {
+      "case": "06-qualification-owner",
+      "state": "EXPANDED_PENDING_VISUAL_REVIEW",
+      "route": "/notices/qualification",
+      "references": {
+        "party_kind": "ORGANIZATION",
+        "roles": [
+          "OWNER"
+        ]
+      },
+      "note": "实际机构 OWNER 资格表单；只读，不上传资质、不设置虚构日期、不提交。",
+      "screenshots": [
+        "06-qualification-owner-390-top.png",
+        "06-qualification-owner-390-fields-1.png"
+      ],
+      "final_action_visible": true,
+      "submitted": false
+    },
+    {
+      "case": "07-new-selected",
+      "state": "EXPANDED_PENDING_VISUAL_REVIEW",
+      "route": "/auditions/new",
+      "references": {
+        "person_id": "e6a3b152-68f6-4b8c-8629-49d00f20db9c",
+        "existing_offer_id": "216941f4-265b-4688-b49e-49bd0f016126"
+      },
+      "note": "只选择本人已授权真人并展开一个空白本地时段；无预约时间、金额默认值，无业务提交。",
+      "screenshots": [
+        "07-new-selected-390-top.png",
+        "07-new-selected-390-fields-1.png",
+        "07-new-selected-390-fields-2.png"
+      ],
+      "final_action_visible": true,
+      "submitted": false
+    },
+    {
+      "case": "08-earning-batches",
+      "state": "EXPANDED_PENDING_VISUAL_REVIEW",
+      "route": "/wallet/records?kind=EARNING",
+      "references": {
+        "order_id": "a461a1fe-ccd4-4570-8aa8-5a9d1645aa0f",
+        "earning_id": "462d2ed3-5714-4cc6-bdd8-5005ea8431cc",
+        "points": 10,
+        "requested_stock_paid_order_id": "2fe22c52-b72d-452e-a9dd-5d24ac99b42a",
+        "matches_requested_stock_paid": false
+      },
+      "note": "只读实际晶钻来源、到期、使用和冲回批次；原现货消费批次为服务器已记录的 10 晶钻。",
+      "screenshots": [
+        "08-earning-batches-390-top.png",
+        "08-earning-batches-390-fields-1.png"
+      ],
+      "final_action_visible": true,
+      "submitted": false
+    },
+    {
+      "case": "08-sync-selected",
+      "state": "EXPANDED_PENDING_VISUAL_REVIEW",
+      "route": "/wallet/sync",
+      "references": {
+        "order_id": "a461a1fe-ccd4-4570-8aa8-5a9d1645aa0f",
+        "earning_id": "462d2ed3-5714-4cc6-bdd8-5005ea8431cc",
+        "points": 10,
+        "requested_stock_paid_order_id": "2fe22c52-b72d-452e-a9dd-5d24ac99b42a",
+        "matches_requested_stock_paid": false
+      },
+      "note": "仅选择账本本人真实的现货 10 晶钻原订单；实际批次与 stock_paid 场景编号是否一致另列，未点击核对/同步动作，未提交 POST。",
+      "screenshots": [
+        "08-sync-selected-390-top.png"
+      ],
+      "final_action_visible": true,
+      "submitted": false
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "05-new-selected-390-top.png",
+      "case": "05-new-selected",
+      "source": "12-artist-stock-producer.png",
+      "position": "top",
+      "width": 390,
+      "height": 844,
+      "sha256": "43049c03496595abbcc33ba7e016eeca9c75d133e1da3477fac6c5b6aa6aa225"
+    },
+    {
+      "file": "05-new-selected-390-fields-1.png",
+      "case": "05-new-selected",
+      "source": "12-artist-stock-producer.png",
+      "position": "fields-1",
+      "width": 390,
+      "height": 844,
+      "sha256": "6e1d1f5b74ef6bda1cecac2a51c750431661da5ac018bc02cbf8254c04e2efdf"
+    },
+    {
+      "file": "05-new-selected-390-fields-2.png",
+      "case": "05-new-selected",
+      "source": "12-artist-stock-producer.png",
+      "position": "fields-2",
+      "width": 390,
+      "height": 844,
+      "sha256": "77115262e8227b02bc268a430616d394140c9f07925e9445679318a3b13c8fd8"
+    },
+    {
+      "file": "06-publish-selected-390-top.png",
+      "case": "06-publish-selected",
+      "source": "23-notice-top.png",
+      "position": "top",
+      "width": 390,
+      "height": 844,
+      "sha256": "e902f281d7bb844af4b8834c6db391e974eee8b4d64204c0c28572edaf3496a9"
+    },
+    {
+      "file": "06-publish-selected-390-fields-1.png",
+      "case": "06-publish-selected",
+      "source": "23-notice-top.png",
+      "position": "fields-1",
+      "width": 390,
+      "height": 844,
+      "sha256": "dc47f96fb773f496d371b348124966132523e75cc94fed4baefd702c26e59056"
+    },
+    {
+      "file": "06-publish-selected-390-fields-2.png",
+      "case": "06-publish-selected",
+      "source": "23-notice-top.png",
+      "position": "fields-2",
+      "width": 390,
+      "height": 844,
+      "sha256": "aa82acc7a76333ff60ddc289075b96b909a5195ed508205ec92f514f16f5964e"
+    },
+    {
+      "file": "06-qualification-owner-390-top.png",
+      "case": "06-qualification-owner",
+      "source": "23-notice-top.png",
+      "position": "top",
+      "width": 390,
+      "height": 844,
+      "sha256": "41524194baa707f19f7944a961e4ece92be2c00e7c4ee11d78d15b026bc589b3"
+    },
+    {
+      "file": "06-qualification-owner-390-fields-1.png",
+      "case": "06-qualification-owner",
+      "source": "23-notice-top.png",
+      "position": "fields-1",
+      "width": 390,
+      "height": 844,
+      "sha256": "5f9064724c7c510e85dd77bf80ba89525a52ff09ec3cbd8f976004be1691233e"
+    },
+    {
+      "file": "07-new-selected-390-top.png",
+      "case": "07-new-selected",
+      "source": "21-audition-top.png",
+      "position": "top",
+      "width": 390,
+      "height": 844,
+      "sha256": "177a7763aa45a33598edb055a960809e6d2e013f256d0d1a9475738198d08a9d"
+    },
+    {
+      "file": "07-new-selected-390-fields-1.png",
+      "case": "07-new-selected",
+      "source": "21-audition-top.png",
+      "position": "fields-1",
+      "width": 390,
+      "height": 844,
+      "sha256": "e1dd513d9e2c4499241ea60df47e8eec8a773d757a7484eea906bb005c441c30"
+    },
+    {
+      "file": "07-new-selected-390-fields-2.png",
+      "case": "07-new-selected",
+      "source": "21-audition-top.png",
+      "position": "fields-2",
+      "width": 390,
+      "height": 844,
+      "sha256": "f72a00bfe87d947d2696425392c15ebafd666a44ce99e4895448b0538cafe860"
+    },
+    {
+      "file": "08-earning-batches-390-top.png",
+      "case": "08-earning-batches",
+      "source": "32-wallet-top.png",
+      "position": "top",
+      "width": 390,
+      "height": 844,
+      "sha256": "e1b9b7adbad880b61e45974aedfed9f5856d4cbc2e5bb3e9b22081c3852809a2"
+    },
+    {
+      "file": "08-earning-batches-390-fields-1.png",
+      "case": "08-earning-batches",
+      "source": "32-wallet-top.png",
+      "position": "fields-1",
+      "width": 390,
+      "height": 844,
+      "sha256": "fa111d2569cc9beaae1914517b7790fde161b739b6e84954bae487e7a079b68d"
+    },
+    {
+      "file": "08-sync-selected-390-top.png",
+      "case": "08-sync-selected",
+      "source": "32-wallet-top.png",
+      "position": "top",
+      "width": 390,
+      "height": 844,
+      "sha256": "08d25d04b281f74d0a75db1c8745a8a28715d798973bc8a13a3d5b49b2cdde91"
+    }
+  ],
+  "reads": [
+    {
+      "case": "05-new-selected",
+      "source": "authorized-reference",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/stock/listings/3a08657c-bc93-43f9-8a45-5a7b8392dca2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "authorized-reference",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/artists/people/42abb177-6c48-4930-902f-cce39eced332",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/trade/records?kind=SPEC&limit=20",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/stock/listings?limit=20",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/42abb177-6c48-4930-902f-cce39eced332",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "source": "browser",
+      "role": "stock_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/42abb177-6c48-4930-902f-cce39eced332/records?kind=CONSENT&limit=20",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "authorized-reference",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/notices/rules?limit=20",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "authorized-reference",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/notices/eligibility?rule_id=ce94e560-34e0-4c1f-9a5f-5f8bcbf650a0",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "browser",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "browser",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "browser",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "browser",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "source": "browser",
+      "role": "notices_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/eligibility?rule_id=ce94e560-34e0-4c1f-9a5f-5f8bcbf650a0",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "source": "authorized-reference",
+      "role": "mcn_owner",
+      "method": "GET",
+      "path": "/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "source": "browser",
+      "role": "mcn_owner",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "source": "browser",
+      "role": "mcn_owner",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "source": "browser",
+      "role": "mcn_owner",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "authorized-reference",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/auditions/records/216941f4-265b-4688-b49e-49bd0f016126",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "authorized-reference",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/artists/people/e6a3b152-68f6-4b8c-8629-49d00f20db9c",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/auditions/records?kind=OFFER&limit=20",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e6a3b152-68f6-4b8c-8629-49d00f20db9c",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "source": "browser",
+      "role": "auditions_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e6a3b152-68f6-4b8c-8629-49d00f20db9c/records?kind=CONSENT&limit=20",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "source": "authorized-reference",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/wallet/records?kind=EARNING&limit=20",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/wallet/records?kind=EARNING&limit=20",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "source": "authorized-reference",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/wallet/records?kind=EARNING&limit=20",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "source": "browser",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/wallet/records?kind=EARNING&limit=20",
+      "status": 200
+    }
+  ],
+  "writes": [],
+  "errors": [],
+  "font_network": [
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.118.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.114.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.116.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.117.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.115.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.113.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.119.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.111.woff2",
+      "status": 200
+    },
+    {
+      "case": "05-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.112.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.118.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.117.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.116.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.119.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.115.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.111.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.113.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-publish-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.114.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.118.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.116.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.117.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.119.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.111.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.115.woff2",
+      "status": 200
+    },
+    {
+      "case": "06-qualification-owner",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.114.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.118.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.116.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.114.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.117.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.113.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.115.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.119.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.111.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.110.woff2",
+      "status": 200
+    },
+    {
+      "case": "07-new-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.112.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.111.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.118.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.110.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.119.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.117.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.114.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.116.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.113.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.115.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.112.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-earning-batches",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.107.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.115.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.118.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.117.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.107.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.113.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.110.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.119.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.114.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.112.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.116.woff2",
+      "status": 200
+    },
+    {
+      "case": "08-sync-selected",
+      "host": "fonts.gstatic.com",
+      "path": "/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.111.woff2",
+      "status": 200
+    }
+  ],
+  "no_business_writes": true,
+  "capture_result": "CAPTURED_PENDING_VISUAL_REVIEW",
+  "visual_review": "APP_05_08_FINAL_VISUAL_REVIEW.json"
+}

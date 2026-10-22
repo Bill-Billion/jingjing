@@ -1,0 +1,47 @@
+import {type Domain,type Field,text,long,id,integer,money,date,select,values,bool,group,rows,numbers,fixed,reason,review,operation as op,ids} from './model'
+const categories=[['ACTING','表演'],['LOOK','造型'],['VOICE','声音'],['SPECIALTY','特长'],['SCENE','场景'],['COMMERCIAL','商业']] as const
+const serviceKinds=['STOCK','AUDITION','CUSTOMIZATION','COMMERCIAL'] as const
+const ints=(keys:readonly string[],captions:readonly string[]=keys)=>keys.map((k,i)=>integer(k,captions[i]||k))
+const rule=group('rule','成长、归因和榜单规则',[text('version','规则版本',100),long('terms','业务规则正文'),group('gp','接片成长分值',ints([...serviceKinds,'five_star','media','repeat','refund_penalty'],['现货','试镜','定制','商单','五星评价','带材料评价','复购','退款扣回'])),numbers('thresholds','五级成长阈值（首项0）',5),integer('retention_days','保级核验天数',1,366),integer('retention_bps','保级比例（万分比）',0,10000),group('rank','榜单口径',[integer('window_days','成交窗口天数',1,366),integer('popularity_days','人气窗口天数',1,366),integer('newcomer_days','新人天数',1,366),integer('cold_start_days','冷启动天数',0,90),integer('review_min','最低评价数',1,366),integer('repeat_buyers_min','最低独立买家数',1,366),integer('bayes_n','评价先验样本数',1,366),integer('bayes_mean','评价先验均值',1,5),numbers('weights','五项综合权重（合计10000）',5),numbers('halo_bps','四项光环权重（首项0）',4)]),group('starlight','已确定的星光分值',ints([...serviceKinds,'five_star'],['现货','试镜','定制','商单','五星评价']),true),group('aftercare_days','四业务售后天数',ints(serviceKinds)),group('referral_bps','四业务推荐比例（万分比）',serviceKinds.map(k=>integer(k,k,0,10000))),integer('risk_first_penalty','首次风险扣分',1,100),group('buyer_rank','同城买家独立榜规则',[numbers('personal_weights','个人四项权重',4),numbers('organization_weights','机构三项权重',3),bool('scout_priority','星探优先规则')],true)])
+export const engagement:Domain={key:'engagement',title:'经营、成长与榜单',journal:'PEOPLE & RECOGNITION / 09',intro:'以实际委托、履约与退款记录经营，以独立审核的规则计算成长和奖励。',note:'光环、接片成长与星光分别记录。推荐只取最后一次有效来源，原订单冻结并按退款冲回；不按多级关系发佣。榜单、票数与实际奖励以服务器结果为准。',sections:[
+{key:'dashboard',label:'MCN经营看板',path:'/engagement/mcn/dashboard',party:'required'},
+{key:'staff',label:'逐人委托与派单',path:'/engagement/mcn/staff',party:'required'},
+{key:'referrals',label:'推荐归因与冲回',path:'/engagement/referrals/records',party:'required'},
+{key:'growth',label:'本人成长',path:'/engagement/growth',party:'required',query:[id('person_id','本人或获准经营的真人')]},
+{key:'rankings',label:'六类人物榜',path:'/engagement/rankings',detail:'/engagement/rankings/:record_id',party:'none',query:[text('city','城市',100),text('district','区县',100),text('category','本人已确定的业务类别',100)]},
+{key:'buyers',label:'同城买家榜',path:'/engagement/buyers',party:'none',query:[text('city','城市',100)]},
+{key:'competitions',label:'月冠军与投票',path:'/engagement/competitions',detail:'/engagement/competitions/:record_id',party:'none',query:[text('city','城市',100)]},
+{key:'votes',label:'本人已投票',path:'/engagement/votes',party:'required',query:[id('event_id','当前已审核活动')]},
+{key:'rewards',label:'本人实际奖励',path:'/engagement/rewards',party:'required',files:[{label:'读取本人已发证书',path:'/engagement/rewards/:record_id/file',party:'required'}]},
+{key:'exposures',label:'有效曝光',path:'/engagement/exposures',party:'none',query:[text('city','城市',100)]},
+{key:'reviews',label:'运营独立待办',path:'/engagement/queue',detail:'/engagement/records/:record_id',party:'none',query:[select('kind','核验类别',['RULE','REVIEW','INTERACTION','REWARD_STOCK','REWARD','COMPETITION','CANDIDATE','APPEAL','VOTE','TIE_REVIEW'])]}],operations:[
+op('staff','明确委托当前机构成员','/engagement/mcn/staff',[id('account_id','当前机构实际成员账号'),ids('person_ids','明确委托的旗下真人'),values('actions','允许的办理事项',[['READ_PROFILE','读取明确人物档案'],['COMMISSION_PRODUCTION','为明确人物委托制作'],['MANAGE_AUDITIONS','管理明确人物试镜'],['COMMERCIAL_MESSAGES','本单商业会话'],['READ_INCOME','获准收入看板'],['MANAGE_LISTINGS','管理明确人物展示']]),date('valid_until','委托有效截止')],'required',false,['staff']),
+op('revoke','撤回本项成员委托','/engagement/mcn/staff/:record_id/revoke',[reason()],'required',true,['staff']),
+op('assign','派给当前获准成员','/engagement/mcn/assignments',[id('booking_id','原试镜预约',true),id('order_id','原商单订单',true),id('account_id','当前机构受派成员')],'required',false,['staff','dashboard']),
+op('link','建立真实推荐入口','/engagement/referrals/links',[id('target_party_id','被推荐消费方'),select('category','适用业务',serviceKinds),id('rule_id','已审核推荐规则')],'required',false,['referrals']),
+op('click','本人明确采用本推荐来源','/engagement/referrals/clicks',[id('link_id','实际访问的推荐入口')],'required',false,['referrals']),
+op('sync-referral','核对原单推荐和退款冲回','/engagement/referrals/sync',[id('order_id','原成交订单')],'required',false,['referrals']),
+op('growth-sync','按生效规则核对人物成长','/engagement/growth/sync',[id('person_id','具体真人'),id('rule_id','已审核成长规则')],'required',false,['growth']),
+op('profile','本人选择是否参加人物榜','/engagement/profiles',[id('person_id','本人或明确受托真人'),text('city','城市',100),text('district','区县',100),text('category','本人已确定的业务类别',100),bool('opt_in','明确参加本区域人物榜')],'required',false,['growth']),
+op('buyer-city','本人选择是否参加同城买家榜','/engagement/buyer-city-profile',[text('city','城市',100),bool('opt_in','明确参加同城买家榜')],'required',false,['buyers']),
+op('review-order','评价本次真实履约','/engagement/reviews',[id('order_id','本人原成交订单'),integer('realism','真实度评分',1,5),integer('fit','适配度评分',1,5),integer('completeness','完成度评分',1,5),long('body','本次实际评价',4000),ids('media_asset_ids','本人评价材料')],'required',false,['growth']),
+op('nominate','本人提名参加月冠军','/engagement/candidates',[id('event_id','已审核且开放的活动'),id('profile_id','本人的有效参榜档案')],'required',false,['competitions']),
+op('vote','明确以晶钻投本次票','/engagement/votes',[id('event_id','已阅读活动'),id('candidate_id','本次候选人')],'required',false,['competitions','votes']),
+op('appeal','对本次活动提出申诉','/engagement/appeals',[id('event_id','原活动'),reason()],'required',false,['competitions']),
+op('reward-stock','登记实际奖励库存','/engagement/reward-stock',[text('title','奖励名称',160),select('kind','实际奖励类别',[['CERTIFICATE','证书'],['ROLE_PRIORITY','真实角色优先机会'],['EXPOSURE','真实曝光'],['EVENT_SLOT','实际活动名额']]),long('terms','奖励交付约定'),integer('capacity','实际可兑现库存',1),date('valid_until','可兑现截止'),ids('evidence_asset_ids','真实库存与履约依据')],'required',false,['rewards']),
+op('rule','登记成长与榜单规则','/engagement/rules',[rule],'none',false,['reviews']),
+op('rule-review','独立核验成长与榜单规则','/engagement/rules/:record_id/review',review(),'none',true,['reviews']),
+op('snapshot','按已审规则核定本期榜单','/engagement/rankings',[id('rule_id','已审榜单规则'),text('city','城市',100),text('district','区县',100),text('category','本人已确定的业务类别',100)],'none',false,['reviews']),
+op('moderate','独立核对违规或恢复统计','/engagement/records/:record_id/moderation',[reason(),bool('exclude','排除此项统计（取消则恢复）')],'none',true,['reviews']),
+op('exclude','登记原订单统计排除依据','/engagement/excluded-orders',[id('order_id','原订单'),reason()],'none',false,['reviews']),
+op('reward-review','独立审核真实奖励库存','/engagement/reward-stock/:record_id/review',review(),'none',true,['reviews']),
+op('competition','按已定榜单与库存登记冠军活动','/engagement/competitions',[text('title','活动名称',160),id('snapshot_id','已核定榜单快照'),id('reward_stock_id','已审真实奖励库存'),date('starts_at','投票开始'),date('ends_at','投票结束'),date('appeal_until','申诉截止'),group('rules','活动计分与平票规则',[integer('official_bps','独立评判权重（万分比）',0,10000),integer('ranking_bps','原榜单权重（万分比）',0,10000),integer('vote_bps','已核实票数权重（万分比）',0,10000),integer('vote_cost','每票所需晶钻',1,100000),integer('daily_cap','每人每日上限',1,100),fixed('tie_mode','平票处理','MANUAL_REVIEW'),fixed('void_point_policy','风险票晶钻处理','HOLD_FOR_APPEAL')])],'none',false,['reviews']),
+op('competition-review','独立审核活动规则','/engagement/competitions/:record_id/review',review(),'none',true,['reviews']),
+op('candidate-review','独立核验本次候选资格','/engagement/candidates/:record_id/review',review(),'none',true,['reviews']),
+op('judge','独立记录真实评判','/engagement/judgments',[id('candidate_id','本期候选人'),integer('realism','真实度',1,5),integer('fit','适配度',1,5),integer('completeness','完成度',1,5),reason()],'none',false,['reviews']),
+op('vote-review','独立核对原投票风险','/engagement/votes/:record_id/review',[select('decision','真实核对结果',[['SUSPEND','暂停计票待申诉'],['VOID','核定无效'],['RESTORE','核定恢复'],['RETURN_POINTS','按原记录返还晶钻']]),reason()],'none',true,['reviews']),
+op('appeal-resolve','独立处理本次申诉','/engagement/appeals/:record_id/resolve',[reason()],'none',true,['reviews']),
+op('tie','提出平票处理依据','/engagement/tie-reviews',[id('event_id','本期活动'),id('candidate_id','建议获奖候选人'),reason()],'none',false,['reviews']),
+op('tie-review','另一岗位审核平票处理','/engagement/tie-reviews/:record_id/review',review(),'none',true,['reviews']),
+op('finalize','在申诉与平票处理后正式决议','/engagement/competitions/:record_id/finalize',[],'none',true,['reviews']),
+op('redeem-reward','登记实际奖励交付','/engagement/rewards/:record_id/redeem',[group('delivery','实际交付依据',[id('evidence_asset_id','证书或履约证据'),text('reference','真实交付来源',300),date('starts_at','实际开始'),{...date('ends_at','实际结束（非曝光可留空）'),nullable:true},{...text('placement','实际曝光位置',100),nullable:true}])],'none',true,['reviews'])]}

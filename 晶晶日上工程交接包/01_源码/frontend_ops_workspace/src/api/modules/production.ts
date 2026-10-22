@@ -1,5 +1,5 @@
 import { ApiError, request, requestBytes, type ApiResult } from '../client'
-import { isSpecification, type FilmSpecification } from './trade'
+import { isFilmSpecification, type FilmSpecification } from './trade'
 import { validSupplyId, type SupplyIdentity, type SupplyAsset, type SupplyWrite, postSupply, getSupplyAsset } from './supply'
 export const stages = { SCRIPT:'剧本', SAMPLE:'样片', ROUGH_CUT:'粗剪', FINAL:'成片' } as const
 export type Stage = keyof typeof stages
@@ -40,7 +40,7 @@ export function isProductionRecord(v:unknown):v is ProductionRecord {
  if(!obj(v)||!validSupplyId(v.id)||!nullableId(v.project_id)||!validSupplyId(v.order_id)||!nullableId(v.created_by)||!num(v.object_version,1,100000)||!hash(v.content_sha256)||!obj(v.data))return false
  const d=v.data,s=String(v.current_status)
  switch(v.kind){
- case 'PROJECT':return v.project_id===null&&['IN_REVIEW','READY','IN_PROGRESS','ACCEPTED','REJECTED'].includes(s)&&str(d.line_id,128)&&[d.buyer_party_id,d.merchant_party_id,d.producer_party_id,d.script_version_id,d.assignee_account_id,d.evidence_asset_id].every(validSupplyId)&&nullableId(d.license_project_id)&&str(d.purpose,100)&&str(d.territory,100)&&ids(d.consent_ids)&&isSpecification(d.specification)&&d.specification.service===undefined&&num(d.quantity,1,100000)&&hash(d.contract_sha256)&&map(d.current,validSupplyId)&&map(d.accepted,validSupplyId)&&map(d.revisions,x=>num(x))&&num(d.change_requests)&&review(d.review)&&(d.assignment_reason===undefined||str(d.assignment_reason))
+ case 'PROJECT':return v.project_id===null&&['IN_REVIEW','READY','IN_PROGRESS','ACCEPTED','REJECTED'].includes(s)&&str(d.line_id,128)&&[d.buyer_party_id,d.merchant_party_id,d.producer_party_id,d.script_version_id,d.assignee_account_id,d.evidence_asset_id].every(validSupplyId)&&nullableId(d.license_project_id)&&str(d.purpose,100)&&str(d.territory,100)&&ids(d.consent_ids)&&isFilmSpecification(d.specification)&&d.specification.service===undefined&&num(d.quantity,1,100000)&&hash(d.contract_sha256)&&map(d.current,validSupplyId)&&map(d.accepted,validSupplyId)&&map(d.revisions,x=>num(x))&&num(d.change_requests)&&review(d.review)&&(d.assignment_reason===undefined||str(d.assignment_reason))
  case 'FILE':return validSupplyId(v.project_id)&&['UPLOADING','READY','FAILED'].includes(s)&&str(d.object_key,512)&&Object.hasOwn(fileMedia,String(d.media_type))&&num(d.byte_size,1,MAX_FILE_BYTES)&&hash(d.content_sha256)
  case 'VERSION':return validSupplyId(v.project_id)&&['IN_REVIEW','APPROVED','REJECTED'].includes(s)&&stage(d.stage)&&num(d.revision,1,100000)&&validSupplyId(d.file_id)&&validSupplyId(d.preview_file_id)&&nullableId(d.basis_version_id)&&str(d.note)&&review(d.review)&&(d.last_feedback_id===undefined||validSupplyId(d.last_feedback_id))
  case 'FEEDBACK':return validSupplyId(v.project_id)&&s==='RECORDED'&&validSupplyId(d.version_id)&&stage(d.stage)&&['ACCEPT','REQUEST_CHANGES'].includes(String(d.decision))&&str(d.note,4000)&&(d.checklist===null||checklist(d.checklist))

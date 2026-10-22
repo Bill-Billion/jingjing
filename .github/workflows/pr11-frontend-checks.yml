@@ -12,6 +12,8 @@ on:
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
       - 'scripts/v5-r04-*.mjs'
+      - 'scripts/v5-r05-r12-*.mjs'
+      - 'scripts/v5-r05-r12-*.cjs'
       - 'scripts/customization-delivery-sandbox*.cjs'
       - 'scripts/artists-sandbox.cjs'
       - 'scripts/test-fixtures/ui-session.cjs'
@@ -50,6 +52,8 @@ on:
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
       - 'scripts/v5-r04-*.mjs'
+      - 'scripts/v5-r05-r12-*.mjs'
+      - 'scripts/v5-r05-r12-*.cjs'
       - 'scripts/customization-delivery-sandbox*.cjs'
       - 'scripts/artists-sandbox.cjs'
       - 'scripts/test-fixtures/ui-session.cjs'
@@ -116,6 +120,7 @@ jobs:
       - run: npm run test:customization
       - run: npm run test:artists
       - run: npm run test:delivery
+      - run: npm run test:business
       - run: npm run build
       - name: 安装浏览器及隔离接口测试依赖
         run: |
@@ -228,7 +233,7 @@ jobs:
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
           flutter/bin/flutter config --no-analytics
       - run: flutter pub get --enforce-lockfile
-      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/customization lib/artists lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists
-      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/interaction_flows_test.dart test/widget_test.dart
+      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/customization lib/artists lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists lib/stock lib/notices lib/auditions lib/wallet lib/engagement lib/cocreation lib/redemption lib/privacy test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy
+      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/interaction_flows_test.dart test/widget_test.dart
       - name: 检查完整 App 可以生成网页发布文件
         run: flutter build web --no-pub

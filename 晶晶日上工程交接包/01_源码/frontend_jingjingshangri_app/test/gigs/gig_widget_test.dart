@@ -393,7 +393,11 @@ void main() {
     await nav.openApp(tester, s, route: '/gigs/notifications');
     expect(find.text('商单已暂停'), findsOneWidget);
     expect(find.textContaining('不是全平台通知中心'), findsOneWidget);
-    expect(a.requests.last.headers['X-Acting-Party'], personId);
+    expect(
+        a.requests
+            .singleWhere((r) => r.path == '/api/v1/gigs/notifications')
+            .headers['X-Acting-Party'],
+        personId);
     await tester.tap(find.byType(BackButton));
     await nav.frames(tester);
     nav.expectFiveTabs();

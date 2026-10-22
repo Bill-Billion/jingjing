@@ -609,7 +609,17 @@ class _RecordState extends State<_Record> {
                         ? null
                         : () => Navigator.pushNamed(
                             context, '/trade/record?recordId=${q.id}'),
-                    outline: true)
+                    outline: true),
+                if (q.kind == 'ORDER' &&
+                    q.quote['commercial'] is Map &&
+                    q.quote['commercial']['offer_id'] == r.id)
+                  tradeButton(
+                      '进入这笔商业订单会话',
+                      busy || widget.session.gigsPending.isNotEmpty
+                          ? null
+                          : () => Navigator.pushNamed(
+                              context, '/gigs/conversation?orderId=${q.id}'),
+                      outline: true)
               ]
             ]),
           if (r.status == 'APPROVED' && r.counterparty == api.owner())

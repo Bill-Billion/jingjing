@@ -1,0 +1,60 @@
+{
+  "result": "PASS",
+  "phase": "conversation-readback",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:54691/api/v1",
+  "checks": [
+    {
+      "name": "独立客服冻结后App读取真实状态",
+      "result": "PASS"
+    },
+    {
+      "name": "冻结会话不再允许发送",
+      "result": "PASS"
+    },
+    {
+      "name": "隐藏消息不再返回原文或附件",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "cross-commercial-frozen.png",
+      "route": "/gigs/conversation?orderId=76276296-6083-47dd-8228-3e25d2f31c50",
+      "source": "25-messages-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "28b21a1f7999d042c50c61e6cffe71dd612e7185dd965409dd0dac11cbee54bf"
+    }
+  ],
+  "network": [
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [],
+  "created": {},
+  "errors": []
+}

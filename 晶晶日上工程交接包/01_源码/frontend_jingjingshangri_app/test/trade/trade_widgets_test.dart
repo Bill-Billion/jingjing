@@ -267,7 +267,7 @@ void main() {
     expect(find.text('quote'), findsNothing);
     expect(find.text('lines'), findsNothing);
     expect(find.text('review'), findsNothing);
-    expect(find.text('原报价总额'), findsOneWidget);
+    expect(find.text('本单现金金额'), findsOneWidget);
     expect(find.text('确认订单后付款'), findsOneWidget);
     expect(adapter.requests.any((r) => r.path.contains('contract-snapshots')),
         false);

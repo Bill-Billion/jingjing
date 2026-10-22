@@ -1,0 +1,11 @@
+import { stock } from './stock'
+import {notices} from './notices'
+import {auditions,conversations} from './auditions'
+import {wallet} from './wallet'
+import {engagement} from './engagement'
+import {cocreation} from './cocreation'
+import {redemption} from './redemption'
+import {participation} from './participation'
+import {privacy,media} from './privacy'
+import type { Domain } from './model'
+export const domains:Record<string,Domain>={stock,notices,auditions,conversations,wallet,engagement,cocreation,redemption,participation,privacy,media}

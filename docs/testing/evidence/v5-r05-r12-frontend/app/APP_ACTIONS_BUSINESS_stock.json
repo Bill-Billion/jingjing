@@ -1,0 +1,154 @@
+{
+  "result": "PASS",
+  "phase": "business",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:54691/api/v1",
+  "checks": [
+    {
+      "name": "未播放时通知与收件不可办理",
+      "result": "PASS"
+    },
+    {
+      "name": "现货私有MP4在App实际解码播放",
+      "result": "PASS"
+    },
+    {
+      "name": "明确收件是服务器实际记录",
+      "result": "PASS"
+    },
+    {
+      "name": "个人许可明确验收保留原合同",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "action-stock_unlisted-playing.png",
+      "route": "/stock/purchase?orderId=25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "source": "12-artist-stock-producer.png",
+      "note": "合成色条，只证明受控文件接线和实际解码",
+      "width": 390,
+      "height": 844,
+      "sha256": "daa57aa606d5f17ae638e4d39ffddb146add99ad2aab0b7eeb1899a599c6fd34"
+    },
+    {
+      "file": "action-stock_unlisted-accepted.png",
+      "route": "/stock/purchase?orderId=25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "source": "39-story-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "6c61e1307730342076fecee07b46e0aeae8e51fcdde8c80d7f3c4c1fff12cdaf"
+    }
+  ],
+  "network": [
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809/content",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/operations/notifications",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/operations/notifications/21/read",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809/receipt",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809/acceptance",
+      "method": "POST",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/operations/notifications/21/read",
+      "method": "POST",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "key_sha256": "02fd7f44e76727a20d3872d6a0c14537416c3a324d1fd4bd37485e1f769ac0b1"
+    },
+    {
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809/receipt",
+      "method": "POST",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "key_sha256": "3758787b3452a08f7f5db7ff0447a685eb1f6f594d6ee2f9e22636eaf315047c",
+      "version": "\"3\""
+    },
+    {
+      "path": "/api/v1/stock/purchases/25d48b2f-ccfb-4feb-854d-5f1b162b6809/acceptance",
+      "method": "POST",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "key_sha256": "b6614bd7d5af89ae6426251a82b1adc7b32fe99d6d32a723f7b18c5f32b49497",
+      "version": "\"4\""
+    }
+  ],
+  "created": {},
+  "errors": [],
+  "excluded_captures": [
+    {
+      "file": "action-stock_unlisted-receipt.png",
+      "route": "/stock/purchase?orderId=25d48b2f-ccfb-4feb-854d-5f1b162b6809",
+      "source": "39-story-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "bd313a166ca1a9facb7c8a490065874e35ce80b445543f6e25b42d84fdc9a643",
+      "reason": "Transient first-glyph capture; excluded from final visual evidence. Actual receipt is independently checked in this report."
+    }
+  ]
+}

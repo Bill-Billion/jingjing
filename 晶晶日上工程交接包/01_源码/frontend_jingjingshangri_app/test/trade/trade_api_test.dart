@@ -28,7 +28,9 @@ void main() {
   });
   test('数字人创建托管认证独立规格，冻结原服务与价格且不填影视秒数', () {
     Map<String, dynamic> serviceQuote(String kind) {
-      final q = jsonDecode(jsonEncode(tradeData('QUOTE'))) as Map<String, dynamic>, d = q['data'] as Map<String, dynamic>;
+      final q = jsonDecode(jsonEncode(tradeData('QUOTE')))
+              as Map<String, dynamic>,
+          d = q['data'] as Map<String, dynamic>;
       final amount = kind == 'AVATAR_CREATION'
           ? 6000
           : kind == 'AVATAR_HOSTING'

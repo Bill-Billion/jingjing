@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
-import '../account/app_visual.dart';
 import 'package:flutter/services.dart';
 
 /// Keep the current tab address without replacing the mounted shell. Child
@@ -204,14 +203,18 @@ class _AppShellState extends State<AppShell> {
         ),
         _heading('发现与合作'),
         _entry(
-          '艺人与视频',
-          '查看已审核的公开艺人；现成视频目录仍待接入。',
+          '艺人与数字人',
+          '查看已审核且获准公开的艺人资料。',
           Icons.people_outline,
           () => _open('/discover'),
         ),
+        _entry('现成视频', '查看现成作品、个人许可与已购内容。', Icons.movie_outlined,
+            () => _open('/stock/catalog')),
+        _entry('艺人六榜与月度评选', '按已发布快照查看六榜和评选规则。', Icons.bar_chart_outlined,
+            () => _open('/engagement')),
         _entry(
           '试镜预约',
-          '查看试镜服务的接入进度。',
+          '查看公开可约服务、预约与材料交付。',
           Icons.video_camera_front_outlined,
           () => _select(1),
         ),
@@ -221,37 +224,30 @@ class _AppShellState extends State<AppShell> {
       ];
 
   List<Widget> _audition() => [
-        supplyBusinessIntro('试镜', '公开可约艺人、含交通的总价和预约接拒流程正在接入。'),
-        appNotice('试镜预约暂未开放。预约、艺人接受、付款核实和后续出演授权会分别确认。'),
+        supplyBusinessIntro('试镜', '按公开约定选择时间、场所和含交通总价，接单与核实付款分别办理。'),
         _entry(
-          '已有订单',
-          '继续查看本人已有订单及其实际状态。',
-          Icons.receipt_long_outlined,
-          () => _open('/orders'),
-        ),
-        _entry(
-          '写下制作意向',
-          '暂未确定演员，也可以先提交文字故事。',
-          Icons.edit_note_outlined,
-          () => _open('/customization/new'),
-        ),
+            '可预约艺人',
+            '查看可约时间、公开价格和试镜服务范围。',
+            Icons.video_camera_front_outlined,
+            () => _open('/auditions/catalog')),
+        _entry('我的预约', '处理接单、交通、材料收讫、售后与核实退款。', Icons.event_outlined,
+            () => _open('/auditions/bookings')),
+        _entry('试镜服务与接单', '本人设置可约服务并管理已经收到的预约。', Icons.perm_identity_outlined,
+            () => _open('/auditions/offers')),
       ];
 
   List<Widget> _notices() => [
-        supplyBusinessIntro('通告', '剧、商演、商单、活动、招募和平台通告将分别提供发布与投稿入口。'),
-        appNotice('六类通告与单向投稿正在接入。下面保留已有业务入口，各自按原约定办理。'),
-        _entry(
-          '公开项目与角色',
-          '查看当前公开项目和角色摘要。',
-          Icons.movie_filter_outlined,
-          () => _open('/projects/catalogue'),
-        ),
-        _entry(
-          '商业委托',
-          '查看已有商业需求，按实际资格提交或处理提案。',
-          Icons.work_outline,
-          () => _open('/gigs'),
-        ),
+        supplyBusinessIntro('通告', '剧、商演、商单、活动、招募和平台通告，按类别办理发布与单向投稿。'),
+        _entry('浏览六类通告', '核对用途、地区、截止时间与真实发布方。', Icons.article_outlined,
+            () => _open('/notices/catalog')),
+        _entry('发布通告', '先核对当前身份资格，再填写本次真实要求。', Icons.edit_outlined,
+            () => _open('/notices/new')),
+        _entry('我的通告与投稿', '逐项查看发布、投稿、合作意向和客服处理。', Icons.inbox_outlined,
+            () => _open('/notices/records?kind=SUBMISSION')),
+        _entry('公开项目与角色', '查看当前公开项目与可申请角色。', Icons.movie_filter_outlined,
+            () => _open('/projects/catalogue')),
+        _entry('商业委托', '按实际资格提交或处理商单提案。', Icons.work_outline,
+            () => _open('/gigs')),
       ];
 
   List<Widget> _messages() => [
@@ -268,7 +264,10 @@ class _AppShellState extends State<AppShell> {
           Icons.chat_bubble_outline,
           () => _open('/chat'),
         ),
-        appNotice('单向投稿和客服处理会话正在接入。提交故事后的进度可在“我的故事与草稿”查看。'),
+        _entry('试镜订单沟通', '围绕已接受且核实付款的具体订单沟通。', Icons.event_note_outlined,
+            () => _open('/auditions/bookings')),
+        _entry('投稿与合作客服', '查看单向投稿、业务意向及平台客服处理。', Icons.inbox_outlined,
+            () => _open('/notices/records?kind=CASE')),
         _entry(
           '我的故事与草稿',
           '查看平台待查看、受理中等实际状态。',
@@ -298,7 +297,7 @@ class _AppShellState extends State<AppShell> {
                 ('数字人资料', Icons.face_outlined, '/my-humans'),
                 ('订单与付款', Icons.receipt_long_outlined, '/orders'),
                 ('我的项目', Icons.folder_open_outlined, '/my-projects'),
-                ('我的结算', Icons.account_balance_outlined, '/wallet'),
+                ('钱包与晶钻', Icons.account_balance_outlined, '/wallet'),
               ])
                 Expanded(
                     child: InkWell(
@@ -402,6 +401,19 @@ class _AppShellState extends State<AppShell> {
         _entry('发起制作需求', '选一个品类，先写下你的故事。', Icons.edit_note_outlined,
             () => _open('/customization/new')),
         _menuGrid(),
+        _heading('我的作品与权益'),
+        _entry('我购买的现成视频', '核对个人许可、受控下载、收讫与售后。', Icons.movie_outlined,
+            () => _open('/stock/purchases')),
+        _entry('我的现成作品上架', '本人提交作品、权利材料并查看独立审核。', Icons.publish_outlined,
+            () => _open('/stock/listings')),
+        _entry('钱包、晶钻与会员', '查看可用积分、原批次、期限与会员年。',
+            Icons.account_balance_wallet_outlined, () => _open('/wallet')),
+        _entry('权益兑换与抽奖', '核对实际规则、概率、库存、券包和领取进度。', Icons.redeem_outlined,
+            () => _open('/redemption')),
+        _entry('多人共创', '邀请、本人同意、成团条件和个人片段分别核对。', Icons.groups_outlined,
+            () => _open('/cocreation')),
+        _entry('成长与推荐', '查看成长、一级推荐、计提与冲回。', Icons.trending_up_outlined,
+            () => _open('/engagement?view=growth')),
         _heading('商单与直接合作'),
         _entry('商单通知', '查看商单暂停与直接合作结束记录', Icons.notifications_outlined,
             () => _open('/gigs/notifications')),
@@ -409,6 +421,8 @@ class _AppShellState extends State<AppShell> {
             () => _open('/gigs/records?kind=GIG')),
         _entry('MCN 直接合作', '本人确认、拒绝或结束双方直接合作。', Icons.handshake_outlined,
             () => _open('/mcn')),
+        _entry('MCN 经营与委派', '核对成员、逐人委派、派单与收入。', Icons.business_outlined,
+            () => _open('/engagement?view=mcn')),
         _entry('佣金核算', '按真实净额计提；没有出款与提现接入。', Icons.account_balance_outlined,
             () => _open('/gigs/records?kind=COMMISSION')),
         _heading('订单与付款'),
@@ -421,6 +435,10 @@ class _AppShellState extends State<AppShell> {
         _heading('公开项目与发行'),
         _entry('我的参与项目', '回应邀请、本人入组、逐版确认与发行进度。', Icons.folder_open_outlined,
             () => _open('/my-projects')),
+        _entry('参演条款与会签', '核对片酬、授权、各方确认、变更和履约。', Icons.assignment_outlined,
+            () => _open('/projects/participation')),
+        _entry('独立发行收入约定', '逐方核对实际渠道净收入约定与后续结算。', Icons.payments_outlined,
+            () => _open('/projects/income')),
         _heading('制作与交付'),
         _entry('参与制作项目', '审阅具体版本、提交本版意见与查看修改记录。', Icons.movie_outlined,
             () => _open('/production')),
@@ -439,6 +457,8 @@ class _AppShellState extends State<AppShell> {
         _entry('合同与原约定', '按权限查看合同当时保存的内容和规则。', Icons.description_outlined,
             () => _open('/contract')),
         _heading('帮助与设置'),
+        _entry('个人信息与隐私权益', '办理偏好、查询更正、撤回删除和请求回复。', Icons.privacy_tip_outlined,
+            () => _open('/privacy/requests')),
         _entry('设置与帮助', '账号入口、用户协议和隐私政策。', Icons.settings_outlined,
             () => _open('/settings')),
       ];

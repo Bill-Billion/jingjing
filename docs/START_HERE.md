@@ -1,13 +1,13 @@
-# 当前入口：第四轮制作、付款与交付前端
+# 当前入口：第5—12轮前端集中交付
 
-2026-10-22，Bill-Billion在 `ux/v5-r04-production-frontend` 完成第四轮前端。已同步 `integration/2608ef7`，包含已合入PR32的第三轮及公开资料失效清理修复。前两轮、第三轮的旧“尚未合入”文字是历史，当前共同版本已包含它们。
+2026-10-22，Bill-Billion在`ux/v5-r05-r12-frontend`完成第5—12轮App与运营/MCN网页，沿用“先锋电影刊物”原稿语言、原业务及接口。用户已明确选择继续制作并单列后端阻断。起点第四轮`11abe25`，依赖尚未合入的[PR33](https://github.com/Bill-Billion/jingjing/pull/33)；共同版本仍为`integration/2608ef7`，已包含前两轮和第三轮。
 
-本轮按“先锋电影刊物”原稿接制作、原订单付款、正式预览与明确收讫、反馈、私人作品交付及售后。App346项、网页255项、分析和两端构建通过；110张实际浏览器截图已逐页检查。原故事到同一剧本的网页上传／独审／App确认、未知工单恢复、重发清计时、实际受控下载及下载后状态刷新均有证据。
+App461项、Web13组297项、分析和两端普通网页构建通过。最终404张实际截图：App246/Web158，含主矩阵、表单、实际动作、跨端同记录及320/390/768响应式复验。全额券下单后取消释放、未付款出演订单、发行收入会签、客服隐藏冻结等分别有真实接口和跨端记录。5个本次随机实例、凭据、私有构建、临时媒体及本任务服务已清理。
 
-- [逐页原稿对照图册](testing/evidence/v5-r04-frontend/index.html)、[验收与复现](testing/evidence/v5-r04-frontend/README.md)、[本轮报告](testing/R04_FRONTEND_20261022.md)。
-- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[任务与双方进度](tasks/records/UX-v5-r04-production-frontend-20261022.md)、[主线进度](status/MAINLINE_PROGRESS.md)。
-- [第四轮接口交接](collaboration/V5_R04_HANDOFF.md)、[Core当前记录](status/CORE_CURRENT.md)。统一接口0.30.1-rc.1优先，旧0.17是历史。
+- [逐页原稿图册](testing/evidence/v5-r05-r12-frontend/index.html)、[检查与复现](testing/evidence/v5-r05-r12-frontend/README.md)、[完整报告](testing/R05_R12_FRONTEND_20261022.md)。
+- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[任务与双方进度](tasks/records/UX-v5-r05-r12-frontend-20261022.md)、[主线进度](status/MAINLINE_PROGRESS.md)。
+- [第5—12轮集中交接](collaboration/V5_R05_R12_FRONTEND_HANDOFF.md)、[后端阻断与最小复验](collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)、[Core原记录](status/CORE_CURRENT.md)。接口0.30.1-rc.1优先，旧版本为历史。
 
-仍有一项既有后端阻断R04-CORE-01：原冻结故事的创意追加报价真实返回409 CUSTOMIZATION_ORDER_EXISTS。前端保留来源和输入，未克隆故事绕过；Core需修复报价、审核、确认及绑定，再联调该链。其他已验页面与此项分开记录。
+后端尚未全部完成：原故事追加409、托管未连接、MCN员工服务端范围、首次办理安全上下文、客服初次加入版本、hold跨重启读取及隐私执行范围等均已单列。前端没有用假成功或手填技术标识绕过；Core修复后按清单复验。
 
-本分支已集中推送至[PR #33](https://github.com/Bill-Billion/jingjing/pull/33)，已请求chengcongcong222审阅；远端检查与实际审阅以该申请当前提交为准。因上述追加链阻断保留草稿，未合入第四轮、推main或部署。辅助代理检查不是同事审阅。截图使用隔离合成资料；真实收退款、OSS、成片质量与原生真机另验。先修复上述追加链并复审本轮，再接第五轮现货页面。
+本批集中PR的远端检查、同事实际审阅和共同版本合入分别记录。Android APK本次受Gradle下载网络错误阻塞；原生手机、真实收付款/实名/签署/存储、影像质量及长期模型另验。本批未推main或部署。第四轮原报告仍在[历史交付入口](testing/R04_FRONTEND_20261022.md)。

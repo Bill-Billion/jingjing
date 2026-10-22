@@ -21,6 +21,64 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  int? _restReminderMinutes;
+  int? get restReminderMinutes => _restReminderMinutes;
+  final _domainDenials = <String>{};
+  bool isDomainDenied(String prefix) => _domainDenials.contains(prefix);
+  List<Map<String, dynamic>> pendingForPrefix(String prefix,
+          {bool personal = false}) =>
+      api.pendingForPrefix(prefix,
+          token: _token, party: personal ? null : partyId);
+
+  void denyDomain(String prefix) {
+    if (!additionalBusinessPrefixes.contains(prefix)) {
+      throw ArgumentError.value(prefix, 'prefix', 'Unknown business domain');
+    }
+    _epoch++;
+    operationsTargets.clear();
+    api.clearSupplyOperations();
+    _domainDenials.add(prefix);
+    notifyListeners();
+  }
+
+  Future<void> retryDomainAccess(String prefix, {bool personal = false}) async {
+    final started = _epoch;
+    final originalParty = partyId;
+    if (personal) {
+      await read('/api/v1/me');
+    } else {
+      await loadParties();
+      await refreshParty();
+    }
+    _check(started);
+    if (!personal && partyId != originalParty) {
+      throw const AccountError(0, 'CONTEXT_CHANGED');
+    }
+    _domainDenials.remove(prefix);
+    notifyListeners();
+  }
+
+  bool get stockAccessDenied => isDomainDenied('/api/v1/stock/');
+  List<Map<String, dynamic>> get stockPending =>
+      pendingForPrefix('/api/v1/stock/');
+  void denyStock() => denyDomain('/api/v1/stock/');
+  Future<void> retryStockAccess() => retryDomainAccess('/api/v1/stock/');
+  bool get noticesAccessDenied => isDomainDenied('/api/v1/notices/');
+  List<Map<String, dynamic>> get noticesPending =>
+      pendingForPrefix('/api/v1/notices/');
+  void denyNotices() => denyDomain('/api/v1/notices/');
+  Future<void> retryNoticesAccess() => retryDomainAccess('/api/v1/notices/');
+  bool get auditionsAccessDenied => isDomainDenied('/api/v1/auditions/');
+  List<Map<String, dynamic>> get auditionsPending =>
+      pendingForPrefix('/api/v1/auditions/');
+  void denyAuditions() => denyDomain('/api/v1/auditions/');
+  Future<void> retryAuditionsAccess() =>
+      retryDomainAccess('/api/v1/auditions/');
+  bool get walletAccessDenied => isDomainDenied('/api/v1/wallet/');
+  List<Map<String, dynamic>> get walletPending =>
+      pendingForPrefix('/api/v1/wallet/');
+  void denyWallet() => denyDomain('/api/v1/wallet/');
+  Future<void> retryWalletAccess() => retryDomainAccess('/api/v1/wallet/');
   bool artistsAccessDenied = false;
   List<Map<String, dynamic>> get artistsPending =>
       api.artistsPending(token: _token, party: partyId);
@@ -237,6 +295,7 @@ class AccountSession extends ChangeNotifier {
 
   void _clear() {
     api.clearSupplyOperations();
+    _domainDenials.clear();
     artistsAccessDenied = false;
     supplyAccessDenied = false;
     licensingAccessDenied = false;
@@ -252,6 +311,7 @@ class AccountSession extends ChangeNotifier {
     partyNotice = null;
     _token = null;
     account = null;
+    _restReminderMinutes = null;
     selected = null;
     parties = [];
     partiesCursor = null;
@@ -286,8 +346,34 @@ class AccountSession extends ChangeNotifier {
           bytes: bytes,
           validate: validate);
       _check(started);
+      if (path == '/api/v1/privacy/preferences' &&
+          ['GET', 'PATCH'].contains(method)) {
+        final minutes = result['rest_reminder_minutes'];
+        if (result['personalization'] is bool &&
+            result['marketing'] is bool &&
+            minutes is int &&
+            (minutes == 0 || minutes >= 15 && minutes <= 240) &&
+            _restReminderMinutes != minutes) {
+          _restReminderMinutes = minutes;
+          notifyListeners();
+        }
+      }
       return result;
     } on AccountError catch (error) {
+      final unopenedWallet = method == 'GET' &&
+          path == '/api/v1/wallet/summary' &&
+          error.status == 404 &&
+          error.code == 'WALLET_NOT_FOUND';
+      if ([403, 404].contains(error.status) &&
+          started == _epoch &&
+          !unopenedWallet) {
+        for (final prefix in additionalBusinessPrefixes) {
+          if (path.startsWith(prefix)) {
+            denyDomain(prefix);
+            break;
+          }
+        }
+      }
       if ([403, 404].contains(error.status) &&
           path.startsWith('/api/v1/artists/') &&
           started == _epoch) {
@@ -392,7 +478,10 @@ class AccountSession extends ChangeNotifier {
       return bytes;
     } on AccountError catch (e) {
       if (started == _epoch) {
-        if (path.startsWith('/api/v1/artists/') &&
+        final domain = additionalBusinessPrefixes.where(path.startsWith);
+        if ([403, 404].contains(e.status) && domain.isNotEmpty) {
+          denyDomain(domain.first);
+        } else if (path.startsWith('/api/v1/artists/') &&
             [403, 404].contains(e.status)) {
           denyArtists();
         } else if (path.startsWith('/api/v1/finance/') &&
@@ -469,6 +558,7 @@ class AccountSession extends ChangeNotifier {
     if (value['party']['id'] == partyId) return;
     partyNotice = null;
     api.clearSupplyOperations();
+    _domainDenials.clear();
     artistsAccessDenied = false;
     supplyAccessDenied = false;
     licensingAccessDenied = false;

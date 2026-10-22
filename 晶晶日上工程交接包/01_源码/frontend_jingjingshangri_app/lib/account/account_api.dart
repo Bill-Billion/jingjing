@@ -5,6 +5,32 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
+const additionalBusinessPrefixes = [
+  '/api/v1/stock/',
+  '/api/v1/notices/',
+  '/api/v1/auditions/',
+  '/api/v1/wallet/',
+  '/api/v1/engagement/',
+  '/api/v1/cocreation/',
+  '/api/v1/redemption/',
+  '/api/v1/privacy/',
+  '/api/v1/media/',
+];
+
+bool _privateRequestPath(String path) => [
+      '/api/v1/customization-requests',
+      '/api/v1/artists/',
+      '/api/v1/supply/',
+      '/api/v1/licensing/',
+      '/api/v1/trade/',
+      '/api/v1/gigs/',
+      '/api/v1/production/',
+      '/api/v1/projects/',
+      '/api/v1/finance/',
+      '/api/v1/operations/',
+      ...additionalBusinessPrefixes,
+    ].any(path.startsWith);
+
 /// The account API deliberately has no connection to legacy JWT or demo data.
 class AccountApi {
   AccountApi({Dio? dio, String? baseUrl})
@@ -23,30 +49,7 @@ class AccountApi {
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/customization-requests') ||
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/artists/') ||
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/supply/') ||
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/licensing/') ||
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/trade/') ||
-        (jsonDecode(key) as List)[3].toString().startsWith('/api/v1/gigs/') ||
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/production/') ||
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/projects/') ||
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/finance/') ||
-        (jsonDecode(key) as List)[3]
-            .toString()
-            .startsWith('/api/v1/operations/');
+        _privateRequestPath((jsonDecode(key) as List)[3].toString());
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -59,6 +62,15 @@ class AccountApi {
   Map<String, dynamic>? pending(String method, String path,
           {String? token, String? party}) =>
       _pending[_scope(method, path, token, party)];
+  List<Map<String, dynamic>> pendingForPrefix(String prefix,
+          {String? token, String? party}) =>
+      [
+        for (final entry in _pending.entries)
+          if ((jsonDecode(entry.key) as List)[0] == token &&
+              (jsonDecode(entry.key) as List)[1] == party &&
+              (jsonDecode(entry.key) as List)[3].toString().startsWith(prefix))
+            {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
+      ];
   List<Map<String, dynamic>> tradePending({String? token, String? party}) => [
         for (final entry in _pending.entries)
           if ((jsonDecode(entry.key) as List)[0] == token &&
@@ -145,16 +157,7 @@ class AccountApi {
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
     final writing = method != 'GET';
-    final supply = path.startsWith('/api/v1/customization-requests') ||
-        path.startsWith('/api/v1/artists/') ||
-        path.startsWith('/api/v1/supply/') ||
-        path.startsWith('/api/v1/licensing/') ||
-        path.startsWith('/api/v1/trade/') ||
-        path.startsWith('/api/v1/gigs/') ||
-        path.startsWith('/api/v1/production/') ||
-        path.startsWith('/api/v1/projects/') ||
-        path.startsWith('/api/v1/finance/') ||
-        path.startsWith('/api/v1/operations/');
+    final supply = _privateRequestPath(path);
     final started = _supplyEpoch;
     bool current() => !supply || started == _supplyEpoch;
     body = body == null
@@ -296,6 +299,10 @@ class AccountApi {
               ? DateTime.now().add(Duration(seconds: retrySeconds))
               : null,
           uncertain: code != 'SMS_CHALLENGE_UNAVAILABLE' &&
+              // This endpoint rejects before creating a recharge command.
+              !(path == '/api/v1/wallet/recharges' &&
+                  status == 503 &&
+                  code == 'CUSTODY_PROVIDER_NOT_CONNECTED') &&
               (status == 0 ||
                   status >= 500 ||
                   (status >= 200 && status < 300) ||
@@ -330,10 +337,15 @@ class AccountApi {
                 'Authorization': 'Bearer $token',
                 if (party != null) 'X-Acting-Party': party
               }));
+      final mediaType =
+          response.headers.value('content-type')?.split(';').first;
+      final stockVideoPath = RegExp(
+        r'^/api/v1/stock/(?:catalog/[a-fA-F0-9-]{36}/preview|listings/[a-fA-F0-9-]{36}/files/(?:full|preview)|purchases/[a-fA-F0-9-]{36}/content)$',
+      ).hasMatch(path);
       if (response.statusCode == 200 &&
           response.data != null &&
-          response.headers.value('content-type')?.split(';').first ==
-              'application/octet-stream') {
+          (mediaType == 'application/octet-stream' ||
+              stockVideoPath && mediaType == 'video/mp4')) {
         return Uint8List.fromList(response.data!);
       }
       String code = 'INVALID_BINARY_RESPONSE';

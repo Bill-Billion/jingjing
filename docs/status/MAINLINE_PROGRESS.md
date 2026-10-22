@@ -1,3 +1,17 @@
+# 2026-10-22：第5—12轮前端完成本机验收，集中交付
+
+`ux/v5-r05-r12-frontend`继承第四轮11abe25/PR33，共同版本integration/2608ef7。按用户授权继续完成现货、通告、试镜/商单会话、钱包、MCN/成长、共创、权益抽奖及出演/发行/隐私App与Web；保留先锋电影刊物原设计语言和既有接口。
+
+App461项、Web13组297项、分析及普通网页构建通过，404张最终截图（App246/Web158）与同记录跨端结果已保存。全额券取消释放、各方会签和冻结后清除私密内容等有实际读写。5次随机库及凭据、私有构建、临时媒体和本任务服务均清理。Android APK的Gradle下载网络阻塞、原生手机和真实服务验收单列。
+
+后端未全部完成；员工数据范围、首次安全上下文、原故事追加、托管及隐私等见[独立阻断与复验](../collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)。本侧辅助代理检查不代替同事实际审阅；未合入integration或main、未部署。远端检查须核对本批PR当前提交，不能引用PR33旧检查。
+
+[图册](../testing/evidence/v5-r05-r12-frontend/index.html) · [最终报告](../testing/R05_R12_FRONTEND_20261022.md) · [任务与双方进度](../tasks/records/UX-v5-r05-r12-frontend-20261022.md) · [逐域交接](../collaboration/V5_R05_R12_FRONTEND_HANDOFF.md)。
+
+---
+
+以下为交付当时历史，后续状态以上方及当前入口为准。
+
 # 2026-10-22：第四轮前端已验证，追加报价等待Core修复
 
 Bill-Billion，`ux/v5-r04-production-frontend`，基于重新获取的共同版本 `integration/2608ef7`。PR32已于2026-10-21 15:38 UTC合入，包含PR31第三轮及公开资料清除修复；本轮交接已修正旧起点和第三轮脚本说明。

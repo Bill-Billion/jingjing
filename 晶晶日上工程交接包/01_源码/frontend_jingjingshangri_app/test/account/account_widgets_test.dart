@@ -487,7 +487,9 @@ void main() {
     await frames(tester);
     expect(find.byType(WalletPage), findsNothing);
     expect(find.text('先确认办事身份'), findsOneWidget);
-    expect(find.text('我的结算'), findsOneWidget);
+    expect(find.text('请选择本人的个人负责人身份。'), findsOneWidget);
+    expect(adapter.requests.where((r) => r.path.startsWith('/api/v1/wallet/')),
+        isEmpty);
     await close(tester);
   });
 

@@ -1,3 +1,5 @@
+当前第5—12轮前端已完成本机范围，分支`ux/v5-r05-r12-frontend`，起点11abe25/PR33，integration仍2608ef7。用户2026-10-22授权继续并单列后端阻断。App461、Web297、分析及普通网页构建通过，404张最终截图与同记录跨端证据已整理并清理测试现场；Android Gradle下载网络阻塞单列。先读docs/START_HERE.md及docs/tasks/records/UX-v5-r05-r12-frontend-20261022.md，远端检查/同事审阅/合入分别核对。本批未推main或部署，以下记录为历史。
+
 当前前端第四轮在 `ux/v5-r04-production-frontend`，基于integration/2608ef7并继承已合入PR32。制作/付款/交付本机验收完成：App346、网页255、110张原稿对照截图；下载后履约状态刷新已修。Core仍需处理R04-CORE-01原故事追加报价409，未冒称整条追加链完成。先读docs/START_HERE.md、docs/testing/R04_FRONTEND_20261022.md及docs/tasks/records/UX-v5-r04-production-frontend-20261022.md。集中上传与实际审阅见该分支PR，未合入第四轮或部署。以下入口保留为历史。
 
 当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
