@@ -1,0 +1,461 @@
+{
+  "result": "PASS",
+  "phase": "business",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:54691/api/v1",
+  "checks": [
+    {
+      "name": "再次独立读取原已形成全额权益订单",
+      "result": "PASS"
+    },
+    {
+      "name": "App按实际已审核奖池完成单抽",
+      "result": "PASS"
+    },
+    {
+      "name": "参演 buyer 独立会签后读取原文证据",
+      "result": "PASS"
+    },
+    {
+      "name": "参演 artist 独立会签后读取原文证据",
+      "result": "PASS"
+    },
+    {
+      "name": "参演 producer 独立会签后读取原文证据",
+      "result": "PASS"
+    },
+    {
+      "name": "会签参演实际生成原现金节点且未付款",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "action-full-coupon-order.png",
+      "route": "/trade/record?recordId=2d1b9059-f578-49f2-882c-52390b0d0bd9",
+      "source": "34-orders-top.png",
+      "note": "原App动作已形成订单，本次只读核对；无现金节点。",
+      "width": 390,
+      "height": 844,
+      "sha256": "dd8654d5c277d647606b42a92b95cd1d7c940521333136595a0d5f384e4e4fc6"
+    },
+    {
+      "file": "action-lottery-result.png",
+      "route": "/redemption?view=draw&recordId=c0658ce5-72b2-4caf-8862-f45b7661f922",
+      "source": "32-wallet-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "44b02be63e4874461418d354e1dc13f153e2ce6256f74d42105370137d5ce30f"
+    },
+    {
+      "file": "action-participation-buyer.png",
+      "route": "/projects/participation?view=agreement&recordId=bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "source": "38-custom-extra.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "c38f73e8c1f6d81a2db9117448b30bdcdc8f6bd137e8d97a3a881140a2e05732"
+    },
+    {
+      "file": "action-participation-artist.png",
+      "route": "/projects/participation?view=agreement&recordId=bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "source": "38-custom-extra.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "7cd8f6d4bc14a24cb601a0140f357b4438784edf8acdf6c649e75d7883608e25"
+    },
+    {
+      "file": "action-participation-producer.png",
+      "route": "/projects/participation?view=agreement&recordId=bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "source": "38-custom-extra.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "8bfc3bbe7254eb5a73a501d6ec50f6d410cb343be77bc3425c34d6383f7ebfac"
+    },
+    {
+      "file": "action-participation-order.png",
+      "route": "/trade/record?recordId=e9b780ad-3b95-48a3-b00a-3240d987bca8",
+      "source": "34-orders-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "0e3d32778e2a273510db1f478c74b89c1d3dc80878d68782b523c2be4f1598ec"
+    }
+  ],
+  "network": [
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records/2d1b9059-f578-49f2-882c-52390b0d0bd9",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/production/projects",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/redemption/pools/9a796e13-2d1d-4211-ad42-f7129a54f0c3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/redemption/draws",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/redemption/draws/c0658ce5-72b2-4caf-8862-f45b7661f922",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/progress",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/progress",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/progress",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "artist",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/progress",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/progress",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/progress",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/887990c9-691b-4b5d-bbaa-eec42ca5c22d",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/participation-checkout",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records/e9b780ad-3b95-48a3-b00a-3240d987bca8",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/redemption/draws",
+      "method": "POST",
+      "body_sha256": "9b40472758c40da9f495b205549ddc1be1d7ba26e83829f5f217252bbedcc18f",
+      "key_sha256": "b9a4a8cfeac5786bc1d78c76e065a215be741151a1e9b044eed40046f88e1358"
+    },
+    {
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmation",
+      "method": "POST",
+      "body_sha256": "d103b77fc8728dc90d455f657cb33a598208e591c38ab8dc2515351ca550f7d2",
+      "key_sha256": "bc1a711c37c2353af0da66f0aed7dee6cc4cb286349f8e4346dbe57bcc084f9e",
+      "version": "\"2\""
+    },
+    {
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmation",
+      "method": "POST",
+      "body_sha256": "d103b77fc8728dc90d455f657cb33a598208e591c38ab8dc2515351ca550f7d2",
+      "key_sha256": "89e07db15b4a8c7e057ba059e6b7e7aa6b66448ebebfb2a837331c88ea677d93",
+      "version": "\"2\""
+    },
+    {
+      "path": "/api/v1/projects/participations/bd677f1b-c408-4dbb-8ecb-8ca34d55a5fe/confirmation",
+      "method": "POST",
+      "body_sha256": "d103b77fc8728dc90d455f657cb33a598208e591c38ab8dc2515351ca550f7d2",
+      "key_sha256": "ff7cc98aa055f23c833916bb265088607664ab09b9c986fcbb9e698661f0a017",
+      "version": "\"2\""
+    },
+    {
+      "path": "/api/v1/trade/participation-checkout",
+      "method": "POST",
+      "body_sha256": "b026ca8be6431fe712419efc1daa613f5ebb6548d8d9db57de7aa903901a48eb",
+      "key_sha256": "ea45783dbb9e4eea53646e9ff673c39cfd932707b8fc9d5107069f9ac7569bd8"
+    }
+  ],
+  "created": {
+    "full_coupon_order_id": "2d1b9059-f578-49f2-882c-52390b0d0bd9",
+    "draw_id": "c0658ce5-72b2-4caf-8862-f45b7661f922",
+    "participation_order_id": "e9b780ad-3b95-48a3-b00a-3240d987bca8"
+  },
+  "errors": []
+}

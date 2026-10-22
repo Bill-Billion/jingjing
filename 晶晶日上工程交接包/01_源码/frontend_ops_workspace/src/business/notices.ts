@@ -1,0 +1,32 @@
+import {type Domain,type Field,text,long,id,hash,integer,money,date,select,values,bool,group,numbers,fixed,reason,operation as op,ids} from './model'
+export const noticeTypes=[['DRAMA','剧集'],['PERFORMANCE','商演'],['COMMERCIAL','商单'],['EVENT','活动'],['RECRUITMENT','招募'],['OFFICIAL','平台官方']] as const
+const detailFields:Record<string,Field[]>={DRAMA:[long('synopsis','剧情梗概',2000),long('roles','招募角色',2000)],PERFORMANCE:[text('venue','商演场地',2000),text('schedule','到场安排',2000),long('requirements','商演要求',2000)],COMMERCIAL:[long('deliverables','交付内容',2000),long('requirements','合作要求',2000)],EVENT:[text('venue','活动场地',2000),text('schedule','活动安排',2000)],RECRUITMENT:[long('roles','招募岗位与角色',2000),long('requirements','招募要求',2000)],OFFICIAL:[long('summary','官方事项说明',2000)]}
+const notice=(official=false)=>group('notice','本次发布内容',[official?fixed('type','通告类别','OFFICIAL'):select('type','通告类别',noticeTypes.filter(x=>x[0]!=='OFFICIAL')),text('title','通告标题',160),long('description','公开说明'),text('city','城市',80),date('valid_from','发布有效开始'),date('valid_until','发布有效结束'),...Object.entries(detailFields).filter(([k])=>official?k==='OFFICIAL':k!=='OFFICIAL').map(([k,fs])=>({...group('details','本类通告所需事项',fs),visible:(r:Record<string,unknown>)=>(r.notice as Record<string,unknown>)?.type===k})),id('project_id','关联原出品项目',true),bool('accept_submissions','接受单向投稿（仅剧集或招募）')])
+const submission=group('submission','具体人物的单向意向',[select('kind','投稿方式',[['PROFILE','投递形象与模卡'],['ROLE','想演具体角色'],['CREATE_DRAMA','自己做剧意向'],['INVITATION','买家结构化邀约']]),id('target_party_id','明确的接收方主体'),id('notice_id','对应公开通告',true),id('person_id','本人或明确受托真人'),id('avatar_id','具体数字人'),id('consent_id','针对本接收方的投稿授权'),text('purpose','本次合作用途',200),long('content','意向正文',4000),{...text('role','想演的角色',160),nullable:true},ids('material_asset_ids','私有形象与模卡',6)])
+const rule=group('rule','发布与投稿规则',[text('version','规则版本',100),money('topup_threshold_minor','独立核验资格门槛',1),fixed('membership_days','资格天数',365),numbers('growth_thresholds','五级递增消费成长门槛（5项）',5),group('minimum_levels','发布类型最低资格',[integer('DRAMA','剧集最低级别',1,6),integer('PERFORMANCE','商演最低级别',1,6),fixed('COMMERCIAL','商单最低级别',1),fixed('EVENT','活动最低级别',3),fixed('RECRUITMENT','招募最低级别',1),fixed('OFFICIAL','官方仅专属岗位',null)]),integer('submission_days','投稿有效天数',1,365),long('terms','资格与投稿规则正文',4000)])
+const reviewChecks=(fs:Field[]):Field=>({...group('checks','已实际核验事项',fs),visible:r=>r.decision==='APPROVE',inactive:null})
+const reviewFields=()=>[select('decision','独立核验结论',[['APPROVE','通过'],['REJECT','退回']]),reason()]
+export const notices:Domain={key:'notices',title:'通告与投稿',journal:'CASTING DISPATCH / 06',intro:'按真实资格发布，按具体人物单向投递，感兴趣后由客服关联正式报价。',note:'普通实名不代表有发布资格。意向、感兴趣与客服关联都不代表付款、签约或已取得出演权；联系与付款留在原订单内。',sections:[
+{key:'catalog',label:'公开通告',path:'/notices/catalog',detail:'/notices/catalog/:record_id',party:'none',query:[{...select('type','通告类型',noticeTypes),optional:true},{...text('city','城市',80),optional:true},{...date('at','计划参与时间'),optional:true}]},
+{key:'announcements',label:'我的通告',path:'/notices/records',detail:'/notices/records/:record_id',party:'required',fixedQuery:{kind:'NOTICE'}},
+{key:'submissions',label:'投稿与收件箱',path:'/notices/records',detail:'/notices/records/:record_id',party:'required',fixedQuery:{kind:'SUBMISSION'},files:[{label:'读取本次私有材料',path:'/notices/records/:record_id/materials/:asset_id',party:'required'}]},
+{key:'eligibility',label:'发布资格',path:'/notices/eligibility',party:'required',query:[id('rule_id','已审发布规则')]},
+{key:'qualifications',label:'机构资质',path:'/notices/records',detail:'/notices/records/:record_id',party:'required',fixedQuery:{kind:'QUALIFICATION'}},
+{key:'rules',label:'生效规则',path:'/notices/rules',party:'none'},
+{key:'support',label:'客服转单',path:'/notices/records',detail:'/notices/records/:record_id',party:'none',fixedQuery:{kind:'CASE'}},
+{key:'reviews',label:'独立审核',path:'/notices/records',detail:'/notices/records/:record_id',party:'none',query:[select('kind','待审类别',[['NOTICE','通告'],['SUBMISSION','投稿'],['QUALIFICATION','机构资质'],['FACT','资金资格事实'],['RULE','发布规则']])],files:[{label:'核对实际私有依据',path:'/notices/records/:record_id/materials/:asset_id',party:'none'}]}],operations:[
+op('announcement','填写并提交通告','/notices/announcements',[id('rule_id','已审发布规则'),notice()],'required',false,['announcements']),
+op('official','平台发布官方通告','/notices/announcements',[id('rule_id','已审发布规则'),notice(true)],'none',false,['reviews']),
+op('submission','投递具体人物的意向','/notices/submissions',[id('rule_id','已审投稿规则'),submission],'required',false,['submissions','catalog']),
+op('decision','接收方回复本次意向','/notices/submissions/:record_id/decision',[select('decision','本次回复',[['INTERESTED','感兴趣，转客服核对'],['DECLINE','婉拒']])],'required',true,['submissions']),
+op('close','撤回本人发布或投稿','/notices/records/:record_id/close',[reason()],'required',true,['announcements','submissions','qualifications']),
+op('qualification','申请本机构发布资质','/notices/qualifications',[values('types','申请发布类别',noticeTypes.filter(x=>x[0]!=='OFFICIAL')),date('valid_from','资质有效开始'),date('valid_until','资质有效结束'),ids('evidence_asset_ids','外部资质依据'),long('terms','受托权限及资质说明',4000)],'required',false,['qualifications']),
+op('quote','客服关联原正式报价','/notices/cases/:record_id/quote',[id('quote_id','已审原商单报价'),hash('quote_sha256','已审报价内容校验值'),reason()],'none',true,['support']),
+op('rule','登记发布规则待独审','/notices/rules',[rule],'none',false,['reviews']),
+op('fact','独立记录真实外部资格事实','/notices/facts',[id('party_id','真实事实所属个人'),select('kind','事实类别',[['TOPUP','外部实际充值核验'],['GROWTH','实际消费成长'],['REVERSAL','退款冲回']]),integer('amount','原事实整数值（资金按分、成长按点）',1),date('occurred_at','实际发生时间'),text('source_ref','托管方原始回单来源',200),id('evidence_asset_id','已核对回单证据')],'none',false,['reviews']),
+...([
+ ['review-content','独立核对通告或投稿',[bool('content_reviewed','已核对正文内容',true),bool('materials_reviewed','已核对全部附件',true),bool('no_private_contact','无站外联系与付款引导',true)]],
+ ['review-rule','独立核对发布规则',[bool('business_rule_verified','已核对真实业务规则',true)]],
+ ['review-qualification','独立核对机构资质',[bool('identity_verified','已核验机构身份',true),bool('authority_verified','已核验实际发布权限',true),bool('evidence_verified','已核验外部依据',true)]],
+ ['review-fact','独立核对外部资金事实',[bool('source_verified','已核对原回单来源',true),bool('amount_verified','已核对实际金额',true),bool('party_verified','已核对本人身份',true),bool('licensed_custody_verified','已核对合规托管来源',true)]]
+] as [string,string,Field[]][]).map(([key,label,fs])=>op(key,label,'/notices/records/:record_id/reviews',[...reviewFields(),reviewChecks(fs)],'none',true,['reviews']))]}

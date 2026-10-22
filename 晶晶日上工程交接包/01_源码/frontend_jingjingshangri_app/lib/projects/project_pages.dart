@@ -396,6 +396,18 @@ class _RecordState extends State<_Record> {
           else
             supplyNote('当前身份未获准读取该方案。项目可读不表示所有子记录可读。')
         ]),
+        supplyCard('参演与发行收入约定', [
+          supplyNote('按本次完整原条款核对片酬、用途、分成、会签及后续变更。'),
+          tradeButton(
+              '参演约定与会签',
+              locked
+                  ? null
+                  : () => open('/projects/participation?projectId=${p.id}'),
+              outline: true),
+          tradeButton('独立发行收入约定',
+              locked ? null : () => open('/projects/income?projectId=${p.id}'),
+              outline: true)
+        ]),
         supplyCard('本人记录', [
           for (final r in kinds['CANDIDATE'] ?? []) ...[
             tradeFact('参与状态', projectStatuses[r.status]),
@@ -425,11 +437,24 @@ class _RecordState extends State<_Record> {
                     r)
               ]
             ]),
+        if (record?.kind == 'CANDIDATE' &&
+            record?.owner == api.owner() &&
+            record?.status == 'CONFIRMED')
+          tradeButton(
+              '提出本人参演约定',
+              locked
+                  ? null
+                  : () => open(
+                      '/projects/participation?view=new&recordId=${record!.id}'),
+              outline: true),
         if (p.owner == api.owner()) ...[
           supplyCard('发行办理', [
             for (final r in kinds['RELEASE'] ?? []) ...[
               tradeFact('申请状态', projectStatuses[r.status]),
-              link('查看发行进度', r)
+              link('查看发行进度', r),
+              tradeButton('核对本次发行的收入与结算',
+                  locked ? null : () => open('/finance?sourceId=${r.id}'),
+                  outline: true)
             ],
             tradeButton(
                 '提交发行材料',

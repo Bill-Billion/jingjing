@@ -17,6 +17,9 @@ import 'private_video.dart';
 import 'production_api.dart';
 import 'production_models.dart';
 import 'production_widgets.dart';
+import 'fulfillment_models.dart';
+import 'fulfillment_api.dart';
+import 'fulfillment_pages.dart';
 
 class ProductionProjectsPage extends StatelessWidget {
   const ProductionProjectsPage({super.key, this.orderId, this.works = false});
@@ -111,13 +114,19 @@ class _ProjectListState extends State<_ProjectList> {
     if (!mounted) return;
     setState(() => busy = true);
     try {
-      final result = await api.retry(path);
+      String projectId;
+      if (path.startsWith('/api/v1/production/projects/')) {
+        final original = await api.record(path.split('/')[5], kind: 'PROJECT');
+        projectId = (await api.retryFulfillment(original, path)).projectId;
+      } else {
+        projectId = (await api.retry(path)).projectId!;
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..removeCurrentSnackBar();
       await Navigator.pushNamed(
-          context, '/production/project?projectId=${result.projectId}');
+          context, '/production/project?projectId=$projectId');
       if (mounted) await load();
     } on AccountError catch (e) {
       if (mounted) setState(() => error = productionError(e, writing: true));
@@ -131,6 +140,8 @@ class _ProjectListState extends State<_ProjectList> {
       context,
       widget.works ? '我的交付作品' : '参与制作项目',
       [
+        tradeHeading(widget.works ? '我的作品库' : '我参与的故事',
+            eyebrow: '制作与交付 / 私人记录'),
         tradeBanner(
             widget.works ? '私人访问' : '按具体版本制作与验收',
             widget.works
@@ -140,18 +151,18 @@ class _ProjectListState extends State<_ProjectList> {
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         for (final op in widget.session.productionPending)
-          supplyCard('原意见结果待核实', [
-            appNotice('原内容与版本已保留。核对前请不要重新提交另一份意见。'),
+          tradeSection('原制作办理结果待核实', [
+            appNotice('原内容与版本已保留。核对前请不要重新提交另一份办理。'),
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path']))
           ]),
         if (!busy && rows.isEmpty)
-          supplyCard(widget.works ? '暂时没有成片记录' : '暂时没有参与项目', [
+          tradeSection(widget.works ? '暂时没有成片记录' : '暂时没有参与项目', [
             supplyNote(widget.works
                 ? '当前身份的项目尚无最终成片版本。'
                 : '仅展示真实参与或实际指派的项目。开工项目由商家负责人按原订单办理。')
           ]),
         for (final r in rows)
-          supplyCard('制作项目 ${shortSupplyId(r.id)}', [
+          tradeSection('制作项目 ${shortSupplyId(r.id)}', [
             tradeFact('当前状态', productionStatuses[r.status]),
             if (!widget.works) ...[
               tradeFact('原订单', shortSupplyId(r.orderId)),
@@ -221,6 +232,8 @@ class _ProjectDetailState extends State<_ProjectDetail> {
   ProductionRecord? project;
   List<ProductionRecord> versions = [], feedback = [];
   Map<String, dynamic>? readiness;
+  ProductionFulfillment? fulfillment;
+  TradeRecord? order;
   String? error;
   bool busy = false;
   int ticket = 0;
@@ -239,6 +252,8 @@ class _ProjectDetailState extends State<_ProjectDetail> {
       versions = [];
       feedback = [];
       readiness = null;
+      fulfillment = null;
+      order = null;
     });
     try {
       final p = await api.record(widget.projectId, kind: 'PROJECT');
@@ -247,8 +262,17 @@ class _ProjectDetailState extends State<_ProjectDetail> {
         api.all(projectId: p.id, kind: 'FEEDBACK'),
         api.readiness(p.id)
       ]);
+      final flow = fulfillmentProject(p) ? await api.fulfillment(p) : null;
+      final o = flow != null &&
+              widget.session.isOwner &&
+              [p.data['buyer_party_id'], p.data['merchant_party_id']]
+                  .contains(api.participant())
+          ? await TradeApi(widget.session).record(p.orderId)
+          : null;
       if (!mounted || t != ticket) return;
       setState(() {
+        fulfillment = flow;
+        order = o;
         project = p;
         versions = results[0] as List<ProductionRecord>;
         feedback = results[1] as List<ProductionRecord>;
@@ -276,7 +300,10 @@ class _ProjectDetailState extends State<_ProjectDetail> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (p != null) ...[
-            supplyCard('制作项目 ${shortSupplyId(p.id)}', [
+            if (fulfillment != null)
+              ...fulfillmentSections(context, widget.session, p, fulfillment!,
+                  order: order, busy: busy, reload: load),
+            tradeSection('制作项目 ${shortSupplyId(p.id)}', [
               tradeFact('当前状态', productionStatuses[p.status]),
               tradeFact('用途', p.data['purpose']),
               tradeFact('范围', p.data['territory']),
@@ -293,7 +320,7 @@ class _ProjectDetailState extends State<_ProjectDetail> {
               if (p.data['review'] != null)
                 tradeFact('开工依据审核理由', p.data['review']['reason'])
             ]),
-            supplyCard('当前制作进度', [
+            tradeSection('当前制作进度', [
               for (final stage in productionStages.keys) ...[
                 tradeFact(
                     productionStages[stage]!,
@@ -313,7 +340,7 @@ class _ProjectDetailState extends State<_ProjectDetail> {
               ]
             ]),
             productionSpecification(p),
-            supplyCard('付款与最终交付', [
+            tradeSection('付款与最终交付', [
               appNotice(
                   '确认版本不会自动表示付款成功。样片或最终成片已确认后，请回原订单办理对应付款节点；最终原片仍需当前最终版本已验收、约定款项已付清及有效权利。'),
               if (widget.session.isOwner &&
@@ -334,7 +361,7 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                             context, '/production/work?projectId=${p.id}'),
                     outline: true)
             ]),
-            supplyCard('版本记录与反馈历史', [
+            tradeSection('版本记录与反馈历史', [
               if (versions.isEmpty) supplyNote('尚无已提交版本。'),
               for (final v in versions)
                 ExpansionTile(
@@ -350,12 +377,18 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                         tradeFact('独立审核理由', v.data['review']['reason']),
                       for (final f in feedback
                           .where((f) => f.data['version_id'] == v.id))
-                        supplyCard(
-                            f.data['decision'] == 'ACCEPT'
-                                ? '本版确认意见'
-                                : '本版修改意见',
+                        tradeSection(
+                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
+                                ? '按原约定期限处理'
+                                : f.data['decision'] == 'ACCEPT'
+                                    ? '本版确认意见'
+                                    : '本版修改意见',
                             [
-                              SelectableText(f.data['note'],
+                              SelectableText(
+                                  f.data['acceptance_method'] ==
+                                          'AGREED_TIMEOUT'
+                                      ? '服务器记录：正式版本可读取、买方收讫后，按原约定期限处理；不代表买方亲自点击确认。'
+                                      : f.data['note'],
                                   style: const TextStyle(
                                       fontSize: 16, height: 1.6)),
                               if (f.data['checklist'] != null)
@@ -372,11 +405,11 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                           outline: true)
                     ])
             ]),
-            supplyCard('项目留言', [
+            tradeSection('项目留言', [
               operationCommentLink(context, 'PRODUCTION', p.id, '项目留言',
                   enabled: !busy, returned: load)
             ]),
-            supplyCard('生成服务', [
+            tradeSection('生成服务', [
               appNotice(readiness?['current_status'] == 'SERVICE_READY'
                   ? '服务器已配置生成服务。外部生成需由实际指派制作人在网页工作台核对本人同意、用途和原约定后办理。'
                   : '生成服务尚未开通，不会创建演示任务或视频。'),
@@ -426,6 +459,9 @@ class _VersionReview extends StatefulWidget {
 class _VersionReviewState extends State<_VersionReview> {
   late final api = ProductionApi(widget.session);
   ProductionRecord? version, project;
+  ProductionFulfillment? fulfillment;
+  bool notificationRead = false, conflictReviewed = false;
+  String changeKind = 'PLATFORM_CORRECTION';
   List<ProductionRecord> history = [];
   String? error, text;
   PrivateVideo? video;
@@ -435,7 +471,12 @@ class _VersionReviewState extends State<_VersionReview> {
   String decision = 'REQUEST_CHANGES';
   int ticket = 0;
   String get path => '/api/v1/production/versions/${widget.versionId}/feedback';
-  bool get locked => busy || api.pending(path) != null;
+  bool get locked =>
+      busy ||
+      api.pending(path) != null ||
+      (project != null &&
+          api.pending(api.fulfillmentPath(project!.id, 'delivery-receipt')) !=
+              null);
   bool get canDecide =>
       version != null &&
       project != null &&
@@ -459,7 +500,7 @@ class _VersionReviewState extends State<_VersionReview> {
     super.dispose();
   }
 
-  Future<void> load({bool reset = false}) async {
+  Future<void> load({bool reset = false, bool keepInput = false}) async {
     final t = ++ticket;
     if (reset) {
       await video?.dispose();
@@ -467,8 +508,10 @@ class _VersionReviewState extends State<_VersionReview> {
       opened = false;
       text = null;
       checks.clear();
-      note.clear();
-      changeNote.clear();
+      if (!keepInput) {
+        note.clear();
+        changeNote.clear();
+      }
     }
     if (!mounted) return;
     setState(() {
@@ -476,19 +519,25 @@ class _VersionReviewState extends State<_VersionReview> {
       error = null;
       version = null;
       project = null;
+      fulfillment = null;
+      notificationRead = false;
       history = [];
     });
     try {
       final v = await api.record(widget.versionId, kind: 'VERSION');
       final p = await api.record(v.projectId!, kind: 'PROJECT');
       final h = await api.all(projectId: p.id, kind: 'FEEDBACK');
+      final flow = fulfillmentProject(p) ? await api.fulfillment(p) : null;
       if (!mounted || t != ticket) return;
       final e = widget.evidence;
       if (!reset &&
           e?['version_id'] == v.id &&
           e?['hash'] == v.hash &&
           e?['object_version'] == v.version &&
-          e?['opened'] == true) {
+          e?['opened'] == true &&
+          (flow == null ||
+              flow.receipt?['delivery_id'] == e?['delivery_id'] &&
+                  flow.receipt?['view_observed_at'] != null)) {
         opened = true;
         final carried = e?['checks'];
         if (carried is Map) {
@@ -501,11 +550,13 @@ class _VersionReviewState extends State<_VersionReview> {
       if (pending != null) {
         decision = pending['body']['decision'];
         note.text = pending['body']['note'];
+        changeKind = pending['body']['change_kind'] ?? 'PLATFORM_CORRECTION';
       }
       setState(() {
         version = v;
         project = p;
         history = h;
+        fulfillment = flow;
       });
     } on AccountError catch (e) {
       if (mounted && t == ticket) setState(() => error = productionError(e));
@@ -577,24 +628,57 @@ class _VersionReviewState extends State<_VersionReview> {
           return;
         }
         video = local;
+        local.controller.addListener(() {
+          if (mounted &&
+              t == ticket &&
+              video == local &&
+              local.controller.value.hasError &&
+              opened) {
+            setState(() {
+              opened = false;
+              notificationRead = false;
+              checks.clear();
+              error = '视频播放失败，不计为已查看，也不会开启收讫计时。';
+            });
+          }
+        });
         await local.controller.initialize();
         api.check(epoch, p);
         if (!mounted || t != ticket || video != local) return;
         await local.controller.play();
         setState(() => opened = true);
       }
+      if (opened && project != null && fulfillmentProject(project!)) {
+        final current = await api.fulfillment(project!);
+        api.check(epoch, p);
+        if (!mounted || t != ticket) return;
+        setState(() {
+          fulfillment = current;
+          notificationRead = false;
+        });
+      }
     } on AccountError catch (e) {
+      await video?.dispose();
+      video = null;
       if (mounted && t == ticket) {
         setState(() {
+          opened = false;
+          text = null;
+          notificationRead = false;
           checks.clear();
           error = productionError(e);
         });
       }
     } catch (_) {
+      await video?.dispose();
+      video = null;
       if (mounted && t == ticket) {
         setState(() {
+          opened = false;
+          text = null;
+          notificationRead = false;
           checks.clear();
-          error = '私有内容暂不能播放或阅读，请重新读取。';
+          error = '私有内容暂不能播放或阅读，不计为已查看，也不会开启计时。请重新读取或报告文件问题。';
         });
       }
     } finally {
@@ -604,7 +688,12 @@ class _VersionReviewState extends State<_VersionReview> {
 
   Future<void> submit(String selected, String message) async {
     final pending = api.pending(path), v = version, p = project;
-    if (v == null || p == null || busy) return;
+    if (v == null ||
+        p == null ||
+        busy ||
+        pending == null && stale && !conflictReviewed) {
+      return;
+    }
     final input =
         pending == null ? message.trim() : '${pending['body']['note']}';
     final chosen =
@@ -640,7 +729,8 @@ class _VersionReviewState extends State<_VersionReview> {
                       for (final name in productionCheckNames(v.stage))
                         name: checks[name] == true
                     }
-                  : null)
+                  : null,
+              changeKind: changeKind)
           : await api.retry(path);
       api.check(epoch, party);
       if (!mounted) return;
@@ -656,7 +746,8 @@ class _VersionReviewState extends State<_VersionReview> {
       if (!mounted) return;
       if (e.status == 412) {
         stale = true;
-        await load(reset: true);
+        conflictReviewed = false;
+        await load(reset: true, keepInput: true);
         if (!mounted) return;
       }
       setState(() => error = productionError(e, writing: true));
@@ -665,8 +756,132 @@ class _VersionReviewState extends State<_VersionReview> {
     }
   }
 
+  Future<void> deliveryNotice() async {
+    final v = version, p = project, f = fulfillment;
+    if (v == null || p == null || f == null || !opened) return;
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      final current =
+          await api.receiveDeliveryNotice(p, f, v, contentOpened: opened);
+      if (mounted) {
+        setState(() {
+          fulfillment = current;
+          notificationRead = true;
+        });
+      }
+    } on AccountError catch (e) {
+      if (mounted) {
+        setState(() {
+          notificationRead = false;
+          error = productionError(e, writing: true);
+        });
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> receipt() async {
+    final v = version, p = project, f = fulfillment;
+    if (v == null || p == null || f == null) return;
+    final receiptPath = api.fulfillmentPath(p.id, 'delivery-receipt');
+    final original = api.pending(receiptPath);
+    if (original == null && (!opened || !notificationRead)) return;
+    if (!await tradeConfirm(
+        context, original == null ? '明确确认收到本次正式交付' : '恢复原收讫请求', [
+      tradeFact('具体版本', productionVersionTitle(v)),
+      tradeFact('原约定查看期限', '${f.terms['acceptance_hours']} 小时'),
+      const Text('已成功打开当前文件并确认通知已读。本次确认后服务器开始计算原约定期限；不表示已验收，也不表示已付款。'),
+    ])) {
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      // Refresh the PROJECT version after the notification is read, then ask explicitly.
+      final result = original == null
+          ? await api.changeFulfillment(p, f, 'delivery-receipt', {})
+          : await api.retryFulfillment(p, receiptPath);
+      if (mounted) setState(() => fulfillment = result);
+    } on AccountError catch (e) {
+      if (mounted) {
+        if (e.status == 412) {
+          notificationRead = false;
+          await load(reset: true, keepInput: true);
+        }
+        if (mounted) setState(() => error = productionError(e, writing: true));
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Widget receiptCard(ProductionRecord v) {
+    final f = fulfillment!, r = f.receipt;
+    final original =
+        api.pending(api.fulfillmentPath(f.projectId, 'delivery-receipt'));
+    return tradeSection('先查看，再明确收讫', [
+      if (r == null || r['version_id'] != v.id)
+        appNotice('这不是当前待收讫的正式交付。历史版本或已结束的通知不启动新计时。')
+      else ...[
+        tradeFact(
+            '服务器读取记录',
+            r['view_observed_at'] == null
+                ? '尚未记录本次成功读取'
+                : tradeDate(r['view_observed_at'])),
+        tradeFact('本次收讫',
+            r['started_at'] == null ? '尚未开始计时' : tradeDate(r['started_at'])),
+        if (r['deadline_at'] != null)
+          tradeFact('服务器给出的截止时间', tradeDate(r['deadline_at'])),
+        appNotice('读取失败或视频无法播放不算已查看。通知已读与明确收讫分别办理；超期按原约定处理，不冒称本人确认。'),
+        if (r['started_at'] == null && canDecide) ...[
+          tradeButton(
+              notificationRead ? '本次交付通知已读' : '确认本次交付通知已读',
+              locked || reading || !opened || notificationRead
+                  ? null
+                  : deliveryNotice,
+              outline: true),
+          tradeButton(
+              original != null ? '恢复原收讫请求核对' : '明确确认本次交付已收到',
+              busy ||
+                      reading ||
+                      original == null && (!opened || !notificationRead)
+                  ? null
+                  : receipt),
+        ],
+      ],
+      tradeButton(
+          '报告文件问题或申请延期',
+          locked
+              ? null
+              : () => Navigator.pushNamed(context,
+                          '/production/aftercare?projectId=${f.projectId}&kind=FILE_UNAVAILABLE')
+                      .then((_) {
+                    if (mounted) load(reset: true, keepInput: true);
+                  }),
+          outline: true),
+    ]);
+  }
+
+  Widget changeKindInput() => DropdownButtonFormField<String>(
+      initialValue: changeKind,
+      decoration: const InputDecoration(labelText: '这次修改属于'),
+      isExpanded: true,
+      items: const [
+        DropdownMenuItem(
+            value: 'PLATFORM_CORRECTION', child: Text('纠正原约定错误（不扣创意次数）')),
+        DropdownMenuItem(
+            value: 'CREATIVE_CHANGE', child: Text('新增创作要求（按原约定计次）'))
+      ],
+      onChanged: locked ? null : (v) => setState(() => changeKind = v!));
   Widget contentCard(ProductionRecord v) =>
-      supplyCard(v.stage == 'SCRIPT' ? '剧本节选' : '私有预览', [
+      tradeSection(v.stage == 'SCRIPT' ? '剧本节选' : '私有预览', [
         if (v.stage == 'SCRIPT') ...[
           if (text != null)
             SelectableText(
@@ -687,7 +902,7 @@ class _VersionReviewState extends State<_VersionReview> {
                 child: Container(
                     decoration: BoxDecoration(
                         color: AccountTheme.text.withValues(alpha: .08),
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.zero),
                     child: const Center(
                         child: Icon(Icons.play_circle_outline,
                             size: 64, color: AccountTheme.accent)))),
@@ -701,7 +916,7 @@ class _VersionReviewState extends State<_VersionReview> {
         if (opened) appNotice('本版内容已打开。请自行核对完整内容，再勾选验收项。')
       ]);
   Widget checkCard(ProductionRecord v) =>
-      supplyCard(v.stage == 'SCRIPT' ? '确认阅读' : '验收检查清单', [
+      tradeSection(v.stage == 'SCRIPT' ? '确认阅读' : '验收检查清单', [
         for (final name in productionCheckNames(v.stage))
           CheckboxListTile(
               key: ValueKey('production-check-$name'),
@@ -721,12 +936,18 @@ class _VersionReviewState extends State<_VersionReview> {
       productionCheckNames(v.stage).every((name) => checks[name] == true);
   List<Widget> feedbackForm(ProductionRecord v, ProductionRecord p) {
     final pending = api.pending(path);
-    final limit =
-        p.data['change_requests'] >= p.data['specification']['revision_limit'];
+    final limit = fulfillment == null
+        ? p.data['change_requests'] >= p.data['specification']['revision_limit']
+        : changeKind == 'CREATIVE_CHANGE' &&
+            fulfillment!.creativeChanges >=
+                p.data['specification']['revision_limit'] +
+                    fulfillment!.additionalChanges;
+    final needsRead = fulfillment != null && !opened;
     if (!widget.feedbackOnly && v.stage == 'SCRIPT') {
       return [
         if (canDecide)
-          supplyCard('本版意见', [
+          tradeSection('本版意见', [
+            if (fulfillment != null) changeKindInput(),
             TextField(
                 controller: changeNote,
                 enabled: !locked,
@@ -737,13 +958,17 @@ class _VersionReviewState extends State<_VersionReview> {
                     labelText: '本版修改意见', hintText: '请输入你对本版剧本的修改意见…')),
             tradeButton(
                 '提出修改',
-                locked || limit || changeNote.text.trim().isEmpty
+                locked ||
+                        needsRead ||
+                        stale && !conflictReviewed ||
+                        limit ||
+                        changeNote.text.trim().isEmpty
                     ? null
                     : () => submit('REQUEST_CHANGES', changeNote.text)),
             if (limit) appNotice('本单约定修改次数已用完，请按原约定协商。')
           ]),
         if (canDecide)
-          supplyCard('确认', [
+          tradeSection('确认', [
             checkCard(v),
             TextField(
                 controller: note,
@@ -775,6 +1000,7 @@ class _VersionReviewState extends State<_VersionReview> {
                           'hash': v.hash,
                           'object_version': v.version,
                           'opened': opened,
+                          'delivery_id': fulfillment?.receipt?['delivery_id'],
                           'checks': checks
                         }).then((_) {
                       if (mounted) load(reset: true);
@@ -789,7 +1015,9 @@ class _VersionReviewState extends State<_VersionReview> {
       ];
     }
     return [
-      supplyCard('决定', [
+      if (fulfillment != null && decision == 'REQUEST_CHANGES')
+        changeKindInput(),
+      tradeSection('决定', [
         SegmentedButton<String>(
             segments: const [
               ButtonSegment(value: 'ACCEPT', label: Text('确认本版')),
@@ -802,7 +1030,7 @@ class _VersionReviewState extends State<_VersionReview> {
                 ? null
                 : (values) => setState(() => decision = values.single))
       ]),
-      supplyCard(decision == 'ACCEPT' ? '确认说明' : '修改意见', [
+      tradeSection(decision == 'ACCEPT' ? '确认说明' : '修改意见', [
         TextField(
             controller: note,
             enabled: !locked && canDecide,
@@ -813,21 +1041,25 @@ class _VersionReviewState extends State<_VersionReview> {
                 labelText: decision == 'ACCEPT' ? '确认说明' : '本版修改意见',
                 hintText: '请围绕这一个具体版本填写说明。'))
       ]),
-      supplyCard('修改次数说明', [
+      tradeSection('修改次数说明', [
         tradeFact('按本单约定记录',
             '已提出 ${p.data['change_requests']} 次 / 约定 ${p.data['specification']['revision_limit']} 次'),
-        appNotice('制作方内部补充版本不占买方修改次数。请求修改会按本单约定记一次。')
+        appNotice(fulfillment == null
+            ? '制作方内部补充版本不占买方修改次数。请求修改会按本单约定记一次。'
+            : '纠正原约定错误不扣创意次数；只有新增创作要求按原约定计次，超限另开问题单报价。')
       ]),
       if (decision == 'ACCEPT')
         checkCard(v)
       else
-        supplyCard('验收检查项', [appNotice('请求修改时无需勾选验收项。')]),
+        tradeSection('验收检查项', [appNotice('请求修改时无需勾选验收项。')]),
       tradeButton(
           decision == 'ACCEPT' ? '提交本版确认' : '提交修改意见',
           pending != null ||
                   locked ||
                   !canDecide ||
+                  stale && !conflictReviewed ||
                   note.text.trim().isEmpty ||
+                  needsRead ||
                   (decision == 'ACCEPT' ? !acceptedEnabled(v) : limit)
               ? null
               : () => submit(decision, note.text)),
@@ -853,10 +1085,12 @@ class _VersionReviewState extends State<_VersionReview> {
                           ? '最终成片验收'
                           : '审阅${productionStages[v?.data['stage']] ?? '版本'}',
               [
+                tradeHeading(widget.feedbackOnly ? '写下本版意见' : '确认这一版',
+                    eyebrow: '正式版本 / 先查看，再确认'),
                 if (busy) const LinearProgressIndicator(),
                 if (error != null) appNotice(error!, icon: Icons.error_outline),
                 if (pending != null)
-                  supplyCard('原意见结果待核实', [
+                  tradeSection('原意见结果待核实', [
                     tradeFact(
                         '原决定',
                         pending['body']['decision'] == 'ACCEPT'
@@ -867,7 +1101,7 @@ class _VersionReviewState extends State<_VersionReview> {
                         busy ? null : () => submit(decision, note.text))
                   ]),
                 if (v != null && p != null) ...[
-                  supplyCard(widget.feedbackOnly ? '绑定版本' : '阶段与版本', [
+                  tradeSection(widget.feedbackOnly ? '绑定版本' : '阶段与版本', [
                     tradeFact('版本', productionVersionTitle(v)),
                     tradeFact('当前状态', productionVersionState(v, p)),
                     tradeFact('版本说明', v.data['note']),
@@ -882,9 +1116,20 @@ class _VersionReviewState extends State<_VersionReview> {
                             : v.status != 'APPROVED'
                                 ? '等待独立审片通过后，买方负责人才能确认本版。'
                                 : '当前身份只读；意见由买方负责人提交。'),
-                  if (stale) appNotice('已读取最新版本。请重新打开内容、勾选检查项并填写说明。'),
+                  if (stale) ...[
+                    appNotice('已读取最新版本，说明已保留。请重新打开内容、核对本版，再明确确认沿用输入。'),
+                    CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: conflictReviewed,
+                        title: const Text('我已核对最新版本，沿用本页说明'),
+                        onChanged: locked
+                            ? null
+                            : (v) =>
+                                setState(() => conflictReviewed = v == true))
+                  ],
                   if (!widget.feedbackOnly || (decision == 'ACCEPT' && !opened))
                     contentCard(v),
+                  if (fulfillment != null) receiptCard(v),
                   if (!widget.feedbackOnly)
                     Card(
                         child: ExpansionTile(
@@ -893,18 +1138,24 @@ class _VersionReviewState extends State<_VersionReview> {
                             children: [productionSpecification(p)])),
                   ...feedbackForm(v, p),
                   if (!widget.feedbackOnly)
-                    supplyCard('本版反馈历史', [
+                    tradeSection('本版反馈历史', [
                       if (!history.any((f) => f.data['version_id'] == v.id))
                         supplyNote('本版尚无买方反馈。'),
                       for (final f in history
                           .where((f) => f.data['version_id'] == v.id)) ...[
                         tradeFact(
-                            f.data['decision'] == 'ACCEPT' ? '确认本版' : '请求修改',
-                            f.data['note']),
+                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
+                                ? '按原约定期限处理'
+                                : f.data['decision'] == 'ACCEPT'
+                                    ? '确认本版'
+                                    : '请求修改',
+                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
+                                ? '服务器按收讫后的原约定期限处理，不是本人点击确认。'
+                                : f.data['note']),
                         const Divider()
                       ]
                     ]),
-                  supplyCard('版本留言', [
+                  tradeSection('版本留言', [
                     operationCommentLink(context, 'PRODUCTION', v.id, '版本留言',
                         enabled: !locked, returned: () => load(reset: true))
                   ]),
@@ -946,6 +1197,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
   late final api = ProductionApi(widget.session);
   ProductionRecord? project, version;
   TradeRecord? order;
+  ProductionFulfillment? fulfillment;
   PrivateVideo? video;
   String? error, notice;
   bool busy = false;
@@ -957,7 +1209,9 @@ class _PrivateWorkState extends State<_PrivateWork> {
       version!.accepted(project!) &&
       version!.status == 'APPROVED' &&
       order?.status == 'PAID' &&
-      order!.data['financial']['refunded_minor'] == 0;
+      order!.data['financial']['refunded_minor'] == 0 &&
+      (fulfillment == null ||
+          ['STARTED', 'DELIVERED'].contains(fulfillment!.state));
   @override
   void initState() {
     super.initState();
@@ -981,11 +1235,13 @@ class _PrivateWorkState extends State<_PrivateWork> {
       project = null;
       version = null;
       order = null;
+      fulfillment = null;
       error = null;
       notice = null;
     });
     try {
       final pr = await api.record(widget.projectId, kind: 'PROJECT');
+      final f = fulfillmentProject(pr) ? await api.fulfillment(pr) : null;
       final id = pr.data['current']['FINAL'];
       final v = id == null ? null : await api.record(id, kind: 'VERSION');
       TradeRecord? o;
@@ -1000,6 +1256,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
         project = pr;
         version = v;
         order = o;
+        fulfillment = f;
       });
     } on AccountError catch (e) {
       if (mounted && t == ticket) setState(() => error = productionError(e));
@@ -1024,10 +1281,12 @@ class _PrivateWorkState extends State<_PrivateWork> {
       if (download) {
         final pr = await api.record(widget.projectId, kind: 'PROJECT');
         final o = await TradeApi(widget.session).record(pr.orderId);
+        final f = fulfillmentProject(pr) ? await api.fulfillment(pr) : null;
         if (!mounted || t != ticket) return;
         setState(() {
           project = pr;
           order = o;
+          fulfillment = f;
         });
         if (!deliverable) {
           throw const AccountError(409, 'FINAL_DELIVERY_NOT_READY');
@@ -1047,6 +1306,22 @@ class _PrivateWorkState extends State<_PrivateWork> {
             : saved == null
                 ? '已取消保存。'
                 : '当前原片已保存。');
+        final pr = project;
+        if (pr != null && fulfillmentProject(pr)) {
+          try {
+            final current = await api.fulfillment(pr);
+            api.check(epoch, p);
+            if (!mounted || t != ticket) return;
+            setState(() => fulfillment = current);
+          } catch (_) {
+            if (mounted &&
+                t == ticket &&
+                epoch == widget.session.epoch &&
+                p == widget.session.partyId) {
+              setState(() => error = '履约状态暂未刷新，请重新核对交付条件。');
+            }
+          }
+        }
       } else {
         final local = await PrivateVideo.create(content.bytes);
         if (!mounted || t != ticket || epoch != widget.session.epoch) {
@@ -1079,11 +1354,12 @@ class _PrivateWorkState extends State<_PrivateWork> {
         context,
         '私人作品',
         [
+          tradeHeading('我的交付作品', eyebrow: '私人作品 / 原订单与许可'),
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (notice != null) appNotice(notice!),
           if (p != null && v != null) ...[
-            supplyCard('当前成片', [
+            tradeSection('当前成片', [
               if (video?.controller.value.isInitialized == true)
                 AspectRatio(
                     aspectRatio: video!.controller.value.aspectRatio,
@@ -1094,7 +1370,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
                     child: Container(
                         decoration: BoxDecoration(
                             color: AccountTheme.text.withValues(alpha: .08),
-                            borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.zero),
                         child: const Center(
                             child: Icon(Icons.play_circle_outline,
                                 size: 64, color: AccountTheme.accent)))),
@@ -1107,7 +1383,9 @@ class _PrivateWorkState extends State<_PrivateWork> {
                 tradeButton('暂停预览', () => video!.controller.pause(),
                     outline: true)
             ]),
-            supplyCard('验收与付款', [
+            tradeSection('验收与付款', [
+              if (fulfillment != null)
+                tradeFact('实际履约进度', fulfillmentStates[fulfillment!.state]),
               tradeFact('验收', v.accepted(p) ? '已验收当前最终版本' : '当前最终版本尚未验收'),
               tradeFact(
                   '付款',
@@ -1146,7 +1424,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
                         Navigator.pushNamed(context, '/licensing?kind=PROJECT'),
                 outline: true)
           ] else if (!busy && p != null)
-            supplyCard('尚无当前成片', [
+            tradeSection('尚无当前成片', [
               supplyNote('本项目尚未提交最终成片版本。'),
               tradeButton(
                   '返回制作项目',

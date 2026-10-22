@@ -1,0 +1,158 @@
+{
+  "result": "PASS",
+  "phase": "download",
+  "synthetic_only": true,
+  "media": "PLAYABLE_COLOR_BARS",
+  "checks": [
+    {
+      "name": "当前FINAL已确认且原款项付清才启用正式下载",
+      "result": "PASS"
+    },
+    {
+      "name": "进入作品页没有以正式文件GET探测资格",
+      "result": "PASS"
+    },
+    {
+      "name": "买家明确下载才读取正式字节并交给浏览器保存",
+      "result": "PASS"
+    },
+    {
+      "name": "保存交接后页面重新读取真实履约结果",
+      "result": "PASS"
+    },
+    {
+      "name": "页面没有JS异常或Flutter溢出",
+      "result": "PASS"
+    }
+  ],
+  "shots": [
+    {
+      "file": "18e-my-delivery-works-390.png",
+      "route": "/production/works",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "39-story-top.png / 71已购作品与下载",
+      "note": "私人定制成片子集；现货与试镜作品另有业务入口",
+      "result": "CAPTURED"
+    },
+    {
+      "file": "19-private-work-390.png",
+      "route": "/production/work?projectId=9f4a1370-d34f-4c4e-b93e-a61c62b4f67b",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "37-custom-top.png / 71作品库、39-story-top.png / 下载",
+      "note": "未取正式文件；下载资格和预览分别显示",
+      "result": "CAPTURED"
+    },
+    {
+      "file": "20-formal-download-390.png",
+      "route": "/production/work?projectId=9f4a1370-d34f-4c4e-b93e-a61c62b4f67b",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "39-story-top.png / 私人作品下载",
+      "note": "仅可播放色条，不是真实制作交付",
+      "result": "CAPTURED"
+    }
+  ],
+  "reads": [
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects",
+      "search": "?limit=20"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/b44e6e23-4ff8-4ca8-8e6b-0dd109446801",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/9f4a1370-d34f-4c4e-b93e-a61c62b4f67b",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/9f4a1370-d34f-4c4e-b93e-a61c62b4f67b/fulfillment",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/5ae7b7a6-0fd5-45dc-8b59-dfb571eed83d",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/b44e6e23-4ff8-4ca8-8e6b-0dd109446801",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/9f4a1370-d34f-4c4e-b93e-a61c62b4f67b",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/b44e6e23-4ff8-4ca8-8e6b-0dd109446801",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/9f4a1370-d34f-4c4e-b93e-a61c62b4f67b/fulfillment",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/5ae7b7a6-0fd5-45dc-8b59-dfb571eed83d",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/f1391391-d6ac-4f3f-83e3-5c6e0b59b37c",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/5ae7b7a6-0fd5-45dc-8b59-dfb571eed83d/content",
+      "search": "?variant=final"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/9f4a1370-d34f-4c4e-b93e-a61c62b4f67b/fulfillment",
+      "search": ""
+    }
+  ],
+  "writes": [],
+  "page_errors": [],
+  "flutter_errors": [],
+  "limits": [
+    "Chromium里的实际Flutter Web页面，未声称原生或真机验收",
+    "可播放色条不证明真实成片、水印、音画或AI标识",
+    "没有真实收退款、实名、OSS或制作"
+  ]
+}

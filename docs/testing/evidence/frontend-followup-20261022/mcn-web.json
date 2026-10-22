@@ -1,0 +1,98 @@
+{
+  "result": "PASS",
+  "resumed_from": null,
+  "synthetic_only": true,
+  "api_base": "http://127.0.0.1:54130/api/v1",
+  "fixture_file": ".local\\v5-r05-r12-sandbox\\jx_test_r05r12_4892_ab8bfd8d727d\\access.json",
+  "prototype": "先锋电影刊物",
+  "web_adaptation": true,
+  "current_case": null,
+  "matrix": [],
+  "screenshots": [
+    {
+      "key": "action-mcn-owner-assignment",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-mcn-owner-assignment-1440-overview.png"
+    },
+    {
+      "key": "action-mcn-staff-accepted",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-mcn-staff-accepted-1440-overview.png"
+    },
+    {
+      "key": "action-mcn-staff-accepted",
+      "width": 390,
+      "part": "overview",
+      "file": "action-mcn-staff-accepted-390-overview.png"
+    },
+    {
+      "key": "action-mcn-staff-dashboard",
+      "width": 390,
+      "part": "overview",
+      "file": "action-mcn-staff-dashboard-390-overview.png"
+    },
+    {
+      "key": "action-mcn-staff-scope-denied",
+      "width": 390,
+      "part": "overview",
+      "file": "action-mcn-staff-scope-denied-390-overview.png"
+    }
+  ],
+  "checks": [
+    {
+      "name": "只读矩阵没有业务写入",
+      "result": "PASS"
+    },
+    {
+      "name": "MCN负责人从真实预约和机构成员列表派单",
+      "result": "PASS"
+    },
+    {
+      "name": "获准员工只对实际受派预约明确接单",
+      "result": "PASS"
+    },
+    {
+      "name": "当前合成账号有READ_INCOME时看板200，已知派单属于本人（不证明跨人后端隔离）",
+      "result": "PASS"
+    },
+    {
+      "name": "员工不能管理机构的逐人授权",
+      "result": "PASS"
+    },
+    {
+      "name": "所有页面无浏览器JS异常",
+      "result": "PASS"
+    }
+  ],
+  "posts": [
+    {
+      "role": "mcn_owner",
+      "path": "/api/v1/engagement/mcn/assignments",
+      "key": "950bda85-76a5-47d0-8ec0-87893b908f9d",
+      "method": "POST"
+    },
+    {
+      "role": "mcn_staff",
+      "path": "/api/v1/auditions/bookings/4f9bcfc8-b250-4ae3-a788-0fda2c1ae0a7/decision",
+      "key": "7f6f5761-8337-44b4-8392-e7947c111de6",
+      "method": "POST"
+    }
+  ],
+  "errors": [],
+  "blockers": [],
+  "new_notice_case_id": null,
+  "new_privacy_request_id": null,
+  "income_agreement_id": "9d438864-226b-473f-92d5-51369ffac3a8",
+  "mcn_assignment_id": "859a1f00-f9bf-488d-a470-61124f0abc7b",
+  "mcn_booking_id": "4f9bcfc8-b250-4ae3-a788-0fda2c1ae0a7",
+  "commercial_cross": null,
+  "failure": null,
+  "limits": [
+    "所有资料为隔离合成资料，不代表真实服务、真实付款或真实权利完成验收",
+    "412由测试传输层注入过期If-Match触发真实后端拒绝；丢回复保留真实后端提交和原幂等键",
+    "未操作App保留的stock_paid取文件、audition_delivered、full_coupon及参演会签",
+    "MCN员工授权管理403为实际权限隔离；本轮服务器已按有效艺人授权和派单过滤，Web继续保守显示本人受派事项；多艺人边界另有Core真实接口回归"
+  ]
+}

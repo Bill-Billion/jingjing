@@ -28,6 +28,8 @@ async function current(tx,value,buyer){
 }
 async function bindOrder(tx,order){
  const s=order.data.quote.customization;if(!s)return;
+ // Keep the unique first-order binding. The case owns the amendment binding.
+ if(order.data.quote.customization_change){await require('../production/customization-amendment').current(tx,order);return;}
  await current(tx,s,order.buyer_party_id);
  try{await tx.execute('INSERT INTO customization_orders(request_id,submission_id,quote_id,order_id) VALUES (?,?,?,?)',[s.request_id,s.submission_id,order.parent_id,order.id]);}
  catch(e){if(e.code==='ER_DUP_ENTRY')throw error('CUSTOMIZATION_ORDER_EXISTS',409);throw e;}

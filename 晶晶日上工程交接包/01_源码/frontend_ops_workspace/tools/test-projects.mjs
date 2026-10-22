@@ -46,6 +46,7 @@ try{
   const quote=role();quote.data.pricing='QUOTE';quote.data.amount_minor=null;assert.ok(api.isProjectRecord(quote));quote.data.amount_minor=0;assert.equal(api.isProjectRecord(quote),false)
   const e=edition();e.data.final_content_sha256='fake';assert.equal(api.isProjectRecord(e),false)
  })
+ test('V5项目、独立收入指针、已付改版与方案参演快照兼容当前契约且拒绝未知字段',()=>{const r=project();Object.assign(r.data,{business_version:'V5',current_income_id:id(90),revision:{previous_plan_id:id(13),previous_edition_id:null,reason:'真实已付改版',evidence_asset_id:id(32)}});assert(api.isProjectRecord(r));r.data.business_version='V6';assert.equal(api.isProjectRecord(r),false);r.data.business_version='V5';r.data.revision.extra='private';assert.equal(api.isProjectRecord(r),false);const p=plan();p.data.participation={agreements:[{id:id(91),content_sha256:hash,candidate_id:id(12),order_id:id(41)}],revenue:{basis:'VERIFIED_CHANNEL_NET_RECEIPTS',shares:[{party_id:id(2),bps:10000,role:'PRODUCER'}],terms:'未来实际渠道净收入'},income_agreement:{id:id(90),content_sha256:hash}};assert(api.isProjectRecord(p));p.data.participation.revenue.shares[0].bps=9999;assert.equal(api.isProjectRecord(p),false)})
  test('公开目录只取角色版本与摘要，拒绝候选、身份、证据及额外私有字段',()=>{
   assert.ok(api.isCatalogue(catalogue()))
   for(const mutate of [r=>r.items[0].candidates=[candidate()],r=>r.items[0].roles[0].evidence_asset_id=id(32),r=>r.items[0].roles[0].object_version=0,r=>r.items[0].roles[0].amount_minor=null,r=>r.items[1].scope=scope()]){const c=catalogue();mutate(c);assert.equal(api.isCatalogue(c),false)}

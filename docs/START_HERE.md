@@ -1,13 +1,15 @@
-当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
+当前2026-10-22本侧承接PR33与PR34在worktrees/frontend-followup、core/v5-frontend-followup。关键追加报价/员工权限修复及本机复验完成，准备集中上传、远端检查后按用户授权合入integration；尚不等于全部业务或正式服务已验收。先读docs/testing/FRONTEND_FOLLOWUP_20261022.md和双方CURRENT，后续最终状态以本轮POST_MERGE为准。以下入口保留历史。
 
-# 当前入口：原稿视觉已进入共同版本，第三轮已集中交付
+# 当前入口：第5—12轮前端集中交付
 
-前两轮已按“先锋电影刊物”原设计修正，[PR30](https://github.com/Bill-Billion/jingjing/pull/30)/273d0d0远端8项检查成功，同事chengcongcong222已实际审阅通过；代码随[PR29](https://github.com/Bill-Billion/jingjing/pull/29)进入共同版本integration/b8775fe。原稿、前后对照和42张截图见[视觉验收](testing/evidence/v5-editorial/index.html)。同事的安卓与整合复验见[整合测试](testing/EDITORIAL_MERGE_20261021.md)。
+2026-10-22，Bill-Billion在`ux/v5-r05-r12-frontend`完成第5—12轮App与运营/MCN网页，沿用“先锋电影刊物”原稿语言、原业务及接口。用户已明确选择继续制作并单列后端阻断。起点第四轮`11abe25`，依赖尚未合入的[PR33](https://github.com/Bill-Billion/jingjing/pull/33)；共同版本仍为`integration/2608ef7`，已包含前两轮和第三轮。
 
-第三轮在ux/v5-r03-artists-frontend，已同步最新共同版本并保留其修复；本人/机构受托/独立岗位接新的艺人接口，沿用原稿视觉。项目规定App322、网页238项和构建通过，77张截图已逐页验收，已集中上传[PR31](https://github.com/Bill-Billion/jingjing/pull/31)。远端检查与本轮实际审阅查看该申请；尚未合入第三轮。见[截图和原稿对照](testing/evidence/v5-r03-frontend/index.html)及[验收范围](testing/evidence/v5-r03-frontend/README.md)。
+App461项、Web13组297项、分析和两端普通网页构建通过。最终404张实际截图：App246/Web158，含主矩阵、表单、实际动作、跨端同记录及320/390/768响应式复验。全额券下单后取消释放、未付款出演订单、发行收入会签、客服隐藏冻结等分别有真实接口和跨端记录。5个本次随机实例、凭据、私有构建、临时媒体及本任务服务已清理。
 
-- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[第三轮任务](tasks/records/UX-v5-r03-artists-frontend-20261021.md)、[主线进展](status/MAINLINE_PROGRESS.md)。
-- [Core当前状态](status/CORE_CURRENT.md)、[第三轮接口交接](collaboration/V5_R03_HANDOFF.md)：现统一接口0.30.1-rc.1优先，旧0.16仅为历史。
-- [共同人工测试操作](testing/JOINT_FUNCTIONAL_TEST_20261021.md)。第三轮原生手机、实名、支付、存储与长期模型分别核验，不以本机合成结果当正式启用。
+- [逐页原稿图册](testing/evidence/v5-r05-r12-frontend/index.html)、[检查与复现](testing/evidence/v5-r05-r12-frontend/README.md)、[完整报告](testing/R05_R12_FRONTEND_20261022.md)。
+- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[任务与双方进度](tasks/records/UX-v5-r05-r12-frontend-20261022.md)、[主线进度](status/MAINLINE_PROGRESS.md)。
+- [第5—12轮集中交接](collaboration/V5_R05_R12_FRONTEND_HANDOFF.md)、[后端阻断与最小复验](collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md)、[Core原记录](status/CORE_CURRENT.md)。接口0.30.1-rc.1优先，旧版本为历史。
 
-PR24/26已关闭，代码通过PR28进入共同版本。本轮不推main、不部署；前两轮的实际审阅不代表第三轮已审阅。
+后端尚未全部完成：原故事追加409、托管未连接、MCN员工服务端范围、首次办理安全上下文、客服初次加入版本、hold跨重启读取及隐私执行范围等均已单列。前端没有用假成功或手填技术标识绕过；Core修复后按清单复验。
+
+本批已集中推送至[PR34](https://github.com/Bill-Billion/jingjing/pull/34)，以第四轮分支为base；远端检查、同事实际审阅和共同版本合入分别记录。Android APK本次受Gradle下载网络错误阻塞；原生手机、真实收付款/实名/签署/存储、影像质量及长期模型另验。本批未推main或部署。第四轮原报告仍在[历史交付入口](testing/R04_FRONTEND_20261022.md)。

@@ -66,6 +66,47 @@ Map<String, dynamic> projectData(String kind,
         'current_edition_id': editionKey,
         'cancel_reason': null
       });
+    case 'PARTICIPATION':
+      data.addAll({
+        'candidate_id': candidateKey,
+        'candidate_sha256': 'a' * 64,
+        'role_id': roleKey,
+        'avatar_id': avatarKey,
+        'consent_id': consentKey,
+        'cast': {
+          'person_id': personId,
+          'look_version_id': avatarKey,
+          'voice_version_id': null
+        },
+        'terms': participationTermsData(),
+        'marketplace_finance': null,
+        'fee_minor': 0,
+        'evidence_asset_id': assetKey,
+        'confirmers': [
+          {
+            'party_id': personId,
+            'responsibility': '核对本人完整参演用途与发行分成。',
+            'after_party_ids': <String>[]
+          }
+        ],
+        'review': {'decision': 'APPROVED', 'reason': '独立审核后保留本人会签。'},
+        'order_id': null,
+        'variant_snapshot': null
+      });
+    case 'INCOME_AGREEMENT':
+      data.addAll({
+        'revenue': participationRevenueData(),
+        'evidence_asset_id': assetKey,
+        'previous_agreement_id': null,
+        'confirmers': [
+          {
+            'party_id': personId,
+            'responsibility': '核对本人发行收入约定。',
+            'after_party_ids': <String>[]
+          }
+        ],
+        'review': null
+      });
     case 'ROLE':
       data.addAll({
         'title': '青年画家',
@@ -172,7 +213,9 @@ Map<String, dynamic> projectData(String kind,
       'EDITION': editionKey,
       'CHANNEL': channelKey,
       'RELEASE': releaseKey,
-      'EXTERNAL_EVENT': eventKey
+      'EXTERNAL_EVENT': eventKey,
+      'PARTICIPATION': 'f1000000-0000-4000-8000-000000000012',
+      'INCOME_AGREEMENT': 'f1000000-0000-4000-8000-000000000013'
     }[kind],
     'kind': kind,
     'project_id': ['PROJECT', 'CHANNEL'].contains(kind) ? null : projectKey,
@@ -187,7 +230,9 @@ Map<String, dynamic> projectData(String kind,
           'EDITION': 'APPROVED',
           'CHANNEL': 'APPROVED',
           'RELEASE': 'READY_TO_SUBMIT',
-          'EXTERNAL_EVENT': 'IN_REVIEW'
+          'EXTERNAL_EVENT': 'IN_REVIEW',
+          'PARTICIPATION': 'APPROVED',
+          'INCOME_AGREEMENT': 'IN_REVIEW'
         }[kind],
     'object_version': version,
     'content_sha256': projectDigest(data),
@@ -314,7 +359,9 @@ FakeAccountAdapter projectsAdapter(
         'EDITION': editionKey,
         'CHANNEL': channelKey,
         'RELEASE': releaseKey,
-        'EXTERNAL_EVENT': eventKey
+        'EXTERNAL_EVENT': eventKey,
+        'PARTICIPATION': 'f1000000-0000-4000-8000-000000000012',
+        'INCOME_AGREEMENT': 'f1000000-0000-4000-8000-000000000013'
       };
       final kind = kinds.entries.firstWhere((x) => x.value == id).key;
       return envelope(projectData(kind,
@@ -343,3 +390,25 @@ FakeAccountAdapter projectsAdapter(
   });
   return a;
 }
+
+Map<String, dynamic> participationRevenueData() => {
+      'basis': 'VERIFIED_CHANNEL_NET_RECEIPTS',
+      'shares': [
+        {'party_id': personId, 'bps': 10000, 'role': 'PARTICIPANT'}
+      ],
+      'terms': '仅按本项目经核实的渠道净收入结算。'
+    };
+Map<String, dynamic> participationTermsData() => {
+      'mode': 'REVENUE_SHARE',
+      'usage': 'EXISTING_MATERIAL',
+      'exclusive': false,
+      'territory': 'CN',
+      'language': 'zh',
+      'valid_until': '2030-01-01T00:00:00.000Z',
+      'permitted_uses': '本片发行。',
+      'prohibited_uses': '不得用于其他作品。',
+      'installments': <Map<String, dynamic>>[],
+      'start_payment_keys': <String>[],
+      'revenue': participationRevenueData(),
+      'cancellation_terms': '取消与退出须分别核对原订单和授权。'
+    };

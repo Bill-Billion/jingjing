@@ -1,0 +1,130 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "checks": [
+    {
+      "name": "预览项目仍在制作且旧版已有实际收讫",
+      "result": "PASS"
+    },
+    {
+      "name": "重发沿用同一当前正式版本，生成新的交付编号和通知事件",
+      "result": "PASS"
+    },
+    {
+      "name": "旧查看、通知和收讫时钟全部清空，尚未起算新一期",
+      "result": "PASS"
+    },
+    {
+      "name": "重发采用原PROJECT版本并保存明确理由",
+      "result": "PASS"
+    },
+    {
+      "name": "出演项目仅有一份开放延期工单",
+      "result": "PASS"
+    },
+    {
+      "name": "独立处理原延期工单为RESOLVED，项目按原约定恢复STARTED",
+      "result": "PASS"
+    },
+    {
+      "name": "历史工单保留且开放工单清空，未另建工单",
+      "result": "PASS"
+    },
+    {
+      "name": "独立处理不带主体，使用原工单、原PROJECT版本及明确理由",
+      "result": "PASS"
+    },
+    {
+      "name": "仅发生两项指定Web写入且无浏览器或API错误",
+      "result": "PASS"
+    }
+  ],
+  "reissue": {
+    "project_id": "f85c7082-b8d7-45f8-865e-39d936de3a79",
+    "version_id": "50cad704-d1ba-4553-b652-533f2af523d6",
+    "old_receipt": {
+      "job_id": "a2707dd9-5206-4979-ab7f-e3fffe31452f",
+      "started_at": "2026-10-22T04:05:32.784Z",
+      "version_id": "50cad704-d1ba-4553-b652-533f2af523d6",
+      "deadline_at": "2026-10-29T04:05:32.784Z",
+      "delivery_id": "327d9e5c-f64a-4436-9f30-42b939ac1084",
+      "notified_at": "2026-10-22T04:05:32.784Z",
+      "buyer_account_id": "32447dfc-d82c-4a9f-b1a2-a2d6630f6f40",
+      "view_observed_at": "2026-10-22T04:05:30.231Z",
+      "notification_event_id": 61
+    },
+    "new_receipt": {
+      "job_id": null,
+      "started_at": null,
+      "version_id": "50cad704-d1ba-4553-b652-533f2af523d6",
+      "deadline_at": null,
+      "delivery_id": "fd1ab2ee-9198-4b1a-b97e-158c70c3d738",
+      "notified_at": null,
+      "buyer_account_id": null,
+      "view_observed_at": null,
+      "notification_event_id": 236
+    },
+    "object_version_before": 7,
+    "object_version_after": 8
+  },
+  "resume": {
+    "project_id": "064617c6-35a9-437a-815f-2c5dc74416fe",
+    "case_id": "9a75bc08-ee31-4316-a375-60cc7911b86b",
+    "state_before": "PAUSED",
+    "state_after": "STARTED",
+    "historical_case_count": 1,
+    "open_case_count": 0,
+    "resolution": {
+      "at": "2026-10-22T04:08:57.559Z",
+      "reason": "仅用于隔离合成验收：已读取本项目当前延期工单，按原约定恢复制作。",
+      "decision": "RESUME",
+      "reviewer": "f77b7aaa-4e61-473a-9f87-4b3ab34198d4",
+      "retained_minor": null,
+      "change_order_id": null
+    }
+  },
+  "writes": [
+    {
+      "role": "producer",
+      "path": "/api/v1/production/projects/f85c7082-b8d7-45f8-865e-39d936de3a79/reissue",
+      "method": "POST",
+      "if_match": "\"7\"",
+      "idempotency_key": "485e2757-bc04-4e3d-aeb1-e1e26a08582d",
+      "acting_party": "14ce0802-57b5-4de1-a2cd-a466c884495a",
+      "body": {
+        "version_id": "50cad704-d1ba-4553-b652-533f2af523d6",
+        "reason": "隔离合成跨端验收：按原正式样片重新发送交付通知，供买方重新查看并明确确认本次收讫。"
+      }
+    },
+    {
+      "role": "reviewer",
+      "path": "/api/v1/production/projects/064617c6-35a9-437a-815f-2c5dc74416fe/case-resolution",
+      "method": "POST",
+      "if_match": "\"4\"",
+      "idempotency_key": "8af4d0c4-0730-4de3-96f8-82139ca60d6a",
+      "acting_party": null,
+      "body": {
+        "case_id": "9a75bc08-ee31-4316-a375-60cc7911b86b",
+        "decision": "RESUME",
+        "retained_minor": null,
+        "change_order_id": null,
+        "reason": "仅用于隔离合成验收：已读取本项目当前延期工单，按原约定恢复制作。"
+      }
+    }
+  ],
+  "screenshots": [
+    "recovery-01-reissue-before.png",
+    "recovery-02-reissue-after.png",
+    "recovery-03-resume-before.png",
+    "recovery-04-resume-after.png"
+  ],
+  "page_errors": [],
+  "api_errors": [],
+  "current_action": null,
+  "failure": null,
+  "limits": [
+    "仅操作隔离合成fixture的preview重发和performer当前延期工单",
+    "没有修改产品、后端或数据库，也未操作cross或final_paid项目",
+    "没有读最终文件、模拟签署、支付或退款"
+  ]
+}

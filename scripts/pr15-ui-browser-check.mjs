@@ -156,7 +156,10 @@ async function run() {
     const r = post(p, '/payments/' + payment.id + '/reconciliation'); await p.getByRole('button', { name: '核实支付结果', exact: true }).click(); payment = await data(await r)
     assert.equal(payment.current_status, 'SUCCEEDED'); await go(p, '/trade/orders/' + order.id)
     order = await api(buyer, 'GET', '/trade/records/' + order.id); assert.equal(order.data.financial.received_minor, 18000); assert.equal(order.current_status, 'PAID')
-    await p.getByRole('button', { name: '本单无制作明细', exact: true }).waitFor(); await shot(p, 'order-paid-desktop')
+    assert(order.data.quote.lines.every(line => line.line_kind !== 'PRODUCTION'))
+    await p.getByText('本单无可用制作明细或缺少原履约条款。', { exact: true }).waitFor()
+    assert.equal(await p.locator(`a[href^="/production/orders/${order.id}/"]`).count(), 0, 'Paid non-production order must not offer project creation')
+    await shot(p, 'order-paid-desktop')
   })
   await check('退款逐项金额→独立复核→单独执行→实际渠道核实', async () => {
     const p = buyer.page; await go(p, '/trade/refunds/new'); await p.getByTestId('trade-refund-payment').selectOption(payment.id)

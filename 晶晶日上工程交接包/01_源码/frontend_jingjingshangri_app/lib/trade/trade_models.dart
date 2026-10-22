@@ -1,3 +1,4 @@
+import 'dart:convert';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
 import '../gigs/gig_models.dart' show gigCommercial;
@@ -127,6 +128,7 @@ const tradeStatuses = {
   'OPEN': '待付款',
   'PARTIALLY_PAID': '已收到部分款',
   'PAID': '约定款项已收齐',
+  'REWARD_FUNDED': '制作权益已覆盖款项，待开工核销',
   'PARTIALLY_REFUNDED': '已核实部分退款',
   'REFUNDED': '已核实全部退款',
   'PAYMENT_REVIEW_REQUIRED': '收款异常待人工核对',
@@ -155,6 +157,7 @@ const _statuses = {
   'QUOTE': ['IN_REVIEW', 'APPROVED', 'REJECTED', 'ACCEPTED'],
   'ORDER': [
     'OPEN',
+    'REWARD_FUNDED',
     'PARTIALLY_PAID',
     'PAID',
     'PARTIALLY_REFUNDED',
@@ -218,9 +221,110 @@ const artistServiceNames = {
   'AVATAR_HOSTING': '数字人托管',
   'HALO_REVIEW': '认证资料审核',
 };
-void validateTradeSpecification(dynamic value) => _spec(value);
-void _spec(dynamic value) {
+void validateCustomizationDeliveryTerms(dynamic value) {
   final d = tradeMap(value);
+  tradeRequire(d.length == 5 &&
+      _text(d['version'], 128) &&
+      _text(d['source_ref'], 128) &&
+      _text(d['cancellation_terms']) &&
+      ['PREVIEW_BEFORE_INTERIM', 'INTERIM_BEFORE_PREVIEW']
+          .contains(d['preview_payment_order']) &&
+      d['acceptance_hours'] is int &&
+      d['acceptance_hours'] >= 1 &&
+      d['acceptance_hours'] <= 720);
+}
+
+bool tradeCustomizationRulesReady(TradeRecord order) =>
+    order.quote['customization'] == null ||
+    order.quote['customization_change'] != null ||
+    order.lines
+            .where((l) => ['PRIVATE_CUSTOMIZATION', 'MANUAL_SAMPLE']
+                .contains(l['product_profile']?['type']))
+            .isNotEmpty &&
+        order.lines
+            .where((l) => ['PRIVATE_CUSTOMIZATION', 'MANUAL_SAMPLE']
+                .contains(l['product_profile']?['type']))
+            .every((l) => l['specification']['customization_delivery'] != null);
+
+void validateTradeSpecification(dynamic value) => _spec(value);
+void validateTradeStockLicense(dynamic value, {bool snapshot = false}) {
+  final d = tradeMap(value);
+  tradeRequire(d.length == (snapshot ? 9 : 7) &&
+      d['scope'] == 'PERSONAL_NONCOMMERCIAL' &&
+      d['exclusive'] == false &&
+      d['territory'] == 'WORLDWIDE' &&
+      d['duration'] == 'PERPETUAL' &&
+      d['personal_social_sharing'] == true &&
+      d['acceptance_hours'] is int &&
+      d['acceptance_hours'] >= 1 &&
+      d['acceptance_hours'] <= 720 &&
+      _text(d['aftercare_terms']));
+  if (snapshot) {
+    const excluded = [
+      'COMMERCIAL_ADVERTISING',
+      'ADAPTATION',
+      'DISTRIBUTION',
+      'VOICE_SEPARATELY',
+      'AI_REGENERATION',
+      'SOURCE_OR_MODEL_FILES',
+      'NEW_AVATAR_CONTENT',
+      'EXCLUSIVE_BUYOUT'
+    ];
+    tradeRequire(d['limited_to_buyer'] == true &&
+        jsonEncode(d['excluded']) == jsonEncode(excluded));
+  }
+}
+
+void validateTradeAuditionTerms(dynamic value) {
+  final d = tradeMap(value);
+  tradeRequire(d.length == 7 && _text(d['version'], 128) && _text(d['terms']));
+  for (final entry in {
+    'accept_hours': 168,
+    'acceptance_hours': 720,
+    'photo_count': 30,
+    'video_count': 5,
+    'payment_window_minutes': 1440
+  }.entries) {
+    tradeRequire(d[entry.key] is int &&
+        d[entry.key] >= 1 &&
+        d[entry.key] <= entry.value);
+  }
+}
+
+List<Map<String, dynamic>> tradeInstallments(Map<String, dynamic> quote) {
+  final raw = quote['installments'];
+  tradeRequire(raw is List && raw.length <= 20);
+  if ((raw as List).isEmpty) {
+    tradeRequire(quote['total_minor'] == 0 &&
+        quote['discount'] is Map &&
+        quote['discount']['coverage'] == 'FULL');
+    return [];
+  }
+  return tradeRows(raw, max: 20);
+}
+
+void _spec(dynamic value, {bool participation = false}) {
+  final d = tradeMap(value);
+  if (participation) {
+    tradeRequire(
+        d.length == 2 && _text(d['version'], 128) && _text(d['terms']));
+    return;
+  }
+  if (d.containsKey('stock_license')) {
+    tradeRequire(
+        d.length == 3 && _text(d['version'], 128) && _text(d['terms']));
+    validateTradeStockLicense(d['stock_license']);
+    return;
+  }
+  if (d.containsKey('audition')) {
+    tradeRequire(d.keys.every(
+            ['version', 'terms', 'audition', 'additional_terms'].contains) &&
+        _text(d['version'], 128) &&
+        _text(d['terms']) &&
+        (!d.containsKey('additional_terms') || _text(d['additional_terms'])));
+    validateTradeAuditionTerms(d['audition']);
+    return;
+  }
   tradeRequire(_text(d['version'], 128) &&
       _text(d['service_tier'], 100) &&
       _text(d['terms']));
@@ -254,6 +358,9 @@ void _spec(dynamic value) {
             v['retry_limit'] == 0);
     }
   } else {
+    if (d.containsKey('customization_delivery')) {
+      validateCustomizationDeliveryTerms(d['customization_delivery']);
+    }
     for (final k in ['sample_seconds', 'final_seconds', 'revision_limit']) {
       tradeRequire(d[k] is int && d[k] >= 0 && d[k] <= 100000);
     }
@@ -265,6 +372,62 @@ void _spec(dynamic value) {
 }
 
 void _quote(Map<String, dynamic> d) {
+  final fullCoverage = d['discount'] is Map &&
+      d['discount']['coverage'] == 'FULL' &&
+      d['total_minor'] == 0;
+  if (d['stock_video'] != null) {
+    final stock = tradeMap(d['stock_video']);
+    tradeRequire(stock.length == 3 &&
+        isContractId('${stock['listing_id']}') &&
+        RegExp(r'^[a-f0-9]{64}$').hasMatch('${stock['offer_sha256']}') &&
+        d['transaction_model'] == 'DIRECT_SUPPLIER');
+    validateTradeStockLicense(stock['license'], snapshot: true);
+  }
+  if (d['audition'] != null) {
+    final audition = tradeMap(d['audition']),
+        appointment = tradeMap(audition['appointment']);
+    tradeRequire(audition.length == 6 &&
+        ['booking_id', 'person_id', 'avatar_id']
+            .every((k) => isContractId('${audition[k]}')) &&
+        RegExp(r'^[a-f0-9]{64}$').hasMatch('${audition['offer_sha256']}') &&
+        audition['performance_rights_granted'] == false &&
+        ['OFFLINE', 'ONLINE_MATERIALS'].contains(appointment['mode']) &&
+        ['city', 'venue', 'address', 'purpose']
+            .every((k) => _text(appointment[k], 2000)) &&
+        DateTime.tryParse('${appointment['starts_at']}') != null &&
+        DateTime.tryParse('${appointment['ends_at']}') != null &&
+        DateTime.parse(appointment['starts_at'])
+            .isBefore(DateTime.parse(appointment['ends_at'])) &&
+        DateTime.parse(appointment['ends_at'])
+                .difference(DateTime.parse(appointment['starts_at']))
+                .inHours <=
+            24);
+  }
+  if (d['audition_supplement'] != null) {
+    final a = tradeMap(d['audition_supplement']);
+    tradeRequire(a.length == 8 &&
+        [
+          'supplement_id',
+          'booking_id',
+          'original_order_id',
+          'person_id',
+          'avatar_id'
+        ].every((k) => isContractId('${a[k]}')) &&
+        ['original_contract_sha256', 'supplement_sha256']
+            .every((k) => RegExp(r'^[a-f0-9]{64}$').hasMatch('${a[k]}')) &&
+        a['performance_rights_granted'] == false &&
+        d['audition'] == null);
+  }
+  if (d['participation'] != null) {
+    final a = tradeMap(d['participation']);
+    tradeRequire(a.length == 7 &&
+        ['agreement_id', 'project_id', 'candidate_id', 'avatar_id']
+            .every((k) => isContractId('${a[k]}')) &&
+        RegExp(r'^[a-f0-9]{64}$').hasMatch('${a['agreement_sha256']}') &&
+        a['terms'] is Map &&
+        a['cast'] is Map &&
+        d['transaction_model'] == 'DIRECT_SUPPLIER');
+  }
   if (d['customization'] != null) {
     final source = tradeMap(d['customization']);
     tradeRequire(isContractId('${source['request_id']}') &&
@@ -300,8 +463,8 @@ void _quote(Map<String, dynamic> d) {
     tradeRequire(d['transaction_model'] == 'DIRECT_SUPPLIER');
   }
   tradeRequire(d['currency'] == 'CNY' &&
-      tradeMinor(d['total_minor']) &&
-      ['ALIPAY', 'APPLE'].contains(d['channel']) &&
+      tradeMinor(d['total_minor'], zero: fullCoverage) &&
+      ['ALIPAY', 'APPLE', 'CUSTODY'].contains(d['channel']) &&
       ['DIRECT_SUPPLIER', 'PLATFORM_PRINCIPAL']
           .contains(d['transaction_model']) &&
       isContractId('${d['rule_id']}') &&
@@ -311,17 +474,30 @@ void _quote(Map<String, dynamic> d) {
   for (final l in lines) {
     tradeRequire(_text(l['title'], 200) &&
         _text(l['line_id'], 128) &&
-        isContractId('${l['spec_id']}') &&
+        (isContractId('${l['spec_id']}') ||
+            l['spec_id'] == null &&
+                l['spec_version'] == null &&
+                l['review'] == null &&
+                l['line_kind'] == 'OTHER' &&
+                l['product_profile']?['version'] == 'V5' &&
+                (l['product_profile']?['type'] == 'COMMERCIAL' &&
+                        d['participation'] is Map ||
+                    l['product_profile']?['type'] == 'AUDITION' &&
+                        (d['audition'] is Map ||
+                            d['audition_supplement'] is Map))) &&
         isContractId('${l['provider_party_id']}') &&
         ['LICENSE', 'PRODUCTION', 'OTHER'].contains(l['line_kind']) &&
         l['quantity'] is int &&
         l['quantity'] >= 1 &&
         l['quantity'] <= 10000 &&
-        tradeMinor(l['unit_minor']) &&
-        tradeMinor(l['total_minor']) &&
+        tradeMinor(l['unit_minor'], zero: fullCoverage) &&
+        tradeMinor(l['total_minor'], zero: fullCoverage) &&
         l['total_minor'] == l['unit_minor'] * l['quantity'] &&
         l['currency'] == 'CNY');
-    _spec(l['specification']);
+    _spec(l['specification'],
+        participation: l['spec_id'] == null &&
+            l['product_profile']?['type'] == 'COMMERCIAL' &&
+            d['participation'] is Map);
     if (l['specification']['service'] != null) {
       tradeRequire(l['product_profile'] is Map &&
           l['product_profile']['version'] == 'V5' &&
@@ -332,7 +508,8 @@ void _quote(Map<String, dynamic> d) {
   }
   tradeRequire(total == d['total_minor'] &&
       lines.map((l) => l['line_id']).toSet().length == lines.length);
-  final installments = tradeRows(d['installments'], max: 20);
+  if (d['discount'] != null) _discount(d, lines, fullCoverage);
+  final installments = tradeInstallments(d);
   final allocated = <String, int>{};
   for (final i in installments) {
     tradeRequire(
@@ -345,7 +522,10 @@ void _quote(Map<String, dynamic> d) {
   }
   if (d['artist_service'] != null) {
     final a = tradeMap(d['artist_service']);
-    tradeRequire(a.length == 8 && (a['kind'] == 'HALO_REVIEW' ? a['avatar_id'] == null : isContractId('${a['avatar_id']}')) &&
+    tradeRequire(a.length == 8 &&
+        (a['kind'] == 'HALO_REVIEW'
+            ? a['avatar_id'] == null
+            : isContractId('${a['avatar_id']}')) &&
         ['service_id', 'person_id', 'spec_id']
             .every((k) => isContractId('${a[k]}')) &&
         RegExp(r'^[a-f0-9]{64}$').hasMatch('${a['service_sha256']}') &&
@@ -382,11 +562,81 @@ void _quote(Map<String, dynamic> d) {
   } else {
     tradeRequire(lines.every((l) => l['specification']['service'] == null));
   }
-  tradeRequire(
+  tradeRequire(fullCoverage ||
       installments.map((i) => i['key']).toSet().length == installments.length &&
           allocated.length == lines.length &&
           lines.every((l) => allocated[l['line_id']] == l['total_minor']));
 }
+
+void _discount(
+    Map<String, dynamic> quote, List<Map<String, dynamic>> lines, bool full) {
+  final d = tradeMap(quote['discount']),
+      original = tradeRows(d['original_lines']);
+  final rule = tradeMap(d['rule_snapshot']),
+      production = tradeMap(rule['production']);
+  tradeRequire(d.length == 11 &&
+      isContractId('${d['hold_id']}') &&
+      isContractId('${d['grant_id']}') &&
+      RegExp(r'^[a-f0-9]{64}$').hasMatch('${d['original_quote_sha256']}') &&
+      tradeMinor(d['original_total_minor']) &&
+      tradeMinor(d['discount_minor']) &&
+      quote['total_minor'] == d['original_total_minor'] - d['discount_minor'] &&
+      d['coverage'] == (full ? 'FULL' : 'PARTIAL') &&
+      d['cashable'] == false &&
+      d['refund_forfeit'] == true &&
+      ['PRODUCTION_CREDIT', 'PRODUCTION_FREE', 'SERVICE_CREDIT']
+          .contains(d['source_kind']) &&
+      rule['kind'] == d['source_kind'] &&
+      _text(rule['terms']) &&
+      production['face_minor'] == d['discount_minor'] &&
+      tradeMinor(production['minimum_minor']) &&
+      d['original_total_minor'] >= production['minimum_minor'] &&
+      production['spec_ids'] is List &&
+      original.length == 1 &&
+      lines.length == 1 &&
+      quote['transaction_model'] == 'PLATFORM_PRINCIPAL' &&
+      quote['channel'] != 'APPLE' &&
+      quote['customization'] is Map &&
+      quote['customization_change'] == null &&
+      quote['cocreation'] == null);
+  final a = original.single, b = lines.single;
+  tradeRequire(a['quantity'] == 1 &&
+      b['quantity'] == 1 &&
+      a['product_profile']?['type'] == 'PRIVATE_CUSTOMIZATION' &&
+      b['product_profile']?['type'] == 'PRIVATE_CUSTOMIZATION' &&
+      a['line_kind'] == 'PRODUCTION' &&
+      b['line_kind'] == 'PRODUCTION' &&
+      ['line_id', 'spec_id', 'provider_party_id', 'currency']
+          .every((k) => a[k] == b[k]) &&
+      (production['spec_ids'] as List).contains(b['spec_id']) &&
+      a['unit_minor'] == d['original_total_minor'] &&
+      a['total_minor'] == d['original_total_minor']);
+  _spec(a['specification']);
+  tradeRequire(tradeSame(a['specification'], b['specification']) &&
+      tradeSame(a['product_profile'], b['product_profile']) &&
+      a['title'] == b['title']);
+}
+
+bool tradeSame(dynamic a, dynamic b) {
+  if (a is Map && b is Map) {
+    return a.length == b.length &&
+        a.keys.every((k) => b.containsKey(k) && tradeSame(a[k], b[k]));
+  }
+  if (a is List && b is List) {
+    return a.length == b.length &&
+        List.generate(a.length, (i) => tradeSame(a[i], b[i])).every((v) => v);
+  }
+  return a == b;
+}
+
+String tradeChannel(dynamic channel) =>
+    const {'ALIPAY': '支付宝', 'APPLE': 'Apple', 'CUSTODY': '资金托管账户'}[channel] ??
+    '未知渠道';
+
+String tradeSpecificationTitle(Map<String, dynamic> spec) =>
+    '${spec['service_tier'] ?? (spec['stock_license'] != null ? '现成视频个人许可' : spec['audition'] != null ? '试镜预约服务' : '参演约定')} / ${spec['version']}';
+
+void validateTradeQuoteData(dynamic value) => _quote(tradeMap(value));
 
 void _contract(dynamic value, String party) {
   final c = tradeMap(value);
@@ -487,9 +737,15 @@ class TradeRecord {
         }
         tradeRequire(
             f['net_minor'] == f['received_minor'] - f['refunded_minor']);
+        if (r['current_status'] == 'REWARD_FUNDED') {
+          tradeRequire(d['quote']['discount']?['coverage'] == 'FULL' &&
+              d['quote']['total_minor'] == 0 &&
+              f['received_minor'] == 0 &&
+              f['refunded_minor'] == 0);
+        }
       case 'PAYMENT':
       case 'REFUND':
-        tradeRequire(['ALIPAY', 'APPLE'].contains(d['provider']) &&
+        tradeRequire(['ALIPAY', 'APPLE', 'CUSTODY'].contains(d['provider']) &&
             ['SANDBOX', 'PRODUCTION'].contains(d['environment']) &&
             d['currency'] == 'CNY' &&
             tradeMinor(d['amount_minor']));
@@ -572,7 +828,20 @@ String tradeError(Object e, {bool writing = false}) {
     return '许可约定的生效付款金额尚未核实。付款仍须满足签署、身份及权属核验，不能代替许可办理。';
   }
   if (e.code == 'CUSTOMIZATION_PAYMENT_RULES_PENDING') {
-    return '定制付款条件尚未开放。这笔订单尚未付款，签署与制作需另行办理。';
+    return '这笔旧订单缺少已确认的定制付款条款，暂不能办理付款。请由平台核对原约定，不会自动补用新规则。';
+  }
+  if (['CUSTOMIZATION_PAYMENT_PAUSED', 'CUSTOMIZATION_CHANGE_PAYMENT_REVERSED']
+      .contains(e.code)) {
+    return '原制作或追加订单有问题待处理，付款已暂停。请从原项目查看售后记录。';
+  }
+  if (e.code == 'INSTALLMENT_NOT_READY') {
+    return '当前具体版本尚未满足这笔原付款节点。请先回制作项目核对预览或成片确认。';
+  }
+  if (e.code == 'CUSTOMIZATION_CANCELLATION_REVIEW_REQUIRED') {
+    return '请先从原制作项目申请取消并等待独立核定应退金额，再办理原付款退款。';
+  }
+  if (e.code == 'CUSTOMIZATION_REFUND_EXCEEDS_DECISION') {
+    return '本次申请超过原项目独立核定的可退款金额，请核对已申请及实际退款。';
   }
   if (e.code == 'CUSTOMIZATION_ORDER_EXISTS') {
     return '这份故事已有一笔订单，请返回需求查看原订单，不要重建。';

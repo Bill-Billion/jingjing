@@ -1,0 +1,64 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "request_id": "a510167a-9cc8-49e3-a795-0d95b5a3eebe",
+  "checks": [
+    "本人未明确核对前禁止确认",
+    "实际本人用绑定记录原版本与哈希明确确认；项目、付款、交付仍为空",
+    "专用本人约定页面不前置读取通用项目/履约，不探测成片",
+    "窄屏页面无运行异常或Flutter溢出"
+  ],
+  "screenshots": [
+    {
+      "file": "21-manual-agreement-375.png",
+      "route": "/production/manual-sample?requestId=a510167a-9cc8-49e3-a795-0d95b5a3eebe",
+      "viewport": {
+        "width": 375,
+        "height": 844
+      },
+      "source": "37-custom-top.png / 66、38-custom-extra.png / 67及本人授权延伸",
+      "note": "实际本人身份、已绑定具体cast与约定；无订单/付款/成片"
+    },
+    {
+      "file": "22-manual-self-confirm-390.png",
+      "route": "/production/manual-sample?requestId=a510167a-9cc8-49e3-a795-0d95b5a3eebe",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "37-custom-top.png / 66、38-custom-extra.png / 67及本人授权延伸",
+      "note": "仅本人确认原绑定快照，不代替报价、付款或验收"
+    },
+    {
+      "file": "23-manual-confirmed-390.png",
+      "route": "/production/manual-sample?requestId=a510167a-9cc8-49e3-a795-0d95b5a3eebe",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "37-custom-top.png / 66、38-custom-extra.png / 67及本人授权延伸",
+      "note": "本人确认已记录，仍未有订单或成片；50/50规则不混三期"
+    }
+  ],
+  "reads": [
+    "/api/v1/me",
+    "/api/v1/me/parties",
+    "/api/v1/customization-requests/a510167a-9cc8-49e3-a795-0d95b5a3eebe/manual-sample",
+    "/api/v1/customization-requests/a510167a-9cc8-49e3-a795-0d95b5a3eebe/manual-sample"
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/customization-requests/a510167a-9cc8-49e3-a795-0d95b5a3eebe/manual-sample/confirmation",
+      "version": "\"1\"",
+      "body": {
+        "content_sha256": "7e7dcef2fea868b2d975158cafc150c7e221dd860bd1b2f07ce5e72a239807ca"
+      }
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "未创建人工样片订单或付费",
+    "本人专用成片下载的权限另有专项测试，本次没有可下载成片",
+    "浏览器Flutter页面，未声称原生真机"
+  ]
+}

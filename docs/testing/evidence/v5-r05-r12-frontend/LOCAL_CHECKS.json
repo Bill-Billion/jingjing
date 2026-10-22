@@ -1,0 +1,88 @@
+{
+  "result": "PASS_REQUIRED_FRONTEND_SCOPE",
+  "checks": [
+    {
+      "command": "flutter test",
+      "result": "PASS",
+      "log": ".local/r05-r12-app-tests-final.log",
+      "log_sha256": "17121d7930a9204c0f37a5357abd0b4b33b2229c8fb764e4d9849926a8433eca",
+      "passed": 461,
+      "note": "全套完成后仅偏好范围标签排版再调整，专项1项和320/390/768重拍复验通过，见APP_09_12_VISUAL_REVIEW.json。"
+    },
+    {
+      "command": "dart analyze：本轮及既有业务lib/test、app入口",
+      "result": "PASS",
+      "log": ".local/r05-r12-app-analyze-final.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": 0
+    },
+    {
+      "command": "flutter test：原请求恢复、全额券取消及试镜专项",
+      "result": "PASS",
+      "log": ".local/r05-r12-recovery-audition-final.log",
+      "log_sha256": "f7bcf3c4d3f6040c8aa4470e90cd808e9634938047b70d8a0d513247984ab3c2",
+      "passed": 10,
+      "overlaps_full_suite": true
+    },
+    {
+      "command": "flutter build web --no-web-resources-cdn --no-pub --release（普通lib/main.dart）",
+      "result": "PASS",
+      "log": ".local/r05-r12-app-product-build.log",
+      "log_sha256": "43b44f9f00f7040706a3bf9fdc5f7a68aa098a250da522cd2ce24a3381ac68e7",
+      "synthetic_entry": false
+    },
+    {
+      "command": "npm test，Node22.5.1",
+      "result": "PASS",
+      "log": ".local/r05-r12-web-node22-final.log",
+      "log_sha256": "c8ad28a7c96e400a6739937f41ef048e280420b545595202a3cf9da1fa213fff",
+      "groups": 13,
+      "passed": 297
+    },
+    {
+      "command": "npm test，Node26.3.0",
+      "result": "PASS",
+      "log": ".local/r05-r12-web-node26-final.log",
+      "log_sha256": "a348996b1b8f3d81672c26f244332a5c66df747284c71bedbe7352fe74f7d955",
+      "groups": 13,
+      "passed": 297,
+      "same_tests_repeated": true
+    },
+    {
+      "command": "npm run build（含vue-tsc）",
+      "result": "PASS",
+      "log": ".local/r05-r12-web-build-final.log",
+      "log_sha256": "686904a1547b86145d970b8845bf9648b77a8a71b750b0c9845e7ea7e2ba5bdb",
+      "warning": "既有主包大于500kB的体积提示"
+    },
+    {
+      "command": "flutter build apk --debug --no-pub",
+      "result": "ENVIRONMENT_BLOCKED",
+      "log": ".local/r05-r12-android-build.log",
+      "log_sha256": "a554d3b172f0a9b3a5ff597f68d3ae700c60a3fd8b3f67de77628dbec8e0241e",
+      "reason": "Gradle9.3.1下载镜像的Java网络隧道Unexpected end of file；未到源码编译，未完成APK或真机验收。"
+    }
+  ],
+  "logs_note": "原日志在忽略的本机.local目录；此处记录执行结果、范围和原日志SHA-256。实际HTTP、截图、DTO及业务记录另有随PR交付的JSON。",
+  "not_verified": [
+    "Android/iOS实际手机",
+    "正式支付、短信、实名、电子签、私有存储",
+    "真实影像和长期模型质量、旧库迁移及容量"
+  ],
+  "collaboration_check": {
+    "result": "PASS",
+    "requirements": 60,
+    "current_doc_links": 715,
+    "errors": [],
+    "log_sha256": "13dab60f14194ea9fb71edae86228bb83b86c9320d094253d12b5e8107c76711"
+  },
+  "legacy_project_browser_regression": {
+    "result": "PASS",
+    "node": "22.5.1",
+    "fixture_checks": 11,
+    "browser_checks": 14,
+    "evidence": "CI_FIX.json",
+    "product_source_changed": false,
+    "initial_failure_reproduced": "409 PARTICIPATION_AGREEMENT_REQUIRED"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-21",
+  "updated_on": "2026-10-22",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -8076,5 +8076,105 @@
     "production_enabled": false,
     "native_scenarios": 3,
     "evidence": "docs/testing/evidence/r03-core-review-20261021/RESULTS.json"
+  },
+  "frontend_r04_production_20261022": {
+    "owner": "Bill-Billion",
+    "branch": "ux/v5-r04-production-frontend",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/33",
+    "base": "integration/2608ef77fd57fad86d2533c2c4eb03c9c7c2c1a8",
+    "status": "IN_REVIEW",
+    "scope": "按先锋电影刊物原稿接制作、付款、正式预览/收讫/反馈、成片受控交付及售后；原业务接口和权限保留",
+    "record": "docs/tasks/records/UX-v5-r04-production-frontend-20261022.md",
+    "peer_review": "PENDING",
+    "test_status": "PASS",
+    "app_checks": 346,
+    "web_checks": 255,
+    "screenshots": 110,
+    "evidence": "docs/testing/evidence/v5-r04-frontend/RESULTS.json",
+    "blockers": [
+      "R04-CORE-01：原冻结故事创意追加报价409 CUSTOMIZATION_ORDER_EXISTS；Core报价/审核/确认/绑定修复后复验。"
+    ],
+    "production_enabled": false,
+    "latest_review_check": {
+      "checked_at": "2026-10-22T17:58:18+08:00",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/33",
+      "head": "11abe254ad35280b5d8f404c4c96c323e5d6109d",
+      "state": "OPEN",
+      "draft": true,
+      "current_checks_success": 8,
+      "formal_reviews": 0,
+      "inline_review_comments": 0,
+      "review_threads": 0,
+      "discussion_comments": 0,
+      "requested_reviewer": "chengcongcong222",
+      "frontend_review_action_items": 0,
+      "source_updated_since_previous_delivery": false,
+      "peer_review": "PENDING_NOT_APPROVED"
+    }
+  },
+  "frontend_r05_r12_20261022": {
+    "owner": "Bill-Billion",
+    "branch": "ux/v5-r05-r12-frontend",
+    "base": "ux/v5-r04-production-frontend/11abe254ad35280b5d8f404c4c96c323e5d6109d",
+    "integration": "2608ef77fd57fad86d2533c2c4eb03c9c7c2c1a8",
+    "dependency": "PR33第四轮页面及履约，尚未合入integration；本批集中PR只比较5–12增量",
+    "status": "IN_REVIEW",
+    "scope": "按先锋电影刊物原稿完成第5–12轮App和运营/MCN网页，保留接口与业务；真实联调、逐页截图、检查后集中PR",
+    "authorization": "2026-10-22用户明确选择继续制作5—12轮，单列后端阻断",
+    "record": "docs/tasks/records/UX-v5-r05-r12-frontend-20261022.md",
+    "peer_review": "PENDING",
+    "test_status": "PASS_REQUIRED_FRONTEND_SCOPE",
+    "backend_blockers": [
+      "R04-CORE-01原故事追加报价409，Core未修复",
+      "CUSTODY充值/付款尚无实际adapter，前端不得假报成功",
+      "隐私清理/素材审核覆盖与真实服务分项验收仍保留待办"
+    ],
+    "production_enabled": false,
+    "app_checks": 461,
+    "web_checks": 297,
+    "web_test_groups": 13,
+    "screenshots": 404,
+    "app_screenshots": 246,
+    "web_screenshots": 158,
+    "evidence": "docs/testing/evidence/v5-r05-r12-frontend/RESULTS.json",
+    "visual_comparison": "docs/testing/evidence/v5-r05-r12-frontend/index.html",
+    "handoff": "docs/collaboration/V5_R05_R12_FRONTEND_HANDOFF.md",
+    "backend_blockers_record": "docs/collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md",
+    "remote_checks": "见本分支PR当前提交，不能使用PR33旧检查",
+    "native_device": "NOT_RUN; APK_ENVIRONMENT_BLOCKED_GRADLE_DOWNLOAD",
+    "merged": false,
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/34",
+    "implementation_commit": "01337037516bb3c79f635972183279d7f1c5c459",
+    "uploaded": true,
+    "ci_regression_fix": "docs/testing/evidence/v5-r05-r12-frontend/CI_FIX.json",
+    "latest_review_check": {
+      "checked_at": "2026-10-22T17:58:18+08:00",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/34",
+      "head": "b749b277a0da94645ea31b8ceaece32af98de8f7",
+      "state": "OPEN",
+      "draft": false,
+      "current_checks_success": 8,
+      "formal_reviews": 0,
+      "inline_review_comments": 0,
+      "review_threads": 0,
+      "discussion_comments": 0,
+      "requested_reviewer": "chengcongcong222",
+      "frontend_review_action_items": 0,
+      "source_updated_since_previous_delivery": false,
+      "peer_review": "PENDING_NOT_APPROVED"
+    }
+  },
+  "frontend_followup_20261022": {
+    "owner": "chengcongcong222",
+    "source_prs": [
+      33,
+      34
+    ],
+    "status": "本地修复及必要复验通过，待集中远端检查和合入",
+    "record": "docs/tasks/records/CORE-frontend-followup-20261022.md",
+    "production_enabled": false,
+    "report": "docs/testing/FRONTEND_FOLLOWUP_20261022.md",
+    "remaining_backend_items": 8,
+    "peer_review_of_core_fixes": "NOT_CLAIMED"
   }
 }

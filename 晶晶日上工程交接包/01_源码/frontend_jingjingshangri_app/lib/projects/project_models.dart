@@ -11,9 +11,12 @@ const projectKinds = [
   'EDITION',
   'CHANNEL',
   'RELEASE',
-  'EXTERNAL_EVENT'
+  'EXTERNAL_EVENT',
+  'PARTICIPATION',
+  'INCOME_AGREEMENT'
 ];
 const projectStatuses = {
+  'SUPERSEDED': '已由新约定替代，原记录保留',
   'PREPARING': '筹备中',
   'STARTED': '已开工',
   'CANCELLED': '已取消',
@@ -232,6 +235,14 @@ class ProjectRecord {
         : projectIdValid(r['project_id']));
     const states = {
       'PROJECT': ['PREPARING', 'STARTED', 'CANCELLED'],
+      'PARTICIPATION': [
+        'IN_REVIEW',
+        'APPROVED',
+        'REJECTED',
+        'WITHDRAWN',
+        'SUPERSEDED'
+      ],
+      'INCOME_AGREEMENT': ['IN_REVIEW', 'APPROVED', 'REJECTED'],
       'ROLE': ['OPEN'],
       'CANDIDATE': [
         'INVITED',
@@ -273,13 +284,99 @@ class ProjectRecord {
           'scope',
           'current_plan_id',
           'current_edition_id',
-          'cancel_reason'
+          'cancel_reason',
+          if (d.containsKey('business_version')) 'business_version',
+          if (d.containsKey('current_income_id')) 'current_income_id',
+          if (d.containsKey('revision')) 'revision'
         ]);
+        projectRequire(!d.containsKey('business_version') ||
+            d['business_version'] == 'V5');
+        projectRequire(d['current_income_id'] == null ||
+            projectIsId(d['current_income_id']));
+        if (d['revision'] != null) {
+          final rev = projectMap(d['revision'], keys: [
+            'previous_plan_id',
+            'previous_edition_id',
+            'reason',
+            'evidence_asset_id'
+          ]);
+          projectRequire(projectIsId(rev['previous_plan_id']) &&
+              (rev['previous_edition_id'] == null ||
+                  projectIsId(rev['previous_edition_id'])) &&
+              projectText(rev['reason']) &&
+              projectIsId(rev['evidence_asset_id']));
+        }
         projectRequire(projectText(d['title']) &&
             [d['current_plan_id'], d['current_edition_id']]
                 .every((v) => v == null || projectIdValid(v)) &&
             (d['cancel_reason'] == null || projectText(d['cancel_reason'])));
         projectScope(d['scope']);
+      case 'PARTICIPATION':
+        projectRequire(projectIsId(d['candidate_id']) &&
+            projectHash(d['candidate_sha256']) &&
+            projectIsId(d['role_id']) &&
+            projectIsId(d['avatar_id']) &&
+            projectIsId(d['consent_id']) &&
+            projectInt(d['fee_minor']) &&
+            projectIsId(d['evidence_asset_id']));
+        final cast = projectMap(d['cast'],
+            keys: ['person_id', 'look_version_id', 'voice_version_id']);
+        projectRequire(projectIsId(cast['person_id']) &&
+            projectIsId(cast['look_version_id']) &&
+            (cast['voice_version_id'] == null ||
+                projectIsId(cast['voice_version_id'])));
+        final terms = projectMap(d['terms']);
+        projectRequire(['FIXED_FEE', 'REVENUE_SHARE', 'MIXED']
+                .contains(terms['mode']) &&
+            terms['exclusive'] is bool &&
+            ['EXISTING_MATERIAL', 'NEW_GENERATION'].contains(terms['usage']) &&
+            projectInstant(terms['valid_until']));
+        for (final key in [
+          'territory',
+          'language',
+          'permitted_uses',
+          'prohibited_uses',
+          'cancellation_terms'
+        ]) {
+          projectRequire(projectText(terms[key]));
+        }
+        projectConfirmers(d['confirmers']);
+        projectRequire(terms['installments'] is List &&
+            terms['start_payment_keys'] is List);
+        if (d['amendment'] != null) {
+          final amend = projectMap(d['amendment']);
+          projectRequire(projectIsId(amend['previous_agreement_id']) &&
+              projectHash(amend['previous_sha256']) &&
+              projectInt(amend['cash_required_minor']) &&
+              ['PRICE_OR_TERMS', 'RECAST'].contains(amend['kind']) &&
+              amend['settlements'] is List);
+        }
+      case 'INCOME_AGREEMENT':
+        final revenue =
+            projectMap(d['revenue'], keys: ['basis', 'shares', 'terms']);
+        projectRequire(revenue['basis'] == 'VERIFIED_CHANNEL_NET_RECEIPTS' &&
+            projectText(revenue['terms']) &&
+            projectIsId(d['evidence_asset_id']));
+        final shares = projectList(revenue['shares'], min: 1, max: 30);
+        final parties = <String>{};
+        var sum = 0;
+        for (final share in shares) {
+          final v = projectMap(share, keys: ['party_id', 'bps', 'role']);
+          projectRequire(projectIsId(v['party_id']) &&
+              parties.add(v['party_id']) &&
+              projectInt(v['bps'], max: 10000) &&
+              [
+                'SUPPLIER',
+                'PLATFORM',
+                'MCN',
+                'RIGHTSHOLDER',
+                'PRODUCER',
+                'PARTICIPANT'
+              ].contains(v['role']));
+          sum += v['bps'] as int;
+        }
+        projectRequire(sum == 10000);
+        projectConfirmers(d['confirmers']);
       case 'ROLE':
         projectRole(d);
       case 'CANDIDATE':
@@ -306,8 +403,12 @@ class ProjectRecord {
           'funding',
           'terms',
           'roster_sha256',
-          'review'
+          'review',
+          if (d.containsKey('participation')) 'participation'
         ]);
+        if (d['participation'] != null) {
+          projectRequire(d['participation'] is Map);
+        }
         projectRequire(projectIdValid(d['production_project_id']) &&
             projectHash(d['roster_sha256']) &&
             projectText(d['terms']));

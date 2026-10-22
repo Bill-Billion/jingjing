@@ -1,6 +1,7 @@
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../contracts/contract_api.dart';
+import '../projects/project_api.dart';
 import 'trade_models.dart';
 
 class TradePage {
@@ -92,12 +93,34 @@ class TradeApi {
   }
 
   Future<TradeRecord> retry(String path) async {
+    final p = owner(), epoch = session.epoch;
     final op = pending(path);
     if (op == null) throw const AccountError(409, 'NO_PENDING_OPERATION');
     final body = tradeMap(op['body']);
     // Read a known result or target first. Only the original idempotent POST
     // resolves this operation; a read never authorizes a fresh decision.
-    if (op['resultId'] != null) {
+    if (path == '/api/v1/trade/participation-checkout' &&
+        op['resultId'] == null) {
+      final projects = ProjectsApi(session);
+      final agreement =
+          await projects.record(body['agreement_id'], kind: 'PARTICIPATION');
+      check(epoch, p);
+      await projects.record(agreement.projectId!, kind: 'PROJECT');
+      check(epoch, p);
+      final progress = await session.read(
+          '/api/v1/projects/participations/${agreement.id}/progress',
+          actingParty: p);
+      check(epoch, p);
+      tradeRequire(progress['agreement_id'] == agreement.id &&
+          (progress['order_id'] == null ||
+              isContractId('${progress['order_id']}')) &&
+          progress['milestones'] is List);
+      if (progress['order_id'] != null) {
+        final order = await record(progress['order_id']);
+        tradeRequire(order.kind == 'ORDER' &&
+            order.quote['participation']?['agreement_id'] == agreement.id);
+      }
+    } else if (op['resultId'] != null) {
       await record(op['resultId']);
     } else {
       final parts = path.split('/');
@@ -113,30 +136,63 @@ class TradeApi {
         await all('REFUND');
       }
     }
+    check(epoch, p);
     return write(path, body, version: op['version']);
   }
 
-  Future<TradeRecord> accept(TradeRecord quote) {
+  Future<TradeRecord> accept(TradeRecord quote,
+      {Map<String, dynamic>? rewardSelection}) {
     if (quote.kind != 'QUOTE' ||
         quote.status != 'APPROVED' ||
         !quote.isBuyer(owner())) {
       throw const AccountError(403, 'TRADE_BUYER_REQUIRED');
     }
-    return write('/api/v1/trade/quotes/${quote.id}/acceptance',
-        {'quote_sha256': quote.hash},
-        version: quote.version, kind: 'ORDER');
+    if (rewardSelection != null) {
+      tradeRequire(rewardSelection.length == 2 &&
+          isContractId('${rewardSelection['hold_id']}') &&
+          RegExp(r'^[a-f0-9]{64}$')
+              .hasMatch('${rewardSelection['adjusted_quote_sha256']}'));
+    }
+    return write(
+        '/api/v1/trade/quotes/${quote.id}/acceptance',
+        {
+          'quote_sha256': quote.hash,
+          if (rewardSelection != null) 'reward_selection': rewardSelection
+        },
+        version: quote.version,
+        kind: 'ORDER');
+  }
+
+  Future<TradeRecord> participationCheckout(
+      String agreementId, String hash, String channel) {
+    owner();
+    if (!isContractId(agreementId) ||
+        !RegExp(r'^[a-f0-9]{64}$').hasMatch(hash) ||
+        !['ALIPAY', 'CUSTODY'].contains(channel)) {
+      throw const AccountError(400, 'INVALID_PARTICIPATION_CHECKOUT');
+    }
+    return write(
+        '/api/v1/trade/participation-checkout',
+        {
+          'agreement_id': agreementId,
+          'agreement_sha256': hash,
+          'channel': channel,
+        },
+        kind: 'ORDER');
   }
 
   Future<TradeRecord> cancel(TradeRecord order, String reason) =>
       write('/api/v1/trade/orders/${order.id}/cancellation', {'reason': reason},
           version: order.version, kind: 'ORDER');
   Future<TradeRecord> payment(TradeRecord order, String key) {
-    final i = tradeRows(order.quote['installments'], max: 20)
-        .where((i) => i['key'] == key);
+    final i = tradeInstallments(order.quote).where((i) => i['key'] == key);
     if (!order.isBuyer(owner()) ||
         !['OPEN', 'PARTIALLY_PAID'].contains(order.status) ||
         i.length != 1) {
       throw const AccountError(422, 'INSTALLMENT_NOT_READY');
+    }
+    if (!tradeCustomizationRulesReady(order)) {
+      throw const AccountError(409, 'CUSTOMIZATION_PAYMENT_RULES_PENDING');
     }
     // Acceptance/payment gates are rechecked by the server for this original
     // installment. Local project summaries never establish financial facts.

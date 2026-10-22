@@ -6,15 +6,19 @@ import '../account/app_visual.dart';
 import '../pages/login/login_page.dart';
 import '../supply/supply_widgets.dart';
 import 'trade_models.dart';
+import '../contracts/contract_text.dart';
 
 Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
-        {bool locked = false, Widget? footer}) =>
+        {bool locked = false,
+        Widget? footer,
+        VoidCallback? onBack,
+        String lockedMessage = '操作结果尚未确认，请先恢复原请求核对。'}) =>
     PopScope(
         canPop: !locked,
         onPopInvokedWithResult: (didPop, result) {
           if (!didPop && locked) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(lockedMessage)));
           }
         },
         child: AccountTheme(
@@ -42,10 +46,13 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
                 appBar: AppBar(
                     title: Text(title),
                     leading: BackButton(onPressed: () {
+                      if (onBack != null) {
+                        onBack();
+                        return;
+                      }
                       if (locked) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+                            SnackBar(content: Text(lockedMessage)));
                         return;
                       }
                       if (Navigator.canPop(context)) {
@@ -55,8 +62,8 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
                       }
                     })),
                 body: SafeArea(
-                    child: Center(
-                        child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 560), child: ListView(padding: const EdgeInsets.fromLTRB(18, 20, 18, 0), children: [...children, const SizedBox(height: 24)])))))));
+                    child:
+                        Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 560), child: ListView(padding: const EdgeInsets.fromLTRB(18, 20, 18, 0), children: [...children, const SizedBox(height: 24)])))))));
 
 class TradeGate extends StatelessWidget {
   const TradeGate(
@@ -211,18 +218,57 @@ String tradeDate(dynamic v) =>
     DateTime.tryParse('$v')?.toLocal().toString().split('.').first ?? '$v';
 
 List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
+  if (spec['stock_license'] is Map) {
+    final license = spec['stock_license'];
+    return [
+      tradeFact('许可用途', '仅买方本人非商业使用，可在个人社交账号分享'),
+      tradeFact('地区 / 期限', '全球 / 永久；非独家'),
+      tradeFact('确认期限', '${license['acceptance_hours']} 小时；从明确收讫后起算'),
+      tradeFact('售后约定', license['aftercare_terms']),
+      appNotice('商业广告、改编、发行、单独声音使用、再次AI生成、源文件及模型、新数字人内容和独家买断均须另行办理。'),
+    ];
+  }
+  if (spec['audition'] is Map) {
+    final terms = spec['audition'];
+    return [
+      tradeFact('接单时限', '${terms['accept_hours']} 小时'),
+      tradeFact(
+          '约定材料', '${terms['photo_count']} 张照片 / ${terms['video_count']} 段视频'),
+      tradeFact('明确收讫后确认期限', '${terms['acceptance_hours']} 小时'),
+      tradeFact('付款窗口', '${terms['payment_window_minutes']} 分钟'),
+      ContractText(value: terms['terms']),
+      if (spec['additional_terms'] != null)
+        ContractText(value: spec['additional_terms']),
+      appNotice('此订单仅为试镜服务，不授予演出、数字人生产或商业代言权利。'),
+    ];
+  }
+  if (spec.length == 2 && spec['version'] != null && spec['terms'] != null) {
+    return [tradeFact('本次允许用途', spec['terms'])];
+  }
   final service = spec['service'];
   if (service is! Map) {
     return [
       tradeFact('样片 / 成片',
           '${spec['sample_seconds']} 秒 / ${spec['final_seconds']} 秒'),
-      tradeFact('修改次数', spec['revision_limit'])
+      tradeFact('修改次数', spec['revision_limit']),
+      if (spec['customization_delivery'] != null) ...[
+        tradeFact(
+            '预览与中间付款顺序',
+            spec['customization_delivery']['preview_payment_order'] ==
+                    'PREVIEW_BEFORE_INTERIM'
+                ? '正式预览确认后，按原订单补款'
+                : '沿用本单先中间付款、再预览的历史约定'),
+        tradeFact('明确收讫后的原约定期限',
+            '${spec['customization_delivery']['acceptance_hours']} 小时'),
+        tradeFact('取消约定', spec['customization_delivery']['cancellation_terms']),
+      ]
     ];
   }
   return [
     tradeFact('服务对象', artistServiceNames[service['kind']]),
     if (service['hosting_months'] != null)
-      tradeFact('托管月数', '${service['hosting_months']} 个月；首次核实收款后起算，续期接已有期限，以服务记录为准'),
+      tradeFact(
+          '托管月数', '${service['hosting_months']} 个月；首次核实收款后起算，续期接已有期限，以服务记录为准'),
     if (service['halo_level'] != null)
       tradeFact('认证审核', 'L${service['halo_level']}；付费不等于审核通过'),
     if (service['kind'] == 'AVATAR_CREATION')
@@ -234,8 +280,8 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
 }
 
 List<Widget> tradeArtistFacts(Map<String, dynamic> source) => [
-  tradeFact('服务', artistServiceNames[source['kind']]),
-  tradeFact('真人档案', source['person_id']),
-  tradeFact('具体数字人', source['avatar_id'] ?? '认证申请不绑定数字人'),
-  tradeFact('原服务请求', source['service_id']),
-];
+      tradeFact('服务', artistServiceNames[source['kind']]),
+      tradeFact('真人档案', source['person_id']),
+      tradeFact('具体数字人', source['avatar_id'] ?? '认证申请不绑定数字人'),
+      tradeFact('原服务请求', source['service_id']),
+    ];

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
 import { CircleCheck, Collection, Document, FolderOpened, OfficeBuilding, Reading, Tickets, User, View } from '@element-plus/icons-vue'
+import { domains } from '@/business'
 
 const route = useRoute()
 const links = [
@@ -87,6 +88,7 @@ function active(target: string) {
 </script>
 
 <template>
+  <nav v-if="route.meta.domain" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in Object.values(domains)" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
   <nav class="workspace-nav" aria-label="工作区导航">
     <RouterLink v-for="item in links" :key="item.to" :to="item.to"
       :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
@@ -98,6 +100,8 @@ function active(target: string) {
       <CircleCheck aria-hidden="true" />{{ item.label }}
     </RouterLink>
   </nav>
+
+  <nav v-if="!route.meta.domain" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in Object.values(domains)" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
 </template>
 
 <style scoped>
@@ -106,5 +110,6 @@ function active(target: string) {
 .workspace-nav a.active{color:var(--ops-ink);background:var(--ops-accent-soft);font-weight:600}
 .workspace-nav svg{width:20px;height:20px;flex:none}
 .nav-caption{margin:24px 12px 8px;font-size:12px;color:var(--ops-text-2)}
+.workspace-business-nav{display:grid;gap:2px}.workspace-business-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;font-size:14px}.workspace-business-nav a.active{background:var(--ops-ink);color:var(--ops-bg);font-weight:600}.workspace-business-nav svg{width:20px;height:20px;flex:none}
 @media(max-width:760px){.workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-nav a{gap:8px;padding:10px 8px}.nav-caption{grid-column:1/-1;margin:12px 8px 4px}}
 </style>

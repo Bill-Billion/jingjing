@@ -1,5 +1,24 @@
 # 页面设计来源与实际对应关系
 
+## 2026-10-22：第四轮制作、付款与交付
+
+基准integration/2608ef7已包含PR32第三轮。按先锋电影刊物原稿延续纸灰、墨黑、朱红、宋体标题、细线及方形控件；[110张逐页对照](../testing/evidence/v5-r04-frontend/index.html)已验收。无真实封面时不填示例人物或假视频。
+
+|实际页面|入口|原稿与边界|
+|---|---|---|
+|参与制作、原项目与冻结故事|App `/production`、`/production/project?projectId=…`、`/production/story?projectId=…`|37的65／66；保留原故事、版本与付款事实，新增履约状态按同语言分组|
+|剧本／样片／粗剪／成片、反馈和明确收讫|App `/production/version?versionId=…`、`/production/feedback?versionId=…`|38的67审片反馈与最终验收；实际可用内容、通知、收讫、验收分别办理|
+|原单付款与退款|App `/trade/record`、`/trade/refund`及原有记录；Web `/trade/payments/new?orderId=…`|34／35／36的54—62；按原分期和金额，缺条件不造支付结果|
+|作品列表与明确受控下载|App `/production/works`、`/production/work?projectId=…`|39的71私人定制成片子集；现货／试镜另属后续，未宣称全作品库已接完|
+|售后、暂停、取消和实际退款核对|App `/production/aftercare?projectId=…`；Web项目fulfillment|35的61及36状态；私有证据、独立决定、应退与实际退款分开|
+|人工样片本人约定及专用内容入口|App `/production/manual-sample?requestId=…`|37／38任务与本人确认的延伸；不前置通用项目权限，本人确认不等于付款或成片|
+|运营新建、履约、独审、版本与工单|Web `/production/orders/:id/fulfillment-new`、`/production/projects/:id/fulfillment`、`/production/reviews/fulfillment/:id`及原版本页|同刊物语言PC适配，无PC原稿逐像素声明；43项主菜单保留且当前入口唯一高亮|
+
+App375／390／768与Web375／390／1440均留实际截图。可播放色条仅验证文件读取、播放器与收讫；真实成片标识和质量另验。原故事创意追加报价的Core409阻断单列，不计为已走通。[报告与复现](../testing/R04_FRONTEND_20261022.md)。
+
+---
+
+
 ## 2026-10-21：第三轮延续原稿，接真实人物与机构受托
 
 当前基准是PR29合入后的integration/b8775fe，已含前两轮刊物视觉和Core安卓/订单修复。下方旧暖白铜橙记录为历史。第三轮实际逐页图和说明见[第三轮验收](../testing/evidence/v5-r03-frontend/README.md)。

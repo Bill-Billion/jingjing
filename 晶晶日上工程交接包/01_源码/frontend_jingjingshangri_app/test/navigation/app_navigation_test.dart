@@ -114,7 +114,7 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('通告不冒充旧目录，打开已有项目后返回保留栏目且不重复读取', (tester) async {
+  testWidgets('通告有独立六类入口，打开已有项目后返回保留栏目且不重复读取', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
       handler: (r) => r.path == '/api/v1/projects/catalogue'
@@ -124,11 +124,13 @@ void main() {
     final session = (await tester.runAsync(() => contractSession(adapter)))!;
     await openApp(tester, session, route: '/notices');
     expectFiveTabs();
-    expect(find.textContaining('六类通告与单向投稿正在接入'), findsOneWidget);
+    expect(find.text('浏览六类通告'), findsOneWidget);
     int reads() => adapter.requests
         .where((r) => r.path == '/api/v1/projects/catalogue')
         .length;
     expect(reads(), 0);
+    await tester.scrollUntilVisible(find.text('公开项目与角色'), 250,
+        scrollable: find.byType(Scrollable).first);
     await tester.tap(find.text('公开项目与角色'));
     await frames(tester);
     expect(find.byType(NavigationBar), findsNothing);
@@ -317,8 +319,7 @@ void main() {
     for (final route in ['/wallet', '/my-humans', '/my-works', '/chat']) {
       nav.pushNamed(route);
       await frames(tester);
-      expect(
-          find.text(route == '/my-humans' ? '从你的本人档案开始' : '先确认办事身份'),
+      expect(find.text(route == '/my-humans' ? '从你的本人档案开始' : '先确认办事身份'),
           findsOneWidget,
           reason: route);
       expect(find.text('页面不存在'), findsNothing, reason: route);
@@ -331,7 +332,20 @@ void main() {
         adapter.requests
             .where((r) => r.path.startsWith('/api/'))
             .map((r) => r.path),
-        ['/api/v1/auth/sessions']); // Identity-gated destinations do not read private data.
+        [
+          '/api/v1/auth/sessions',
+          '/api/v1/privacy/preferences',
+          '/api/v1/stock/catalog'
+        ]);
+    // A catalog is public; rest preferences are account-scoped. No gated
+    // destination may read private party data before an identity is selected.
+    expect(
+        adapter.requests
+            .where((r) =>
+                r.path.startsWith('/api/v1/') &&
+                r.path != '/api/v1/auth/sessions')
+            .every((r) => r.headers['X-Acting-Party'] == null),
+        isTrue);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

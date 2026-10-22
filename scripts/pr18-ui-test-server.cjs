@@ -2,7 +2,7 @@
 
 // Local isolated PR18 fixture: real SMS HTTP identities, OWNER/independent
 // review, supply, production, verified sandbox receipts and project workflows.
-// Only external SMS/storage/payment transports are synthetic. No paid gateway,
+// Only external SMS/identity/storage/payment transports are synthetic. No paid gateway,
 // public private-content fallback, real identity or business default is introduced.
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -180,6 +180,9 @@ async function main() {
   const app = fromBackend('./src/http/account-api').createAccountApi({ db, secret: crypto.randomBytes(32).toString('base64'),
     sms: { async call(operation, input) { assert.equal(operation, 'send'); assert(Object.values(phones).includes(input.phone)); sent.set(input.phone, input.code); return { accepted: true, provider_request_id: 'synthetic-pr18-local-only' }; } },
     supplyStorageFactory: storageFactory, supplyEnv: { NODE_ENV: 'test' }, governanceEnvironment: 'SANDBOX',
+    artistIdentityProviderFactory: () => ({ async assertReady() {}, async verify(input) {
+      return { request_key: input.request_key, person_id: input.person_id, status: 'VERIFIED', issuer: 'synthetic.pr18.identity', subject_fingerprint: sha(Buffer.from(input.account_id)), age_band: 'ADULT', valid_until: validUntil, evidence_ref: 'synthetic:pr18-identity', liveness_verified: true, phone_verified: true };
+    } }),
     tradeProvidersFactory: () => ({ get(code) { assert(providers); return providers.get(code); } }),
     authSettings: { resendMs: 1000, phoneSendsPerHour: 1000, ipSendsPerHour: 1000, totalSendsPerHour: 1000, ipLoginsPerMinute: 1000 }, allowedOrigins: origins });
   apiServer = http.createServer((req, res) => {
@@ -213,7 +216,7 @@ async function main() {
   sponsor.actingPartyId = member.actingPartyId = sponsorOrganizationId;
   const invitation = await call('POST', `/parties/${sponsorOrganizationId}/invitations`, { person: sponsor, party: sponsorOrganizationId, body: { invitee_account_id: member.accountId, expires_at: new Date(now + 86400000).toISOString() } });
   await call('POST', `/parties/${sponsorOrganizationId}/invitations/${invitation.invitation_id}/responses`, { person: member, party: sponsorOrganizationId, version: invitation.object_version, body: { decision: 'ACCEPT' } });
-  for (const action of ['PROJECT_REVIEW', 'TRADE_REVIEW', 'TRADE_REFUND', 'PRODUCTION_REVIEW', 'SUPPLY_REVIEW_PROFILE', 'SUPPLY_REVIEW_RIGHTS', 'SUPPLY_REVIEW_CONTENT', 'SUPPLY_REVIEW_CONSENT']) await grant('reviewer', action, true);
+  for (const action of ['PROJECT_REVIEW', 'TRADE_REVIEW', 'TRADE_REFUND', 'PRODUCTION_REVIEW', 'SUPPLY_REVIEW_PROFILE', 'SUPPLY_REVIEW_RIGHTS', 'SUPPLY_REVIEW_CONTENT', 'SUPPLY_REVIEW_CONSENT', 'ARTIST_REVIEW_RIGHTS']) await grant('reviewer', action, true);
   await grant('channelRegistrar', 'PROJECT_REVIEW', true);
   checks.push('Six normal SMS/account identities; sponsor organization OWNER and invitation-accepted MEMBER; independent reviewer and channel registrar grants with actual audit history');
 
@@ -258,7 +261,45 @@ async function main() {
   let work = await call('POST', '/supply/work-versions', { person: producer, party: producer.personalPartyId, body: { work_id: null, previous_version_id: null, title: '清风短笺 · 合成原创', kind: 'ORIGINAL', source_version_id: null, project_id: null, content_asset_id: assets.originalContent.id, evidence_ids: [assets.producerProof.id], credits: [{ party_id: producer.personalPartyId, role: 'RIGHTS_HOLDER', evidence_asset_ids: [assets.producerProof.id] }] } });
   work = await call('POST', `/supply/work-versions/${work.id}/actions`, { person: producer, party: producer.personalPartyId, version: work.object_version, body: { action: 'SUBMIT', reason: null } });
   for (const channel of ['RIGHTS', 'CONTENT']) work = await sr('work-versions', work, { channel }); records.originalWork = work;
-  records.avatar = await call('POST', '/supply/avatars', { person: producer, party: producer.personalPartyId, body: { display_name: 'PR18合成人物资料（无真人）', material_asset_ids: [assets.avatarMaterial.id] } });
+  records.performer = await call('POST', '/artists/people', { person: producer, party: producer.personalPartyId, body: { display_name: 'PR18合成出演者（无真人）' } });
+  const performerPath = `/artists/people/${records.performer.id}`;
+  assert.equal((await call('POST', performerPath + '/identity', { person: producer, party: producer.personalPartyId, body: { session_ref: 'synthetic:pr18-identity' } })).current_status, 'VERIFIED');
+  records.avatar = await call('POST', performerPath + '/avatars', { person: producer, party: producer.personalPartyId, body: { display_name: 'PR18合成人物资料（无真人）' } });
+  async function artistConsent(name, grantee, purposes) {
+    let r = await call('POST', performerPath + '/consents', { person: producer, party: producer.personalPartyId, body: { avatar_id: records.avatar.id, consent: { features: ['FACE', 'VOICE'], purposes, grantee_party_id: grantee, territories: ['CN'], valid_from: validFrom, valid_until: validUntil, terms: '仅PR18明确合成用途，同意与实名并非真实服务认证。', evidence_asset_ids: [assets.consentEvidence.id] } } });
+    await call('GET', performerPath + '/records/' + r.id, { person: reviewer });
+    const proof = await request('GET', performerPath + '/records/' + r.id + '/assets/' + assets.consentEvidence.id + '/content', { person: reviewer });
+    assert.equal(sha(proof.body), assets.consentEvidence.content_sha256);
+    return records[name] = await call('POST', performerPath + '/records/' + r.id + '/reviews', { person: reviewer, version: r.object_version, body: { decision: 'APPROVE', reason: '独立读取合成本人证据并核对具体用途与授予方。' } });
+  }
+  const archive = await artistConsent('archiveConsent', producer.personalPartyId, ['PRIVATE_ARCHIVE', 'NEW_GENERATION']);
+  await artistConsent('projectConsent', sponsorOrganizationId, ['PROJECT_PRODUCTION']);
+  for (const kind of ['LOOK', 'VOICE']) records['performer' + kind] = await call('POST', performerPath + '/variants', { person: producer, party: producer.personalPartyId, body: { avatar_id: records.avatar.id, kind, variant: { previous_version_id: null, display_name: 'PR18合成' + kind, material_asset_ids: [assets.avatarMaterial.id], consent_id: archive.id } } });
+  // A linked artist needs a genuinely paid hosting entitlement for the legacy
+  // original productions too. Reuse Core's isolated service/receipt pattern;
+  // only the second merchant's external payment transport is synthetic.
+  phase = 'paid artist hosting prerequisite';
+  const [[principal]] = await db.execute('SELECT subject_ref FROM identity_accounts WHERE id=?', [producer.accountId]);
+  assert(principal?.subject_ref);
+  const hostingContext = {}, resolveHostingPrincipal = async ctx => ctx === hostingContext ? { subject_ref: principal.subject_ref } : null;
+  const artistServices = fromBackend('./src/modules/artists/services').createArtistServices(db, { resolvePrincipal: resolveHostingPrincipal, merchantPartyId: sponsorOrganizationId });
+  const hostingTrade = fromBackend('./src/modules/trade/repository').createTradeRepository(db, { resolvePrincipal: resolveHostingPrincipal });
+  const hostingSpec = await tr(await call('POST', '/trade/specifications', { person: sponsor, party: sponsorOrganizationId, body: {
+    previous_spec_id: null, title: 'PR18合成人物一个月托管', provider_party_id: sponsorOrganizationId, line_kind: 'OTHER', unit_minor: 2900, currency: 'CNY',
+    product_profile: { version: 'V5', type: 'AVATAR_HOSTING' }, specification: { version: 'synthetic-v1', service_tier: '仅隔离合成托管', service: { kind: 'AVATAR_HOSTING', unit: 'AVATAR_MONTH', rule_version: 'V5-20261013', source_ref: 'synthetic:pr18-hosting', retry_limit: 0, hosting_months: 1, halo_level: null, failure_policy: 'REFUND_UNDELIVERED' }, deliverables: ['该合成人物一个月托管权益'], terms: '仅PR18隔离服务，不代表真实托管或自动扣款。' }
+  } }));
+  let hosting = await artistServices.request(hostingContext, { person_id: records.performer.id, party_id: producer.personalPartyId, avatar_id: records.avatar.id, spec_id: hostingSpec.id, renewal_reminder: false, operation_key: key() });
+  const hostingQuote = await tr(await call('POST', '/trade/quotes', { person: sponsor, party: sponsorOrganizationId, body: { buyer_party_id: producer.personalPartyId, lines: [{ line_id: 'hosting', spec_id: hostingSpec.id, quantity: 1 }], installments: [{ key: 'hosting', trigger: 'ORDER_ACCEPTED', allocations: [{ line_id: 'hosting', amount_minor: 2900 }], apple_product_id: null }], channel: 'ALIPAY', transaction_model: 'PLATFORM_PRINCIPAL', rule_id: ruleId, expires_at: validUntil, payment_window_minutes: 30, license_reservation_id: null, artist_service_source: { service_id: hosting.id } } }));
+  const hostingOrder = await call('POST', `/trade/quotes/${hostingQuote.id}/acceptance`, { person: producer, party: producer.personalPartyId, version: hostingQuote.object_version, body: { quote_sha256: hostingQuote.content_sha256 } });
+  const hostingConfig = { provider: 'ALIPAY', environment: 'SANDBOX', app_id: 'synthetic.pr18.hosting', merchant_id: 'synthetic.pr18.hosting', merchant_party_id: sponsorOrganizationId, config_revision: 'synthetic.pr18.hosting' };
+  const hostingPayment = await hostingTrade.preparePayment(hostingContext, { party_id: producer.personalPartyId, order_id: hostingOrder.id, installment_key: 'hosting', operation_key: key() }, hostingConfig);
+  await hostingTrade.applyPayment({ ...hostingConfig, payment_id: hostingPayment.id, currency: 'CNY', amount_minor: 2900, transaction_id: 'synthetic.pr18.hosting.' + hostingPayment.id, status: 'SUCCEEDED', product_id: null, app_account_token: null });
+  hosting = await artistServices.sync(hostingContext, { person_id: records.performer.id, party_id: producer.personalPartyId, record_id: hosting.id, operation_key: key() });
+  assert.equal(hosting.current_status, 'DELIVERED'); assert.equal(hosting.data.auto_debit_enabled, false); assert(hosting.data.hosting_period.valid_until > new Date().toISOString());
+  const paidHostingOrder = await call('GET', `/trade/records/${hostingOrder.id}`, { person: producer, party: producer.personalPartyId });
+  assert.equal(paidHostingOrder.current_status, 'PAID'); assert.deepEqual(paidHostingOrder.data.financial, { received_minor: 2900, refunded_minor: 0, net_minor: 2900 });
+  records.hosting = hosting; records.hostingOrder = paidHostingOrder;
+  checks.push('Actual verified artist, independent consent review, LOOK/VOICE versions and paid one-month hosting service; exact SANDBOX receipt and original order activate entitlement without bypassing hosting');
   async function consent(name, purposes) { return records[name] = await sr('consents', await call('POST', '/supply/consents', { person: producer, party: producer.personalPartyId, body: { consent: { avatar_id: records.avatar.id, subject_party_id: producer.personalPartyId, features: ['FACE', 'VOICE'], purposes, territories: ['CN'], valid_from: validFrom, valid_until: validUntil, terms: '本人合成测试同意；范围明确，不是真人授权或正式商业默认。', evidence_asset_ids: [assets.consentEvidence.id] } } })); }
   for (const side of ['web', 'app', 'refund', 'withdrawal']) { await consent(side + 'PrivateConsent', ['PRIVATE']); await consent(side + 'PublicConsent', ['PUBLIC_SHARE', 'RELEASE']); }
   async function spec(name, kind, amount) { return records[name] = await tr(await call('POST', '/trade/specifications', { person: producer, party: producer.personalPartyId, body: { previous_spec_id: null, title: name + ' · PR18合成明确条件', provider_party_id: producer.personalPartyId, line_kind: kind, unit_minor: amount, currency: 'CNY', specification: { version: 'synthetic.v1', service_tier: '仅合成测试档位', sample_seconds: 20, final_seconds: 90, revision_limit: 2, deliverables: ['合成文字', '可播放合成预览', '不同字节的合成最终文件'], terms: '所有金额、时长、条件只用于隔离样本，不作默认商品。' } } })); }
@@ -369,6 +410,8 @@ async function main() {
   creation.publicShareReady = { ...shareInput, projectId: share.p.id, candidateId: share.c.id, roleId: share.r.id };
   assert.equal((await call('GET', `/projects/projects/${share.p.id}/readiness`, { person: sponsor, party: sponsorOrganizationId })).current_status, 'AVAILABLE');
   for (const side of ['web', 'app']) { const fee = await order(side + 'CreationCast', true); await pay(fee, 'fee', side + 'CreationCastPayment'); creation[side] = { productionProjectId: records[side + 'ProductionProject'].id, finalVersionId: records[side + 'FINALVersion'].id, avatarId: records.avatar.id, publicConsentId: records[side + 'PublicConsent'].id, roleAmountMinor: 1001, unusedFundingOrderId: fee.id, fundingLineId: 'cast', fundingUsage: 'ONLY_FOR_ONE_NEW_CONFIRMED_CANDIDATE_NOT_YET_ASSIGNED' }; }
+  const participationRuleId = key(), participationRule = fromBackend('./src/modules/governance/content').createRuleContent({ id: participationRuleId, rule_key: 'participation.pr18.synthetic', version: '1', terms: { marketplace_finance: { model: 'V5_TWO_LAYER', product_type: 'COMMERCIAL', fee_base: 'NET_PAID', platform_party_id: channelRegistrar.personalPartyId, platform_bps: 2200, referral_bps: 0, rounding: 'HALF_UP_PLATFORM_REMAINDER' } } });
+  await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)', [participationRuleId, 'participation.pr18.synthetic', '1', JSON.stringify(participationRule), '2020-01-01 00:00:00', sponsor.accountId, 'EFFECTIVE']);
 
   phase = 'real invitation, permissions and version-bound confirmations';
   const vi = await castProject('verificationInvitation', 'web', 'INVITED', true);
@@ -495,6 +538,7 @@ async function main() {
   await request('OPTIONS', '/projects/projects', { status: 403, headers: { Origin: 'https://example.invalid' } });
   checks.push('Actual successful candidate decision loses one reply as 503 after commit; same original key/body/version replays same record without duplicate or resubmit; changed key content rejects and stale version is 412; independent simultaneous decisions yield one 200/one 412; fresh App/Web race seeds remain APPLIED; configured loopback CORS accepted and foreign rejected');
   creation.common = { producerPartyId: producer.personalPartyId, assigneeAccountId: producer.accountId, avatarId: records.avatar.id, sponsorPartyId: sponsorOrganizationId, evidenceAssetId: assets.sponsorProof.id, channelId: records.approvedChannel.id,
+    participationRuleId, platformPartyId: channelRegistrar.personalPartyId, participationCast: { person_id: records.performer.id, look_version_id: records.performerLOOK.id, voice_version_id: records.performerVOICE.id },
     rightsLayers: ['FACE_VOICE', 'ORIGINAL', 'SCRIPT', 'MUSIC', 'ADAPTATION', 'FINAL'], sourceKind: 'ORIGINAL', licensingRequired: false, reason: '真实原创来源不需要伪造改编许可；原PRIVATE制作与公开同意分别保留' };
   phase = 'private runtime state'; await saveState(); if (process.platform !== 'win32') assert.equal((await fs.stat(statePath)).mode & 0o777, 0o600); // Windows permissions are governed by NTFS ACLs.
   const sanitized = await snapshot(); assert.equal(JSON.stringify(sanitized).includes(controlToken), false); for (const p of Object.values(people)) assert.equal(JSON.stringify(sanitized).includes(p.token), false);

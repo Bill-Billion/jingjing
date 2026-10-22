@@ -1,0 +1,151 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:50143/api/v1",
+  "scope": "Only the completed buyer income confirmation from the first cross-end attempt. The subsequent producer view exposed an unnecessary unauthorized project read, fixed separately.",
+  "checks": [
+    {
+      "name": "发行 buyer 独立会签后读取原文证据",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [],
+  "network": [
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/57fcbaa5-2be6-4e75-bbf4-1d3f1c0ce416",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/57fcbaa5-2be6-4e75-bbf4-1d3f1c0ce416/history",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/57fcbaa5-2be6-4e75-bbf4-1d3f1c0ce416/executions",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/0c4395ed-be51-45c6-a1b1-da871ca4b22f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/2ebe810c-a0a3-407f-898a-dbfba5f36a54",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/projects/2ebe810c-a0a3-407f-898a-dbfba5f36a54/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/projects/2ebe810c-a0a3-407f-898a-dbfba5f36a54/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/0c4395ed-be51-45c6-a1b1-da871ca4b22f/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/income-agreements/0c4395ed-be51-45c6-a1b1-da871ca4b22f/confirmation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/0c4395ed-be51-45c6-a1b1-da871ca4b22f/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/0c4395ed-be51-45c6-a1b1-da871ca4b22f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/2ebe810c-a0a3-407f-898a-dbfba5f36a54",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/projects/2ebe810c-a0a3-407f-898a-dbfba5f36a54/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/projects/2ebe810c-a0a3-407f-898a-dbfba5f36a54/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/0c4395ed-be51-45c6-a1b1-da871ca4b22f/confirmations",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/projects/income-agreements/0c4395ed-be51-45c6-a1b1-da871ca4b22f/confirmation",
+      "method": "POST",
+      "body_sha256": "7abd7c6ced869c9ed2267945821097dc15108e1002369ea19626aa5a5b34b752",
+      "key_sha256": "0a7d7ca8cdafc29ce7dc3b6b13af167bb1593b1872dac185d6415f1e94156852",
+      "version": "\"2\""
+    }
+  ],
+  "capture_note": "Earlier successful App confirmation; screenshot superseded by final APP_ACTIONS_CROSS."
+}

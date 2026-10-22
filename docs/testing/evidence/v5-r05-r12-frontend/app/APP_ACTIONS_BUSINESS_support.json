@@ -1,0 +1,74 @@
+{
+  "result": "PASS",
+  "phase": "business",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:54691/api/v1",
+  "checks": [
+    {
+      "name": "本人明确申请客服加入原商单",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "action-commercial-support-request.png",
+      "route": "/gigs/conversation?orderId=76276296-6083-47dd-8228-3e25d2f31c50",
+      "source": "25-messages-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "b4fb77a5a7a9ae70f933d32ae79b6f189d67c4f8a94dad2849374d6351da442b"
+    }
+  ],
+  "network": [
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/control",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/control",
+      "method": "POST",
+      "body_sha256": "c1e31b60752d573909202bcc00fe2c2a4a7fa2e2af1ad109ea3756828a661825",
+      "key_sha256": "7a182bb43f32333deb5f5525372a614696fc368814d6006396a2f9972e1ad55e",
+      "version": "\"1\""
+    }
+  ],
+  "created": {
+    "commercial_order_id": "76276296-6083-47dd-8228-3e25d2f31c50"
+  },
+  "errors": []
+}

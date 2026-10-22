@@ -1,0 +1,73 @@
+{
+  "result": "PASS",
+  "phase": "business",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:54691/api/v1",
+  "checks": [
+    {
+      "name": "商单App文字实际入同一订单会话",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "action-commercial-message.png",
+      "route": "/gigs/conversation?orderId=76276296-6083-47dd-8228-3e25d2f31c50",
+      "source": "25-messages-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "c0addd7e33f8f08a90d04ad10422df0e6fae314a7e43eac33de80a416c9075fc"
+    }
+  ],
+  "network": [
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/gigs/orders/76276296-6083-47dd-8228-3e25d2f31c50/conversation/messages",
+      "method": "POST",
+      "body_sha256": "618c1a966f34551f4ac3e1af4be3bec7828efbd40c87608b527aad694b8bcc7a",
+      "key_sha256": "7981d454d4d5c379ef0f8f25f3ac037b23865bbcfd4396b061888b6754f0c0b3"
+    }
+  ],
+  "created": {
+    "commercial_order_id": "76276296-6083-47dd-8228-3e25d2f31c50"
+  },
+  "errors": []
+}

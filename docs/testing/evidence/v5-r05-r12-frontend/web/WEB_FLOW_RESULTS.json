@@ -1,0 +1,156 @@
+{
+  "result": "PASS",
+  "resumed_from": {
+    "first_failure": "income-independent-review",
+    "earlier_checks_reused": 8
+  },
+  "synthetic_only": true,
+  "prototype": "先锋电影刊物",
+  "web_adaptation": true,
+  "current_case": null,
+  "matrix": [],
+  "screenshots": [
+    {
+      "key": "action-notice-conflict",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-notice-conflict-1440-overview.png"
+    },
+    {
+      "key": "action-notice-interested",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-notice-interested-1440-overview.png"
+    },
+    {
+      "key": "action-coupon-recovered",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-coupon-recovered-1440-overview.png"
+    },
+    {
+      "key": "action-coupon-released",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-coupon-released-1440-overview.png"
+    },
+    {
+      "key": "action-privacy-created",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-privacy-created-1440-overview.png"
+    },
+    {
+      "key": "action-income-reviewed",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-income-reviewed-1440-overview.png"
+    },
+    {
+      "key": "action-private-cleared",
+      "width": 1440,
+      "part": "overview",
+      "file": "action-private-cleared-1440-overview.png"
+    }
+  ],
+  "checks": [
+    {
+      "name": "只读矩阵没有业务写入",
+      "result": "PASS"
+    },
+    {
+      "name": "真实后端412后保留原回复输入并刷新原记录",
+      "result": "PASS"
+    },
+    {
+      "name": "Web接收方明确感兴趣后生成真实客服CASE",
+      "result": "PASS"
+    },
+    {
+      "name": "响应丢失后禁止另建选券请求",
+      "result": "PASS"
+    },
+    {
+      "name": "未知选券恢复复用准确原键、内容与版本",
+      "result": "PASS"
+    },
+    {
+      "name": "未确认报价的实际券锁定由原HOLD释放",
+      "result": "PASS"
+    },
+    {
+      "name": "Web本人明确创建COPY请求，不伪造副本完成",
+      "result": "PASS"
+    },
+    {
+      "name": "独立岗位读取原收入依据后审核，仍保留受益方逐方确认",
+      "result": "PASS"
+    },
+    {
+      "name": "403后清除旧本人申请正文及私有显示",
+      "result": "PASS"
+    },
+    {
+      "name": "所有页面无浏览器JS异常",
+      "result": "PASS"
+    }
+  ],
+  "posts": [
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/notices/submissions/5922702a-ca99-40f5-aff8-789f60f719bd/decision",
+      "key": "b0c60060-3733-458e-879d-e74b1d25ee16",
+      "method": "POST"
+    },
+    {
+      "role": "notices_buyer",
+      "path": "/api/v1/notices/submissions/5922702a-ca99-40f5-aff8-789f60f719bd/decision",
+      "key": "c3cb1a0c-de57-4fe4-bc7f-d293dec3d641",
+      "method": "POST"
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/redemption/grants/7be8a269-c630-4a31-9baa-f949ae843798/checkout",
+      "key": "b0a24ee0-0046-406a-961f-8a465c8d8065",
+      "method": "POST"
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/redemption/grants/7be8a269-c630-4a31-9baa-f949ae843798/checkout",
+      "key": "b0a24ee0-0046-406a-961f-8a465c8d8065",
+      "method": "POST"
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/redemption/holds/8bea466f-b737-4db1-a22f-4750e4f100cb/release",
+      "key": "cf402e58-7fdb-4122-977c-561c6f197204",
+      "method": "POST"
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests",
+      "key": "91a18c67-8cfc-4129-85e3-ea42069d4378",
+      "method": "POST"
+    },
+    {
+      "role": "reviewer",
+      "path": "/api/v1/projects/income-agreements/0c4395ed-be51-45c6-a1b1-da871ca4b22f/review",
+      "key": "0997de81-7c9c-4d85-a0a5-84aa72505255",
+      "method": "POST"
+    }
+  ],
+  "errors": [],
+  "blockers": [],
+  "new_notice_case_id": "1f02164b-39e5-45f2-8ad4-d6b51aa0b19b",
+  "new_privacy_request_id": "57fcbaa5-2be6-4e75-bbf4-1d3f1c0ce416",
+  "income_agreement_id": "0c4395ed-be51-45c6-a1b1-da871ca4b22f",
+  "failure": null,
+  "limits": [
+    "所有资料为隔离合成资料，不代表真实服务、真实付款或真实权利完成验收",
+    "412由测试传输层注入过期If-Match触发真实后端拒绝；丢回复保留真实后端提交和原幂等键",
+    "未操作App保留的stock_paid取文件、audition_delivered、full_coupon及参演会签",
+    "MCN服务端看板缺少跨人范围过滤，当前单人零商单200不能证明跨人隔离；Web对非负责人隐藏整体关系和总额。"
+  ],
+  "api_base": "http://127.0.0.1:50143/api/v1",
+  "fixture_file": "jx_test_r05r12_69063_e6f843c610c8/access.json"
+}

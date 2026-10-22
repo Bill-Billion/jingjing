@@ -1,0 +1,162 @@
+{
+  "result": "PASS",
+  "phase": "cross",
+  "synthetic_only": true,
+  "media": "PLAYABLE_COLOR_BARS",
+  "checks": [
+    {
+      "name": "同一已收讫剧本再次阅读沿用服务器原截止",
+      "result": "PASS"
+    },
+    {
+      "name": "网页派单开工上传独审后，App确认同一SCRIPT且不代替后续付款",
+      "result": "PASS"
+    },
+    {
+      "name": "页面没有JS异常或Flutter溢出",
+      "result": "PASS"
+    }
+  ],
+  "shots": [
+    {
+      "file": "18b-web-uploaded-script-390.png",
+      "route": "/production/version?versionId=ccb4d167-a486-4989-acda-f63f0228f5de",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "38-custom-extra.png / 剧本确认",
+      "note": "网页受派上传并经独立岗位审核的同一私有文件",
+      "result": "CAPTURED"
+    },
+    {
+      "file": "18c-script-confirm-390.png",
+      "route": "/production/version?versionId=ccb4d167-a486-4989-acda-f63f0228f5de",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "38-custom-extra.png / 剧本确认",
+      "note": "收讫、验收与付款各自确认",
+      "result": "CAPTURED"
+    },
+    {
+      "file": "18d-cross-script-accepted-390.png",
+      "route": "/production/project?projectId=e5c31e23-996e-4041-a884-a222b5c7c44f",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "source": "37-custom-top.png / 66",
+      "note": "同一原项目、原订单与版本的两端闭环",
+      "result": "CAPTURED"
+    }
+  ],
+  "reads": [
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/ccb4d167-a486-4989-acda-f63f0228f5de",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/e5c31e23-996e-4041-a884-a222b5c7c44f",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/records",
+      "search": "?limit=20&kind=FEEDBACK"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/fulfillment",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/ccb4d167-a486-4989-acda-f63f0228f5de",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/ed9d73f5-e604-41a9-a2ba-3902a06ed1d0",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/ccb4d167-a486-4989-acda-f63f0228f5de/content",
+      "search": "?variant=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/fulfillment",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/e5c31e23-996e-4041-a884-a222b5c7c44f",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/records",
+      "search": "?limit=20&kind=VERSION"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/records",
+      "search": "?limit=20&kind=FEEDBACK"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/generation-readiness",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/fulfillment",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/47a2f30f-e206-4511-99e2-e43fc3d7f0a6",
+      "search": ""
+    }
+  ],
+  "writes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/production/versions/ccb4d167-a486-4989-acda-f63f0228f5de/feedback",
+      "body": {
+        "decision": "ACCEPT",
+        "note": "合成联调：已核对网页交来的这一个具体剧本版本。",
+        "checklist": {
+          "script_reviewed": true
+        },
+        "change_kind": null
+      },
+      "body_sha256": "d287a2d2426c5c27fd4d8d7a9d5128fd7d5e675e141bfa0eb91f95f0a3d1ca3d",
+      "key_sha256": "ac75d782fad4099e67fa62b63221c70d76ccdb67982dd036ca25d9c891b7146c",
+      "version": "\"2\"",
+      "acting_party": "1230db2e-d0e9-4162-a08a-8dc4a9456de1"
+    }
+  ],
+  "page_errors": [],
+  "flutter_errors": [],
+  "limits": [
+    "Chromium里的实际Flutter Web页面，未声称原生或真机验收",
+    "可播放色条不证明真实成片、水印、音画或AI标识",
+    "没有真实收退款、实名、OSS或制作"
+  ]
+}
