@@ -88,6 +88,28 @@
         "",
         "25 artists checks passed."
       ]
+    },
+    {
+      "name": "既有真实交易浏览器流程PR15／Node22断言修正后",
+      "result": "PASS",
+      "checks": 11,
+      "page_errors": 0,
+      "log": ".local/r04-pr15-after.log",
+      "sha256": "937938c4950793e544d7d24c6d46ef8941407bbdff96a9121c421912f6152cdb",
+      "last_lines": [
+        "Browser stage 15: PASS; API and web processes stopped. Logs: .local/browser-check-15"
+      ]
+    },
+    {
+      "name": "既有真实制作浏览器流程PR16／Node22",
+      "result": "PASS",
+      "checks": 10,
+      "page_errors": 0,
+      "log": ".local/r04-pr16-after.log",
+      "sha256": "f38fa1984b03b9056960843433469e802ab1044bd8ce404bbcd56889cf3d26a8",
+      "last_lines": [
+        "Browser stage 16: PASS; API and web processes stopped. Logs: .local/browser-check-16"
+      ]
     }
   ],
   "scope": "包含下载后刷新修复的最终验证；未运行历史全仓截图套件。",
@@ -98,5 +120,18 @@
     "fix": "执行循环移入模拟环境try，全部执行完才清理；不修改业务代码",
     "local_reproduction": "Node22.5.1同样ReferenceError: sessionStorage is not defined",
     "remote_current": "https://github.com/Bill-Billion/jingjing/pull/33/checks"
+  },
+  "legacy_browser_assertion_fix": {
+    "failed_head": "6e83acc6dba9841104cd1ab841be0c1a4b6f4db3",
+    "failed_run": "https://github.com/Bill-Billion/jingjing/actions/runs/39722845249",
+    "script": "scripts/pr15-ui-browser-check.mjs",
+    "cause": "付款后OTHER订单缺制作明细的旧禁用按钮已改为说明段落，旧脚本仍等待按钮超时",
+    "assertions_preserved": [
+      "真实原单没有PRODUCTION明细",
+      "明确显示无可用制作说明",
+      "不存在该订单新建制作项目的入口"
+    ],
+    "business_source_changed": false,
+    "historical_evidence": "重跑产物另存忽略目录；历史跟踪截图恢复HEAD，不计入R04图册"
   }
 }
