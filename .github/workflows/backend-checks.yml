@@ -67,7 +67,13 @@ jobs:
         run: |
           # Hosted runners often already contain these tools. Verify before touching apt.
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null || [ ! -r /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]; then
-            apt_options=(-o Acquire::Retries=1 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+            # The Azure mirror stalled this job; keep Ubuntu's signed packages on its main mirror.
+            for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+              if [ -f "$source" ]; then
+                sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' "$source"
+              fi
+            done
+            apt_options=(-o Acquire::ForceIPv4=true -o Acquire::Retries=1 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
             # Use existing package indexes first; an unrelated repository must not hang the whole job.
             if ! timeout 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends ffmpeg fonts-dejavu-core; then
               timeout 120s sudo apt-get "${apt_options[@]}" update
