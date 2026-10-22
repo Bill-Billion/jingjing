@@ -1,13 +1,13 @@
-当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
+# 当前入口：第四轮制作、付款与交付前端
 
-# 当前入口：原稿视觉已进入共同版本，第三轮已集中交付
+2026-10-22，Bill-Billion在 `ux/v5-r04-production-frontend` 完成第四轮前端。已同步 `integration/2608ef7`，包含已合入PR32的第三轮及公开资料失效清理修复。前两轮、第三轮的旧“尚未合入”文字是历史，当前共同版本已包含它们。
 
-前两轮已按“先锋电影刊物”原设计修正，[PR30](https://github.com/Bill-Billion/jingjing/pull/30)/273d0d0远端8项检查成功，同事chengcongcong222已实际审阅通过；代码随[PR29](https://github.com/Bill-Billion/jingjing/pull/29)进入共同版本integration/b8775fe。原稿、前后对照和42张截图见[视觉验收](testing/evidence/v5-editorial/index.html)。同事的安卓与整合复验见[整合测试](testing/EDITORIAL_MERGE_20261021.md)。
+本轮按“先锋电影刊物”原稿接制作、原订单付款、正式预览与明确收讫、反馈、私人作品交付及售后。App346项、网页255项、分析和两端构建通过；110张实际浏览器截图已逐页检查。原故事到同一剧本的网页上传／独审／App确认、未知工单恢复、重发清计时、实际受控下载及下载后状态刷新均有证据。
 
-第三轮在ux/v5-r03-artists-frontend，已同步最新共同版本并保留其修复；本人/机构受托/独立岗位接新的艺人接口，沿用原稿视觉。项目规定App322、网页238项和构建通过，77张截图已逐页验收，已集中上传[PR31](https://github.com/Bill-Billion/jingjing/pull/31)。远端检查与本轮实际审阅查看该申请；尚未合入第三轮。见[截图和原稿对照](testing/evidence/v5-r03-frontend/index.html)及[验收范围](testing/evidence/v5-r03-frontend/README.md)。
+- [逐页原稿对照图册](testing/evidence/v5-r04-frontend/index.html)、[验收与复现](testing/evidence/v5-r04-frontend/README.md)、[本轮报告](testing/R04_FRONTEND_20261022.md)。
+- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[任务与双方进度](tasks/records/UX-v5-r04-production-frontend-20261022.md)、[主线进度](status/MAINLINE_PROGRESS.md)。
+- [第四轮接口交接](collaboration/V5_R04_HANDOFF.md)、[Core当前记录](status/CORE_CURRENT.md)。统一接口0.30.1-rc.1优先，旧0.17是历史。
 
-- [前端当前状态](status/EXPERIENCE_CURRENT.md)、[第三轮任务](tasks/records/UX-v5-r03-artists-frontend-20261021.md)、[主线进展](status/MAINLINE_PROGRESS.md)。
-- [Core当前状态](status/CORE_CURRENT.md)、[第三轮接口交接](collaboration/V5_R03_HANDOFF.md)：现统一接口0.30.1-rc.1优先，旧0.16仅为历史。
-- [共同人工测试操作](testing/JOINT_FUNCTIONAL_TEST_20261021.md)。第三轮原生手机、实名、支付、存储与长期模型分别核验，不以本机合成结果当正式启用。
+仍有一项既有后端阻断R04-CORE-01：原冻结故事的创意追加报价真实返回409 CUSTOMIZATION_ORDER_EXISTS。前端保留来源和输入，未克隆故事绕过；Core需修复报价、审核、确认及绑定，再联调该链。其他已验页面与此项分开记录。
 
-PR24/26已关闭，代码通过PR28进入共同版本。本轮不推main、不部署；前两轮的实际审阅不代表第三轮已审阅。
+本分支集中交付，远端检查与同事实际审阅见对应合并申请；未合入第四轮、推main或部署。辅助代理检查不是同事审阅。截图使用隔离合成资料；真实收退款、OSS、成片质量与原生真机另验。先修复上述追加链并复审本轮，再接第五轮现货页面。

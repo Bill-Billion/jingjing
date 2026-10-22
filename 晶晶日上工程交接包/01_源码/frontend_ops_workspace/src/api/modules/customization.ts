@@ -42,7 +42,7 @@ function isField(v: unknown): v is CustomizationField {
 export function isCustomizationTemplate(v: unknown): v is CustomizationTemplate {
   return obj(v) && only(v, ['title','description','fields']) && text(v.title,160) && text(v.description,2000,true) && Array.isArray(v.fields) && v.fields.length > 0 && v.fields.length <= 40 && v.fields.every(isField) && new Set(v.fields.map(f => f.key)).size === v.fields.length
 }
-function answers(v: unknown, t: CustomizationTemplate): v is Record<string,string> {
+export function answers(v: unknown, t: CustomizationTemplate): v is Record<string,string> {
   if (!obj(v) || Object.keys(v).length > 40 || new TextEncoder().encode(JSON.stringify(v)).length > 48 * 1024) return false
   for (const [key,value] of Object.entries(v)) {
     const f = t.fields.find(f => f.key === key)

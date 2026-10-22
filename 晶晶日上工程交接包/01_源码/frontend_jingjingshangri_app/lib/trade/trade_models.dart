@@ -218,6 +218,31 @@ const artistServiceNames = {
   'AVATAR_HOSTING': '数字人托管',
   'HALO_REVIEW': '认证资料审核',
 };
+void validateCustomizationDeliveryTerms(dynamic value) {
+  final d = tradeMap(value);
+  tradeRequire(d.length == 5 &&
+      _text(d['version'], 128) &&
+      _text(d['source_ref'], 128) &&
+      _text(d['cancellation_terms']) &&
+      ['PREVIEW_BEFORE_INTERIM', 'INTERIM_BEFORE_PREVIEW']
+          .contains(d['preview_payment_order']) &&
+      d['acceptance_hours'] is int &&
+      d['acceptance_hours'] >= 1 &&
+      d['acceptance_hours'] <= 720);
+}
+
+bool tradeCustomizationRulesReady(TradeRecord order) =>
+    order.quote['customization'] == null ||
+    order.quote['customization_change'] != null ||
+    order.lines
+            .where((l) => ['PRIVATE_CUSTOMIZATION', 'MANUAL_SAMPLE']
+                .contains(l['product_profile']?['type']))
+            .isNotEmpty &&
+        order.lines
+            .where((l) => ['PRIVATE_CUSTOMIZATION', 'MANUAL_SAMPLE']
+                .contains(l['product_profile']?['type']))
+            .every((l) => l['specification']['customization_delivery'] != null);
+
 void validateTradeSpecification(dynamic value) => _spec(value);
 void _spec(dynamic value) {
   final d = tradeMap(value);
@@ -254,6 +279,9 @@ void _spec(dynamic value) {
             v['retry_limit'] == 0);
     }
   } else {
+    if (d.containsKey('customization_delivery')) {
+      validateCustomizationDeliveryTerms(d['customization_delivery']);
+    }
     for (final k in ['sample_seconds', 'final_seconds', 'revision_limit']) {
       tradeRequire(d[k] is int && d[k] >= 0 && d[k] <= 100000);
     }
@@ -345,7 +373,10 @@ void _quote(Map<String, dynamic> d) {
   }
   if (d['artist_service'] != null) {
     final a = tradeMap(d['artist_service']);
-    tradeRequire(a.length == 8 && (a['kind'] == 'HALO_REVIEW' ? a['avatar_id'] == null : isContractId('${a['avatar_id']}')) &&
+    tradeRequire(a.length == 8 &&
+        (a['kind'] == 'HALO_REVIEW'
+            ? a['avatar_id'] == null
+            : isContractId('${a['avatar_id']}')) &&
         ['service_id', 'person_id', 'spec_id']
             .every((k) => isContractId('${a[k]}')) &&
         RegExp(r'^[a-f0-9]{64}$').hasMatch('${a['service_sha256']}') &&
@@ -572,7 +603,20 @@ String tradeError(Object e, {bool writing = false}) {
     return '许可约定的生效付款金额尚未核实。付款仍须满足签署、身份及权属核验，不能代替许可办理。';
   }
   if (e.code == 'CUSTOMIZATION_PAYMENT_RULES_PENDING') {
-    return '定制付款条件尚未开放。这笔订单尚未付款，签署与制作需另行办理。';
+    return '这笔旧订单缺少已确认的定制付款条款，暂不能办理付款。请由平台核对原约定，不会自动补用新规则。';
+  }
+  if (['CUSTOMIZATION_PAYMENT_PAUSED', 'CUSTOMIZATION_CHANGE_PAYMENT_REVERSED']
+      .contains(e.code)) {
+    return '原制作或追加订单有问题待处理，付款已暂停。请从原项目查看售后记录。';
+  }
+  if (e.code == 'INSTALLMENT_NOT_READY') {
+    return '当前具体版本尚未满足这笔原付款节点。请先回制作项目核对预览或成片确认。';
+  }
+  if (e.code == 'CUSTOMIZATION_CANCELLATION_REVIEW_REQUIRED') {
+    return '请先从原制作项目申请取消并等待独立核定应退金额，再办理原付款退款。';
+  }
+  if (e.code == 'CUSTOMIZATION_REFUND_EXCEEDS_DECISION') {
+    return '本次申请超过原项目独立核定的可退款金额，请核对已申请及实际退款。';
   }
   if (e.code == 'CUSTOMIZATION_ORDER_EXISTS') {
     return '这份故事已有一笔订单，请返回需求查看原订单，不要重建。';

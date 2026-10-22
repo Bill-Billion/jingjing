@@ -8,6 +8,9 @@ import '../supply/supply_widgets.dart';
 import 'trade_api.dart';
 import 'trade_models.dart';
 import 'trade_widgets.dart';
+import '../production/production_api.dart';
+import '../production/fulfillment_api.dart';
+import '../production/fulfillment_models.dart';
 
 class TradeRefundForm extends StatefulWidget {
   const TradeRefundForm(
@@ -22,6 +25,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
   late final api = TradeApi(widget.session);
   TradeRecord? payment, order;
   List<TradeRecord> refunds = [];
+  final cancellationFlows = <String, ProductionFulfillment>{};
   final reason = TextEditingController(),
       amounts = <String, TextEditingController>{};
   bool busy = false;
@@ -48,14 +52,26 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
       error = null;
       payment = null;
       order = null;
+      cancellationFlows.clear();
     });
     try {
       final p = await api.record(widget.paymentId);
       tradeRequire(p.kind == 'PAYMENT');
       final rs = await api.all('REFUND');
       final o = p.orderId == null ? null : await api.record(p.orderId!);
+      if (o != null &&
+          o.quote['customization'] != null &&
+          o.quote['customization_change'] == null) {
+        final production = ProductionApi(widget.session);
+        for (final project in (await production.all())
+            .where((r) => r.orderId == o.id && fulfillmentProject(r))) {
+          cancellationFlows[project.data['line_id']] =
+              await production.fulfillment(project);
+        }
+      }
       if (!mounted) return;
-      final remaining = tradeRefundRemaining(p, rs);
+      order = o;
+      final remaining = available(p, rs);
       final pending = api.pending(path);
       final saved = pending == null ? null : tradeMap(pending['body']);
       setState(() {
@@ -83,6 +99,31 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
     }
   }
 
+  Map<String, int> available(TradeRecord payment, List<TradeRecord> records) {
+    final result = tradeRefundRemaining(payment, records);
+    for (final e in cancellationFlows.entries) {
+      final cancellation = e.value.cancellation;
+      final reserved = records
+          .where((r) =>
+              r.orderId == payment.orderId &&
+              !['REJECTED', 'FAILED'].contains(r.status))
+          .expand((r) => tradeRows(r.data['allocations']))
+          .where((a) => a['line_id'] == e.key)
+          .fold<int>(0, (n, a) => n + (a['amount_minor'] as int));
+      final budget = cancellation == null
+          ? 0
+          : (cancellation['refund_minor'] as int) - reserved;
+      if (result.containsKey(e.key)) {
+        result[e.key] = budget < 0
+            ? 0
+            : result[e.key]! < budget
+                ? result[e.key]!
+                : budget;
+      }
+    }
+    return result;
+  }
+
   String _yuan(int n) => '${n ~/ 100}.${(n % 100).toString().padLeft(2, '0')}';
   bool get locked => busy || widget.session.tradePending.isNotEmpty;
   List<Map<String, dynamic>>? validate() {
@@ -93,7 +134,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
         reason.text.trim().length > 2000) {
       return null;
     }
-    final remaining = tradeRefundRemaining(p, refunds);
+    final remaining = available(p, refunds);
     final rows = <Map<String, dynamic>>[];
     for (final e in amounts.entries) {
       if (e.value.text.trim().isEmpty) continue;
@@ -169,8 +210,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
   Widget build(BuildContext context) {
     final p = payment;
     final pending = widget.session.tradePending;
-    final remaining =
-        p == null ? <String, int>{} : tradeRefundRemaining(p, refunds);
+    final remaining = p == null ? <String, int>{} : available(p, refunds);
     return tradeScaffold(
         context,
         '申请退款',
@@ -182,7 +222,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
           if (error != null) supplyNote(error!, error: true),
           if (busy) const LinearProgressIndicator(),
           if (pending.isNotEmpty)
-            supplyCard('原操作结果待核实', [
+            tradeSection('原操作结果待核实', [
               appNotice('原申请内容与编号已保留，请先恢复核对。'),
               for (final op in pending)
                 tradeButton(
@@ -205,13 +245,36 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
                           }),
             ]),
           if (p != null) ...[
-            supplyCard('关联订单与付款', [
+            tradeSection('关联订单与付款', [
               tradeFact('原付款', p.id),
               tradeFact('金额', tradeMoney(p.amount)),
               tradeFact('服务器状态', tradeStatuses[p.status]),
               if (p.orderId != null) tradeFact('订单', p.orderId)
             ]),
-            supplyCard('原约定退款依据', [
+            for (final flow in cancellationFlows.values)
+              tradeSection('原项目取消与应退款', [
+                tradeFact('实际进度', fulfillmentStates[flow.state]),
+                if (flow.cancellation == null)
+                  appNotice('先从原项目申请取消并等待独立核定应退金额，尚不能直接申请制作退款。')
+                else ...[
+                  tradeFact(
+                      '独立核定应退', tradeMoney(flow.cancellation!['refund_minor'])),
+                  tradeFact('已核实实际退款',
+                      tradeMoney(flow.cancellation!['actual_refunded_minor'])),
+                  appNotice('本页还会扣除同一原订单已经申请或待核实的退款金额，防止不同付款重复申请。'),
+                ],
+                tradeButton(
+                    '查看原项目问题与取消记录',
+                    locked
+                        ? null
+                        : () => Navigator.pushNamed(context,
+                                    '/production/aftercare?projectId=${flow.projectId}')
+                                .then((_) {
+                              if (mounted) load();
+                            }),
+                    outline: true),
+              ]),
+            tradeSection('原约定退款依据', [
               if (order != null)
                 ExpansionTile(title: const Text('展开原订单保存条款'), children: [
                   ContractText(
@@ -225,7 +288,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
                   icon: Icons.info_outline),
             if (p.data['provider'] == 'APPLE')
               appNotice('Apple 当前仅支持原付款全额退款。审核通过后仍需用户通过 Apple 官方流程申请。'),
-            supplyCard('退款明细与本次金额', [
+            tradeSection('退款明细与本次金额', [
               for (final e in remaining.entries) ...[
                 tradeFact('明细 ${e.key}', '可申请 ${tradeMoney(e.value)}'),
                 TextField(
@@ -242,7 +305,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
                 const SizedBox(height: 16),
               ],
             ]),
-            supplyCard('申请原因', [
+            tradeSection('申请原因', [
               TextField(
                   controller: reason,
                   enabled: !locked && p.refundable,

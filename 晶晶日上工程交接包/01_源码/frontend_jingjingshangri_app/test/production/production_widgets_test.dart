@@ -197,7 +197,7 @@ void main() {
     expect(find.text('制作项目'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('412读取新记录并清空旧说明，用户重新填写才能再次提交', (tester) async {
+  testWidgets('412保留旧说明并读取新版本，明确重核后才能再次提交', (tester) async {
     var writes = 0;
     final adapter = productionAdapter(override: (r) {
       if (r.path == feedbackPath && ++writes == 1) {
@@ -220,7 +220,7 @@ void main() {
     await tester.tap(find.text('确认办理'));
     await nav.frames(tester);
     expect(s.productionPending, isEmpty);
-    expect(find.text('旧决定'), findsNothing);
+    expect(find.text('旧决定'), findsOneWidget);
     await reveal(tester, find.text('内容已更新，请重新查看当前版本，再填写并确认。本次旧决定不会自动重放。'));
     expect(find.text('内容已更新，请重新查看当前版本，再填写并确认。本次旧决定不会自动重放。'), findsOneWidget);
     await reveal(tester, find.text('提交修改意见'));
@@ -230,6 +230,8 @@ void main() {
             .onPressed,
         isNull);
     await reveal(tester, find.widgetWithText(TextField, '本版修改意见'));
+    await reveal(tester, find.text('我已核对最新版本，沿用本页说明'));
+    await tester.tap(find.text('我已核对最新版本，沿用本页说明'));
     await tester.enterText(find.widgetWithText(TextField, '本版修改意见'), '新核对意见');
     await reveal(tester, find.text('提交修改意见'));
     await tester.tap(find.text('提交修改意见'));

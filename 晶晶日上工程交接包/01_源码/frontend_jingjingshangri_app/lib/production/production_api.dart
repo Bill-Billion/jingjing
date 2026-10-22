@@ -126,7 +126,8 @@ class ProductionApi {
       ProductionRecord project,
       String decision,
       String note,
-      Map<String, bool>? checklist) {
+      Map<String, bool>? checklist,
+      {String? changeKind}) {
     if (!session.isOwner || !project.buyer(participant())) {
       throw const AccountError(403, 'PRODUCTION_BUYER_REQUIRED');
     }
@@ -149,15 +150,29 @@ class ProductionApi {
                 .any((k) => checklist[k] != true))) {
       throw const AccountError(400, 'ACCEPTANCE_CHECKS_INCOMPLETE');
     }
+    final customized =
+        project.data['specification']['customization_delivery'] != null;
+    if (customized &&
+        decision == 'REQUEST_CHANGES' &&
+        !['PLATFORM_CORRECTION', 'CREATIVE_CHANGE'].contains(changeKind)) {
+      throw const AccountError(400, 'CUSTOMIZATION_CHANGE_KIND_REQUIRED');
+    }
     if (decision == 'REQUEST_CHANGES' &&
         (checklist != null ||
-            project.data['change_requests'] >=
-                project.data['specification']['revision_limit'])) {
+            !customized &&
+                project.data['change_requests'] >=
+                    project.data['specification']['revision_limit'])) {
       throw const AccountError(409, 'REVISION_LIMIT_REACHED');
     }
     return _feedback(
         '/api/v1/production/versions/${version.id}/feedback',
-        {'decision': decision, 'note': note.trim(), 'checklist': checklist},
+        {
+          'decision': decision,
+          'note': note.trim(),
+          'checklist': checklist,
+          if (customized)
+            'change_kind': decision == 'REQUEST_CHANGES' ? changeKind : null
+        },
         version.version);
   }
 

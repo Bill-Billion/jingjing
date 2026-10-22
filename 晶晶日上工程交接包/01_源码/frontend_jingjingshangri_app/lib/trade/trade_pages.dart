@@ -14,6 +14,8 @@ import '../gigs/gig_models.dart';
 import '../gigs/gig_widgets.dart';
 import '../production/production_api.dart';
 import '../production/production_models.dart';
+import '../production/fulfillment_api.dart';
+import '../production/fulfillment_models.dart';
 
 // Film editorial, pages 54–56. Details return to the shared five-tab shell.
 class TradeRecordsPage extends StatelessWidget {
@@ -213,6 +215,7 @@ class _TradeDetailState extends State<_TradeDetail> {
   TradeRecord? record;
   List<TradeRecord> payments = [], refunds = [];
   List<ProductionRecord> projects = [];
+  final fulfillments = <String, ProductionFulfillment>{};
   String? productionNotice;
   String? error;
   bool busy = false;
@@ -238,6 +241,7 @@ class _TradeDetailState extends State<_TradeDetail> {
       payments = [];
       refunds = [];
       projects = [];
+      fulfillments.clear();
       productionNotice = null;
       error = null;
     });
@@ -248,13 +252,16 @@ class _TradeDetailState extends State<_TradeDetail> {
         ps =
             (await api.all('PAYMENT')).where((p) => p.orderId == r.id).toList();
         rs = (await api.all('REFUND')).where((p) => p.orderId == r.id).toList();
-        if (r.quote['customization'] == null &&
-            tradeRows(r.quote['lines'])
-                .any((l) => l['line_kind'] == 'PRODUCTION')) {
+        if (tradeRows(r.quote['lines'])
+            .any((l) => l['line_kind'] == 'PRODUCTION')) {
           try {
             projects = (await ProductionApi(widget.session).all())
                 .where((p) => p.orderId == r.id)
                 .toList();
+            for (final p in projects.where(fulfillmentProject)) {
+              fulfillments[p.id] =
+                  await ProductionApi(widget.session).fulfillment(p);
+            }
           } on AccountError catch (e) {
             productionNotice = productionError(e);
           }
@@ -367,7 +374,9 @@ class _TradeDetailState extends State<_TradeDetail> {
             r.status == 'APPROVED'
                 ? '买方确认后形成订单，付款和签署另行办理。'
                 : '仅独立审核通过且在有效期内的指定买方可以确认。'),
-      if (d['artist_service'] != null) tradeSection('对应的真人与服务', tradeArtistFacts(tradeMap(d['artist_service']))),
+      if (d['artist_service'] != null)
+        tradeSection(
+            '对应的真人与服务', tradeArtistFacts(tradeMap(d['artist_service']))),
       if (d['customization'] != null)
         tradeSection('对应的正式故事', [
           tradeFact('需求编号', shortSupplyId(d['customization']['request_id'])),
@@ -451,7 +460,7 @@ class _TradeDetailState extends State<_TradeDetail> {
               tradeFact('分配 · ${a['line_id']}', tradeMoney(a['amount_minor'])),
           ]),
           if (i['trigger'] != 'ORDER_ACCEPTED')
-            appNotice('本阶段尚未开放验收，此付款节点不可办理。'),
+            appNotice('这笔款项须满足原订单对应的具体版本确认条件；订单页会重新核对制作进度。'),
           const Divider(),
         ]
       ]),
@@ -488,9 +497,13 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       tradeSection('订单 ${shortSupplyId(r.id)}',
           [tradeStatus(r), appNotice('款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')]),
-      if (r.quote['artist_service'] != null) tradeSection('对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
+      if (r.quote['artist_service'] != null)
+        tradeSection(
+            '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
       if (r.quote['customization'] != null)
-        appNotice('订单已生成，合同内容已保存。请核对下方实际收款记录；生成订单不代表已付款或签署。当前页面尚未开放定制付款和开工办理。'),
+        appNotice(tradeCustomizationRulesReady(r)
+            ? '原故事、报价与合同已固定。先核对首款，再按原单预览、确认和后续付款节点办理；生成订单不代表已付款或签署。'
+            : '这笔历史定制订单未保存完整付款和交付条款。请由平台核对原约定，不会自动补用新单规则。'),
       if (r.quote['commercial'] != null)
         tradeSection('关联商业约定', [
           tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
@@ -509,14 +522,25 @@ class _TradeDetailState extends State<_TradeDetail> {
                       context, '/gigs/records?kind=COMMISSION'),
               outline: true)
         ]),
-      if (r.quote['customization'] == null &&
-          tradeRows(r.quote['lines'])
-              .any((l) => l['line_kind'] == 'PRODUCTION'))
+      if (tradeRows(r.quote['lines'])
+          .any((l) => l['line_kind'] == 'PRODUCTION'))
         tradeSection('制作进度', [
           if (productionNotice != null) appNotice(productionNotice!),
           if (projects.isEmpty) appNotice('尚无可读取的关联制作项目。开工由商家按原订单与审核依据办理。'),
           for (final p in projects) ...[
             tradeFact('制作项目', shortSupplyId(p.id)),
+            if (fulfillments[p.id] != null)
+              tradeFact('实际履约进度', fulfillmentStates[fulfillments[p.id]!.state]),
+            tradeButton(
+                '查看原项目进度与售后',
+                locked
+                    ? null
+                    : () => Navigator.pushNamed(context,
+                                '/production/project?projectId=${p.id}')
+                            .then((_) {
+                          if (mounted) load();
+                        }),
+                outline: true),
             for (final stage in productionStages.keys) ...[
               tradeFact(
                   productionStages[stage]!,
@@ -580,7 +604,7 @@ class _TradeDetailState extends State<_TradeDetail> {
               outline: true)
       ]),
       ...quoteView(r, order: true),
-      if (r.quote['customization'] == null &&
+      if (tradeCustomizationRulesReady(r) &&
           r.isBuyer(api.owner()) &&
           ['OPEN', 'PARTIALLY_PAID'].contains(r.status))
         tradeSection('办理付款记录', [
@@ -646,7 +670,8 @@ class _TradeDetailState extends State<_TradeDetail> {
               trailing: const Icon(Icons.chevron_right),
               onTap: locked ? null : () => open(x.id)),
       ]),
-      if (r.isBuyer(api.owner()) &&
+      if (projects.isEmpty &&
+          r.isBuyer(api.owner()) &&
           r.status == 'OPEN' &&
           f['received_minor'] == 0 &&
           !payments.any((p) => [
@@ -663,9 +688,19 @@ class _TradeDetailState extends State<_TradeDetail> {
   }
 
   bool installmentReady(TradeRecord order, String trigger) {
+    if (!tradeCustomizationRulesReady(order)) return false;
+    if (fulfillments.values.any((f) => !f.active)) return false;
+    if (projects
+        .where(fulfillmentProject)
+        .any((p) => fulfillments[p.id] == null)) {
+      return false;
+    }
     if (trigger == 'ORDER_ACCEPTED') return true;
-    final stage =
-        {'SAMPLE_ACCEPTED': 'SAMPLE', 'FINAL_ACCEPTED': 'FINAL'}[trigger];
+    final stage = {
+      'SAMPLE_ACCEPTED': 'SAMPLE',
+      'FINAL_ACCEPTED': 'FINAL',
+      'CUSTOMIZATION_INTERIM_CONFIRMED': 'SAMPLE'
+    }[trigger];
     final lines = tradeRows(order.quote['lines'])
         .where((l) => l['line_kind'] == 'PRODUCTION')
         .toList();
@@ -674,8 +709,14 @@ class _TradeDetailState extends State<_TradeDetail> {
         lines.every((line) => projects.any((p) =>
             p.data['line_id'] == line['line_id'] &&
             ['IN_PROGRESS', 'ACCEPTED'].contains(p.status) &&
-            p.data['current'][stage] != null &&
-            p.data['accepted'][stage] == p.data['current'][stage]));
+            (trigger == 'CUSTOMIZATION_INTERIM_CONFIRMED' &&
+                    fulfillments[p.id]?.terms['preview_payment_order'] ==
+                        'INTERIM_BEFORE_PREVIEW'
+                ? p.data['current']['SAMPLE'] != null &&
+                    p.data['current']['SCRIPT'] != null &&
+                    p.data['accepted']['SCRIPT'] == p.data['current']['SCRIPT']
+                : p.data['current'][stage] != null &&
+                    p.data['accepted'][stage] == p.data['current'][stage])));
   }
 
   List<Widget> contractView(TradeRecord r) {
@@ -683,7 +724,9 @@ class _TradeDetailState extends State<_TradeDetail> {
     return [
       tradeBanner('合同内容已保存，尚未签署', '这是本订单返回的合同快照，用于留存与核对。',
           icon: Icons.description_outlined),
-      if (r.quote['artist_service'] != null) tradeSection('对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
+      if (r.quote['artist_service'] != null)
+        tradeSection(
+            '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
       tradeSection('合同信息', [
         tradeFact('合同编号', c['id']),
         tradeFact('买方', r.buyer),
@@ -938,7 +981,8 @@ class _TradeDetailState extends State<_TradeDetail> {
                                 facts: [
                                   tradeFact('总价', tradeMoney(r.amount)),
                                   if (r.data['artist_service'] != null)
-                                    ...tradeArtistFacts(tradeMap(r.data['artist_service'])),
+                                    ...tradeArtistFacts(
+                                        tradeMap(r.data['artist_service'])),
                                   const Text('确认后保存合同内容，尚未签署；付款和许可另行办理。')
                                 ]),
                     child: const Text('确认报价形成订单'))

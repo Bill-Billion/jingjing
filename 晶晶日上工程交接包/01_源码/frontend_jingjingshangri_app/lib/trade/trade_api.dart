@@ -138,6 +138,9 @@ class TradeApi {
         i.length != 1) {
       throw const AccountError(422, 'INSTALLMENT_NOT_READY');
     }
+    if (!tradeCustomizationRulesReady(order)) {
+      throw const AccountError(409, 'CUSTOMIZATION_PAYMENT_RULES_PENDING');
+    }
     // Acceptance/payment gates are rechecked by the server for this original
     // installment. Local project summaries never establish financial facts.
     return write('/api/v1/trade/payments',

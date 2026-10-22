@@ -1,3 +1,5 @@
+当前前端第四轮在 `ux/v5-r04-production-frontend`，基于integration/2608ef7并继承已合入PR32。制作/付款/交付本机验收完成：App346、网页255、110张原稿对照截图；下载后履约状态刷新已修。Core仍需处理R04-CORE-01原故事追加报价409，未冒称整条追加链完成。先读docs/START_HERE.md、docs/testing/R04_FRONTEND_20261022.md及docs/tasks/records/UX-v5-r04-production-frontend-20261022.md。集中上传与实际审阅见该分支PR，未合入第四轮或部署。以下入口保留为历史。
+
 当前本侧第三轮复审目录worktrees/round3-review、core/v5-r03-review；来源PR31/d242816，已修复公开资料失效残留。先读docs/testing/R03_REVIEW_20261021.md及docs/status/CORE_CURRENT.md，再核对实际分支与远端。旧目录与记录保留，不以旧安卓结果代替第三轮验收。
 
 当前前端第三轮为 `ux/v5-r03-artists-frontend`，已同步共同版本integration/b8775fe。PR30/273d0d0已由chengcongcong222实际审阅通过，并随PR29合入；保留其安卓配置与已确认报价的固定订单入口修复。本人/受托机构/运营分别接新artists接口，保持先锋电影刊物视觉；当前任务见docs/tasks/records/UX-v5-r03-artists-frontend-20261021.md。以下前端与Core旧入口保留为历史。

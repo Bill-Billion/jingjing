@@ -16,6 +16,8 @@ import 'trade/trade_pages.dart';
 import 'gigs/gig_pages.dart';
 import 'gigs/gig_forms.dart';
 import 'production/production_pages.dart';
+import 'production/fulfillment_pages.dart';
+import 'production/manual_sample_page.dart';
 import 'projects/project_pages.dart';
 import 'projects/project_forms.dart';
 import 'finance/finance_pages.dart';
@@ -152,6 +154,9 @@ class JingjingShangriApp extends StatelessWidget {
             mode: 'EXTERNAL', id: uri.queryParameters['releaseId'] ?? ''),
         '/production' =>
           ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
+        '/production/manual-sample' => ManualSamplePage(requestId: uri.queryParameters['requestId'] ?? ''),
+        '/production/story' => ProductionStoryPage(projectId: uri.queryParameters['projectId'] ?? ''),
+        '/production/aftercare' => ProductionAftercarePage(projectId: uri.queryParameters['projectId'] ?? '', kind: uri.queryParameters['kind']),
         '/production/project' => ProductionProjectPage(
             projectId: uri.queryParameters['projectId'] ?? ''),
         '/production/version' => ProductionVersionPage(

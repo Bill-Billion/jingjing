@@ -8,7 +8,7 @@ import '../supply/supply_widgets.dart';
 import 'trade_models.dart';
 
 Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
-        {bool locked = false, Widget? footer}) =>
+        {bool locked = false, Widget? footer, VoidCallback? onBack}) =>
     PopScope(
         canPop: !locked,
         onPopInvokedWithResult: (didPop, result) {
@@ -42,6 +42,10 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
                 appBar: AppBar(
                     title: Text(title),
                     leading: BackButton(onPressed: () {
+                      if (onBack != null) {
+                        onBack();
+                        return;
+                      }
                       if (locked) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -55,8 +59,8 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
                       }
                     })),
                 body: SafeArea(
-                    child: Center(
-                        child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 560), child: ListView(padding: const EdgeInsets.fromLTRB(18, 20, 18, 0), children: [...children, const SizedBox(height: 24)])))))));
+                    child:
+                        Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 560), child: ListView(padding: const EdgeInsets.fromLTRB(18, 20, 18, 0), children: [...children, const SizedBox(height: 24)])))))));
 
 class TradeGate extends StatelessWidget {
   const TradeGate(
@@ -216,13 +220,25 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
     return [
       tradeFact('样片 / 成片',
           '${spec['sample_seconds']} 秒 / ${spec['final_seconds']} 秒'),
-      tradeFact('修改次数', spec['revision_limit'])
+      tradeFact('修改次数', spec['revision_limit']),
+      if (spec['customization_delivery'] != null) ...[
+        tradeFact(
+            '预览与中间付款顺序',
+            spec['customization_delivery']['preview_payment_order'] ==
+                    'PREVIEW_BEFORE_INTERIM'
+                ? '正式预览确认后，按原订单补款'
+                : '沿用本单先中间付款、再预览的历史约定'),
+        tradeFact('明确收讫后的原约定期限',
+            '${spec['customization_delivery']['acceptance_hours']} 小时'),
+        tradeFact('取消约定', spec['customization_delivery']['cancellation_terms']),
+      ]
     ];
   }
   return [
     tradeFact('服务对象', artistServiceNames[service['kind']]),
     if (service['hosting_months'] != null)
-      tradeFact('托管月数', '${service['hosting_months']} 个月；首次核实收款后起算，续期接已有期限，以服务记录为准'),
+      tradeFact(
+          '托管月数', '${service['hosting_months']} 个月；首次核实收款后起算，续期接已有期限，以服务记录为准'),
     if (service['halo_level'] != null)
       tradeFact('认证审核', 'L${service['halo_level']}；付费不等于审核通过'),
     if (service['kind'] == 'AVATAR_CREATION')
@@ -234,8 +250,8 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
 }
 
 List<Widget> tradeArtistFacts(Map<String, dynamic> source) => [
-  tradeFact('服务', artistServiceNames[source['kind']]),
-  tradeFact('真人档案', source['person_id']),
-  tradeFact('具体数字人', source['avatar_id'] ?? '认证申请不绑定数字人'),
-  tradeFact('原服务请求', source['service_id']),
-];
+      tradeFact('服务', artistServiceNames[source['kind']]),
+      tradeFact('真人档案', source['person_id']),
+      tradeFact('具体数字人', source['avatar_id'] ?? '认证申请不绑定数字人'),
+      tradeFact('原服务请求', source['service_id']),
+    ];

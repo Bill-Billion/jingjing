@@ -1,0 +1,149 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "prototype": "先锋电影刊物",
+  "references": [
+    "34-orders-top.png",
+    "35-orders-aftercare.png",
+    "36-orders-last.png",
+    "37-custom-top.png"
+  ],
+  "web_adaptation": true,
+  "matrix_count": 0,
+  "screenshot_count": 6,
+  "checks": [
+    {
+      "name": "只读逐页矩阵没有业务写入",
+      "result": "PASS"
+    },
+    {
+      "name": "初始读取没有API失败或运行异常",
+      "result": "PASS"
+    },
+    {
+      "name": "Web按原订单建立独立定制项目且未虚构开工",
+      "result": "PASS"
+    },
+    {
+      "name": "新建项目由独立账号实际读取依据后核验，商户未自行批准",
+      "result": "PASS"
+    },
+    {
+      "name": "已付首期的项目由实际受派账号确认开工",
+      "result": "PASS"
+    },
+    {
+      "name": "实际私有文本文件上传并生成不可变SCRIPT版本",
+      "result": "PASS"
+    },
+    {
+      "name": "独立账号实际读本版SCRIPT后审片，买方验收保持分离",
+      "result": "PASS"
+    },
+    {
+      "name": "仅核对取消项目实际退款记录，未发渠道退款",
+      "result": "PASS"
+    },
+    {
+      "name": "没有读取final变体或发起真实渠道收退款",
+      "result": "PASS"
+    },
+    {
+      "name": "浏览器运行无JS异常",
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "screenshots": [
+    {
+      "file": "action-created-1440-overview.png",
+      "key": "action-created",
+      "width": 1440,
+      "section": "overview"
+    },
+    {
+      "file": "action-project-reviewed-1440-overview.png",
+      "key": "action-project-reviewed",
+      "width": 1440,
+      "section": "overview"
+    },
+    {
+      "file": "action-started-1440-overview.png",
+      "key": "action-started",
+      "width": 1440,
+      "section": "overview"
+    },
+    {
+      "file": "action-script-submitted-1440-overview.png",
+      "key": "action-script-submitted",
+      "width": 1440,
+      "section": "overview"
+    },
+    {
+      "file": "action-script-reviewed-1440-overview.png",
+      "key": "action-script-reviewed",
+      "width": 1440,
+      "section": "overview"
+    },
+    {
+      "file": "action-refund-synced-1440-overview.png",
+      "key": "action-refund-synced",
+      "width": 1440,
+      "section": "overview"
+    }
+  ],
+  "posts": [
+    {
+      "role": "producer",
+      "method": "POST",
+      "path": "/api/v1/production/projects"
+    },
+    {
+      "role": "reviewer",
+      "method": "POST",
+      "path": "/api/v1/production/records/85b0f752-632f-4426-8758-fc38285f5aa1/reviews"
+    },
+    {
+      "role": "producer",
+      "method": "POST",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/start"
+    },
+    {
+      "role": "producer",
+      "method": "POST",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/files"
+    },
+    {
+      "role": "producer",
+      "method": "POST",
+      "path": "/api/v1/production/projects/e5c31e23-996e-4041-a884-a222b5c7c44f/versions"
+    },
+    {
+      "role": "reviewer",
+      "method": "POST",
+      "path": "/api/v1/production/records/ccb4d167-a486-4989-acda-f63f0228f5de/reviews"
+    },
+    {
+      "role": "buyer",
+      "method": "POST",
+      "path": "/api/v1/production/projects/3a252fea-92ad-4d85-a23d-5a94c1e45b43/refund-sync"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "api_errors": [],
+  "blockers": [],
+  "cross_version": {
+    "project_id": "e5c31e23-996e-4041-a884-a222b5c7c44f",
+    "version_id": "ccb4d167-a486-4989-acda-f63f0228f5de",
+    "stage": "SCRIPT"
+  },
+  "new_project_id": "85b0f752-632f-4426-8758-fc38285f5aa1",
+  "current_case": null,
+  "failure": null,
+  "limits": [
+    "合成色条不代表真片水印、声音或AI标识已验收",
+    "浏览器付款客户端未启用，没有真实收退款",
+    "预览与最终文件不做探测或预加载；App另行执行明确查看与下载"
+  ]
+}

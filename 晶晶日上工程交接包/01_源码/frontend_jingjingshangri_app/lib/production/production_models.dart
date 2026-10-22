@@ -1,5 +1,6 @@
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
+import '../trade/trade_models.dart' show validateTradeSpecification;
 
 const productionStages = {
   'SCRIPT': '剧本',
@@ -149,23 +150,7 @@ class ProductionRecord {
                 .every((v) => name == 'revisions' ? _number(v) : _id(v)));
       }
       final s = productionMap(d['specification']);
-      _keys(s, [
-        'version',
-        'service_tier',
-        'sample_seconds',
-        'final_seconds',
-        'revision_limit',
-        'deliverables',
-        'terms'
-      ]);
-      productionRequire(_text(s['version'], 100) &&
-          _text(s['service_tier'], 100) &&
-          _number(s['sample_seconds']) &&
-          _number(s['final_seconds']) &&
-          _number(s['revision_limit']) &&
-          s['deliverables'] is List &&
-          (s['deliverables'] as List).every((v) => v is String) &&
-          s['terms'] is String);
+      validateTradeSpecification(s);
     } else if (r['kind'] == 'VERSION') {
       _keys(d, [
         'stage',
@@ -198,12 +183,24 @@ class ProductionRecord {
           _number(d['byte_size'], min: 1, max: 52428800) &&
           _hash(d['content_sha256']));
     } else if (r['kind'] == 'FEEDBACK') {
-      _keys(d, ['version_id', 'stage', 'decision', 'note', 'checklist']);
+      _keys(d, ['version_id', 'stage', 'decision', 'note', 'checklist'],
+          ['change_kind', 'acceptance_method']);
+      if (d.containsKey('change_kind')) {
+        productionRequire(d['change_kind'] == null ||
+            ['PLATFORM_CORRECTION', 'CREATIVE_CHANGE']
+                .contains(d['change_kind']));
+      }
+      if (d.containsKey('acceptance_method')) {
+        productionRequire(['BUYER_EXPLICIT', 'AGREED_TIMEOUT']
+            .contains(d['acceptance_method']));
+      }
       productionRequire(_id(d['version_id']) &&
           productionStages.containsKey(d['stage']) &&
           ['ACCEPT', 'REQUEST_CHANGES'].contains(d['decision']) &&
           _text(d['note'], 4000));
-      if (d['decision'] == 'ACCEPT') {
+      if (d['acceptance_method'] == 'AGREED_TIMEOUT') {
+        productionRequire(d['decision'] == 'ACCEPT' && d['checklist'] == null);
+      } else if (d['decision'] == 'ACCEPT') {
         final checks = productionMap(d['checklist']);
         final names = productionCheckNames(d['stage']);
         _keys(checks, names);
@@ -241,6 +238,18 @@ String productionError(AccountError e, {bool writing = false}) {
   if (e.status == 412) return '内容已更新，请重新查看当前版本，再填写并确认。本次旧决定不会自动重放。';
   if (writing && e.uncertain) return '提交结果尚未确认。请保留本页，恢复原请求核对，系统不会另建同一份意见。';
   const messages = {
+    'CUSTOMIZATION_NOT_STARTED': '尚未由受派制作人开工，请核对首款与项目审核。',
+    'CUSTOMIZATION_PAUSED': '项目已暂停，请从原项目查看问题与处理记录。',
+    'CUSTOMIZATION_CANCELLED': '原委托已取消，不能继续制作或下载，请核对退款进度。',
+    'CUSTOMIZATION_PREVIEW_NOT_VIEWED': '请先真实读取并打开当前正式版本。读取或播放失败不算已查看。',
+    'CUSTOMIZATION_NOTIFICATION_NOT_RECEIVED': '请先确认收到当前正式交付通知，再明确确认收讫。',
+    'CUSTOMIZATION_CHANGE_KIND_REQUIRED': '请区分纠正原约定错误与新增创作要求。',
+    'CUSTOMIZATION_CHANGE_QUOTE_REQUIRED':
+        '原订单创意修改次数已用完。新增要求请从原项目开问题单，另行报价、确认和付款。',
+    'CUSTOMIZATION_CASE_ALREADY_OPEN': '原项目已有一份未解决的问题，请先查看原处理记录。',
+    'CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED': '请先核对原订单的中间补款节点。预览或成片确认不表示钱已到账。',
+    'CUSTOMIZATION_REFUND_RECONCILIATION_REQUIRED':
+        '收退款记录与取消决定需要进一步核对，不能记为已退款。',
     'INVALID_PRODUCTION_RESPONSE': '制作服务返回内容不完整，请重新核对。',
     'CURRENT_APPROVED_VERSION_REQUIRED': '只有当前审核通过的版本可以审阅与确认。请返回项目读取最新版本。',
     'FINAL_DELIVERY_NOT_READY': '完成当前最终版本验收和约定付款后，才能下载原片。',
