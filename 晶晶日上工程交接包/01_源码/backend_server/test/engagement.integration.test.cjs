@@ -70,6 +70,64 @@ test('engagement real database journey and permission boundaries',{skip:!process
  try{const body={booking_id:booking.id,account_id:T.buyer2.account_id};assert.equal((await post('/mcn/assignments',body)).status,403);const grant=(await post('/mcn/staff',{account_id:T.buyer2.account_id,person_ids:[T.seller.person.id],actions:['READ_PROFILE','MANAGE_AUDITIONS'],valid_until:data.valid_until})).data;const assignment=await post('/mcn/assignments',body);assert.equal(assignment.status,200,JSON.stringify(assignment));assert.equal(assignment.data.data.account_id,T.buyer2.account_id);await post('/mcn/staff/'+grant.id+'/revoke',{reason:'synthetic revoked'},grant.object_version);assert.equal((await post('/mcn/assignments',body)).status,403);}finally{await new Promise(r=>api.close(r));}
  });
  await t.test('artist cannot erase operator exclusion by editing public profile',async()=>{let p=await write('moderate',reviewer,{record_id:profile.id,expected_version:profile.object_version,reason:'synthetic safety exclusion',exclude:true});p=await write('rankingProfile',seller,{party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:true});assert.equal(p.current_status,'EXCLUDED');await assert.rejects(write('interaction',buyer,{profile_id:p.id,action:'VIEW',device_id:key()}));profile=await write('moderate',reviewer,{record_id:p.id,expected_version:p.object_version,reason:'independent recovery',exclude:false});});
+
+ await t.test('MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation',async()=>{
+  const parties=require('../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal:S.resolvePrincipal});
+  const org=await parties.createOrganization(outsider.ctx,{display_name:'synthetic two-artist income scope',operation_key:key()});
+  await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]);
+  for(const employee of [buyer,reviewer]){
+   const invite=await parties.inviteMember(outsider.ctx,{party_id:org.party_id,invitee_account_id:employee.account_id,expires_at:'2099-01-01T00:00:00.000Z',operation_key:key()});
+   await parties.respondInvitation(employee.ctx,{party_id:org.party_id,invitation_id:invite.invitation_id,expected_version:1,decision:'ACCEPT',operation_key:key()});
+  }
+  const relations=[];
+  for(const artist of [seller,buyer2]){
+   const old=(await db.execute("SELECT id,object_version FROM artist_records WHERE kind='DELEGATION' AND person_id=? AND current_status='ACTIVE'",[artist.person.id]))[0];
+   for(const r of old)await S.artists.withdraw(artist.ctx,{person_id:artist.person.id,party_id:artist.personal_party_id,record_id:r.id,expected_version:r.object_version,reason:'Close earlier fixture delegation',operation_key:key()});
+   const relation=key(),data={valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',accepted_by:artist.account_id};
+   await db.execute("INSERT INTO gig_records(id,kind,owner_party_id,counterparty_id,created_by,current_status,data_json,data_sha256) VALUES (?,'RELATION',?,?,?,'ACTIVE',?,?)",[relation,org.party_id,artist.personal_party_id,outsider.account_id,JSON.stringify(data),digest(data)]);
+   const evidence=await S.supply.upload(artist.ctx,{party_id:artist.personal_party_id,purpose:'CONSENT_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic scoped delegation'),operation_key:key()});
+   await S.artists.createDelegation(artist.ctx,{person_id:artist.person.id,party_id:artist.personal_party_id,delegation:{organization_party_id:org.party_id,relation_id:relation,actions:['READ_PROFILE'],valid_from:data.valid_from,valid_until:data.valid_until,evidence_asset_ids:[evidence.id],terms:'Synthetic income scope only'},operation_key:key()});
+   relations.push(relation);
+  }
+  const grant=(u,artist)=>write('staffGrant',outsider,{party_id:org.party_id,account_id:u.account_id,person_ids:[artist.person.id],actions:['READ_INCOME'],valid_until:'2099-01-01T00:00:00.000Z'});
+  const g1=await grant(buyer,seller),g2=await grant(reviewer,buyer2);
+  const orders=[];
+  // Synthetic historical orders and trusted ledger facts, never a real provider call.
+  for(const [artist,employee,amount] of [[seller,buyer,1000],[buyer2,reviewer,2000],[seller,reviewer,3000],[buyer2,buyer,4000]]){
+   const avatar=(await db.execute('SELECT avatar_id FROM artist_avatar_links WHERE person_id=? LIMIT 1',[artist.person.id]))[0][0].avatar_id;
+   const oid=key(),pid=key(),data={quote:{total_minor:amount,commercial:{avatar_id:avatar,relation:{mcn_party_id:org.party_id},commission:{platform_bps:2000,mcn_bps:1000}}},contract:{synthetic_only:true,order_id:oid}};
+   await db.execute("INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,created_by,current_status,data_json,data_sha256) VALUES (?,'ORDER',?,?,?,'PAID',?,?)",[oid,buyer.personal_party_id,artist.personal_party_id,outsider.account_id,JSON.stringify(data),digest(data)]);
+   const payment={environment:'PRODUCTION',synthetic_only:true};
+   await db.execute("INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,'PAYMENT',?,?,?,?,'SUCCEEDED',?,?)",[pid,buyer.personal_party_id,artist.personal_party_id,oid,outsider.account_id,JSON.stringify(payment),digest(payment)]);
+   await db.execute("INSERT INTO trade_journal(id,source_id,order_id,direction,currency,amount_minor,provider_reference) VALUES (?,?,?,'RECEIPT','CNY',?,?)",[key(),pid,oid,amount,'synthetic:'+pid]);
+   await db.withTransaction(tx=>C.insert(tx,{id:outsider.account_id},'ASSIGNMENT',org.party_id,null,'ASSIGNED',{person_id:artist.person.id,account_id:employee.account_id,order_id:oid,booking_id:null}));
+   orders.push(oid);
+  }
+  const dashboard=u=>R.mcnDashboard(u.ctx,{party_id:org.party_id});
+  const owner=await dashboard(outsider);assert.equal(owner.orders.length,4);assert.equal(owner.total_accrual_minor,1000);
+  let first=await dashboard(buyer),second=await dashboard(reviewer);
+  assert.deepEqual(first.relations.map(x=>x.id),[relations[0]]);
+  assert.deepEqual(second.relations.map(x=>x.id),[relations[1]]);
+  assert.deepEqual(first.orders.map(x=>x.order_id),[orders[0]]);assert.equal(first.total_accrual_minor,100);
+  assert.deepEqual(second.orders.map(x=>x.order_id),[orders[1]]);assert.equal(second.total_accrual_minor,200);
+  assert.ok(first.assignments.every(x=>x.data.person_id===seller.person.id));
+  const extra=await grant(reviewer,seller);assert.equal((await dashboard(reviewer)).total_accrual_minor,500);
+  await write('revokeStaff',outsider,{party_id:org.party_id,record_id:extra.id,expected_version:extra.object_version,reason:'Scope withdrawn'});
+  assert.equal((await dashboard(reviewer)).total_accrual_minor,200);
+  await db.execute("UPDATE artist_people SET current_status='CLOSED' WHERE id=?",[seller.person.id]);
+  assert.deepEqual((await dashboard(buyer)).orders,[]);
+  await db.execute("UPDATE artist_people SET current_status='ACTIVE' WHERE id=?",[seller.person.id]);
+  await db.execute("UPDATE parties SET current_status='SUSPENDED' WHERE id=?",[seller.personal_party_id]);
+  assert.deepEqual((await dashboard(buyer)).orders,[]);
+  await db.execute("UPDATE parties SET current_status='ACTIVE' WHERE id=?",[seller.personal_party_id]);
+  assert.equal((await dashboard(buyer)).total_accrual_minor,100);
+  await db.execute("UPDATE gig_records SET current_status='ENDED' WHERE id=?",[relations[0]]);
+  first=await dashboard(buyer);assert.deepEqual(first.orders,[]);assert.deepEqual(first.relations,[]);assert.deepEqual(first.assignments,[]);assert.equal(first.total_accrual_minor,0);
+  await write('revokeStaff',outsider,{party_id:org.party_id,record_id:g1.id,expected_version:g1.object_version,reason:'Employment ended'});
+  await assert.rejects(dashboard(buyer),{code:'MCN_EMPLOYEE_SCOPE_REQUIRED'});
+  await patch('engagement_records',g2,{valid_until:'2020-01-01T00:00:00.000Z'});
+  await assert.rejects(dashboard(reviewer),{code:'MCN_EMPLOYEE_SCOPE_REQUIRED'});
+ });
  await t.test('HTTP routes require authentication and preserve response envelope',async()=>{const base='http://127.0.0.1:'+server.address().port+'/api/v1/engagement';let r=await fetch(base+'/rankings/'+snapshot.id);assert.equal(r.status,401);r=await fetch(base+'/rankings/'+snapshot.id,{headers:{Authorization:'Bearer '+buyer.token}});const body=await r.json();assert.equal(r.status,200,JSON.stringify(body));assert.equal(body.data.id,snapshot.id);assert.equal(body.meta.actor.account_id,buyer.account_id);});
  const output=process.env.ENGAGEMENT_HTTP_FIXTURES_OUT||require('node:path').resolve(__dirname,'../../../..','.local/engagement-http-fixtures.json');await fs.mkdir(require('node:path').dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
