@@ -68,7 +68,7 @@ jobs:
           # Hosted runners often already contain these tools. Verify before touching apt.
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null || [ ! -r /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]; then
             # The Azure mirror stalled this job; keep Ubuntu's signed packages on its main mirror.
-            for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+            for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt /etc/apt/apt-mirrors-security.txt; do
               if [ -f "$source" ]; then
                 sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' "$source"
               fi
