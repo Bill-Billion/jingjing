@@ -80,9 +80,17 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       actions = [],
       copyRows = [];
   Map<String, dynamic>? request, copy;
+  bool get creatingRequest =>
+      ['new', 'correction', 'complaint'].contains(widget.view);
   @override
   void initState() {
     super.initState();
+    if (widget.view == 'correction') {
+      type = 'CORRECT';
+      scopes.add('PROFILE');
+    } else if (widget.view == 'complaint') {
+      type = 'COMPLAINT';
+    }
     load();
   }
 
@@ -188,7 +196,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           c = await allRows('$base/model-creations');
           a = await allRows('$base/actions');
         }
-      } else if (widget.view != 'new') {
+      } else if (!creatingRequest) {
         final p = await api.read('requests',
             query: {'limit': 20, if (cursor != null) 'cursor': cursor});
         list = communityItems(p).map((v) => validateRequest(v)).toList();
@@ -324,6 +332,10 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       ];
   List<Widget> newView() => [
         communityHeading('提出本人申请', '说明你希望处理的具体资料和事情。'),
+        if (widget.view == 'correction')
+          appNotice('填写希望更正的本人账号展示名及原因。申请、方案核对与实际修改分别处理，不会直接覆盖已保存的合同或机构名称。'),
+        if (widget.view == 'complaint')
+          appNotice('此处受理个人信息投诉与保护申请。订单售后请回原订单，功能建议和一般客服反馈仍未开放。'),
         menu(),
         const SizedBox(height: 20),
         communitySelect(
@@ -758,7 +770,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       [
         ...feedback,
         ...switch (widget.view) {
-          'new' => newView(),
+          'new' || 'correction' || 'complaint' => newView(),
           'preferences' => preferenceView(),
           'request' => requestView(),
           _ => listView()

@@ -4,6 +4,7 @@ import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../account/account_theme.dart';
 import '../account/editorial_widgets.dart';
+import '../account/read_failure_widgets.dart';
 import '../stock/v5_support.dart';
 import '../stock/v5_media.dart';
 import '../supply/supply_api.dart';
@@ -29,8 +30,13 @@ class NoticesPage extends StatelessWidget {
   Widget build(BuildContext context) => V5Gate(
       domain: 'notices',
       embedded: embedded,
-      route: '/notices/$mode',
+      route: Uri(path: '/notices/$mode', queryParameters: {
+        if (mode == 'records' && kind != null) 'kind': kind!,
+        if (mode == 'catalog' && initialCity.isNotEmpty) 'city': initialCity,
+      }).toString(),
       account: ['catalog', 'public'].contains(mode),
+      showExpired: ['catalog', 'records'].contains(mode),
+      expiredLabel: mode == 'records' ? '我的通告与投稿' : '通告现场',
       builder: (s) => mode == 'submit'
           ? NoticesSubmission(session: s, noticeId: id, kind: kind ?? 'PROFILE')
           : _NoticeScreen(
@@ -70,7 +76,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   NoticeEligibility? eligibility;
   String? cursor, error, type, ruleId;
   String recordKind = 'SUBMISSION';
-  bool busy = false;
+  bool busy = false, loadFailed = false, hasRead = false, changedKind = false;
   int ticket = 0;
   @override
   void initState() {
@@ -96,6 +102,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     setState(() {
       busy = true;
       error = null;
+      loadFailed = false;
       if (!more) {
         publicRows.clear();
         rows.clear();
@@ -136,9 +143,14 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           throw const AccountError(400, 'INVALID_PATH');
       }
       api.check(epoch, ['catalog', 'public'].contains(widget.mode) ? null : p);
-      if (mounted && t == ticket) setState(() {});
+      if (mounted && t == ticket) setState(() => hasRead = true);
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = v5Error(e));
+      if (mounted && t == ticket) {
+        setState(() {
+          error = v5Error(e);
+          loadFailed = true;
+        });
+      }
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
     }
@@ -237,6 +249,38 @@ class _NoticeScreenState extends State<_NoticeScreen> {
       'qualification' => '机构发布资格',
       _ => '通告现场'
     };
+    if (busy &&
+        !hasRead &&
+        ['catalog', 'records'].contains(widget.mode) &&
+        publicRows.isEmpty &&
+        rows.isEmpty &&
+        api.pendingOperations.isEmpty &&
+        city.text.isEmpty &&
+        at.text.isEmpty &&
+        type == null &&
+        !changedKind) {
+      return V5Frame(
+          api: api,
+          title: title,
+          embedded: widget.embedded,
+          children: [ReadLoadingContent(label: title)]);
+    }
+    if (loadFailed &&
+        !busy &&
+        error != null &&
+        ['catalog', 'records'].contains(widget.mode) &&
+        publicRows.isEmpty &&
+        rows.isEmpty &&
+        api.pendingOperations.isEmpty) {
+      return V5Frame(
+          api: api,
+          title: title,
+          embedded: widget.embedded,
+          footer: ReadFailureActions(
+              onBack: () => setState(() => loadFailed = false),
+              onRetry: () => load()),
+          children: [ReadFailureContent(reason: error!)]);
+    }
     return V5Frame(
         api: api,
         title: title,
@@ -252,7 +296,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                               fontFamily: AccountTheme.serif,
                               fontSize: 56,
                               height: 1.1,
-                              fontWeight: FontWeight.w700)))),
+                              fontWeight: FontWeight.w900)))),
               OutlinedButton(
                   onPressed: busy ? null : () => go('/notices/new'),
                   child: const Text('发布 ＋')),
@@ -464,7 +508,10 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                 onChanged: busy
                     ? null
                     : (v) {
-                        setState(() => recordKind = v!);
+                        setState(() {
+                          recordKind = v!;
+                          changedKind = true;
+                        });
                         load();
                       }),
             for (final x in rows)

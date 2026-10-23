@@ -359,7 +359,10 @@ class _StockUploadState extends State<_StockUpload> {
       if (!mounted) return;
       setState(() => uploaded = r);
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (mounted) {
+        setState(() =>
+            error = v5Error(e, writing: widget.api.pending('/files') != null));
+      }
     } catch (_) {
       if (mounted) setState(() => error = '文件选择或上传未完成，请核对 MP4 文件后重试。');
     } finally {

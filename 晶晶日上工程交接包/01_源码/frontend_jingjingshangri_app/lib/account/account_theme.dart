@@ -44,17 +44,17 @@ class AccountTheme extends StatelessWidget {
           headlineLarge: TextStyle(
               fontFamily: serif,
               fontSize: 42,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w900,
               height: 1.2),
           headlineMedium: TextStyle(
               fontFamily: serif,
               fontSize: 34,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w900,
               height: 1.25),
           headlineSmall: TextStyle(
               fontFamily: serif,
               fontSize: 28,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w900,
               height: 1.3),
           titleLarge: TextStyle(
               fontFamily: serif,
@@ -100,6 +100,19 @@ class AccountTheme extends StatelessWidget {
             backgroundColor: canvas,
             surfaceTintColor: Colors.transparent,
             shape: _square),
+        datePickerTheme: const DatePickerThemeData(
+            backgroundColor: canvas,
+            surfaceTintColor: Colors.transparent,
+            shape: _square,
+            headerHeadlineStyle: TextStyle(
+                fontFamily: serif, fontSize: 32, fontWeight: FontWeight.w900),
+            todayForegroundColor: WidgetStatePropertyAll(vermilion)),
+        timePickerTheme: const TimePickerThemeData(
+            backgroundColor: canvas,
+            shape: _square,
+            hourMinuteShape: _square,
+            hourMinuteTextStyle: TextStyle(
+                fontFamily: sans, fontSize: 40, fontWeight: FontWeight.w600)),
         bottomSheetTheme: const BottomSheetThemeData(
             backgroundColor: canvas,
             surfaceTintColor: Colors.transparent,

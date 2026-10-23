@@ -73,6 +73,12 @@ class _AgreementsState extends State<_Agreements> {
       '我的收入',
       [
         tradeHeading('我的收入', eyebrow: '艺人经营收入 / 独立记账'),
+        supplyCard('按账户分别查看', [
+          financeParagraph('当前为经营结算约定。消费者余额及消费流水单独记账，不与本页金额相加。'),
+          tradeButton('查看消费余额与流水',
+              locked ? null : () => Navigator.pushNamed(context, '/wallet'),
+              outline: true),
+        ]),
         supplyCard('当前身份', [
           tradeFact('办事身份', widget.session.party?['display_name']),
           financeParagraph('先选择一份结算约定，再查看本人金额。客户付款、约定分成与合作方实际收款分别核对。')

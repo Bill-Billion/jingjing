@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import StateValue from '@/components/StateValue.vue'
 import { licenseTitle, moneyText, recordStatus, territoryText, languageText, purposes, rights, type LicenseRecord } from '@/api/modules/licensing'
 import { shortSupplyId } from '@/api/modules/supply'
 import LicenseTerms from './LicenseTerms.vue'
@@ -10,7 +11,7 @@ const date = (s: string) => new Date(s).toLocaleString('zh-CN',{hour12:false})
 <template>
   <div :class="{ 'license-overview-grid': record.kind === 'GRANT' }">
   <section class="supply-card record-summary">
-    <div class="section-heading"><h2>{{ record.kind === 'GRANT' ? '许可凭证摘要' : licenseTitle(record) }}</h2><span class="supply-badge">{{ recordStatus(record) }}</span></div>
+    <div class="section-heading"><h2>{{ record.kind === 'GRANT' ? '许可凭证摘要' : licenseTitle(record) }}</h2><span class="supply-badge"><StateValue :code="record.current_status" :label="recordStatus(record)"/></span></div>
     <dl v-if="record.kind === 'GRANT'" class="supply-facts summary-rights"><div><dt>逐项获准权利</dt><dd>{{ record.data.terms.rights.map(r => rights[r]).join('、') }}</dd></div><div><dt>独家约定</dt><dd>{{ record.data.terms.exclusive ? '独家，仅限约定范围' : '非独家' }}</dd></div><div><dt>约定总价</dt><dd class="license-amount">{{ moneyText(record.data.price) }}</dd></div></dl>
     <details v-if="record.kind === 'GRANT'" class="record-identifiers"><summary>查看许可编号与关联身份</summary><dl class="supply-facts"><div><dt>记录编号 / 当前版本</dt><dd><span :title="record.id">{{ record.id }}</span> · {{ record.object_version }}</dd></div><div><dt>负责人身份</dt><dd :title="record.owner_party_id">{{ record.owner_party_id }}</dd></div><div v-if="record.counterparty_id"><dt>另一方身份</dt><dd :title="record.counterparty_id">{{ record.counterparty_id }}</dd></div><div v-if="record.work_id"><dt>作品来源</dt><dd :title="record.work_id">{{ record.work_id }}</dd></div><div v-if="record.parent_id"><dt>关联记录</dt><dd :title="record.parent_id">{{ record.parent_id }}</dd></div></dl></details>
     <dl v-if="record.kind !== 'GRANT'" class="supply-facts"><div><dt>记录编号 / 当前版本</dt><dd><span :title="record.id">{{ shortSupplyId(record.id) }}</span> · {{ record.object_version }}</dd></div><div><dt>负责人身份</dt><dd><span :title="record.owner_party_id">{{ shortSupplyId(record.owner_party_id) }}</span></dd></div><div v-if="record.counterparty_id"><dt>另一方身份</dt><dd><span :title="record.counterparty_id">{{ shortSupplyId(record.counterparty_id) }}</span></dd></div><div v-if="record.work_id"><dt>作品来源</dt><dd><span :title="record.work_id">{{ shortSupplyId(record.work_id) }}</span></dd></div></dl>

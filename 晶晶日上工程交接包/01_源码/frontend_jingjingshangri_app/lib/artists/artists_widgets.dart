@@ -3,14 +3,20 @@ import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
+import '../account/read_failure_widgets.dart';
 import '../trade/trade_widgets.dart';
 import 'artists_models.dart';
 
 class ArtistsGate extends StatelessWidget {
   const ArtistsGate(
-      {super.key, required this.builder, this.accountOnly = false});
+      {super.key,
+      required this.builder,
+      this.accountOnly = false,
+      this.showExpired = false,
+      this.returnRoute = '/my-humans'});
   final Widget Function(AccountSession) builder;
-  final bool accountOnly;
+  final bool accountOnly, showExpired;
+  final String returnRoute;
   @override
   Widget build(BuildContext context) {
     final s = context.watch<AccountSession>();
@@ -25,6 +31,18 @@ class ArtistsGate extends StatelessWidget {
       return KeyedSubtree(
           key: ValueKey('artists:${s.epoch}:${s.account?['id']}:${s.partyId}'),
           child: builder(s));
+    }
+    if (showExpired && readSessionExpired(s)) {
+      return ReadSessionExpiredPage(returnRoute: returnRoute, label: '公开艺人目录');
+    }
+    if (s.artistsAccessDenied) {
+      return ReadAccessDeniedPage(
+          reason: '当前账号暂时无法读取这页，私有内容已清空。请核对账号、当前身份和有效委托。',
+          onRetry: () async {
+            try {
+              await s.retryArtistsAccess();
+            } catch (_) {}
+          });
     }
     return tradeScaffold(context, '艺人与数字人', [
       tradeHeading(s.artistsAccessDenied ? '先核对查看权限' : '从你的本人档案开始',

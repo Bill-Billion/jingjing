@@ -26,6 +26,12 @@ String redemptionPercent(Object? value) {
   return '${(v! * 100).toStringAsFixed(4)}%';
 }
 
+String redemptionExpectedCount(Object? value) {
+  final text = communityText(value);
+  if (!RegExp(r'^\d+\.\d+$').hasMatch(text)) return text;
+  return text.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+}
+
 class RedemptionPage extends StatelessWidget {
   const RedemptionPage(
       {super.key,
@@ -824,7 +830,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           communityFact('第十次综合概率', redemptionPercent(p['tenth_probability'])),
           communityFact(
               '进入保底时概率', redemptionPercent(p['forced_tenth_probability'])),
-          communityFact('十次期望数量', p['expected_count_per_ten'])
+          communityFact(
+              '十次期望数量', redemptionExpectedCount(p['expected_count_per_ten']))
         ]),
       for (final p in communityRows(r['prize_promises']))
         communitySection(

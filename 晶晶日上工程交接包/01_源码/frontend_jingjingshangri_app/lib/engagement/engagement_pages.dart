@@ -483,7 +483,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     if (d == null) return [];
     final boards = communityMap(d['boards']);
     return [
-      communityHeading('艺人六榜', '按发布时的业务事实形成快照，排名不代表付费推广。'),
+      communityHeading('艺人榜单', '按发布时的业务事实形成快照，排名不代表付费推广。'),
       communityFact('统计时间', communityDate(d['at'])),
       for (final b in [
         ('sales', '成交榜'),

@@ -269,7 +269,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                               fontFamily: AccountTheme.serif,
                               fontSize: 56,
                               height: 1.1,
-                              fontWeight: FontWeight.w700)))),
+                              fontWeight: FontWeight.w900)))),
               TextButton(
                   onPressed: busy ? null : () => go('/auditions/bookings'),
                   child: const Text('我的试镜 ↗')),

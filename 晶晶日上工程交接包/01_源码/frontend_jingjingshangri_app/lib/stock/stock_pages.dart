@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
+import '../account/read_failure_widgets.dart';
 import '../trade/trade_widgets.dart';
 import '../trade/trade_models.dart' show tradeStatuses;
 import 'stock_api.dart';
@@ -23,6 +24,8 @@ class StockPage extends StatelessWidget {
           : '/stock/$mode',
       account: ['catalog', 'video'].contains(mode),
       personal: ['purchases', 'purchase'].contains(mode),
+      showExpired: mode == 'catalog',
+      expiredLabel: '现成视频',
       builder: (s) => mode == 'new'
           ? StockListingForm(session: s)
           : _StockScreen(
@@ -66,7 +69,12 @@ class _StockScreenState extends State<_StockScreen> {
   StockPurchase? purchase;
   String? cursor, error, notice;
   String channel = 'ALIPAY';
-  bool busy = false, opened = false, notified = false, licenseRead = false;
+  bool busy = false,
+      opened = false,
+      notified = false,
+      licenseRead = false,
+      loadFailed = false,
+      hasRead = false;
   int ticket = 0;
   @override
   void initState() {
@@ -89,6 +97,7 @@ class _StockScreenState extends State<_StockScreen> {
     setState(() {
       busy = true;
       error = null;
+      loadFailed = false;
       if (!more) {
         offers.clear();
         listings.clear();
@@ -127,9 +136,14 @@ class _StockScreenState extends State<_StockScreen> {
       }
       api.check(epoch, ['catalog', 'video'].contains(widget.mode) ? null : p);
       if (!mounted || t != ticket) return;
-      setState(() {});
+      setState(() => hasRead = true);
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = v5Error(e));
+      if (mounted && t == ticket) {
+        setState(() {
+          error = v5Error(e);
+          loadFailed = true;
+        });
+      }
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
     }
@@ -164,7 +178,7 @@ class _StockScreenState extends State<_StockScreen> {
     } on AccountError catch (e) {
       if (mounted) {
         setState(() {
-          error = v5Error(e);
+          error = v5Error(e, writing: true);
           if (e.status == 412 || e.code == 'STOCK_OFFER_CHANGED') {
             offer = null;
             licenseRead = false;
@@ -179,12 +193,14 @@ class _StockScreenState extends State<_StockScreen> {
   Future<void> readNotice() async {
     final current = purchase;
     if (current == null) return;
+    var markingRead = false;
     setState(() {
       busy = true;
       error = null;
     });
     try {
-      final r = await api.notification(current, opened: opened);
+      final r = await api.notification(current,
+          opened: opened, onMarkReadPhase: (writing) => markingRead = writing);
       if (!mounted) return;
       setState(() {
         purchase = r;
@@ -192,7 +208,9 @@ class _StockScreenState extends State<_StockScreen> {
         notice = '本次实际交付通知已标记本人已读；尚未开始收件计时。';
       });
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (mounted) {
+        setState(() => error = v5Error(e, writing: markingRead));
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -227,7 +245,7 @@ class _StockScreenState extends State<_StockScreen> {
     } on AccountError catch (e) {
       if (mounted) {
         setState(() {
-          error = v5Error(e);
+          error = v5Error(e, writing: true);
           if (e.status == 412) {
             purchase = null;
             opened = false;
@@ -258,6 +276,29 @@ class _StockScreenState extends State<_StockScreen> {
       'purchases' => '已购视频',
       _ => '我的个人许可'
     };
+    if (busy &&
+        !hasRead &&
+        widget.mode == 'catalog' &&
+        offers.isEmpty &&
+        api.pendingOperations.isEmpty &&
+        city.text.isEmpty) {
+      return V5Frame(
+          api: api, title: title, children: [ReadLoadingContent(label: title)]);
+    }
+    if (loadFailed &&
+        !busy &&
+        error != null &&
+        widget.mode == 'catalog' &&
+        offers.isEmpty &&
+        api.pendingOperations.isEmpty) {
+      return V5Frame(
+          api: api,
+          title: title,
+          footer: ReadFailureActions(
+              onBack: () => setState(() => loadFailed = false),
+              onRetry: () => load()),
+          children: [ReadFailureContent(reason: error!)]);
+    }
     return V5Frame(api: api, title: title, children: [
       tradeHeading(o?.title ?? p?.title ?? l?.data['title'] ?? title,
           eyebrow: '完成的作品 / 每份许可有来处'),
@@ -382,6 +423,18 @@ class _StockScreenState extends State<_StockScreen> {
               onSuccess: (_) => load()),
       ],
       if (widget.mode == 'purchases') ...[
+        tradeSection('按作品来源查看', [
+          const Text('当前为本人已购现货。定制制作和试镜交付在各自目录核对权限与状态。'),
+          const SizedBox(height: 12),
+          Wrap(spacing: 12, runSpacing: 8, children: [
+            OutlinedButton(
+                onPressed: () => go('/production/works'),
+                child: const Text('定制交付作品')),
+            OutlinedButton(
+                onPressed: () => go('/auditions/bookings'),
+                child: const Text('试镜交付记录')),
+          ]),
+        ]),
         for (final r in purchases)
           row(r.title, stockStatuses[r.status]!,
               '/stock/purchase?orderId=${r.orderId}'),

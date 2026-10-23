@@ -4,6 +4,8 @@ import '../account/account_theme.dart';
 import '../account/editorial_widgets.dart';
 import '../engagement/community_support.dart';
 import '../engagement/engagement_pages.dart' show validateBuyers;
+import '../notices/notices_api.dart';
+import '../notices/notices_models.dart';
 import '../trade/trade_widgets.dart';
 
 enum DiscoveryKind { artists, videos, notices }
@@ -110,7 +112,10 @@ class _DiscoverySearchPageState extends State<DiscoverySearchPage> {
         tradeButton('查看所选目录', () {
           Navigator.pushNamed(context,
               discoveryDirectoryRoute(kind, city: city.text, tag: tag.text));
-        })
+        }),
+        tradeButton('查看已发布艺人榜单',
+            () => Navigator.pushNamed(context, '/engagement?view=rankings'),
+            outline: true),
       ]);
 }
 
@@ -156,8 +161,10 @@ class _PublicProducer extends StatefulWidget {
 
 class _PublicProducerState extends State<_PublicProducer> {
   Map<String, dynamic>? buyer;
-  bool busy = false;
-  String? error;
+  List<NoticePublic> notices = [];
+  final noticeCursors = <String>{};
+  bool busy = false, noticesBusy = false, rankingEnabled = false;
+  String? error, noticeError, noticeCursor;
   @override
   void initState() {
     super.initState();
@@ -170,6 +177,11 @@ class _PublicProducerState extends State<_PublicProducer> {
       busy = true;
       buyer = null;
       error = null;
+      notices = [];
+      noticeCursor = null;
+      noticeError = null;
+      noticeCursors.clear();
+      rankingEnabled = false;
     });
     try {
       communityRequiredId(widget.partyId, '公开主体');
@@ -180,12 +192,78 @@ class _PublicProducerState extends State<_PublicProducer> {
       if (!mounted) return;
       setState(() {
         buyer = current;
+        rankingEnabled = snapshot['ranking_enabled'] == true;
         if (current == null) error = '该主体目前不在这个城市的公开名单中。';
       });
+      if (current != null) await loadNotices(recheckBuyer: false);
     } catch (e) {
       if (mounted) setState(() => error = communityError(e));
     } finally {
       if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> loadNotices(
+      {bool more = false, bool recheckBuyer = true}) async {
+    if (noticesBusy || buyer == null) return;
+    var buyerChecked = !recheckBuyer;
+    setState(() {
+      noticesBusy = true;
+      noticeError = null;
+    });
+    try {
+      if (recheckBuyer) {
+        final snapshot = await CommunityApi(widget.session, 'engagement')
+            .read('buyers', account: true, query: {'city': widget.city});
+        final current =
+            currentPublicBuyer(snapshot, widget.city, widget.partyId);
+        if (!mounted) return;
+        buyerChecked = true;
+        setState(() {
+          buyer = current;
+          rankingEnabled = snapshot['ranking_enabled'] == true;
+          if (current == null) {
+            notices = [];
+            noticeCursor = null;
+            error = '该主体目前不在这个城市的公开名单中。';
+          }
+        });
+        if (current == null) return;
+      }
+      final page = await NoticesApi(widget.session)
+          .catalog(city: widget.city, cursor: more ? noticeCursor : null);
+      if (!mounted) return;
+      if (page.cursor != null) {
+        communityRequire(noticeCursors.add(page.cursor!));
+      }
+      setState(() {
+        notices = {
+          for (final n in [
+            if (more) ...notices,
+            ...page.items.where((n) =>
+                n.raw['owner_party_id'] == widget.partyId &&
+                n.notice['city'] == widget.city)
+          ])
+            n.id: n
+        }.values.toList();
+        noticeCursor = page.cursor;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          if (!buyerChecked) {
+            buyer = null;
+            notices = [];
+            noticeCursor = null;
+            rankingEnabled = false;
+            error = communityError(e);
+          } else {
+            noticeError = communityError(e);
+          }
+        });
+      }
+    } finally {
+      if (mounted) setState(() => noticesBusy = false);
     }
   }
 
@@ -226,17 +304,51 @@ class _PublicProducerState extends State<_PublicProducer> {
           ],
           tradeFact(
               '合规记录', current['compliance_clear'] == true ? '当前已核对' : '有记录需复核'),
+          tradeFact(
+              '本次同城名单分值', rankingEnabled ? current['score'] : '当前未配置排名规则'),
+          const Text('名单分值来自当前公开规则，消费成长与星探资格分别核对，不代表艺人评分或距离排序。',
+              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
         ]),
-        tradeSection('公开作品与通告', [
-          const Text('公开名单尚未提供姓名、肖像、作品清单或该主体的在架通告，当前无法展示这些内容。',
+        tradeSection('已读取的公开通告', [
+          const Text('只显示当前城市已读取目录中，由该主体发布的通告。继续读取可核对后续页面；进入详情时会重新核对公开状态。',
+              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+          if (noticesBusy) const LinearProgressIndicator(),
+          if (noticeError != null)
+            Text(noticeError!,
+                style: const TextStyle(color: AccountTheme.danger))
+          else if (!noticesBusy && notices.isEmpty)
+            const Text('当前已读取范围内没有该主体的公开通告。'),
+          for (final n in notices) ...[
+            const SizedBox(height: 16),
+            Text(n.notice['title'],
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            tradeFact('通告类型', noticeTypes[n.notice['type']]),
+            tradeFact('有效截止', communityDate(n.notice['valid_until'])),
+            tradeButton(
+                '查看这份公开通告',
+                () => Navigator.pushNamed(
+                    context, '/notices/public?noticeId=${n.id}'),
+                outline: true),
+          ],
+          if (noticeError != null)
+            tradeButton('重新核对公开名单与通告', busy || noticesBusy ? null : load,
+                outline: true)
+          else if (noticeCursor != null)
+            tradeButton('继续读取本城通告',
+                busy || noticesBusy ? null : () => loadNotices(more: true),
+                outline: true),
+        ]),
+        tradeSection('公开资料边界', [
+          const Text('公开名单尚未提供姓名、肖像或作品清单。向该主体投稿仍需本次用途的有效本人授权及接收条件，不能由名单资格代替。',
               style: TextStyle(color: AccountTheme.muted, height: 1.6)),
           const SizedBox(height: 16),
           const FilledButton(onPressed: null, child: Text('针对该主体的投稿暂未开放')),
         ]),
       ],
-      tradeButton('重新核对公开名单', busy ? null : load, outline: true),
+      tradeButton('重新核对公开名单', busy || noticesBusy ? null : load, outline: true),
       tradeButton(
-          '查看全站通告',
+          '查看本城通告目录',
           () => Navigator.pushNamed(
               context,
               discoveryDirectoryRoute(DiscoveryKind.notices,

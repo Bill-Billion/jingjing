@@ -5,6 +5,7 @@ import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/editorial_widgets.dart';
+import '../account/read_failure_widgets.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
 import '../supply/supply_widgets.dart' show shortSupplyId;
@@ -705,6 +706,11 @@ class ArtistCataloguePage extends StatelessWidget {
   @override
   Widget build(BuildContext c) => ArtistsGate(
       accountOnly: true,
+      showExpired: true,
+      returnRoute: Uri(path: '/artists/catalog', queryParameters: {
+        if (initialCity.isNotEmpty) 'city': initialCity,
+        if (initialTag.isNotEmpty) 'tag': initialTag,
+      }).toString(),
       builder: (s) => _Catalogue(
           session: s, initialCity: initialCity, initialTag: initialTag));
 }
@@ -727,7 +733,7 @@ class _CatalogueState extends State<_Catalogue> {
       rows = <Map<String, dynamic>>[],
       seen = <String>{};
   final previews = <String, Uint8List>{};
-  bool busy = false, audition = false;
+  bool busy = false, audition = false, loadFailed = false, hasRead = false;
   String? cursor, error;
   @override
   void initState() {
@@ -750,6 +756,7 @@ class _CatalogueState extends State<_Catalogue> {
       busy = true;
       error = null;
       previews.clear();
+      loadFailed = false;
       if (!more) {
         rows.clear();
         cursor = null;
@@ -768,12 +775,14 @@ class _CatalogueState extends State<_Catalogue> {
           rows.addAll(p.items.where(
               (r) => !rows.any((old) => old['listing_id'] == r['listing_id'])));
           cursor = p.cursor;
+          hasRead = true;
         });
       }
     } on AccountError catch (e) {
       if (mounted) {
         setState(() {
           error = artistError(e);
+          loadFailed = true;
           if ([401, 403, 404].contains(e.status)) {
             rows.clear();
             previews.clear();
@@ -822,79 +831,97 @@ class _CatalogueState extends State<_Catalogue> {
   }
 
   @override
-  Widget build(BuildContext c) => tradeScaffold(c, '公开艺人', [
-        tradeHeading('看见正在发生的故事', eyebrow: '艺人目录 / 已获准公开'),
-        appNotice('这里只展示已批准的公开资料。每次读取预览都会重新核对当前授权与托管，公开展示不代表你取得形象或声音商用许可。'),
-        TextField(
-            controller: city,
-            enabled: !busy,
-            maxLength: 100,
-            decoration: const InputDecoration(labelText: '城市筛选')),
-        TextField(
-            controller: tag,
-            enabled: !busy,
-            maxLength: 40,
-            decoration: const InputDecoration(labelText: '标签筛选')),
-        CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('只看已开放试镜展示的艺人'),
-            value: audition,
-            onChanged:
-                busy ? null : (v) => setState(() => audition = v == true)),
-        tradeButton('按条件查看艺人', busy ? null : load),
-        if (busy) const LinearProgressIndicator(),
-        if (error != null) appNotice(error!),
-        if (!busy && error == null && rows.isEmpty)
-          const Text('当前条件下没有已获准公开的艺人。'),
-        for (final r in rows)
-          tradeSection(r['display_name'], [
-            tradeFact('城市 / 认证', '${r['city']} / L${r['halo_level']}'),
-            tradeButton(
-                '查看艺人详情',
-                busy
-                    ? null
-                    : () async {
-                        await Navigator.push<void>(
-                            c,
-                            MaterialPageRoute(
-                                builder: (_) => ArtistsGate(
-                                    accountOnly: true,
-                                    builder: (session) => _PublicArtistDetails(
-                                        session: session, listing: r))));
-                        if (mounted) await load();
-                      },
-                outline: true),
-            Text(r['introduction']),
-            const SizedBox(height: 8),
-            Text((r['tags'] as List).join(' · '),
-                style:
-                    const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-            for (final id
-                in artistStrings(r['preview_asset_ids'], ids: true)) ...[
-              if (previews[id] != null)
-                Semantics(
-                    label: '当前获准的指定预览',
-                    child: Image.memory(previews[id]!,
-                        height: 280,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Text('这份预览无法作为图片显示，可以保存文件后查看。')))),
-              tradeButton('读取这份获准预览', busy ? null : () => preview(r, id),
-                  outline: true),
-              tradeButton(
-                  '重新核权并保存预览', busy ? null : () => preview(r, id, save: true),
-                  outline: true),
-            ],
-          ]),
-        if (cursor != null)
-          tradeButton('加载更多公开艺人', busy ? null : () => load(more: true),
+  Widget build(BuildContext c) {
+    if (busy &&
+        !hasRead &&
+        rows.isEmpty &&
+        widget.session.artistsPending.isEmpty &&
+        city.text.isEmpty &&
+        tag.text.isEmpty &&
+        !audition) {
+      return tradeScaffold(
+          c, '公开艺人', [const ReadLoadingContent(label: '公开艺人')]);
+    }
+    if (loadFailed &&
+        !busy &&
+        error != null &&
+        rows.isEmpty &&
+        widget.session.artistsPending.isEmpty) {
+      return tradeScaffold(c, '公开艺人', [ReadFailureContent(reason: error!)],
+          footer: ReadFailureActions(
+              onBack: () => setState(() => loadFailed = false), onRetry: load));
+    }
+    return tradeScaffold(c, '公开艺人', [
+      tradeHeading('看见正在发生的故事', eyebrow: '艺人目录 / 已获准公开'),
+      appNotice('这里只展示已批准的公开资料。每次读取预览都会重新核对当前授权与托管，公开展示不代表你取得形象或声音商用许可。'),
+      TextField(
+          controller: city,
+          enabled: !busy,
+          maxLength: 100,
+          decoration: const InputDecoration(labelText: '城市筛选')),
+      TextField(
+          controller: tag,
+          enabled: !busy,
+          maxLength: 40,
+          decoration: const InputDecoration(labelText: '标签筛选')),
+      CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('只看已开放试镜展示的艺人'),
+          value: audition,
+          onChanged: busy ? null : (v) => setState(() => audition = v == true)),
+      tradeButton('按条件查看艺人', busy ? null : load),
+      if (busy) const LinearProgressIndicator(),
+      if (error != null) appNotice(error!),
+      if (!busy && error == null && rows.isEmpty)
+        const Text('当前条件下没有已获准公开的艺人。'),
+      for (final r in rows)
+        tradeSection(r['display_name'], [
+          tradeFact('城市 / 认证', '${r['city']} / L${r['halo_level']}'),
+          tradeButton(
+              '查看艺人详情',
+              busy
+                  ? null
+                  : () async {
+                      await Navigator.push<void>(
+                          c,
+                          MaterialPageRoute(
+                              builder: (_) => ArtistsGate(
+                                  accountOnly: true,
+                                  builder: (session) => _PublicArtistDetails(
+                                      session: session, listing: r))));
+                      if (mounted) await load();
+                    },
               outline: true),
-        tradeButton('浏览剧本', () => Navigator.pushNamed(c, '/licensing/catalog'),
+          Text(r['introduction']),
+          const SizedBox(height: 8),
+          Text((r['tags'] as List).join(' · '),
+              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          for (final id
+              in artistStrings(r['preview_asset_ids'], ids: true)) ...[
+            if (previews[id] != null)
+              Semantics(
+                  label: '当前获准的指定预览',
+                  child: Image.memory(previews[id]!,
+                      height: 280,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('这份预览无法作为图片显示，可以保存文件后查看。')))),
+            tradeButton('读取这份获准预览', busy ? null : () => preview(r, id),
+                outline: true),
+            tradeButton(
+                '重新核权并保存预览', busy ? null : () => preview(r, id, save: true),
+                outline: true),
+          ],
+        ]),
+      if (cursor != null)
+        tradeButton('加载更多公开艺人', busy ? null : () => load(more: true),
             outline: true),
-        tradeButton('浏览商单', () => Navigator.pushNamed(c, '/gigs'),
-            outline: true),
-      ]);
+      tradeButton('浏览剧本', () => Navigator.pushNamed(c, '/licensing/catalog'),
+          outline: true),
+      tradeButton('浏览商单', () => Navigator.pushNamed(c, '/gigs'), outline: true),
+    ]);
+  }
 }
 
 /// Public presentation uses only this listing's approved data and fresh reads.

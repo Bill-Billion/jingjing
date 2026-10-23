@@ -182,18 +182,21 @@ class TradeRecordPage extends StatelessWidget {
       {super.key,
       required this.recordId,
       this.section,
+      this.installmentKey,
       this.customizationSourceCurrent});
   final String recordId;
   final String? section;
+  final String? installmentKey;
   final bool? customizationSourceCurrent;
   @override
   Widget build(BuildContext context) => TradeGate(
       returnRoute:
-          '/trade/record?recordId=$recordId${section == null ? '' : '&section=$section'}',
+          '/trade/record?recordId=$recordId${section == null ? '' : '&section=$section'}${installmentKey == null ? '' : '&installmentKey=${Uri.encodeQueryComponent(installmentKey!)}'}',
       builder: (s) => _TradeDetail(
           session: s,
           id: recordId,
           section: section,
+          installmentKey: installmentKey,
           customizationSourceCurrent: customizationSourceCurrent));
 }
 
@@ -202,10 +205,12 @@ class _TradeDetail extends StatefulWidget {
       {required this.session,
       required this.id,
       this.section,
+      this.installmentKey,
       this.customizationSourceCurrent});
   final AccountSession session;
   final String id;
   final String? section;
+  final String? installmentKey;
   final bool? customizationSourceCurrent;
   @override
   State<_TradeDetail> createState() => _TradeDetailState();
@@ -222,6 +227,7 @@ class _TradeDetailState extends State<_TradeDetail> {
   String? productionNotice;
   String? error;
   bool busy = false;
+  bool cashierConfirmed = false;
   int ticket = 0;
   final transaction = TextEditingController();
   @override
@@ -247,6 +253,7 @@ class _TradeDetailState extends State<_TradeDetail> {
       fulfillments.clear();
       productionNotice = null;
       error = null;
+      cashierConfirmed = false;
     });
     try {
       final r = await api.record(widget.id);
@@ -442,11 +449,35 @@ class _TradeDetailState extends State<_TradeDetail> {
     }
   }
 
-  Future<void> open(String id, {String? section}) async {
+  Future<void> open(String id,
+      {String? section, String? installmentKey}) async {
     await Navigator.pushNamed(context,
-        '/trade/record?recordId=$id${section == null ? '' : '&section=$section'}');
+        '/trade/record?recordId=$id${section == null ? '' : '&section=$section'}${installmentKey == null ? '' : '&installmentKey=${Uri.encodeQueryComponent(installmentKey)}'}');
     if (mounted) load();
   }
+
+  TradeRecord? installmentPayment(Map<String, dynamic> installment) {
+    final existing = payments
+        .where((p) =>
+            p.data['installment_key'] == installment['key'] &&
+            p.status != 'CLOSED')
+        .toList();
+    return existing.isEmpty ? null : existing.last;
+  }
+
+  int installmentAmount(Map<String, dynamic> installment) =>
+      tradeRows(installment['allocations'])
+          .fold(0, (total, row) => total + (row['amount_minor'] as int));
+
+  Future<void> createInstallmentPayment(
+          TradeRecord order, Map<String, dynamic> installment) =>
+      mutate('建立指定节点付款记录', '/api/v1/trade/payments',
+          () => api.payment(order, installment['key']),
+          facts: [
+            tradeFact('节点', tradeTriggers[installment['trigger']]),
+            tradeFact('本次金额', tradeMoney(installmentAmount(installment))),
+            const Text('此操作不会在客户端发起实际支付。')
+          ]);
 
   Future<void> cancel() async {
     final input = TextEditingController();
@@ -797,17 +828,9 @@ class _TradeDetailState extends State<_TradeDetail> {
                 style:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            if (payments.any((p) =>
-                p.data['installment_key'] == i['key'] && p.status != 'CLOSED'))
-              tradeButton(
-                  '查看该节点原付款',
-                  locked
-                      ? null
-                      : () => open(payments
-                          .lastWhere((p) =>
-                              p.data['installment_key'] == i['key'] &&
-                              p.status != 'CLOSED')
-                          .id),
+            if (installmentPayment(i) != null)
+              tradeButton('查看该节点原付款',
+                  locked ? null : () => open(installmentPayment(i)!.id),
                   outline: true)
             else
               tradeButton(
@@ -818,18 +841,16 @@ class _TradeDetailState extends State<_TradeDetail> {
                           : '等待当前版本验收',
                   locked || !installmentReady(r, i['trigger'])
                       ? null
-                      : () => mutate('建立指定节点付款记录', '/api/v1/trade/payments',
-                              () => api.payment(r, i['key']),
-                              facts: [
-                                tradeFact('节点', tradeTriggers[i['trigger']]),
-                                tradeFact(
-                                    '本次金额',
-                                    tradeMoney(tradeRows(i['allocations']).fold(
-                                        0,
-                                        (a, v) =>
-                                            a + (v['amount_minor'] as int)))),
-                                const Text('此操作不会在客户端发起实际支付。')
-                              ])),
+                      : () => createInstallmentPayment(r, i)),
+            KeyedSubtree(
+                key: ValueKey('trade-cashier-entry-${i['key']}'),
+                child: tradeButton(
+                    '进入收银台',
+                    locked
+                        ? null
+                        : () => open(r.id,
+                            section: 'cashier', installmentKey: i['key']),
+                    outline: true)),
           ],
         ]),
       tradeSection('订单留言', [
@@ -902,6 +923,123 @@ class _TradeDetailState extends State<_TradeDetail> {
                     p.data['accepted']['SCRIPT'] == p.data['current']['SCRIPT']
                 : p.data['current'][stage] != null &&
                     p.data['accepted'][stage] == p.data['current'][stage])));
+  }
+
+  Map<String, dynamic>? cashierInstallment(TradeRecord order) {
+    for (final installment in tradeInstallments(order.quote)) {
+      if (installment['key'] == widget.installmentKey) return installment;
+    }
+    return null;
+  }
+
+  List<Widget> cashierView(TradeRecord order) {
+    final installment = cashierInstallment(order);
+    if (installment == null) {
+      return [supplyNote('该付款节点不在原订单计划中，请返回原订单核对。', error: true)];
+    }
+    final original = installmentPayment(installment);
+    final financial = order.data['financial'];
+    final payable = ['OPEN', 'PARTIALLY_PAID'].contains(order.status);
+    final ready = installmentReady(order, installment['trigger']);
+    final channel = order.quote['channel'];
+    return [
+      tradeHeading('确认付款', eyebrow: '${order.title} / 原订单付款节点'),
+      const Text('本次节点金额',
+          style: TextStyle(fontSize: 16, color: AccountTheme.muted)),
+      const SizedBox(height: 10),
+      Text(tradeMoney(installmentAmount(installment)),
+          key: const Key('trade-cashier-amount'),
+          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 10),
+      Text(tradeTriggers[installment['trigger']]!,
+          style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
+      tradeSection('对应原订单', [
+        Text(order.title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        tradeFact('订单编号', shortSupplyId(order.id)),
+        tradeFact('合同现金总额', tradeMoney(order.amount)),
+        tradeFact('当前已核实收款', tradeMoney(financial['received_minor'])),
+        tradeFact('当前已核实退款', tradeMoney(financial['refunded_minor'])),
+        tradeFact('当前净收款', tradeMoney(financial['net_minor'])),
+        tradeFact('合同服务方', shortSupplyId(order.merchant)),
+      ]),
+      Container(
+          color: AccountTheme.text,
+          padding: const EdgeInsets.all(16),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Icon(Icons.check, color: AccountTheme.canvas),
+            const SizedBox(width: 12),
+            Expanded(
+                child: Text('${tradeChannel(channel)} · 原订单已固定',
+                    style: const TextStyle(
+                        color: AccountTheme.canvas,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700))),
+          ])),
+      const SizedBox(height: 8),
+      appNotice('托管消费余额尚未接通，当前不能用于支付。账面余额不代表可支付金额；本页不会切换原订单渠道。'),
+      if (original != null)
+        tradeSection('本节点原付款', [
+          tradeFact('付款编号', shortSupplyId(original.id)),
+          tradeFact('原付款状态', tradeStatuses[original.status]),
+          appNotice('本节点已有未关闭付款记录，请查看并核对原记录，不另建相同付款。'),
+        ])
+      else if (!payable)
+        appNotice('当前订单不处于可建立付款记录的状态，请查看原订单与付款计划。')
+      else if (!ready)
+        appNotice('当前付款节点尚未确认可办理，请返回原订单核对当前版本与履约条件。'),
+      tradeSection('建立记录后', [
+        const Text('建立付款记录不表示实际扣款或到账。当前客户端不能发起实际支付；每笔付款均保留原记录，结果以服务器核实为准。',
+            style: TextStyle(height: 1.6, color: AccountTheme.muted)),
+        const SizedBox(height: 12),
+        appNotice('结果仍在处理或待核对时，保留本页并恢复原请求；不要重复建立付款或把预计金额记为已到账。'),
+      ]),
+      if (original == null && payable && order.isBuyer(api.owner()))
+        CheckboxListTile(
+            key: const Key('trade-cashier-confirm'),
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            title: const Text('我已核对本次金额、合同服务方与对应付款节点'),
+            value: cashierConfirmed,
+            onChanged: locked || !ready || channel == 'CUSTODY'
+                ? null
+                : (value) => setState(() => cashierConfirmed = value ?? false)),
+    ];
+  }
+
+  Widget cashierFooter(TradeRecord order) {
+    final installment = cashierInstallment(order);
+    final original =
+        installment == null ? null : installmentPayment(installment);
+    final canCreate = installment != null &&
+        order.isBuyer(api.owner()) &&
+        ['OPEN', 'PARTIALLY_PAID'].contains(order.status) &&
+        order.quote['channel'] != 'CUSTODY' &&
+        installmentReady(order, installment['trigger']);
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(
+          flex: 2,
+          child: OutlinedButton(
+              onPressed: locked ? null : () => open(order.id),
+              child: const Text('查看付款计划'))),
+      const SizedBox(width: 10),
+      Expanded(
+          flex: 3,
+          child: FilledButton(
+              key: const Key('trade-cashier-action'),
+              onPressed: locked
+                  ? null
+                  : original != null
+                      ? () => open(original.id)
+                      : canCreate && cashierConfirmed
+                          ? () => createInstallmentPayment(order, installment)
+                          : null,
+              child: Text(original != null
+                  ? '查看本节点原付款'
+                  : order.quote['channel'] == 'CUSTODY'
+                      ? '托管消费尚未接通'
+                      : '建立本节点付款记录'))),
+    ]);
   }
 
   List<Widget> contractView(TradeRecord r) {
@@ -1100,16 +1238,19 @@ class _TradeDetailState extends State<_TradeDetail> {
   @override
   Widget build(BuildContext context) {
     final r = record;
+    final cashier = widget.section == 'cashier';
     final linkedOrderId = r?.orderId ?? (r?.data['order_id'] as String?);
     return tradeScaffold(
         context,
-        widget.section == 'contract'
-            ? '订单合同与原约定'
-            : r == null
-                ? '交易详情'
-                : '${tradeKinds[r.kind]}详情',
+        cashier
+            ? '收银台'
+            : widget.section == 'contract'
+                ? '订单合同与原约定'
+                : r == null
+                    ? '交易详情'
+                    : '${tradeKinds[r.kind]}详情',
         [
-          if (r != null)
+          if (r != null && !cashier)
             tradeHeading(
                 widget.section == 'contract'
                     ? '这次约定的原文'
@@ -1134,11 +1275,16 @@ class _TradeDetailState extends State<_TradeDetail> {
                       : () => mutate(
                           '恢复核对', op['path'], () => api.retry(op['path']))),
             ]),
-          if (r != null)
+          if (r != null && cashier && r.kind != 'ORDER')
+            supplyNote('收银台只对应原订单，请返回原记录核对。', error: true),
+          if (r != null && (!cashier || r.kind == 'ORDER'))
             ...switch (r.kind) {
               'QUOTE' => quoteView(r),
-              'ORDER' =>
-                widget.section == 'contract' ? contractView(r) : orderView(r),
+              'ORDER' => cashier
+                  ? cashierView(r)
+                  : widget.section == 'contract'
+                      ? contractView(r)
+                      : orderView(r),
               'PAYMENT' => paymentView(r),
               'REFUND' => refundView(r),
               'LEGACY' => legacyView(r),
@@ -1150,44 +1296,47 @@ class _TradeDetailState extends State<_TradeDetail> {
         lockedMessage: couponPreview != null
             ? '本次权益仍有预留，请先确认原报价或明确释放。'
             : '操作结果尚未确认，请先恢复原请求核对。',
-        footer: r?.kind == 'QUOTE' &&
-                r!.status == 'ACCEPTED' &&
-                linkedOrderId != null
-            ? FilledButton(
-                onPressed: locked ? null : () => open(linkedOrderId),
-                child: const Text('查看已形成订单'))
+        footer: cashier && r?.kind == 'ORDER'
+            ? cashierFooter(r!)
             : r?.kind == 'QUOTE' &&
-                    r!.status == 'APPROVED' &&
-                    widget.customizationSourceCurrent != false &&
-                    r.isBuyer(api.owner())
+                    r!.status == 'ACCEPTED' &&
+                    linkedOrderId != null
                 ? FilledButton(
-                    onPressed: locked ||
-                            staleCoupon ||
-                            !DateTime.parse(r.data['expires_at'])
-                                .isAfter(DateTime.now())
-                        ? null
-                        : () => mutate(
-                                '确认本报价与原约定',
-                                '/api/v1/trade/quotes/${r.id}/acceptance',
-                                () => api.accept(r,
-                                    rewardSelection: rewardSelection),
-                                facts: [
-                                  tradeFact(
-                                      '本单现金金额',
-                                      tradeMoney(
-                                          effectiveQuote(r)['total_minor'])),
-                                  if (rewardSelection != null)
-                                    tradeFact(
-                                        '权益抵扣',
-                                        tradeMoney(effectiveQuote(r)['discount']
-                                            ['discount_minor'])),
-                                  if (r.data['artist_service'] != null)
-                                    ...tradeArtistFacts(
-                                        tradeMap(r.data['artist_service'])),
-                                  const Text('确认后保存合同内容，尚未签署；付款和许可另行办理。')
-                                ]),
-                    child: const Text('确认报价形成订单'))
-                : null);
+                    onPressed: locked ? null : () => open(linkedOrderId),
+                    child: const Text('查看已形成订单'))
+                : r?.kind == 'QUOTE' &&
+                        r!.status == 'APPROVED' &&
+                        widget.customizationSourceCurrent != false &&
+                        r.isBuyer(api.owner())
+                    ? FilledButton(
+                        onPressed: locked ||
+                                staleCoupon ||
+                                !DateTime.parse(r.data['expires_at'])
+                                    .isAfter(DateTime.now())
+                            ? null
+                            : () => mutate(
+                                    '确认本报价与原约定',
+                                    '/api/v1/trade/quotes/${r.id}/acceptance',
+                                    () => api.accept(r,
+                                        rewardSelection: rewardSelection),
+                                    facts: [
+                                      tradeFact(
+                                          '本单现金金额',
+                                          tradeMoney(effectiveQuote(
+                                              r)['total_minor'])),
+                                      if (rewardSelection != null)
+                                        tradeFact(
+                                            '权益抵扣',
+                                            tradeMoney(
+                                                effectiveQuote(r)['discount']
+                                                    ['discount_minor'])),
+                                      if (r.data['artist_service'] != null)
+                                        ...tradeArtistFacts(
+                                            tradeMap(r.data['artist_service'])),
+                                      const Text('确认后保存合同内容，尚未签署；付款和许可另行办理。')
+                                    ]),
+                        child: const Text('确认报价形成订单'))
+                    : null);
   }
 }
 

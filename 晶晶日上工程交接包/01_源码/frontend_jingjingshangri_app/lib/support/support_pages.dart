@@ -145,6 +145,14 @@ const helpTopics = <({
     route: '/production',
     action: '查看制作任务'
   ),
+  (
+    title: '个人信息有误或受到侵害',
+    summary: '使用本人申请渠道，核对答复与实际处理',
+    answer:
+        '个人信息查询、更正、删除或投诉可在隐私与个人信息中提出本人申请。请选择本次具体资料范围并说明情况；提交申请不表示更正、删除、退款或内容限制已完成。',
+    route: '/privacy?view=complaint',
+    action: '提出个人信息投诉与保护申请'
+  ),
 ];
 
 class HelpFeedbackPage extends StatefulWidget {
@@ -213,6 +221,9 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             style: TextStyle(color: AccountTheme.muted, height: 1.6)),
         const SizedBox(height: 16),
         tradeButton('查看我的业务', () => Navigator.pushNamed(context, '/my'),
+            outline: true),
+        tradeButton('个人信息投诉与保护',
+            () => Navigator.pushNamed(context, '/privacy?view=complaint'),
             outline: true),
       ]),
       const OutlinedButton(onPressed: null, child: Text('查看反馈记录 · 暂未开放')),

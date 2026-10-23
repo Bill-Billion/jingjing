@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import StateValue from '@/components/StateValue.vue'
 import { computed } from 'vue'
 import { artistKinds,artistStatuses,features,purposes,delegatedActions,artistEvidence,type ArtistRecord,type ArtistServiceDetail } from '@/api/modules/artists'
 import { money,artistServiceKinds } from '@/api/modules/trade'
@@ -9,7 +10,7 @@ const date=(v:string|null)=>v?new Date(v).toLocaleString('zh-CN',{hour12:false})
 </script>
 <template>
  <article class="artist-record" data-testid="artists-record">
-  <section class="supply-card"><div class="section-heading"><h2>{{artistKinds[record.kind]}}</h2><span class="supply-badge" data-testid="artists-record-status">{{artistStatuses[record.current_status]||record.current_status}}</span></div><p class="muted">这份记录只适用于当前真人及其指定数字人；保存、审核、付款和交付分别记录。</p>
+  <section class="supply-card"><div class="section-heading"><h2>{{artistKinds[record.kind]}}</h2><span class="supply-badge" data-testid="artists-record-status"><StateValue :code="record.current_status" :label="artistStatuses[record.current_status]"/></span></div><p class="muted">这份记录只适用于当前真人及其指定数字人；保存、审核、付款和交付分别记录。</p>
    <details class="ops-technical"><summary>核对这份记录的真人与数字人归属</summary><dl class="supply-facts"><div><dt>真人档案编号</dt><dd class="identifier">{{record.person_id}}</dd></div><div><dt>具体数字人</dt><dd class="identifier">{{record.avatar_id||'此项按真人办理'}}</dd></div></dl></details>
   </section>
   <section v-if="consent" class="supply-card"><h2>本人这次明确允许的用途</h2><dl class="supply-facts"><div><dt>形象与声音</dt><dd>{{consent.features.map(f=>features[f]).join('、')}}</dd></div><div><dt>用途</dt><dd>{{consent.purposes.map(p=>purposes[p]).join('、')}}</dd></div><div><dt>获准使用主体</dt><dd class="identifier">{{consent.grantee_party_id}}</dd></div><div><dt>地区</dt><dd>{{consent.territories.join('、')}}</dd></div><div><dt>开始 / 结束</dt><dd>{{date(consent.valid_from)}} — {{date(consent.valid_until)}}</dd></div></dl><p class="long-text">{{consent.terms}}</p><p class="muted">同意存私人档案，不等于允许公开展示、重新生成或制作其他项目；仍需核对相应用途和本次主体。</p></section>

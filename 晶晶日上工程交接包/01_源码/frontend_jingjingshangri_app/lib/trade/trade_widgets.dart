@@ -128,7 +128,7 @@ Widget tradeHeading(String title, {String? eyebrow}) => Padding(
                   fontFamily: 'EditorialSerif',
                   fontSize: 32,
                   height: 1.25,
-                  fontWeight: FontWeight.w700))),
+                  fontWeight: FontWeight.w900))),
     ]));
 
 /// Paper sections follow the ruled, card-free layout of the film editorial.

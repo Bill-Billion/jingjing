@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
+import { computed, ref, watch } from 'vue'
 import { CircleCheck, Collection, Document, FolderOpened, OfficeBuilding, Reading, Tickets, User, View } from '@element-plus/icons-vue'
 import { domains } from '@/business'
 
 const route = useRoute()
+const query = ref('')
+const matches = (label: string, path: string) => `${label} ${path}`.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase())
+const visibleLinks = computed(() => links.filter(item => matches(item.label, item.to)))
+const visibleReviews = computed(() => reviews.filter(item => matches(item.label, item.to)))
+const visibleDomains = computed(() => Object.values(domains).filter(d => matches(d.title, `/${d.key}/`)))
+const resultCount = computed(() => visibleLinks.value.length + visibleReviews.value.length + visibleDomains.value.length)
+watch(() => route.path, () => { query.value = '' })
 const links = [
   { to: '/workspace', label: '账号与机构', icon: User },
   { to: '/contracts', label: '合同与规则', icon: Document },
@@ -88,28 +96,33 @@ function active(target: string) {
 </script>
 
 <template>
-  <nav v-if="route.meta.domain" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in Object.values(domains)" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
+  <div class="workspace-nav-search"><label for="workspace-nav-query">查找工作区入口</label><input id="workspace-nav-query" v-model="query" type="search" autocomplete="off" placeholder="按业务名称查找" aria-controls="workspace-nav-results"><p v-if="query.trim()" role="status">找到 {{resultCount}} 个入口<button type="button" class="outline" @click="query=''">清除筛选</button></p></div>
+  <div id="workspace-nav-results" class="workspace-nav-results" role="region" tabindex="0" aria-label="工作区入口列表">
+  <nav v-if="route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
   <nav class="workspace-nav" aria-label="工作区导航">
-    <RouterLink v-for="item in links" :key="item.to" :to="item.to"
+    <RouterLink v-for="item in visibleLinks" :key="item.to" :to="item.to"
       :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
       <component :is="item.icon" aria-hidden="true" />{{ item.label }}
     </RouterLink>
-    <p class="nav-caption">独立审核</p>
-    <RouterLink v-for="item in reviews" :key="item.to" :to="item.to"
+    <p v-if="visibleReviews.length" class="nav-caption">独立审核</p>
+    <RouterLink v-for="item in visibleReviews" :key="item.to" :to="item.to"
       :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
       <CircleCheck aria-hidden="true" />{{ item.label }}
     </RouterLink>
   </nav>
 
-  <nav v-if="!route.meta.domain" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in Object.values(domains)" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
+  <nav v-if="!route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
+  <p v-if="!resultCount" class="nav-empty" role="status">没有匹配入口，请更换名称或清除筛选。菜单显示不授予业务权限。</p>
+  </div>
 </template>
 
 <style scoped>
 .workspace-nav{display:grid;gap:6px}
+.workspace-nav-search{display:grid;gap:8px;margin:0 0 12px;font-size:13px}.workspace-nav-search input{width:100%;min-width:0;min-height:44px}.workspace-nav-search p{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0}.workspace-nav-search button{min-height:36px;font-size:12px}.workspace-nav-results:focus-visible{outline:2px solid var(--ops-ink);outline-offset:2px}.nav-empty{font-size:13px;line-height:1.7}
 .workspace-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;border-radius:var(--ops-radius-sm);font-size:14px}
 .workspace-nav a.active{color:var(--ops-ink);background:var(--ops-accent-soft);font-weight:600}
 .workspace-nav svg{width:20px;height:20px;flex:none}
 .nav-caption{margin:24px 12px 8px;font-size:12px;color:var(--ops-text-2)}
 .workspace-business-nav{display:grid;gap:2px}.workspace-business-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;font-size:14px}.workspace-business-nav a.active{background:var(--ops-ink);color:var(--ops-bg);font-weight:600}.workspace-business-nav svg{width:20px;height:20px;flex:none}
-@media(max-width:760px){.workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-nav a{gap:8px;padding:10px 8px}.nav-caption{grid-column:1/-1;margin:12px 8px 4px}}
+@media(max-width:760px){.workspace-nav-results{max-height:50dvh;overflow-y:auto;overscroll-behavior-y:contain;padding-bottom:8px;border-bottom:1px solid var(--ops-border-strong)}.workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-nav a{gap:8px;padding:10px 8px}.nav-caption{grid-column:1/-1;margin:12px 8px 4px}}
 </style>

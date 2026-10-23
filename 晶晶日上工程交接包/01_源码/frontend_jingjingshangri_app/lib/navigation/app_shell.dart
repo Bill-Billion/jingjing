@@ -246,11 +246,11 @@ class _AppShellState extends State<AppShell> {
                         fontFamily: AccountTheme.serif,
                         fontSize: 52,
                         height: 1.1,
-                        fontWeight: FontWeight.w700)),
+                        fontWeight: FontWeight.w900)),
                 const SizedBox(height: 12),
                 const Text('平台制作 · 专员对接'),
                 TextButton(
-                    onPressed: () => _open('/customization/new'),
+                    onPressed: () => _open('/production/services'),
                     child: const Text('开始创作 ↗')),
               ]);
         }
@@ -298,7 +298,7 @@ class _AppShellState extends State<AppShell> {
                                           style: TextStyle(
                                               fontFamily: AccountTheme.serif,
                                               fontSize: titleSize,
-                                              fontWeight: FontWeight.w700,
+                                              fontWeight: FontWeight.w900,
                                               height: 1.04,
                                               letterSpacing: -.7)))),
                           ])))),
@@ -318,7 +318,7 @@ class _AppShellState extends State<AppShell> {
                         ColoredBox(
                             color: AccountTheme.canvas,
                             child: TextButton(
-                                onPressed: () => _open('/customization/new'),
+                                onPressed: () => _open('/production/services'),
                                 style: TextButton.styleFrom(
                                     padding: const EdgeInsets.only(right: 6),
                                     alignment: Alignment.centerLeft),
@@ -366,7 +366,7 @@ class _AppShellState extends State<AppShell> {
                             fontSize: MediaQuery.sizeOf(context).width < 350
                                 ? 17
                                 : 20,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w900,
                             height: 1.3)),
                     const SizedBox(height: 6),
                     Text(_channel == 0 ? '公开资料 · 作品与形象' : '浏览作品 · 核对个人许可',
@@ -451,7 +451,7 @@ class _AppShellState extends State<AppShell> {
                       () => _open('/discover')),
                   _entry('现成视频', '查看现成作品、个人许可与已购内容。', Icons.movie_outlined,
                       () => _open('/stock/catalog')),
-                  _entry('艺人六榜与月度评选', '查看已发布榜单与评选规则。', Icons.bar_chart_outlined,
+                  _entry('艺人榜单与月度评选', '查看已发布榜单与评选规则。', Icons.bar_chart_outlined,
                       () => _open('/engagement')),
                   _entry('找出品人与机构', '查看同城公开资料与合作信息。', Icons.business_outlined,
                       () => _open('/engagement?view=buyers')),
@@ -523,7 +523,7 @@ class _AppShellState extends State<AppShell> {
                         fontFamily: AccountTheme.serif,
                         color: AccountTheme.canvas,
                         fontSize: 104,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w900,
                         height: 1.15)),
                 const SizedBox(width: 20),
                 Expanded(
@@ -719,9 +719,10 @@ class _AppShellState extends State<AppShell> {
         ],
       3 => [
           Row(children: [
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < 4; i++)
               Expanded(
                   child: TextButton(
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
                       onPressed: () => setState(() => _messageChannel = i),
                       child: Container(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -732,8 +733,8 @@ class _AppShellState extends State<AppShell> {
                                           ? AccountTheme.vermilion
                                           : AccountTheme.border,
                                       width: _messageChannel == i ? 2 : 1))),
-                          child: Text(['订单会话', '投稿意向', '系统通知'][i],
-                              style: const TextStyle(fontSize: 14))))),
+                          child: Text(['订单会话', '投稿意向', '活动投票', '系统通知'][i],
+                              style: const TextStyle(fontSize: 12))))),
           ]),
           const SizedBox(height: 12),
           if (_messageChannel == 0) ...[
@@ -746,10 +747,13 @@ class _AppShellState extends State<AppShell> {
             _entry('投稿与合作客服', '查看单向投稿、业务意向及客服处理。', Icons.inbox_outlined,
                 () => _open('/notices/records?kind=CASE')),
           if (_messageChannel == 2)
+            _entry('活动、投票与异议', '按城市和原规则查看已公示活动；未读总数仍由各原业务分别核对。',
+                Icons.how_to_vote_outlined, () => _open('/engagement')),
+          if (_messageChannel == 3)
             _entry('系统与业务通知', '查看当前账号和身份获准的通知。', Icons.notifications_outlined,
                 () => _open('/operations/notifications')),
           const SizedBox(height: 28),
-          const Text('订单沟通、投稿意向与系统提醒，在此分别查看。',
+          const Text('订单沟通、投稿意向、活动投票与系统提醒，按原业务分别查看。',
               style: TextStyle(
                   fontSize: 12, height: 1.6, color: AccountTheme.muted)),
         ],
@@ -794,7 +798,9 @@ class _AppShellState extends State<AppShell> {
                           : _selected == 0
                               ? 27
                               : 14,
-                      fontWeight: FontWeight.w700)),
+                      fontWeight: _selected > 0 && _selected < 4
+                          ? FontWeight.w900
+                          : FontWeight.w700)),
               actions: [
                   if (_selected == 0)
                     TextButton(

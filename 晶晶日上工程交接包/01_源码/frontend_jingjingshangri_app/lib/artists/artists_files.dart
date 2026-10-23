@@ -118,7 +118,7 @@ class _ArtistFilesState extends State<ArtistFiles> {
       });
       widget.onChanged?.call({...widget.ids, asset['id'] as String}.toList());
     } on AccountError catch (e) {
-      if (mounted) setState(() => notice = artistError(e));
+      if (mounted) setState(() => notice = artistError(e, writing: true));
     } catch (_) {
       if (mounted) setState(() => notice = '文件选择或上传未完成，请检查后重试。');
     } finally {

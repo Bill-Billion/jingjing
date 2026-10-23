@@ -28,7 +28,7 @@ assert(['localhost', '127.0.0.1'].includes(new URL(base).hostname))
 const evidence = resolve(root, 'docs/ux/pr14-ui/evidence')
 const shots = resolve(evidence, 'screenshots')
 await mkdir(shots, { recursive: true })
-const results = [], pageErrors = [], forbiddenConsole = []
+const results = [], pageErrors = [], forbiddenConsole = [], screenshotCoverage = []
 const suffix = Date.now().toString(36)
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
 const actors = {}
@@ -179,10 +179,21 @@ async function runFinalScreenshots() {
   await page.locator('pre.controlled-reader').waitFor()
   assert((await page.locator('pre.controlled-reader').innerText()).includes('<b>此文本不可执行</b>'))
   assert.equal(await page.locator('pre.controlled-reader b').count(), 0)
+  const readerViewport = async file => {
+    const geometry = await page.evaluate(() => ({ scroll_y: window.scrollY, viewport_height: innerHeight, page_height: document.documentElement.scrollHeight, width: innerWidth }))
+    await page.screenshot({ path: resolve(shots, file), fullPage: false })
+    screenshotCoverage.push({ file: 'screenshots/' + file, ...geometry })
+  }
   await page.evaluate(() => window.scrollTo(0, 0))
-  await page.screenshot({ path: resolve(shots, 'pr14-web-controlled-reader-mobile.png'), fullPage: false })
+  await readerViewport('pr14-web-controlled-reader-mobile.png')
   await page.locator('pre.controlled-reader').scrollIntoViewIfNeeded()
-  await page.screenshot({ path: resolve(shots, 'pr14-web-reader-focused-mobile.png'), fullPage: false })
+  await readerViewport('pr14-web-reader-focused-mobile.png')
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  await readerViewport('pr14-web-reader-bottom-mobile.png')
+  const [top, focused, bottom] = screenshotCoverage
+  assert.equal(top.scroll_y, 0)
+  assert(focused.scroll_y <= top.viewport_height && bottom.scroll_y <= focused.scroll_y + focused.viewport_height)
+  assert(bottom.scroll_y + bottom.viewport_height >= bottom.page_height - 1)
   assert((await page.locator('pre.controlled-reader').innerText()).includes(buyer.accountId))
   assert.equal(await page.locator('.workspace-nav').count(), 1)
   assert.equal(await page.locator('.supply-header').count(), 1)
@@ -633,7 +644,7 @@ try {
   const failed = results.filter(row => row.result === 'FAIL').length
   const report = { synthetic_only: true, api: 'Real isolated HTTP/MySQL, synthetic SMS and private storage', browser: 'Real Google Chrome / Playwright',
     base_url: base, scope: onlyFinalShots ? 'FINAL_VIEWPORT_SCREENSHOTS_ONLY' : onlyPendingNav ? 'PENDING_NAVIGATION_ONLY' : onlyAdaptation ? 'PROJECT_ADAPTATION_ONLY' : 'FULL_LICENSING_AND_ADAPTATION', result: failed ? 'FAIL' : 'PASS', passed: results.filter(row => row.result === 'PASS').length, failed,
-    checked_at: new Date().toISOString(), checks: results,
+    checked_at: new Date().toISOString(), checks: results, screenshot_coverage: screenshotCoverage,
     limits: 'No production access, payment provider, real identity vendor, e-sign vendor or deployment. Screenshots contain synthetic test identities only.' }
   await writeFile(resolve(evidence, onlyFinalShots ? 'web-final-screenshots-runtime.json' : onlyPendingNav ? 'web-pending-navigation-runtime.json' : onlyAdaptation ? 'web-adaptation-runtime.json' : 'web-runtime.json'), JSON.stringify(report, null, 2) + '\n')
   await browser.close()

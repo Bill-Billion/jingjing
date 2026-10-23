@@ -119,7 +119,10 @@ void main() {
   testWidgets('通告有独立六类入口，打开已有项目后返回保留栏目且不重复读取', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
-      handler: (r) => r.path == '/api/v1/projects/catalogue'
+      handler: (r) => const [
+        '/api/v1/projects/catalogue',
+        '/api/v1/notices/catalog'
+      ].contains(r.path)
           ? envelope({'items': [], 'next_cursor': null})
           : adapter.defaultReply(r),
     );

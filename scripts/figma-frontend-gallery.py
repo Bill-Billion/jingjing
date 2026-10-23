@@ -188,11 +188,32 @@ last_manifest = dict(result='SELECTED_SUCCESSFUL_CASES_WITH_EXPLICIT_LIMITS',
 replaced = set(last_groups)
 shots = [q for q in shots if (q['case'],q['width']) not in replaced] + last_shots
 
+# A follow-up font/layout pass has its own reviewed source-bound selection.
+# Prior captures remain in their original folders, but may not masquerade as
+# screenshots of the new build after changing font assets or product sources.
+followup_path = BASE/'followup/SELECTED_MANIFEST.json'
+followup_manifest = None
+if followup_path.exists():
+    followup_manifest = read(followup_path)
+    assert followup_manifest['manual_visual_review_completed'] is True
+    assert followup_manifest['errors'] == []
+    current = []
+    for q in followup_manifest['screenshots']:
+        current.append(record(q['file'], q['case'], q['width'], q['figmaIds'],
+            q['sourceBundleSha256'], q['sha256'], q['relationship'],
+            route=q.get('route'), position=q.get('position'),
+            sourceReport=q['sourceReport'],
+            sourceReportSha256=digest(ROOT/q['sourceReport']),
+            evidenceKind=q.get('evidenceKind'),
+            visualStateStub=q.get('visualStateStub'), stateControl=q.get('stateControl')))
+    assert len({q['file'] for q in current}) == len(current)
+    shots = current
+
 mapping = read(MAPPING)
 assert len(mapping['screens']) == len({q['figmaId'] for q in mapping['screens']}) == 103
 known_ids = {q['figmaId'] for q in mapping['screens']}
 assert all(set(q['figmaIds']) <= known_ids for q in shots)
-not_state_verified = {'2004:4989','2004:5173','2004:5246','2004:5306',
+not_state_verified = {'2004:2031','2004:5111','2004:4989','2004:5173','2004:5246','2004:5306',
                       '2004:5432','2004:6412','2004:6457','2004:6580'}
 controlled_state_ids = {'2004:6412','2004:6457','2004:6580'}
 closed = {'23:1261','2004:2461','2004:3564','2004:4444'}
@@ -200,8 +221,18 @@ associated_only = {
  '22:1093': '关联实际播放后的制作审片播放器；14号专屏全部控件、字幕和素材管理没有据此完成。',
  '2004:4260': '仅关联按品类模板保存的本人故事草稿；不是70号完整通用业务创作草稿库或分享能力。',
  '2004:5621': '仅关联同一发票未开放入口；企业税号表单和正式开票未启用，不采集无法提交的税务信息。',
+ '2004:4785': '仅核对legacy_compatible原商单内NOT_SIGNED合同快照；该订单已PAID，不能代表先签署后付款的完整S02门禁。',
 }
 notes = {
+ '2004:3003':'保留各原订单真实分域事实与入口；最后收银台新入口实拍使用制作订单，只核对共用样式和节点跳转，不代表原稿试镜肖像、行程或角色流程均具备。原试镜已付单截图另列。',
+ '2004:935':'现有邀约表单要求本人原INVITATION投稿；本批仅有PROFILE资料，缺合法原上下文，不能拿另一种投稿或旧库UUID替代。首次定向邀约准入仍需安全契约。',
+ '2004:3652':'独立服务介绍页、主页入口、报价说明与三段流程已补；雨景仅作视觉示意，与原稿人物海报有素材差异。规格/金额以原报价为准，不把示例当可售承诺。',
+ '2004:3160':'独立收银台已按原ORDER与节点显示，复用原权限/付款和恢复逻辑；实际可办理首节点、未满足后节点、原已付节点及未提交勾选分别检查。渠道固定、托管消费未接通，建立记录不等于实际扣款或到账。',
+ '2004:5045':'当前6条原上架没有审核退回状态；详情可展示双审意见，但原单修改重提另缺契约，待真实退回资料复拍。',
+ '2004:5494':'原会话真实ARCHIVED，发送关闭且消息列表为空；已核对只读空历史，不填示例聊天，也未点击独立客服服务入口。',
+ '2004:5544':'制作项目问题表单已读取，未填写或提交；该原项目已付但尚未正式交付，不证明已交付售后或受理结果。',
+ '2004:5765':'本批试镜记录没有REFUND_REQUIRED，原退款列表为空；已有拒单退款实现，缺合法原状态资料，不用制作退款替代。',
+ '2004:5836':'本批试镜记录没有REFUNDED或已核实全额退款；缺原退款证据，不造渠道到账结果。',
  '2004:4989':'PAYMENT无FAILED枚举；关闭状态不能冒充已确认失败。',
  '2004:5173':'生成服务关闭，无真实FAILED生成任务；只核对相关服务关闭入口。',
  '2004:5246':'会员中心与规则已检查，未单独生成本幅冻结状态资料。',
@@ -210,11 +241,18 @@ notes = {
  '2004:6412':'已通过受控HTTP503检查加载失败UI与恢复入口；不是正式服务真实故障或业务失败证明。',
  '2004:6457':'已通过受控HTTP401检查失权清理与登录入口；不是正式会话自然到期证明。',
  '2004:6580':'已对实际GET控制延迟后放行并捕捉读取UI；不是正式网络性能或请求成功率证明。',
- '2004:3302':'实拍为原合同编号读取及分域许可，统一合同目录仍有结构缺口。',
- '2004:4349':'实拍分域现货/制作/试镜；统一库与最近下载仍有结构缺口。',
+ '2004:6502':'失权后清私有内容，艺人与制作拒绝读取门已按双行标题、黑块和原权限重核动作校准；403/404不证明记录存在或已下架。',
+ '2004:2031':'材料分类提示、原申请/原服务与实际审核意见已核对；本批只有L1通过，缺L2已付补件实拍，不能替代本状态。',
+ '2004:5111':'相关认证真实L1通过已核对；L2实际通过状态缺本轮截图资料，不能拿L1冒充。',
+ '22:961':'同城名单、规则分值或未配置状态及星探事实已有来源；公开姓名、肖像和完整作品档案仍缺。',
+ '22:1031':'重读核对公开主体及本城已加载通告过滤、分页已补；当前已读取范围不等于全量主体聚合。',
+ '2004:3302':'已补原合同编号读取与订单/许可/参与协议来源入口；统一跨域只读摘要契约仍未提供。',
+ '2004:4349':'已补现货、制作与试镜购买来源入口；统一库与最近下载仍有结构缺口。',
  '2004:1871':'个人MCN合作与机构经营不是同一整页。',
- '2004:6012':'主壳系统频道入口与真实通知分开，不是统一摘要列表。',
- '2004:6127':'通告与权益分别可达，未形成原稿顶层聚合频道。',
+ '2004:6012':'主壳已设订单、投递、活动、系统四频道并指向真实分域入口；跨域统一摘要列表未提供。',
+ '2004:6127':'通告权益入口及消息活动投票频道已具备；通告顶层统一活动/权益聚合的范围与布局仍待确认。',
+ '2004:4535':'本人偏好与展示名更正申请入口已补；执行方案payload缺口及手机号组合编辑继续单列。',
+ '2004:4618':'FAQ及个人信息投诉分流已补；一般反馈、附件及陌生人售前会话未开放。',
  '2004:2726':'R12黑色金额区与细线事实行已校准。当前显示本人结算投影，须与整单分配和总额分别核对；应付、本人份额与已核实实付不能混算，合成资料不证明正式到账。',
  '2004:2818':'R12黑色可申请金额区与细线事实行已校准。剩余边界是本人可申请额度和私有附件核验口径，不能把附件保存当作银行卡绑定或出款成功；本轮未提交申请或办理真实付款。',
  **associated_only,
@@ -239,7 +277,7 @@ for screen in mapping['screens']:
         status = 'CONTROLLED_STATE_UI_REVIEWED_NOT_BUSINESS_OUTCOME'
     if node in associated_only:
         status = 'ASSOCIATED_VISUAL_EVIDENCE_ONLY' if matches else 'MAPPED_WITHOUT_INDEPENDENT_SCREENSHOT'
-    if node in {'2004:2726','2004:2818'} and any('/last-details/finance/' in q['file'] for q in matches):
+    if node in {'2004:2726','2004:2818'} and any('/last-details/finance/' in q['file'] or '/followup/finance' in q['file'] for q in matches):
         status = 'FINANCE_VISUAL_REVIEWED_WITH_DATA_SCOPE_LIMITS'
     screen['visualAcceptanceStatus'] = status
     screen['evidenceCoverage'] = dict(
@@ -261,8 +299,9 @@ source_files.update(path for path in (web_root/'src').rglob('*') if path.is_file
 for root, names in [(app_root, ['pubspec.yaml','pubspec.lock']),
                     (web_root, ['package.json','package-lock.json','vite.config.ts','tsconfig.json','index.html'])]:
     source_files.update(root/name for name in names if (root/name).is_file())
+source_files.update(path for path in (app_root/'assets/fonts').rglob('*') if path.is_file())
 mapping['sourceFingerprints'] = {relative(path):digest(path) for path in sorted(source_files) if path.is_file()}
-mapping['sourceFingerprintScope'] = '当前App lib、Web src及两端现有构建配置；只计算哈希，未修改源码；不替代各截图bundle哈希。'
+mapping['sourceFingerprintScope'] = '当前App lib、Web src、两端现有构建配置与本地字体；只计算哈希，未修改源码；不替代各截图bundle哈希。'
 mapping['status'] = 'REVIEWED_MAPPING_WITH_EXPLICIT_UNFINISHED_REQUIREMENTS'
 mapping['countsByVisualAcceptanceStatus'] = dict(counts)
 MAPPING.write_text(json.dumps(mapping, ensure_ascii=False, indent=2)+'\n')
@@ -278,6 +317,10 @@ manifest = dict(result='REVIEWED_WITH_EXPLICIT_GAPS', designCount=103,
                 currentSourceFingerprintCount=len(mapping['sourceFingerprints']),
                 sourceBundleSha256s=sorted({q['sourceBundleSha256'] for q in shots}),
                 source_delta='各批截图保留自己的构建和源清单哈希；源码指纹不是全部截图同源构建证明。')
+if followup_manifest:
+    manifest['followupManifest'] = relative(followup_path)
+    manifest['followupManifestSha256'] = digest(followup_path)
+    manifest['priorCaptures'] = '前轮图册及源清单留档；本轮主图册只选本轮重新构建后的截图。'
 (BASE/'GALLERY_MANIFEST.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
 labels = {'ASSOCIATED_VISUAL_EVIDENCE_ONLY':'仅关联画面／能力未整页完成',
           'CONTROLLED_STATE_UI_REVIEWED_NOT_BUSINESS_OUTCOME':'受控状态UI已核对／非真实业务结果',
@@ -289,9 +332,9 @@ labels = {'ASSOCIATED_VISUAL_EVIDENCE_ONLY':'仅关联画面／能力未整页�
           'STATE_NOT_INDEPENDENTLY_VERIFIED':'本状态未独立验证'}
 parts = ['''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>新版前端逐页对照</title><style>
 :root{color:#151515;background:#f3f1e8;font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}body{max-width:1200px;margin:auto;padding:28px}h1,h2{font-family:"Songti SC",serif;line-height:1.2}h1{font-size:44px}a{color:#a73124}nav{display:flex;gap:20px;flex-wrap:wrap}input,button{font:inherit;background:white;border:1px solid #cecbc2;padding:10px}button{cursor:pointer}details{border-top:1px solid #cecbc2;padding:15px 0}summary{cursor:pointer;font-size:20px;font-weight:600}.tag{font:12px/1.6 sans-serif;background:#151515;color:#f3f1e8;padding:5px 8px;display:inline-block;margin:8px}.compare{display:grid;grid-template-columns:minmax(200px,390px) 1fr;gap:24px}.compare img{width:100%;height:auto;display:block}.actual{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,260px));gap:12px;align-items:start}figure{margin:0}figcaption,small{font-size:12px;color:#66645f;word-break:break-word}.missing{padding:24px;background:#e7e4da}.metadata{overflow-wrap:anywhere}code{font-size:12px}footer{border-top:1px solid #151515;margin-top:40px;padding:24px 0}@media(max-width:650px){body{padding:18px}h1{font-size:34px}.compare{grid-template-columns:1fr}summary{font-size:17px}}
-</style><body><p>2026-10-23 · 晶晶日上 · Experience</p><h1>新版前端<br>逐页设计与实际画面</h1><p>103幅原稿逐一映射。这里区分已核对页面、关闭入口及未独立验证状态，保留全部需求与设计差异；不是“103幅全部逐像素通过”。</p><nav>''',
+</style><body><p>2026-10-24续作 · 晶晶日上 · Experience</p><h1>新版前端<br>逐页设计与实际画面</h1><p>103幅原稿逐一映射。这里区分已核对页面、关闭入口及未独立验证状态，保留全部需求与设计差异；不是“103幅全部逐像素通过”。</p><nav>''',
  f'<a href="{href(ROOT/"docs/reviews/figma-frontend-restore-20261023/REPORT.md")}">需求与设计问题报告</a>',
- '<a href="foundation-review/index.html">故事与新入口</a><a href="app-r03-r04/index.html">艺人与制作</a><a href="app-r05-r12/review/index.html">第5—12轮</a><a href="web-review/index.html">PC与窄屏工作台</a></nav>',
+ '<a href="followup/SELECTED_MANIFEST.json">本轮App选图</a><a href="followup/web-ci/index.html">本轮PC与窄屏工作台</a><a href="foundation-review/index.html">前轮故事留档</a><a href="app-r03-r04/index.html">前轮艺人与制作留档</a></nav>',
  f'<p>选用实际截图 {len(unique)} 张；各自保留构建哈希，最后局部修改单列。PC没有逐屏Figma稿，按同一系统适配。</p>',
  '<label>按页名、路由或问题号查找 <input id="filter" type="search" placeholder="例如：合同、R10、/wallet"></label> <button id="expand">展开全部</button><p id="count"></p>']
 for s in mapping['screens']:

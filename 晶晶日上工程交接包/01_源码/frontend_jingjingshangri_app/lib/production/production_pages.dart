@@ -10,6 +10,7 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../account/editorial_widgets.dart';
+import '../account/read_failure_widgets.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_api.dart';
 import '../trade/trade_models.dart';
@@ -28,6 +29,8 @@ class ProductionProjectsPage extends StatelessWidget {
   final bool works;
   @override
   Widget build(BuildContext context) => ProductionGate(
+      showExpired: true,
+      expiredLabel: works ? '我的交付作品' : '参与制作项目',
       returnRoute: works
           ? '/production/works'
           : '/production${orderId == null ? '' : '?orderId=$orderId'}',
@@ -48,7 +51,7 @@ class _ProjectListState extends State<_ProjectList> {
   late final api = ProductionApi(widget.session);
   List<ProductionRecord> rows = [];
   String? cursor, error;
-  bool busy = false;
+  bool busy = false, loadFailed = false, hasRead = false;
   int ticket = 0;
   final orders = <String, TradeRecord>{};
   @override
@@ -62,6 +65,7 @@ class _ProjectListState extends State<_ProjectList> {
     setState(() {
       busy = true;
       error = null;
+      loadFailed = false;
       if (!more) {
         rows = [];
         orders.clear();
@@ -90,9 +94,15 @@ class _ProjectListState extends State<_ProjectList> {
       setState(() {
         rows = [...(more ? rows : <ProductionRecord>[]), ...eligible];
         cursor = result.nextCursor;
+        hasRead = true;
       });
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = productionError(e));
+      if (mounted && t == ticket) {
+        setState(() {
+          error = productionError(e);
+          loadFailed = true;
+        });
+      }
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
     }
@@ -113,7 +123,10 @@ class _ProjectListState extends State<_ProjectList> {
       return;
     }
     if (!mounted) return;
-    setState(() => busy = true);
+    setState(() {
+      busy = true;
+      loadFailed = false;
+    });
     try {
       String projectId;
       if (path.startsWith('/api/v1/production/projects/')) {
@@ -137,78 +150,99 @@ class _ProjectListState extends State<_ProjectList> {
   }
 
   @override
-  Widget build(BuildContext context) => tradeScaffold(
-      context,
-      widget.works ? '我的交付作品' : '参与制作项目',
-      [
-        tradeHeading(widget.works ? '我的作品库' : '我参与的故事',
-            eyebrow: '制作与交付 / 私人记录'),
-        tradeBanner(
-            widget.works ? '私人访问' : '按具体版本制作与验收',
-            widget.works
-                ? '作品仅当前参与身份及获准人员可见。验收与付款分别核对，最终原片每次下载重新验证权限。'
-                : '买方负责人可确认本版或提出修改。商家开工、指派和上传，以及独立审片，请在网页工作台按真实角色办理。',
-            icon: widget.works ? Icons.lock_outline : Icons.movie_outlined),
-        if (busy) const LinearProgressIndicator(),
-        if (error != null) appNotice(error!, icon: Icons.error_outline),
-        for (final op in widget.session.productionPending)
-          tradeSection('原制作办理结果待核实', [
-            appNotice('原内容与版本已保留。核对前请不要重新提交另一份办理。'),
-            tradeButton('恢复原请求核对', busy ? null : () => restore(op['path']))
-          ]),
-        if (!busy && rows.isEmpty)
-          tradeSection(widget.works ? '暂时没有成片记录' : '暂时没有参与项目', [
-            supplyNote(widget.works
-                ? '当前身份的项目尚无最终成片版本。'
-                : '仅展示真实参与或实际指派的项目。开工项目由商家负责人按原订单办理。')
-          ]),
-        for (final r in rows)
-          tradeSection('制作项目 ${shortSupplyId(r.id)}', [
-            tradeFact('当前状态', productionStatuses[r.status]),
-            if (!widget.works) ...[
-              tradeFact('原订单', shortSupplyId(r.orderId)),
-              tradeFact('服务档位', r.data['specification']['service_tier']),
-              tradeFact('修改次数',
-                  '${r.data['change_requests']} / ${r.data['specification']['revision_limit']}'),
-              for (final stage in productionStages.keys)
+  Widget build(BuildContext context) {
+    if (busy &&
+        !hasRead &&
+        rows.isEmpty &&
+        widget.session.productionPending.isEmpty) {
+      return tradeScaffold(context, widget.works ? '我的交付作品' : '参与制作项目',
+          [ReadLoadingContent(label: widget.works ? '我的交付作品' : '参与制作项目')]);
+    }
+    if (loadFailed &&
+        !busy &&
+        error != null &&
+        rows.isEmpty &&
+        widget.session.productionPending.isEmpty) {
+      return tradeScaffold(context, widget.works ? '我的交付作品' : '参与制作项目',
+          [ReadFailureContent(reason: error!)],
+          footer: ReadFailureActions(
+              onBack: () => setState(() => loadFailed = false), onRetry: load));
+    }
+    return tradeScaffold(
+        context,
+        widget.works ? '我的交付作品' : '参与制作项目',
+        [
+          tradeHeading(widget.works ? '我的作品库' : '我参与的故事',
+              eyebrow: '制作与交付 / 私人记录'),
+          tradeBanner(
+              widget.works ? '私人访问' : '按具体版本制作与验收',
+              widget.works
+                  ? '作品仅当前参与身份及获准人员可见。验收与付款分别核对，最终原片每次下载重新验证权限。'
+                  : '买方负责人可确认本版或提出修改。商家开工、指派和上传，以及独立审片，请在网页工作台按真实角色办理。',
+              icon: widget.works ? Icons.lock_outline : Icons.movie_outlined),
+          if (busy) const LinearProgressIndicator(),
+          if (error != null) appNotice(error!, icon: Icons.error_outline),
+          for (final op in widget.session.productionPending)
+            tradeSection('原制作办理结果待核实', [
+              appNotice('原内容与版本已保留。核对前请不要重新提交另一份办理。'),
+              tradeButton('恢复原请求核对', busy ? null : () => restore(op['path']))
+            ]),
+          if (!busy && error == null && rows.isEmpty)
+            tradeSection(widget.works ? '暂时没有成片记录' : '暂时没有参与项目', [
+              supplyNote(widget.works
+                  ? '当前身份的项目尚无最终成片版本。'
+                  : '仅展示真实参与或实际指派的项目。开工项目由商家负责人按原订单办理。')
+            ]),
+          for (final r in rows)
+            tradeSection('制作项目 ${shortSupplyId(r.id)}', [
+              tradeFact('当前状态', productionStatuses[r.status]),
+              tradeFact('当前版本确认', '已确认 ${productionConfirmedStages(r)}/4 个阶段'),
+              if (!widget.works) ...[
+                tradeFact('原订单', shortSupplyId(r.orderId)),
+                tradeFact('服务档位', r.data['specification']['service_tier']),
+                tradeFact('修改次数',
+                    '${r.data['change_requests']} / ${r.data['specification']['revision_limit']}'),
+                for (final stage in productionStages.keys)
+                  tradeFact(
+                      productionStages[stage]!,
+                      r.data['current'][stage] == null
+                          ? '未开始'
+                          : r.data['current'][stage] ==
+                                  r.data['accepted'][stage]
+                              ? '当前版本已确认'
+                              : '当前版本待审阅')
+              ] else ...[
+                tradeFact('阶段', '当前最终成片'),
                 tradeFact(
-                    productionStages[stage]!,
-                    r.data['current'][stage] == null
-                        ? '未开始'
-                        : r.data['current'][stage] == r.data['accepted'][stage]
-                            ? '当前版本已确认'
-                            : '当前版本待审阅')
-            ] else ...[
-              tradeFact('阶段', '当前最终成片'),
-              tradeFact(
-                  '验收',
-                  r.data['current']['FINAL'] == r.data['accepted']['FINAL']
-                      ? '最终版本已验收'
-                      : '当前最终版本尚未验收'),
-              tradeFact(
-                  '付款',
-                  orders[r.orderId]?.status == 'PAID'
-                      ? '约定款项已付清'
-                      : orders.containsKey(r.orderId)
-                          ? '尚未付清或财务状态不满足交付'
-                          : '请由买方负责人核对订单款项')
-            ],
+                    '验收',
+                    r.data['current']['FINAL'] == r.data['accepted']['FINAL']
+                        ? '最终版本已验收'
+                        : '当前最终版本尚未验收'),
+                tradeFact(
+                    '付款',
+                    orders[r.orderId]?.status == 'PAID'
+                        ? '约定款项已付清'
+                        : orders.containsKey(r.orderId)
+                            ? '尚未付清或财务状态不满足交付'
+                            : '请由买方负责人核对订单款项')
+              ],
+              tradeButton(
+                  widget.works ? '查看成片' : '查看项目', busy ? null : () => open(r))
+            ]),
+          if (cursor != null)
+            tradeButton('加载更多', busy ? null : () => load(more: true),
+                outline: true),
+          tradeButton('重新读取', busy ? null : load, outline: true),
+          if (!widget.works)
             tradeButton(
-                widget.works ? '查看成片' : '查看项目', busy ? null : () => open(r))
-          ]),
-        if (cursor != null)
-          tradeButton('加载更多', busy ? null : () => load(more: true),
-              outline: true),
-        tradeButton('重新读取', busy ? null : load, outline: true),
-        if (!widget.works)
-          tradeButton(
-              '我的交付作品',
-              busy || widget.session.productionPending.isNotEmpty
-                  ? null
-                  : () => Navigator.pushNamed(context, '/production/works'),
-              outline: true)
-      ],
-      locked: busy || widget.session.productionPending.isNotEmpty);
+                '我的交付作品',
+                busy || widget.session.productionPending.isNotEmpty
+                    ? null
+                    : () => Navigator.pushNamed(context, '/production/works'),
+                outline: true)
+        ],
+        locked: busy || widget.session.productionPending.isNotEmpty);
+  }
 }
 
 class ProductionProjectPage extends StatelessWidget {
@@ -306,6 +340,11 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                 eyebrow: '平台制作任务 / ${productionStatuses[p.status]}',
                 description:
                     '${p.data['specification']['final_seconds']}秒 · ${p.data['specification']['service_tier']}'),
+            productionCurrentTasks(p, versions,
+                flow: fulfillment,
+                order: order,
+                buyerOwner:
+                    p.buyer(api.participant()) && widget.session.isOwner),
             if (fulfillment != null)
               ...fulfillmentSections(context, widget.session, p, fulfillment!,
                   order: order, busy: busy, reload: load),
@@ -1163,7 +1202,7 @@ class _VersionReviewState extends State<_VersionReview> {
                                     fontFamily: AccountTheme.serif,
                                     fontSize: 52,
                                     height: 1.15,
-                                    fontWeight: FontWeight.w700)),
+                                    fontWeight: FontWeight.w900)),
                           ])),
                 ] else
                   tradeHeading(widget.feedbackOnly ? '写下本版意见' : '确认这一版',

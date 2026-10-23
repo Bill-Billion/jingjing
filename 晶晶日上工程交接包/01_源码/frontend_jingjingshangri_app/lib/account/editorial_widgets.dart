@@ -51,7 +51,7 @@ class EditorialFeature extends StatelessWidget {
                       style: TextStyle(
                           fontFamily: AccountTheme.serif,
                           fontSize: typeSize,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w900,
                           height: 1.06,
                           color: foreground)),
                   if (description != null) ...[

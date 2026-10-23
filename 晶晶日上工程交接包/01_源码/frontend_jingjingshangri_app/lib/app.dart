@@ -25,6 +25,7 @@ import 'gigs/gig_conversation.dart';
 import 'production/production_pages.dart';
 import 'production/fulfillment_pages.dart';
 import 'production/manual_sample_page.dart';
+import 'production/production_service_page.dart';
 import 'projects/project_pages.dart';
 import 'projects/project_forms.dart';
 import 'projects/participation_pages.dart';
@@ -185,7 +186,8 @@ class JingjingShangriApp extends StatelessWidget {
                 TradeRecordsPage(kind: uri.queryParameters['kind'] ?? 'ORDER'),
               '/trade/record' => TradeRecordPage(
                   recordId: uri.queryParameters['recordId'] ?? '',
-                  section: uri.queryParameters['section']),
+                  section: uri.queryParameters['section'],
+                  installmentKey: uri.queryParameters['installmentKey']),
               '/trade/participation-checkout' => ParticipationCheckoutPage(
                   agreementId: uri.queryParameters['agreementId'] ?? '',
                   agreementSha256:
@@ -241,6 +243,7 @@ class JingjingShangriApp extends StatelessWidget {
                   mode: 'EXTERNAL', id: uri.queryParameters['releaseId'] ?? ''),
               '/production' =>
                 ProductionProjectsPage(orderId: uri.queryParameters['orderId']),
+              '/production/services' => const ProductionServicePage(),
               '/production/manual-sample' => ManualSamplePage(
                   requestId: uri.queryParameters['requestId'] ?? ''),
               '/production/story' => ProductionStoryPage(

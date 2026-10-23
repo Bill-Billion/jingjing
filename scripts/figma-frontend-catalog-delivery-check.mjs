@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto'
 import { resolve, join } from 'node:path'
 
 const root = process.cwd()
-const out = resolve('docs/testing/evidence/figma-frontend-restore-20261023/app-r03-r04')
+const out = resolve(process.env.FIGMA_CATALOG_OUTPUT || 'docs/testing/evidence/figma-frontend-restore-20261023/app-r03-r04')
 const app = 'http://127.0.0.1:5500'
 const files = {
   r05r12: process.env.R05_R12_ACCESS_FILE || '.local/v5-r05-r12-sandbox/jx_test_r05r12_96809_98b9c83d1e49/access.json',
@@ -330,6 +330,18 @@ try {
     if (!scenario?.version_id) continue
     await run('production-review-' + key, 'delivery', 'buyer', '/production/version?versionId=' + scenario.version_id, null, ['2004:4000'], '顶部黑色播放器与正式版本信息；收讫、验收和付款条件互不替代。', {
       after: async row => {
+        if (key === 'pending_video') {
+          const before = reads.length;
+          await top(); await press(button('播放预览'));
+          await page.waitForLoadState('networkidle');
+          const content = reads.slice(before).filter(r => r.path.endsWith('/content'));
+          assert(content.some(r => r.status === 409 && r.search === '?variant=preview'), 'Unreviewed version must still be denied by the real API');
+          assert(content.every(r => !r.search.includes('variant=final')), 'No formal-file read');
+          assert.equal(await page.locator('video').count(), 0, 'Denied preview cannot mount a playable private video');
+          row.checks.push({ name: '未审片版本实际409，不冒充可播放或已查看', result: 'EXPECTED_REAL_API_DENIAL', content });
+          await capture(['2004:4000'], '未审片版本真实409；不解码、不确认收讫、不验收、不提交业务。', true, 'review-required');
+          return;
+        }
         await previewPlayback(row, '播放预览', ['2004:4000'])
         if (key === 'preview') {
           await top()

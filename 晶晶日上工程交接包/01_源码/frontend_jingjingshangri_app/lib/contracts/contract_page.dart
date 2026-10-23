@@ -114,6 +114,27 @@ class _ContractPageState extends State<ContractPage> {
                                       ],
                                       icon: Icons.person_outline),
                                 ] else ...[
+                                  if (widget.snapshotId == null &&
+                                      snapshot == null)
+                                    _card('从原业务查看合同', [
+                                      _notice(
+                                          '各类合同保留在原业务记录中，按当前身份分别核对。这里不合并签署、付款或履约状态。'),
+                                      for (final source in const [
+                                        ('订单与原报价', '/orders'),
+                                        ('作品许可与使用约定', '/licensing'),
+                                        ('参演条款与会签', '/projects/participation'),
+                                      ])
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child: OutlinedButton.icon(
+                                                onPressed: () =>
+                                                    Navigator.pushNamed(
+                                                        context, source.$2),
+                                                icon: const Icon(
+                                                    Icons.description_outlined),
+                                                label: Text(source.$1))),
+                                    ]),
                                   _card('指定合同', [
                                     _fact(
                                         '当前办事身份',

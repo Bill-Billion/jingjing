@@ -10,7 +10,7 @@ const root=process.cwd(),access=process.env.V5_FRONTEND_ACCESS_FILE
 assert(access,'V5_FRONTEND_ACCESS_FILE required')
 const fixture=JSON.parse(await readFile(access,'utf8')),base=new URL(fixture.base_url)
 assert(fixture.synthetic_only&&base.hostname==='127.0.0.1'&&base.protocol==='http:'&&base.pathname==='/api/v1')
-const web='http://127.0.0.1:5173',out=resolve('output/playwright/figma-frontend-web-supplement')
+const web='http://127.0.0.1:5173',out=resolve(process.env.FIGMA_WEB_OUTPUT||'output/playwright/figma-frontend-web-supplement')
 await mkdir(out,{recursive:true})
 const secrets=Object.values(fixture.accounts).map(a=>a.bearer_token)
 const redact=value=>secrets.reduce((s,t)=>s.replaceAll(t,'[redacted]'),String(value))

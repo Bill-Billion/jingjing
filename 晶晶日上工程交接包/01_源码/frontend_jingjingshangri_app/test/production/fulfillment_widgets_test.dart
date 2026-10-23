@@ -29,6 +29,46 @@ class _SavingPicker extends FilePickerPlatform {
 }
 
 void main() {
+  for (final state in ['STARTED', 'PAUSED', 'REFUND_REQUIRED']) {
+    testWidgets('项目组合待办区分验收、已付清、正式收讫与暂停取消：$state', (t) async {
+      final a = productionAdapter(
+          stage: 'FINAL',
+          paid: true,
+          override: (r) {
+            if (r.path == '/api/v1/production/records/$productionProjectId') {
+              return envelope(fulfillmentProjectData(stage: 'FINAL'));
+            }
+            if (r.path.endsWith('/fulfillment')) {
+              return envelope(fulfillmentData(
+                  viewed: true,
+                  received: true,
+                  issue: state == 'PAUSED',
+                  cancelled: state == 'REFUND_REQUIRED'));
+            }
+            return null;
+          });
+      final s = (await t.runAsync(() => buyerSession(a)))!;
+      await nav.openApp(t, s,
+          route: '/production/project?projectId=$productionProjectId');
+      expect(
+          find.text(
+              '当前待办：${state == 'STARTED' ? '审阅并确认当前最终成片' : state == 'PAUSED' ? '查看原项目问题与处理记录' : '核对取消与实际退款'}'),
+          findsOneWidget);
+      expect(find.text('已确认 0/4 个阶段'), findsOneWidget);
+      await reveal(t, find.text('该正式版本已明确收讫；版本验收仍另行核对。'));
+      await reveal(t, find.textContaining('约定款项已收齐；已核实收款'));
+      if (state != 'STARTED') {
+        expect(find.text('当前待办：审阅并确认当前最终成片'), findsNothing);
+      }
+      expect(
+          a.requests.where((r) =>
+              r.method == 'POST' && r.path.startsWith('/api/v1/production/')),
+          isEmpty);
+      expect(a.requests.where((r) => r.path.endsWith('/content')), isEmpty);
+      expect(t.takeException(), isNull);
+    });
+  }
+
   for (final refreshFails in [false, true]) {
     testWidgets('最终原片读取保存后刷新履约，刷新失败=$refreshFails 不误报下载失败', (t) async {
       final oldPicker = FilePickerPlatform.instance, picker = _SavingPicker();

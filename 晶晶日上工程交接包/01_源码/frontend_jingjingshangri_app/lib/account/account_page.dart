@@ -493,6 +493,17 @@ class _AccountPageState extends State<AccountPage> {
                             icon: Icons.copy),
                         _button('退出登录', _logout, icon: Icons.logout),
                       ]),
+                      _button(
+                          '隐私与使用偏好',
+                          () => Navigator.pushNamed(
+                              context, '/privacy?view=preferences'),
+                          icon: Icons.tune),
+                      _button(
+                          '申请更正本人展示名',
+                          () => Navigator.pushNamed(
+                              context, '/privacy?view=correction'),
+                          icon: Icons.edit_outlined),
+                      _small('偏好单独保存。展示名更正按本人申请处理，提交申请不表示资料已修改；手机号不能在此变更。'),
                     ],
                     subtitle: '管理账号、机构和成员，按授权阅读保存的合同。'),
                 const Text('选择办事身份',

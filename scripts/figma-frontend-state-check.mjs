@@ -2,7 +2,7 @@
 import assert from'node:assert/strict';import{readFile,writeFile,mkdir}from'node:fs/promises';import{createRequire}from'node:module';import{createHash}from'node:crypto';import{resolve,join}from'node:path';
 const f=JSON.parse(await readFile(process.env.V5_ACCESS_FILE,'utf8'));assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
 const {chromium}=createRequire(resolve('晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
-const out=resolve('docs/testing/evidence/figma-frontend-restore-20261023/last-details/error-final');await mkdir(out,{recursive:true});
+const out=resolve(process.env.FIGMA_STATE_OUTPUT||'docs/testing/evidence/figma-frontend-restore-20261023/last-details/error-final');await mkdir(out,{recursive:true});
 const sha=b=>createHash('sha256').update(b).digest('hex'),bundle=sha(await readFile('晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/.local/figma-browser-final/main.dart.js'));
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),errors=[],writes=[],shots=[],results=[];
 try{
@@ -20,6 +20,7 @@ try{
   if(mode==='delay'){for(let i=0;i<100&&!intercepted;i++)await p.waitForTimeout(100);assert(intercepted>0);await p.waitForTimeout(250);}else{await p.waitForLoadState('networkidle');await p.waitForTimeout(250);}
   const text=await p.locator('body').ariaSnapshot();assert(intercepted>0);assert(!text.includes('当前筛选没有仍有效的已审公开通告。'));assert(!text.includes('当前没有本类型的可读记录。'));
   if(mode==='401')assert(!text.includes('Synthetic film recruitment'));
+  if(mode==='503'){assert(text.includes('读取'));assert(!text.includes('本次操作结果待核对'));assert(!text.includes('恢复原请求核对'));}
   const file=name+'.png',bytes=await p.screenshot();await writeFile(join(out,file),bytes);shots.push({file,case:name,width:390,figmaIds:[id],sourceBundleSha256:bundle,sha256:sha(bytes),stateControl:mode==='delay'?'实际GET延迟后放行':'受控HTTP'+mode+'故障；不是正式服务状态'});results.push({name,route,mode,intercepted,text});
   release();await p.waitForLoadState('networkidle');await ctx.close();console.log(name+' CAPTURED');
  }

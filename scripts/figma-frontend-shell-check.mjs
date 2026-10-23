@@ -9,7 +9,7 @@ const root=process.cwd(), f=JSON.parse(await readFile(process.env.V5_ACCESS_FILE
 assert(f.synthetic_only && new URL(f.base_url).hostname==='127.0.0.1');
 const {chromium}=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
-const out=resolve('output/playwright/figma-frontend-restore/shell');await mkdir(out,{recursive:true});
+const out=resolve(process.env.FIGMA_SHELL_OUTPUT||'output/playwright/figma-frontend-restore/shell');await mkdir(out,{recursive:true});
 const bundleSha=createHash('sha256').update(await readFile(join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/.local/figma-browser-final/main.dart.js'))).digest('hex');
 const results=[],errors=[],writes=[];
 const secret=Object.values(f.accounts).map(v=>v.bearer_token);
@@ -42,6 +42,12 @@ try{
   for(let n=1;n<=4;n++){
    await page.getByRole('tab',{name:['','试镜','通告','消息','我的'][n],exact:true}).click();
    await page.waitForLoadState('networkidle');await page.waitForTimeout(250);await shot(page,['','audition','notices','messages','my'][n]+'-'+width);
+   if(n===3){
+    for(const [label,suffix] of [['投稿意向','submissions'],['活动投票','activities'],['系统通知','system']]){
+     await page.getByRole('button',{name:label,exact:true}).click();
+     await page.waitForTimeout(200);await shot(page,'messages-'+suffix+'-'+width);
+    }
+   }
   }
   await ctx.close();
  }

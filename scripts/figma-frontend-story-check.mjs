@@ -5,6 +5,8 @@ import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {join,resolve} from 'node:path';
 const suite=process.env.FIGMA_FOUNDATION_SUITE||'story';assert(['story','extra'].includes(suite));
+const fixtureGroup=process.env.FIGMA_FIXTURE_GROUP||(suite==='story'?'story':'r05r12');
+assert(['story','r05r12','artists','delivery'].includes(fixtureGroup));
 const f=JSON.parse(await readFile(suite==='story'?process.env.CUSTOMIZATION_ACCESS_FILE:process.env.V5_ACCESS_FILE,'utf8'));
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
 const {chromium}=createRequire(join(process.cwd(),'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
@@ -50,7 +52,7 @@ for(const width of widths)for(const [name,role,route,figmaId]of matrix){
  page.on('request',r=>{const u=new URL(r.url());if(r.url().startsWith(f.base_url)&&!['GET','OPTIONS','HEAD'].includes(r.method()))writes.push({method:r.method(),path:u.pathname});if(u.protocol.startsWith('http')&&u.hostname!=='127.0.0.1')external.push({name,url:r.url()});});
  page.on('response',r=>{if(r.url().startsWith(f.base_url))network.push({path:new URL(r.url()).pathname,status:r.status()});});
  try{
-  await page.goto(`http://127.0.0.1:5500/?fixtureGroup=${suite==='story'?'story':'r05r12'}&fixtureRole=${role}#${route}`);
+  await page.goto(`http://127.0.0.1:5500/?fixtureGroup=${fixtureGroup}&fixtureRole=${role}#${route}`);
   await page.locator('flt-semantics-placeholder').waitFor({state:'attached'});await page.locator('flt-semantics-placeholder').evaluate(e=>e.click());
   await page.getByRole('heading').first().waitFor();await page.waitForLoadState('networkidle');
   if (['story-new-family','story-new-life','story-attachment-blocked'].includes(name)) {

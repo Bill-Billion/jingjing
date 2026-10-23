@@ -1,0 +1,339 @@
+{
+  "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+  "synthetic_only": true,
+  "normal_entrypoint": true,
+  "login": "真实隔离短信HTTP登录；仅登录过程允许auth写入，截图阶段无业务写入",
+  "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+  "results": [
+    {
+      "name": "settlement-detail",
+      "route": "/finance/record?recordId=e6c078f8-2ecf-4030-875f-5b21dc3b5853",
+      "figmaId": "2004:2726",
+      "text": "- button \"Back\"\n- heading \"确认结算单\" [level=2]\n- group:\n  - heading \"原约定 / 真实凭据 结算单详情\" [level=2]\n  - text: 本人已确认本版 按本版原约定核对本人可见份额。确认不代表真实付款，实付与税费另行核验。\n  - textbox \"本期本人应得 本版原始结算快照中的本人份额\" [disabled]\n  - textbox \"已核实调整\" [disabled]\n  - textbox \"本人已核实付款 以已核实的实际付款凭据为准\" [disabled]\n  - textbox \"尚未付款\" [disabled]\n  - group \"结算期间\":\n    - textbox [disabled]\n    - textbox [disabled]\n    - button \"查看本次来源\"\n    - button \"准确版本与原始依据\"\n  - text: 规则说明 规则版本 约定结算时间 可结算条件\n- button \"提出结算异议\"\n- button \"查看原始约定\"\n- text: 验证码已发送，请查收短信",
+      "network": [
+        {
+          "path": "/api/v1/auth/sms-challenges",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/sessions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/agreements",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853/confirmations",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "settlement-awaiting-confirmation",
+      "route": "/finance/record?recordId=51ff2c6d-0ed6-4519-9a04-f5147eb8670b",
+      "figmaId": "2004:2726",
+      "text": "- button \"Back\"\n- heading \"确认结算单\" [level=2]\n- group:\n  - heading \"原约定 / 真实凭据 结算单详情\" [level=2]\n  - text: 结算核对中 · 待本人确认 按本版原约定核对本人可见份额。确认不代表真实付款，实付与税费另行核验。\n  - textbox \"本期本人应得 本版原始结算快照中的本人份额\" [disabled]\n  - textbox \"已核实调整\" [disabled]\n  - textbox \"本人已核实付款 以已核实的实际付款凭据为准\" [disabled]\n  - textbox \"尚未付款\" [disabled]\n  - group \"结算期间\":\n    - textbox [disabled]\n    - textbox [disabled]\n    - button \"查看本次来源\"\n    - button \"准确版本与原始依据\"\n  - text: 规则说明 规则版本 约定结算时间 可结算条件\n- button \"提出结算异议\"\n- button \"查看原始约定\"",
+      "network": [
+        {
+          "path": "/api/v1/auth/sms-challenges",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/sessions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/agreements",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853/confirmations",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/51ff2c6d-0ed6-4519-9a04-f5147eb8670b",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/2521a2f6-8bc9-4bf1-b320-849e7c7b4b0c",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/51ff2c6d-0ed6-4519-9a04-f5147eb8670b/confirmations",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "payout-application",
+      "route": "/finance/payout/new?agreementId=aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+      "figmaId": "2004:2818",
+      "text": "- button \"Back\"\n- heading \"申请付款\" [level=2]\n- group:\n  - heading \"本人确认 / 按原约定办理 收益收款申请\" [level=2]\n  - text: 当前可申请 ¥30.00 这是当前约定下本人的可付金额，不包含消费钱包余额。\n  - textbox \"收款主体 当前主体 本次申请的收款主体为当前登录身份，收款资料另行核验。\" [disabled]\n  - button \"复制当前主体\"\n  - textbox \"申请金额 申请金额（元） 金额精确到分，不默认填写额度；并发申请共同占用当前可付金额。\"\n  - text: 16 characters remaining\n  - group \"收款资料 上传私有收款资料，仅用于本次付款核验。 PDF、TXT、JPG、PNG、WAV、MP3、MP4、BIN · 每个不超过 8 MiB · 当前身份私有\":\n    - button \"选择并上传文件\"\n  - textbox \"备注 备注\"\n- button \"查看收款记录\"\n- button \"提交付款申请\" [disabled]",
+      "network": [
+        {
+          "path": "/api/v1/auth/sms-challenges",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/auth/sessions",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/agreements",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853/confirmations",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/51ff2c6d-0ed6-4519-9a04-f5147eb8670b",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/2521a2f6-8bc9-4bf1-b320-849e7c7b4b0c",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/51ff2c6d-0ed6-4519-9a04-f5147eb8670b/confirmations",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/records/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/finance/agreements/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b/balances",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "settlement-detail-0.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "9b510a126e98883d011def2d3bad349f599052565d898b627d1c1c3d3ea63d2f"
+    },
+    {
+      "file": "settlement-detail-1.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "f8817c762c59ea4660bc4ccf31d1aa6e6a4d5156ecb43a72b3f9ee54c8df3625"
+    },
+    {
+      "file": "settlement-detail-2.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "01d9db2fc8c9a0b46f229d81b85a81b103029153a31ffe19185c4745ed9fc50e"
+    },
+    {
+      "file": "settlement-detail-3.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "61cbc5681307e8f6d11943b83316d14c1b963108a85b900273c71f0dcd8691f7"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-0.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "6ba2660c69cc9beec1a7d3095561541c7adc517761bf5090c26e4fe9541a6195"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-1.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "be44270f9b3152de2ab4b70e0f1274fc24ad06b7b65443755f557517871e22eb"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-2.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "d5a95f82b39ed81ebb50a4b2be049c40a84b1f2fc5108d9a7e9f3c8698f02a17"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-3.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "c52deb97758fdc69e100d159f238829c3d1ad0d2f3f8e74dd4c9a8334563e407"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-4.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "d229f112eae86cc842d526a6bf7a278408247b8f6481bdc2168db4114bee92db"
+    },
+    {
+      "file": "payout-application-0.png",
+      "case": "payout-application",
+      "width": 320,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "8af55b5ffa2e64d8a95ef34a5590b400763e35be828982243e2736db5924c542"
+    },
+    {
+      "file": "payout-application-1.png",
+      "case": "payout-application",
+      "width": 320,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "6b2b111942fefe4ac0e52353446f29601d6d5ceb972c8bf01d9e02440f8830da"
+    },
+    {
+      "file": "payout-application-2.png",
+      "case": "payout-application",
+      "width": 320,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "e3361b23d5b2ecd47cc9858599f229681ae72b3b8180d622cef1728390c2afc6",
+      "sha256": "95a2db9afe9dfc988a92abe4fc502d485404568aebb38518bb78698f4943e018"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/v1/auth/sms-challenges",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/sessions",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/agreements",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/e6c078f8-2ecf-4030-875f-5b21dc3b5853/confirmations",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/51ff2c6d-0ed6-4519-9a04-f5147eb8670b",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/2521a2f6-8bc9-4bf1-b320-849e7c7b4b0c",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/51ff2c6d-0ed6-4519-9a04-f5147eb8670b/confirmations",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/records/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/finance/agreements/aff2dcc3-92c5-4d17-aa38-d32dc9f0d92b/balances",
+      "status": 200
+    }
+  ],
+  "business_writes": [],
+  "errors": []
+}
