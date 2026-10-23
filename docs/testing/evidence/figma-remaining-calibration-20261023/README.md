@@ -1,29 +1,31 @@
-# 其余Figma页面：校准准备与额度阻塞
+# 其余Figma页面原稿对照与验收
 
-2026-10-23，Experience。本轮任务是按最早“先锋电影刊物”原稿校准其余页面，保留最新V5需求及现有业务流程，逐页截图检查后更新原文件。
+2026-10-23，原文件 `4W24XKo6ODW5JD8lBAyuDj`，页面 `0:1`。本次使用正常Figma网页编辑，不使用MCP。
 
-**当前未完成：用户已要求改用正常网页编辑，原文件已打开，当前等待网页登录。剩余100幅画面尚未修改、尚未视觉验收。** 网页当前停在已有账号的密码登录框，实际编辑和导出能力需登录后验证。MCP调用额度用尽保留为历史原因，本次不再以恢复MCP额度作为继续工作的前提。
+原有100幅逐页核对：44幅修正、56幅保留；新增1幅当前晶钻活动详情，最终节点为 `2064:2976`。此前广场与视频频道两幅单独交付，本包排除。新活动页曾用临时ID `2056:2906`，移至根级后重新导出，PNG逐字节相同，不重复计数。
 
-## 已准备的内容
+打开[index.html](index.html)，可按板块和名称筛选，点击完整长图，逐页对照三张最早原稿。直接构图对应与视觉语言适配分别标明。每张联系表最多四幅，使用原始PNG像素；联系表只是排放证据，不改原图。
 
-[打开准备图册](index.html) · [完整页面清单](SCREEN_INVENTORY.json) · [逐页待核对项](REVIEWS.json) · [阻塞与恢复记录](TASK_STATE.json)
+- `SCREEN_INVENTORY.json`：原102幅基线清单；`ADDED_SCREENS.json`：新增24A。
+- `before/`：100幅原状截图；`after/`：45幅本次修正或新增后的原生导出。未修改56幅的当前证据直接引用原图，不能称为45幅以外的“修改后导出”。早期试镜、我的保留原390宽截图，其余大多为网页内置780宽2倍PNG。
+- `REVIEWS.json`：最终逐页状态、原稿对应、实际改动、当前PNG、SHA及视觉/业务记录来源。原状发现和修正后结论分开保留。
+- `QA_*.json`：本侧实际看图记录。原状视觉和业务各覆盖100幅；修改后视觉/业务各40幅，晶钻专项另5幅。静态检查不证明App、正式服务或完整交互。
+- `WEB_EDITS.json`、`STRUCTURAL_EDITS.json`：原生文字及布局操作。编辑日志包含临时文字和图外开发说明，不以条数冒充不同页面数量。
+- `WEB_EXPORTS.json`：实际网页导出历史，含中间版本及旧临时节点；当前有效截图以REVIEWS为准。
+- `DISABLED_CONTROLS.json`、`ACTIVITY_DISABLED_CONTROLS.json`：7个关闭入口的外观与Prototype属性核对；`PROTOTYPE_CHECKS.json`：3条新增动作，未宣称运行验证或完整原型覆盖。
+- `VERSION_HISTORY.json`与`web-proof/version-history.png`：校准前、复核稿及最终命名版本的网页保存核对。
+- `MANIFEST.json`、`VALIDATION.json`：图片哈希、来源、结构与链接检查。它们本身不替代逐页看图。
 
-原文件现有102幅页面及频道/状态。主页与视频频道两幅已在上一轮完成，本轮排除；其余100幅已识别实际节点、所在板块和原尺寸。已保存3张真实修改前截图：[试镜](before/2-72.png)、[我的](before/2-81.png)、[登录](before/22-541.png)。其余页面还未获得本轮修改前截图；修改后截图及本轮验收通过均为0。
+图中人物、统计、金额和影像属于设计示例，不表示已经查得真实业务资料。当前无开放活动/目录是设计默认态，不能当作正式服务查询结果；已审活动、制作金、公示投票、付款、本人授权等仍由原业务控制。
 
-三张最早原稿分别为[首页与发现](contact/reference-01.png)、[详情与我的](contact/reference-02.png)、[任务与反馈](contact/reference-03.png)，原文件来自项目`output/imagegen/app-experimental-v3`。它们直接提供六个画面；其他业务页面按视觉语言适配，不能冒称原稿有对应专屏或逐像素一致。原稿复制件、截图及联系表保留原像素，图片校验见[清单](MANIFEST.json)。
+Figma原生图层已更新。App、运营网页、后端和接口未改；用户及同事人工审阅尚未进行。证据保存在本地任务分支，没有据此更新GitHub PR或宣称远端自动检查通过。
 
-## 继续时的视觉与业务检查
+重建图册：
 
-目录以黑色刊头、交错大图和错位宋体为参考；“我的”采用上黑下纸、巨大单字与功能目录；任务采用图文对照、黑色待办条及细线进度；反馈采用黑色播放器与纸色意见区。表单、消息、付款和合同保留紧凑可读的事实与字段，不统一添加海报或装饰大图。
+```sh
+/Users/yanghaoran/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 docs/testing/evidence/figma-remaining-calibration-20261023/build_gallery.py
+python3 scripts/collaboration_check.py --render
+python3 scripts/collaboration_check.py
+```
 
-最新业务依据[已确认决定](../../../collaboration/DECISIONS.md)、[当前前端交接](../../../collaboration/V5_R05_R12_FRONTEND_HANDOFF.md)、[完成补充交接](../../../collaboration/V5_COMPLETION_HANDOFF.md)和[隐私交接](../../../collaboration/V5_PRIVACY_HANDOFF.md)。保留最新五栏、普通买家故事、现货个人许可、本人逐项同意及隐私办理；定制30%首款、正式预览确认后补60%、成片确认和尾10%后下载，人工样片独立50/50且不用制作金。共创满20是不可提现服务额度。旧五栏、自助即时出片、付费即认证、陌生自由私信和演示付款事实均不恢复。
-
-图册内的构图与业务条目是恢复后的待核对清单，不是已完成的检查。尚未读取的页面正文不能凭清单推断已经符合最新需求。原有原型行为尚未重新检查，也未宣称完整可点击原型。
-
-## 历史额度阻塞与当前网页接续
-
-工具原文：`You've reached the Figma MCP tool call limit on the Starter plan.` `whoami`已核实当前是Full席位、Starter套餐。Figma官方说明可通过升级文件所属团队的套餐及适用席位提高额度，见[调用额度说明](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/)。本次未发起付费升级。
-
-用户明确要求不用MCP、直接通过网页修改。Experience已打开原文件，当前浏览器会话停在密码登录框，未保存或读取密码。用户完成网页登录后，由Experience检查正常编辑及导出能力，继续读取正文、保存修改前证据，按类别校准原生可编辑图层，逐页截图、修复、验收并更新原文件。Core此次没有新增接口工作，既有后端阻断仍按原清单处理。App、网页业务代码、后端、合同接口、PR、共同版本和部署均未改。
-
-准备图册可在本目录运行`python3 build_gallery.py`重建，需要已有Pillow；已经包含本地原稿复制件，不依赖原图的外部绝对路径。任务尚未完成，本记录仅保存进度与恢复入口。
+执行目录为本工作树；图片与QA文件均已随包保存，不依赖登录态或MCP。原稿优先使用本包内文件，缺失时才查项目原始素材目录。
