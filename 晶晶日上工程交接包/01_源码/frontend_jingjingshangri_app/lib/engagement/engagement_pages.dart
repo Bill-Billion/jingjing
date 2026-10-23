@@ -773,7 +773,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               communityMoney(d['total_accrual_minor'])),
           appNotice('应计收入并非实际出款；换绑机构不改写原合同与历史记录。'),
           if (d['staff_scope_limited'] == true)
-            appNotice('本页仅显示已明确派给你的订单，不展开全机构经营关系和总额。更多按艺人授权的收入范围需服务器进一步提供依据。'),
+            appNotice('本页仅显示有效艺人授权范围内、已明确派给你的订单；这里的金额不代表全机构收入。'),
           if (d['truncated'] == true)
             appNotice('记录较多，当前展示有数量上限；完整核对请在机构网页工作台办理。'),
           for (final r in communityRows(d['orders']))

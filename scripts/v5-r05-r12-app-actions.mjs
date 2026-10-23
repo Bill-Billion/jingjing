@@ -10,13 +10,13 @@ assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
 const phase=process.env.V5_APP_PHASE||'business';assert(['business','cross','conversation-readback','coupon-cancel'].includes(phase));
 const out=resolve('output/playwright/v5-r05-r12/app');await mkdir(out,{recursive:true});
 const {chromium}=createRequire(join(process.cwd(),'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
-const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const secrets=Object.values(f.accounts).map(a=>a.bearer_token),redact=v=>secrets.reduce((s,t)=>s.replaceAll(t,'[redacted]'),String(v));
 const hash=v=>createHash('sha256').update(v||'').digest('hex');
 const checks=[],screenshots=[],network=[],writes=[],errors=[],created={};let context,page,failure;
 const check=(name,test=true)=>{assert(test,name);checks.push({name,result:'PASS'});console.log('PASS '+name);};
 async function api(path,role){const a=f.accounts[role],r=await fetch(f.base_url+path,{headers:{Authorization:'Bearer '+a.bearer_token,'X-Acting-Party':a.party_id},signal:AbortSignal.timeout(10000)});assert(r.ok,path+' '+r.status);return(await r.json()).data;}
-async function open(route,role){if(context)await context.close();context=await browser.newContext({locale:'zh-CN',viewport:{width:390,height:844},acceptDownloads:true});page=await context.newPage();page.setDefaultTimeout(15000);
+async function open(route,role){if(context)await context.close();context=await browser.newContext({locale:'zh-CN',viewport:{width:390,height:844},acceptDownloads:true});await context.route('**/*',route=>{const u=new URL(route.request().url());return /^https?:$/.test(u.protocol)&&u.hostname!=='127.0.0.1'?route.abort('blockedbyclient'):route.continue();});page=await context.newPage();page.setDefaultTimeout(15000);
  page.on('pageerror',e=>errors.push(redact(e.message)));page.on('console',m=>{if(/RenderFlex.*overflow|overflowed by|EXCEPTION CAUGHT/.test(m.text()))errors.push(redact(m.text()));});
  page.on('request',r=>{if(!r.url().startsWith(f.base_url)||['GET','OPTIONS'].includes(r.method()))return;writes.push({path:new URL(r.url()).pathname,method:r.method(),body_sha256:hash(r.postData()),key_sha256:hash(r.headers()['idempotency-key']),version:r.headers()['if-match']});});
  page.on('response',r=>{if(r.url().startsWith(f.base_url))network.push({role,path:new URL(r.url()).pathname,method:r.request().method(),status:r.status()});});
@@ -25,7 +25,7 @@ async function open(route,role){if(context)await context.close();context=await b
 const button=name=>page.getByRole('button',{name,exact:true});
 async function reveal(target){for(let n=0;n<70;n++){const b=await target.count()?await target.first().boundingBox():null;if(b&&b.y+b.height/2>58&&b.y+b.height/2<834)return b;await page.mouse.move(190,410);await page.mouse.wheel(0,b?.y<58?-320:320);await page.waitForTimeout(65);}throw Error('Control not visible: '+await target.toString());}
 async function press(target){const b=await reveal(target);await page.mouse.click(b.x+b.width/2,b.y+b.height/2);await page.waitForTimeout(180);}
-async function fill(label,value){const t=page.getByRole('textbox',{name:label,exact:true});await press(t);await page.keyboard.press('Meta+A');await page.keyboard.type(value,{delay:1});await page.keyboard.press('Tab');}
+async function fill(label,value){const t=page.getByRole('textbox',{name:label,exact:true});await press(t);await t.fill(value);await page.keyboard.press('Tab');}
 async function shot(name,source,note=''){await page.waitForLoadState('networkidle');await page.evaluate(async()=>{await document.fonts.ready;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});await page.waitForTimeout(500);const file=name+'.png';await page.screenshot({path:join(out,file)});screenshots.push({file,route:new URL(page.url()).hash.slice(1),source,note,width:390,height:844,sha256:hash(await readFile(join(out,file)))});}
 async function confirm(name='确认办理'){await page.getByRole('alertdialog').waitFor();await press(button(name));await page.waitForLoadState('networkidle');}
 async function signer(id,role,income=false){await open(`/projects/${income?'income':'participation'}?view=agreement&recordId=${id}`,role);const before=await api('/projects/records/'+id,role),confirmed=(await api('/projects/records/'+id+'/confirmations',role)).items.some(c=>c.party_id===f.accounts[role].party_id&&c.decision==='APPROVED'&&c.content_sha256===before.content_sha256);if(confirmed){check(`${income?'发行':'参演'} ${role} 原会签仍可独立读取`);await shot('action-'+(income?'income':'participation')+'-'+role,'38-custom-extra.png');return;}await fill('本人会签意见','本人已核对隔离原约定、金额、权利及本次版本');await press(page.getByRole('checkbox',{name:'我已阅读全部原条款、金额、分成及变更影响，确认这一份版本',exact:true}));await press(button('本人同意本次约定'));await page.waitForLoadState('networkidle');const r=await api('/projects/records/'+id,role),cs=await api('/projects/records/'+id+'/confirmations',role);check(`${income?'发行':'参演'} ${role} 独立会签后读取原文证据`,cs.items.some(c=>c.party_id===f.accounts[role].party_id&&c.decision==='APPROVED'&&c.content_sha256===r.content_sha256));await shot('action-'+(income?'income':'participation')+'-'+role,'38-custom-extra.png');}
@@ -39,7 +39,7 @@ try{
   await reveal(button('确认本次交付通知已读'));const unreadDisabled=await button('确认本次交付通知已读').isDisabled();await reveal(button('明确确认本次文件已收到'));check('未播放时通知与收件不可办理',unreadDisabled&&await button('明确确认本次文件已收到').isDisabled());
   await press(button('受控播放已购作品'));await button('暂停预览').waitFor();await page.waitForTimeout(250);
   check('现货私有MP4在App实际解码播放',await page.locator('video').evaluateAll(v=>v.some(x=>x.readyState>=2&&x.currentTime>0)));await shot('action-'+stockKey+'-playing','12-artist-stock-producer.png','合成色条，只证明受控文件接线和实际解码');
-  await press(button('确认本次交付通知已读'));await page.waitForLoadState('networkidle');await press(button('明确确认本次文件已收到'));await confirm();
+  await press(button('确认本次交付通知已读'));await page.waitForLoadState('networkidle');await page.waitForTimeout(500);await press(button('明确确认本次文件已收到'));await confirm();
   let p=await api('/stock/purchases/'+stock.order_id,'stock_buyer');check('明确收件是服务器实际记录',!!p.data.receipt_at);await shot('action-'+stockKey+'-receipt','39-story-top.png');
   await press(button('确认本次个人许可交付'));await confirm();p=await api('/stock/purchases/'+stock.order_id,'stock_buyer');check('个人许可明确验收保留原合同',!!p.data.accepted_at&&p.data.acceptance_method==='BUYER_EXPLICIT');await shot('action-'+stockKey+'-accepted','39-story-top.png');
   }
@@ -84,7 +84,7 @@ try{
    ['notice-case','notices_seller','/notices/record?recordId='+ids.notice_case_id,'/notices/records/'+ids.notice_case_id],
    ['privacy','buyer','/privacy?view=request&recordId='+ids.privacy_request_id,'/privacy/requests/'+ids.privacy_request_id],
    ['mcn-accepted','mcn_staff','/auditions/booking?bookingId='+ids.mcn_booking_id,'/auditions/records/'+ids.mcn_booking_id]]){
-   await open(route,role);check('Web到App同记录 '+name,network.some(n=>n.role===role&&n.path==='/api/v1'+path&&n.status===200));await shot('cross-'+name,name==='mcn-accepted'?'21-audition-top.png':'40-states-a-top.png','同一旧会话50143内Web实际办理记录');
+   await open(route,role);check('Web到App同记录 '+name,network.some(n=>n.role===role&&n.path==='/api/v1'+path&&n.status===200));await shot('cross-'+name,name==='mcn-accepted'?'21-audition-top.png':'40-states-a-top.png','同一隔离会话内Web实际办理记录');
   }
   await signer(ids.income_agreement_id,'buyer',true);await signer(ids.income_agreement_id,'producer',true);created.income_agreement_id=ids.income_agreement_id;
  }

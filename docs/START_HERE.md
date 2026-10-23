@@ -32,6 +32,8 @@
 
 ---
 
+当前2026-10-22本侧承接PR33与PR34在worktrees/frontend-followup、core/v5-frontend-followup。关键追加报价/员工权限修复及本机复验完成，准备集中上传、远端检查后按用户授权合入integration；尚不等于全部业务或正式服务已验收。先读docs/testing/FRONTEND_FOLLOWUP_20261022.md和双方CURRENT，后续最终状态以本轮POST_MERGE为准。以下入口保留历史。
+
 # 当前入口：第5—12轮前端集中交付
 
 2026-10-22，Bill-Billion在`ux/v5-r05-r12-frontend`完成第5—12轮App与运营/MCN网页，沿用“先锋电影刊物”原稿语言、原业务及接口。用户已明确选择继续制作并单列后端阻断。起点第四轮`11abe25`，依赖尚未合入的[PR33](https://github.com/Bill-Billion/jingjing/pull/33)；共同版本仍为`integration/2608ef7`，已包含前两轮和第三轮。
