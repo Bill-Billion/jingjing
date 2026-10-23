@@ -1,4 +1,4 @@
-当前任务为2026-10-23其余100幅Figma页面校准，分支`ux/figma-remaining-calibration-20261023`。只读盘点已完成，Starter套餐MCP额度已用尽；100幅尚未修改或视觉验收，上一轮主页两幅已完成。额度恢复后按docs/tasks/records/UX-figma-remaining-calibration-20261023.md继续；不得把准备清单当通过结果或通过其他通道规避额度。以下记录保留各自日期。
+当前任务为2026-10-23其余100幅Figma页面校准。用户现已明确要求正常网页编辑、不使用MCP，恢复MCP额度不再作为前提。原文件已打开，当前需在网页完成账号登录；编辑、保存与导出能力尚待验证，100幅尚未修改或视觉验收。按docs/tasks/records/UX-figma-remaining-calibration-20261023.md继续，保留已完成主页、最新业务和正常网页登录权限边界。以下记录按日期区分历史。
 
 当前任务为2026-10-23的Figma主页原稿校准，文档分支`ux/figma-home-calibration-20261023`。原文件的广场与视频频道已更新，本侧截图检查通过；App与网页业务源码未改，其他页面未按此次最早原稿重新验收。先读docs/tasks/records/UX-figma-home-calibration-20261023.md及docs/ux/gallery-implementation-standard.md。以下前端批次、审阅和远端状态保留各自日期，不能当成本次重新核对。
 
