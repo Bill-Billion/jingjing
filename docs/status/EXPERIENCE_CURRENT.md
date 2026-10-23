@@ -4,7 +4,7 @@ App现有业务页和Web14个工作区已按校准后的“先锋电影刊物”
 
 [逐页原稿对照](../testing/evidence/figma-frontend-restore-20261023/index.html) · [需求与设计问题报告](../reviews/figma-frontend-restore-20261023/REPORT.md) · [本轮任务、双方范围及检查](../tasks/records/UX-figma-frontend-restore-20261023.md)。报告含16类已修问题和24类仍待明确事项；**不代表103幅全部逐像素一致或所有业务开放**。同事实际审阅、真机及正式服务验收待进行，PC无逐屏稿，字体和部分整页版式差异已单列。
 
-本轮基于integration/0bd350d，保留PR35修复，服务器/数据库/接口未改；准备按阶段上传独立ux分支并提交integration草稿申请。未合入共同版本或main、未部署。以下记录各保留其日期，不能代替本轮状态。
+本轮基于integration/0bd350d，保留PR35修复，服务器/数据库/接口未改；已按阶段上传独立ux分支并提交[草稿PR36](https://github.com/Bill-Billion/jingjing/pull/36)；远端检查以申请当前提交为准。未合入共同版本或main、未部署。以下记录各保留其日期，不能代替本轮状态。
 
 ---
 

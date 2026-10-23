@@ -1,4 +1,4 @@
-当前任务2026-10-23：新版前端还原本地检查已完成；103幅逐一映射，App491/Web297与静态检查、普通网页构建通过。主报告docs/reviews/figma-frontend-restore-20261023/REPORT.md，逐页646张App选图与174张Web图在对应evidence。16类问题已修、24类需求/设计差异待明确，不能称全103逐像素通过。准备集中交付ux/figma-frontend-restore-20261023至integration；未合入或部署，同事未实际审阅。下方保留原设计阶段及历史。
+当前任务2026-10-23：新版前端还原本地检查已完成；103幅逐一映射，App491/Web297与静态检查、普通网页构建通过。主报告docs/reviews/figma-frontend-restore-20261023/REPORT.md，逐页646张App选图与174张Web图在对应evidence。16类问题已修、24类需求/设计差异待明确，不能称全103逐像素通过。已集中上传ux/figma-frontend-restore-20261023，草稿PR36目标integration；远端检查以当前申请为准。未合入或部署，同事未实际审阅。下方保留原设计阶段及历史。
 
 当前任务2026-10-23其余100幅Figma页面校准已完成：正常网页原位修正44幅、保留56幅，另补24A当前晶钻活动详情。100份原状及45份修改/新增后PNG已逐页检查；原生图层和最新V5业务保留。最终命名版本、任务和当前证据见docs/tasks/records/UX-figma-remaining-calibration-20261023.md。App、后端、接口及PR未改，仓库仅本地提交。下方登录、额度及“其他页面尚未校准”的阶段描述均为历史，不再作为当前状态。
 
