@@ -1,3 +1,11 @@
+# 当前入口：Figma主页按最早原稿校准
+
+2026-10-23，原文件的[Figma广场](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2-69)和[视频频道](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2004-5895)已更新，[原稿与前后截图](testing/evidence/figma-home-calibration-20261023/index.html)通过本侧检查。最新V5需求及现有业务入口保留；本次只更新主页设计，App业务代码未改，其他页面尚未重新校准，用户与同事尚未人工审阅。
+
+后续视觉执行[当前标准](ux/gallery-implementation-standard.md)，范围与分工见[本次记录](tasks/records/UX-figma-home-calibration-20261023.md)。仓库证据保存在本地分支，本次未修改PR33/PR34或重新核对远端；下面的功能、上传和审阅状态保留原日期。
+
+---
+
 # 当前入口：第5—12轮前端集中交付
 
 2026-10-22，Bill-Billion在`ux/v5-r05-r12-frontend`完成第5—12轮App与运营/MCN网页，沿用“先锋电影刊物”原稿语言、原业务及接口。用户已明确选择继续制作并单列后端阻断。起点第四轮`11abe25`，依赖尚未合入的[PR33](https://github.com/Bill-Billion/jingjing/pull/33)；共同版本仍为`integration/2608ef7`，已包含前两轮和第三轮。

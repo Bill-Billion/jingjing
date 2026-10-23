@@ -1,3 +1,15 @@
+# 2026-10-23：Figma主页已按最早原稿校准
+
+Experience已原位更新[Figma广场](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2-69)与[视频频道](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2004-5895)，保留最新五栏、城市/频道和现有业务入口。默认/上海两频道、城市浮层与完整业务目录截图已通过本侧检查；[查看原稿、修改前及修改后](../testing/evidence/figma-home-calibration-20261023/index.html)。
+
+本次是主页设计交付，App和网页业务代码未改，其他页面尚未按最早原稿重新校准；用户与同事尚未人工审阅。旧功能测试不自动证明符合这次明确的视觉基准。Figma更新已生效，仓库证据保存在独立本地分支，未修改PR33/PR34、合入或部署，也未重新核对其远端状态。
+
+后续Experience继续逐页校准设计，App实现另行登记；Core此次无需修改接口，既有后端阻断仍单列。没有代同事认领或宣称双方已同步审阅。[本次任务与分工](../tasks/records/UX-figma-home-calibration-20261023.md)。
+
+---
+
+以下为各自日期的历史状态，不能当成本次远端核对或新视觉验收。
+
 # 2026-10-22 17:58：PR33与PR34复核，等待同事实际审阅
 
 远端仍为PR33/`11abe25`和PR34/`b749b27`，共同版本integration/2608ef7未更新。PR33开放且为草稿，PR34开放待审并依赖PR33；核对时两个提交各8项检查通过。普通讨论、正式审阅、行内评论和审阅线程均为空；已请求chengcongcong222审阅，尚无批准。

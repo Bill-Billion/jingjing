@@ -1,3 +1,5 @@
+当前任务为2026-10-23的Figma主页原稿校准，文档分支`ux/figma-home-calibration-20261023`。原文件的广场与视频频道已更新，本侧截图检查通过；App与网页业务源码未改，其他页面未按此次最早原稿重新验收。先读docs/tasks/records/UX-figma-home-calibration-20261023.md及docs/ux/gallery-implementation-standard.md。以下前端批次、审阅和远端状态保留各自日期，不能当成本次重新核对。
+
 当前第5—12轮前端已完成本机范围并集中上传PR34（https://github.com/Bill-Billion/jingjing/pull/34），分支`ux/v5-r05-r12-frontend`，起点11abe25/PR33，integration仍2608ef7。用户2026-10-22授权继续并单列后端阻断。App461、Web297、分析及普通网页构建通过，404张最终截图与同记录跨端证据已整理并清理测试现场；Android Gradle下载网络阻塞单列。先读docs/START_HERE.md及docs/tasks/records/UX-v5-r05-r12-frontend-20261022.md，远端检查/同事审阅/合入分别核对。本批未推main或部署，以下记录为历史。
 
 当前前端第四轮在 `ux/v5-r04-production-frontend`，基于integration/2608ef7并继承已合入PR32。制作/付款/交付本机验收完成：App346、网页255、110张原稿对照截图；下载后履约状态刷新已修。Core仍需处理R04-CORE-01原故事追加报价409，未冒称整条追加链完成。先读docs/START_HERE.md、docs/testing/R04_FRONTEND_20261022.md及docs/tasks/records/UX-v5-r04-production-frontend-20261022.md。集中上传与实际审阅见该分支PR，未合入第四轮或部署。以下入口保留为历史。
@@ -42,12 +44,13 @@
 - 每次新增、更换或删除入口，检查所有受影响入口及返回路径；内部有效链接不能404。越权或不存在的业务记录仍按接口约定拒绝，不能为隐藏错误而放松权限。
 - 当前路线和具体验收方式见[导航与新版页面验收](docs/ux/navigation-acceptance.md)。
 
-## 页面视觉依据（2026-10-21按用户纠正更新）
+## 页面视觉依据（2026-10-23按最早原稿重新校准）
 
-- 当前业务与信息结构优先依据已确认V5、D1与[已保存的Figma画面](docs/reviews/v5-d1-intake/figma-evidence/README.md)。历史图册 `acd5f99 / design/full-ui-20260929` 继续提供未冲突的组件、字级与间距参考；按其manifest采用最终图片，不能恢复旧五栏或覆盖V5流程。
-- 本轮live Figma MCP因无编辑权限拒绝访问，未通过其他通道绕过该拒绝。按已存画面和现有组件实施；不得声称本轮验证了live Figma、原型连线或逐像素一致。已有存证是2026-10-15的只读画布分区截图，不是本轮新获取。
-- 前两轮App按“先锋电影刊物”原设计使用纸灰、墨黑、朱红、宋体标题、细线和方形控件。旧暖白铜橙组件不能覆盖新原稿；网页受影响工作区继承同一语言，缺PC原稿处明确为适配。不得新增虚构作品、人物或装饰营销横幅。
-- 每个页面记录图册映射，实际检查相关视口、主菜单与返回路径，保存真实界面证据。未开发业务不能用图册示例冒充已实现。具体尺寸与验收要求见[原图册实现标准](docs/ux/gallery-implementation-standard.md)。
+- 用户明确指定最早“先锋电影刊物”概念原稿为视觉基准；业务与信息结构继续依据最新V5、D1和现有业务流程。最早原图、真实在线修改前截图及新稿见[主页对照](docs/testing/evidence/figma-home-calibration-20261023/index.html)。历史图册只在不冲突处补充参考，不能恢复旧五栏或覆盖最新业务。
+- 2026-10-23新连接的有编辑权限账户已原位更新[广场主页](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2-69)与[视频频道](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2004-5895)。此前MCP权限拒绝属于历史状态。本次实际检查城市/频道状态、浮层及完整业务目录；原有原型连线为零，未扩称完整可点击原型。
+- 视觉必须核对不对称竖幅大图、错位大宋体、次级图文、黑色续办条，以及纸灰、墨黑、朱红、细线和方形控件。只换颜色和字体不能算符合原稿；旧暖白铜橙标准已被取代。中文采用可用的Noto Serif SC与Noto Sans SC，具体基准见[原图册实现标准](docs/ux/gallery-implementation-standard.md)。
+- 本次完成Figma主页设计，App与网页业务代码尚未按这份新主页实现，其他页面尚未重新校准。旧批次功能测试保持原范围，不能用其截图证明符合此次最早原稿。每页保存来源映射、真实截图及差异，照片示意不构成真实艺人、商品或交易事实。
+- 修正此前误判：匿名分区截图没有加载照片，有权限读取的修改前主页已存在大图和错位标题。不得继续声称旧Figma只参考配色和字体。用户及另一位同事的人工审阅尚未进行。
 
 ## 分工与协作
 
