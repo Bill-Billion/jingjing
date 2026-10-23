@@ -17,3 +17,5 @@
 撤回方式：本轮仅前端及文档/截图，可在分支回退本阶段提交；没有数据库升级或生产状态回滚。普通lib/main.dart构建不含截图夹具入口或凭据。本轮12个随机测试库已确认删除，全部6个测试端口关闭，临时账号运行凭据、私有构建和截图工作副本已清理；[收尾记录](../../testing/evidence/figma-frontend-restore-20261023/final-checks/CLEANUP.json)可核对。
 
 本轮已集中上传，唯一合并入口为[草稿PR36](https://github.com/Bill-Billion/jingjing/pull/36)，目标integration；实施提交d320173。远端自动检查请以申请当前提交的实际状态为准，不以本地结果冒充远端通过。同事尚未实际审阅，未合入integration/main、未部署。
+
+远端首轮App及两组服务器检查通过，网页运行在Azure镜像安装FFmpeg时长时间等待，已取消取回日志并修正CI安装源、下载超时和按需安装。此项不改页面、业务或依赖锁定版本，全部原浏览器用例保留；最新远端结论仍以PR当前提交为准。见[安装修正依据](../../testing/evidence/figma-frontend-restore-20261023/final-checks/CI_INSTALLATION_FIX.json)。
