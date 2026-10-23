@@ -1,0 +1,459 @@
+{
+  "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+  "captured_at": "2026-10-23T16:36:04.720Z",
+  "scope": "all",
+  "synthetic_only": true,
+  "served_build": {
+    "file": "main.dart.js",
+    "byte_size": 5641320,
+    "sha256": "e4853519b1c09fa8d492b89bd6b8d41252180bfb43bffb92db7177ad00d56594"
+  },
+  "fixture_sources": [
+    {
+      "group": "r05r12",
+      "access_file": ".local/v5-r05-r12-sandbox/jx_test_r05r12_99805_9f6c896123ec/access.json",
+      "api_base_url": "http://127.0.0.1:49212/api/v1",
+      "synthetic_media": null
+    },
+    {
+      "group": "artists",
+      "access_file": ".local/artists-sandbox/jx_test_artists_99749_32fde4cc7ae3/access.json",
+      "api_base_url": "http://127.0.0.1:49210/api/v1",
+      "synthetic_media": null
+    },
+    {
+      "group": "delivery",
+      "access_file": ".local/customization-delivery-sandbox/jx_test_delivery_99794_b235a780831e/access.json",
+      "api_base_url": "http://127.0.0.1:49214/api/v1",
+      "synthetic_media": "PLAYABLE_COLOR_BARS"
+    }
+  ],
+  "results": [
+    {
+      "case": "05-artist-form-avatar",
+      "group": "artists",
+      "role": "artist",
+      "route": "/artists/form?mode=AVATAR&personId=7c7b74ec-7fc3-44e5-bd25-ac704b892939&avatarId=a849eedb-60a9-4da4-8f54-8d708e468275",
+      "width": 390,
+      "references": [
+        {
+          "node_id": "2004:1487",
+          "name": "37 / 创建数字人",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-1487.png"
+        }
+      ],
+      "note": "数字人建档与付费创建请求分别办理；不提交。",
+      "checks": [],
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "scroll_stop": {
+        "reason": "identical_rendered_pixels",
+        "iteration": 1
+      }
+    },
+    {
+      "case": "17-artist-private-denied",
+      "group": "artists",
+      "role": "outsider",
+      "route": "/artists/person?personId=7c7b74ec-7fc3-44e5-bd25-ac704b892939",
+      "width": 390,
+      "references": [
+        {
+          "node_id": "2004:6502",
+          "name": "C08 / 公共状态 · 无查看权限",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-6502.png"
+        }
+      ],
+      "note": "无权账号不能保留本人私人资料。",
+      "checks": [],
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "width": 390,
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "顶部黑色播放器与正式版本信息；收讫、验收和付款条件互不替代。",
+      "checks": [
+        {
+          "name": "未审片版本实际409，不冒充可播放或已查看",
+          "result": "EXPECTED_REAL_API_DENIAL",
+          "content": [
+            {
+              "case": "38-production-review-pending_video",
+              "group": "delivery",
+              "role": "buyer",
+              "path": "/api/v1/production/versions/66f4538c-968a-4da6-8906-881571351fee/content",
+              "search": "?variant=preview",
+              "status": 409
+            }
+          ]
+        }
+      ],
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "scroll_stop": {
+        "reason": "identical_rendered_pixels",
+        "iteration": 3
+      }
+    },
+    {
+      "case": "44-production-private-denied",
+      "group": "delivery",
+      "role": "outsider",
+      "route": "/production/project?projectId=002d2d4f-1064-4d40-a218-bdcc24f042fe",
+      "width": 390,
+      "references": [
+        {
+          "node_id": "2004:6502",
+          "name": "C08 / 公共状态 · 无查看权限",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-6502.png"
+        }
+      ],
+      "note": "非项目成员不能读取私人制作详情。",
+      "checks": [],
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    }
+  ],
+  "shots": [
+    {
+      "case": "05-artist-form-avatar",
+      "file": "05-artist-form-avatar-top.png",
+      "route": "/artists/form?mode=AVATAR&personId=7c7b74ec-7fc3-44e5-bd25-ac704b892939&avatarId=a849eedb-60a9-4da4-8f54-8d708e468275",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:1487",
+          "name": "37 / 创建数字人",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-1487.png"
+        }
+      ],
+      "note": "数字人建档与付费创建请求分别办理；不提交。",
+      "capture_sha256": "baf24b47758057b7236395d3d905f8bfb11d43dce365a1f4edce9ccc748a02d0",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "17-artist-private-denied",
+      "file": "17-artist-private-denied-top.png",
+      "route": "/artists/person?personId=7c7b74ec-7fc3-44e5-bd25-ac704b892939",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:6502",
+          "name": "C08 / 公共状态 · 无查看权限",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-6502.png"
+        }
+      ],
+      "note": "无权账号不能保留本人私人资料。",
+      "capture_sha256": "e90c50d5b3493ec46eee258bde9007e0fd6714f8bc46b1518d9dfe8d2d85e7a7",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "file": "38-production-review-pending_video-top.png",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "顶部黑色播放器与正式版本信息；收讫、验收和付款条件互不替代。",
+      "capture_sha256": "bc7f8b7bb0754c2303ae86ea71ffbf50cbc7acda11c60bfb8c68ab8ef06da84c",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "file": "38-production-review-pending_video-scroll-01.png",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "顶部黑色播放器与正式版本信息；收讫、验收和付款条件互不替代。；连续滚动覆盖",
+      "capture_sha256": "28eea4aabc8d805913cac4a3e380e4c5113237b5a19edcdcac4d948c14a56265",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "file": "38-production-review-pending_video-scroll-02.png",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "顶部黑色播放器与正式版本信息；收讫、验收和付款条件互不替代。；连续滚动覆盖",
+      "capture_sha256": "03a14965b47f58eca5c71f80563002c1ae4ec502cd871a0f47de163bf5090e21",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "file": "38-production-review-pending_video-review-required-top.png",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "未审片版本真实409；不解码、不确认收讫、不验收、不提交业务。",
+      "capture_sha256": "88ddc6c2a794659468b0ca11f7e187374f762fa4140a085c9cbb3b0764eebe30",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "file": "38-production-review-pending_video-review-required-scroll-01.png",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "未审片版本真实409；不解码、不确认收讫、不验收、不提交业务。；连续滚动覆盖",
+      "capture_sha256": "14bf9ef0988ea716096822e7af4e097509756cfc61e04d24e299c87f5cccbd27",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "file": "38-production-review-pending_video-review-required-scroll-02.png",
+      "route": "/production/version?versionId=66f4538c-968a-4da6-8906-881571351fee",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:4000",
+          "name": "67 / 审片反馈与最终验收",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-4000.png"
+        }
+      ],
+      "note": "未审片版本真实409；不解码、不确认收讫、不验收、不提交业务。；连续滚动覆盖",
+      "capture_sha256": "f715856d1e1d735108aa7aaa4ac5ceab46255392b2f70aa2d1ba450e4bc99fea",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    },
+    {
+      "case": "44-production-private-denied",
+      "file": "44-production-private-denied-top.png",
+      "route": "/production/project?projectId=002d2d4f-1064-4d40-a218-bdcc24f042fe",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "references": [
+        {
+          "node_id": "2004:6502",
+          "name": "C08 / 公共状态 · 无查看权限",
+          "reference": "docs/testing/evidence/figma-remaining-calibration-20261023/after/2004-6502.png"
+        }
+      ],
+      "note": "非项目成员不能读取私人制作详情。",
+      "capture_sha256": "72668914f84e53551b2a95daed531aafb2aef316ef80f5617adad45ef031429a",
+      "result": "CAPTURED_PENDING_VISUAL_REVIEW"
+    }
+  ],
+  "read_requests": [
+    {
+      "source": "preflight",
+      "group": "artists",
+      "role": "artist",
+      "path": "/api/v1/artists/people/7c7b74ec-7fc3-44e5-bd25-ac704b892939",
+      "status": 200
+    },
+    {
+      "case": "05-artist-form-avatar",
+      "group": "artists",
+      "role": "artist",
+      "path": "/api/v1/me",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "05-artist-form-avatar",
+      "group": "artists",
+      "role": "artist",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20",
+      "status": 200
+    },
+    {
+      "case": "05-artist-form-avatar",
+      "group": "artists",
+      "role": "artist",
+      "path": "/api/v1/artists/people/7c7b74ec-7fc3-44e5-bd25-ac704b892939",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "17-artist-private-denied",
+      "group": "artists",
+      "role": "outsider",
+      "path": "/api/v1/me",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "17-artist-private-denied",
+      "group": "artists",
+      "role": "outsider",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20",
+      "status": 200
+    },
+    {
+      "case": "17-artist-private-denied",
+      "group": "artists",
+      "role": "outsider",
+      "path": "/api/v1/artists/people/7c7b74ec-7fc3-44e5-bd25-ac704b892939",
+      "search": "",
+      "status": 404
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/records/66f4538c-968a-4da6-8906-881571351fee",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/records/8019faaf-8757-4786-bdff-08326158fab0",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/projects/8019faaf-8757-4786-bdff-08326158fab0/records",
+      "search": "?limit=20&kind=FEEDBACK",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/projects/8019faaf-8757-4786-bdff-08326158fab0/fulfillment",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/records/66f4538c-968a-4da6-8906-881571351fee",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/records/5c449fe3-4121-40a4-b314-b458659a16ef",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "38-production-review-pending_video",
+      "group": "delivery",
+      "role": "buyer",
+      "path": "/api/v1/production/versions/66f4538c-968a-4da6-8906-881571351fee/content",
+      "search": "?variant=preview",
+      "status": 409
+    },
+    {
+      "case": "44-production-private-denied",
+      "group": "delivery",
+      "role": "outsider",
+      "path": "/api/v1/me",
+      "search": "",
+      "status": 200
+    },
+    {
+      "case": "44-production-private-denied",
+      "group": "delivery",
+      "role": "outsider",
+      "path": "/api/v1/me/parties",
+      "search": "?limit=20",
+      "status": 200
+    },
+    {
+      "case": "44-production-private-denied",
+      "group": "delivery",
+      "role": "outsider",
+      "path": "/api/v1/production/records/002d2d4f-1064-4d40-a218-bdcc24f042fe",
+      "search": "",
+      "status": 404
+    }
+  ],
+  "blocked_write_requests": [],
+  "page_errors": [],
+  "flutter_layout_errors": [],
+  "limitations": [
+    "真实Flutter Web Chromium截图，不声称iOS/Android真机验收。",
+    "所有外部写请求在浏览器端被阻断；未确认收讫、验收、付款、授权或退款。",
+    "缺图与缺乏可信媒体标识须按报告记录；合成像素/色条/不可播放字节不代表真实肖像或成片质量。",
+    "截图只有人工对照原PNG后才可更新为验收结论。"
+  ]
+}

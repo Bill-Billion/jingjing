@@ -291,9 +291,13 @@ void main() {
     await t.tap(find.text('获取验证码'));
     await frames(t);
     await t.enterText(find.byType(TextField).last, '123456');
-    await t.tap(find.byIcon(Icons.radio_button_unchecked_rounded));
+    FocusManager.instance.primaryFocus?.unfocus();
     await frames(t);
-    await t.tap(find.text('登录 / 注册'));
+    await t.scrollUntilVisible(find.byType(Checkbox), 200,
+        scrollable: find.byType(Scrollable).first);
+    await t.tap(find.byType(Checkbox));
+    await frames(t);
+    await t.tap(find.text('登录并继续'));
     await frames(t);
     expect(destination, '/licensing/record?recordId=$productId');
     expect(find.byType(LoginPage), findsNothing);
@@ -314,7 +318,10 @@ void main() {
     final session = (await t.runAsync(() => contractSession(adapter)))!;
     session.denySupply();
     await pump(t, session, const LicenseEvidenceForm(reservationId: reserveId));
-    expect(find.text('提交外部核验材料'), findsOneWidget);
+    expect(
+        find.descendant(
+            of: find.byType(AppBar), matching: find.text('提交外部核验材料')),
+        findsOneWidget);
     expect(find.textContaining('私有材料权限已失效'), findsWidgets);
     expect(adapter.requests.where((r) => r.path.contains('/supply/assets')),
         isEmpty);

@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
+import '../account/read_failure_widgets.dart';
 import '../pages/login/login_page.dart';
 import '../trade/trade_widgets.dart';
 
@@ -87,6 +89,16 @@ String v5LocalDate(dynamic value) {
   return '${date.year}-${two(date.month)}-${two(date.day)} ${two(date.hour)}:${two(date.minute)}';
 }
 
+String v5DateZone(dynamic value) {
+  final offset =
+      (DateTime.tryParse('${value ?? ''}')?.toLocal() ?? DateTime.now())
+          .timeZoneOffset;
+  final minutes = offset.inMinutes.abs();
+  final hours = (minutes ~/ 60).toString().padLeft(2, '0');
+  final remainder = (minutes % 60).toString().padLeft(2, '0');
+  return '本机本地时间（UTC${offset.isNegative ? '-' : '+'}$hours:$remainder），提交时转为UTC。';
+}
+
 Future<String?> v5PickDateTime(BuildContext context, dynamic current) async {
   final initial =
       DateTime.tryParse('${current ?? ''}')?.toLocal() ?? DateTime.now();
@@ -94,11 +106,18 @@ Future<String?> v5PickDateTime(BuildContext context, dynamic current) async {
       context: context,
       initialDate: initial,
       firstDate: DateTime(initial.year < 1900 ? initial.year : 1900),
-      lastDate: DateTime(initial.year > 2200 ? initial.year + 1 : 2200),
+      lastDate: DateTime(initial.year > 2200 ? initial.year + 1 : 2200, 12, 31),
       helpText: '选择本地日期',
       cancelText: '返回',
       confirmText: '下一步',
-      builder: (_, child) => AccountTheme(child: child!));
+      builder: (context, child) => Localizations.override(
+          context: context,
+          locale: const Locale('zh', 'CN'),
+          delegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
+          ],
+          child: AccountTheme(child: child!)));
   if (date == null || !context.mounted) return null;
   final time = await showTimePicker(
       context: context,
@@ -106,11 +125,31 @@ Future<String?> v5PickDateTime(BuildContext context, dynamic current) async {
       helpText: '选择本地时间',
       cancelText: '返回',
       confirmText: '确定',
-      builder: (_, child) => AccountTheme(child: child!));
+      builder: (context, child) => Localizations.override(
+          context: context,
+          locale: const Locale('zh', 'CN'),
+          delegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
+          ],
+          child: AccountTheme(
+              child: MediaQuery(
+                  data: MediaQuery.of(context)
+                      .copyWith(alwaysUse24HourFormat: true),
+                  child: child!))));
   if (time == null || !context.mounted) return null;
-  return v5LocalDate(
-      DateTime(date.year, date.month, date.day, time.hour, time.minute)
-          .toIso8601String());
+  final selected =
+      DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  if (selected.year != date.year ||
+      selected.month != date.month ||
+      selected.day != date.day ||
+      selected.hour != time.hour ||
+      selected.minute != time.minute) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('该本地时间受时区切换影响，请重新选择有效日期和时间。')));
+    return null;
+  }
+  return v5LocalDate(selected.toIso8601String());
 }
 
 Widget v5DateField(BuildContext context,
@@ -119,7 +158,8 @@ Widget v5DateField(BuildContext context,
         required void Function(String) onChanged,
         TextEditingController? controller,
         bool enabled = true,
-        bool required = true}) =>
+        bool required = true,
+        String? hint}) =>
     TextFormField(
         key: controller == null ? ValueKey('$label:$value') : null,
         controller: controller,
@@ -129,7 +169,12 @@ Widget v5DateField(BuildContext context,
         decoration: InputDecoration(
             labelText: label,
             hintText: '选择日期与时间',
-            helperText: '按本机本地时间显示',
+            helper: Text(
+                [v5DateZone(controller?.text ?? value), if (hint != null) hint]
+                    .join('\n'),
+                style: const TextStyle(
+                    fontSize: 12, height: 1.5, color: AccountTheme.muted)),
+            errorMaxLines: 6,
             prefixIcon: const Icon(Icons.calendar_today_outlined),
             suffixIcon: !required && '${value ?? ''}'.isNotEmpty
                 ? IconButton(
@@ -349,19 +394,39 @@ class V5Frame extends StatelessWidget {
       {super.key,
       required this.api,
       required this.title,
-      required this.children});
+      required this.children,
+      this.embedded = false,
+      this.footer});
+  final Widget? footer;
+  final bool embedded;
   final V5Api api;
   final String title;
   final List<Widget> children;
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
       animation: api,
-      builder: (context, _) => tradeScaffold(context, title, children,
-          locked: api.writes > 0 ||
-              api.pendingOperations.isNotEmpty ||
-              api.session.pending('POST', '/api/v1/supply/assets',
-                      actingParty: api.session.partyId) !=
-                  null));
+      builder: (context, _) {
+        final locked = api.writes > 0 ||
+            api.pendingOperations.isNotEmpty ||
+            api.session.pending('POST', '/api/v1/supply/assets',
+                    actingParty: api.session.partyId) !=
+                null;
+        if (!embedded) {
+          return tradeScaffold(context, title, children,
+              locked: locked, footer: footer);
+        }
+        return PopScope(
+            canPop: !locked,
+            onPopInvokedWithResult: (didPop, result) {
+              if (!didPop && locked) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+              }
+            },
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [...children, if (footer != null) footer!]));
+      });
 }
 
 class V5Gate extends StatelessWidget {
@@ -371,7 +436,12 @@ class V5Gate extends StatelessWidget {
       required this.route,
       required this.builder,
       this.account = false,
-      this.personal = false});
+      this.personal = false,
+      this.embedded = false,
+      this.showExpired = false,
+      this.expiredLabel});
+  final bool embedded, showExpired;
+  final String? expiredLabel;
   final String domain, route;
   final bool account, personal;
   final Widget Function(AccountSession) builder;
@@ -386,39 +456,47 @@ class V5Gate extends StatelessWidget {
         allowed = false;
       }
     }
+    if (!allowed && showExpired && readSessionExpired(s)) {
+      return ReadSessionExpiredPage(
+          returnRoute: route, label: expiredLabel ?? '原页面', embedded: embedded);
+    }
+    final unavailable = <Widget>[
+      tradeHeading('先确认办事身份', eyebrow: '本人记录 / 私有资料'),
+      appNotice(api.denied
+          ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
+          : personal
+              ? '请选择本人的个人负责人身份。'
+              : ['auditions', 'gigs'].contains(domain)
+                  ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
+                  : '登录并选择有效负责人身份后办理。'),
+      tradeButton(
+          '前往账号与身份',
+          () => s.isLoggedIn
+              ? Navigator.pushNamed(context, '/account')
+              : Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => LoginPage(returnRoute: route)))),
+      if (api.denied)
+        tradeButton('重新核对权限', () async {
+          try {
+            await api.retryAccess();
+          } catch (_) {}
+        }, outline: true),
+    ];
     return allowed
         ? KeyedSubtree(
             key: ValueKey('${s.epoch}:${s.partyId}:$domain:$route'),
             child: builder(s))
-        : tradeScaffold(context, '账号与权限', [
-            tradeHeading('先确认办事身份', eyebrow: '本人记录 / 私有资料'),
-            appNotice(api.denied
-                ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
-                : personal
-                    ? '请选择本人的个人负责人身份。'
-                    : ['auditions', 'gigs'].contains(domain)
-                        ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
-                        : '登录并选择有效负责人身份后办理。'),
-            tradeButton(
-                '前往账号与身份',
-                () => s.isLoggedIn
-                    ? Navigator.pushNamed(context, '/account')
-                    : Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => LoginPage(returnRoute: route)))),
-            if (api.denied)
-              tradeButton('重新核对权限', () async {
-                try {
-                  await api.retryAccess();
-                } catch (_) {}
-              }, outline: true),
-          ]);
+        : embedded
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: unavailable)
+            : tradeScaffold(context, '账号与权限', unavailable);
   }
 }
 
-String v5Error(AccountError e) {
-  if (e.uncertain) return '本次操作结果待核对。请恢复原请求，不能另换内容或重复发起。';
+String v5Error(AccountError e, {bool writing = false}) {
   if (e.status == 412) return '记录已有新版本。输入已保留，请读取最新状态并重新确认。';
   if ([403, 404].contains(e.status)) return '当前身份不能读取或办理这份记录，私有内容已清空。';
   const messages = {
@@ -464,7 +542,22 @@ String v5Error(AccountError e) {
     'PRIVATE_CONTENT_MISMATCH': '私有文件校验失败，本次不能记为成功查看。',
     'CONTEXT_CHANGED': '办事身份已变化，原页面私有内容已清空。',
   };
-  return messages[e.code] ?? '本次未能办理，请核对原记录。原因：${e.code}';
+  final specific = messages[e.code];
+  if (specific != null &&
+      !(writing &&
+          e.uncertain &&
+          ['INVALID_V5_RESPONSE', 'PRIVATE_CONTENT_MISMATCH']
+              .contains(e.code))) {
+    return specific;
+  }
+  if (writing && e.uncertain) {
+    return '本次操作结果待核对。请恢复原请求，不能另换内容或重复发起。';
+  }
+  return e.status == 0 || e.status >= 500
+      ? writing
+          ? '本次未能完成，请核对原记录后再办理。'
+          : '暂时无法读取，请检查网络后重新读取本页。重读不会重复提交业务。'
+      : '本次未能办理，请核对原记录。原因：${e.code}';
 }
 
 class V5Field {
@@ -687,7 +780,7 @@ class _V5FormState extends State<V5Form> {
     } on AccountError catch (e) {
       if (mounted && t == ticket) {
         setState(() {
-          error = v5Error(e);
+          error = v5Error(e, writing: true);
           if (e.status == 412 ||
               [
                 'WALLET_RULE_CHANGED',
@@ -832,7 +925,7 @@ class _V5RecoveryPanelState extends State<V5RecoveryPanel> {
       widget.api.check(epoch, p);
       if (mounted) widget.onRestored(r);
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (mounted) setState(() => error = v5Error(e, writing: true));
     } finally {
       if (mounted) setState(() => busy = false);
     }

@@ -39,7 +39,7 @@ Future<void> press(WidgetTester tester, String label) async {
       : label == '选择并上传文件'
           ? find.widgetWithText(OutlinedButton, label)
           : label == '我的结算'
-              ? find.widgetWithText(InkWell, '先选约定，核对本人金额、确认、付款申请与真实实付。')
+              ? find.widgetWithText(InkWell, '我的结算')
               : find.widgetWithText(FilledButton, label);
   await reveal(tester, finder);
   await tester.tap(finder);
@@ -90,12 +90,18 @@ void main() {
         s = (await tester.runAsync(() => buyerSession(a)))!;
     await nav.openApp(tester, s, route: '/my');
     nav.expectFiveTabs();
+    await reveal(tester, find.text('资金与收益'));
+    await tester.tap(find.text('资金与收益'));
+    await nav.frames(tester);
     await press(tester, '我的结算');
     expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('查看本人结算'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     await nav.frames(tester);
     nav.expectFiveTabs();
+    await reveal(tester, find.text('共创与权益'));
+    await tester.tap(find.text('共创与权益'));
+    await nav.frames(tester);
     await reveal(tester, find.text('我的许可办理'));
     expect(find.text('我的许可办理'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -328,6 +334,27 @@ void main() {
     expect(find.text('先确认办事身份'), findsOneWidget);
     expect(find.widgetWithText(TextField, '确认意见'), findsNothing);
     expect(find.text('本人结算以本次原始快照为准。'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('未返回本人额度时黑色额度区保持待核对，不显示默认零额或允许申请', (tester) async {
+    final a = financeAdapter(
+            override: (r) => r.path.endsWith('/balances')
+                ? envelope({...financeBalances(), 'items': <Object>[]})
+                : null),
+        s = (await tester.runAsync(() => buyerSession(a)))!;
+    await nav.openApp(tester, s,
+        route: '/finance/payout/new?agreementId=$agreementKey');
+    expect(find.text('当前可申请金额待核对'), findsOneWidget);
+    expect(find.textContaining('¥0.00'), findsNothing);
+    expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交付款申请'))
+            .onPressed,
+        isNull);
+    expect(
+        a.requests
+            .any((r) => r.method == 'POST' && r.path == financePayoutPath),
+        isFalse);
     expect(tester.takeException(), isNull);
   });
 }

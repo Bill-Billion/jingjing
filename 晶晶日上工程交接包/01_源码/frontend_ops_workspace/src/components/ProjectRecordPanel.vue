@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import StateValue from '@/components/StateValue.vue'
 import {display} from '@/business/labels'
 import { layers,kindLabels,projectStatus,type ProjectRecord } from '@/api/modules/projects'
 import { money } from '@/api/modules/trade'
@@ -8,7 +9,7 @@ import type { TextValue } from '@/api/modules/contracts'
 const textValue=(value:unknown):TextValue=>JSON.parse(JSON.stringify(value))
 defineProps<{record:ProjectRecord}>()
 </script>
-<template><section class="supply-card project-record"><div class="project-record-title"><h2>{{record.kind==='PROJECT'?record.data.title:record.kind==='ROLE'?record.data.title:record.kind==='CHANNEL'?record.data.name:kindLabels[record.kind]}}</h2><span class="status-chip">{{projectStatus(record)}}</span></div>
+<template><section class="supply-card project-record"><div class="project-record-title"><h2>{{record.kind==='PROJECT'?record.data.title:record.kind==='ROLE'?record.data.title:record.kind==='CHANNEL'?record.data.name:kindLabels[record.kind]}}</h2><span class="status-chip"><StateValue :code="record.current_status" :label="projectStatus(record)"/></span></div>
 <dl v-if="record.kind==='PROJECT'" class="supply-facts"><div><dt>用途</dt><dd>{{record.data.scope.purpose==='RELEASE'?'发行':'公开分享'}}</dd></div><div><dt>地域 / 语言</dt><dd>{{record.data.scope.territory}} / {{record.data.scope.language}}</dd></div><div><dt>有效期</dt><dd>{{display(record.data.scope.valid_until)}}</dd></div><div><dt>当前方案</dt><dd>{{record.data.current_plan_id?shortSupplyId(record.data.current_plan_id):'尚未提交'}}</dd></div></dl>
 <div v-if="record.kind==='PROJECT'&&record.data.business_version==='V5'" class="supply-actions"><RouterLink :to="`/participation/projects/${record.id}`" class="button-link outline">参演约定与已付变更</RouterLink><RouterLink v-if="record.data.current_income_id" :to="`/participation/income/${record.data.current_income_id}`" class="button-link outline">本版独立未来收入约定</RouterLink></div>
 <template v-if="record.kind==='ROLE'||record.kind==='CANDIDATE'"><dl class="supply-facts"><div><dt>金额</dt><dd>{{record.data.amount_minor===null?'待明确报价':money(record.data.amount_minor)}}</dd></div><div><dt>所属主体</dt><dd>{{shortSupplyId(record.owner_party_id)}}</dd></div><template v-if="record.kind==='CANDIDATE'"><div><dt>数字人</dt><dd>{{record.data.avatar_id?shortSupplyId(record.data.avatar_id):'尚未提供'}}</dd></div><div><dt>本人同意</dt><dd>{{record.data.consent_id?shortSupplyId(record.data.consent_id):'尚未提供'}}</dd></div></template></dl><p class="long-text">{{record.data.terms}}</p><p v-if="record.kind==='CANDIDATE'&&record.data.note" class="long-text">{{record.data.note}}</p></template>

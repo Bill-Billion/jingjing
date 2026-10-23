@@ -26,23 +26,7 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
 
   final r = flow.receipt, cancel = flow.cancellation;
   final buyer = project.buyer(session.partyId!) && session.isOwner;
-  final phase = flow.state == 'PLANNED'
-      ? project.status == 'IN_REVIEW'
-          ? '开工依据待独立审核'
-          : project.status == 'REJECTED'
-              ? '开工依据未通过审核'
-              : order != null && order.data['financial']['received_minor'] == 0
-                  ? '首款尚未核实'
-                  : '待受派制作人核对首款与权利后开工'
-      : fulfillmentStates[flow.state]!;
   return [
-    tradeHeading('这次制作', eyebrow: '原故事 / 原订单 / 具体版本'),
-    tradeBanner(
-        phase,
-        flow.raw['started_at'] == null
-            ? '尚未开工。付款、项目审核与授权分别核对。'
-            : '实际开工：${tradeDate(flow.raw['started_at'])}',
-        icon: Icons.movie_outlined),
     tradeSection('给谁制作，使用谁的形象', [
       tradeFact('买方主体', shortSupplyId(project.data['buyer_party_id'])),
       tradeFact('平台制作主体', shortSupplyId(project.data['producer_party_id'])),

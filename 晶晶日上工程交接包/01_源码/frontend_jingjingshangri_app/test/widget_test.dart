@@ -23,6 +23,6 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.text('登录 / 注册'), findsOneWidget);
+    expect(find.text('登录并继续'), findsOneWidget);
   });
 }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../account/editorial_widgets.dart';
+import '../account/read_failure_widgets.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
 import '../supply/supply_widgets.dart' show shortSupplyId;
@@ -76,23 +78,28 @@ class _PeopleState extends State<_People> {
     return tradeScaffold(c, '我的艺人', [
       tradeHeading(personal ? '我的艺人' : '获托艺人',
           eyebrow: personal ? '真人本人档案 / 本人所有' : '机构工作 / 仅有效委托'),
-      appNotice(personal
-          ? '一个真人可拥有多个数字人。本人同意、私人档案与公开展示分别办理。'
-          : '这里只显示本人已委托当前机构查看的艺人。机构代办不改变所有权，也不能替本人授权、签署或修改佣金。'),
       artistPendingNotice(c, widget.session),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
       for (final p in rows)
-        artistRow(
-            p.name,
-            '实名：${artistStatus(p.raw['identity_status'])}\n归属本人：${shortSupplyId(p.owner)}',
-            busy
+        artistIdentityCover(p.name,
+            '实名：${artistStatus(p.raw['identity_status'])} · 归属本人 ${shortSupplyId(p.owner)}',
+            onTap: busy
                 ? null
                 : () =>
                     Navigator.pushNamed(c, artistPersonRoute(p.id)).then((_) {
                       if (mounted) load();
                     }),
             key: ValueKey('artist-person-${p.id}')),
+      tradeBanner(
+          '让每一次出场有据可查',
+          personal
+              ? '资料、授权与商品，都在这里管理。形象、声音与数字人始终归本人所有。'
+              : '仅管理本人已明确委托的事项，所有权和本人决定不因代办改变。',
+          icon: Icons.badge_outlined),
+      appNotice(personal
+          ? '一个真人可拥有多个数字人。本人同意、私人档案与公开展示分别办理。'
+          : '这里只显示本人已委托当前机构查看的艺人。机构代办不改变所有权，也不能替本人授权、签署或修改佣金。'),
       if (!busy && error == null && rows.isEmpty)
         Text(personal
             ? '还没有本人档案。可以先建立档案，核验和数字人分别进行。'
@@ -237,6 +244,22 @@ class _PersonState extends State<_Person> {
                 '${avatar.raw['data']['archive_status'] == 'DELIVERED' ? '私人档案已交付' : '档案尚未交付'} · 长期模型未启用',
                 null,
                 key: ValueKey('artist-avatar-${avatar.id}')),
+            tradeButton(
+                '查看数字人档案',
+                busy
+                    ? null
+                    : () async {
+                        await Navigator.push<void>(
+                            c,
+                            MaterialPageRoute(
+                                builder: (_) => ArtistsGate(
+                                    builder: (session) => _AvatarDetails(
+                                        session: session,
+                                        personId: widget.id,
+                                        avatarId: avatar.id))));
+                        if (mounted) await load();
+                      },
+                outline: true),
             if (self)
               tradeButton(
                   '为${avatar.name}填写本人同意',
@@ -677,15 +700,28 @@ class _RecordState extends State<_Record> {
 }
 
 class ArtistCataloguePage extends StatelessWidget {
-  const ArtistCataloguePage({super.key});
+  const ArtistCataloguePage(
+      {super.key, this.initialCity = '', this.initialTag = ''});
+  final String initialCity, initialTag;
   @override
-  Widget build(BuildContext c) =>
-      ArtistsGate(accountOnly: true, builder: (s) => _Catalogue(session: s));
+  Widget build(BuildContext c) => ArtistsGate(
+      accountOnly: true,
+      showExpired: true,
+      returnRoute: Uri(path: '/artists/catalog', queryParameters: {
+        if (initialCity.isNotEmpty) 'city': initialCity,
+        if (initialTag.isNotEmpty) 'tag': initialTag,
+      }).toString(),
+      builder: (s) => _Catalogue(
+          session: s, initialCity: initialCity, initialTag: initialTag));
 }
 
 class _Catalogue extends StatefulWidget {
-  const _Catalogue({required this.session});
+  const _Catalogue(
+      {required this.session,
+      required this.initialCity,
+      required this.initialTag});
   final AccountSession session;
+  final String initialCity, initialTag;
   @override
   State<_Catalogue> createState() => _CatalogueState();
 }
@@ -697,11 +733,13 @@ class _CatalogueState extends State<_Catalogue> {
       rows = <Map<String, dynamic>>[],
       seen = <String>{};
   final previews = <String, Uint8List>{};
-  bool busy = false, audition = false;
+  bool busy = false, audition = false, loadFailed = false, hasRead = false;
   String? cursor, error;
   @override
   void initState() {
     super.initState();
+    city.text = widget.initialCity;
+    tag.text = widget.initialTag;
     load();
   }
 
@@ -718,6 +756,7 @@ class _CatalogueState extends State<_Catalogue> {
       busy = true;
       error = null;
       previews.clear();
+      loadFailed = false;
       if (!more) {
         rows.clear();
         cursor = null;
@@ -736,12 +775,14 @@ class _CatalogueState extends State<_Catalogue> {
           rows.addAll(p.items.where(
               (r) => !rows.any((old) => old['listing_id'] == r['listing_id'])));
           cursor = p.cursor;
+          hasRead = true;
         });
       }
     } on AccountError catch (e) {
       if (mounted) {
         setState(() {
           error = artistError(e);
+          loadFailed = true;
           if ([401, 403, 404].contains(e.status)) {
             rows.clear();
             previews.clear();
@@ -790,62 +831,301 @@ class _CatalogueState extends State<_Catalogue> {
   }
 
   @override
-  Widget build(BuildContext c) => tradeScaffold(c, '公开艺人', [
-        tradeHeading('看见正在发生的故事', eyebrow: '艺人目录 / 已获准公开'),
-        appNotice('这里只展示已批准的公开资料。每次读取预览都会重新核对当前授权与托管，公开展示不代表你取得形象或声音商用许可。'),
-        TextField(
-            controller: city,
-            enabled: !busy,
-            maxLength: 100,
-            decoration: const InputDecoration(labelText: '城市筛选')),
-        TextField(
-            controller: tag,
-            enabled: !busy,
-            maxLength: 40,
-            decoration: const InputDecoration(labelText: '标签筛选')),
-        CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('只看已开放试镜展示的艺人'),
-            value: audition,
-            onChanged:
-                busy ? null : (v) => setState(() => audition = v == true)),
-        tradeButton('按条件查看艺人', busy ? null : load),
-        if (busy) const LinearProgressIndicator(),
-        if (error != null) appNotice(error!),
-        if (!busy && error == null && rows.isEmpty)
-          const Text('当前条件下没有已获准公开的艺人。'),
-        for (final r in rows)
-          tradeSection(r['display_name'], [
-            tradeFact('城市 / 认证', '${r['city']} / L${r['halo_level']}'),
-            Text(r['introduction']),
-            const SizedBox(height: 8),
-            Text((r['tags'] as List).join(' · '),
-                style:
-                    const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-            for (final id
-                in artistStrings(r['preview_asset_ids'], ids: true)) ...[
-              if (previews[id] != null)
-                Semantics(
-                    label: '当前获准的指定预览',
-                    child: Image.memory(previews[id]!,
-                        height: 280,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Text('这份预览无法作为图片显示，可以保存文件后查看。')))),
-              tradeButton('读取这份获准预览', busy ? null : () => preview(r, id),
-                  outline: true),
-              tradeButton(
-                  '重新核权并保存预览', busy ? null : () => preview(r, id, save: true),
-                  outline: true),
-            ],
-          ]),
-        if (cursor != null)
-          tradeButton('加载更多公开艺人', busy ? null : () => load(more: true),
+  Widget build(BuildContext c) {
+    if (busy &&
+        !hasRead &&
+        rows.isEmpty &&
+        widget.session.artistsPending.isEmpty &&
+        city.text.isEmpty &&
+        tag.text.isEmpty &&
+        !audition) {
+      return tradeScaffold(
+          c, '公开艺人', [const ReadLoadingContent(label: '公开艺人')]);
+    }
+    if (loadFailed &&
+        !busy &&
+        error != null &&
+        rows.isEmpty &&
+        widget.session.artistsPending.isEmpty) {
+      return tradeScaffold(c, '公开艺人', [ReadFailureContent(reason: error!)],
+          footer: ReadFailureActions(
+              onBack: () => setState(() => loadFailed = false), onRetry: load));
+    }
+    return tradeScaffold(c, '公开艺人', [
+      tradeHeading('看见正在发生的故事', eyebrow: '艺人目录 / 已获准公开'),
+      appNotice('这里只展示已批准的公开资料。每次读取预览都会重新核对当前授权与托管，公开展示不代表你取得形象或声音商用许可。'),
+      TextField(
+          controller: city,
+          enabled: !busy,
+          maxLength: 100,
+          decoration: const InputDecoration(labelText: '城市筛选')),
+      TextField(
+          controller: tag,
+          enabled: !busy,
+          maxLength: 40,
+          decoration: const InputDecoration(labelText: '标签筛选')),
+      CheckboxListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('只看已开放试镜展示的艺人'),
+          value: audition,
+          onChanged: busy ? null : (v) => setState(() => audition = v == true)),
+      tradeButton('按条件查看艺人', busy ? null : load),
+      if (busy) const LinearProgressIndicator(),
+      if (error != null) appNotice(error!),
+      if (!busy && error == null && rows.isEmpty)
+        const Text('当前条件下没有已获准公开的艺人。'),
+      for (final r in rows)
+        tradeSection(r['display_name'], [
+          tradeFact('城市 / 认证', '${r['city']} / L${r['halo_level']}'),
+          tradeButton(
+              '查看艺人详情',
+              busy
+                  ? null
+                  : () async {
+                      await Navigator.push<void>(
+                          c,
+                          MaterialPageRoute(
+                              builder: (_) => ArtistsGate(
+                                  accountOnly: true,
+                                  builder: (session) => _PublicArtistDetails(
+                                      session: session, listing: r))));
+                      if (mounted) await load();
+                    },
               outline: true),
-        tradeButton('浏览剧本', () => Navigator.pushNamed(c, '/licensing/catalog'),
+          Text(r['introduction']),
+          const SizedBox(height: 8),
+          Text((r['tags'] as List).join(' · '),
+              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          for (final id
+              in artistStrings(r['preview_asset_ids'], ids: true)) ...[
+            if (previews[id] != null)
+              Semantics(
+                  label: '当前获准的指定预览',
+                  child: Image.memory(previews[id]!,
+                      height: 280,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('这份预览无法作为图片显示，可以保存文件后查看。')))),
+            tradeButton('读取这份获准预览', busy ? null : () => preview(r, id),
+                outline: true),
+            tradeButton(
+                '重新核权并保存预览', busy ? null : () => preview(r, id, save: true),
+                outline: true),
+          ],
+        ]),
+      if (cursor != null)
+        tradeButton('加载更多公开艺人', busy ? null : () => load(more: true),
             outline: true),
-        tradeButton('浏览商单', () => Navigator.pushNamed(c, '/gigs'),
+      tradeButton('浏览剧本', () => Navigator.pushNamed(c, '/licensing/catalog'),
+          outline: true),
+      tradeButton('浏览商单', () => Navigator.pushNamed(c, '/gigs'), outline: true),
+    ]);
+  }
+}
+
+/// Public presentation uses only this listing's approved data and fresh reads.
+/// Design sample portraits never stand in for a real person's public assets.
+class _PublicArtistDetails extends StatefulWidget {
+  const _PublicArtistDetails({required this.session, required this.listing});
+  final AccountSession session;
+  final Map<String, dynamic> listing;
+  @override
+  State<_PublicArtistDetails> createState() => _PublicArtistDetailsState();
+}
+
+class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
+  late final api = ArtistsApi(widget.session);
+  final previews = <String, Uint8List>{};
+  bool busy = false, available = true;
+  String? error;
+
+  Future<void> preview(String id, {bool save = false}) async {
+    if (busy) return;
+    setState(() {
+      busy = true;
+      error = null;
+      previews.remove(id);
+    });
+    final epoch = widget.session.epoch;
+    try {
+      final bytes = await api.publicPreview(widget.listing['listing_id'], id);
+      if (!mounted) return;
+      if (save) {
+        await FilePicker.saveFile(fileName: 'preview-$id', bytes: bytes);
+        api.check(epoch, null);
+      } else {
+        setState(() => previews[id] = bytes);
+      }
+    } on AccountError catch (e) {
+      if (mounted) {
+        setState(() {
+          error = artistError(e);
+          previews.clear();
+          if ([401, 403, 404, 409].contains(e.status)) available = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => error = '预览或保存未完成，请重新读取后再试。');
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final r = widget.listing;
+    final ids = artistStrings(r['preview_asset_ids'], ids: true);
+    final loaded = ids.where(previews.containsKey).firstOrNull;
+    return tradeScaffold(context, '艺人详情', [
+      if (busy) const LinearProgressIndicator(),
+      if (error != null) appNotice(error!),
+      if (available) ...[
+        EditorialFeature(
+          title: r['display_name'],
+          eyebrow: '数字人档案 / ${r['city']}',
+          description: (r['tags'] as List).join(' · '),
+          imageLabel: ids.isEmpty ? '未提供公开肖像' : '读取获准预览后展示',
+          image: loaded == null
+              ? null
+              : Image.memory(previews[loaded]!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Text('此预览不是可显示的图片，请保存后查看。')))),
+        ),
+        tradeFact('当前认证', 'L${r['halo_level']}'),
+        tradeSection('关于这位艺人', [Text(r['introduction'])]),
+        tradeSection('作品与声音', [
+          appNotice('每份预览在读取时重新核对公开授权。公开展示不授予形象、声音或作品商用许可。'),
+          if (ids.isEmpty) const Text('这份公开资料尚未提供可读预览。'),
+          for (var i = 0; i < ids.length; i++) ...[
+            if (loaded != ids[i] && previews[ids[i]] != null)
+              Image.memory(previews[ids[i]]!,
+                  height: 220,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Text('此预览请保存后查看。')),
+            tradeButton('读取获准预览 ${i + 1}', busy ? null : () => preview(ids[i]),
+                outline: true),
+            tradeButton('重新核权并保存预览 ${i + 1}',
+                busy ? null : () => preview(ids[i], save: true),
+                outline: true),
+          ],
+        ]),
+        tradeButton('查看公开试镜方案',
+            busy ? null : () => Navigator.pushNamed(context, '/auditions'),
             outline: true),
-      ]);
+        appNotice('试镜方案按本人已审核并公开的目录展示；预约前请核对具体艺人与本单用途。'),
+      ] else
+        tradeHeading('这份公开资料当前不可用', eyebrow: '公开授权 / 当前核对结果'),
+    ]);
+  }
+}
+
+class _AvatarDetails extends StatefulWidget {
+  const _AvatarDetails(
+      {required this.session, required this.personId, required this.avatarId});
+  final AccountSession session;
+  final String personId, avatarId;
+  @override
+  State<_AvatarDetails> createState() => _AvatarDetailsState();
+}
+
+class _AvatarDetailsState extends State<_AvatarDetails> {
+  late final api = ArtistsApi(widget.session);
+  ArtistDetail? detail;
+  Set<String> actions = {};
+  bool busy = false;
+  String? error;
+  @override
+  void initState() {
+    super.initState();
+    load();
+  }
+
+  Future<void> load() async {
+    setState(() {
+      busy = true;
+      error = null;
+      detail = null;
+      actions = {};
+    });
+    try {
+      final current = await api.person(widget.personId);
+      artistRequire(
+          current.avatars.any((avatar) => avatar.id == widget.avatarId));
+      final permitted = await api.actions(current);
+      if (mounted) {
+        setState(() {
+          detail = current;
+          actions = permitted;
+        });
+      }
+    } on AccountError catch (e) {
+      if (mounted) setState(() => error = artistError(e));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  void records(String kind) => Navigator.pushNamed(context,
+              '/artists/records?personId=${widget.personId}&kind=$kind')
+          .then((_) {
+        if (mounted) load();
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    final d = detail;
+    final avatar = d?.avatars.where((a) => a.id == widget.avatarId).firstOrNull;
+    final self = d?.person.owner == widget.session.partyId;
+    return tradeScaffold(context, '数字人详情', [
+      if (busy) const LinearProgressIndicator(),
+      if (error != null) appNotice(error!),
+      if (d != null && avatar != null) ...[
+        tradeHeading(avatar.name, eyebrow: '形象资产 / 本人所有'),
+        artistIdentityCover(avatar.name, '形象与声音 · 数字人档案',
+            imageLabel: '未提供数字人肖像封面'),
+        tradeSection('资产所有人', [
+          tradeFact('真人本人', d.person.name),
+          tradeFact('所有权主体', shortSupplyId(d.person.owner)),
+          tradeFact(
+              '私人档案',
+              avatar.raw['data']['archive_status'] == 'DELIVERED'
+                  ? '已交付'
+                  : '尚未交付'),
+        ]),
+        tradeSection('当前授权与委托', [
+          if (self)
+            tradeButton('查看本人同意与用途', busy ? null : () => records('CONSENT'),
+                outline: true),
+          tradeButton('查看当前委托范围', busy ? null : () => records('DELEGATION'),
+              outline: true),
+          appNotice('授权按具体用途、期限和作品逐份核对；已建档不代表允许公开、商用或重新生成。'),
+        ]),
+        tradeSection('试镜素材与造型版本', [
+          tradeButton('查看造型版本', busy ? null : () => records('LOOK'),
+              outline: true),
+          tradeButton('查看声音版本', busy ? null : () => records('VOICE'),
+              outline: true),
+          if ((self || actions.contains('MANAGE_MATERIALS')) &&
+              (avatar.raw['data']['material_asset_ids'] as List).isNotEmpty)
+            ArtistFiles(
+                api: api,
+                person: d.person,
+                purpose: 'AVATAR_MATERIAL',
+                ids: artistStrings(avatar.raw['data']['material_asset_ids'],
+                    ids: true)),
+        ]),
+        tradeBanner('长期模型未启用', '数字人档案与已保存的造型、声音版本不表示长期模型已训练或可调用。',
+            icon: Icons.lock_outline),
+        if (self)
+          tradeButton('管理创建与托管服务', busy ? null : () => records('SERVICE'),
+              outline: true),
+        tradeButton('返回本人档案', () => Navigator.pop(context), outline: true),
+      ],
+      tradeButton('重新读取数字人档案', busy ? null : load, outline: true),
+    ]);
+  }
 }

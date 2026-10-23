@@ -8,7 +8,7 @@ class HomeStationHero extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 240),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.zero,
           color: const Color(0xFF665846),
           image: const DecorationImage(
               image: AssetImage('assets/images/home-station-v2.png'),
@@ -37,7 +37,7 @@ class ManuscriptHero extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 150),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.zero,
           color: const Color(0xFFF0E5D7),
           image: const DecorationImage(
               image: AssetImage('assets/images/story-manuscript-v2.png'),
@@ -75,7 +75,7 @@ Widget appNotice(String text, {IconData icon = Icons.info_outline}) =>
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: const Color(0xFFE5E1D7),
+            color: const Color(0xFFE7E4DA),
             border: const Border(
                 top: BorderSide(color: AccountTheme.border),
                 bottom: BorderSide(color: AccountTheme.border))),

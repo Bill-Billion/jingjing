@@ -157,7 +157,10 @@ class _NotificationsState extends State<_Notifications> {
           Expanded(
               child: Text(operationEvent(n.code),
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w600)))
+                      fontFamily: AccountTheme.serif,
+                      fontSize: 22,
+                      height: 1.3,
+                      fontWeight: FontWeight.w700)))
         ]),
         operationIdFact('关联对象', n.recordId),
         tradeFact('通知时间', tradeDate(n.createdAt)),
@@ -186,6 +189,8 @@ class _NotificationsState extends State<_Notifications> {
       context,
       widget.eventId == null ? '业务通知' : '通知详情',
       [
+        if (widget.eventId == null)
+          tradeHeading('系统通知', eyebrow: '消息 / 真实业务变化'),
         tradeFact('当前身份', widget.session.party?['display_name']),
         if (widget.eventId == null)
           Padding(

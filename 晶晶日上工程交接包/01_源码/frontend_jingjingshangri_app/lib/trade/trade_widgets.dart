@@ -121,12 +121,14 @@ Widget tradeHeading(String title, {String? eyebrow}) => Padding(
                 fontSize: 12, color: AccountTheme.accent, height: 1.5)),
         const SizedBox(height: 14),
       ],
-      Text(title,
-          style: const TextStyle(
-              fontFamily: 'EditorialSerif',
-              fontSize: 32,
-              height: 1.25,
-              fontWeight: FontWeight.w700)),
+      Semantics(
+          header: true,
+          child: Text(title,
+              style: const TextStyle(
+                  fontFamily: 'EditorialSerif',
+                  fontSize: 32,
+                  height: 1.25,
+                  fontWeight: FontWeight.w900))),
     ]));
 
 /// Paper sections follow the ruled, card-free layout of the film editorial.

@@ -1,0 +1,50 @@
+{
+  "result": "FAIL",
+  "synthetic_only": true,
+  "controlled_faults_not_business_facts": true,
+  "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+  "results": [
+    {
+      "name": "catalog-read-failure",
+      "route": "/notices/catalog",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - banner \"通告\":\n    - button \"发布 ＋\"\n  - text: 本次操作结果待核对。请恢复原请求，不能另换内容或重复发起。\n  - group:\n    - button \"全部\"\n    - button \"剧与角色\"\n    - button \"商演\"\n    - button \"商单\"\n    - button \"活动\"\n    - button \"招募\"\n    - button \"平台官方\"\n  - textbox \"城市（可留空）\"\n  - textbox \"指定有效时间（可留空）\"\n  - text: 按本机本地时间显示\n  - button \"筛选通告\"\n  - button \"核对资格并发布通告\"\n  - button \"我的投稿与接收箱\"\n  - button \"我的已发通告\"\n  - button \"合作客服处理\"\n  - button \"重新读取\""
+    },
+    {
+      "name": "own-records-read-failure",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"我的通告与投稿\" [level=2]\n- group:\n  - heading \"单向意向 / 交给明确的人处理 我的通告与投稿\" [level=2]\n  - text: 本次操作结果待核对。请恢复原请求，不能另换内容或重复发起。\n  - button \"查看本人记录 我发布的通告\"\n  - button \"重新读取\""
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "catalog-read-failure.png",
+      "case": "catalog-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+      "sha256": "bf78c9fd5dfc2ee7c52f1c3abac2fbad509a5687decf4c65b7c2e5b0a9d634d6",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "own-records-read-failure.png",
+      "case": "own-records-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+      "sha256": "9c360dbd05afda49384ec50160f5f39f9987a1a45876ee2cb08e08334ce157b9",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    }
+  ],
+  "errors": [
+    "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('progressbar').first() to be visible\u001b[22m\n\n    at /Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/scripts/figma-frontend-state-check.mjs:20:62"
+  ],
+  "business_writes": []
+}

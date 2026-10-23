@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import StateValue from '@/components/StateValue.vue'
 import { creditRoles, recordTitle, shortSupplyId, supplyStatus, type SupplyAsset, type SupplyRecord } from '@/api/modules/supply'
 defineProps<{ record: SupplyRecord; assets: Record<string, SupplyAsset>; busy?: boolean; contentFirst?: boolean }>()
 const emit = defineEmits<{ info: [id: string]; download: [id: string] }>()
 const time = (v: string) => new Date(v).toLocaleString('zh-CN', { hour12: false })
 </script>
 <template>
-  <section class="supply-card"><div class="section-heading"><h2>{{ recordTitle(record) }}</h2><span class="supply-badge">{{ supplyStatus[record.current_status] }}</span></div><dl class="supply-facts"><div><dt>记录编号</dt><dd :title="record.id" :aria-label="record.id">{{ shortSupplyId(record.id) }}</dd></div><div><dt>修订</dt><dd>第 {{ record.revision }} 版</dd></div><div><dt>{{ record.kind === 'WORK_VERSION' ? '作品编号' : '主体编号' }}</dt><dd :title="record.stream_ref" :aria-label="record.stream_ref">{{ shortSupplyId(record.stream_ref) }}</dd></div><div><dt>提交账号</dt><dd :title="record.created_by" :aria-label="record.created_by">{{ shortSupplyId(record.created_by) }}</dd></div></dl>
+  <section class="supply-card"><div class="section-heading"><h2>{{ recordTitle(record) }}</h2><span class="supply-badge"><StateValue :code="record.current_status" :label="supplyStatus[record.current_status]"/></span></div><dl class="supply-facts"><div><dt>记录编号</dt><dd :title="record.id" :aria-label="record.id">{{ shortSupplyId(record.id) }}</dd></div><div><dt>修订</dt><dd>第 {{ record.revision }} 版</dd></div><div><dt>{{ record.kind === 'WORK_VERSION' ? '作品编号' : '主体编号' }}</dt><dd :title="record.stream_ref" :aria-label="record.stream_ref">{{ shortSupplyId(record.stream_ref) }}</dd></div><div><dt>提交账号</dt><dd :title="record.created_by" :aria-label="record.created_by">{{ shortSupplyId(record.created_by) }}</dd></div></dl>
     <p v-if="record.kind === 'PROFILE'" class="long-text">{{ record.data.description }}</p>
     <p v-else-if="record.current_status === 'REVIEWS_COMPLETE'" class="muted">双审结论已记录；作品上架、签约、许可和发行分别办理。</p>
     <details class="supply-identifiers"><summary>查看完整记录与身份编号</summary><dl class="supply-facts"><div><dt>记录编号</dt><dd>{{ record.id }}</dd></div><div><dt>{{ record.kind === 'WORK_VERSION' ? '作品编号' : '主体编号' }}</dt><dd>{{ record.stream_ref }}</dd></div><div><dt>提交账号</dt><dd>{{ record.created_by }}</dd></div><div><dt>供给身份</dt><dd>{{ record.owner_party_id }}</dd></div></dl></details>

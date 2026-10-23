@@ -112,7 +112,7 @@ void main() {
     await tester.tap(find.text('获取验证码'));
     await frames(tester);
     expect(find.textContaining('发送结果未确认'), findsOneWidget);
-    expect(find.textContaining('后重发'), findsNothing);
+    expect(find.textContaining('后可重新获取'), findsNothing);
     expect(session.isLoggedIn, isFalse);
     expect(legacy.isLoggedIn, isFalse);
     expect(adapter.requests.single.path, '/api/v1/auth/sms-challenges');
@@ -127,12 +127,12 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('获取验证码'));
     await frames(tester);
-    expect(find.textContaining('后重发'), findsOneWidget);
+    expect(find.textContaining('后可重新获取'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, '13800000001');
     await tester.pump();
     expect(
         tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录并继续'))
             .onPressed,
         isNull);
     expect(adapter.requests.where((r) => r.path.endsWith('/auth/sessions')),
@@ -153,15 +153,15 @@ void main() {
       } catch (_) {}
     });
     await pump(tester, session, const LoginPage());
-    final button = tester
-        .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'));
+    final button =
+        tester.widget<FilledButton>(find.widgetWithText(FilledButton, '登录并继续'));
     expect(button.onPressed, isNotNull);
     expect(
         tester
             .widgetList<TextField>(find.byType(TextField))
             .every((field) => field.enabled == false),
         isTrue);
-    await tester.tap(find.text('登录 / 注册'));
+    await tester.tap(find.text('登录并继续'));
     await frames(tester);
     final requests = adapter.requests
         .where((r) => r.path.endsWith('/auth/sessions'))
@@ -199,24 +199,24 @@ void main() {
     await frames(tester);
     expect(
         tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录并继续'))
             .onPressed,
         isNull);
     await tester.enterText(find.byType(TextField).last, '123456');
     await tester.pump();
     expect(
         tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录并继续'))
             .onPressed,
         isNull);
-    await tester.tap(find.byIcon(Icons.radio_button_unchecked_rounded));
+    await tester.tap(find.byType(Checkbox));
     await tester.pump();
     expect(
         tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录 / 注册'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '登录并继续'))
             .onPressed,
         isNotNull);
-    await tester.tap(find.text('登录 / 注册'));
+    await tester.tap(find.text('登录并继续'));
     await frames(tester);
     expect(session.isLoggedIn, isTrue);
     expect(legacy.isLoggedIn, isFalse);
@@ -228,6 +228,12 @@ void main() {
         ModalRoute.of(tester.element(find.byType(MainScaffold)))?.settings.name,
         '/my');
     expect(find.text('旧业务入口'), findsNothing); // Old private routes are removed.
+    await tester.scrollUntilVisible(find.text('认证与成长'), 300,
+        scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('认证与成长'));
+    await frames(tester);
+    await tester.scrollUntilVisible(find.text('账号与机构'), 300,
+        scrollable: find.byType(Scrollable).first);
     expect(find.text('账号与机构'), findsOneWidget);
     expect(continued, isFalse);
     final prefs = await SharedPreferences.getInstance();
@@ -501,13 +507,19 @@ void main() {
     await pump(tester, session, const MainScaffold(initialTab: 4));
     await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
-    expect(find.text('让故事\n与你有关'), findsOneWidget);
+    expect(find.text('故事制作'), findsOneWidget);
     expect(
         find.descendant(
             of: find.byType(NavigationBar), matching: find.text('试镜')),
         findsOneWidget);
     await tester.tap(find.byKey(const Key('app-tab-4')));
     await frames(tester);
+    await tester.scrollUntilVisible(find.text('认证与成长'), 300,
+        scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('认证与成长'));
+    await frames(tester);
+    await tester.scrollUntilVisible(find.text('账号与机构'), 300,
+        scrollable: find.byType(Scrollable).first);
     await tester.tap(find.text('账号与机构'));
     await frames(tester);
     await tester.tap(find.text('退出登录'));

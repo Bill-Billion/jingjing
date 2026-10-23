@@ -329,9 +329,10 @@ void main() {
     await tester.tap(find.text('获取验证码'));
     await frames(tester);
     await tester.enterText(find.byType(TextField).last, '123456');
-    await tester.tap(find.byIcon(Icons.radio_button_unchecked_rounded));
+    await reveal(tester, find.byType(Checkbox));
+    await tester.tap(find.byType(Checkbox));
     await frames(tester);
-    await tester.tap(find.text('登录 / 注册'));
+    await tester.tap(find.text('登录并继续'));
     await frames(tester);
     expect(destination, '/supply/record?recordId=$versionId');
     expect(find.byType(LoginPage), findsNothing);

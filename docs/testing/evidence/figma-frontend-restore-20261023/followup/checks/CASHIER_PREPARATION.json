@@ -1,0 +1,109 @@
+{
+  "result": "PASS",
+  "testOnly": true,
+  "syntheticOnly": true,
+  "checkedAt": "2026-10-23T17:14:26.210Z",
+  "schema": "jx_test_29864_ed38d3654440",
+  "method": "Existing test service; ordinary SMS sessions and original trade create/review/accept endpoints. No direct SQL mutation, payment creation, reconciliation, signature or provider call added by this preparation.",
+  "calls": [
+    {
+      "method": "POST",
+      "path": "/auth/sms-challenges",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sessions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sms-challenges",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sessions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sms-challenges",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sessions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/trade/quotes",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/da1929ca-99de-4f77-a588-c4abfe69b993/reviews",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/trade/quotes/da1929ca-99de-4f77-a588-c4abfe69b993/acceptance",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/b6591573-2a52-4118-8384-085d68017091",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/06409390-f06d-456d-80c5-04820c73223f",
+      "status": 200
+    }
+  ],
+  "cases": [
+    {
+      "name": "cashier-ready",
+      "route": "/trade/record?recordId=b6591573-2a52-4118-8384-085d68017091&section=cashier&installmentKey=first",
+      "figmaId": "2004:3160",
+      "expectedState": "OPEN first ORDER_ACCEPTED 4000 minor"
+    },
+    {
+      "name": "cashier-waiting-final",
+      "route": "/trade/record?recordId=b6591573-2a52-4118-8384-085d68017091&section=cashier&installmentKey=last",
+      "figmaId": "2004:3160",
+      "expectedState": "OPEN last FINAL_ACCEPTED 6000 minor, not ready"
+    },
+    {
+      "name": "cashier-paid-original",
+      "route": "/trade/record?recordId=06409390-f06d-456d-80c5-04820c73223f&section=cashier&installmentKey=full",
+      "figmaId": "2004:3160",
+      "expectedState": "PAID original payment reused"
+    }
+  ],
+  "originalSnapshots": [
+    {
+      "id": "b6591573-2a52-4118-8384-085d68017091",
+      "kind": "ORDER",
+      "status": "OPEN",
+      "objectVersion": 1,
+      "contentSha256": "56d8093c129e72f12aac1f0589170479654160408b671fd01954226508b6fd56",
+      "responseSha256": "17099ba9a37efd4073d38ff6125ea2ffc19b77e191af183a180b74657f3dcb51"
+    },
+    {
+      "id": "06409390-f06d-456d-80c5-04820c73223f",
+      "kind": "ORDER",
+      "status": "PAID",
+      "objectVersion": 2,
+      "contentSha256": "cc54216264aa6fc8c5cf943e6981dddf517958488ccc8b0c3040f77aae21a5c8",
+      "responseSha256": "402daf03772beeeb7f575daa40946740d335a8b92076085b7df3f6e7681784e9"
+    }
+  ],
+  "preparationBusinessWrites": {
+    "quotesCreated": 1,
+    "quotesIndependentlyReviewed": 1,
+    "quotesAccepted": 1,
+    "newPaymentCalls": 0
+  }
+}

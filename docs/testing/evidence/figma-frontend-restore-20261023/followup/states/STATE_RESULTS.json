@@ -1,0 +1,84 @@
+{
+  "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+  "synthetic_only": true,
+  "controlled_faults_not_business_facts": true,
+  "sourceBundleSha256": "08a960a8bbbee3d10a9f87914d258ba99b0501bec0fa1f302089c3974330c821",
+  "results": [
+    {
+      "name": "catalog-read-failure",
+      "route": "/notices/catalog",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - heading \"本页读取未完成 这页还没 加载出来 暂时无法读取 暂时无法读取，请检查网络后重新读取本页。重读不会重复提交业务。 重新加载仅重新读取当前页面，保留本页筛选，不会再次提交业务或付款。\" [level=2]\n- button \"返回\"\n- button \"重新加载\""
+    },
+    {
+      "name": "own-records-read-failure",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"我的通告与投稿\" [level=2]\n- group:\n  - heading \"本页读取未完成 这页还没 加载出来 暂时无法读取 暂时无法读取，请检查网络后重新读取本页。重读不会重复提交业务。 重新加载仅重新读取当前页面，保留本页筛选，不会再次提交业务或付款。\" [level=2]\n- button \"返回\"\n- button \"重新加载\""
+    },
+    {
+      "name": "catalog-loading",
+      "route": "/notices/catalog",
+      "mode": "delay",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - banner \"通告\":\n    - button \"发布 ＋\" [disabled]\n  - group:\n    - button \"全部\" [disabled]\n    - button \"剧与角色\" [disabled]\n    - button \"商演\" [disabled]\n    - button \"商单\" [disabled]\n    - button \"活动\" [disabled]\n    - button \"招募\" [disabled]\n    - button \"平台官方\" [disabled]\n  - textbox \"城市（可留空）\"\n  - textbox \"指定有效时间（可留空）\" [disabled]\n  - text: 本机本地时间（UTC+08:00），提交时转为UTC。\n  - button \"筛选通告\" [disabled]\n  - button \"核对资格并发布通告\"\n  - button \"我的投稿与接收箱\"\n  - button \"我的已发通告\"\n  - button \"合作客服处理\"\n  - button \"重新读取\" [disabled]"
+    },
+    {
+      "name": "session-401",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "401",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"账号与权限\" [level=2]\n- group:\n  - heading \"本人记录 / 私有资料 先确认办事身份\" [level=2]\n  - text: 登录并选择有效负责人身份后办理。\n  - button \"前往账号与身份\""
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "catalog-read-failure.png",
+      "case": "catalog-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "08a960a8bbbee3d10a9f87914d258ba99b0501bec0fa1f302089c3974330c821",
+      "sha256": "100068e37fe308bc9a67f3aadd98615ac3fcba49a5ef979983edf4bd1db9c09c",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "own-records-read-failure.png",
+      "case": "own-records-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "08a960a8bbbee3d10a9f87914d258ba99b0501bec0fa1f302089c3974330c821",
+      "sha256": "ad140fbb0bf5cac3a4b8056e002054cfa67285e7289ec94a68f46faa8ebf34bf",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "catalog-loading.png",
+      "case": "catalog-loading",
+      "width": 390,
+      "figmaIds": [
+        "2004:6580"
+      ],
+      "sourceBundleSha256": "08a960a8bbbee3d10a9f87914d258ba99b0501bec0fa1f302089c3974330c821",
+      "sha256": "f4ad9ad6e0921bbb58d207751886f0de27f8fd93a332e7ec3077b1c5511ce9ee",
+      "stateControl": "实际GET延迟后放行"
+    },
+    {
+      "file": "session-401.png",
+      "case": "session-401",
+      "width": 390,
+      "figmaIds": [
+        "2004:6457"
+      ],
+      "sourceBundleSha256": "08a960a8bbbee3d10a9f87914d258ba99b0501bec0fa1f302089c3974330c821",
+      "sha256": "27716d134f7b6ab8c8b27233e792d84b238799c3b0ca6935d89b0874660b4d0e",
+      "stateControl": "受控HTTP401故障；不是正式服务状态"
+    }
+  ],
+  "errors": [],
+  "business_writes": []
+}

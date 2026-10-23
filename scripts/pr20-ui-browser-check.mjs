@@ -150,9 +150,24 @@ async function report(a,rid,{operator=true}={}){const p=a.page,response=wait(p,'
 async function refresh(a,rid){const response=wait(a.page,'GET','/operations/reports/'+rid);await a.page.getByTestId('ops-report-refresh').click();const r=await data(await response);await ready(a.page);return r}
 const reportBody=(kind,environment='SANDBOX')=>({kind,environment,period_start:state.creation.common.report.period_start.slice(0,16)+':00.000Z',period_end:state.creation.common.report.period_end.slice(0,16)+':00.000Z'})
 async function fillReport(a,kind,{operator=true,environment='SANDBOX'}={}){const p=a.page;await go(p,reportRoute('new',operator));const body=reportBody(kind,environment);await p.getByTestId('ops-report-kind-'+kind).check();await p.getByTestId('ops-report-environment').selectOption(environment);await fill(p,'ops-report-start',body.period_start.slice(0,16));await fill(p,'ops-report-end',body.period_end.slice(0,16));return body}
+async function captureReportRadio(p,kind){
+ const directory=process.env.JX_BROWSER_RADIO_FOLLOWUP_DIR;if(!directory)return
+ await mkdir(resolve(root,directory),{recursive:true});const checks=[],original=p.viewportSize(),before=requests.length
+ for(const width of [320,390,1440]){
+  await p.setViewportSize({width,height:844});await p.evaluate(async()=>{await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))})
+  const choice=p.getByTestId('ops-report-kind-SETTLEMENT');await choice.locator('..').click();assert.equal(await choice.isChecked(),true)
+  await p.getByTestId('ops-report-kind-'+kind).locator('..').click();assert.equal(await p.getByTestId('ops-report-kind-'+kind).isChecked(),true)
+  const layout=await p.locator('.ops-kind-options label').evaluateAll(labels=>labels.map(label=>{const input=label.querySelector('input'),box=input.getBoundingClientRect(),text=[...label.childNodes].find(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim()),range=document.createRange();range.selectNodeContents(text);const textBoxes=[...range.getClientRects()].filter(r=>r.width>0);return {label:label.textContent.trim(),input_width:box.width,input_height:box.height,text_lines:textBoxes.length,text_right:Math.max(...textBoxes.map(r=>r.right)),label_right:label.getBoundingClientRect().right}}))
+  assert.equal(layout.length,3);assert(layout.every(row=>row.text_lines===1&&row.text_right<=row.label_right),'Report category labels must remain readable on one line')
+  assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));assert.equal(requests.length,before)
+  await p.evaluate(()=>window.scrollTo(0,0));const file=`report-categories-${width}.png`;await p.screenshot({path:resolve(root,directory,file),fullPage:true})
+  checks.push({width,result:'PASS',labels:layout,business_writes:0,file})
+ }
+ await p.setViewportSize(original);await p.evaluate(()=>window.scrollTo(0,0));await writeFile(resolve(root,directory,'EXTRA_RESULTS.json'),JSON.stringify({synthetic_only:true,source:'Existing report form before its original E2E submission; labels clicked and restored, no extra report requested',checks,total:checks.length,passed:checks.length,business_writes:requests.length-before,pageErrors},null,2)+'\n')
+}
 async function requestReport(a,kind,name,{operator=true,unknown=false,environment='SANDBOX'}={}){
  if(facts[name])return report(a,facts[name].id,{operator})
- const p=a.page,body=await fillReport(a,kind,{operator,environment});await shot(p,name+'-request-desktop','WEB-33-01')
+ const p=a.page,body=await fillReport(a,kind,{operator,environment});if(name==='queuedCASH')await captureReportRadio(p,kind);await shot(p,name+'-request-desktop','WEB-33-01')
  const start=requests.length;if(unknown)await control('/response-loss?operation=report&mode=503')
  let response=wait(p,'POST','/operations/reports');await p.getByTestId('ops-report-submit').click()
  if(unknown){assert.equal((await response).status(),503);await p.getByTestId('ops-pending').waitFor();await blockedNavigation(p);await shot(p,name+'-unknown-desktop','WEB-33-01');await p.getByTestId('ops-check-pending').click();await ready(p);assert.equal(await p.getByTestId('ops-retry-pending').isEnabled(),true);response=wait(p,'POST','/operations/reports');await p.getByTestId('ops-retry-pending').click()}

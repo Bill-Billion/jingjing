@@ -5,6 +5,7 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../supply/supply_widgets.dart';
+import '../trade/trade_widgets.dart';
 import 'contract_api.dart';
 import 'contract_reader.dart';
 import 'contract_text.dart';
@@ -54,25 +55,8 @@ class _ContractPageState extends State<ContractPage> {
     super.dispose();
   }
 
-  Widget _card(String title, List<Widget> children, {IconData? icon}) => Card(
-          child: Padding(
-        padding: const EdgeInsets.all(16),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Row(children: [
-            if (icon != null) ...[
-              Icon(icon, color: AccountTheme.accent, size: 22),
-              const SizedBox(width: 10)
-            ],
-            Expanded(
-                child: Text(title,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w700)))
-          ]),
-          const SizedBox(height: 16),
-          ...children,
-        ]),
-      ));
+  Widget _card(String title, List<Widget> children, {IconData? icon}) =>
+      tradeSection(title, children);
   Widget _fact(String label, dynamic value) => supplyFact(label, value);
   Widget _notice(String message, {bool error = false}) => Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -104,15 +88,12 @@ class _ContractPageState extends State<ContractPage> {
                 body: SafeArea(
                     child: Center(
                         child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 760),
+                            constraints: const BoxConstraints(maxWidth: 560),
                             child: ListView(
-                              padding: const EdgeInsets.all(16),
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 40, 20, 24),
                               children: [
-                                const Text('阅读保存的合同',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w700)),
-                                const SizedBox(height: 8),
+                                tradeHeading('合同与许可', eyebrow: '每次使用都有依据'),
                                 _notice('按合同编号读取当时保存的内容。能否查看，由当前账号和办事身份的授权决定。'),
                                 if (!session.isLoggedIn ||
                                     session.partyId == null) ...[
@@ -133,6 +114,27 @@ class _ContractPageState extends State<ContractPage> {
                                       ],
                                       icon: Icons.person_outline),
                                 ] else ...[
+                                  if (widget.snapshotId == null &&
+                                      snapshot == null)
+                                    _card('从原业务查看合同', [
+                                      _notice(
+                                          '各类合同保留在原业务记录中，按当前身份分别核对。这里不合并签署、付款或履约状态。'),
+                                      for (final source in const [
+                                        ('订单与原报价', '/orders'),
+                                        ('作品许可与使用约定', '/licensing'),
+                                        ('参演条款与会签', '/projects/participation'),
+                                      ])
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child: OutlinedButton.icon(
+                                                onPressed: () =>
+                                                    Navigator.pushNamed(
+                                                        context, source.$2),
+                                                icon: const Icon(
+                                                    Icons.description_outlined),
+                                                label: Text(source.$1))),
+                                    ]),
                                   _card('指定合同', [
                                     _fact(
                                         '当前办事身份',
@@ -174,10 +176,8 @@ class _ContractPageState extends State<ContractPage> {
                                   if (reader.error != null)
                                     _notice(reader.error!, error: true),
                                   if (snapshot != null) ...[
-                                    const ManuscriptHero(
-                                        title: '合同内容已保存',
-                                        subtitle:
-                                            '保存时尚未签署，留存原约定。\n实际签署与付款须另行核验。'),
+                                    tradeBanner('合同内容已保存',
+                                        '保存时尚未签署，留存原约定。实际签署与付款须另行核验。'),
                                     const SizedBox(height: 16),
                                     _card(
                                         '合同信息',

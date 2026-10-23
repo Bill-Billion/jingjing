@@ -1,0 +1,61 @@
+{
+  "result": "INITIAL_NOT_ACCEPTED",
+  "reviewer": "Codex screenshot inspection (not colleague sign-off)",
+  "inspected_shots": 96,
+  "method": "12张接触表覆盖全部96张截图；关键页单张放大，对照Figma10/19/22/34/36/37/43/44/66/67/71原PNG。不以渲染成功代替还原通过。",
+  "findings": [
+    {
+      "id": "CAT-10",
+      "cases": [
+        "01-artist-owner-list",
+        "02-artist-person"
+      ],
+      "observed": "34仅文本名单、36没有独立数字人详情，缺整幅封面与黑色身份条。",
+      "action": "已补前端；等待最终构建复拍。"
+    },
+    {
+      "id": "CAT-11",
+      "cases": [
+        "19-notice-detail-feature",
+        "20-notice-detail-narrow",
+        "23-production-unpaid",
+        "25-production-preview",
+        "33-production-task-narrow"
+      ],
+      "observed": "长题在160宽64号栏中拆成十余行，破坏构图。",
+      "action": "共享组件按长题分支修正，等待复拍。"
+    },
+    {
+      "id": "CAT-12",
+      "cases": [
+        "37-production-review-final_paid"
+      ],
+      "observed": "AppBar个别中文字形回退成方框，并出现networkidle超时。",
+      "action": "共享本地字体明确绑定后复拍，保留失败图。"
+    }
+  ],
+  "capture_invalidity": [
+    {
+      "case": "21-project-detail-feature",
+      "reason": "使用无权producer角色，仅证明权限拒绝；不能作为22剧目详情验收。",
+      "action": "最终用已有buyer身份重拍。"
+    },
+    {
+      "cases": [
+        "37-production-review-final_paid",
+        "41-production-private-work",
+        "44-production-private-denied"
+      ],
+      "reason": "networkidle等待超时；初轮算失败，不当作验收通过。"
+    },
+    {
+      "reason": "语义树不变不能证明Flutter Column长页到底，最终改像素一致和左侧空白连续滚动复拍。"
+    }
+  ],
+  "observations": "其余表单、长记录和320宽内容未见明显重叠、截断或横向溢出；与原稿仍存在报告CAT-01..17所列数据/业务结构差异。",
+  "request_safety": {
+    "blocked_write_requests": 0,
+    "page_errors": 0,
+    "flutter_layout_errors": 0
+  }
+}

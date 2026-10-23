@@ -1,0 +1,152 @@
+{
+  "id": "23:1478",
+  "name": "27 / 月冠军与评选",
+  "verdict": "NATIVE_COPY_AND_ENTRY_PROPOSAL_PENDING_AFTER_REVIEW",
+  "screenshot": "before/23-1478.png",
+  "screenshot_sha256": "73bb9fdb1f3944b6799d7ae2f3fb35cf83278199a7cae397bfd065b7e9815928",
+  "preserve": [
+    "十月月冠军标题、人物图片与原刊物式构图",
+    "两条候选概览、示例评分/成交/出品、候选编号、入围标签",
+    "候选公布/公开评选/结果与称号三个进度阶段及示例日期",
+    "往届称号入口"
+  ],
+  "minimal_text_changes": [
+    {
+      "old": "本月评选 / 作品称号",
+      "new": "本月评选 / 艺人称号",
+      "reason": "现有候选及冠军按 person_id 归属艺人，作品作为展示和评价依据。"
+    },
+    {
+      "old": "候选作品",
+      "new": "候选艺人",
+      "reason": "对齐 App competitionDetail 候选艺人及服务端 CANDIDATE.person_id，避免误导为给作品而非艺人投票。"
+    },
+    {
+      "old": "周见川制作组",
+      "new": "周见川",
+      "reason": "现有候选接口为具体真人档案，不存在制作组/机构候选类型；保留人物及本月出品示例信息。"
+    },
+    {
+      "old": "查看参评规则",
+      "new": "规则、投票与结果",
+      "reason": "使用已有本期活动详情入口，同时覆盖规则、投票和结果；原左侧往届称号不变。"
+    }
+  ],
+  "native_note": {
+    "placement": "三段评选进度之后、底部两按钮之前；新增浅灰说明区，可增高页面，不压缩或遮挡原候选与进度。",
+    "title": "投票与异议",
+    "paragraphs": [
+      "以本人身份进入本期详情，读取每票晶钻、今日已用与剩余次数；选定候选后，确认扣分再投票。",
+      "投票记录与结果可查；在本期异议截止前提交说明。争议期间不自动退钻，复核可恢复有效票或退回晶钻。",
+      "提交结果未确定时，先核对当前记录，再使用原编号继续，避免重复扣分。"
+    ]
+  },
+  "entry": {
+    "label": "规则、投票与结果",
+    "existing_route": "/engagement?view=competition&recordId=<本期真实活动ID>",
+    "existing_detail": [
+      "当前状态、开始/投票截止/异议截止",
+      "每票晶钻与每日上限",
+      "本人今日已用和剩余次数",
+      "按候选选择投票及再次确认扣分",
+      "我的投票记录",
+      "有已核定结果时展示总分、有效票及冠军",
+      "异议说明和提交本次活动异议",
+      "结果未知时先核对当前记录，再使用原编号继续核对"
+    ],
+    "note": "本提议为原生设计内容及入口表达，不代表本代理已修改Figma原型事件或新建后端流程。"
+  },
+  "state_guards": [
+    "每票晶钻和上限来自本次已发布活动规则，今日 used_today/remaining_today 来自 GET /engagement/votes；不得编造1次、3次、100晶钻或固定评分权重。",
+    "投票仅本人个人身份，候选已批准、活动PUBLISHED且在投票时间内，并仍有今日次数；服务端重验可用晶钻和待冲回状态。",
+    "POST /engagement/votes 只提交活动与候选引用，扣分由服务端规则确定；前端确认弹层展示本次真实扣分。",
+    "活动异议仅限活动PUBLISHED且未超过appeal_until；FINALIZED后的结果没有普通用户重开评选接口，不写成最终公布后可无限申诉。",
+    "票被暂停或作废不自动退钻；由运营复核决定恢复票或退钻。普通用户不得直接操作RESTORE或RETURN_POINTS。",
+    "恢复原请求是结果未知后的同编号核对，不是重投一票、恢复每日次数或自动退钻。",
+    "未处理异议或暂停票阻止最终核定；同分处理按官方分、榜单分及必要独立复核，不由用户付费决定。",
+    "用户现在使用活动异议能力；无独立“最终结果重开/无限申诉”流程，不新增该入口。"
+  ],
+  "evidence": [
+    {
+      "path": "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R09_HANDOFF.md",
+      "lines": [
+        17,
+        38,
+        39,
+        47
+      ],
+      "supports": "投票扣分、每日限次、本人次数、异议、同分与退钻边界"
+    },
+    {
+      "path": "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/DECISIONS.md",
+      "lines": [
+        27,
+        47
+      ],
+      "supports": "月冠军争议处理及晶钻待冲回限制"
+    },
+    {
+      "path": "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/engagement/engagement_pages.dart",
+      "lines": [
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        355,
+        356,
+        357,
+        383,
+        384,
+        402,
+        407,
+        409,
+        416,
+        419,
+        535,
+        545,
+        547,
+        550,
+        551,
+        566,
+        570,
+        573,
+        580,
+        588,
+        590,
+        593
+      ],
+      "supports": "实际读取今日次数、确认弹层、候选投票、记录与异议、原请求核对"
+    },
+    {
+      "path": "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/engagement/community_support.dart",
+      "lines": [
+        496,
+        506,
+        544,
+        555,
+        577
+      ],
+      "supports": "保留原请求内容/编号，先核对当前记录，再同编号继续"
+    },
+    {
+      "path": "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/晶晶日上工程交接包/01_源码/backend_server/src/modules/engagement/championship.js",
+      "lines": [
+        3,
+        7,
+        9,
+        11,
+        13,
+        15,
+        16,
+        19
+      ],
+      "supports": "候选为person_id、计次扣分、异议开放门槛、运营恢复票/退钻、当前结果和最终核定条件"
+    }
+  ],
+  "scope": "只读原PNG、需求交接和现有接口/App相关代码；未修改UI、业务代码或其他QA。此建议等待主任务网页原生修改后再以after图实际验收。"
+}
