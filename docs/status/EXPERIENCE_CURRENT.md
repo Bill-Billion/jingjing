@@ -1,3 +1,11 @@
+# 2026-10-23：其余100幅Figma校准受工具额度阻塞
+
+Experience已识别原文件102幅页面/状态；上一轮主页两幅排除，本轮余100幅。三张原稿的六个画面、逐页对应与最新业务检查项已整理，取得3张修改前截图。Figma MCP随后返回Starter套餐调用额度已用尽，当前Full编辑席位及文件权限有效。
+
+**其余100幅尚未修改、尚未截图验收，原设计稿未更新。** 待用户恢复可用额度后由Experience继续；Core此次无需新增接口修改。App、后端、接口、PR及共同版本均未改，亦未重新核对远端。[准备包](../testing/evidence/figma-remaining-calibration-20261023/index.html) · [任务与恢复入口](../tasks/records/UX-figma-remaining-calibration-20261023.md)。
+
+---
+
 # 2026-10-23：Figma主页已按最早原稿校准
 
 Experience已原位更新[Figma广场](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2-69)与[视频频道](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2004-5895)，保留最新五栏、城市/频道和现有业务入口。默认/上海两频道、城市浮层与完整业务目录截图已通过本侧检查；[查看原稿、修改前及修改后](../testing/evidence/figma-home-calibration-20261023/index.html)。

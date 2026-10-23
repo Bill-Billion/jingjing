@@ -1,3 +1,11 @@
+# 当前任务：其余100幅Figma校准等待工具额度恢复
+
+2026-10-23，已完成页面盘点、原稿对应和最新业务待核对项，取得3张修改前截图；Figma Starter套餐MCP额度已用尽。本轮其余100幅尚未修改或视觉验收，上一轮主页两幅保持完成状态。
+
+[准备包](testing/evidence/figma-remaining-calibration-20261023/index.html) · [任务与恢复入口](tasks/records/UX-figma-remaining-calibration-20261023.md)。用户恢复额度后由Experience继续，App与后端未改；未更新PR或重新核对远端。以下保留主页交付及原批次状态。
+
+---
+
 # 当前入口：Figma主页按最早原稿校准
 
 2026-10-23，原文件的[Figma广场](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2-69)和[视频频道](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2004-5895)已更新，[原稿与前后截图](testing/evidence/figma-home-calibration-20261023/index.html)通过本侧检查。最新V5需求及现有业务入口保留；本次只更新主页设计，App业务代码未改，其他页面尚未重新校准，用户与同事尚未人工审阅。

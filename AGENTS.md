@@ -1,3 +1,5 @@
+当前任务为2026-10-23其余100幅Figma页面校准，分支`ux/figma-remaining-calibration-20261023`。只读盘点已完成，Starter套餐MCP额度已用尽；100幅尚未修改或视觉验收，上一轮主页两幅已完成。额度恢复后按docs/tasks/records/UX-figma-remaining-calibration-20261023.md继续；不得把准备清单当通过结果或通过其他通道规避额度。以下记录保留各自日期。
+
 当前任务为2026-10-23的Figma主页原稿校准，文档分支`ux/figma-home-calibration-20261023`。原文件的广场与视频频道已更新，本侧截图检查通过；App与网页业务源码未改，其他页面未按此次最早原稿重新验收。先读docs/tasks/records/UX-figma-home-calibration-20261023.md及docs/ux/gallery-implementation-standard.md。以下前端批次、审阅和远端状态保留各自日期，不能当成本次重新核对。
 
 当前第5—12轮前端已完成本机范围并集中上传PR34（https://github.com/Bill-Billion/jingjing/pull/34），分支`ux/v5-r05-r12-frontend`，起点11abe25/PR33，integration仍2608ef7。用户2026-10-22授权继续并单列后端阻断。App461、Web297、分析及普通网页构建通过，404张最终截图与同记录跨端证据已整理并清理测试现场；Android Gradle下载网络阻塞单列。先读docs/START_HERE.md及docs/tasks/records/UX-v5-r05-r12-frontend-20261022.md，远端检查/同事审阅/合入分别核对。本批未推main或部署，以下记录为历史。
