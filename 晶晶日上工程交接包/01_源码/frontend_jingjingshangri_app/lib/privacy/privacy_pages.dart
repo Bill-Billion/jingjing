@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../trade/trade_widgets.dart';
@@ -295,7 +296,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         menu(),
         const SizedBox(height: 20),
         appNotice('此处按登录本人办理，不由机构或他人代办。资料留存、资金义务和具体清理范围由已审核依据分别处理。'),
-        if (rows.isEmpty && !checking) const Text('暂无属于你的个人信息申请。'),
+        if (rows.isEmpty && !checking && error == null)
+          const Text('暂无属于你的个人信息申请。'),
         for (final r in rows)
           communitySection(
               privacyTypes[communityMap(r['request'])['type']] ?? '本人申请', [
@@ -361,18 +363,38 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                     })
                 : null)
       ];
+  Widget _preferenceSwitch(String title, String subtitle, bool value,
+          ValueChanged<bool>? changed) =>
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AccountTheme.border))),
+        child: SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: value,
+          onChanged: changed,
+          activeThumbColor: AccountTheme.canvas,
+          activeTrackColor: AccountTheme.text,
+          inactiveThumbColor: AccountTheme.canvas,
+          inactiveTrackColor: AccountTheme.border,
+          title: Text(title,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+          subtitle: Text(subtitle,
+              style: const TextStyle(
+                  fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ),
+      );
+
   List<Widget> preferenceView() => [
-        communityHeading('由你选择的隐私偏好', '个性化与营销初始关闭，选择会保存为本人账号偏好。'),
+        communityHeading('资料与设置', '个性化与营销初始关闭，选择会保存为本人账号偏好。',
+            eyebrow: '你的资料与使用偏好'),
         menu(),
         const SizedBox(height: 20),
-        communityCheck(
-            '允许个性化设置',
-            personalization,
-            enabled
-                ? (v) => setState(() => personalization = v == true)
-                : null),
-        communityCheck('允许营销消息', marketing,
-            enabled ? (v) => setState(() => marketing = v == true) : null),
+        _preferenceSwitch('个性化内容推荐', '按你的账号偏好推荐公开内容', personalization,
+            enabled ? (v) => setState(() => personalization = v) : null),
+        _preferenceSwitch('营销消息提醒', '营销偏好不代替必要业务记录与业务通知', marketing,
+            enabled ? (v) => setState(() => marketing = v) : null),
         communityField(minutes, '休息提醒间隔（分钟）', keyboard: TextInputType.number),
         const Text('0为关闭；开启时15—240分钟。'),
         tradeButton(

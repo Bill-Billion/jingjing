@@ -323,6 +323,7 @@ void main() {
     await tester.tap(find.text('查看当前样片'));
     await nav.frames(tester);
     expect(find.text('审阅样片'), findsOneWidget);
+    await reveal(tester, find.text('本版已确认。停止重复确认，请回订单查看原付款节点。'));
     expect(find.text('本版已确认。停止重复确认，请回订单查看原付款节点。'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -332,6 +333,9 @@ void main() {
         s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, s, route: '/my');
     expect(find.byType(NavigationBar), findsOneWidget);
+    await reveal(tester, find.text('业务与作品'));
+    await tester.tap(find.text('业务与作品'));
+    await nav.frames(tester);
     await reveal(tester, find.text('我的交付作品'));
     await tester.tap(find.text('我的交付作品'));
     await nav.frames(tester);
@@ -344,6 +348,10 @@ void main() {
     await tester.tap(find.byType(BackButton));
     await nav.frames(tester);
     expect(find.byType(NavigationBar), findsOneWidget);
+    await reveal(tester, find.text('共创与权益'));
+    await tester.tap(find.text('共创与权益'));
+    await nav.frames(tester);
+    await reveal(tester, find.text('我的许可办理'));
     expect(find.text('我的许可办理'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

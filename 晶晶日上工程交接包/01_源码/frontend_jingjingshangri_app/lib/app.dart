@@ -9,6 +9,8 @@ import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
 import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
+import 'discovery/discovery_pages.dart';
+import 'support/support_pages.dart';
 import 'customization/customization_page.dart';
 import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
@@ -103,6 +105,15 @@ class JingjingShangriApp extends StatelessWidget {
               '/supply/record' => SupplyRecordPage(
                   recordId: uri.queryParameters['recordId'] ?? ''),
               '/settings' => const AppHelpPage(),
+              '/help' => const HelpFeedbackPage(),
+              '/search' => DiscoverySearchPage(
+                  initialCity: uri.queryParameters['city'] ?? ''),
+              '/saved' => const SavedHistoryPage(),
+              '/invoices' =>
+                InvoicePage(orderId: uri.queryParameters['orderId']),
+              '/producers/public' => PublicProducerPage(
+                  partyId: uri.queryParameters['partyId'] ?? '',
+                  city: uri.queryParameters['city'] ?? ''),
               '/agreement' => const AppLegalPage(
                   title: '用户协议',
                   body: LegalDocs.userAgreement,
@@ -117,6 +128,8 @@ class JingjingShangriApp extends StatelessWidget {
                   body: LegalDocs.privacyPolicy,
                   updatedAt: LegalDocs.privacyUpdated),
               '/wallet' => const WalletPage(),
+              '/wallet/points' => const WalletPage(mode: 'points'),
+              '/wallet/scout' => const WalletPage(mode: 'scout'),
               '/wallet/rules' => const WalletPage(mode: 'rules'),
               '/wallet/recharge' => const WalletPage(mode: 'recharge'),
               '/wallet/records' =>
@@ -161,7 +174,9 @@ class JingjingShangriApp extends StatelessWidget {
               '/humans' ||
               '/human-detail' ||
               '/artists/catalog' =>
-                const ArtistCataloguePage(),
+                ArtistCataloguePage(
+                    initialCity: uri.queryParameters['city'] ?? '',
+                    initialTag: uri.queryParameters['tag'] ?? ''),
               '/orders' => licenseKinds.containsKey(uri.queryParameters['kind'])
                   ? LicenseRecordsPage(kind: uri.queryParameters['kind']!)
                   : TradeRecordsPage(
@@ -308,7 +323,7 @@ class JingjingShangriApp extends StatelessWidget {
               '/stock/catalog' ||
               '/video-lib' ||
               '/sample-library' =>
-                const StockPage(),
+                StockPage(city: uri.queryParameters['city']),
               '/stock/video' =>
                 StockPage(mode: 'video', id: uri.queryParameters['listingId']),
               '/stock/listings' => const StockPage(mode: 'listings'),
@@ -321,7 +336,8 @@ class JingjingShangriApp extends StatelessWidget {
               '/stock/purchase' ||
               '/sample-order-detail' =>
                 StockPage(mode: 'purchase', id: uri.queryParameters['orderId']),
-              '/notices/catalog' => const NoticesPage(),
+              '/notices/catalog' =>
+                NoticesPage(initialCity: uri.queryParameters['city'] ?? ''),
               '/notices/public' => NoticesPage(
                   mode: 'public', id: uri.queryParameters['noticeId']),
               '/notices/new' => const NoticesPage(mode: 'new'),

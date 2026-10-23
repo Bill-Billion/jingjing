@@ -63,6 +63,33 @@ Map<String, dynamic> noticeRecord({int version = 4, String status = 'SENT'}) =>
       'expired': false
     };
 void main() {
+  for (final mode in ['catalog', 'records']) {
+    for (final failed in [true, false]) {
+      testWidgets('$mode 读取${failed ? '失败不显示成功空态' : '成功空列表有明确空态'}', (t) async {
+        final path =
+            '/api/v1/notices/${mode == 'catalog' ? 'catalog' : 'records'}';
+        final a = FakeAccountAdapter(
+            handler: (r) => r.path == path
+                ? (failed
+                    ? envelope({'code': 'SERVICE_UNAVAILABLE'},
+                        status: 503, error: true)
+                    : envelope({'items': [], 'next_cursor': null}))
+                : FakeAccountAdapter().defaultReply(r));
+        final s = (await t.runAsync(() => buyerSession(a)))!;
+        await host(t, s, NoticesPage(mode: mode, kind: 'NOTICE'));
+        final empty = mode == 'catalog' ? '当前筛选没有仍有效的已审公开通告。' : '当前没有本类型的可读记录。';
+        expect(a.requests.where((r) => r.path == path), isNotEmpty);
+        if (failed) {
+          expect(find.byIcon(Icons.error_outline), findsOneWidget);
+          expect(find.text(empty), findsNothing);
+        } else {
+          await reveal(t, find.text(empty));
+          expect(find.text(empty), findsOneWidget);
+        }
+        expect(t.takeException(), isNull);
+      });
+    }
+  }
   test('六类通告按各自字段，不把商单、活动强制变成到场表', () {
     for (final type in noticeTypes.keys) {
       final r = NoticePublic({

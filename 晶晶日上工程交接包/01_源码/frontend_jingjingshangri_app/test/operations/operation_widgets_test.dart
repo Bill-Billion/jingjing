@@ -32,7 +32,7 @@ void main() {
   testWidgets('header通知接真实列表，未读/全部和本人已读分开且保留五栏目返回', (t) async {
     final a = operationsAdapter(),
         s = (await t.runAsync(() => buyerSession(a)))!;
-    await nav.openApp(t, s, route: '/notices');
+    await nav.openApp(t, s, route: '/messages');
     expect(find.text('项目通知与留言暂未开放。'), findsNothing);
     nav.expectFiveTabs();
     await t.tap(find.byTooltip('通知'));

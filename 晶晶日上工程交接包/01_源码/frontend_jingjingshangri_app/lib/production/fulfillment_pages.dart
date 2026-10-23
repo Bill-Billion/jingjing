@@ -36,7 +36,6 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
                   : '待受派制作人核对首款与权利后开工'
       : fulfillmentStates[flow.state]!;
   return [
-    tradeHeading('这次制作', eyebrow: '原故事 / 原订单 / 具体版本'),
     tradeBanner(
         phase,
         flow.raw['started_at'] == null

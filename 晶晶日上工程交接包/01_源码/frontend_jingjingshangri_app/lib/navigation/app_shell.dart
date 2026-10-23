@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../auditions/auditions_pages.dart';
+import '../notices/notices_pages.dart';
 import 'package:flutter/services.dart';
 
 /// Keep the current tab address without replacing the mounted shell. Child
@@ -47,6 +49,9 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   late int _selected = widget.initialTab.clamp(0, 4);
   final _visited = <int>{};
+  String _city = '';
+  int _channel = 0;
+  int _messageChannel = 0;
   (int, String?, String?)? _sessionContext;
   static const _labels = ['广场', '试镜', '通告', '消息', '我的'];
   static const _routes = [
@@ -116,12 +121,14 @@ class _AppShellState extends State<AppShell> {
                                     fontFamily: AccountTheme.serif,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700)),
-                            const SizedBox(height: 6),
-                            Text(description,
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    color: AccountTheme.muted,
-                                    height: 1.6)),
+                            if (description.isNotEmpty)
+                              const SizedBox(height: 6),
+                            if (description.isNotEmpty)
+                              Text(description,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AccountTheme.muted,
+                                      height: 1.6)),
                           ])),
                       const SizedBox(width: 16),
                       const Icon(Icons.north_east,
@@ -137,32 +144,274 @@ class _AppShellState extends State<AppShell> {
               fontSize: 23,
               fontWeight: FontWeight.w700)));
 
-  Widget _storyFeature() =>
-      Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        const Divider(color: AccountTheme.text, height: 16),
-        const Padding(
-            padding: EdgeInsets.only(top: 18, bottom: 12),
-            child: Text('平台制作 / 由专员对接',
-                style: TextStyle(fontSize: 11, color: AccountTheme.accent))),
-        const Text('让故事\n与你有关',
-            style: TextStyle(
-                fontFamily: AccountTheme.serif,
-                fontSize: 42,
-                fontWeight: FontWeight.w700,
-                height: 1.18)),
-        const SizedBox(height: 18),
-        Image.asset('assets/images/editorial-rain.webp',
-            height: 205,
-            fit: BoxFit.cover,
-            excludeFromSemantics: true,
-            alignment: const Alignment(0, -.25)),
-        Container(
-            color: AccountTheme.text,
-            padding: const EdgeInsets.all(14),
-            child: const Text('写下自己的故事，交由平台制作专员接收。',
-                style: TextStyle(
-                    color: AccountTheme.canvas, fontSize: 13, height: 1.6))),
-      ]);
+  Future<void> _chooseCity() async {
+    final field = TextEditingController(text: _city);
+    final selected = await showDialog<String>(
+        context: context,
+        builder: (c) => AccountTheme(
+                child: AlertDialog(
+              title: const Text('选择城市'),
+              content: Column(mainAxisSize: MainAxisSize.min, children: [
+                const Text('查看所选城市的公开内容',
+                    style: TextStyle(color: AccountTheme.muted, fontSize: 13)),
+                const SizedBox(height: 16),
+                TextField(
+                    controller: field,
+                    maxLength: 40,
+                    decoration: const InputDecoration(
+                        labelText: '城市名称', hintText: '留空查看全部城市')),
+              ]),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(c), child: const Text('返回')),
+                TextButton(
+                    onPressed: () => Navigator.pop(c, ''),
+                    child: const Text('全部城市')),
+                FilledButton(
+                    onPressed: () => Navigator.pop(c, field.text.trim()),
+                    child: const Text('确定')),
+              ],
+            )));
+    // The dialog's exit animation may still reference its controller.
+    if (selected != null && mounted) setState(() => _city = selected);
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    field.dispose();
+  }
+
+  String _catalogRoute() => Uri(
+          path: _channel == 0 ? '/artists/catalog' : '/stock/catalog',
+          queryParameters: _city.isEmpty ? null : {'city': _city})
+      .toString();
+
+  Widget _channelBar() => Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AccountTheme.text))),
+      child: Row(children: [
+        TextButton(
+            onPressed: _chooseCity,
+            style: TextButton.styleFrom(padding: EdgeInsets.zero),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 66),
+                  child: Text(_city.isEmpty ? '城市' : _city,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12))),
+              const Icon(Icons.expand_more, size: 14)
+            ])),
+        for (var i = 0; i < 2; i++)
+          Semantics(
+              selected: _channel == i,
+              child: TextButton(
+                  onPressed: () => setState(() => _channel = i),
+                  style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10)),
+                  child: Container(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  color: _channel == i
+                                      ? AccountTheme.vermilion
+                                      : Colors.transparent,
+                                  width: 2))),
+                      child: Text(['艺人', '视频'][i],
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: _channel == i
+                                  ? FontWeight.w700
+                                  : FontWeight.w400))))),
+        const Spacer(),
+        TextButton(
+            onPressed: () => _open('/engagement?view=buyers'),
+            style: TextButton.styleFrom(padding: EdgeInsets.zero),
+            child: const Text('找出品人 ↗', style: TextStyle(fontSize: 11))),
+      ]));
+
+  Widget _storyFeature() => LayoutBuilder(builder: (context, box) {
+        final width = box.maxWidth;
+        final titleSize = width * 72 / 390;
+        final enlarged = MediaQuery.textScalerOf(context).scale(14) > 19;
+        if (enlarged) {
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset('assets/images/editorial-sea.webp',
+                    height: 320,
+                    fit: BoxFit.cover,
+                    semanticLabel: '海边影像示意，非在售作品'),
+                const Text('我的故事',
+                    style: TextStyle(
+                        fontFamily: AccountTheme.serif,
+                        fontSize: 52,
+                        height: 1.1,
+                        fontWeight: FontWeight.w700)),
+                const SizedBox(height: 12),
+                const Text('平台制作 · 专员对接'),
+                TextButton(
+                    onPressed: () => _open('/customization/new'),
+                    child: const Text('开始创作 ↗')),
+              ]);
+        }
+        return SizedBox(
+            height: width * 430 / 390,
+            child: Stack(children: [
+              Positioned(
+                  left: width * 104 / 390,
+                  right: 0,
+                  top: 10,
+                  bottom: 0,
+                  child: Image.asset('assets/images/editorial-sea.webp',
+                      fit: BoxFit.cover, semanticLabel: '海边影像示意，非在售作品')),
+              const Positioned(
+                  left: 16,
+                  top: 20,
+                  child: Text('故事制作',
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w600))),
+              Positioned(
+                  right: 8,
+                  top: 8,
+                  child: TextButton(
+                      onPressed: () => _open('/customization/new'),
+                      child: const Text('写下故事 ↗',
+                          style: TextStyle(
+                              color: AccountTheme.accent,
+                              fontWeight: FontWeight.w600)))),
+              Positioned(
+                  left: 16,
+                  top: width * .506,
+                  child: Semantics(
+                      header: true,
+                      label: '我的故事',
+                      child: ExcludeSemantics(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                            for (final line in ['我的', '故事'])
+                              ColoredBox(
+                                  color: AccountTheme.canvas,
+                                  child: Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: Text(line,
+                                          style: TextStyle(
+                                              fontFamily: AccountTheme.serif,
+                                              fontSize: titleSize,
+                                              fontWeight: FontWeight.w700,
+                                              height: 1.04,
+                                              letterSpacing: -.7)))),
+                          ])))),
+              Positioned(
+                  left: 16,
+                  bottom: 0,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const ColoredBox(
+                            color: AccountTheme.canvas,
+                            child: Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: Text('平台制作 · 专员对接',
+                                    style:
+                                        TextStyle(fontSize: 11, height: 1.6)))),
+                        ColoredBox(
+                            color: AccountTheme.canvas,
+                            child: TextButton(
+                                onPressed: () => _open('/customization/new'),
+                                style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.only(right: 6),
+                                    alignment: Alignment.centerLeft),
+                                child: const Text('开始创作 ↗',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        decoration:
+                                            TextDecoration.underline)))),
+                      ])),
+              const Positioned(
+                  right: 8,
+                  bottom: 8,
+                  child: ColoredBox(
+                      color: AccountTheme.canvas,
+                      child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          child:
+                              Text('影像示意', style: TextStyle(fontSize: 10))))),
+            ]));
+      });
+
+  Widget _catalogFeature() => Padding(
+      padding: const EdgeInsets.fromLTRB(16, 15, 16, 0),
+      child: Column(children: [
+        const Divider(height: 1, color: AccountTheme.text),
+        const SizedBox(height: 17),
+        InkWell(
+            onTap: () => _open(_catalogRoute()),
+            child: Row(children: [
+              Image.asset('assets/images/editorial-rain.webp',
+                  width: ((MediaQuery.sizeOf(context).width - 32) * .43)
+                      .clamp(0.0, 154.0),
+                  height: 84,
+                  fit: BoxFit.cover,
+                  semanticLabel: '雨巷影像示意，非艺人照片或商品封面'),
+              const SizedBox(width: 14),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(_channel == 0 ? '艺人与数字人' : '现成视频',
+                        style: TextStyle(
+                            fontFamily: AccountTheme.serif,
+                            fontSize: MediaQuery.sizeOf(context).width < 350
+                                ? 17
+                                : 20,
+                            fontWeight: FontWeight.w700,
+                            height: 1.3)),
+                    const SizedBox(height: 6),
+                    Text(_channel == 0 ? '公开资料 · 作品与形象' : '浏览作品 · 核对个人许可',
+                        style: const TextStyle(fontSize: 11, height: 1.5)),
+                    const SizedBox(height: 5),
+                    const Text('查看名录 ↗',
+                        style:
+                            TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                  ])),
+            ])),
+      ]));
+
+  Widget _continuation() => Material(
+      color: AccountTheme.text,
+      child: InkWell(
+          onTap: () => _open('/customization'),
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(children: [
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      const Text('我的故事与草稿',
+                          style: TextStyle(
+                              color: AccountTheme.canvas, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      const Text('继续填写 · 查看受理进度',
+                          style: TextStyle(
+                              color: AccountTheme.canvas,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600)),
+                    ])),
+                const SizedBox(width: 12),
+                const ColoredBox(
+                    color: AccountTheme.vermilion,
+                    child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                        child: Text('查看 ↗',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600)))),
+              ]))));
 
   List<Widget> _currentTools() => [
         _heading('已有业务'),
@@ -187,40 +436,33 @@ class _AppShellState extends State<AppShell> {
       ];
 
   List<Widget> _home(AccountSession session) => [
+        _channelBar(),
         _storyFeature(),
-        const SizedBox(height: 16),
-        _entry(
-          '把我的故事拍成片',
-          '选择品类，写下想记录的内容；没写完可以先存草稿。',
-          Icons.edit_note_outlined,
-          () => _open('/customization/new'),
-        ),
-        _entry(
-          '我的故事与草稿',
-          '继续填写、查看已提交内容和平台受理进度。',
-          Icons.drafts_outlined,
-          () => _open('/customization'),
-        ),
-        _heading('发现与合作'),
-        _entry(
-          '艺人与数字人',
-          '查看已审核且获准公开的艺人资料。',
-          Icons.people_outline,
-          () => _open('/discover'),
-        ),
-        _entry('现成视频', '查看现成作品、个人许可与已购内容。', Icons.movie_outlined,
-            () => _open('/stock/catalog')),
-        _entry('艺人六榜与月度评选', '按已发布快照查看六榜和评选规则。', Icons.bar_chart_outlined,
-            () => _open('/engagement')),
-        _entry(
-          '试镜预约',
-          '查看公开可约服务、预约与材料交付。',
-          Icons.video_camera_front_outlined,
-          () => _select(1),
-        ),
-        _entry('通告与合作', '查看通告分类与已有合作业务。', Icons.article_outlined,
-            () => _select(2)),
-        ..._currentTools(),
+        _catalogFeature(),
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _heading('发现与合作'),
+                  _entry('搜索与匹配', '按城市、艺人标签查找公开目录。', Icons.search,
+                      () => _open('/search')),
+                  _entry('艺人与数字人', '查看已审核且获准公开的艺人资料。', Icons.people_outline,
+                      () => _open('/discover')),
+                  _entry('现成视频', '查看现成作品、个人许可与已购内容。', Icons.movie_outlined,
+                      () => _open('/stock/catalog')),
+                  _entry('艺人六榜与月度评选', '查看已发布榜单与评选规则。', Icons.bar_chart_outlined,
+                      () => _open('/engagement')),
+                  _entry('找出品人与机构', '查看同城公开资料与合作信息。', Icons.business_outlined,
+                      () => _open('/engagement?view=buyers')),
+                  _entry('试镜预约', '查看公开可约服务与预约记录。',
+                      Icons.video_camera_front_outlined, () => _select(1)),
+                  _entry('通告与合作', '查看通告分类与已有合作业务。', Icons.article_outlined,
+                      () => _select(2)),
+                  ..._currentTools(),
+                  _entry('我已购买的作品', '查看本人已购内容与个人许可。', Icons.movie_outlined,
+                      () => _open('/stock/purchases')),
+                ])),
       ];
 
   List<Widget> _audition() => [
@@ -250,32 +492,6 @@ class _AppShellState extends State<AppShell> {
             () => _open('/gigs')),
       ];
 
-  List<Widget> _messages() => [
-        supplyBusinessIntro('消息', '把业务变化、合作意向与具体订单沟通分开查看。'),
-        _entry(
-          '系统与业务通知',
-          '查看当前账号和办理身份获准的通知。',
-          Icons.notifications_outlined,
-          () => _open('/operations/notifications'),
-        ),
-        _entry(
-          '订单与项目留言',
-          '围绕本人有权参与的订单和项目查看现有留言。',
-          Icons.chat_bubble_outline,
-          () => _open('/chat'),
-        ),
-        _entry('试镜订单沟通', '围绕已接受且核实付款的具体订单沟通。', Icons.event_note_outlined,
-            () => _open('/auditions/bookings')),
-        _entry('投稿与合作客服', '查看单向投稿、业务意向及平台客服处理。', Icons.inbox_outlined,
-            () => _open('/notices/records?kind=CASE')),
-        _entry(
-          '我的故事与草稿',
-          '查看平台待查看、受理中等实际状态。',
-          Icons.drafts_outlined,
-          () => _open('/customization'),
-        ),
-      ];
-
   Widget supplyBusinessIntro(String title, String description) => Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -283,39 +499,6 @@ class _AppShellState extends State<AppShell> {
             style: const TextStyle(
                 fontSize: 14, color: AccountTheme.muted, height: 1.6)),
       ]));
-
-  Widget _menuGrid() => Card(
-      child: Padding(
-          padding: const EdgeInsets.all(16),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const Text('我的业务',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              for (final item in [
-                ('数字人资料', Icons.face_outlined, '/my-humans'),
-                ('订单与付款', Icons.receipt_long_outlined, '/orders'),
-                ('我的项目', Icons.folder_open_outlined, '/my-projects'),
-                ('钱包与晶钻', Icons.account_balance_outlined, '/wallet'),
-              ])
-                Expanded(
-                    child: InkWell(
-                        borderRadius: BorderRadius.zero,
-                        onTap: () => _open(item.$3),
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 4, vertical: 12),
-                            child: Column(children: [
-                              Icon(item.$2,
-                                  size: 28, color: AccountTheme.accent),
-                              const SizedBox(height: 10),
-                              Text(item.$1,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 12)),
-                            ])))),
-            ]),
-          ])));
 
   List<Widget> _mine(AccountSession session) => [
         if (!session.isLoggedIn) ...[
@@ -339,7 +522,7 @@ class _AppShellState extends State<AppShell> {
                     style: TextStyle(
                         fontFamily: AccountTheme.serif,
                         color: AccountTheme.canvas,
-                        fontSize: 86,
+                        fontSize: 104,
                         fontWeight: FontWeight.w700,
                         height: 1.15)),
                 const SizedBox(width: 20),
@@ -391,117 +574,195 @@ class _AppShellState extends State<AppShell> {
                         child: const Text('切换身份')),
                   ]))),
         ],
-        _entry('账号与机构', '管理账号、机构、邀请和办事身份。', Icons.manage_accounts_outlined,
-            () => _open('/account')),
-        _entry('业务通知', '查看当前账号和办事身份获准的业务变化。', Icons.notifications_outlined,
-            () => _open('/operations/notifications')),
-        _heading('我的故事'),
-        _entry('我的故事与草稿', '找回草稿、查看提交内容和受理进度。', Icons.drafts_outlined,
-            () => _open('/customization')),
-        _entry('发起制作需求', '选一个品类，先写下你的故事。', Icons.edit_note_outlined,
-            () => _open('/customization/new')),
-        _menuGrid(),
-        _heading('我的作品与权益'),
-        _entry('我购买的现成视频', '核对个人许可、受控下载、收讫与售后。', Icons.movie_outlined,
-            () => _open('/stock/purchases')),
-        _entry('我的现成作品上架', '本人提交作品、权利材料并查看独立审核。', Icons.publish_outlined,
-            () => _open('/stock/listings')),
-        _entry('钱包、晶钻与会员', '查看可用积分、原批次、期限与会员年。',
-            Icons.account_balance_wallet_outlined, () => _open('/wallet')),
-        _entry('权益兑换与抽奖', '核对实际规则、概率、库存、券包和领取进度。', Icons.redeem_outlined,
-            () => _open('/redemption')),
-        _entry('多人共创', '邀请、本人同意、成团条件和个人片段分别核对。', Icons.groups_outlined,
-            () => _open('/cocreation')),
-        _entry('成长与推荐', '查看成长、一级推荐、计提与冲回。', Icons.trending_up_outlined,
-            () => _open('/engagement?view=growth')),
-        _heading('商单与直接合作'),
-        _entry('商单通知', '查看商单暂停与直接合作结束记录', Icons.notifications_outlined,
-            () => _open('/gigs/notifications')),
-        _entry('我的商单与接单约定', '查看当前身份的需求、约定与审核状态。', Icons.work_outline,
-            () => _open('/gigs/records?kind=GIG')),
-        _entry('MCN 直接合作', '本人确认、拒绝或结束双方直接合作。', Icons.handshake_outlined,
-            () => _open('/mcn')),
-        _entry('MCN 经营与委派', '核对成员、逐人委派、派单与收入。', Icons.business_outlined,
-            () => _open('/engagement?view=mcn')),
-        _entry('佣金核算', '按真实净额计提；没有出款与提现接入。', Icons.account_balance_outlined,
-            () => _open('/gigs/records?kind=COMMISSION')),
-        _heading('订单与付款'),
-        _entry('我的结算', '先选约定，核对本人金额、确认、付款申请与真实实付。',
-            Icons.account_balance_wallet_outlined, () => _open('/finance')),
-        _entry('结算业务通知', '仅当前身份获准参与的结算业务。', Icons.notifications_outlined,
-            () => _open('/finance/notifications')),
-        _entry('订单、报价与旧记录', '核对原报价、付款节点与退款状态。', Icons.receipt_long_outlined,
-            () => _open('/orders')),
-        _heading('公开项目与发行'),
-        _entry('我的参与项目', '回应邀请、本人入组、逐版确认与发行进度。', Icons.folder_open_outlined,
-            () => _open('/my-projects')),
-        _entry('参演条款与会签', '核对片酬、授权、各方确认、变更和履约。', Icons.assignment_outlined,
-            () => _open('/projects/participation')),
-        _entry('独立发行收入约定', '逐方核对实际渠道净收入约定与后续结算。', Icons.payments_outlined,
-            () => _open('/projects/income')),
-        _heading('制作与交付'),
-        _entry('参与制作项目', '审阅具体版本、提交本版意见与查看修改记录。', Icons.movie_outlined,
-            () => _open('/production')),
-        _entry('我的交付作品', '当前最终成片、验收付款与受控下载。', Icons.lock_outline,
-            () => _open('/production/works')),
-        _heading('剧本许可'),
-        _entry('我的许可办理', '签署、身份、权属核验与许可生效条件。', Icons.verified_outlined,
-            () => _open('/licensing')),
-        _entry('我的许可项目', '查看公开项目与许可绑定。', Icons.folder_open_outlined,
-            () => _open('/licensing?kind=PROJECT')),
-        _heading('创作与供给'),
-        _entry('历史作品资料', '查看此前保存的作品和权利资料。', Icons.edit_note_outlined,
-            () => _open('/supply')),
-        _entry('创作工具', '创作任务与历史作品 · 暂未开放', Icons.auto_awesome_outlined,
-            () => _open('/ai-create')),
-        _entry('合同与原约定', '按权限查看合同当时保存的内容和规则。', Icons.description_outlined,
-            () => _open('/contract')),
-        _heading('帮助与设置'),
-        _entry('个人信息与隐私权益', '办理偏好、查询更正、撤回删除和请求回复。', Icons.privacy_tip_outlined,
-            () => _open('/privacy/requests')),
-        _entry('设置与帮助', '账号入口、用户协议和隐私政策。', Icons.settings_outlined,
-            () => _open('/settings')),
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _myDirectory()),
       ];
 
+  Widget _myDirectory() {
+    final groups = <(String, String, List<(String, String)>)>[
+      (
+        '业务与作品',
+        '订单 · 出品参演 · 已购作品',
+        [
+          ('我的故事与草稿', '/customization'),
+          ('发起制作需求', '/customization/new'),
+          ('订单与付款', '/orders'),
+          ('我的参与项目', '/my-projects'),
+          ('参与制作项目', '/production'),
+          ('我的交付作品', '/production/works'),
+          ('我购买的现成视频', '/stock/purchases'),
+          ('参演条款与会签', '/projects/participation'),
+          ('独立发行收入约定', '/projects/income'),
+          ('合同与原约定', '/contract'),
+        ]
+      ),
+      (
+        '艺人与商品',
+        '我的艺人 · 数字人 · 视频 · 试镜设置',
+        [
+          ('数字人资料', '/my-humans'),
+          ('我的现成作品上架', '/stock/listings'),
+          ('试镜服务与接单', '/auditions/offers'),
+          ('我的商单与接单约定', '/gigs/records?kind=GIG'),
+          ('历史作品资料', '/supply'),
+          ('创作工具 · 暂未开放', '/ai-create'),
+        ]
+      ),
+      (
+        '认证与成长',
+        '实名 · 授权 · 成长与合作',
+        [
+          ('账号与机构', '/account'),
+          ('成长与推荐', '/engagement?view=growth'),
+          ('MCN 直接合作', '/mcn'),
+          ('MCN 经营与委派', '/engagement?view=mcn'),
+        ]
+      ),
+      (
+        '资金与收益',
+        '消费余额 · 晶钻 · 艺人收入',
+        [
+          ('钱包、晶钻与会员', '/wallet'),
+          ('晶钻中心', '/wallet/points'),
+          ('星探中心', '/wallet/scout'),
+          ('发票与票据', '/invoices'),
+          ('我的结算', '/finance'),
+          ('佣金核算', '/gigs/records?kind=COMMISSION'),
+          ('结算业务通知', '/finance/notifications'),
+        ]
+      ),
+      (
+        '共创与权益',
+        '参与记录 · 制作金 · 活动规则',
+        [
+          ('多人共创', '/cocreation'),
+          ('权益兑换与抽奖', '/redemption'),
+          ('我的许可办理', '/licensing'),
+          ('我的许可项目', '/licensing?kind=PROJECT'),
+        ]
+      ),
+      (
+        '业务通知',
+        '系统通知 · 商单与履约变化',
+        [
+          ('系统与业务通知', '/operations/notifications'),
+          ('商单通知', '/gigs/notifications'),
+          ('我的预约', '/auditions/bookings'),
+          ('我的通告与投稿', '/notices/records?kind=SUBMISSION'),
+        ]
+      ),
+      (
+        '账号与帮助',
+        '隐私设置 · 账号管理 · 帮助反馈',
+        [
+          ('个人信息与隐私权益', '/privacy/requests'),
+          ('设置与帮助', '/settings'),
+          ('帮助与反馈', '/help'),
+        ]
+      ),
+    ];
+    return Column(children: [
+      for (final g in groups)
+        DecoratedBox(
+            decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+            child: ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: const EdgeInsets.only(left: 12),
+                shape: const Border(),
+                collapsedShape: const Border(),
+                title: Text(g.$1,
+                    style: const TextStyle(
+                        fontFamily: AccountTheme.serif,
+                        fontSize: 23,
+                        height: 1.3,
+                        fontWeight: FontWeight.w700)),
+                subtitle: Text(g.$2,
+                    style: const TextStyle(
+                        fontSize: 11, color: AccountTheme.muted)),
+                trailing: const Icon(Icons.north_east, size: 22),
+                children: [
+                  for (final item in g.$3)
+                    _entry(item.$1, '', Icons.north_east, () => _open(item.$2))
+                ])),
+    ]);
+  }
+
   Widget _section(int index, AccountSession session) {
-    final identityName = session.party?['display_name'] as String?;
     final children = switch (index) {
-      1 => _audition(),
-      2 => _notices(),
-      3 => _messages(),
+      1 => [
+          if (session.isLoggedIn)
+            AuditionsPage(embedded: true, initialCity: _city)
+          else
+            ..._audition(),
+          _entry('我的预约', '处理接单、交付和退款。', Icons.event_outlined,
+              () => _open('/auditions/bookings')),
+          _entry('试镜服务与接单', '本人设置服务并管理预约。', Icons.perm_identity_outlined,
+              () => _open('/auditions/offers')),
+        ],
+      2 => [
+          if (session.isLoggedIn)
+            NoticesPage(embedded: true, initialCity: _city)
+          else
+            ..._notices(),
+          _entry('发布通告', '核对身份资格后填写要求。', Icons.edit_outlined,
+              () => _open('/notices/new')),
+          _entry('我的通告与投稿', '查看发布、投稿与合作意向。', Icons.inbox_outlined,
+              () => _open('/notices/records?kind=SUBMISSION')),
+          _entry('公开项目与角色', '查看当前项目与可申请角色。', Icons.movie_filter_outlined,
+              () => _open('/projects/catalogue')),
+          _entry('商业委托', '按实际资格提交或处理提案。', Icons.work_outline,
+              () => _open('/gigs')),
+          _entry('权益兑换与抽奖', '核对实际活动规则。', Icons.redeem_outlined,
+              () => _open('/redemption')),
+        ],
+      3 => [
+          Row(children: [
+            for (var i = 0; i < 3; i++)
+              Expanded(
+                  child: TextButton(
+                      onPressed: () => setState(() => _messageChannel = i),
+                      child: Container(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: _messageChannel == i
+                                          ? AccountTheme.vermilion
+                                          : AccountTheme.border,
+                                      width: _messageChannel == i ? 2 : 1))),
+                          child: Text(['订单会话', '投稿意向', '系统通知'][i],
+                              style: const TextStyle(fontSize: 14))))),
+          ]),
+          const SizedBox(height: 12),
+          if (_messageChannel == 0) ...[
+            _entry('订单与项目留言', '围绕有权参与的原订单与项目查看留言。', Icons.chat_bubble_outline,
+                () => _open('/chat')),
+            _entry('试镜订单沟通', '接单且核实付款后，进入具体订单沟通。', Icons.event_note_outlined,
+                () => _open('/auditions/bookings')),
+          ],
+          if (_messageChannel == 1)
+            _entry('投稿与合作客服', '查看单向投稿、业务意向及客服处理。', Icons.inbox_outlined,
+                () => _open('/notices/records?kind=CASE')),
+          if (_messageChannel == 2)
+            _entry('系统与业务通知', '查看当前账号和身份获准的通知。', Icons.notifications_outlined,
+                () => _open('/operations/notifications')),
+          const SizedBox(height: 28),
+          const Text('订单沟通、投稿意向与系统提醒，在此分别查看。',
+              style: TextStyle(
+                  fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+        ],
       4 => _mine(session),
       _ => _home(session),
     };
     return ListView(
         key: PageStorageKey('app-section-$index:$_sessionContext'),
         primary: false,
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (index == 0)
-            Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: InkWell(
-                    borderRadius: BorderRadius.zero,
-                    onTap: () => _open('/account'),
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Row(children: [
-                          const Icon(Icons.person_outline,
-                              color: AccountTheme.muted, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                              child: Text(
-                                  session.isLoggedIn
-                                      ? (identityName ?? '请选择办事身份')
-                                      : '登录后选择办事身份',
-                                  style: const TextStyle(
-                                      color: AccountTheme.muted))),
-                          const Icon(Icons.chevron_right,
-                              size: 20, color: AccountTheme.muted),
-                        ])))),
-          ...children,
-          const SizedBox(height: 24),
-        ]);
+        padding: index == 0 || index == 4 && session.isLoggedIn
+            ? EdgeInsets.zero
+            : const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        children: [...children, const SizedBox(height: 24)]);
   }
 
   @override
@@ -509,25 +770,47 @@ class _AppShellState extends State<AppShell> {
     final session = context.watch<AccountSession>();
     return AccountTheme(
         child: Scaffold(
-      appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: _selected == 0,
-          titleSpacing: 16,
-          toolbarHeight: _selected > 0 && _selected < 4 ? 78 : 56,
-          title: Text(_selected == 0 ? '晶晶日上' : _labels[_selected],
-              style: TextStyle(
-                  fontFamily: AccountTheme.serif,
-                  fontSize: _selected > 0 && _selected < 4 ? 42 : 20,
-                  fontWeight: FontWeight.w700)),
-          actions: [
-            IconButton(
-                tooltip: _selected == 4 ? '设置与帮助' : '通知',
-                onPressed: () => _open(
-                    _selected == 4 ? '/settings' : '/operations/notifications'),
-                icon: Icon(_selected == 4
-                    ? Icons.settings_outlined
-                    : Icons.notifications_outlined)),
-          ]),
+      appBar: session.isLoggedIn && [1, 2].contains(_selected)
+          ? null
+          : AppBar(
+              backgroundColor: _selected == 4 && session.isLoggedIn
+                  ? AccountTheme.text
+                  : AccountTheme.canvas,
+              foregroundColor: _selected == 4 && session.isLoggedIn
+                  ? AccountTheme.canvas
+                  : AccountTheme.text,
+              automaticallyImplyLeading: false,
+              centerTitle: false,
+              titleSpacing: 16,
+              toolbarHeight: _selected > 0 && _selected < 4 ? 78 : 44,
+              title: Text(_selected == 0 ? '晶晶日上' : _labels[_selected],
+                  style: TextStyle(
+                      color: _selected == 4 && session.isLoggedIn
+                          ? AccountTheme.canvas
+                          : AccountTheme.text,
+                      fontFamily: AccountTheme.serif,
+                      fontSize: _selected > 0 && _selected < 4
+                          ? 52
+                          : _selected == 0
+                              ? 27
+                              : 14,
+                      fontWeight: FontWeight.w700)),
+              actions: [
+                  if (_selected == 0)
+                    TextButton(
+                        onPressed: () => _open('/account'),
+                        child: const Text('账号与身份 ⌄',
+                            style: TextStyle(
+                                fontSize: 12, color: AccountTheme.muted))),
+                  IconButton(
+                      tooltip: _selected == 4 ? '设置与帮助' : '通知',
+                      onPressed: () => _open(_selected == 4
+                          ? '/settings'
+                          : '/operations/notifications'),
+                      icon: Icon(_selected == 4
+                          ? Icons.settings_outlined
+                          : Icons.notifications_outlined)),
+                ]),
       body: SafeArea(
           child: Center(
               child: ConstrainedBox(
@@ -545,37 +828,40 @@ class _AppShellState extends State<AppShell> {
                                           enabled: index == _selected,
                                           child: _section(index, session)))
                                   : const SizedBox.shrink())))))),
-      bottomNavigationBar: DecoratedBox(
-          decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AccountTheme.border))),
-          child: NavigationBar(
-              animationDuration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : const Duration(milliseconds: 140),
-              height: 64,
-              elevation: 0,
-              backgroundColor: AccountTheme.canvas,
-              indicatorColor: Colors.transparent,
-              selectedIndex: _selected,
-              onDestinationSelected: _select,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              destinations: List.generate(
-                  5,
-                  (i) => NavigationDestination(
-                      key: Key('app-tab-$i'),
-                      icon: Icon(_icons[i]),
-                      selectedIcon: Stack(clipBehavior: Clip.none, children: [
-                        Icon(_icons[i]),
-                        const Positioned(
-                            bottom: -20,
-                            left: 10,
-                            child: SizedBox(
-                                width: 3,
-                                height: 3,
-                                child:
-                                    ColoredBox(color: AccountTheme.vermilion))),
-                      ]),
-                      label: _labels[i])))),
+      bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
+        if (_selected == 0) _continuation(),
+        DecoratedBox(
+            decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: AccountTheme.border))),
+            child: NavigationBar(
+                animationDuration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 140),
+                height: 64,
+                elevation: 0,
+                backgroundColor: AccountTheme.canvas,
+                indicatorColor: Colors.transparent,
+                selectedIndex: _selected,
+                onDestinationSelected: _select,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                destinations: List.generate(
+                    5,
+                    (i) => NavigationDestination(
+                        key: Key('app-tab-$i'),
+                        icon: Icon(_icons[i]),
+                        selectedIcon: Stack(clipBehavior: Clip.none, children: [
+                          Icon(_icons[i]),
+                          const Positioned(
+                              bottom: -20,
+                              left: 10,
+                              child: SizedBox(
+                                  width: 3,
+                                  height: 3,
+                                  child: ColoredBox(
+                                      color: AccountTheme.vermilion))),
+                        ]),
+                        label: _labels[i])))),
+      ]),
     ));
   }
 }
@@ -685,6 +971,11 @@ class AppHelpPage extends StatelessWidget {
           FilledButton(
               onPressed: () => Navigator.pushNamed(context, '/account'),
               child: const Text('管理账号与机构'))
+        ]),
+        _section('帮助与反馈', '查找常见办理问题与当前可用入口。', Icons.help_outline, [
+          OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, '/help'),
+              child: const Text('打开帮助与反馈'))
         ]),
         _section('产品工作名', '晶晶日上', Icons.info_outline, []),
       ]);

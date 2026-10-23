@@ -106,7 +106,7 @@ function active(target: string) {
 
 <style scoped>
 .workspace-nav{display:grid;gap:6px}
-.workspace-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;border-radius:10px;font-size:14px}
+.workspace-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;border-radius:var(--ops-radius-sm);font-size:14px}
 .workspace-nav a.active{color:var(--ops-ink);background:var(--ops-accent-soft);font-weight:600}
 .workspace-nav svg{width:20px;height:20px;flex:none}
 .nav-caption{margin:24px 12px 8px;font-size:12px;color:var(--ops-text-2)}

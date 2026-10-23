@@ -59,37 +59,84 @@ Widget financeIdFact(String label, String id) => Row(children: [
           onPressed: () => Clipboard.setData(ClipboardData(text: id)),
           icon: const Icon(Icons.copy_outlined, size: 20))
     ]);
-Widget financeAmounts(Map<String, dynamic> d) => LayoutBuilder(
-    builder: (context, c) => Wrap(spacing: 12, runSpacing: 12, children: [
-          for (final entry in [
-            ('本人应得', 'accrued_minor'),
-            ('已核实付款', 'paid_minor'),
-            ('尚未付款', 'balance_minor'),
-            ('当前可申请', 'available_minor')
-          ])
-            Container(
-                width: (c.maxWidth - 12) / 2,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    color: AccountTheme.canvas,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(entry.$1,
+Widget financeEditorialBanner(String title, String body) => Container(
+    margin: const EdgeInsets.only(bottom: 24),
+    padding: const EdgeInsets.all(18),
+    color: AccountTheme.text,
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(title,
+          style: const TextStyle(
+              color: AccountTheme.canvas,
+              fontSize: 16,
+              fontWeight: FontWeight.w700)),
+      const SizedBox(height: 8),
+      Text(body,
+          style: const TextStyle(
+              color: AccountTheme.canvas, fontSize: 14, height: 1.6))
+    ]));
+
+Widget financeEditorialFact(String label, String value,
+        {String? description, bool accent = false}) =>
+    Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AccountTheme.border))),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Expanded(
+              flex: 3,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(label,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                    if (description != null) ...[
+                      const SizedBox(height: 6),
+                      Text(description,
                           style: const TextStyle(
-                              fontSize: 16, color: AccountTheme.muted)),
-                      const SizedBox(height: 12),
-                      FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(financeMoneyText(d[entry.$2]),
-                              style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                  color: AccountTheme.accent)))
-                    ]))
+                              fontSize: 14,
+                              height: 1.5,
+                              color: AccountTheme.muted))
+                    ]
+                  ])),
+          const SizedBox(width: 16),
+          Expanded(
+              flex: 2,
+              child: SelectableText(value,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 16,
+                      height: 1.5,
+                      color: accent ? AccountTheme.accent : AccountTheme.text)))
         ]));
+
+Widget financeAmounts(Map<String, dynamic> d) =>
+    Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      for (final entry in [
+        ('本人应得', 'accrued_minor'),
+        ('已核实付款', 'paid_minor'),
+        ('尚未付款', 'balance_minor'),
+        ('当前可申请', 'available_minor')
+      ])
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AccountTheme.border))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(entry.$1,
+                  style:
+                      const TextStyle(fontSize: 13, color: AccountTheme.muted)),
+              const SizedBox(height: 8),
+              Text(financeMoneyText(d[entry.$2]),
+                  style: const TextStyle(
+                      fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
+            ],
+          ),
+        ),
+    ]);
+
 Widget financeParagraph(String text) => projectParagraph(text);
 void financeClearWarnings(BuildContext context) => ScaffoldMessenger.of(context)
   ..clearSnackBars()

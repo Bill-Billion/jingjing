@@ -9,6 +9,7 @@ import '../operations/operation_widgets.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
+import '../account/editorial_widgets.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_api.dart';
 import '../trade/trade_models.dart';
@@ -300,6 +301,11 @@ class _ProjectDetailState extends State<_ProjectDetail> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (p != null) ...[
+            EditorialFeature(
+                title: productionProjectTitle(p, order),
+                eyebrow: '平台制作任务 / ${productionStatuses[p.status]}',
+                description:
+                    '${p.data['specification']['final_seconds']}秒 · ${p.data['specification']['service_tier']}'),
             if (fulfillment != null)
               ...fulfillmentSections(context, widget.session, p, fulfillment!,
                   order: order, busy: busy, reload: load),
@@ -322,13 +328,7 @@ class _ProjectDetailState extends State<_ProjectDetail> {
             ]),
             tradeSection('当前制作进度', [
               for (final stage in productionStages.keys) ...[
-                tradeFact(
-                    productionStages[stage]!,
-                    p.data['current'][stage] == null
-                        ? '未开始'
-                        : p.data['accepted'][stage] == p.data['current'][stage]
-                            ? '当前版本已确认'
-                            : '当前版本待审阅'),
+                productionProgressStep(p, stage),
                 if (p.data['current'][stage] != null &&
                     versions.any((v) => v.id == p.data['current'][stage]))
                   tradeButton(
@@ -880,41 +880,100 @@ class _VersionReviewState extends State<_VersionReview> {
             value: 'CREATIVE_CHANGE', child: Text('新增创作要求（按原约定计次）'))
       ],
       onChanged: locked ? null : (v) => setState(() => changeKind = v!));
-  Widget contentCard(ProductionRecord v) =>
-      tradeSection(v.stage == 'SCRIPT' ? '剧本节选' : '私有预览', [
-        if (v.stage == 'SCRIPT') ...[
-          if (text != null)
-            SelectableText(
-                text!.length > 260 ? '${text!.substring(0, 260)}…' : text!,
-                style: const TextStyle(fontSize: 16, height: 1.8))
-          else
-            appNotice('点击完整阅读，按当前身份读取本版剧本。'),
-          tradeButton(
-              '完整阅读', locked || reading ? null : () => readContent(full: true))
-        ] else ...[
-          if (video?.controller.value.isInitialized == true)
-            AspectRatio(
-                aspectRatio: video!.controller.value.aspectRatio,
-                child: VideoPlayer(video!.controller))
-          else
-            AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Container(
-                    decoration: BoxDecoration(
-                        color: AccountTheme.text.withValues(alpha: .08),
-                        borderRadius: BorderRadius.zero),
-                    child: const Center(
-                        child: Icon(Icons.play_circle_outline,
-                            size: 64, color: AccountTheme.accent)))),
-          const SizedBox(height: 12),
-          appNotice('预览保留实际审核过的内容标识。当前画面仅来自私有文件，不使用示例视频。'),
-          tradeButton('播放预览', locked || reading ? null : readContent),
-          if (video?.controller.value.isInitialized == true)
-            tradeButton('暂停预览', () => video!.controller.pause(), outline: true)
-        ],
+  String mediaTime(Duration duration) =>
+      '${duration.inMinutes.toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+
+  Widget contentCard(ProductionRecord v) {
+    if (v.stage == 'SCRIPT') {
+      return tradeSection('剧本节选', [
+        if (text != null)
+          SelectableText(
+              text!.length > 260 ? '${text!.substring(0, 260)}…' : text!,
+              style: const TextStyle(fontSize: 16, height: 1.8))
+        else
+          appNotice('点击完整阅读，按当前身份读取本版剧本。'),
+        tradeButton(
+            '完整阅读', locked || reading ? null : () => readContent(full: true)),
         if (reading) const LinearProgressIndicator(),
-        if (opened) appNotice('本版内容已打开。请自行核对完整内容，再勾选验收项。')
+        if (opened) appNotice('本版内容已打开。请自行核对完整内容，再勾选验收项。'),
       ]);
+    }
+    final controller = video?.controller;
+    final initialized = controller?.value.isInitialized == true;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Container(
+          color: AccountTheme.text,
+          margin: const EdgeInsets.only(bottom: 16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            AspectRatio(
+                aspectRatio:
+                    initialized ? controller!.value.aspectRatio : 16 / 9,
+                child: initialized
+                    ? VideoPlayer(controller!)
+                    : Center(
+                        child: IconButton.filled(
+                            style: IconButton.styleFrom(
+                                backgroundColor: AccountTheme.canvas,
+                                foregroundColor: AccountTheme.text,
+                                shape: const RoundedRectangleBorder()),
+                            iconSize: 30,
+                            padding: const EdgeInsets.all(18),
+                            tooltip: '重新核权并播放本版预览',
+                            onPressed: locked || reading ? null : readContent,
+                            icon: const Icon(Icons.play_arrow_outlined)))),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                          '${productionStages[v.stage]} · 第 ${v.data['revision']} 版 · 私有预览',
+                          style: const TextStyle(
+                              fontSize: 13,
+                              height: 1.6,
+                              color: AccountTheme.canvas)),
+                      const SizedBox(height: 12),
+                      if (initialized)
+                        ValueListenableBuilder<VideoPlayerValue>(
+                            valueListenable: controller!,
+                            builder: (_, value, __) => Column(children: [
+                                  VideoProgressIndicator(controller,
+                                      allowScrubbing: false,
+                                      colors: const VideoProgressColors(
+                                          playedColor: AccountTheme.vermilion,
+                                          bufferedColor: AccountTheme.muted,
+                                          backgroundColor: Color(0xFF444444))),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(mediaTime(value.position),
+                                            style: const TextStyle(
+                                                color: AccountTheme.canvas,
+                                                fontSize: 12)),
+                                        Text(mediaTime(value.duration),
+                                            style: const TextStyle(
+                                                color: AccountTheme.canvas,
+                                                fontSize: 12)),
+                                      ]),
+                                ]))
+                      else
+                        const Text('读取后显示本版实际时长',
+                            style: TextStyle(
+                                color: AccountTheme.canvas, fontSize: 12)),
+                    ])),
+          ])),
+      tradeButton('播放预览', locked || reading ? null : readContent),
+      if (initialized)
+        tradeButton('暂停预览', () => controller!.pause(), outline: true),
+      if (reading) const LinearProgressIndicator(),
+      appNotice('画面来自当前获准的私有文件；读取或播放失败不会视为已查看。'),
+      if (opened) appNotice('本版内容已打开。请自行核对完整内容，再勾选验收项。'),
+    ]);
+  }
+
   Widget checkCard(ProductionRecord v) =>
       tradeSection(v.stage == 'SCRIPT' ? '确认阅读' : '验收检查清单', [
         for (final name in productionCheckNames(v.stage))
@@ -1085,8 +1144,30 @@ class _VersionReviewState extends State<_VersionReview> {
                           ? '最终成片验收'
                           : '审阅${productionStages[v?.data['stage']] ?? '版本'}',
               [
-                tradeHeading(widget.feedbackOnly ? '写下本版意见' : '确认这一版',
-                    eyebrow: '正式版本 / 先查看，再确认'),
+                if (!widget.feedbackOnly &&
+                    v != null &&
+                    p != null &&
+                    v.stage != 'SCRIPT') ...[
+                  contentCard(v),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 8, bottom: 24),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(productionVersionTitle(v),
+                                style: const TextStyle(
+                                    fontSize: 12, color: AccountTheme.accent)),
+                            const SizedBox(height: 20),
+                            Text(v.stage == 'FINAL' ? '成片验收' : '样片审阅',
+                                style: const TextStyle(
+                                    fontFamily: AccountTheme.serif,
+                                    fontSize: 52,
+                                    height: 1.15,
+                                    fontWeight: FontWeight.w700)),
+                          ])),
+                ] else
+                  tradeHeading(widget.feedbackOnly ? '写下本版意见' : '确认这一版',
+                      eyebrow: '正式版本 / 先查看，再确认'),
                 if (busy) const LinearProgressIndicator(),
                 if (error != null) appNotice(error!, icon: Icons.error_outline),
                 if (pending != null)
@@ -1127,7 +1208,8 @@ class _VersionReviewState extends State<_VersionReview> {
                             : (v) =>
                                 setState(() => conflictReviewed = v == true))
                   ],
-                  if (!widget.feedbackOnly || (decision == 'ACCEPT' && !opened))
+                  if ((!widget.feedbackOnly && v.stage == 'SCRIPT') ||
+                      (widget.feedbackOnly && decision == 'ACCEPT' && !opened))
                     contentCard(v),
                   if (fulfillment != null) receiptCard(v),
                   if (!widget.feedbackOnly)

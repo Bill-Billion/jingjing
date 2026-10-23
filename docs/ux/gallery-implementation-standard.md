@@ -6,7 +6,7 @@
 
 [最早原稿](../testing/evidence/figma-home-calibration-20261023/assets/earliest-reference.png)是视觉基准，本轮采用左侧主页；[截图对照](../testing/evidence/figma-home-calibration-20261023/index.html)同时保留真实在线修改前、新稿、城市/频道状态和业务目录。[Figma广场](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2-69)与[视频频道](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2004-5895)已在原文件中更新，[对照区](https://www.figma.com/design/4W24XKo6ODW5JD8lBAyuDj/?node-id=2035-1752)保存修改前稿和四种状态。
 
-本次仅Figma主页设计通过本侧截图检查。App及网页业务代码未改，其他Figma页面尚未依此最早原稿重新校准；用户与同事人工审阅未完成。旧轮次功能验收与截图只证明当时版本和记录范围。原Figma原型连线为零，本次提供可编辑状态稿，未宣称完整可点击原型。
+主页2幅及其余100幅已在原Figma逐页校准，另补24A；本次103幅成为App还原来源。现有App页面和Web视觉已修改，逐页[实际对照](../testing/evidence/figma-frontend-restore-20261023/index.html)与[问题报告](../reviews/figma-frontend-restore-20261023/REPORT.md)分别记录完成、关联模板、关闭和未验证状态。PC没有逐屏稿。用户和同事人工审阅尚未完成，原型状态图不等于完整可点击原型。
 
 ## 当前视觉规则
 
@@ -18,7 +18,7 @@
 
 ## 本轮证据与后续交接
 
-[检查说明](../testing/evidence/figma-home-calibration-20261023/README.md)、[结构记录](../testing/evidence/figma-home-calibration-20261023/FINAL_REVIEW.json)及[任务记录](../tasks/records/UX-figma-home-calibration-20261023.md)列明检查范围。默认/上海两频道、城市浮层、完整业务目录已截图复验；320像素无溢出检查来自本地设计预览，Figma主稿为390像素。后续App按新稿实现及其他页面逐页校准须分别登记，不扩大本次结果。
+新版103幅使用[逐页来源及路由映射](../reviews/figma-frontend-restore-20261023/SCREEN_MAPPING.json)。App保留44像素主要动作、320/390/768适配和放大文字，白底直角输入块/底线、短线页签与32号表单题；短详情题64，长题按42或窄屏36独立排版，避免挤成字柱。正文使用完整本地NotoSansSC，标题思源宋体700与原稿Black仍有差别且正文首访资源较大；f7故事页外部字体记录不能抹去。API缺媒体或公开事实时保留明确媒体槽，不补示例事实。原始截图与最后局部复拍绑定各自构建哈希，源指纹不能证明每张都是最终构建。
 
 2026-10-15匿名截图未加载照片；本次有权限读取的原主页已有大图和错位标题。此前“只参考颜色字体”的判断已更正，差异应据真实修改前截图判断。历史图册、旧页面映射和业务验收证据保留，不作为新视觉已通过的证明。
 

@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jingjingshangri_app/account/editorial_widgets.dart';
 import '../account/fake_account_api.dart';
 import '../navigation/app_navigation_test.dart' as nav;
 import '../trade/trade_api_test.dart' show buyerSession;
@@ -98,7 +99,9 @@ void main() {
         s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s,
         route: '/production/project?projectId=$productionProjectId');
-    expect(find.text('这次制作'), findsOneWidget);
+    expect(find.byType(EditorialFeature), findsOneWidget);
+    expect(t.widget<EditorialFeature>(find.byType(EditorialFeature)).title,
+        '私人短片制作');
     await reveal(t, find.text('这笔制作不使用可识别人物，普通买家无需先建立或购买自己的数字人。'));
     await reveal(t, find.text('查看订单固定的原故事'));
     await t.tap(find.text('查看订单固定的原故事'));

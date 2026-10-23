@@ -481,6 +481,14 @@ class _TradeDetailState extends State<_TradeDetail> {
     final d = effectiveQuote(r);
     return [
       if (!order)
+        tradeSection('本次合同总价', [
+          Text(tradeMoney(d['total_minor']),
+              style: const TextStyle(
+                  fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
+          const SizedBox(height: 8),
+          supplyNote('按本次用途与期限单独约定'),
+        ]),
+      if (!order)
         tradeBanner(
             tradeStatuses[r.status] ?? r.status,
             r.status == 'APPROVED'
@@ -598,10 +606,13 @@ class _TradeDetailState extends State<_TradeDetail> {
               tradeTriggers[i['trigger']]!,
               tradeMoney(tradeRows(i['allocations'])
                   .fold(0, (a, v) => a + (v['amount_minor'] as int)))),
-          ExpansionTile(title: Text('节点 ${i['key']} · 分项金额'), children: [
-            for (final a in tradeRows(i['allocations']))
-              tradeFact('分配 · ${a['line_id']}', tradeMoney(a['amount_minor'])),
-          ]),
+          ExpansionTile(
+              title: Text('${tradeTriggers[i['trigger']]} · 分项金额'),
+              children: [
+                for (final a in tradeRows(i['allocations']))
+                  tradeFact(
+                      '分配 · ${a['line_id']}', tradeMoney(a['amount_minor'])),
+              ]),
           if (i['trigger'] != 'ORDER_ACCEPTED')
             appNotice('这笔款项须满足原订单对应的具体版本确认条件；订单页会重新核对制作进度。'),
           const Divider(),
@@ -962,9 +973,9 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeSection('本次金额', [
           Text(tradeMoney(r.amount),
               style: const TextStyle(
-                  fontSize: 36,
+                  fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: AccountTheme.accent)),
+                  color: AccountTheme.text)),
           const Divider(),
           tradeFact('付款节点', r.data['installment_key']),
           tradeFact('付款编号', r.id)
@@ -1103,9 +1114,9 @@ class _TradeDetailState extends State<_TradeDetail> {
                 widget.section == 'contract'
                     ? '这次约定的原文'
                     : switch (r.kind) {
-                        'QUOTE' => '这份报价',
+                        'QUOTE' => '确认这份报价',
                         'ORDER' => '这次约定',
-                        'PAYMENT' => '付款记录',
+                        'PAYMENT' => '付款结果与凭证',
                         'REFUND' => '售后与退款',
                         _ => '保留原来的约定',
                       },

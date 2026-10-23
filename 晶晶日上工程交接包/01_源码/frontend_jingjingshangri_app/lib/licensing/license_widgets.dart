@@ -6,30 +6,11 @@ import '../account/app_visual.dart';
 import '../pages/login/login_page.dart';
 import '../supply/supply_widgets.dart';
 import 'license_models.dart';
+import '../trade/trade_widgets.dart';
 
 Widget licenseScaffold(
         BuildContext context, String title, List<Widget> children) =>
-    AccountTheme(
-        child: Scaffold(
-            appBar: AppBar(
-                title: Text(title),
-                leading: BackButton(onPressed: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  } else {
-                    Navigator.pushReplacementNamed(context, '/enter');
-                  }
-                })),
-            body: SafeArea(
-                child: Center(
-                    child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 760),
-                        child: ListView(
-                            padding: const EdgeInsets.all(16),
-                            children: [
-                              ...children,
-                              const SizedBox(height: 24)
-                            ]))))));
+    tradeScaffold(context, title, children);
 
 class LicenseGate extends StatelessWidget {
   const LicenseGate(
@@ -163,23 +144,16 @@ Widget licenseGrantTerms(LicenseTerms terms) {
   ]);
 }
 
-Widget licenseAmount(Map<String, dynamic> price, {int? due}) => Card(
-    child: Padding(
-        padding: const EdgeInsets.all(16),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Expanded(child: _amount('总价', licenseMoney(price))),
-            if (due != null) ...[
-              Container(width: 1, height: 56, color: AccountTheme.border),
-              const SizedBox(width: 16),
-              Expanded(
-                  child: _amount('生效前应付', licenseMoney(price, amount: due))),
-            ],
-          ]),
-          const SizedBox(height: 16),
-          supplyNote('许可费用不等于整片制作费用。签署与付款由真实外部材料经独立人员核验。'),
-        ])));
+Widget licenseAmount(Map<String, dynamic> price, {int? due}) =>
+    tradeSection('本次许可费用', [
+      _amount('总价', licenseMoney(price)),
+      if (due != null) ...[
+        const SizedBox(height: 20),
+        _amount('生效前应付', licenseMoney(price, amount: due)),
+      ],
+      const SizedBox(height: 16),
+      supplyNote('许可费用不等于整片制作费用。签署与付款由真实外部材料经独立人员核验。'),
+    ]);
 
 Widget _amount(String label, String value) =>
     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -188,9 +162,9 @@ Widget _amount(String label, String value) =>
       const SizedBox(height: 6),
       Text(value,
           style: const TextStyle(
-              fontSize: 26,
+              fontSize: 28,
               fontWeight: FontWeight.w700,
-              color: AccountTheme.accent,
+              color: AccountTheme.text,
               height: 1.3)),
     ]);
 Future<bool> licenseConfirm(

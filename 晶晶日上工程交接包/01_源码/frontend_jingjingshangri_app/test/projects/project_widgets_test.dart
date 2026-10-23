@@ -21,6 +21,7 @@ void main() {
     final a = projectsAdapter(), s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s, route: '/notices');
     nav.expectFiveTabs();
+    await reveal(t, find.text('公开项目与角色'));
     await t.tap(find.text('公开项目与角色'));
     await nav.frames(t);
     expect(find.byType(NavigationBar), findsNothing);

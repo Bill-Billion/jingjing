@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
+import '../trade/trade_models.dart';
 import '../account/app_visual.dart';
 import '../pages/login/login_page.dart';
 import '../supply/supply_widgets.dart';
@@ -78,3 +80,51 @@ Widget productionSpecification(ProductionRecord p) => supplyCard('原约定', [
                 style: const TextStyle(fontSize: 16, height: 1.6)))
       ])
     ]);
+
+String productionProjectTitle(ProductionRecord project, TradeRecord? order) {
+  final line = order?.lines
+      .where((line) => line['line_id'] == project.data['line_id'])
+      .firstOrNull;
+  return line == null ? '制作任务' : line['title'] as String;
+}
+
+/// A stage is complete only when this project's current version is accepted.
+Widget productionProgressStep(ProductionRecord project, String stage) {
+  final current = project.data['current'][stage];
+  final accepted =
+      current != null && current == project.data['accepted'][stage];
+  return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+            width: 24,
+            height: 24,
+            color: accepted
+                ? AccountTheme.text
+                : current != null
+                    ? AccountTheme.vermilion
+                    : AccountTheme.border,
+            child: Icon(accepted ? Icons.check : Icons.circle,
+                size: accepted ? 18 : 4,
+                color: current != null
+                    ? AccountTheme.canvas
+                    : AccountTheme.muted)),
+        const SizedBox(width: 12),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(productionStages[stage]!,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(
+              current == null
+                  ? '未开始'
+                  : accepted
+                      ? '当前版本已确认'
+                      : '当前版本待审阅',
+              style: const TextStyle(
+                  fontSize: 13, height: 1.6, color: AccountTheme.muted)),
+        ])),
+      ]));
+}

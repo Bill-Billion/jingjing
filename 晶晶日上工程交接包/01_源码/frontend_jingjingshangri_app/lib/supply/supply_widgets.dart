@@ -44,7 +44,7 @@ Widget supplyStatus(String status) => Align(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
             color: AccountTheme.accent.withValues(alpha: .08),
-            borderRadius: BorderRadius.circular(6)),
+            borderRadius: BorderRadius.zero),
         child: Text(supplyStatuses[status] ?? status,
             style: const TextStyle(
                 fontSize: 12,
@@ -65,7 +65,7 @@ Widget supplyScaffold(BuildContext context, String title, List<Widget> children,
         body: SafeArea(
             child: Center(
                 child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 760),
+                    constraints: const BoxConstraints(maxWidth: 560),
                     child: ListView(
                         padding: const EdgeInsets.all(16),
                         children: [

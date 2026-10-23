@@ -1,0 +1,692 @@
+{
+  "result": "VISUALLY_REVIEWED_WITH_DOCUMENTED_GAPS",
+  "reviewed_at": "2026-10-23T13:33:49.657348+00:00",
+  "capture_manifest": "FINANCE_RESULTS.json",
+  "synthetic_only": true,
+  "normal_entrypoint": true,
+  "sourcebundlehash": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+  "fixture_origin": {
+    "api": "http://127.0.0.1:3342",
+    "web": "http://127.0.0.1:8777",
+    "role": "recipient",
+    "login": "正常隔离短信HTTP登录，截图阶段未办理业务写入"
+  },
+  "validation": {
+    "case_count": 9,
+    "selected_screenshot_count": 40,
+    "reference_count": 4,
+    "widths": [
+      320,
+      390
+    ],
+    "screenshot_hashes_match": true,
+    "reference_hashes_match": true,
+    "http_statuses": [
+      200
+    ],
+    "business_write_count": 0,
+    "javascript_errors": 0,
+    "flutter_layout_overflow_reported": false,
+    "manual_pixel_review_completed": true,
+    "case_width_count": 9,
+    "route_state_count": 6
+  },
+  "references": [
+    {
+      "node_id": "2004:2539",
+      "name": "50 / 资金流水",
+      "file": "docs/testing/evidence/figma-remaining-calibration-20261023/before/2004-2539.png",
+      "sha256": "599a38f8ee9da315000bb2c8f75177108c6e86189c72f7b930a0cd45f1ce253d"
+    },
+    {
+      "node_id": "2004:2640",
+      "name": "51 / 我的收入",
+      "file": "docs/testing/evidence/figma-remaining-calibration-20261023/before/2004-2640.png",
+      "sha256": "356553695d33297047e301de0cd342a314f337eb3d831c2e5920ca8cdaca6fa0"
+    },
+    {
+      "node_id": "2004:2726",
+      "name": "52 / 结算单详情",
+      "file": "docs/testing/evidence/figma-remaining-calibration-20261023/before/2004-2726.png",
+      "sha256": "a23eb3078de66a03eaa1b6c65c57a7f19f9260a0dd2fd77ce36bc291c8941f85"
+    },
+    {
+      "node_id": "2004:2818",
+      "name": "53 / 收款资料与收益收款申请",
+      "file": "docs/testing/evidence/figma-remaining-calibration-20261023/before/2004-2818.png",
+      "sha256": "20f301b7daa798236b0e9a33388e13721884e461a977fbc30efb86057ff92eaf"
+    }
+  ],
+  "cases": [
+    {
+      "case": "income-agreements",
+      "route": "/finance",
+      "screenshots": [
+        "income-agreements-0.png",
+        "income-agreements-1.png",
+        "income-agreements-2.png",
+        "income-agreements-3.png",
+        "income-agreements-4.png",
+        "income-agreements-5.png",
+        "income-agreements-6.png",
+        "income-agreements-7.png",
+        "income-agreements-8.png",
+        "income-agreements-9.png",
+        "income-agreements-10.png",
+        "income-agreements-11.png"
+      ],
+      "figma": "51 / 我的收入",
+      "coverage": "RELATED_ENTRY_PAGE",
+      "finding": "逐约定选择入口与本人的结算概览合起来覆盖现有收入流程；原稿跨约定汇总与推荐奖励不是这张长目录的实现。",
+      "scroll": "12图覆盖当前加载列表至底部“继续读取下一页/重新读取约定/真实付款”；没有点击下一页，不能声称核验全部约定记录。",
+      "width": 390
+    },
+    {
+      "case": "income-overview",
+      "route": "/finance/agreement?agreementId=fc531463-b8ad-4239-8559-326da443ea21",
+      "screenshots": [
+        "income-overview-0.png",
+        "income-overview-1.png",
+        "income-overview-2.png",
+        "income-overview-3.png"
+      ],
+      "figma": "51 / 我的收入",
+      "coverage": "POSITIVE_BUSINESS_VIEW_WITH_DESIGN_GAPS",
+      "finding": "本人应得30.00、已核实付款0.00、尚未付款30.00、可申请30.00、调整0.00；订单客户净收100.00另区显示并说明不等于本人到账。当前按约定核权，不是原稿的跨约定总计/推荐汇总。",
+      "scroll": "4图覆盖题区、本人金额、客户付款、相关记录、付款方式至“刷新本人结算”，末端控件完整。",
+      "width": 390
+    },
+    {
+      "case": "settlement-detail",
+      "route": "/finance/record?recordId=62063995-99d4-4932-a43f-83fc3c674d7b",
+      "screenshots": [
+        "settlement-detail-0.png",
+        "settlement-detail-1.png",
+        "settlement-detail-2.png",
+        "settlement-detail-3.png"
+      ],
+      "figma": "52 / 结算单详情",
+      "coverage": "POSITIVE_OWN_VIEW_WITH_CONTRACT_GAPS",
+      "finding": "只展示本人应得30.00、调整0.00、已付0.00、尚未付30.00；准确版本/原始指纹、当前规则和各方确认分别显示，本人已同意。黑色真实状态、连续金额行及底部异议/原约定动作已按稿还原；整单佣金/艺人/MCN/税费仍受本人投影限制，不补出不可读余额。",
+      "scroll": "4图覆盖黑色本人确认状态、连续本人金额、期间/规则/确认记录至“刷新结果”；底部异议/原约定动作始终可见，原始指纹/来源/分配明细/完整规则/完整保存记录等折叠区未展开。",
+      "width": 390
+    },
+    {
+      "case": "settlement-awaiting-confirmation",
+      "route": "/finance/record?recordId=60ce1717-f973-42a3-953a-5584ebb5b8c5",
+      "screenshots": [
+        "settlement-awaiting-confirmation-0.png",
+        "settlement-awaiting-confirmation-1.png",
+        "settlement-awaiting-confirmation-2.png",
+        "settlement-awaiting-confirmation-3.png"
+      ],
+      "figma": "52 / 结算单详情",
+      "coverage": "POSITIVE_OWN_VIEW_WITH_CONTRACT_GAPS",
+      "finding": "同样只见本人30.00应得与0.00已付；本人尚未确认、其他会签状态单列。已完整阅读复选框未选、意见为空，确认与不同意均未提交。",
+      "scroll": "4图覆盖黑色待本人确认状态、连续金额至确认意见/复选框、原单/刷新控件；底部异议/原约定动作可见，折叠原始依据未展开。",
+      "width": 390
+    },
+    {
+      "case": "payout-application",
+      "route": "/finance/payout/new?agreementId=fc531463-b8ad-4239-8559-326da443ea21",
+      "screenshots": [
+        "payout-application-0.png",
+        "payout-application-1.png",
+        "payout-application-2.png"
+      ],
+      "figma": "53 / 收款资料与收益收款申请",
+      "coverage": "POSITIVE_OWN_VIEW_WITH_CONTRACT_GAPS",
+      "finding": "当前收款主体为本人办事身份，可申请30.00。申请金额为空、不默认填满；私有资料上传、备注、付款提示、提交/重核控件完整。申请未提交。黑色额度块、细线章节、白底金额字段及底部记录/提交动作已按稿还原；没有把附件当作已核验姓名/银行卡，已核验账户与最近申请合并视图仍缺契约。",
+      "scroll": "3图覆盖黑色实际额度、收款主体、空金额、私有资料、备注和申请与到账说明至重新核对；底部收款记录/原提交动作始终可见，无键盘遮挡。",
+      "width": 390
+    },
+    {
+      "case": "income-entries",
+      "route": "/finance/entries?agreementId=fc531463-b8ad-4239-8559-326da443ea21",
+      "screenshots": [
+        "income-entries-0.png"
+      ],
+      "figma": "50 / 资金流水",
+      "coverage": "RELATED_NARROWER_BUSINESS_VIEW",
+      "finding": "单约定本人应得计提+30.00、对应事实记录可读；不是原稿的消费钱包/艺人收益双账户及充值/消费/退款/冻结筛选聚合页。",
+      "scroll": "1图显示短列表和末端“重新读取流水”；该合成约定只有已捕获的可见记录，不据此声称全站流水覆盖。",
+      "width": 390
+    },
+    {
+      "case": "settlement-detail",
+      "route": "/finance/record?recordId=62063995-99d4-4932-a43f-83fc3c674d7b",
+      "screenshots": [
+        "320/settlement-detail-0.png",
+        "320/settlement-detail-1.png",
+        "320/settlement-detail-2.png",
+        "320/settlement-detail-3.png"
+      ],
+      "figma": "52 / 结算单详情",
+      "coverage": "POSITIVE_OWN_VIEW_WITH_CONTRACT_GAPS",
+      "finding": "只展示本人应得30.00、调整0.00、已付0.00、尚未付30.00；准确版本/原始指纹、当前规则和各方确认分别显示，本人已同意。黑色真实状态、连续金额行及底部异议/原约定动作已按稿还原；整单佣金/艺人/MCN/税费仍受本人投影限制，不补出不可读余额。",
+      "scroll": "320宽共4张连续滚动图，底部动作始终可见；金额、复选框、意见或申请字段及末端刷新/重核均可读，无永久遮挡。折叠依据未展开。",
+      "width": 320
+    },
+    {
+      "case": "settlement-awaiting-confirmation",
+      "route": "/finance/record?recordId=60ce1717-f973-42a3-953a-5584ebb5b8c5",
+      "screenshots": [
+        "320/settlement-awaiting-confirmation-0.png",
+        "320/settlement-awaiting-confirmation-1.png",
+        "320/settlement-awaiting-confirmation-2.png",
+        "320/settlement-awaiting-confirmation-3.png",
+        "320/settlement-awaiting-confirmation-4.png"
+      ],
+      "figma": "52 / 结算单详情",
+      "coverage": "POSITIVE_OWN_VIEW_WITH_CONTRACT_GAPS",
+      "finding": "同样只见本人30.00应得与0.00已付；本人尚未确认、其他会签状态单列。已完整阅读复选框未选、意见为空，确认与不同意均未提交。",
+      "scroll": "320宽共5张连续滚动图，底部动作始终可见；金额、复选框、意见或申请字段及末端刷新/重核均可读，无永久遮挡。折叠依据未展开。",
+      "width": 320
+    },
+    {
+      "case": "payout-application",
+      "route": "/finance/payout/new?agreementId=fc531463-b8ad-4239-8559-326da443ea21",
+      "screenshots": [
+        "320/payout-application-0.png",
+        "320/payout-application-1.png",
+        "320/payout-application-2.png"
+      ],
+      "figma": "53 / 收款资料与收益收款申请",
+      "coverage": "POSITIVE_OWN_VIEW_WITH_CONTRACT_GAPS",
+      "finding": "当前收款主体为本人办事身份，可申请30.00。申请金额为空、不默认填满；私有资料上传、备注、付款提示、提交/重核控件完整。申请未提交。黑色额度块、细线章节、白底金额字段及底部记录/提交动作已按稿还原；没有把附件当作已核验姓名/银行卡，已核验账户与最近申请合并视图仍缺契约。",
+      "scroll": "320宽共3张连续滚动图，底部动作始终可见；金额、复选框、意见或申请字段及末端刷新/重核均可读，无永久遮挡。折叠依据未展开。",
+      "width": 320
+    }
+  ],
+  "selected_screenshots": [
+    {
+      "file": "income-agreements-0.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "79e439ba2342844d961ae3cb374efd6aacb1c88604bb7f6594dfb1a0938a597a"
+    },
+    {
+      "file": "income-agreements-1.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "818df1ac2c3903ed6d4c175c2ff76686b2ecb0f21985dc51a867141b5183cb8c"
+    },
+    {
+      "file": "income-agreements-2.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "35aaa5fdd7f8ba38efed805ea378085e6b900a673cf70bf0ecdd870503ec4a38"
+    },
+    {
+      "file": "income-agreements-3.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "05ee84d3502f15444c6a36108d8fe6152f7feca6e1c4524a3e46c4acb0cbae2a"
+    },
+    {
+      "file": "income-agreements-4.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "6a85b212c0b2e8761eeb2c688ce51ea09394b4ddf21c0b421819c7f41eb4f4cc"
+    },
+    {
+      "file": "income-agreements-5.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "f1252882abfb1478a0d3ca36a7db1d38051f77bad82ecec32bfef3a2254b40c5"
+    },
+    {
+      "file": "income-agreements-6.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "fa1aa9fb304c999087922094169fc001586772dba69856831397088083c7f162"
+    },
+    {
+      "file": "income-agreements-7.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "7f40ba375b287ec280b6b4fcc2d8e1171a1d249d874f43d32a6ff54c12572d10"
+    },
+    {
+      "file": "income-agreements-8.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "b8446404e534aa634e8065b0b78cda6a3b06d8ebcba7dff2abb432652fadc655"
+    },
+    {
+      "file": "income-agreements-9.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "5499a2970bdf9943017320a762965cfc5d0100fda6a071ec4b3583ec043d86e5"
+    },
+    {
+      "file": "income-agreements-10.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "4b32931dcd24a64406b58d62ddf26c2f3110881c1372fc4e6e3a6eb8dd1a54c5"
+    },
+    {
+      "file": "income-agreements-11.png",
+      "case": "income-agreements",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "73baa55d33f43756da00b75e39066c592d6f3eeb968e987e570f7ecbe776d2e8"
+    },
+    {
+      "file": "income-overview-0.png",
+      "case": "income-overview",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "26913e2288451690ae978443e2d37cde0a5196a7b993eb171a8c6e83afbfe2ad"
+    },
+    {
+      "file": "income-overview-1.png",
+      "case": "income-overview",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "832fa778e020253b6b950f6ba286ae696ae7e3aa322c4308c44deaddb903d457"
+    },
+    {
+      "file": "income-overview-2.png",
+      "case": "income-overview",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "0ab83cdd756083e1cc3cc43b41ae80d39e92d9216a1d5411a8135412a65a3728"
+    },
+    {
+      "file": "income-overview-3.png",
+      "case": "income-overview",
+      "width": 390,
+      "figmaIds": [
+        "2004:2640"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "1583f7aa63b8bca127410582081c4c35fcadbbedca788d6f6368c507119105ac"
+    },
+    {
+      "file": "settlement-detail-0.png",
+      "case": "settlement-detail",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "f5dfaf8303f923af3193074e01ed7a8f3baa22f38c46c8a74ec958f4be39581e"
+    },
+    {
+      "file": "settlement-detail-1.png",
+      "case": "settlement-detail",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "2e61e81614c685e92bfe78eeaa39c83cf9d096200aded005cf0324e8503b468a"
+    },
+    {
+      "file": "settlement-detail-2.png",
+      "case": "settlement-detail",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "1733c72c8fae916970c96012cb1c8f584d59eae4c358174b00671e773d6628af"
+    },
+    {
+      "file": "settlement-detail-3.png",
+      "case": "settlement-detail",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "1f9b01591b5a70da39c9da534381868760935472c073955e9fecaf5507af32f7"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-0.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "e7e5476f344fb4456a30d8c0cd720bcf569580b7023c6031d05a2386435e49ce"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-1.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "6f8f9a4228043a7cd1409e9ed2e0292e4a8242992e81298dfaa676ab4a1e6363"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-2.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "281626c970cf8244745ceea6e9c21825adcabea535fa4e69636aefeaf02fac3c"
+    },
+    {
+      "file": "settlement-awaiting-confirmation-3.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 390,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "5e64a980361f8cef392e3edcb8d91ba1526515495112965102e516faa2dec8b4"
+    },
+    {
+      "file": "payout-application-0.png",
+      "case": "payout-application",
+      "width": 390,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "e6397ab91604063a745f44b1164584a23864175a515ca9e661a37e8a20513e18"
+    },
+    {
+      "file": "payout-application-1.png",
+      "case": "payout-application",
+      "width": 390,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "b3fe0f1b33fc39594190d5e35d89a13cd0f9c940d9ba41628b1ae9521dd88b41"
+    },
+    {
+      "file": "payout-application-2.png",
+      "case": "payout-application",
+      "width": 390,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "181e1a4035307bdd414ccd96de0a1fd20eddb2208f194604503a58406a6d7f86"
+    },
+    {
+      "file": "income-entries-0.png",
+      "case": "income-entries",
+      "width": 390,
+      "figmaIds": [
+        "2004:2539"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "40d1842922a9c4f44813e57151322df69df2bc3fe63ed2191b10185973a9040b"
+    },
+    {
+      "file": "320/settlement-detail-0.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "006bf6f16411a2b70e639ec7be3e8931fb859d18bcd1b376c5eac39c394e7e0d"
+    },
+    {
+      "file": "320/settlement-detail-1.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "0e30636c625551f0653a0f08cbefc7c30bbe7eb8627981a778e9d4381e7f8520"
+    },
+    {
+      "file": "320/settlement-detail-2.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "9dedf1e9214fa1ff15c7c7d970de2d7e81e161cbaa992cbf28cd4bb30691b462"
+    },
+    {
+      "file": "320/settlement-detail-3.png",
+      "case": "settlement-detail",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "4d9111da223e572c9ec36e347f29124a8b5a9f940e48e4e0a9825221379afa6d"
+    },
+    {
+      "file": "320/settlement-awaiting-confirmation-0.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "5620bee48055a5f47c316bf0c2953075e138f1deafb095a068da01cb54c77a8d"
+    },
+    {
+      "file": "320/settlement-awaiting-confirmation-1.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "848cabf75edc92b46f3ccc9608d38c4eb4496c9f5ca0e3376b04a414c9d378d4"
+    },
+    {
+      "file": "320/settlement-awaiting-confirmation-2.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "4b610825192770e88900f3ca67ff52111e5a724b106e4e9072faa3c3d65ab142"
+    },
+    {
+      "file": "320/settlement-awaiting-confirmation-3.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "8d1eef58d98f1ca5b8b3dc539ecd1899f2bf6aab23dc47664fb8b3289c8a2768"
+    },
+    {
+      "file": "320/settlement-awaiting-confirmation-4.png",
+      "case": "settlement-awaiting-confirmation",
+      "width": 320,
+      "figmaIds": [
+        "2004:2726"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "10dd5da2c1d47ef0a0f2c610f560ef88866e63c2ee8c97127105c8a101d038b8"
+    },
+    {
+      "file": "320/payout-application-0.png",
+      "case": "payout-application",
+      "width": 320,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "320d239946f9ec84610dd5d89144f71e72a84703477947945af22310099c035f"
+    },
+    {
+      "file": "320/payout-application-1.png",
+      "case": "payout-application",
+      "width": 320,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "6b2b111942fefe4ac0e52353446f29601d6d5ceb972c8bf01d9e02440f8830da"
+    },
+    {
+      "file": "320/payout-application-2.png",
+      "case": "payout-application",
+      "width": 320,
+      "figmaIds": [
+        "2004:2818"
+      ],
+      "sourceBundleSha256": "c6b3d1744ea8db097ec95e11fb1628936384668c362e628d4d16f1c89cebf9c2",
+      "sha256": "95a2db9afe9dfc988a92abe4fc502d485404568aebb38518bb78698f4943e018"
+    }
+  ],
+  "findings": [
+    {
+      "id": "FIN-01",
+      "severity": "中",
+      "references": [
+        "2004:2539",
+        "2004:2640"
+      ],
+      "issue": "50/51的双账户资金筛选、跨约定收入及推荐奖励汇总尚未形成统一页面。",
+      "handling": "当前保留明确“本约定/本人”范围，消费余额和经营收入不合并，见总报告R12。"
+    },
+    {
+      "id": "FIN-02",
+      "severity": "高",
+      "references": [
+        "2004:2726"
+      ],
+      "issue": "52原稿为整单佣金、艺人、MCN及税费细目；本人的合法投影只返回本人余额。",
+      "handling": "本人视图已按稿结构还原；整单财务分配若要展示，需具备对应投影及权限契约，不读取或推断其他主体余额。"
+    },
+    {
+      "id": "FIN-03",
+      "severity": "高",
+      "references": [
+        "2004:2818"
+      ],
+      "issue": "53设计含已核验实名/银行卡，但当前使用办事主体与私有收款材料，并没有已验证银行账户事实。",
+      "handling": "截图保留原核验流程，上传不等于账户已验证、申请不等于真实付款。需补账户核验契约与资料变更状态，见总报告R12。"
+    }
+  ],
+  "historical_failures_excluded": [
+    "INITIAL_CHECKBOX_FAILURE.json",
+    "INITIAL_FOCUS_FAILURE.json",
+    "INITIAL_HEADING_ASSUMPTION_FAILURE.json",
+    "INITIAL_INPUT_FAILURE.json",
+    "INITIAL_KEYBOARD_FAILURE.json",
+    "INITIAL_LOCATOR_FAILURE.json",
+    "INITIAL_SEMANTICS_RELOAD_FAILURE.json"
+  ],
+  "manual_review_method": [
+    "实际查看4幅原PNG，按REVIEWS.finalSha256重新核对来源。",
+    "40张截图逐一通过390四张与320两张联系图查看；另按原尺寸复核52/53首尾、金额、确认门槛及320底部动作。",
+    "检查纸色/字体/文字裁切、白色字段底线、黑色状态/额度、连续事实行、末端主要动作、本人金额与客户付款分离、确认与实付分离。"
+  ],
+  "limitations": [
+    "当前6个路由/状态不等于6幅设计原稿，直接或关联对照原稿50–53四幅。",
+    "390宽六个页面/状态及320宽两种结算与收款申请；未替代iOS/Android真机或768宽验收。",
+    "已滚动到当前加载内容底部，不声明验证全部分页或尚未展开的折叠依据。",
+    "这些截图证明正向读取、实际业务呈现与未提交表单；不证明收款资料审核、实际转账或申请成功。",
+    "存在所列结构及视觉差距，不声明逐像素一致。"
+  ],
+  "completed_visual_changes": [
+    "52以真实审核/本人确认状态显示黑色说明块",
+    "52本人应得/调整/已付/尚未付连续细线事实行，未加入他人余额",
+    "52底栏次要异议和主要原始约定动作；原确认门槛保留",
+    "53实际可申请额度黑块，额度未知时不显示默认零额",
+    "53白色金额字段和无四边框章节，私有材料与备注完整",
+    "53底栏收款记录/原提交动作，金额/资料/备注门槛不变"
+  ],
+  "historical_success_not_selected": "PRE_LAYOUT_FINAL_SUCCESS.json",
+  "visual_implementation_tests": {
+    "log": "docs/reviews/figma-frontend-restore-20261023/finance-editorial-tests.log",
+    "finance_tests_passed": 21,
+    "targeted_analysis": "NO_ISSUES",
+    "new_risk_covered": "没有本人额度时不显示默认零额、不允许申请"
+  },
+  "gallery_verification": {
+    "case_sections": 9,
+    "selected_shot_images": 40,
+    "previous_29_shot_review_superseded": true,
+    "local_file_rendered": true,
+    "reference_images_displayed": true
+  },
+  "capture_manifests": [
+    "FINANCE_RESULTS.json",
+    "320/FINANCE_RESULTS.json"
+  ],
+  "narrow_validation": {
+    "case_widths": 3,
+    "screenshots": 12,
+    "http_statuses": [
+      200
+    ],
+    "business_writes": 0,
+    "errors": 0,
+    "manual_bottom_actions": "52异议/原始约定、53收款记录/原提交在320宽均完整可见",
+    "money_scope": "两种结算状态保持本人应得30/已付0/尚未付30；申请额度30、空金额不放行",
+    "full_scroll": "已到当前内容底部；不声称展开所有折叠依据。"
+  }
+}

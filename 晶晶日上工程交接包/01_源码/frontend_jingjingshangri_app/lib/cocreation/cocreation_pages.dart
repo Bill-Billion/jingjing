@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../supply/supply_api.dart';
@@ -244,7 +245,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       menu(),
       const SizedBox(height: 20),
       if (kind == 'rooms') tradeButton('发起新的共创', () => open('new')),
-      if (rows.isEmpty && !checking) appNotice('当前身份暂无相关记录。'),
+      if (rows.isEmpty && !checking && error == null) appNotice('当前身份暂无相关记录。'),
       for (final r in rows)
         communitySection(
             kind == 'rooms'
@@ -354,12 +355,28 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     final count = communityMap(r['counts']),
         actions = List<String>.from(r['allowed_actions']),
         snapshot = communityMap(r['rule_snapshot']);
+    final joined = count['joined_count'],
+        eligible = count['eligible_count'],
+        benefitRemaining = count['benefit_remaining'];
     return [
-      communityHeading(communityText(r['title']), '参加人数、有效人数和已核定成团依据分别展示。'),
-      communityFact('房间进展', communityState(r['current_status'])),
+      communityHeading('一起完成这部戏', '参加人数、有效人数和已核定成团依据分别展示。',
+          eyebrow: '共创计划 / 每人独立确认'),
+      tradeBanner(
+          communityText(r['title']), communityState(r['current_status'])),
+      const Text('已参加人数',
+          style: TextStyle(color: AccountTheme.muted, fontSize: 13)),
+      const SizedBox(height: 8),
+      Text('${count['joined_count']}人',
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 16),
       communityFact('招募截止', communityDate(r['deadline'])),
+      if (eligible is int &&
+          joined is int &&
+          joined > 0 &&
+          eligible >= 0 &&
+          eligible <= joined)
+        roomProgress('资料授权及付款齐备', eligible, joined),
       communitySection('当前条件', [
-        communityFact('已参加人数', count['joined_count']),
         communityFact('资料授权及付款齐备', count['eligible_count']),
         communityFact('距成团还差', count['people_remaining']),
         communityFact('距服务额度还差', count['benefit_remaining']),
@@ -372,6 +389,12 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         ],
         appNotice('达到人数不代表自动开工；仍需原订单付款、有效授权及制作审核。')
       ]),
+      if (eligible is int &&
+          benefitRemaining is int &&
+          eligible >= 0 &&
+          benefitRemaining >= 0 &&
+          eligible + benefitRemaining > 0)
+        roomProgress('服务额度人数进度', eligible, eligible + benefitRemaining),
       communitySection('每人独立确认的条款', [
         SelectableText(communityText(snapshot['participation_terms'])),
         communityFact('用途 / 地域', '${r['purpose']} / ${r['territory']}'),
@@ -495,6 +518,18 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       communityRecordId(r)
     ];
   }
+
+  Widget roomProgress(String label, int current, int total) =>
+      communitySection(label, [
+        LinearProgressIndicator(
+            value: current / total,
+            minHeight: 3,
+            color: AccountTheme.vermilion,
+            backgroundColor: AccountTheme.border),
+        const SizedBox(height: 10),
+        Text('$current / $total 人',
+            style: const TextStyle(color: AccountTheme.muted)),
+      ]);
 
   List<Widget> participationView() {
     final r = room;

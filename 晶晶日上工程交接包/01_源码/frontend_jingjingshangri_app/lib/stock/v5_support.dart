@@ -349,19 +349,39 @@ class V5Frame extends StatelessWidget {
       {super.key,
       required this.api,
       required this.title,
-      required this.children});
+      required this.children,
+      this.embedded = false,
+      this.footer});
+  final Widget? footer;
+  final bool embedded;
   final V5Api api;
   final String title;
   final List<Widget> children;
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
       animation: api,
-      builder: (context, _) => tradeScaffold(context, title, children,
-          locked: api.writes > 0 ||
-              api.pendingOperations.isNotEmpty ||
-              api.session.pending('POST', '/api/v1/supply/assets',
-                      actingParty: api.session.partyId) !=
-                  null));
+      builder: (context, _) {
+        final locked = api.writes > 0 ||
+            api.pendingOperations.isNotEmpty ||
+            api.session.pending('POST', '/api/v1/supply/assets',
+                    actingParty: api.session.partyId) !=
+                null;
+        if (!embedded) {
+          return tradeScaffold(context, title, children,
+              locked: locked, footer: footer);
+        }
+        return PopScope(
+            canPop: !locked,
+            onPopInvokedWithResult: (didPop, result) {
+              if (!didPop && locked) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+              }
+            },
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [...children, if (footer != null) footer!]));
+      });
 }
 
 class V5Gate extends StatelessWidget {
@@ -371,7 +391,9 @@ class V5Gate extends StatelessWidget {
       required this.route,
       required this.builder,
       this.account = false,
-      this.personal = false});
+      this.personal = false,
+      this.embedded = false});
+  final bool embedded;
   final String domain, route;
   final bool account, personal;
   final Widget Function(AccountSession) builder;
@@ -386,34 +408,39 @@ class V5Gate extends StatelessWidget {
         allowed = false;
       }
     }
+    final unavailable = <Widget>[
+      tradeHeading('先确认办事身份', eyebrow: '本人记录 / 私有资料'),
+      appNotice(api.denied
+          ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
+          : personal
+              ? '请选择本人的个人负责人身份。'
+              : ['auditions', 'gigs'].contains(domain)
+                  ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
+                  : '登录并选择有效负责人身份后办理。'),
+      tradeButton(
+          '前往账号与身份',
+          () => s.isLoggedIn
+              ? Navigator.pushNamed(context, '/account')
+              : Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => LoginPage(returnRoute: route)))),
+      if (api.denied)
+        tradeButton('重新核对权限', () async {
+          try {
+            await api.retryAccess();
+          } catch (_) {}
+        }, outline: true),
+    ];
     return allowed
         ? KeyedSubtree(
             key: ValueKey('${s.epoch}:${s.partyId}:$domain:$route'),
             child: builder(s))
-        : tradeScaffold(context, '账号与权限', [
-            tradeHeading('先确认办事身份', eyebrow: '本人记录 / 私有资料'),
-            appNotice(api.denied
-                ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
-                : personal
-                    ? '请选择本人的个人负责人身份。'
-                    : ['auditions', 'gigs'].contains(domain)
-                        ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
-                        : '登录并选择有效负责人身份后办理。'),
-            tradeButton(
-                '前往账号与身份',
-                () => s.isLoggedIn
-                    ? Navigator.pushNamed(context, '/account')
-                    : Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => LoginPage(returnRoute: route)))),
-            if (api.denied)
-              tradeButton('重新核对权限', () async {
-                try {
-                  await api.retryAccess();
-                } catch (_) {}
-              }, outline: true),
-          ]);
+        : embedded
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: unavailable)
+            : tradeScaffold(context, '账号与权限', unavailable);
   }
 }
 

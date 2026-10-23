@@ -173,3 +173,63 @@ Widget artistEditorScaffold(String title, List<Widget> children,
                           child: SizedBox(
                               width: double.infinity, child: footer)))))),
     ));
+
+/// The full-width archive cover and black identity strip from screens 34/36.
+/// A private material is never selected as a portrait without a cover contract.
+Widget artistIdentityCover(String name, String subtitle,
+        {VoidCallback? onTap, Key? key, String imageLabel = '未提供本人肖像封面'}) =>
+    Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Material(
+          color: AccountTheme.text,
+          child: InkWell(
+              key: key,
+              onTap: onTap,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AspectRatio(
+                        aspectRatio: 350 / 216,
+                        child: ColoredBox(
+                            color: const Color(0xFFE7E4DA),
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Text(imageLabel,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            height: 1.6,
+                                            color: AccountTheme.muted)))))),
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                    Text(name,
+                                        style: const TextStyle(
+                                            fontFamily: AccountTheme.serif,
+                                            fontSize: 24,
+                                            height: 1.25,
+                                            fontWeight: FontWeight.w700,
+                                            color: AccountTheme.canvas)),
+                                    const SizedBox(height: 8),
+                                    Text(subtitle,
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            height: 1.6,
+                                            color: AccountTheme.canvas)),
+                                  ])),
+                              if (onTap != null)
+                                const Padding(
+                                    padding: EdgeInsets.only(left: 12),
+                                    child: Icon(Icons.north_east,
+                                        size: 18, color: AccountTheme.canvas)),
+                            ])),
+                  ])),
+        ));

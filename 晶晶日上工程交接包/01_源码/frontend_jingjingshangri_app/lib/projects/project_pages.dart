@@ -4,6 +4,7 @@ import '../account/account_api.dart';
 import '../operations/operation_widgets.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
+import '../account/editorial_widgets.dart';
 import '../contracts/contract_text.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_models.dart';
@@ -74,33 +75,39 @@ class _CatalogueState extends State<_Catalogue> {
           for (final p in catalogue!.items.where((v) => v['kind'] == 'PROJECT'))
             for (final role in (p['roles'] as List).where(
                 (v) => widget.roleId == null || v['id'] == widget.roleId))
-              supplyCard(widget.roleId == null ? p['title'] : '项目与角色', [
-                if (widget.roleId != null) projectHeading(p['title']),
-                projectScopeFacts(projectMap(p['scope'])),
-                tradeFact('角色名称', role['title']),
-                tradeFact('角色总名额', '${role['capacity']} 个名额'),
-                tradeFact(
-                    '费用方式',
-                    role['pricing'] == 'FIXED'
-                        ? '固定价 ${tradeMoney(role['amount_minor'])}'
-                        : '需报价'),
-                supplyNote('实际可报名情况以提交时为准。'),
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 if (widget.roleId != null)
-                  ExpansionTile(
-                      initiallyExpanded: true,
-                      title: const Text('角色条款'),
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: projectParagraph(role['terms']))
-                      ]),
-                tradeButton(
-                    widget.roleId == null ? '查看项目' : '申请这个角色',
-                    () => Navigator.pushNamed(
-                        context,
-                        widget.roleId == null
-                            ? '/projects/role?roleId=${role['id']}'
-                            : '/projects/apply?roleId=${role['id']}'))
+                  EditorialFeature(
+                      title: p['title'],
+                      eyebrow: '剧目档案 / 演出记录',
+                      description: '公开招募 · ${role['title']}'),
+                supplyCard(widget.roleId == null ? p['title'] : '项目与角色', [
+                  projectScopeFacts(projectMap(p['scope'])),
+                  tradeFact('角色名称', role['title']),
+                  tradeFact('角色总名额', '${role['capacity']} 个名额'),
+                  tradeFact(
+                      '费用方式',
+                      role['pricing'] == 'FIXED'
+                          ? '固定价 ${tradeMoney(role['amount_minor'])}'
+                          : '需报价'),
+                  supplyNote('实际可报名情况以提交时为准。'),
+                  if (widget.roleId != null)
+                    ExpansionTile(
+                        initiallyExpanded: true,
+                        title: const Text('角色条款'),
+                        children: [
+                          Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: projectParagraph(role['terms']))
+                        ]),
+                  tradeButton(
+                      widget.roleId == null ? '查看项目' : '申请这个角色',
+                      () => Navigator.pushNamed(
+                          context,
+                          widget.roleId == null
+                              ? '/projects/role?roleId=${role['id']}'
+                              : '/projects/apply?roleId=${role['id']}'))
+                ]),
               ]),
           if (!catalogue!.items.any((p) =>
               p['kind'] == 'PROJECT' &&
@@ -380,7 +387,11 @@ class _RecordState extends State<_Record> {
       locked ? null : () => open('/projects/record?recordId=${r.id}'),
       outline: true);
   List<Widget> workspace(ProjectRecord p) => [
-        supplyCard(p.data['title'], [
+        EditorialFeature(
+            title: p.data['title'],
+            eyebrow: '剧目档案 / 演出记录',
+            description: projectStatuses[p.status]),
+        supplyCard('项目介绍', [
           tradeFact('当前状态', projectStatuses[p.status]),
           projectScopeFacts(projectMap(p.data['scope']))
         ]),

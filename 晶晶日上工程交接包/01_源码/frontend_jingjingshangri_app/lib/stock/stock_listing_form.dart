@@ -223,8 +223,8 @@ class _StockListingFormState extends State<StockListingForm> {
                       choices: participantNames),
                 const V5Field('payment_window_minutes', '原约定付款窗口（分钟）',
                     type: 'int'),
-                const V5Field('apple_product_id', '已审 Apple 产品编号（未接通留空）',
-                    required: false),
+                const V5Field('apple_product_id', '已审 Apple 产品编号',
+                    required: false, hint: '未接通时留空。'),
               ],
               buildBody: (v) {
                 final cast = [

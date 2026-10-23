@@ -28,9 +28,8 @@ void main() {
     await tester
         .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 35)));
     await tester.pumpAndSettle();
-    final checks = tester
-        .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
-        .toList();
+    final checks =
+        tester.widgetList<SwitchListTile>(find.byType(SwitchListTile)).toList();
     expect(checks, hasLength(2));
     expect(checks.every((x) => x.value == false), true);
     expect(find.text('休息提醒间隔（分钟）'), findsOneWidget);

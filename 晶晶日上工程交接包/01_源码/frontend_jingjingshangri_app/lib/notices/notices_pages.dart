@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
+import '../account/account_theme.dart';
+import '../account/editorial_widgets.dart';
 import '../stock/v5_support.dart';
 import '../stock/v5_media.dart';
 import '../supply/supply_api.dart';
@@ -12,25 +14,47 @@ import 'notices_models.dart';
 import 'notices_submission.dart';
 
 class NoticesPage extends StatelessWidget {
-  const NoticesPage({super.key, this.mode = 'catalog', this.id, this.kind});
+  const NoticesPage(
+      {super.key,
+      this.mode = 'catalog',
+      this.id,
+      this.kind,
+      this.embedded = false,
+      this.initialCity = ''});
   final String mode;
   final String? id, kind;
+  final bool embedded;
+  final String initialCity;
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'notices',
+      embedded: embedded,
       route: '/notices/$mode',
       account: ['catalog', 'public'].contains(mode),
       builder: (s) => mode == 'submit'
           ? NoticesSubmission(session: s, noticeId: id, kind: kind ?? 'PROFILE')
-          : _NoticeScreen(session: s, mode: mode, id: id, kind: kind));
+          : _NoticeScreen(
+              session: s,
+              mode: mode,
+              id: id,
+              kind: kind,
+              embedded: embedded,
+              initialCity: initialCity));
 }
 
 class _NoticeScreen extends StatefulWidget {
   const _NoticeScreen(
-      {required this.session, required this.mode, this.id, this.kind});
+      {required this.session,
+      required this.mode,
+      this.id,
+      this.kind,
+      required this.embedded,
+      required this.initialCity});
   final AccountSession session;
   final String mode;
   final String? id, kind;
+  final bool embedded;
+  final String initialCity;
   @override
   State<_NoticeScreen> createState() => _NoticeScreenState();
 }
@@ -51,6 +75,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   @override
   void initState() {
     super.initState();
+    city.text = widget.initialCity;
     recordKind = widget.kind ?? 'SUBMISSION';
     load();
   }
@@ -146,6 +171,61 @@ class _NoticeScreenState extends State<_NoticeScreen> {
         tradeFact('开始', tradeDate(n['valid_from'])),
         tradeFact('截止', tradeDate(n['valid_until']))
       ];
+  Widget _featuredNotice(NoticePublic item) {
+    final title = item.notice['title'] as String;
+    final longTitle = title.runes.length > 8;
+    final cover = Container(
+        height: longTitle ? 216 : 320,
+        color: const Color(0xFFE7E4DA),
+        alignment: Alignment.center,
+        child: const Padding(
+            padding: EdgeInsets.all(12),
+            child: Text('未提供通告封面',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted))));
+    final summary = Container(
+        constraints: BoxConstraints(minHeight: longTitle ? 0 : 320),
+        color: AccountTheme.text,
+        padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(noticeTypes[item.notice['type']]!,
+              style: const TextStyle(color: AccountTheme.canvas, fontSize: 12)),
+          const SizedBox(height: 20),
+          Text(title,
+              style: TextStyle(
+                  fontFamily: AccountTheme.serif,
+                  fontSize: longTitle
+                      ? (MediaQuery.sizeOf(context).width < 350 ? 36 : 42)
+                      : 44,
+                  height: 1.1,
+                  fontWeight: FontWeight.w700,
+                  color: AccountTheme.canvas)),
+          const SizedBox(height: 20),
+          Text(item.notice['city'],
+              style: const TextStyle(color: AccountTheme.canvas, fontSize: 12)),
+          const SizedBox(height: 16),
+          TextButton(
+              style: TextButton.styleFrom(
+                  foregroundColor: AccountTheme.canvas,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.zero),
+              onPressed:
+                  busy ? null : () => go('/notices/public?noticeId=${item.id}'),
+              child: const Text('查看要求 ↗')),
+        ]));
+    return Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: longTitle
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [summary, cover])
+            : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(flex: 4, child: cover),
+                Expanded(flex: 3, child: summary),
+              ]));
+  }
+
   @override
   Widget build(BuildContext context) {
     final r = record, n = publicNotice;
@@ -157,202 +237,257 @@ class _NoticeScreenState extends State<_NoticeScreen> {
       'qualification' => '机构发布资格',
       _ => '通告现场'
     };
-    return V5Frame(api: api, title: title, children: [
-      tradeHeading(title, eyebrow: '单向意向 / 交给明确的人处理'),
-      V5RecoveryPanel(
-          api: api,
-          label: api.recoveryLabel,
-          restore: api.restoreOperation,
-          onRestored: (r) => go('/notices/record?recordId=${r['id']}')),
-      if (busy) const LinearProgressIndicator(),
-      if (error != null) appNotice(error!, icon: Icons.error_outline),
-      if (widget.mode == 'catalog') ...[
-        DropdownButtonFormField<String>(
-            initialValue: type,
-            isExpanded: true,
-            decoration: const InputDecoration(labelText: '六类通告'),
-            items: [
-              const DropdownMenuItem(value: '', child: Text('全部类型')),
-              for (final e in noticeTypes.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value))
-            ],
-            onChanged:
-                busy ? null : (v) => setState(() => type = v == '' ? null : v)),
-        TextField(
-            controller: city,
-            decoration: const InputDecoration(labelText: '城市（可留空）')),
-        v5DateField(context,
-            label: '指定有效时间（可留空）',
-            value: at.text,
-            controller: at,
-            enabled: !busy,
-            required: false,
-            onChanged: (v) => setState(() => at.text = v)),
-        tradeButton('筛选通告', busy ? null : () => load(), outline: true),
-        for (final item in publicRows)
-          tradeSection(item.notice['title'], [
-            Text(
-                '${noticeTypes[item.notice['type']]} · ${item.notice['city']}'),
-            tradeFact('截止', tradeDate(item.notice['valid_until'])),
-            tradeButton(
-                '查看这份通告', () => go('/notices/public?noticeId=${item.id}'),
-                outline: true)
-          ]),
-        if (!busy && publicRows.isEmpty) appNotice('当前筛选没有仍有效的已审公开通告。'),
-        tradeButton('核对资格并发布通告', () => go('/notices/new')),
-        tradeButton('我的投稿与接收箱', () => go('/notices/records?kind=SUBMISSION'),
-            outline: true),
-        tradeButton('我的已发通告', () => go('/notices/records?kind=NOTICE'),
-            outline: true),
-        tradeButton('合作客服处理', () => go('/notices/records?kind=CASE'),
-            outline: true),
-      ],
-      if (n != null) ...[
-        tradeSection(n.notice['title'], noticeFacts(n.notice)),
-        appNotice(n.raw['official'] == true
-            ? '此为平台官方发布；普通机构不能冒用官方身份。'
-            : '通告经独立审核。投稿仅单向递交，不自动付款、签约或开放私聊。'),
-        if (n.notice['accept_submissions'] == true)
-          for (final k in ['PROFILE', 'ROLE', 'CREATE_DRAMA'])
-            tradeButton(submissionKinds[k]!,
-                () => go('/notices/submit?noticeId=${n.id}&kind=$k'),
-                outline: k != 'PROFILE')
-      ],
-      if (widget.mode == 'new') ...[
-        appNotice('发布资格由服务器按可信事实和当前规则计算；普通实名不能替代星探或机构资质。官方事项请由有权运营在网页办理。'),
-        DropdownButtonFormField<String>(
-            initialValue: ruleId,
-            isExpanded: true,
-            decoration: const InputDecoration(labelText: '选择已生效发布规则'),
-            items: rules
-                .map((x) => DropdownMenuItem(
-                    value: x.id,
-                    child: Text(
-                        '${x.rule['version']} · 投稿${x.rule['submission_days']}天')))
-                .toList(),
-            onChanged: busy ? null : (v) => chooseRule(v!)),
-        if (ruleId != null) ...[
-          tradeSection('本版规则', [
-            SelectableText(
-                rules.firstWhere((x) => x.id == ruleId).rule['terms']),
-            if (eligibility != null) ...[
-              tradeFact(
-                  '可发布类型',
-                  (eligibility!.raw['types'] as List)
-                      .map((t) => noticeTypes[t])
-                      .join('、')),
-              tradeFact('实际资格等级', eligibility!.raw['level']),
-              tradeFact('原因', eligibility!.raw['reason'] ?? '当前资格有效')
-            ]
-          ]),
-          if (eligibility != null && eligibility!.raw['active'] != true)
-            appNotice('当前没有正式发布资格。机构请独立提交资质；个人可在钱包查看会员年和消费成长依据。'),
-          tradeButton('查看个人钱包与资格', () => go('/wallet'), outline: true),
-          if (widget.session.party?['kind'] == 'ORGANIZATION')
-            tradeButton('申请机构发布资格', () => go('/notices/qualification'),
-                outline: true)
-        ],
-        if (eligibility != null) ...[
-          DropdownButtonFormField<String>(
-              initialValue: eligibility!.canPublish(type ?? '') ? type : null,
-              isExpanded: true,
-              decoration: const InputDecoration(labelText: '本次可发布类型'),
-              items: (eligibility!.raw['types'] as List)
-                  .where((x) => x != 'OFFICIAL')
-                  .map((x) => DropdownMenuItem<String>(
-                      value: x, child: Text(noticeTypes[x]!)))
-                  .toList(),
-              onChanged: busy ? null : (v) => setState(() => type = v)),
-          if (type != null && eligibility!.canPublish(type!)) _noticeForm(type!)
-        ],
-      ],
-      if (widget.mode == 'qualification') ...[
-        if (widget.session.party?['kind'] != 'ORGANIZATION')
-          appNotice('此项仅适用于机构负责人；个人资格从个人账本和会员事实核对。')
-        else
-          V5Form(
+    return V5Frame(
+        api: api,
+        title: title,
+        embedded: widget.embedded,
+        children: [
+          if (widget.mode == 'catalog') ...[
+            Row(children: [
+              Expanded(
+                  child: Semantics(
+                      header: true,
+                      child: const Text('通告',
+                          style: TextStyle(
+                              fontFamily: AccountTheme.serif,
+                              fontSize: 56,
+                              height: 1.1,
+                              fontWeight: FontWeight.w700)))),
+              OutlinedButton(
+                  onPressed: busy ? null : () => go('/notices/new'),
+                  child: const Text('发布 ＋')),
+            ]),
+            const SizedBox(height: 24),
+          ] else if (n == null)
+            tradeHeading(title, eyebrow: '单向意向 / 交给明确的人处理'),
+          V5RecoveryPanel(
               api: api,
-              title: '机构资质',
-              action: '提交机构独立资质审核',
-              suffix: '/qualifications',
-              fields: [
-                for (final e
-                    in noticeTypes.entries.where((x) => x.key != 'OFFICIAL'))
-                  V5Field('type_${e.key}', '申请发布${e.value}',
-                      type: 'bool', required: false),
-                const V5Field('valid_from', '资质生效时间', type: 'datetime'),
-                const V5Field('valid_until', '资质截止时间', type: 'datetime'),
-                const V5Field('terms', '资质与业务范围', type: 'multiline')
-              ],
-              restore: (b) => {
-                    ...b,
-                    for (final t in b['types']) 'type_$t': true,
-                    'evidence_asset_ids':
-                        (b['evidence_asset_ids'] as List).join(', ')
-                  },
-              buildBody: (v) {
-                final types = noticeTypes.keys
-                    .where((k) => k != 'OFFICIAL' && v['type_$k'] == true)
-                    .toList();
-                final ids = v5InputIds(v['evidence_asset_ids'] ?? '');
-                if (types.isEmpty || ids.isEmpty) {
-                  throw const AccountError(400, 'NOTICE_QUALIFICATION_INVALID');
-                }
-                return {
-                  'types': types,
-                  'valid_from': v5InputDate(v['valid_from']),
-                  'valid_until': v5InputDate(v['valid_until']),
-                  'terms': v['terms'],
-                  'evidence_asset_ids': ids
-                };
-              },
-              parse: api.validateRecord,
-              onSuccess: (d) => go('/notices/record?recordId=${d['id']}'),
-              extra: (v, set, enabled) => [
-                    SupplyFiles(
-                        api: SupplyApi(widget.session),
-                        purpose: 'RIGHTS_EVIDENCE',
-                        ids: v5InputIds(v['evidence_asset_ids'] ?? ''),
-                        enabled: enabled,
-                        onChanged: (ids) =>
-                            set('evidence_asset_ids', ids.join(', ')))
-                  ])
-      ],
-      if (widget.mode == 'records') ...[
-        DropdownButtonFormField<String>(
-            initialValue: recordKind,
-            decoration: const InputDecoration(labelText: '查看本人记录'),
-            items: const [
-              DropdownMenuItem(value: 'SUBMISSION', child: Text('投稿与被投稿')),
-              DropdownMenuItem(value: 'NOTICE', child: Text('我发布的通告')),
-              DropdownMenuItem(value: 'CASE', child: Text('客服处理')),
-              DropdownMenuItem(value: 'QUALIFICATION', child: Text('机构资质'))
+              label: api.recoveryLabel,
+              restore: api.restoreOperation,
+              onRestored: (r) => go('/notices/record?recordId=${r['id']}')),
+          if (busy) const LinearProgressIndicator(),
+          if (error != null) appNotice(error!, icon: Icons.error_outline),
+          if (widget.mode == 'catalog') ...[
+            SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(children: [
+                  for (final e
+                      in <String, String>{'': '全部', ...noticeTypes}.entries)
+                    Container(
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  color: (type ?? '') == e.key
+                                      ? AccountTheme.accent
+                                      : Colors.transparent,
+                                  width: 3))),
+                      child: TextButton(
+                          onPressed: busy
+                              ? null
+                              : () {
+                                  setState(() =>
+                                      type = e.key.isEmpty ? null : e.key);
+                                  load();
+                                },
+                          child: Text(e.value,
+                              style: TextStyle(
+                                  fontWeight: (type ?? '') == e.key
+                                      ? FontWeight.w700
+                                      : FontWeight.w400))),
+                    ),
+                ])),
+            const SizedBox(height: 20),
+            TextField(
+                controller: city,
+                decoration: const InputDecoration(labelText: '城市（可留空）')),
+            v5DateField(context,
+                label: '指定有效时间（可留空）',
+                value: at.text,
+                controller: at,
+                enabled: !busy,
+                required: false,
+                onChanged: (v) => setState(() => at.text = v)),
+            tradeButton('筛选通告', busy ? null : () => load(), outline: true),
+            for (final item in publicRows) ...[
+              if (item == publicRows.first) _featuredNotice(item),
+              tradeSection(
+                  item == publicRows.first ? '通告要求与投稿' : item.notice['title'], [
+                Text(
+                    '${noticeTypes[item.notice['type']]} · ${item.notice['city']}'),
+                tradeFact('截止', tradeDate(item.notice['valid_until'])),
+                tradeButton(
+                    '查看这份通告', () => go('/notices/public?noticeId=${item.id}'),
+                    outline: true)
+              ]),
             ],
-            onChanged: busy
-                ? null
-                : (v) {
-                    setState(() => recordKind = v!);
-                    load();
-                  }),
-        for (final x in rows)
-          tradeSection(x.title, [
-            tradeFact('状态', noticeStates[x.status]),
-            tradeFact(
-                '方向',
-                x.raw['owner_party_id'] == widget.session.partyId
-                    ? '我发出'
-                    : '我接收'),
-            tradeButton('查看具体进度', () => go('/notices/record?recordId=${x.id}'),
-                outline: true)
-          ]),
-        if (!busy && rows.isEmpty) appNotice('当前没有本类型的可读记录。'),
-      ],
-      if (r != null) ..._recordBody(r),
-      if (cursor != null)
-        tradeButton('继续读取下一页', busy ? null : () => load(more: true),
-            outline: true),
-      tradeButton('重新读取', busy ? null : () => load(), outline: true),
-    ]);
+            if (!busy && error == null && publicRows.isEmpty)
+              appNotice('当前筛选没有仍有效的已审公开通告。'),
+            tradeButton('核对资格并发布通告', () => go('/notices/new')),
+            tradeButton(
+                '我的投稿与接收箱', () => go('/notices/records?kind=SUBMISSION'),
+                outline: true),
+            tradeButton('我的已发通告', () => go('/notices/records?kind=NOTICE'),
+                outline: true),
+            tradeButton('合作客服处理', () => go('/notices/records?kind=CASE'),
+                outline: true),
+          ],
+          if (n != null) ...[
+            EditorialFeature(
+                title: n.notice['title'],
+                eyebrow:
+                    '${noticeTypes[n.notice['type']]} / ${n.notice['city']}',
+                description: n.notice['description']),
+            tradeSection('通告要求', noticeFacts(n.notice)),
+            appNotice(n.raw['official'] == true
+                ? '此为平台官方发布；普通机构不能冒用官方身份。'
+                : '通告经独立审核。投稿仅单向递交，不自动付款、签约或开放私聊。'),
+            if (n.notice['accept_submissions'] == true)
+              for (final k in ['PROFILE', 'ROLE', 'CREATE_DRAMA'])
+                tradeButton(submissionKinds[k]!,
+                    () => go('/notices/submit?noticeId=${n.id}&kind=$k'),
+                    outline: k != 'PROFILE')
+          ],
+          if (widget.mode == 'new') ...[
+            appNotice('发布资格由服务器按可信事实和当前规则计算；普通实名不能替代星探或机构资质。官方事项请由有权运营在网页办理。'),
+            DropdownButtonFormField<String>(
+                initialValue: ruleId,
+                isExpanded: true,
+                decoration: const InputDecoration(labelText: '选择已生效发布规则'),
+                items: rules
+                    .map((x) => DropdownMenuItem(
+                        value: x.id,
+                        child: Text(
+                            '${x.rule['version']} · 投稿${x.rule['submission_days']}天')))
+                    .toList(),
+                onChanged: busy ? null : (v) => chooseRule(v!)),
+            if (ruleId != null) ...[
+              tradeSection('本版规则', [
+                SelectableText(
+                    rules.firstWhere((x) => x.id == ruleId).rule['terms']),
+                if (eligibility != null) ...[
+                  tradeFact(
+                      '可发布类型',
+                      (eligibility!.raw['types'] as List)
+                          .map((t) => noticeTypes[t])
+                          .join('、')),
+                  tradeFact('实际资格等级', eligibility!.raw['level']),
+                  tradeFact('原因', eligibility!.raw['reason'] ?? '当前资格有效')
+                ]
+              ]),
+              if (eligibility != null && eligibility!.raw['active'] != true)
+                appNotice('当前没有正式发布资格。机构请独立提交资质；个人可在钱包查看会员年和消费成长依据。'),
+              tradeButton('查看个人钱包与资格', () => go('/wallet'), outline: true),
+              if (widget.session.party?['kind'] == 'ORGANIZATION')
+                tradeButton('申请机构发布资格', () => go('/notices/qualification'),
+                    outline: true)
+            ],
+            if (eligibility != null) ...[
+              DropdownButtonFormField<String>(
+                  initialValue:
+                      eligibility!.canPublish(type ?? '') ? type : null,
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: '本次可发布类型'),
+                  items: (eligibility!.raw['types'] as List)
+                      .where((x) => x != 'OFFICIAL')
+                      .map((x) => DropdownMenuItem<String>(
+                          value: x, child: Text(noticeTypes[x]!)))
+                      .toList(),
+                  onChanged: busy ? null : (v) => setState(() => type = v)),
+              if (type != null && eligibility!.canPublish(type!))
+                _noticeForm(type!)
+            ],
+          ],
+          if (widget.mode == 'qualification') ...[
+            if (widget.session.party?['kind'] != 'ORGANIZATION')
+              appNotice('此项仅适用于机构负责人；个人资格从个人账本和会员事实核对。')
+            else
+              V5Form(
+                  api: api,
+                  title: '机构资质',
+                  action: '提交机构独立资质审核',
+                  suffix: '/qualifications',
+                  fields: [
+                    for (final e in noticeTypes.entries
+                        .where((x) => x.key != 'OFFICIAL'))
+                      V5Field('type_${e.key}', '申请发布${e.value}',
+                          type: 'bool', required: false),
+                    const V5Field('valid_from', '资质生效时间', type: 'datetime'),
+                    const V5Field('valid_until', '资质截止时间', type: 'datetime'),
+                    const V5Field('terms', '资质与业务范围', type: 'multiline')
+                  ],
+                  restore: (b) => {
+                        ...b,
+                        for (final t in b['types']) 'type_$t': true,
+                        'evidence_asset_ids':
+                            (b['evidence_asset_ids'] as List).join(', ')
+                      },
+                  buildBody: (v) {
+                    final types = noticeTypes.keys
+                        .where((k) => k != 'OFFICIAL' && v['type_$k'] == true)
+                        .toList();
+                    final ids = v5InputIds(v['evidence_asset_ids'] ?? '');
+                    if (types.isEmpty || ids.isEmpty) {
+                      throw const AccountError(
+                          400, 'NOTICE_QUALIFICATION_INVALID');
+                    }
+                    return {
+                      'types': types,
+                      'valid_from': v5InputDate(v['valid_from']),
+                      'valid_until': v5InputDate(v['valid_until']),
+                      'terms': v['terms'],
+                      'evidence_asset_ids': ids
+                    };
+                  },
+                  parse: api.validateRecord,
+                  onSuccess: (d) => go('/notices/record?recordId=${d['id']}'),
+                  extra: (v, set, enabled) => [
+                        SupplyFiles(
+                            api: SupplyApi(widget.session),
+                            purpose: 'RIGHTS_EVIDENCE',
+                            ids: v5InputIds(v['evidence_asset_ids'] ?? ''),
+                            enabled: enabled,
+                            onChanged: (ids) =>
+                                set('evidence_asset_ids', ids.join(', ')))
+                      ])
+          ],
+          if (widget.mode == 'records') ...[
+            DropdownButtonFormField<String>(
+                initialValue: recordKind,
+                decoration: const InputDecoration(labelText: '查看本人记录'),
+                items: const [
+                  DropdownMenuItem(value: 'SUBMISSION', child: Text('投稿与被投稿')),
+                  DropdownMenuItem(value: 'NOTICE', child: Text('我发布的通告')),
+                  DropdownMenuItem(value: 'CASE', child: Text('客服处理')),
+                  DropdownMenuItem(value: 'QUALIFICATION', child: Text('机构资质'))
+                ],
+                onChanged: busy
+                    ? null
+                    : (v) {
+                        setState(() => recordKind = v!);
+                        load();
+                      }),
+            for (final x in rows)
+              tradeSection(x.title, [
+                tradeFact('状态', noticeStates[x.status]),
+                tradeFact(
+                    '方向',
+                    x.raw['owner_party_id'] == widget.session.partyId
+                        ? '我发出'
+                        : '我接收'),
+                tradeButton(
+                    '查看具体进度', () => go('/notices/record?recordId=${x.id}'),
+                    outline: true)
+              ]),
+            if (!busy && error == null && rows.isEmpty)
+              appNotice('当前没有本类型的可读记录。'),
+          ],
+          if (r != null) ..._recordBody(r),
+          if (cursor != null)
+            tradeButton('继续读取下一页', busy ? null : () => load(more: true),
+                outline: true),
+          tradeButton('重新读取', busy ? null : () => load(), outline: true),
+        ]);
   }
 
   Widget _noticeForm(String type) => V5Form(

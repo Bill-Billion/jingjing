@@ -4,15 +4,22 @@ import 'package:flutter/material.dart';
 class AccountTheme extends StatelessWidget {
   const AccountTheme({super.key, required this.child});
   final Widget child;
-  static const canvas = Color(0xFFF3F0E7);
-  static const surface = Color(0xFFFFFDF8);
-  static const text = Color(0xFF171717);
-  static const muted = Color(0xFF68655F);
-  static const accent = Color(0xFFAD2D23);
-  static const vermilion = Color(0xFFF04434);
-  static const border = Color(0xFFD4D0C7);
+  static const canvas = Color(0xFFF3F1E8);
+  static const surface = Color(0xFFF3F1E8);
+  static const text = Color(0xFF151515);
+  static const muted = Color(0xFF66645F);
+  static const accent = Color(0xFFA73124);
+  static const vermilion = Color(0xFFEF4938);
+  static const border = Color(0xFFCECBC2);
   static const danger = Color(0xFFB62F25);
   static const serif = 'EditorialSerif';
+  static const sans = 'NotoSansSC';
+  static const sansFallback = [
+    'NotoSansSC',
+    'PingFang SC',
+    'Microsoft YaHei',
+    'sans-serif'
+  ];
   static const _square = RoundedRectangleBorder();
   static ThemeData get data => ThemeData(
         useMaterial3: true,
@@ -26,8 +33,13 @@ class AccountTheme extends StatelessWidget {
             outline: border,
             error: danger),
         scaffoldBackgroundColor: canvas,
-        fontFamily: 'PingFang SC',
-        fontFamilyFallback: const ['Microsoft YaHei', 'sans-serif'],
+        fontFamily: sans,
+        fontFamilyFallback: const [
+          'NotoSansSC',
+          'PingFang SC',
+          'Microsoft YaHei',
+          'sans-serif'
+        ],
         textTheme: const TextTheme(
           headlineLarge: TextStyle(
               fontFamily: serif,
@@ -57,7 +69,12 @@ class AccountTheme extends StatelessWidget {
           labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           labelMedium: TextStyle(fontSize: 12),
           labelSmall: TextStyle(fontSize: 11),
-        ).apply(bodyColor: text, displayColor: text),
+        ).apply(bodyColor: text, displayColor: text, fontFamilyFallback: const [
+          'NotoSansSC',
+          'PingFang SC',
+          'Microsoft YaHei',
+          'sans-serif'
+        ]),
         appBarTheme: const AppBarTheme(
             backgroundColor: canvas,
             foregroundColor: text,
@@ -67,7 +84,11 @@ class AccountTheme extends StatelessWidget {
             toolbarHeight: 56,
             titleSpacing: 0,
             titleTextStyle: TextStyle(
-                color: text, fontSize: 14, fontWeight: FontWeight.w500),
+                fontFamily: sans,
+                fontFamilyFallback: sansFallback,
+                color: text,
+                fontSize: 14,
+                fontWeight: FontWeight.w500),
             centerTitle: false),
         cardTheme: const CardThemeData(
             color: canvas,
@@ -85,18 +106,18 @@ class AccountTheme extends StatelessWidget {
             shape: _square),
         inputDecorationTheme: const InputDecorationTheme(
             filled: true,
-            fillColor: surface,
+            fillColor: Colors.white,
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            border: OutlineInputBorder(
+            border: UnderlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: border)),
-            enabledBorder: OutlineInputBorder(
+            enabledBorder: UnderlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: border)),
-            focusedBorder: OutlineInputBorder(
+            focusedBorder: UnderlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: text, width: 1.5)),
-            errorBorder: OutlineInputBorder(
+            errorBorder: UnderlineInputBorder(
                 borderRadius: BorderRadius.zero,
                 borderSide: BorderSide(color: danger))),
         filledButtonTheme: FilledButtonThemeData(
@@ -128,8 +149,16 @@ class AccountTheme extends StatelessWidget {
             backgroundColor: canvas,
             selectedColor: text,
             secondarySelectedColor: text,
-            labelStyle: TextStyle(color: text, fontSize: 13),
-            secondaryLabelStyle: TextStyle(color: canvas, fontSize: 13),
+            labelStyle: TextStyle(
+                fontFamily: sans,
+                fontFamilyFallback: sansFallback,
+                color: text,
+                fontSize: 13),
+            secondaryLabelStyle: TextStyle(
+                fontFamily: sans,
+                fontFamilyFallback: sansFallback,
+                color: canvas,
+                fontSize: 13),
             shape: _square,
             side: BorderSide(color: border),
             showCheckmark: false),
@@ -149,6 +178,8 @@ class AccountTheme extends StatelessWidget {
                 IconThemeData(size: 22, color: text)),
             labelTextStyle: WidgetStateProperty.resolveWith((states) =>
                 TextStyle(
+                    fontFamily: sans,
+                    fontFamilyFallback: sansFallback,
                     fontSize: 11,
                     color: text,
                     fontWeight: states.contains(WidgetState.selected)

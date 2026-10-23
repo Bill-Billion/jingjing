@@ -11,18 +11,26 @@ import 'v5_media.dart';
 import 'v5_support.dart';
 
 class StockPage extends StatelessWidget {
-  const StockPage({super.key, this.mode = 'catalog', this.id, this.action});
+  const StockPage(
+      {super.key, this.mode = 'catalog', this.id, this.action, this.city});
   final String mode;
-  final String? id, action;
+  final String? id, action, city;
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'stock',
-      route: '/stock/$mode',
+      route: mode == 'catalog'
+          ? '/stock/catalog${city?.trim().isNotEmpty == true ? '?city=${Uri.encodeQueryComponent(city!.trim())}' : ''}'
+          : '/stock/$mode',
       account: ['catalog', 'video'].contains(mode),
       personal: ['purchases', 'purchase'].contains(mode),
       builder: (s) => mode == 'new'
           ? StockListingForm(session: s)
-          : _StockScreen(session: s, mode: mode, id: id, action: action));
+          : _StockScreen(
+              session: s,
+              mode: mode,
+              id: id,
+              action: action,
+              initialCity: city));
 }
 
 List<Widget> stockLicenseFacts(StockLicense l) => [
@@ -35,17 +43,21 @@ List<Widget> stockLicenseFacts(StockLicense l) => [
 
 class _StockScreen extends StatefulWidget {
   const _StockScreen(
-      {required this.session, required this.mode, this.id, this.action});
+      {required this.session,
+      required this.mode,
+      this.id,
+      this.action,
+      this.initialCity});
   final AccountSession session;
   final String mode;
-  final String? id, action;
+  final String? id, action, initialCity;
   @override
   State<_StockScreen> createState() => _StockScreenState();
 }
 
 class _StockScreenState extends State<_StockScreen> {
   late final api = StockApi(widget.session);
-  final city = TextEditingController();
+  late final city = TextEditingController(text: widget.initialCity?.trim());
   final offers = <StockOffer>[],
       listings = <StockListing>[],
       purchases = <StockPurchase>[];
@@ -247,7 +259,8 @@ class _StockScreenState extends State<_StockScreen> {
       _ => '我的个人许可'
     };
     return V5Frame(api: api, title: title, children: [
-      tradeHeading(title, eyebrow: '完成的作品 / 每份许可有来处'),
+      tradeHeading(o?.title ?? p?.title ?? l?.data['title'] ?? title,
+          eyebrow: '完成的作品 / 每份许可有来处'),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,
@@ -269,7 +282,8 @@ class _StockScreenState extends State<_StockScreen> {
         for (final r in offers)
           row(r.title, '${r.data['city']} · ${v5Money(r.price)} · 个人非商用许可',
               '/stock/video?listingId=${r.id}'),
-        if (!busy && offers.isEmpty) appNotice('当前筛选没有可公开销售的已审作品。'),
+        if (!busy && offers.isEmpty && error == null)
+          appNotice('当前筛选没有可公开销售的已审作品。'),
         tradeButton('我的已购视频', () => go('/stock/purchases'), outline: true),
         tradeButton('我上架的作品', () => go('/stock/listings'), outline: true),
       ],
@@ -317,10 +331,11 @@ class _StockScreenState extends State<_StockScreen> {
         for (final r in listings)
           row(r.data['title'], stockStatuses[r.status]!,
               '/stock/listing?listingId=${r.id}'),
-        if (!busy && listings.isEmpty) appNotice('本人当前没有上架材料。'),
+        if (!busy && listings.isEmpty && error == null)
+          appNotice('本人当前没有上架材料。'),
       ],
       if (l != null) ...[
-        tradeSection(l.data['title'], [
+        tradeSection('上架状态与审核', [
           tradeFact('状态', stockStatuses[l.status]),
           tradeFact('卖方具体真人', '本次已授权真人'),
           tradeFact('城市', l.data['city']),
@@ -370,17 +385,22 @@ class _StockScreenState extends State<_StockScreen> {
         for (final r in purchases)
           row(r.title, stockStatuses[r.status]!,
               '/stock/purchase?orderId=${r.orderId}'),
-        if (!busy && purchases.isEmpty) appNotice('本人当前没有现货订单。付款核实后才发放个人许可。'),
+        if (!busy && purchases.isEmpty && error == null)
+          appNotice('本人当前没有现货订单。付款核实后才发放个人许可。'),
       ],
       if (p != null) ...[
-        tradeSection(p.title, [
+        tradeSection('本次许可与交付', [
           if (p.data['current_case_id'] != null)
             appNotice('本单售后处理中，正式文件下载已暂停。原许可记录保留，等待独立客服核对。'),
           tradeFact('许可状态', stockStatuses[p.status]),
           tradeFact('原订单状态',
               tradeStatuses[p.raw['order_status']] ?? '当前状态待核对，请查看原订单'),
           ...stockLicenseFacts(p.license),
-          tradeFact('原合同指纹', p.raw['contract_sha256'])
+          ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: const EdgeInsets.only(bottom: 12),
+              title: const Text('原合同依据'),
+              children: [tradeFact('原合同指纹', p.raw['contract_sha256'])])
         ]),
         if (p.usable)
           V5Media(
