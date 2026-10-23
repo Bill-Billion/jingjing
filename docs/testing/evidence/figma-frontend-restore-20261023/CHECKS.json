@@ -1,6 +1,6 @@
 {
   "result": "LOCAL_CHECKS_PASSED_WITH_DOCUMENTED_GAPS",
-  "checkedAt": "2026-10-23T13:38:30.756601+00:00",
+  "checkedAt": "2026-10-23T14:31:16.434847+00:00",
   "app": {
     "testsPassed": 491,
     "testsLog": "final-checks/app-tests.log",
@@ -65,7 +65,7 @@
     "f7故事页仍有10条外部字体资源记录；17.8MB正文及标题字体差异单列",
     "Node本机26.3.0；远端正式运行环境以CI为准"
   ],
-  "cleanup": "最终隔离服务及私有构建已关闭/移除，12个随机库已查证不存在，见final-checks清理记录。",
+  "cleanup": "初轮12个随机库已确认不存在；CI浏览器9次复验后再次查证无剩余测试库，21个本任务端口关闭，临时凭据与截图工作副本清理，见final-checks记录。",
   "remote": {
     "pullRequest": "https://github.com/Bill-Billion/jingjing/pull/36",
     "target": "integration",
@@ -90,5 +90,14 @@
     "brokenReferences": 0
   },
   "cleanupRecord": "final-checks/CLEANUP.json",
-  "logFormatting": "已保存工具原始输出内容，仅规范行尾空格与末尾空行；未移除警告或失败信息。"
+  "logFormatting": "已保存工具原始输出内容，仅规范行尾空格与末尾空行；未移除警告或失败信息。",
+  "browserRegression": {
+    "result": "PASS",
+    "checksPassed": 138,
+    "runs": 9,
+    "evidence": "final-checks/CI_LOCAL_RECHECK.json",
+    "scope": "本地实际API浏览器；仅短信检查更新为真实展开导航，其余业务断言原样保留；远端以PR当前提交为准。"
+  },
+  "databaseRecheck": "final-checks/CI_DATABASE_CLEANUP.json",
+  "ciPrivateArtifactCleanup": "final-checks/CI_PRIVATE_ARTIFACT_CLEANUP.json"
 }

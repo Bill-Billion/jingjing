@@ -14,8 +14,10 @@
 
 边界：标题仍为思源宋体700子集，与原稿Black存在差异；完整正文17.8MB且f7故事页仍记录外部字体请求。部分页只有相关模板或关闭入口，统一合同/作品库、整单结算视图等差异见报告；未将关联截图冒充独立状态通过。浏览器和合成资料不证明真机、真实支付/签署/生成或影像质量。
 
-撤回方式：本轮仅前端及文档/截图，可在分支回退本阶段提交；没有数据库升级或生产状态回滚。普通lib/main.dart构建不含截图夹具入口或凭据。本轮12个随机测试库已确认删除，全部6个测试端口关闭，临时账号运行凭据、私有构建和截图工作副本已清理；[收尾记录](../../testing/evidence/figma-frontend-restore-20261023/final-checks/CLEANUP.json)可核对。
+撤回方式：本轮仅前端及文档/截图，可在分支回退本阶段提交；没有数据库升级或生产状态回滚。普通lib/main.dart构建不含截图夹具入口或凭据。本轮12个随机测试库已确认删除，初轮全部6个测试端口关闭，临时账号运行凭据、私有构建和截图工作副本已清理；[收尾记录](../../testing/evidence/figma-frontend-restore-20261023/final-checks/CLEANUP.json)可核对。
 
 本轮已集中上传，唯一合并入口为[草稿PR36](https://github.com/Bill-Billion/jingjing/pull/36)，目标integration；实施提交d320173。远端自动检查请以申请当前提交的实际状态为准，不以本地结果冒充远端通过。同事尚未实际审阅，未合入integration/main、未部署。
 
 远端首轮App及两组服务器检查通过，网页运行在Azure镜像安装FFmpeg时长时间等待，已取消取回日志并修正CI安装源、下载超时和按需安装。此项不改页面、业务或依赖锁定版本，全部原浏览器用例保留；最新远端结论仍以PR当前提交为准。见[安装修正依据](../../testing/evidence/figma-frontend-restore-20261023/final-checks/CI_INSTALLATION_FIX.json)。
+
+后续CI暴露短信脚本仍等待默认折叠手机侧栏中的身份项；已改为真实展开导航并核对可见、可选状态，未改产品代码。普通账号、短信及第14—20阶段共138项本地实际API浏览器复验通过，历史证据已恢复；见[复验记录](../../testing/evidence/figma-frontend-restore-20261023/final-checks/CI_LOCAL_RECHECK.json)。随后再次清理隔离服务及运行凭据，最终状态见收尾记录。

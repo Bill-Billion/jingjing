@@ -1,0 +1,127 @@
+{
+  "result": "PASS",
+  "checkedAt": "2026-10-23T14:31:16.434847+00:00",
+  "environment": "macOS local Chrome, Node 26.3.0, isolated loopback MySQL; Linux CI is checked separately on the current PR head",
+  "totalChecksPassed": 138,
+  "runs": [
+    {
+      "stage": "11-account",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 24,
+      "script": "晶晶日上工程交接包/01_源码/frontend_ops_workspace/tools/e2e-login.mjs",
+      "scriptSha256": "97e06b475b6b769ceb57cdcaf048b06cbd08d357070ec2e3cc9ea2dc601b6dd5",
+      "logs": {
+        "wrapper": "ci-browser-11-account-wrapper.log"
+      }
+    },
+    {
+      "stage": "11-sms",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 8,
+      "script": "scripts/sms-login-browser-check.mjs",
+      "scriptSha256": "f27ee86cfc4a4dacba9614411ac03efb11a2b5b5473d9b1608d0581e9ff5acca",
+      "logs": {
+        "wrapper": "ci-browser-11-sms-wrapper.log",
+        "check": "ci-browser-11-sms-check.log"
+      }
+    },
+    {
+      "stage": "14",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 20,
+      "script": "scripts/pr14-ui-browser-check.mjs",
+      "scriptSha256": "85e02ebd9d265bf41f3421f0f8c1dd4f342797b3fd0cc8f98013e15404c2f6c4",
+      "logs": {
+        "wrapper": "ci-browser-14-wrapper.log",
+        "check": "ci-browser-14-check.log"
+      }
+    },
+    {
+      "stage": "15",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 11,
+      "script": "scripts/pr15-ui-browser-check.mjs",
+      "scriptSha256": "d71bc658ac3b49ce3ff1171bdf8d79093107c189273b92c23471729f3c211aed",
+      "logs": {
+        "wrapper": "ci-browser-15-wrapper.log",
+        "check": "ci-browser-15-check.log"
+      }
+    },
+    {
+      "stage": "16",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 10,
+      "script": "scripts/pr16-ui-browser-check.mjs",
+      "scriptSha256": "eb34b0a01c9c07c405013612759aa81fe105428862c16dd3c8bfcf733026401b",
+      "logs": {
+        "wrapper": "ci-browser-16-wrapper.log",
+        "check": "ci-browser-16-check.log"
+      }
+    },
+    {
+      "stage": "17",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 9,
+      "script": "scripts/pr17-ui-browser-check.mjs",
+      "scriptSha256": "06aeb48098c35834aba1899418ac486ed00be46ef5d057ae660088f72a30d61d",
+      "logs": {
+        "wrapper": "ci-browser-17-wrapper.log",
+        "check": "ci-browser-17-check.log"
+      }
+    },
+    {
+      "stage": "18",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 14,
+      "script": "scripts/pr18-ui-browser-check.mjs",
+      "scriptSha256": "8d6ad6a5ec5ee96c7acc3c5680d6bc360c73ca6ae8cd9d4b7d06eb6e7fa186bd",
+      "logs": {
+        "wrapper": "ci-browser-18-wrapper.log",
+        "check": "ci-browser-18-check.log"
+      }
+    },
+    {
+      "stage": "19",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 21,
+      "script": "scripts/pr19-ui-browser-check.mjs",
+      "scriptSha256": "e96cdbe80cc968a1fdb762f9d263335496057681d951a929e6b024f5a52497f2",
+      "logs": {
+        "wrapper": "ci-browser-19-wrapper.log",
+        "check": "ci-browser-19-check.log"
+      }
+    },
+    {
+      "stage": "20",
+      "result": "PASS",
+      "exitCode": 0,
+      "checksPassed": 21,
+      "script": "scripts/pr20-ui-browser-check.mjs",
+      "scriptSha256": "55452ad8c1a8ee2a2fe824a41dd2f564ce4eb5e3b32f969329bc614751058add",
+      "logs": {
+        "wrapper": "ci-browser-20-wrapper.log",
+        "check": "ci-browser-20-check.log"
+      }
+    }
+  ],
+  "normalLoginLogLimit": "24 assertions were observed in the completed normal-account run; the next SMS run reused check.log, so only its wrapper PASS log is retained here.",
+  "initialRemoteFailure": {
+    "head": "57e6f2c9fdfa55283bbbdff436a963b027539fac",
+    "run": "https://github.com/Bill-Billion/jingjing/actions/runs/39966439709",
+    "failedStep": "用真实账号接口检查页面（仅短信模拟）",
+    "localReproduction": "The normal account run passed; the SMS run timed out waiting for .identity while the new mobile workspace navigation was collapsed."
+  },
+  "fix": "Open the actual 工作区导航 button, require aria-expanded=true, and verify the identity is visible, enabled and selectable through Playwright trial click. All eight SMS checks retained.",
+  "productSourceChangedDuringRecheck": false,
+  "historicalEvidenceRestored": true,
+  "credentialsOrApiLogsIncluded": false,
+  "scope": "Real local API and temporary synthetic test records; no real SMS, production payment, external signing or release."
+}
