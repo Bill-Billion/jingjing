@@ -96,7 +96,9 @@ async function main() {
     const unassigned=await f.newOrder();scenarios.unassigned_order={order_id:unassigned.order.id,story_id:unassigned.story.id,spec_id:unassigned.spec.id};
     checkRunning();
     const app=createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id},allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5000','http://localhost:5000','http://127.0.0.1:5500','http://localhost:5500']});
-    const rules=[/^\/api\/v1\/production(?:\/|$)/,/^\/api\/v1\/operations\/(notifications|comments|customization-requests)(?:\/|$)/,/^\/api\/v1\/customization-requests(?:\/|$)/,/^\/api\/v1\/me(?:\/parties)?$/,/^\/api\/v1\/trade\/(records|specifications|quotes|payments|refunds|readiness)(?:\/|$)/,/^\/(health|ready)$/];
+    const rules=[
+      ['GET', /^\/api\/v1\/privacy\/preferences$/], // App rest reminder reads only this account's preference.
+/^\/api\/v1\/production(?:\/|$)/,/^\/api\/v1\/operations\/(notifications|comments|customization-requests)(?:\/|$)/,/^\/api\/v1\/customization-requests(?:\/|$)/,/^\/api\/v1\/me(?:\/parties)?$/,/^\/api\/v1\/trade\/(records|specifications|quotes|payments|refunds|readiness)(?:\/|$)/,/^\/(health|ready)$/];
     server=http.createServer((req,res)=>{const route=req.url.split('?')[0],readOnly=['GET','OPTIONS'].includes(req.method)&&/^\/api\/v1\/(supply|artists|licensing|account|parties|customization-categories)(?:\/|$)/.test(route),evidenceUpload=req.method==='POST'&&route==='/api/v1/supply/assets';if(readOnly||evidenceUpload||rules.some(r=>r.test(route)))return app(req,res);res.writeHead(403,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code:'LOCAL_FIXTURE_ROUTE_DISABLED'}}));});
     server.listen(0,'127.0.0.1');await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});checkRunning();
     const base_url='http://127.0.0.1:'+server.address().port+'/api/v1';await fs.mkdir(out,{recursive:true});

@@ -115,7 +115,9 @@ async function main() {
     const relationId=relation.id;
     const delegation=await repo.createDelegation(artist.ctx,{...base,delegation:{organization_party_id:agency.party_id,relation_id:relationId,actions:['READ_PROFILE','MANAGE_AVATARS','MANAGE_MATERIALS','SUBMIT_LISTING'],valid_from:from,valid_until:until,evidence_asset_ids:[evidence.id],terms:'只限本机合成委托，不可代授权或代签'},operation_key:randomUUID()});
     const app=createAccountApi({db,secret,supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id},supplyStorageFactory:storageFactory,tradeEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'},allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5000','http://localhost:5000','http://127.0.0.1:5500','http://localhost:5500']});
-    const rules=[/^\/api\/v1\/artists(?:\/|$)/,/^\/api\/v1\/me(?:\/parties)?$/,/^\/api\/v1\/trade\/(records|specifications|quotes)(?:\/|$)/,/^\/(health|ready)$/];
+    const rules=[
+      ['GET', /^\/api\/v1\/privacy\/preferences$/], // App rest reminder reads only this account's preference.
+/^\/api\/v1\/artists(?:\/|$)/,/^\/api\/v1\/me(?:\/parties)?$/,/^\/api\/v1\/trade\/(records|specifications|quotes)(?:\/|$)/,/^\/(health|ready)$/];
     server=http.createServer((req,res)=>{const url=new URL(req.url,'http://127.0.0.1');const readRelation=['GET','OPTIONS'].includes(req.method)&&url.pathname==='/api/v1/gigs/records'&&url.searchParams.get('kind')==='RELATION';if(readRelation||rules.some(r=>r.test(url.pathname)))return app(req,res);res.writeHead(403,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code:'LOCAL_FIXTURE_ROUTE_DISABLED'}}));});
     server.listen(0,'127.0.0.1');await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});checkRunning();
     const base_url='http://127.0.0.1:'+server.address().port+'/api/v1';await fs.mkdir(out,{recursive:true});

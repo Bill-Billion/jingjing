@@ -109,6 +109,8 @@ async function main() {
     checkRunning();
     const uuid='[a-fA-F0-9-]{36}';
     const rules=[
+      ['GET', /^\/api\/v1\/privacy\/preferences$/], // App rest reminder reads only this account's preference.
+
       ['GET',new RegExp('^/api/v1/trade/records(?:/'+uuid+')?$')],
       ['POST',/^\/api\/v1\/trade\/quotes$/],
       ['POST',new RegExp('^/api/v1/trade/records/'+uuid+'/reviews$')],

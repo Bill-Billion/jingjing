@@ -44,7 +44,8 @@ import 'pages/splash/splash_page.dart';
 import 'pages/legal/legal_docs.dart';
 
 class JingjingShangriApp extends StatelessWidget {
-  const JingjingShangriApp({super.key});
+  const JingjingShangriApp({super.key, this.navigatorObservers = const []});
+  final List<NavigatorObserver> navigatorObservers;
 
   Route<dynamic> _generate(RouteSettings settings) {
     final uri = Uri.tryParse(settings.name ?? '/');
@@ -385,6 +386,7 @@ class JingjingShangriApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: '晶晶日上',
+        navigatorObservers: navigatorObservers,
         debugShowCheckedModeBanner: false,
         theme: AccountTheme.data,
         builder: (context, child) => RestReminder(
