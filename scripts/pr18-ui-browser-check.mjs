@@ -99,4 +99,32 @@ async function run(){const sponsor=await login('sponsor'),actor=await login('pro
  await check('渠道登记与独立核验分人办理，不提供虚构平台接入',async()=>{const p=registrar.page;await go(p,'/projects/channels/new');await set(p,'channel-name','浏览器合成渠道档案');await set(p,'channel-reference','browser18-channel');await set(p,'channel-requirements','仅合成测试，真实材料与外部编号需逐项核实，无自动提交服务。');await upload(p);await shot(p,'channel-new-desktop');const response=post(p,'/channels');await p.getByTestId('channel-submit').click();channel=await data(await response);assert.equal(channel.current_status,'IN_REVIEW');channel=await review(channel,'channels');assert.equal(channel.current_status,'APPROVED')});
  await check('统一导航与窄屏、当前隐私边界、旧制作与商业菜单并存',async()=>{const p=sponsor.page;for(const route of ['/projects/projects','/projects/plans','/projects/releases','/projects/channels','/contracts','/production/projects']){await go(p,route);await p.locator('.workspace-nav').getByRole('link',{name:'供给申请',exact:true}).waitFor();await p.locator('.workspace-nav').getByRole('link',{name:'我的作品',exact:true}).waitFor()}await p.setViewportSize({width:390,height:844});await go(p,`/projects/projects/${project.id}`);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot(p,'project-narrow');const outsider=await login('outsider');await outsider.page.goto(base+'/projects/projects/'+project.id);await outsider.page.getByText('项目记录不存在',{exact:false}).or(outsider.page.getByText('当前身份无权',{exact:false})).first().waitFor();await shot(outsider.page,'outsider-denied-desktop')});
 }
-try{await run();assert.equal(pageErrors.length,0,pageErrors.join('\n'))}catch(e){console.error(redact(e.stack));process.exitCode=1;const p=activePage||Object.values(actors).at(-1)?.page;if(p){await p.screenshot({path:resolve(shots,'debug-web.png'),fullPage:true}).catch(()=>{});await writeFile(resolve(root,'.local/pr18-web-debug.html'),await p.content())}}finally{await saveEvidence();await browser.close()}
+async function captureFollowup() {
+ if(!process.env.JX_BROWSER_FOLLOWUP_DIR)return
+ const dir=resolve(root,process.env.JX_BROWSER_FOLLOWUP_DIR),p=actors.sponsor.page,projectId=currentRefs().project,checks=[],images=[],writes=[]
+ await mkdir(dir,{recursive:true})
+ const observe=r=>{if(!['GET','OPTIONS'].includes(r.method()))writes.push({method:r.method(),path:new URL(r.url()).pathname})}
+ p.on('request',observe)
+ try {
+  for(const width of [320,390,1440]) {
+   await p.setViewportSize({width,height:width<760?844:1000});await go(p,`/projects/projects/${projectId}/plans/new`)
+   const input=p.getByTestId('plan-production'),choice=p.getByTestId('plan-production-choice')
+   await input.waitFor({state:'visible'});assert.equal(await input.inputValue(),'')
+   await choice.waitFor({state:'visible'});const values=await choice.locator('option').evaluateAll(rows=>rows.map(r=>r.value).filter(Boolean));assert(values.length)
+   const value=values.includes(state.creation.webReady.productionProjectId)?state.creation.webReady.productionProjectId:values[0]
+   await choice.selectOption(value);assert.equal(await input.inputValue(),value)
+   assert.equal(await input.locator('..').locator('.record-picker-value code').textContent(),value)
+   const capture=async(name)=>{await p.evaluate(()=>document.fonts.ready);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));const file=`${name}-${width}.png`;await p.screenshot({path:resolve(dir,file),fullPage:true});images.push({file,viewport:p.viewportSize(),route:new URL(p.url()).pathname})}
+   await capture('record-choice-full-id');checks.push({width,check:'Selected actual readable record keeps exact UUID in input and visible full value',value})
+   const query=p.locator('#workspace-nav-query');await query.fill('故事');assert.equal(await p.locator('.workspace-nav a').count(),1);assert.equal(await p.locator('.workspace-nav a').getAttribute('href'),'/operations/customization');await capture('navigation-search')
+   await query.fill('不存在的业务名称');assert.equal(await p.locator('.workspace-nav a').count(),0);await p.getByText('没有匹配入口',{exact:false}).waitFor();await capture('navigation-no-match')
+   await p.locator('.workspace-nav-search').getByRole('button',{name:'清除筛选',exact:true}).click();assert.equal(await query.inputValue(),'');assert.equal(await p.locator('.workspace-nav a').count(),43);assert.equal(await p.locator('.workspace-nav [aria-current="page"]').count(),1)
+   const region=await p.locator('.workspace-nav-results').evaluate(e=>({height:e.clientHeight,scrollHeight:e.scrollHeight,overflow:getComputedStyle(e).overflowY}));if(width<760){assert(region.height<=422);assert.equal(region.overflow,'auto');assert(region.scrollHeight>region.height)}
+   await capture('navigation-cleared');checks.push({width,check:'Name search, no match, clear restores 43 entries and one active route',region})
+  }
+  assert.equal(writes.length,0);checks.push({check:'Read-only followup did not send business writes',writes:0})
+ } finally {
+  p.off('request',observe);await writeFile(resolve(dir,'EXTRA_RESULTS.json'),JSON.stringify({synthetic_only:true,scope:'Existing successful sandbox owner session; input selection and navigation only; no form submission',result:checks.length===7&&writes.length===0?'PASS':'INCOMPLETE',checks,screenshots:images,business_writes:writes.length,page_errors:pageErrors.length},null,2)+'\n')
+ }
+}
+try{await run();await captureFollowup();assert.equal(pageErrors.length,0,pageErrors.join('\n'))}catch(e){console.error(redact(e.stack));process.exitCode=1;const p=activePage||Object.values(actors).at(-1)?.page;if(p){await p.screenshot({path:resolve(shots,'debug-web.png'),fullPage:true}).catch(()=>{});await writeFile(resolve(root,'.local/pr18-web-debug.html'),await p.content())}}finally{await saveEvidence();await browser.close()}

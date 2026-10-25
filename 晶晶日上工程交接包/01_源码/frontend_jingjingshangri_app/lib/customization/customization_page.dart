@@ -786,7 +786,7 @@ class _StoryEditorState extends State<_StoryEditor> {
         ]),
       if (!denied && widget.id == null && record == null) ...[
         _note('选择故事品类，写下属于你的片段。不同品类有不同的问题，没写完也能先保存。'),
-        if (!busy && categories.isEmpty)
+        if (!busy && categories.isEmpty && error == null)
           _section('暂未发布可用故事表单', [
             _note('平台发布表单后即可选择，请稍后再试。'),
             OutlinedButton(
@@ -800,7 +800,7 @@ class _StoryEditorState extends State<_StoryEditor> {
             child: Material(
               color: selected?.id == category.id
                   ? AccountTheme.text
-                  : const Color(0xFFE6E2D8),
+                  : AccountTheme.surface,
               child: ListTile(
                 key: ValueKey('customization-category-${category.code}'),
                 contentPadding:

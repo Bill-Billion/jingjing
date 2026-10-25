@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
+import '../account/account_theme.dart';
 import '../stock/v5_support.dart';
 import '../stock/v5_media.dart';
 import '../trade/trade_widgets.dart';
@@ -18,12 +19,17 @@ class AuditionsPage extends StatelessWidget {
       this.mode = 'catalog',
       this.id,
       this.action,
-      this.invitationId});
+      this.invitationId,
+      this.embedded = false,
+      this.initialCity = ''});
   final String mode;
   final String? id, action, invitationId;
+  final bool embedded;
+  final String initialCity;
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'auditions',
+      embedded: embedded,
       route: '/auditions/$mode',
       account: mode == 'catalog',
       builder: (s) => mode == 'action'
@@ -31,7 +37,12 @@ class AuditionsPage extends StatelessWidget {
           : mode == 'new'
               ? AuditionOfferForm(session: s)
               : _AuditionsScreen(
-                  session: s, mode: mode, id: id, invitationId: invitationId));
+                  session: s,
+                  mode: mode,
+                  id: id,
+                  invitationId: invitationId,
+                  embedded: embedded,
+                  initialCity: initialCity));
 }
 
 List<Widget> auditionAppointmentFacts(Map<String, dynamic> d) => [
@@ -46,10 +57,17 @@ List<Widget> auditionAppointmentFacts(Map<String, dynamic> d) => [
 
 class _AuditionsScreen extends StatefulWidget {
   const _AuditionsScreen(
-      {required this.session, required this.mode, this.id, this.invitationId});
+      {required this.session,
+      required this.mode,
+      this.id,
+      this.invitationId,
+      required this.embedded,
+      required this.initialCity});
   final AccountSession session;
   final String mode;
   final String? id, invitationId;
+  final bool embedded;
+  final String initialCity;
   @override
   State<_AuditionsScreen> createState() => _AuditionsScreenState();
 }
@@ -71,6 +89,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   @override
   void initState() {
     super.initState();
+    city.text = widget.initialCity;
     load();
   }
 
@@ -235,111 +254,181 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       'messages' => '本单会话',
       _ => '试镜进度与取样'
     };
-    return V5Frame(api: api, title: title, children: [
-      tradeHeading(title, eyebrow: '真实用途 / 正规场地 / 一口价含交通'),
-      V5RecoveryPanel(
-          api: api,
-          label: api.recoveryLabel,
-          restore: api.restoreOperation,
-          onRestored: (r) => go(r['kind'] == 'ORDER'
-              ? '/trade/record?recordId=${r['id']}'
-              : r['kind'] == 'OFFER'
-                  ? '/auditions/offer?offerId=${r['id']}'
-                  : '/auditions/booking?bookingId=${r['kind'] == 'MESSAGE' || r['kind'] == 'SUPPLEMENT' ? r['parent_id'] : r['booking_id'] ?? r['id']}')),
-      if (busy) const LinearProgressIndicator(),
-      if (error != null) appNotice(error!, icon: Icons.error_outline),
-      if (notice != null) appNotice(notice!),
-      if (widget.mode == 'catalog') ...[
-        appNotice(widget.invitationId == null
-            ? '只展示当前可公开预约的已审方案；价格可由艺人选择不公开。'
-            : '这里只读取本次已接受定向邀约匹配的真实方案。'),
-        if (widget.invitationId == null) ...[
-          TextField(
-              controller: city,
-              decoration: const InputDecoration(labelText: '城市筛选')),
-          tradeButton('按城市查找', busy ? null : () => load(), outline: true)
-        ],
-        for (final x in offers)
-          tradeSection(x.title, [
-            tradeFact('城市与服务范围', '${x.raw['city']} · ${x.raw['service_area']}'),
-            tradeFact(
-                '价格',
-                x.raw['unit_minor'] == null
-                    ? '未公开，请按本次订单约定核对'
-                    : v5Money(x.raw['unit_minor'])),
-            tradeFact('费用范围', '一口价包含交通，远距离条件须在付款前谈清'),
-            tradeButton(
-                '填写这次试镜预约',
-                () => go(
-                    '/auditions/book?offerId=${x.id}${widget.invitationId == null ? '' : '&invitationId=${widget.invitationId}'}'))
-          ]),
-        if (!busy && offers.isEmpty) appNotice('当前筛选没有仍可约的有效方案。'),
-        tradeButton('我的试镜进度', () => go('/auditions/bookings'), outline: true),
-        tradeButton('本人发布与接单方案', () => go('/auditions/offers'), outline: true),
-      ],
-      if (o != null) _bookingForm(o),
-      if (['offers', 'bookings'].contains(widget.mode)) ...[
-        if (widget.mode == 'offers')
-          tradeButton('提交本人试镜方案审核', () => go('/auditions/new')),
-        for (final x in records)
-          tradeSection(x.title, [
-            tradeFact('状态', auditionStates[x.status]),
-            if (x.kind == 'BOOKING')
-              ...auditionAppointmentFacts(v5Map(x.data['appointment'])),
-            tradeButton(
-                '查看本次记录',
-                () => go(
-                    '/auditions/${x.kind == 'OFFER' ? 'offer' : 'booking'}?${x.kind == 'OFFER' ? 'offerId' : 'bookingId'}=${x.id}'),
-                outline: true)
-          ]),
-        if (!busy && records.isEmpty) appNotice('本人当前没有可读的本类试镜记录。'),
-      ],
-      if (r != null && r.kind == 'OFFER') ...[
-        tradeSection(r.title, [
-          tradeFact('状态', auditionStates[r.status]),
-          tradeFact('价格', v5Money(r.data['offer']['unit_minor'])),
-          tradeFact('交通', '已含在该一口价内'),
-          tradeFact('原规则', r.data['rules']['terms']),
-          tradeFact('取样约定',
-              '${r.data['rules']['photo_count']}照 / ${r.data['rules']['video_count']}视频'),
-          tradeFact('明确收讫后的期限', '${r.data['rules']['acceptance_hours']} 小时')
-        ]),
-        if (r.status == 'PUBLISHED')
-          V5Form(
+    return V5Frame(
+        api: api,
+        title: title,
+        embedded: widget.embedded,
+        children: [
+          if (widget.mode == 'catalog') ...[
+            Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              Expanded(
+                  child: Semantics(
+                      header: true,
+                      child: const Text('试镜',
+                          style: TextStyle(
+                              fontFamily: AccountTheme.serif,
+                              fontSize: 56,
+                              height: 1.1,
+                              fontWeight: FontWeight.w900)))),
+              TextButton(
+                  onPressed: busy ? null : () => go('/auditions/bookings'),
+                  child: const Text('我的试镜 ↗')),
+            ]),
+            const SizedBox(height: 18),
+            const Text('公开可约的艺人，一口价含交通。',
+                style: TextStyle(
+                    fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+            const SizedBox(height: 22),
+          ] else
+            tradeHeading(title, eyebrow: '真实用途 / 正规场地 / 一口价含交通'),
+          V5RecoveryPanel(
               api: api,
-              title: '分别控制公开预约与公开价格',
-              action: '保存本方案公开选择',
-              suffix: '/offers/${r.id}/visibility',
-              version: r.version,
-              initial: {
-                'public_booking': r.data['offer']['public_booking'],
-                'public_price': r.data['offer']['public_price']
-              },
-              fields: const [
-                V5Field('public_booking', '允许公开预约',
-                    type: 'bool', required: false),
-                V5Field('public_price', '公开本方案价格',
-                    type: 'bool', required: false)
-              ],
-              buildBody: (v) => {
-                    'public_booking': v['public_booking'] == true,
-                    'public_price': v['public_price'] == true
+              label: api.recoveryLabel,
+              restore: api.restoreOperation,
+              onRestored: (r) => go(r['kind'] == 'ORDER'
+                  ? '/trade/record?recordId=${r['id']}'
+                  : r['kind'] == 'OFFER'
+                      ? '/auditions/offer?offerId=${r['id']}'
+                      : '/auditions/booking?bookingId=${r['kind'] == 'MESSAGE' || r['kind'] == 'SUPPLEMENT' ? r['parent_id'] : r['booking_id'] ?? r['id']}')),
+          if (busy) const LinearProgressIndicator(),
+          if (error != null) appNotice(error!, icon: Icons.error_outline),
+          if (notice != null) appNotice(notice!),
+          if (widget.mode == 'catalog') ...[
+            appNotice(widget.invitationId == null
+                ? '只展示当前可公开预约的已审方案；价格可由艺人选择不公开。'
+                : '这里只读取本次已接受定向邀约匹配的真实方案。'),
+            if (widget.invitationId == null) ...[
+              TextField(
+                  controller: city,
+                  decoration: const InputDecoration(labelText: '城市筛选')),
+              tradeButton('按城市查找', busy ? null : () => load(), outline: true)
+            ],
+            for (final x in offers)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                decoration: const BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: AccountTheme.border))),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          width: 104,
+                          height: 170,
+                          color: const Color(0xFFE7E4DA),
+                          alignment: Alignment.center,
+                          child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Text('未提供公开肖像',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      height: 1.5,
+                                      color: AccountTheme.muted)))),
+                      const SizedBox(width: 16),
+                      Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                            Text(x.title,
+                                style: const TextStyle(
+                                    fontFamily: AccountTheme.serif,
+                                    fontSize: 24,
+                                    height: 1.25,
+                                    fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 10),
+                            Text('${x.raw['city']} · ${x.raw['service_area']}',
+                                style:
+                                    const TextStyle(fontSize: 12, height: 1.6)),
+                            const SizedBox(height: 12),
+                            Text(
+                                x.raw['unit_minor'] == null
+                                    ? '价格未公开'
+                                    : v5Money(x.raw['unit_minor']),
+                                style: const TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.w700)),
+                            const Text('一口价 · 含交通',
+                                style: TextStyle(
+                                    fontSize: 11, color: AccountTheme.muted)),
+                            const SizedBox(height: 12),
+                            tradeButton(
+                                '约试镜 ↗',
+                                busy
+                                    ? null
+                                    : () => go(
+                                        '/auditions/book?offerId=${x.id}${widget.invitationId == null ? '' : '&invitationId=${widget.invitationId}'}')),
+                          ])),
+                    ]),
+              ),
+            if (!busy && offers.isEmpty) appNotice('当前筛选没有仍可约的有效方案。'),
+            tradeButton('我的试镜进度', () => go('/auditions/bookings'),
+                outline: true),
+            tradeButton('本人发布与接单方案', () => go('/auditions/offers'),
+                outline: true),
+          ],
+          if (o != null) _bookingForm(o),
+          if (['offers', 'bookings'].contains(widget.mode)) ...[
+            if (widget.mode == 'offers')
+              tradeButton('提交本人试镜方案审核', () => go('/auditions/new')),
+            for (final x in records)
+              tradeSection(x.title, [
+                tradeFact('状态', auditionStates[x.status]),
+                if (x.kind == 'BOOKING')
+                  ...auditionAppointmentFacts(v5Map(x.data['appointment'])),
+                tradeButton(
+                    '查看本次记录',
+                    () => go(
+                        '/auditions/${x.kind == 'OFFER' ? 'offer' : 'booking'}?${x.kind == 'OFFER' ? 'offerId' : 'bookingId'}=${x.id}'),
+                    outline: true)
+              ]),
+            if (!busy && records.isEmpty) appNotice('本人当前没有可读的本类试镜记录。'),
+          ],
+          if (r != null && r.kind == 'OFFER') ...[
+            tradeSection(r.title, [
+              tradeFact('状态', auditionStates[r.status]),
+              tradeFact('价格', v5Money(r.data['offer']['unit_minor'])),
+              tradeFact('交通', '已含在该一口价内'),
+              tradeFact('原规则', r.data['rules']['terms']),
+              tradeFact('取样约定',
+                  '${r.data['rules']['photo_count']}照 / ${r.data['rules']['video_count']}视频'),
+              tradeFact('明确收讫后的期限', '${r.data['rules']['acceptance_hours']} 小时')
+            ]),
+            if (r.status == 'PUBLISHED')
+              V5Form(
+                  api: api,
+                  title: '分别控制公开预约与公开价格',
+                  action: '保存本方案公开选择',
+                  suffix: '/offers/${r.id}/visibility',
+                  version: r.version,
+                  initial: {
+                    'public_booking': r.data['offer']['public_booking'],
+                    'public_price': r.data['offer']['public_price']
                   },
-              parse: (d) {
-                AuditionRecord(d, id: r.id, kind: 'OFFER');
-              },
-              reload: latest,
-              onSuccess: (_) => load()),
-      ],
-      if (r != null && r.kind == 'BOOKING' && widget.mode == 'booking')
-        ..._bookingBody(r),
-      if (r != null && r.kind == 'BOOKING' && widget.mode == 'messages')
-        ..._messageBody(r),
-      if (cursor != null)
-        tradeButton('继续读取下一页', busy ? null : () => load(more: true),
-            outline: true),
-      tradeButton('重新读取本页', busy ? null : () => load(), outline: true),
-    ]);
+                  fields: const [
+                    V5Field('public_booking', '允许公开预约',
+                        type: 'bool', required: false),
+                    V5Field('public_price', '公开本方案价格',
+                        type: 'bool', required: false)
+                  ],
+                  buildBody: (v) => {
+                        'public_booking': v['public_booking'] == true,
+                        'public_price': v['public_price'] == true
+                      },
+                  parse: (d) {
+                    AuditionRecord(d, id: r.id, kind: 'OFFER');
+                  },
+                  reload: latest,
+                  onSuccess: (_) => load()),
+          ],
+          if (r != null && r.kind == 'BOOKING' && widget.mode == 'booking')
+            ..._bookingBody(r),
+          if (r != null && r.kind == 'BOOKING' && widget.mode == 'messages')
+            ..._messageBody(r),
+          if (cursor != null)
+            tradeButton('继续读取下一页', busy ? null : () => load(more: true),
+                outline: true),
+          tradeButton('重新读取本页', busy ? null : () => load(), outline: true),
+        ]);
   }
 
   Widget _bookingForm(AuditionOffer o) =>

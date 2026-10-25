@@ -223,8 +223,8 @@ class _StockListingFormState extends State<StockListingForm> {
                       choices: participantNames),
                 const V5Field('payment_window_minutes', '原约定付款窗口（分钟）',
                     type: 'int'),
-                const V5Field('apple_product_id', '已审 Apple 产品编号（未接通留空）',
-                    required: false),
+                const V5Field('apple_product_id', '已审 Apple 产品编号',
+                    required: false, hint: '未接通时留空。'),
               ],
               buildBody: (v) {
                 final cast = [
@@ -359,7 +359,10 @@ class _StockUploadState extends State<_StockUpload> {
       if (!mounted) return;
       setState(() => uploaded = r);
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (mounted) {
+        setState(() =>
+            error = v5Error(e, writing: widget.api.pending('/files') != null));
+      }
     } catch (_) {
       if (mounted) setState(() => error = '文件选择或上传未完成，请核对 MP4 文件后重试。');
     } finally {

@@ -85,6 +85,8 @@ void main() {
     expect(homePosition, greaterThan(0));
     await tester.tap(find.byKey(const Key('app-tab-4')));
     await frames(tester);
+    await tester.tap(find.text('业务与作品'));
+    await frames(tester);
     await tester.drag(find.byType(ListView), const Offset(0, -300));
     await frames(tester);
     final minePosition = sectionScroll(tester).position.pixels;
@@ -117,14 +119,19 @@ void main() {
   testWidgets('通告有独立六类入口，打开已有项目后返回保留栏目且不重复读取', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
-      handler: (r) => r.path == '/api/v1/projects/catalogue'
+      handler: (r) => const [
+        '/api/v1/projects/catalogue',
+        '/api/v1/notices/catalog'
+      ].contains(r.path)
           ? envelope({'items': [], 'next_cursor': null})
           : adapter.defaultReply(r),
     );
     final session = (await tester.runAsync(() => contractSession(adapter)))!;
     await openApp(tester, session, route: '/notices');
     expectFiveTabs();
-    expect(find.text('浏览六类通告'), findsOneWidget);
+    for (final type in ['剧与角色', '商演', '商单', '活动', '招募', '平台官方']) {
+      expect(find.text(type), findsOneWidget);
+    }
     int reads() => adapter.requests
         .where((r) => r.path == '/api/v1/projects/catalogue')
         .length;
@@ -174,6 +181,9 @@ void main() {
     expect(find.text('手机号登录'), findsOneWidget);
     final before = adapter.requests.length;
     await tester.tap(find.byKey(const Key('app-tab-3')));
+    await frames(tester);
+    expect(adapter.requests.length, before);
+    await tester.tap(find.text('系统通知'));
     await frames(tester);
     expect(adapter.requests.length, before);
     expect(find.text('系统与业务通知'), findsOneWidget);
@@ -335,6 +345,9 @@ void main() {
         [
           '/api/v1/auth/sessions',
           '/api/v1/privacy/preferences',
+          '/api/v1/auditions/catalog',
+          '/api/v1/notices/catalog',
+          '/api/v1/notices/catalog',
           '/api/v1/stock/catalog'
         ]);
     // A catalog is public; rest preferences are account-scoped. No gated

@@ -1,0 +1,54 @@
+{
+  "result": "FINAL_CAPTURE_PASSED_AFTER_HARNESS_CORRECTIONS",
+  "finalReport": "final-pages/FINAL_PAGES_RESULTS.json",
+  "attempts": [
+    {
+      "file": "docs/testing/evidence/figma-frontend-restore-20261023/followup/final-pages-agreement-link-attempt/FINAL_PAGES_RESULTS.json",
+      "sha256": "9447a453278fc2fa5cda102764d5c99bd87afbad36c828fcaeee51b7bf8f5227",
+      "result": "FAIL",
+      "cases": 3,
+      "screenshots": 11,
+      "failure": [
+        "locator.getAttribute: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('checkbox')\u001b[22m\n\n    at /Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/.local/capture-final-pages.mjs:31:338"
+      ],
+      "notSelected": true
+    },
+    {
+      "file": "docs/testing/evidence/figma-frontend-restore-20261023/followup/final-pages-checkbox-frame-attempt/FINAL_PAGES_RESULTS.json",
+      "sha256": "04539354155e01238cb754380ff995020aaec9f6658c4cfbda48fca521bc0d8a",
+      "result": "FAIL",
+      "cases": 5,
+      "screenshots": 20,
+      "failure": [
+        "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(await b.isEnabled())\n\n    at file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/.local/capture-final-pages.mjs:41:188"
+      ],
+      "notSelected": true
+    },
+    {
+      "file": "docs/testing/evidence/figma-frontend-restore-20261023/followup/final-pages-initial-login/FINAL_PAGES_RESULTS.json",
+      "sha256": "04e14b18dea3d52a9daa4c2cf434dd4a2574ddcdad05c7b5447cf0fb4981ca58",
+      "result": "FAIL",
+      "cases": 3,
+      "screenshots": 11,
+      "failure": [
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'false' !== 'true'\n\n    at file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/.local/capture-final-pages.mjs:31:305"
+      ],
+      "notSelected": true
+    },
+    {
+      "file": "docs/testing/evidence/figma-frontend-restore-20261023/followup/final-pages-wording-assertion-attempt/FINAL_PAGES_RESULTS.json",
+      "sha256": "9964894fc6d9b179f38834d078b3d865b9852d3003110beb28fc069e26faa4c6",
+      "result": "FAIL",
+      "cases": 7,
+      "screenshots": 24,
+      "failure": [
+        "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(text.includes('条件尚未满足'))\n\n    at file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/.local/capture-final-pages.mjs:44:44"
+      ],
+      "notSelected": true
+    }
+  ],
+  "productSourceChangedDuringAttempts": false,
+  "sameServedBundle": "b445127a6ddd31e936b630e404b579543bacaab6107d24f01282ca655a20c536",
+  "explanation": "登录点击需要落在复选框，不能点击中间协议链接；实际Flutter勾选后需等待语义及绘制稳定。后节点断言改用最终源码实际文案。没有改应用主题、降低权限或跳过原付款条件。",
+  "intermediateScreenshotIsStableVisualEvidence": false
+}

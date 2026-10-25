@@ -1,0 +1,84 @@
+{
+  "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+  "synthetic_only": true,
+  "controlled_faults_not_business_facts": true,
+  "sourceBundleSha256": "e4853519b1c09fa8d492b89bd6b8d41252180bfb43bffb92db7177ad00d56594",
+  "results": [
+    {
+      "name": "catalog-read-failure",
+      "route": "/notices/catalog",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - heading \"本页读取未完成 这页还没 加载出来 暂时无法读取 暂时无法读取，请检查网络后重新读取本页。重读不会重复提交业务。 重新加载仅重新读取当前页面，保留本页筛选，不会再次提交业务或付款。\" [level=2]\n- button \"返回\"\n- button \"重新加载\""
+    },
+    {
+      "name": "own-records-read-failure",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"我的通告与投稿\" [level=2]\n- group:\n  - heading \"本页读取未完成 这页还没 加载出来 暂时无法读取 暂时无法读取，请检查网络后重新读取本页。重读不会重复提交业务。 重新加载仅重新读取当前页面，保留本页筛选，不会再次提交业务或付款。\" [level=2]\n- button \"返回\"\n- button \"重新加载\""
+    },
+    {
+      "name": "catalog-loading",
+      "route": "/notices/catalog",
+      "mode": "delay",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - group \"通告现场 正在加载 请稍候，正在读取本页可查看的最新信息。 获取本页信息 加载中… 本页内容 正在读取 — 可查看记录 正在读取 — 当前条件 正在读取 —\":\n    - heading \"正在读取进度\" [level=2]"
+    },
+    {
+      "name": "session-401",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "401",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"登录过期\" [level=2]\n- group:\n  - heading \"账号验证 回来， 继续这个故事 登录状态已过期 完成登录后，继续查看我的通告与投稿。私有内容已清空，不会自动继续原操作。 返回位置 我的通告与投稿 已保留\" [level=2]\n- button \"返回浏览\"\n- button \"重新登录\""
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "catalog-read-failure.png",
+      "case": "catalog-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "e4853519b1c09fa8d492b89bd6b8d41252180bfb43bffb92db7177ad00d56594",
+      "sha256": "100068e37fe308bc9a67f3aadd98615ac3fcba49a5ef979983edf4bd1db9c09c",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "own-records-read-failure.png",
+      "case": "own-records-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "e4853519b1c09fa8d492b89bd6b8d41252180bfb43bffb92db7177ad00d56594",
+      "sha256": "ad140fbb0bf5cac3a4b8056e002054cfa67285e7289ec94a68f46faa8ebf34bf",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "catalog-loading.png",
+      "case": "catalog-loading",
+      "width": 390,
+      "figmaIds": [
+        "2004:6580"
+      ],
+      "sourceBundleSha256": "e4853519b1c09fa8d492b89bd6b8d41252180bfb43bffb92db7177ad00d56594",
+      "sha256": "36761d1f04036432785e740d821cfe2f6762552584db2ebc77e6ce6a40e92b2c",
+      "stateControl": "实际GET延迟后放行"
+    },
+    {
+      "file": "session-401.png",
+      "case": "session-401",
+      "width": 390,
+      "figmaIds": [
+        "2004:6457"
+      ],
+      "sourceBundleSha256": "e4853519b1c09fa8d492b89bd6b8d41252180bfb43bffb92db7177ad00d56594",
+      "sha256": "615ce4da733a00121d4d986d81a0dea5e6e93acb189ed07417d61bdc5d39a68f",
+      "stateControl": "受控HTTP401故障；不是正式服务状态"
+    }
+  ],
+  "errors": [],
+  "business_writes": []
+}

@@ -158,7 +158,11 @@ class _FollowupListState extends State<_FollowupList> {
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (!widget.history && !widget.session.isOwner)
           appNotice('当前成员可以提交制作意向及查看需求报价摘要。报价详情和机构订单确认须由有权负责人办理。'),
-        if (!busy && !denied && histories.isEmpty && quotes.isEmpty)
+        if (!busy &&
+            !denied &&
+            error == null &&
+            histories.isEmpty &&
+            quotes.isEmpty)
           Text(widget.history ? '暂无正式提交记录。' : '平台尚未给这份需求报价。'),
         for (final r in histories)
           Container(

@@ -339,13 +339,21 @@ export interface ErrorLike {
   message: string;
   retryable: boolean;
   requestId?: string | null;
+  requestMethod?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
 }
 
 /** 取一句给人看的中文说明。找不到就返回 null，让调用方决定怎么展示。 */
 export function explainError(e: ErrorLike): string | null {
-  // 前端自己产生的校验错误（CLIENT_*）：message 本来就是给人看的话，直接用
   if (e.code.startsWith('CLIENT_')) return e.message;
   const byCode = CODE_MESSAGES[e.code];
+  if (byCode && !['NETWORK_UNREACHABLE', 'UNEXPECTED_RESPONSE_SHAPE', 'SERVICE_UNAVAILABLE', 'COMMIT_OUTCOME_UNKNOWN'].includes(e.code)) return byCode;
+  if (e.requestMethod === 'GET') {
+    if (e.status === 0) return '读取未完成，请检查连接后重新读取。';
+    if (e.code === 'UNEXPECTED_RESPONSE_SHAPE') return '读取结果无法确认，请重新读取；仍有问题时提供下方请求编号。';
+    if (e.status >= 500) return '暂时无法读取，请稍后重新读取。';
+    if (e.status === 401) return '登录状态已失效，请重新登录后读取。';
+  }
+  if (e.requestMethod && e.requestMethod !== 'GET' && (e.status === 0 || e.status >= 500 || e.code === 'UNEXPECTED_RESPONSE_SHAPE')) return '本次提交结果尚未确认，请先核对原记录，再恢复同一次请求。';
   if (byCode) return byCode;
   const byStatus = STATUS_MESSAGES[e.status];
   if (byStatus) return byStatus;

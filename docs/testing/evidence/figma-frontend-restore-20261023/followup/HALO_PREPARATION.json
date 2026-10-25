@@ -1,0 +1,83 @@
+{
+  "created_at": "2026-10-23T15:45:49.747Z",
+  "result": "BLOCKED_BY_SANDBOX_PAYMENT_ROUTE",
+  "synthetic_only": true,
+  "fixture_running": true,
+  "loopback_only": true,
+  "reads": [
+    {
+      "method": "GET",
+      "scope": "/artists/services",
+      "status": 200,
+      "code": null
+    },
+    {
+      "method": "GET",
+      "scope": "/artists/people/<person_id>/records?kind=HALO&limit=100",
+      "status": 200,
+      "code": null
+    },
+    {
+      "method": "GET",
+      "scope": "/artists/people/<person_id>/records?kind=SERVICE&limit=100",
+      "status": 200,
+      "code": null
+    },
+    {
+      "method": "GET",
+      "scope": "/trade/records?kind=PAYMENT&limit=100",
+      "status": 200,
+      "code": null
+    },
+    {
+      "method": "OPTIONS",
+      "scope": "/trade/payments",
+      "status": 403,
+      "code": "LOCAL_FIXTURE_ROUTE_DISABLED"
+    }
+  ],
+  "actual_state": {
+    "l1_approved": true,
+    "l2_applications": 0,
+    "l2_services": 0,
+    "l2_spec_published": true,
+    "l2_spec_price_minor": 1000,
+    "existing_payment_states": [
+      "SUCCEEDED"
+    ]
+  },
+  "blocker": {
+    "method": "OPTIONS",
+    "path": "/api/v1/trade/payments",
+    "http_status": 403,
+    "code": "LOCAL_FIXTURE_ROUTE_DISABLED",
+    "source": "scripts/artists-sandbox.cjs:118-119"
+  },
+  "required_conditions": [
+    "A HALO_REVIEW service must be fully paid through an order bound to that same service.",
+    "NEEDS_MATERIAL must come from an independent HALO review, not a direct state update.",
+    "Supplement must retain the same HALO record and service_id."
+  ],
+  "prepared_business_records": 0,
+  "business_writes": 0,
+  "external_provider_calls": 0,
+  "bypassed_http_allowlist": false,
+  "database_writes": false,
+  "gap_classification": "TEST_FIXTURE_SCOPE_GAP_NOT_MISSING_L2_API",
+  "checked_existing_fixtures": [
+    {
+      "source": "scripts/pr13-ui-test-server.cjs",
+      "finding": "Supply/work-version fixture; no artist L2 service or supplement scenario."
+    },
+    {
+      "source": "scripts/v5-r03-artists-browser-check.mjs:25-27",
+      "finding": "NEEDS_MATERIAL scenario is CONSENT; HALO_REVIEW service stops at REQUESTED."
+    },
+    {
+      "source": "backend_server/test/artists.integration.test.cjs:30-45,83-89,208",
+      "finding": "L2 paid service and same-case supplement are tested with a local helper; the test closes the server and drops its random database. No persistent screenshot fixture was started or extracted."
+    }
+  ],
+  "backend_integration_test_run_in_this_preparation": false,
+  "screenshot_claim": "No L2 NEEDS_MATERIAL case was prepared or claimed."
+}

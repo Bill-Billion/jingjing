@@ -396,7 +396,7 @@ class ArtistPage<T> {
   final String? cursor;
 }
 
-String artistError(AccountError e) => switch (e.code) {
+String artistError(AccountError e, {bool writing = false}) => switch (e.code) {
       'CONTEXT_CHANGED' => '办事身份已变化，请重新打开本页。',
       'MINOR_OPERATION_RESTRICTED' => '儿童实际处理暂未开放，请勿上传儿童素材。',
       'HALO_VERIFIED_METRICS_NOT_AVAILABLE' => 'L3所需真实业务事实尚未具备，当前不能申请。',
@@ -414,12 +414,16 @@ String artistError(AccountError e) => switch (e.code) {
         '存储结果需平台核对。请保留原上传，暂勿更换文件或再次上传。',
       'INVALID_ARTIST_RESPONSE' ||
       'PRIVATE_CONTENT_MISMATCH' =>
-        '返回资料无法核对，未采用本次内容。请重新读取。',
+        writing && e.uncertain
+            ? '操作结果尚未确认，请恢复同一请求核对。'
+            : '返回资料无法核对，未采用本次内容。请重新读取。',
       _ => e.status == 412
           ? '记录已更新。本页输入已保留，请先读取当前版本核对。'
           : [401, 403, 404].contains(e.status)
               ? '当前账号无法查看这份资料，私有内容已清空。请核对账号与委托。'
-              : e.uncertain
+              : writing && e.uncertain
                   ? '操作结果尚未确认，请恢复同一请求核对。'
-                  : '这一步未能完成，请检查资料和当前状态后重新读取。',
+                  : !writing && (e.status == 0 || e.status >= 500)
+                      ? '暂时无法读取艺人资料，请检查网络后重新读取。重读不会重复提交业务。'
+                      : '这一步未能完成，请检查资料和当前状态后重新读取。',
     };

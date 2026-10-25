@@ -9,6 +9,7 @@ import '../supply/supply_widgets.dart';
 import 'license_api.dart';
 import 'license_models.dart';
 import 'license_widgets.dart';
+import '../trade/trade_widgets.dart';
 
 class LicenseEvidenceForm extends StatelessWidget {
   const LicenseEvidenceForm({super.key, required this.reservationId});
@@ -148,6 +149,7 @@ class _EvidenceFormState extends State<_EvidenceForm> {
   Widget build(BuildContext context) {
     final pending = _api.pending(_path), locked = pending != null || _busy;
     return licenseScaffold(context, '提交外部核验材料', [
+      tradeHeading('提交外部核验材料', eyebrow: '本人用途 / 许可办理'),
       if (_error != null) supplyNote(_error!, error: true),
       if (_busy && _reservation == null)
         const Center(child: CircularProgressIndicator()),
@@ -353,6 +355,7 @@ class _ProjectFormState extends State<_ProjectForm> {
   Widget build(BuildContext context) {
     final pending = _api.pending(_path), enabled = !_busy && pending == null;
     return licenseScaffold(context, '登记许可用途项目', [
+      tradeHeading('登记许可用途项目', eyebrow: '本人用途 / 许可办理'),
       appNotice('填写项目实际用途与范围，保存后再选择许可绑定。集数必须与许可相符。'),
       if (pending != null) supplyNote('上次保存结果未确认，请恢复原内容。', error: true),
       if (_error != null) supplyNote(_error!, error: true),
@@ -583,6 +586,7 @@ class _BindingFormState extends State<_BindingForm> {
         project != null &&
         grant.terms!.matches(project);
     return licenseScaffold(context, '将许可用于项目', [
+      tradeHeading('将许可用于项目', eyebrow: '本人用途 / 许可办理'),
       if (_error != null) supplyNote(_error!, error: true),
       if (_busy && grant == null)
         const Center(child: CircularProgressIndicator()),

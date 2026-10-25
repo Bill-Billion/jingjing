@@ -396,6 +396,16 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         voteUsage!['remaining_today'] > 0;
   }
 
+  bool get appealsOpen {
+    final d = detail;
+    final deadline = DateTime.tryParse('${d?['appeal_until']}');
+    return session.isOwner &&
+        session.partyId != null &&
+        d?['status'] == 'PUBLISHED' &&
+        deadline != null &&
+        DateTime.now().isBefore(deadline);
+  }
+
   bool get ownProfile =>
       session.isOwner &&
       people.any((p) => p.id == person.text && p.owner == session.partyId);
@@ -444,7 +454,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         communityField(district, '区县'),
         communityField(category, '艺人类别'),
         tradeButton('读取对应榜单', enabled ? load : null),
-        if (rows.isEmpty && !checking)
+        if (rows.isEmpty && !checking && error == null)
           appNotice('选择城市、区县和类别后读取已发布榜单。没有记录时不会编造名次。'),
         for (final r in rows)
           communitySection(
@@ -473,7 +483,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     if (d == null) return [];
     final boards = communityMap(d['boards']);
     return [
-      communityHeading('艺人六榜', '按发布时的业务事实形成快照，排名不代表付费推广。'),
+      communityHeading('艺人榜单', '按发布时的业务事实形成快照，排名不代表付费推广。'),
       communityFact('统计时间', communityDate(d['at'])),
       for (final b in [
         ('sales', '成交榜'),
@@ -585,11 +595,15 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 '总分 ${r['total']} · 有效票 ${r['votes']}')
         ]),
       if (!canVote) appNotice('投票按本人个人身份与实际晶钻办理，请先切换到本人身份再核对。'),
-      communityField(reason, '异议说明', lines: 3),
+      if (!appealsOpen) appNotice('仅公示期间且在异议截止前可提交说明，请核对当前状态与截止时间。'),
+      communityField(reason, '异议说明', lines: 3, enabled: enabled && appealsOpen),
       tradeButton(
           '提交本次活动异议',
-          enabled
+          enabled && appealsOpen
               ? () => submit(() async {
+                    if (!appealsOpen) {
+                      throw const AccountError(409, 'APPEAL_CLOSED');
+                    }
                     await act('appeals', {
                       'event_id': d['id'],
                       'reason': communityRequired(reason.text, '异议原因')
@@ -987,7 +1001,16 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                       if (detail!['ranking_enabled'] == true)
                         communityFact('本次排名分值', r['score']),
                       communityFact('合规记录',
-                          r['compliance_clear'] == true ? '当前已核对' : '有记录需复核')
+                          r['compliance_clear'] == true ? '当前已核对' : '有记录需复核'),
+                      tradeButton(
+                          '查看已公开资料',
+                          () => Navigator.pushNamed(
+                              context,
+                              Uri(path: '/producers/public', queryParameters: {
+                                'partyId': r['party_id'] as String,
+                                'city': city.text.trim()
+                              }).toString()),
+                          outline: true)
                     ])
             ])
         ],
@@ -1037,7 +1060,8 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                       reviewAgreed = false;
                     })
                 : null),
-        if (orders.isEmpty && !checking) const Text('当前没有可选择的本人已付款业务订单。'),
+        if (orders.isEmpty && !checking && error == null)
+          const Text('当前没有可选择的本人已付款业务订单。'),
         for (final x in [
           ('realism', '真实感'),
           ('fit', '契合度'),
@@ -1143,7 +1167,8 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         const SizedBox(height: 20),
         communityField(city, '所在城市'),
         tradeButton('读取当前生效曝光', enabled ? load : null),
-        if (rows.isEmpty && !checking) appNotice('当前所选城市暂无生效曝光记录。'),
+        if (rows.isEmpty && !checking && error == null)
+          appNotice('当前所选城市暂无生效曝光记录。'),
         for (final r in rows)
           communitySection(artistName(r['person_id']), [
             communityFact('资源位', r['placement']),

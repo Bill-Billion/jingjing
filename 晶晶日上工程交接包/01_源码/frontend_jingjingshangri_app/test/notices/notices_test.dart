@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
+import 'package:jingjingshangri_app/account/read_failure_widgets.dart';
 import 'package:jingjingshangri_app/notices/notices_api.dart';
 import 'package:jingjingshangri_app/notices/notices_models.dart';
 import 'package:jingjingshangri_app/notices/notices_pages.dart';
 import 'package:jingjingshangri_app/stock/v5_support.dart';
+import 'package:jingjingshangri_app/pages/login/login_page.dart';
 import '../account/fake_account_api.dart';
 import '../trade/trade_api_test.dart' show buyerSession;
 import '../stock/v5_test_host.dart';
@@ -63,6 +66,157 @@ Map<String, dynamic> noticeRecord({int version = 4, String status = 'SENT'}) =>
       'expired': false
     };
 void main() {
+  for (final context in ['initial', 'input', 'pending']) {
+    testWidgets('C07只替换无数据无本地输入无pending的首次读取：$context', (t) async {
+      final waiting = Completer<void>();
+      final a = FakeAccountAdapter(handler: (r) async {
+        if (r.path == '/api/v1/notices/announcements' && r.method == 'POST') {
+          return envelope({'code': 'SERVICE_UNAVAILABLE'},
+              status: 503, error: true);
+        }
+        if (r.path == '/api/v1/notices/catalog') {
+          await waiting.future;
+          return envelope({'items': [], 'next_cursor': null});
+        }
+        return FakeAccountAdapter().defaultReply(r);
+      });
+      final s = (await t.runAsync(() => buyerSession(a)))!;
+      if (context == 'pending') {
+        await t.runAsync(() async {
+          try {
+            await s.write('POST', '/api/v1/notices/announcements',
+                actingParty: s.partyId,
+                body: {'notice': noticeData('RECRUITMENT')});
+          } on AccountError {/* Retain the original uncertain fixture write. */}
+        });
+      }
+      await host(
+          t, s, NoticesPage(initialCity: context == 'input' ? '杭州' : ''));
+      expect(find.byType(ReadLoadingContent),
+          context == 'initial' ? findsOneWidget : findsNothing);
+      expect(find.text('当前筛选没有仍有效的已审公开通告。'), findsNothing);
+      if (context == 'input') {
+        expect(
+            t
+                .widget<TextField>(find.widgetWithText(TextField, '城市（可留空）'))
+                .controller!
+                .text,
+            '杭州');
+      }
+      if (context == 'pending') {
+        expect(find.text('原操作结果待核对'), findsOneWidget);
+        expect(s.noticesPending, hasLength(1));
+      }
+      waiting.complete();
+      await frames(t);
+      expect(find.byType(ReadLoadingContent), findsNothing);
+      await reveal(t, find.text('当前筛选没有仍有效的已审公开通告。'));
+      expect(t.takeException(), isNull);
+    });
+  }
+
+  for (final status in [401, 403, 404]) {
+    testWidgets('只有实际401展示C09并保留原记录分类，$status不混成网络或登录过期', (t) async {
+      final a = FakeAccountAdapter(
+          handler: (r) => r.path == '/api/v1/notices/records'
+              ? envelope({
+                  'code':
+                      status == 401 ? 'AUTHENTICATION_REQUIRED' : 'NOT_FOUND'
+                }, status: status, error: true)
+              : FakeAccountAdapter().defaultReply(r));
+      final s = (await t.runAsync(() => buyerSession(a)))!;
+      await host(t, s, const NoticesPage(mode: 'records', kind: 'NOTICE'));
+      if (status == 401) {
+        expect(find.byType(ReadSessionExpiredPage), findsOneWidget);
+        expect(find.text('回来，\n继续这个故事'), findsOneWidget);
+        expect(
+            t
+                .widget<ReadSessionExpiredPage>(
+                    find.byType(ReadSessionExpiredPage))
+                .returnRoute,
+            '/notices/records?kind=NOTICE');
+        expect(s.isLoggedIn, isFalse);
+        expect(s.account, isNull);
+        await t.tap(find.byKey(const ValueKey('read-expired-login')));
+        await frames(t);
+        expect(t.widget<LoginPage>(find.byType(LoginPage)).returnRoute,
+            '/notices/records?kind=NOTICE');
+      } else {
+        expect(find.byType(ReadSessionExpiredPage), findsNothing);
+        expect(s.isLoggedIn, isTrue);
+        expect(s.noticesAccessDenied, isTrue);
+      }
+      expect(
+          a.requests.where((r) =>
+              r.method == 'POST' && r.path.startsWith('/api/v1/notices/')),
+          isEmpty);
+      expect(t.takeException(), isNull);
+    });
+  }
+
+  for (final mode in ['catalog', 'records']) {
+    for (final failed in [true, false]) {
+      testWidgets('$mode 读取${failed ? '失败不显示成功空态' : '成功空列表有明确空态'}', (t) async {
+        final path =
+            '/api/v1/notices/${mode == 'catalog' ? 'catalog' : 'records'}';
+        final a = FakeAccountAdapter(
+            handler: (r) => r.path == path
+                ? (failed
+                    ? envelope({'code': 'SERVICE_UNAVAILABLE'},
+                        status: 503, error: true)
+                    : envelope({'items': [], 'next_cursor': null}))
+                : FakeAccountAdapter().defaultReply(r));
+        final s = (await t.runAsync(() => buyerSession(a)))!;
+        await host(
+            t, s, NoticesPage(mode: mode, kind: 'NOTICE', initialCity: '杭州'));
+        final empty = mode == 'catalog' ? '当前筛选没有仍有效的已审公开通告。' : '当前没有本类型的可读记录。';
+        expect(a.requests.where((r) => r.path == path), isNotEmpty);
+        if (failed) {
+          expect(find.byType(ReadFailureContent), findsOneWidget);
+          expect(find.text('这页还没\n加载出来'), findsOneWidget);
+          expect(find.text(empty), findsNothing);
+          expect(find.textContaining('重读不会重复提交业务'), findsOneWidget);
+          expect(find.textContaining('本次操作结果待核对'), findsNothing);
+          expect(
+              a.requests.where((r) =>
+                  r.method == 'POST' && r.path.startsWith('/api/v1/notices/')),
+              isEmpty);
+          await t.tap(find.byKey(const ValueKey('read-failure-retry')));
+          await frames(t);
+          expect(find.byType(ReadFailureContent), findsOneWidget);
+          await t.tap(find.byKey(const ValueKey('read-failure-back')));
+          await frames(t);
+          expect(find.byType(ReadFailureContent), findsNothing);
+          expect(find.text(empty), findsNothing);
+          if (mode == 'catalog') {
+            expect(
+                t
+                    .widget<TextField>(
+                        find.widgetWithText(TextField, '城市（可留空）'))
+                    .controller!
+                    .text,
+                '杭州');
+            expect(
+                a.requests
+                    .lastWhere((r) => r.path == path)
+                    .queryParameters['city'],
+                '杭州');
+          } else {
+            expect(
+                t
+                    .widget<DropdownButtonFormField<String>>(
+                        find.byType(DropdownButtonFormField<String>))
+                    .initialValue,
+                'NOTICE');
+          }
+        } else {
+          await reveal(t, find.text(empty));
+          expect(find.text(empty), findsOneWidget);
+        }
+        expect(t.takeException(), isNull);
+      });
+    }
+  }
   test('六类通告按各自字段，不把商单、活动强制变成到场表', () {
     for (final type in noticeTypes.keys) {
       final r = NoticePublic({

@@ -238,6 +238,7 @@ void main() {
     await nav.openApp(tester, s, route: '/cultivate');
     expect(find.byType(AppShell), findsOneWidget);
     nav.expectFiveTabs();
+    await reveal(tester, find.text('商业委托'));
     await tester.tap(find.text('商业委托'));
     await nav.frames(tester);
     await click(tester, '查看商单需求', outline: true);

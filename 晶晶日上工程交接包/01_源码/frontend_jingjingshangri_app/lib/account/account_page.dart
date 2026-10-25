@@ -6,6 +6,7 @@ import 'account_theme.dart';
 import 'app_visual.dart';
 import 'account_api.dart';
 import 'account_session.dart';
+import '../trade/trade_widgets.dart';
 
 const _capabilities = {
   'AUTHOR': '作者',
@@ -311,27 +312,11 @@ class _AccountPageState extends State<AccountPage> {
     await _perform(_session.logout, '已退出登录', refresh: false);
   }
 
-  Widget _card(String title, List<Widget> children, {String? subtitle}) => Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w700)),
-                if (subtitle != null)
-                  Padding(
-                      padding: const EdgeInsets.only(top: 7),
-                      child: Text(subtitle,
-                          style: const TextStyle(
-                              color: AccountTheme.muted, height: 1.5))),
-                const SizedBox(height: 16),
-                ...children
-              ],
-            )),
-      );
+  Widget _card(String title, List<Widget> children, {String? subtitle}) =>
+      tradeSection(title, [
+        if (subtitle != null) _small(subtitle),
+        ...children,
+      ]);
   Widget _small(String value) => Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(value,
@@ -358,7 +343,7 @@ class _AccountPageState extends State<AccountPage> {
     void choose() => session.select(row);
     return Card(
         child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.zero,
             onTap: enabled ? choose : null,
             child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -366,15 +351,16 @@ class _AccountPageState extends State<AccountPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(children: [
-                        CircleAvatar(
-                            radius: 24,
-                            backgroundColor: const Color(0xFFF0E8DE),
+                        Container(
+                            width: 48,
+                            height: 48,
+                            color: AccountTheme.text,
                             child: Icon(
                                 value['kind'] == 'ORGANIZATION'
                                     ? Icons.apartment_outlined
                                     : Icons.person_outline,
-                                color: AccountTheme.accent,
-                                size: 28)),
+                                color: AccountTheme.canvas,
+                                size: 24)),
                         const SizedBox(width: 12),
                         Expanded(
                             child: Text('${value['display_name']}',
@@ -468,8 +454,9 @@ class _AccountPageState extends State<AccountPage> {
             onRefresh: _refresh,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              padding: const EdgeInsets.fromLTRB(20, 40, 20, 32),
               children: [
+                tradeHeading('账号与身份', eyebrow: '你的资料 / 代表谁办事'),
                 if (_busy) const LinearProgressIndicator(),
                 if (_error != null || session.partyNotice != null)
                   Card(
@@ -506,6 +493,17 @@ class _AccountPageState extends State<AccountPage> {
                             icon: Icons.copy),
                         _button('退出登录', _logout, icon: Icons.logout),
                       ]),
+                      _button(
+                          '隐私与使用偏好',
+                          () => Navigator.pushNamed(
+                              context, '/privacy?view=preferences'),
+                          icon: Icons.tune),
+                      _button(
+                          '申请更正本人展示名',
+                          () => Navigator.pushNamed(
+                              context, '/privacy?view=correction'),
+                          icon: Icons.edit_outlined),
+                      _small('偏好单独保存。展示名更正按本人申请处理，提交申请不表示资料已修改；手机号不能在此变更。'),
                     ],
                     subtitle: '管理账号、机构和成员，按授权阅读保存的合同。'),
                 const Text('选择办事身份',

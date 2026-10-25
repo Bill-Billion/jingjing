@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
+import 'package:jingjingshangri_app/account/read_failure_widgets.dart';
 import 'package:jingjingshangri_app/artists/artists_forms.dart';
 import 'package:jingjingshangri_app/artists/artists_pages.dart';
 import '../account/fake_account_api.dart';
@@ -71,7 +72,158 @@ Future<void> input(WidgetTester t, String key, String value) async {
   await t.pumpAndSettle();
 }
 
+Future<void> dateInput(WidgetTester t, String key, DateTime value) async {
+  final field = find.byKey(ValueKey('artist-field-$key'));
+  await show(t, field);
+  await t.tap(field);
+  await t.pumpAndSettle();
+  final localizations =
+      MaterialLocalizations.of(t.element(find.byType(DatePickerDialog)));
+  await t.tap(find.byTooltip(localizations.inputDateModeButtonLabel));
+  await t.pumpAndSettle();
+  await t.enterText(
+      find.descendant(
+          of: find.byType(InputDatePickerFormField),
+          matching: find.byType(TextFormField)),
+      localizations.formatCompactDate(value));
+  await t.tap(find.text('下一步'));
+  await t.pumpAndSettle();
+  await t.tap(find.byTooltip(localizations.inputTimeModeButtonLabel));
+  await t.pumpAndSettle();
+  final timeFields = find.descendant(
+      of: find.byType(TimePickerDialog), matching: find.byType(TextField));
+  await t.enterText(timeFields.at(0), '${value.hour}');
+  await t.enterText(timeFields.at(1), '${value.minute}');
+  await t.tap(find.text('确定'));
+  await t.pumpAndSettle();
+}
+
 void main() {
+  testWidgets('公开艺人目录503用C06且返回保留城市标签，重读不创建业务', (t) async {
+    var failed = true;
+    final a = artistAdapter(
+        override: (r) => r.path == '$artistRoot/catalog'
+            ? failed
+                ? envelope({'code': 'SERVICE_UNAVAILABLE'},
+                    status: 503, error: true)
+                : envelope({'items': [], 'next_cursor': null})
+            : null);
+    final s = (await t.runAsync(() => artistSession(a)))!;
+    await host(
+        t, s, const ArtistCataloguePage(initialCity: '杭州', initialTag: '对白'));
+    expect(find.byType(ReadFailureContent), findsOneWidget);
+    await press(t, find.byKey(const ValueKey('read-failure-back')));
+    expect(
+        t
+            .widget<TextField>(find.widgetWithText(TextField, '城市筛选'))
+            .controller!
+            .text,
+        '杭州');
+    expect(
+        t
+            .widget<TextField>(find.widgetWithText(TextField, '标签筛选'))
+            .controller!
+            .text,
+        '对白');
+    expect(find.text('当前条件下没有已获准公开的艺人。'), findsNothing);
+    failed = false;
+    await press(t, find.text('按条件查看艺人'));
+    await show(t, find.text('当前条件下没有已获准公开的艺人。'));
+    expect(find.byType(ReadFailureContent), findsNothing);
+    final request =
+        a.requests.lastWhere((r) => r.path == '$artistRoot/catalog');
+    expect(request.queryParameters['city'], '杭州');
+    expect(request.queryParameters['tag'], '对白');
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.startsWith('$artistRoot/')),
+        isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('认证补件展示四类提示与实际审核意见，沿用原服务且只提交原申请', (t) async {
+    final old = FilePickerPlatform.instance;
+    FilePickerPlatform.instance = Picker();
+    addTearDown(() => FilePickerPlatform.instance = old);
+    final original = artistRecord(kind: 'HALO', status: 'NEEDS_MATERIAL');
+    original['data']['level'] = 2;
+    original['data']['service_id'] = specKey;
+    original['data']['review'] = {'reason': '请补充本人的清晰全身照片，其他原材料继续沿用。'};
+    final path = '$artistRoot/people/$personKey/records/$recordKey/supplements';
+    final a = artistAdapter(override: (r) {
+      if (r.path == '$artistRoot/people/$personKey/records/$recordKey') {
+        return envelope(original);
+      }
+      if (r.path == path) {
+        return envelope(
+            {...original, 'current_status': 'SUBMITTED', 'object_version': 3});
+      }
+      return null;
+    });
+    final s = (await t.runAsync(() => artistSession(a)))!;
+    await host(
+        t,
+        s,
+        const ArtistFormPage(
+            mode: 'SUPPLEMENT', personId: personKey, recordId: recordKey));
+    await show(t, find.text('沿用原认证申请'));
+    expect(find.text('L2'), findsOneWidget);
+    await show(t, find.text('本次实际补件意见'));
+    expect(find.text('请补充本人的清晰全身照片，其他原材料继续沿用。'), findsOneWidget);
+    for (final label in ['形象模卡', '生活照', '全身照', '补充材料（选填）']) {
+      await show(t, find.text(label));
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(find.byType(CheckboxListTile), findsNothing);
+    await input(t, 'reason', '按本次意见补充全身照。');
+    await press(t, find.byKey(const ValueKey('artist-upload-REVIEW_EVIDENCE')));
+    await press(t, find.byKey(const ValueKey('artist-submit')));
+    await press(t, find.text('确认办理'));
+    final write = a.requests.singleWhere((r) => r.path == path);
+    expect(write.data, {
+      'evidence_asset_ids': [assetKey],
+      'note': '按本次意见补充全身照。'
+    });
+    expect(write.headers['If-Match'], '"2"');
+    expect(
+        a.requests.where((r) =>
+            r.method == 'POST' &&
+            (r.path.endsWith('/services') || r.path.endsWith('/halos'))),
+        isEmpty);
+    expect(find.text('真实结果页入口'), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('窄屏完整显示授权对象长名称，展开选项也不省略或溢出', (t) async {
+    const name = '这是一份用于核对本人授权对象的较长数字人名称，保留结尾以区分不同授权对象';
+    final detail = detailData();
+    (detail['avatars'][0]['data'] as Map)['display_name'] = name;
+    final a = artistAdapter(
+            override: (r) => r.path == '$artistRoot/people/$personKey'
+                ? envelope(detail)
+                : null),
+        s = (await t.runAsync(() => artistSession(a)))!;
+    await host(
+        t,
+        s,
+        const ArtistFormPage(
+            mode: 'CONSENT', personId: personKey, avatarId: avatarKey));
+    t.view.physicalSize = const Size(320, 844);
+    await t.pumpAndSettle();
+    final selected = find.text(name);
+    await show(t, selected);
+    expect(t.widget<Text>(selected).overflow, isNot(TextOverflow.ellipsis));
+    expect(t.getSize(selected).height, greaterThan(48));
+    expect(t.takeException(), isNull);
+    await press(t, find.byKey(ValueKey('artist-select-具体数字人-$avatarKey')));
+    expect(find.text(name), findsWidgets);
+    expect(t.takeException(), isNull);
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.startsWith('$artistRoot/')),
+        isEmpty);
+  });
+
   for (final code in ['ARTIST_CONSENT_REQUIRED', 'ARTIST_HOSTING_REQUIRED']) {
     testWidgets('公开预览因$code被拒后清除过期公开资料', (t) async {
       final a = artistAdapter(override: (r) {
@@ -209,8 +361,8 @@ void main() {
     await press(t, find.widgetWithText(CheckboxListTile, '形象 / 脸部'));
     await press(t, find.widgetWithText(CheckboxListTile, '仅私人档案'));
     await input(t, 'territories', 'CN');
-    await input(t, 'from', '2026-01-01 09:00');
-    await input(t, 'until', '2030-01-01 09:00');
+    await dateInput(t, 'from', DateTime(2026, 1, 1, 9));
+    await dateInput(t, 'until', DateTime(2030, 1, 1, 9));
     await input(t, 'terms', '本人仅同意用于这个私人档案。');
     await press(
         t, find.byKey(const ValueKey('artist-upload-CONSENT_EVIDENCE')));
@@ -222,6 +374,10 @@ void main() {
     expect(r.data['consent']['purposes'], ['PRIVATE_ARCHIVE']);
     expect(r.data['consent']['evidence_asset_ids'], [assetKey]);
     expect(r.data['consent']['grantee_party_id'], personId);
+    expect(r.data['consent']['valid_from'],
+        DateTime(2026, 1, 1, 9).toUtc().toIso8601String());
+    expect(r.data['consent']['valid_until'],
+        DateTime(2030, 1, 1, 9).toUtc().toIso8601String());
     expect(t.takeException(), isNull);
   });
   testWidgets('412保留原因，显式核对新版本后才按新版本再次提交', (t) async {
@@ -320,6 +476,9 @@ void main() {
     expect(s.artistsAccessDenied, true);
     expect(find.text('本人私有同意原约定'), findsNothing);
     expect(find.textContaining('私有内容已清空'), findsOneWidget);
+    expect(find.byType(ReadAccessDeniedPage), findsOneWidget);
+    expect(find.text('当前无法\n读取这页'), findsOneWidget);
+    expect(find.byKey(const ValueKey('read-denied-retry')), findsOneWidget);
     expect(t.takeException(), isNull);
   });
   testWidgets('未知提交锁定输入和返回，只恢复原body与请求key', (t) async {

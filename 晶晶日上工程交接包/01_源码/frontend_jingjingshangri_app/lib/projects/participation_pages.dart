@@ -794,15 +794,19 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         ])
           communityFact(x.$2,
               x.$1 == 'valid_until' ? communityDate(terms[x.$1]) : terms[x.$1]),
-        for (final s in communityRows(terms['installments']))
-          communitySection('原分期 · ${s['key']}', [
+        for (final (i, s) in communityRows(terms['installments']).indexed)
+          communitySection('原分期 · 第 ${i + 1} 期', [
             communityFact('金额', communityMoney(s['amount_minor'])),
             communityFact('达成条件', s['milestone']),
             communityFact(
                 '开工前须支付',
                 (terms['start_payment_keys'] as List).contains(s['key'])
                     ? '是'
-                    : '按本期条件办理')
+                    : '按本期条件办理'),
+            ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: const Text('原分期依据'),
+                children: [communityFact('原分期标识', s['key'])])
           ]),
         if (terms['revenue'] != null)
           ...revenueFacts(communityMap(terms['revenue'])),
@@ -835,8 +839,14 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                   context, '/trade/record?recordId=${progress!['order_id']}'),
               outline: true),
         if (progress != null)
-          for (final s in communityRows(progress!['milestones']))
-            communityFact('已确认履约节点 ${s['installment_key']}', s['reason'])
+          for (final (i, s) in communityRows(progress!['milestones']).indexed)
+            communitySection('已确认履约节点 · 第 ${i + 1} 项', [
+              communityFact('达成说明', s['reason']),
+              ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: const Text('原节点依据'),
+                  children: [communityFact('原分期标识', s['installment_key'])])
+            ])
       ],
       if (d['review'] is Map)
         communitySection('独立审核意见', [
@@ -1141,8 +1151,15 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           ]),
         if (mode != 'FIXED_FEE') ...revenueFields(),
         if (amending) ...[
-          communityField(retained, '换角时旧参演方保留金额（同本人改价留空）',
-              keyboard: TextInputType.number),
+          Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: TextField(
+                  controller: retained,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                      labelText: '旧参演方保留金额',
+                      helperText: '仅换角时填写；同一参演方改价时留空。',
+                      helperMaxLines: 3))),
           communityField(why, '改价或换角的具体原因', lines: 3),
           appNotice('同一参演方按原净付款抵扣新片酬；换角则单列旧方保留和新方全额。最终差额由服务器核实，不能按填写内容显示退款成功。')
         ],

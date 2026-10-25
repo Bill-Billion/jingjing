@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../trade/trade_widgets.dart';
@@ -79,9 +80,17 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       actions = [],
       copyRows = [];
   Map<String, dynamic>? request, copy;
+  bool get creatingRequest =>
+      ['new', 'correction', 'complaint'].contains(widget.view);
   @override
   void initState() {
     super.initState();
+    if (widget.view == 'correction') {
+      type = 'CORRECT';
+      scopes.add('PROFILE');
+    } else if (widget.view == 'complaint') {
+      type = 'COMPLAINT';
+    }
     load();
   }
 
@@ -187,7 +196,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           c = await allRows('$base/model-creations');
           a = await allRows('$base/actions');
         }
-      } else if (widget.view != 'new') {
+      } else if (!creatingRequest) {
         final p = await api.read('requests',
             query: {'limit': 20, if (cursor != null) 'cursor': cursor});
         list = communityItems(p).map((v) => validateRequest(v)).toList();
@@ -295,7 +304,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         menu(),
         const SizedBox(height: 20),
         appNotice('此处按登录本人办理，不由机构或他人代办。资料留存、资金义务和具体清理范围由已审核依据分别处理。'),
-        if (rows.isEmpty && !checking) const Text('暂无属于你的个人信息申请。'),
+        if (rows.isEmpty && !checking && error == null)
+          const Text('暂无属于你的个人信息申请。'),
         for (final r in rows)
           communitySection(
               privacyTypes[communityMap(r['request'])['type']] ?? '本人申请', [
@@ -322,6 +332,10 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       ];
   List<Widget> newView() => [
         communityHeading('提出本人申请', '说明你希望处理的具体资料和事情。'),
+        if (widget.view == 'correction')
+          appNotice('填写希望更正的本人账号展示名及原因。申请、方案核对与实际修改分别处理，不会直接覆盖已保存的合同或机构名称。'),
+        if (widget.view == 'complaint')
+          appNotice('此处受理个人信息投诉与保护申请。订单售后请回原订单，功能建议和一般客服反馈仍未开放。'),
         menu(),
         const SizedBox(height: 20),
         communitySelect(
@@ -361,18 +375,38 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                     })
                 : null)
       ];
+  Widget _preferenceSwitch(String title, String subtitle, bool value,
+          ValueChanged<bool>? changed) =>
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AccountTheme.border))),
+        child: SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: value,
+          onChanged: changed,
+          activeThumbColor: AccountTheme.canvas,
+          activeTrackColor: AccountTheme.text,
+          inactiveThumbColor: AccountTheme.canvas,
+          inactiveTrackColor: AccountTheme.border,
+          title: Text(title,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+          subtitle: Text(subtitle,
+              style: const TextStyle(
+                  fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ),
+      );
+
   List<Widget> preferenceView() => [
-        communityHeading('由你选择的隐私偏好', '个性化与营销初始关闭，选择会保存为本人账号偏好。'),
+        communityHeading('资料与设置', '个性化与营销初始关闭，选择会保存为本人账号偏好。',
+            eyebrow: '你的资料与使用偏好'),
         menu(),
         const SizedBox(height: 20),
-        communityCheck(
-            '允许个性化设置',
-            personalization,
-            enabled
-                ? (v) => setState(() => personalization = v == true)
-                : null),
-        communityCheck('允许营销消息', marketing,
-            enabled ? (v) => setState(() => marketing = v == true) : null),
+        _preferenceSwitch('个性化内容推荐', '按你的账号偏好推荐公开内容', personalization,
+            enabled ? (v) => setState(() => personalization = v) : null),
+        _preferenceSwitch('营销消息提醒', '营销偏好不代替必要业务记录与业务通知', marketing,
+            enabled ? (v) => setState(() => marketing = v) : null),
         communityField(minutes, '休息提醒间隔（分钟）', keyboard: TextInputType.number),
         const Text('0为关闭；开启时15—240分钟。'),
         tradeButton(
@@ -736,7 +770,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       [
         ...feedback,
         ...switch (widget.view) {
-          'new' => newView(),
+          'new' || 'correction' || 'complaint' => newView(),
           'preferences' => preferenceView(),
           'request' => requestView(),
           _ => listView()

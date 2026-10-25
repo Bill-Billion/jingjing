@@ -168,10 +168,16 @@ class _V5MediaState extends State<V5Media> {
           AspectRatio(
               aspectRatio: 16 / 9,
               child: ColoredBox(
-                  color: AccountTheme.text.withValues(alpha: .06),
+                  color: AccountTheme.text,
                   child: const Center(
-                      child: Icon(Icons.play_circle_outline,
-                          size: 54, color: AccountTheme.accent)))),
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.play_arrow_outlined,
+                        size: 36, color: AccountTheme.canvas),
+                    SizedBox(height: 8),
+                    Text('尚未读取预览',
+                        style: TextStyle(
+                            color: AccountTheme.canvas, fontSize: 12)),
+                  ])))),
         tradeButton(widget.label,
             busy ? null : () => open(save: widget.type == 'file')),
         if (widget.allowSave && widget.type != 'file')

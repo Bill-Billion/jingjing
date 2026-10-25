@@ -2,7 +2,7 @@
 /**
  * 404。
  *
- * 版面跟登录页同一套：满屏墨底 + 宋体品牌名。
+ * 沿用电影刊物的墨色、纸色和宋体标题。
  * 理由是这两页都是"不在工作台里面"的页面——一个是进不来，一个是走错了，
  * 用同一套壳子，比让用户突然看到一张系统默认的白底报错页舒服。
  *
@@ -18,7 +18,7 @@ const router = useRouter()
 <template>
   <div class="nf">
     <div class="stage">
-      <p class="brand">晶选片场</p>
+      <p class="brand">晶晶日上 / 404</p>
       <h1 class="title">页面不存在</h1>
       <p class="hint">
         地址 <span class="ops-mono path">{{ route.fullPath }}</span> 没有对应的页面。
@@ -36,31 +36,12 @@ const router = useRouter()
   justify-content: center;
   padding: 56px 24px;
   background: var(--ops-ink);
-  background-image: radial-gradient(1100px 520px at 50% 22%, rgba(201, 164, 94, 0.08), transparent 62%);
 }
 
 .stage {
   max-width: 420px;
   width: 100%;
   text-align: center;
-  animation: rise 0.42s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stage {
-    animation: none;
-  }
 }
 
 .brand {
@@ -75,7 +56,8 @@ const router = useRouter()
 
 .title {
   margin: 0;
-  font-size: 26px;
+  font-family: var(--ops-serif);
+  font-size: clamp(36px, 7vw, 52px);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-indent: 0.06em;
@@ -97,7 +79,8 @@ const router = useRouter()
 .back {
   border: 0;
   background: none;
-  padding: 0 0 4px;
+  min-height: 44px;
+  padding: 10px 0;
   font-family: inherit;
   font-size: 13px;
   letter-spacing: 0.06em;
