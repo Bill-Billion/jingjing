@@ -215,6 +215,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
         context,
         '申请退款',
         [
+          tradeHeading('新建售后申请', eyebrow: '原订单 / 原付款'),
           const Text('请选择退款的真实付款与明细，并填写申请原因。我们将根据原订单条款进行审核。',
               style: TextStyle(
                   fontSize: 16, height: 1.6, color: AccountTheme.muted)),

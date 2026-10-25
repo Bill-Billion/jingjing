@@ -1,0 +1,31 @@
+{
+  "result": "FAIL",
+  "synthetic_only": true,
+  "normal_entrypoint": true,
+  "login": "真实隔离短信HTTP登录；仅登录过程允许auth写入，截图阶段无业务写入",
+  "sourceBundleSha256": "47da39b194a0420dd4f0efba83ef102640b517d8ddc5bd8247720786e78a3b53",
+  "results": [],
+  "screenshots": [],
+  "network": [
+    {
+      "path": "/api/v1/auth/sms-challenges",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/auth/sessions",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/privacy/preferences",
+      "status": 200
+    }
+  ],
+  "business_writes": [],
+  "errors": [
+    "locator.waitFor: Error: strict mode violation: getByText('验证码已发送，请查收短信', { exact: true }) resolved to 2 elements:\n    1) <flt-announcement-polite aria-live=\"polite\">验证码已发送，请查收短信 </flt-announcement-polite> aka locator('flt-announcement-polite')\n    2) <span>验证码已发送，请查收短信</span> aka locator('#flt-semantic-node-56').getByText('验证码已发送，请查收短信')\n\nCall log:\n\u001b[2m  - waiting for getByText('验证码已发送，请查收短信', { exact: true }) to be hidden\u001b[22m\n\n    at /Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/scripts/figma-frontend-finance-check.mjs:36:47"
+  ]
+}

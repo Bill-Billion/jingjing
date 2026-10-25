@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
+import 'package:jingjingshangri_app/account/read_failure_widgets.dart';
 import 'package:jingjingshangri_app/production/production_api.dart';
 import 'package:jingjingshangri_app/production/production_models.dart';
 import 'package:jingjingshangri_app/production/production_pages.dart';
@@ -37,6 +38,94 @@ Future<void> reveal(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  for (final status in [403, 404]) {
+    testWidgets('制作拒绝读取$status用C08，不猜下架或过期，原权限重核后才重新读取', (tester) async {
+      var unavailable = true;
+      final adapter = productionAdapter(
+          override: (r) => unavailable &&
+                  r.path == '/api/v1/production/records/$productionProjectId'
+              ? envelope({'code': 'NOT_FOUND'}, status: status, error: true)
+              : null);
+      final s = (await tester.runAsync(() => buyerSession(adapter)))!;
+      await nav.openApp(tester, s,
+          route: '/production/project?projectId=$productionProjectId');
+      expect(find.byType(ReadAccessDeniedPage), findsOneWidget);
+      expect(find.byType(ReadSessionExpiredPage), findsNothing);
+      expect(s.isLoggedIn, isTrue);
+      expect(s.productionAccessDenied, isTrue);
+      expect(find.textContaining('已下架'), findsNothing);
+      expect(find.textContaining('已取消'), findsNothing);
+      expect(find.textContaining('私有内容已清空'), findsOneWidget);
+      unavailable = false;
+      await tester.tap(find.byKey(const ValueKey('read-denied-retry')));
+      await nav.frames(tester);
+      expect(s.productionAccessDenied, isFalse);
+      expect(find.byType(ReadAccessDeniedPage), findsNothing);
+      expect(find.text('当前待办：审阅并确认当前剧本'), findsOneWidget);
+      expect(
+          adapter.requests.where((r) =>
+              r.method == 'POST' && r.path.startsWith('/api/v1/production/')),
+          isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final failed in [false, true]) {
+    testWidgets('制作目录空结果与503互斥，失败=$failed 不产生业务写入', (tester) async {
+      final adapter = productionAdapter(override: (r) {
+        if (r.path == '/api/v1/production/projects') {
+          return failed
+              ? envelope({'code': 'SERVICE_UNAVAILABLE'},
+                  status: 503, error: true)
+              : envelope({'items': [], 'next_cursor': null});
+        }
+        return null;
+      });
+      final s = (await tester.runAsync(() => buyerSession(adapter)))!;
+      await nav.openApp(tester, s, route: '/production');
+      if (failed) {
+        expect(find.byType(ReadFailureContent), findsOneWidget);
+        expect(find.textContaining('重读不会重复提交业务'), findsOneWidget);
+        expect(find.text('暂时没有参与项目'), findsNothing);
+      } else {
+        expect(find.text('暂时没有参与项目'), findsOneWidget);
+        expect(find.textContaining('暂时无法读取'), findsNothing);
+      }
+      expect(
+          adapter.requests.where((r) =>
+              r.method == 'POST' && r.path.startsWith('/api/v1/production/')),
+          isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+  testWidgets('阶段数量只计当前版本确认，旧样片确认不计且可打开当前样片', (tester) async {
+    final project = productionData('PROJECT', stage: 'SAMPLE');
+    project['data']['current']['SCRIPT'] = productionFileId;
+    project['data']
+        ['accepted'] = {'SCRIPT': productionFileId, 'SAMPLE': otherVersionId};
+    project['data']['revisions']['SCRIPT'] = 1;
+    final adapter = productionAdapter(
+        stage: 'SAMPLE',
+        override: (r) =>
+            r.path == '/api/v1/production/records/$productionProjectId'
+                ? envelope(project)
+                : null);
+    final s = (await tester.runAsync(() => buyerSession(adapter)))!;
+    await nav.openApp(tester, s,
+        route: '/production/project?projectId=$productionProjectId');
+    expect(find.text('当前待办：审阅并确认当前样片'), findsOneWidget);
+    expect(find.text('已确认 1/4 个阶段'), findsOneWidget);
+    expect(find.textContaining('45%'), findsNothing);
+    await reveal(tester, find.text('查看当前样片'));
+    await tester.tap(find.text('查看当前样片'));
+    await nav.frames(tester);
+    expect(
+        adapter.requests.where(
+            (r) => r.path == '/api/v1/production/records/$productionVersionId'),
+        isNotEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final status in [409, 503]) {
     testWidgets('重新读取私有剧本$status后清空旧内容与阅读确认', (tester) async {
       var unavailable = false;
@@ -323,6 +412,7 @@ void main() {
     await tester.tap(find.text('查看当前样片'));
     await nav.frames(tester);
     expect(find.text('审阅样片'), findsOneWidget);
+    await reveal(tester, find.text('本版已确认。停止重复确认，请回订单查看原付款节点。'));
     expect(find.text('本版已确认。停止重复确认，请回订单查看原付款节点。'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -332,6 +422,9 @@ void main() {
         s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, s, route: '/my');
     expect(find.byType(NavigationBar), findsOneWidget);
+    await reveal(tester, find.text('业务与作品'));
+    await tester.tap(find.text('业务与作品'));
+    await nav.frames(tester);
     await reveal(tester, find.text('我的交付作品'));
     await tester.tap(find.text('我的交付作品'));
     await nav.frames(tester);
@@ -344,6 +437,10 @@ void main() {
     await tester.tap(find.byType(BackButton));
     await nav.frames(tester);
     expect(find.byType(NavigationBar), findsOneWidget);
+    await reveal(tester, find.text('共创与权益'));
+    await tester.tap(find.text('共创与权益'));
+    await nav.frames(tester);
+    await reveal(tester, find.text('我的许可办理'));
     expect(find.text('我的许可办理'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

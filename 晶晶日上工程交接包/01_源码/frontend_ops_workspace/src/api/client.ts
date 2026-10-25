@@ -34,6 +34,7 @@ export class ApiError extends Error {
   readonly requestId: string | null
   readonly details: unknown[]
   readonly retryAfterAt: number | null
+  readonly requestMethod?: RequestOptions['method']
 
   constructor(init: {
     status: number
@@ -43,6 +44,7 @@ export class ApiError extends Error {
     requestId?: string | null
     details?: unknown[]
     retryAfterAt?: number | null
+    requestMethod?: RequestOptions['method']
   }) {
     super(init.message)
     this.name = 'ApiError'
@@ -52,6 +54,7 @@ export class ApiError extends Error {
     this.requestId = init.requestId ?? null
     this.details = init.details ?? []
     this.retryAfterAt = init.retryAfterAt ?? null
+    this.requestMethod = init.requestMethod
   }
 }
 
@@ -137,6 +140,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       code: 'NETWORK_UNREACHABLE',
       message: '连接中断，请求结果未确认。请保留原内容重试。',
       retryable: true,
+      requestMethod: method,
     })
   }
 
@@ -146,7 +150,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   // 响应体不一定是 JSON（例如网关返回的 HTML 错误页），要能兜住
   let raw: string
   try { raw = await response.text() } catch {
-    throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '连接中断，请求结果未确认。请保留原内容重试。', retryable: true })
+    throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '连接中断，请求结果未确认。请保留原内容重试。', retryable: true, requestMethod: method })
   }
   let parsed: unknown = null
   if (raw) {
@@ -160,7 +164,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (!response.ok) {
     if (response.status === 401 && token) unauthorized?.(token)
     const errBody = (parsed as ErrBody | null)?.error
-    throw toApiError(response.status, errBody, echoRequestId, raw, retryAfterAt(response.headers.get('Retry-After')))
+    throw toApiError(response.status, errBody, echoRequestId, raw, retryAfterAt(response.headers.get('Retry-After')), method)
   }
 
   const ok = parsed as OkBody<T> | null
@@ -170,6 +174,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       code: 'UNEXPECTED_RESPONSE_SHAPE',
       message: '服务器返回了 2xx，但响应体不是约定的 {meta, data} 结构。',
       requestId: echoRequestId,
+      requestMethod: method,
     })
   }
 
@@ -187,6 +192,7 @@ function toApiError(
   echoRequestId: string | null,
   rawText: string,
   retryAfterAt: number | null,
+  requestMethod: RequestOptions['method'],
 ): ApiError {
   if (errBody && typeof errBody.code === 'string') {
     return new ApiError({
@@ -197,6 +203,7 @@ function toApiError(
       requestId: echoRequestId,
       details: errBody.details,
       retryAfterAt,
+      requestMethod,
     })
   }
   // 拿不到 {meta, error} 结构：可能是网关/代理返回的，如实说明
@@ -206,6 +213,7 @@ function toApiError(
     message: `服务器返回 ${status}，但响应体不是约定的错误结构。原始内容前 200 字：${rawText.slice(0, 200)}`,
     requestId: echoRequestId,
     retryAfterAt,
+    requestMethod,
   })
 }
 
@@ -243,15 +251,17 @@ export async function requestBytes(path: string, options: RequestOptions, conten
   let response: Response
   try {
     response = await fetch(`${API_BASE}${path}`, { method: 'GET', headers, credentials: 'omit', cache: 'no-store', signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(20000)]) : AbortSignal.timeout(20000) })
-  } catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
+  } catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true, requestMethod: 'GET' }) }
   if (!response.ok) {
     if (response.status === 401 && options.token) unauthorized?.(options.token)
-    const raw = await response.text()
+    let raw: string
+    try { raw = await response.text() }
+    catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料读取未完成，请重新读取。', retryable: true, requestMethod: 'GET' }) }
     let error: ErrorBody | undefined
     try { error = JSON.parse(raw)?.error } catch { /* Non-JSON gateway error. */ }
-    throw toApiError(response.status, error, response.headers.get('X-Request-Id'), raw, retryAfterAt(response.headers.get('Retry-After')))
+    throw toApiError(response.status, error, response.headers.get('X-Request-Id'), raw, retryAfterAt(response.headers.get('Retry-After')), 'GET')
   }
-  if (response.headers.get('Content-Type')?.split(';')[0] !== contentType) throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '材料返回格式不正确，未下载。' })
+  if (response.headers.get('Content-Type')?.split(';')[0] !== contentType) throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '材料返回格式不正确，未下载。', requestMethod: 'GET' })
   try { return await response.blob() }
-  catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true }) }
+  catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true, requestMethod: 'GET' }) }
 }

@@ -78,13 +78,12 @@ void main() {
       await t.tap(find.text('获取验证码'));
       await t.pump(const Duration(milliseconds: 300));
       expect(find.textContaining('账号服务地址尚未配置'), findsOneWidget);
-      expect(find.textContaining('后重发'), findsNothing);
+      expect(find.textContaining('后可重新获取'), findsNothing);
       await t.enterText(find.byType(TextField).last, '123456');
       await t.pump();
       expect(
           t
-              .widget<FilledButton>(
-                  find.widgetWithText(FilledButton, '登录 / 注册'))
+              .widget<FilledButton>(find.widgetWithText(FilledButton, '登录并继续'))
               .onPressed,
           isNull);
       expect(find.byType(MainScaffold), findsNothing);

@@ -1,0 +1,2041 @@
+{
+  "result": "REVIEWED_WITH_REMAINING_GAPS",
+  "resolvedFindingCount": 4,
+  "remainingVisualFindingIds": [
+    "F05",
+    "F07"
+  ],
+  "evidenceLimitFindingIds": [
+    "F06"
+  ],
+  "verifiedAppBundleSha256": "d5fd658abda9162dabecf980b20eb5c1e6ca236099d506453c215cc309d00625",
+  "reviewDate": "2026-10-23",
+  "scope": "仅foundation截图对照审核，未改业务代码",
+  "caseCount": 33,
+  "screenshotCount": 63,
+  "referenceCount": 12,
+  "allScreenshotsActuallyViewed": true,
+  "businessVerification": "NOT_INFERRED_FROM_SCREENSHOTS",
+  "syntheticOnly": true,
+  "sources": [
+    {
+      "group": "story",
+      "file": "STORY_RESULTS.json",
+      "sha256": "beba34cf25c73e7ab7b770fbf6dbbd82c071450f92cfbba98e7b8ecd72084db9",
+      "app_bundle_sha256": "d5fd658abda9162dabecf980b20eb5c1e6ca236099d506453c215cc309d00625"
+    },
+    {
+      "group": "extra",
+      "file": "EXTRA_RESULTS.json",
+      "sha256": "1e006d8a3d7e6cc6790198eb87c39a6d3efc2207c7271dee01a5f167a00d6d1f",
+      "app_bundle_sha256": "d5fd658abda9162dabecf980b20eb5c1e6ca236099d506453c215cc309d00625"
+    }
+  ],
+  "excludedFromPixelComparison": [
+    "系统状态栏、原型省略号和iPhone home indicator为Figma示意，网页截图不绘制假系统栏。",
+    "最新需求动态模板、实际字段与明确关闭动作优先；这些业务适配不等于与原稿逐像素相同。",
+    "768px为响应式实现，原设计390px无同宽独立稿；只验无溢出、内容宽度和动作可达。"
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "kind": "VISUAL",
+      "priority": "P2",
+      "status": "FIXED_VISUALLY_VERIFIED",
+      "title": "可编辑字段白底与底线：复核通过",
+      "description": "最新63张中，故事表单、查找及帮助字段已恢复白色填充与底部细线；纸色透明底和四周框已移除。少量顶部圆角另列F07。",
+      "screens": [
+        "story-new-family",
+        "story-new-life",
+        "story-draft",
+        "story-supplement",
+        "search",
+        "help"
+      ],
+      "requestedFix": "已在指定最终构建实拍复核，无须继续此项修正。",
+      "verificationEvidence": [
+        "screenshots/story-story-new-family-390-1.png",
+        "screenshots/story-story-draft-320-1.png",
+        "screenshots/extra-search-390-0.png",
+        "screenshots/extra-help-390-0.png"
+      ]
+    },
+    {
+      "id": "F02",
+      "kind": "VISUAL",
+      "priority": "P2",
+      "status": "FIXED_VISUALLY_VERIFIED",
+      "title": "目录页签短红线：复核通过",
+      "description": "09查找与72收藏页签的红色整框已改为选中文字下方短朱红线，390/320/768查找及390收藏截图均可核对。",
+      "screens": [
+        "search",
+        "saved"
+      ],
+      "requestedFix": "已在指定最终构建实拍复核，无须继续此项修正。",
+      "verificationEvidence": [
+        "screenshots/extra-search-390-0.png",
+        "screenshots/extra-search-320-0.png",
+        "screenshots/extra-search-768-0.png",
+        "screenshots/extra-saved-390-0.png"
+      ]
+    },
+    {
+      "id": "F03",
+      "kind": "PRODUCT_COPY",
+      "priority": "P2",
+      "status": "FIXED_VISUALLY_VERIFIED",
+      "title": "报价付款分项业务名称：复核通过",
+      "description": "已审报价付款展开标题按实际trigger显示中文确认订单后付款、定制中间补款条件确认后付款、成片验收后付款，不再出现first/interim/last内部节点键。",
+      "screens": [
+        "approved-quote"
+      ],
+      "requestedFix": "已在指定最终构建实拍复核，无须继续此项修正。",
+      "verificationEvidence": [
+        "screenshots/extra-approved-quote-390-2.png",
+        "screenshots/extra-approved-quote-390-3.png"
+      ]
+    },
+    {
+      "id": "F04",
+      "kind": "CAPTURE_COVERAGE",
+      "priority": "P2",
+      "status": "FIXED_VISUALLY_VERIFIED",
+      "title": "768px草稿首屏及帮助末端补拍：复核通过",
+      "description": "新的草稿768px首屏包含“人工定制 / 故事需求”和“写下你的故事”；帮助768px已补充完整末端业务、反馈记录及灰显提交按钮，已查看完整原图。",
+      "screens": [
+        "story-draft",
+        "help"
+      ],
+      "requestedFix": "已在指定最终构建实拍复核，无须继续此项修正。",
+      "verificationEvidence": [
+        "screenshots/story-story-draft-768-0.png",
+        "screenshots/extra-help-768-1.png",
+        "screenshots/extra-help-768-5.png"
+      ]
+    },
+    {
+      "id": "F05",
+      "kind": "VISUAL_STATE",
+      "priority": "P2",
+      "status": "REPORTED_TO_ROOT",
+      "title": "权限与下架提示尚未采用专门状态稿构图",
+      "description": "C08/C09原稿为独立大标题、状态块及返回业务动作。当前截图沿用来源页面标题加普通提示，权限闭锁和隐藏私有内容正确，不能据此判定专门状态稿已完整还原。",
+      "screens": [
+        "private-forbidden",
+        "stock-unlisted-public"
+      ],
+      "requestedFix": "在保持真实权限和订单访问规则的前提下，统一状态标题、提示块和返回动作；否则在最终报告保留此视觉差距。"
+    },
+    {
+      "id": "F06",
+      "kind": "EVIDENCE_LIMIT",
+      "priority": "P2",
+      "status": "DOCUMENTED",
+      "title": "空目录与编号读取不覆盖设计中的有数据列表",
+      "description": "foundation的54号只有空订单列表；59号只有按合同编号读取入口。无法据此验收原稿中的有数据订单分类和多合同目录。story原有quote-detail三个宽度为404权限关闭态；56号正向界面由extra的approved-quote六个滚动片段补充，仍未包含确认后下单结果。",
+      "screens": [
+        "orders",
+        "contract-directory",
+        "quote-detail"
+      ],
+      "requestedFix": "由其他截图集补齐实际有数据状态，或在最终覆盖矩阵明确记录缺口。"
+    },
+    {
+      "id": "F07",
+      "kind": "MINOR_VISUAL",
+      "priority": "P3",
+      "status": "ROOT_CODE_CHANGED_PENDING_TARGETED_VISUAL",
+      "title": "白色字段顶部仍有轻微圆角",
+      "description": "最终构建的白色输入块上角仍约4px圆角，原稿为直角；白底与底线修复已通过，这项为单独的微小几何差距。",
+      "screens": [
+        "story-new-family",
+        "story-new-life",
+        "story-draft",
+        "story-supplement",
+        "search",
+        "help",
+        "contract-directory",
+        "public-empty"
+      ],
+      "requestedFix": "root已报告显式设置borderRadius为零，后续由root的最后定点截图确认。本目录固定d5fd658a的63张证据，不把未在此目录实拍的修正标成视觉通过。"
+    }
+  ],
+  "cases": [
+    {
+      "group": "story",
+      "name": "story-list",
+      "width": 390,
+      "route": "/customization",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-list-390-0.png",
+        "screenshots/story-story-list-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-new",
+      "width": 390,
+      "route": "/customization/new",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-new-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-new-family",
+      "width": 390,
+      "route": "/customization/new",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/story-story-new-family-390-0.png",
+        "screenshots/story-story-new-family-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-new-life",
+      "width": 390,
+      "route": "/customization/new",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/story-story-new-life-390-0.png",
+        "screenshots/story-story-new-life-390-1.png",
+        "screenshots/story-story-new-life-390-2.png"
+      ],
+      "screenshotCount": 3,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-attachment-blocked",
+      "width": 390,
+      "route": "/customization/new",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REQUIRED_ATTACHMENT_CLOSED",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "必填私有附件槽明确关闭，正式提交按钮灰显，保存文字草稿仍保留。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-attachment-blocked-390-0.png",
+        "screenshots/story-story-attachment-blocked-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-draft",
+      "width": 390,
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/story-story-draft-390-0.png",
+        "screenshots/story-story-draft-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-submitted",
+      "width": 390,
+      "route": "/customization/7935c8dd-0af8-4ab5-bcd0-49b9ff2ca93a",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-submitted-390-0.png",
+        "screenshots/story-story-submitted-390-1.png",
+        "screenshots/story-story-submitted-390-2.png",
+        "screenshots/story-story-submitted-390-3.png"
+      ],
+      "screenshotCount": 4,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-supplement",
+      "width": 390,
+      "route": "/customization/8b726abe-6cbc-47c5-950d-1926d7599854",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/story-story-supplement-390-0.png",
+        "screenshots/story-story-supplement-390-1.png",
+        "screenshots/story-story-supplement-390-2.png"
+      ],
+      "screenshotCount": 3,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-quote",
+      "width": 390,
+      "route": "/customization/d9db6c19-beea-4a2b-bbfb-b98905b00d87",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-quote-390-0.png",
+        "screenshots/story-story-quote-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "quote-detail",
+      "width": 390,
+      "route": "/trade/record?recordId=ac23b91c-5027-43d6-9d2a-7e3ca1911619",
+      "figmaId": "2004:3091",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "verdict": "NEGATIVE_STATE_ONLY",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "该场景实际返回404并清空私有内容，属于关闭态；不能算作56号报价内容正向验收，正向证据见extra/approved-quote。",
+      "findingIds": [
+        "F06"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F06"
+      ],
+      "screenshots": [
+        "screenshots/story-quote-detail-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "orders",
+      "width": 390,
+      "route": "/orders",
+      "figmaId": "2004:2898",
+      "referenceName": "54 / 我的订单",
+      "referenceFile": "references/2004-2898.png",
+      "verdict": "EMPTY_STATE_ONLY",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "当前隔离身份确无该类订单；不造设计示例订单。只验证空目录，未验收有数据列表。",
+      "findingIds": [
+        "F06"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F06"
+      ],
+      "screenshots": [
+        "screenshots/story-orders-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "contract-directory",
+      "width": 390,
+      "route": "/contract",
+      "figmaId": "2004:3302",
+      "referenceName": "59 / 我的合同与许可",
+      "referenceFile": "references/2004-3302.png",
+      "verdict": "DIRECTORY_DESIGN_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "截图仅为现有合同编号读取入口，尚未验证原设计中的多合同分类列表。",
+      "findingIds": [
+        "F07",
+        "F06"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F07",
+        "F06"
+      ],
+      "screenshots": [
+        "screenshots/story-contract-directory-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "private-forbidden",
+      "width": 390,
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "figmaId": "2004:6502",
+      "referenceName": "C08 / 公共状态 · 无查看权限",
+      "referenceFile": "references/2004-6502.png",
+      "verdict": "CLOSED_WITH_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "来源故事记录404后正文被清空，显示无查看权限和重新核对入口；原稿专门状态构图仍有差距。",
+      "findingIds": [
+        "F05"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F05"
+      ],
+      "screenshots": [
+        "screenshots/story-private-forbidden-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-new",
+      "width": 320,
+      "route": "/customization/new",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-new-320-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-draft",
+      "width": 320,
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/story-story-draft-320-0.png",
+        "screenshots/story-story-draft-320-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "quote-detail",
+      "width": 320,
+      "route": "/trade/record?recordId=ac23b91c-5027-43d6-9d2a-7e3ca1911619",
+      "figmaId": "2004:3091",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "verdict": "NEGATIVE_STATE_ONLY",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "该场景实际返回404并清空私有内容，属于关闭态；不能算作56号报价内容正向验收，正向证据见extra/approved-quote。",
+      "findingIds": [
+        "F06"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F06"
+      ],
+      "screenshots": [
+        "screenshots/story-quote-detail-320-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-new",
+      "width": 768,
+      "route": "/customization/new",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/story-story-new-768-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "story-draft",
+      "width": 768,
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "figmaId": "2004:3737",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "动态模板与状态信息可读；可编辑和只读内容被区分，底部动作与当前状态一致。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。",
+        "768px首屏/末端补拍已完整核对。"
+      ],
+      "businessAdaptation": "64号的单张表单扩展为品类模板、业务草稿、正式提交、逐项补充和办理进度；保留当前实际流程，不能按示例压回固定故事字段。",
+      "findingIds": [
+        "F01",
+        "F07",
+        "F04"
+      ],
+      "resolvedFindingIds": [
+        "F01",
+        "F04"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/story-story-draft-768-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "story",
+      "name": "quote-detail",
+      "width": 768,
+      "route": "/trade/record?recordId=ac23b91c-5027-43d6-9d2a-7e3ca1911619",
+      "figmaId": "2004:3091",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "verdict": "NEGATIVE_STATE_ONLY",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "该场景实际返回404并清空私有内容，属于关闭态；不能算作56号报价内容正向验收，正向证据见extra/approved-quote。",
+      "findingIds": [
+        "F06"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F06"
+      ],
+      "screenshots": [
+        "screenshots/story-quote-detail-768-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "search",
+      "width": 390,
+      "route": "/search",
+      "figmaId": "22:738",
+      "referenceName": "09 / 搜索与智能匹配",
+      "referenceFile": "references/22-738.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。",
+        "已复拍确认选中页签为文字下方短红线。"
+      ],
+      "businessAdaptation": "只有已支持的城市、艺人标签与类型目录跳转；未开放的语义匹配关闭，没有伪造姓名、图片或匹配率。",
+      "findingIds": [
+        "F01",
+        "F02",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01",
+        "F02"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-search-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "producer-public",
+      "width": 390,
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "figmaId": "22:1031",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "390/320/768三宽的标题、媒体空槽、长主体编号、统计与关闭投稿可读。"
+      ],
+      "businessAdaptation": "公开名单只给主体编号、核实统计和资格；保留左纸右媒体槽构图，但不使用设计姓名肖像或把完成订单伪装为作品部数。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/extra-producer-public-390-0.png",
+        "screenshots/extra-producer-public-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "invoices",
+      "width": 390,
+      "route": "/invoices",
+      "figmaId": "2004:3564",
+      "referenceName": "62 / 发票与票据",
+      "referenceFile": "references/2004-3564.png",
+      "verdict": "CLOSED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "对应正式接口未接通；明确未开放并关闭申请/管理，不填示例票据或收藏、不采集无法提交的资料。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/extra-invoices-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "saved",
+      "width": 390,
+      "route": "/saved",
+      "figmaId": "2004:4444",
+      "referenceName": "72 / 收藏与足迹",
+      "referenceFile": "references/2004-4444.png",
+      "verdict": "CLOSED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认选中页签为文字下方短红线。"
+      ],
+      "businessAdaptation": "对应正式接口未接通；明确未开放并关闭申请/管理，不填示例票据或收藏、不采集无法提交的资料。",
+      "findingIds": [
+        "F02"
+      ],
+      "resolvedFindingIds": [
+        "F02"
+      ],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/extra-saved-390-0.png",
+        "screenshots/extra-saved-390-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "help",
+      "width": 390,
+      "route": "/help",
+      "figmaId": "2004:4618",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "verdict": "FAQ_USABLE_FEEDBACK_CLOSED",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "已开放本地FAQ阅读与原业务跳转；反馈提交、附件、记录及统一客服尚未接通，不能按设计示例收集私人材料。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-help-390-0.png",
+        "screenshots/extra-help-390-1.png",
+        "screenshots/extra-help-390-2.png"
+      ],
+      "screenshotCount": 3,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "approved-quote",
+      "width": 390,
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "figmaId": "2004:3091",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "六张连续滚动片段覆盖报价主体、分项、付款节点、审核与固定财务说明；确认动作始终在固定底部。",
+        "付款分项标题已采用实际触发条件的中文名称。"
+      ],
+      "businessAdaptation": "展示当前已审合成报价的真实价格¥500与30/60/10付款节点，额外的权限、固定规则和原故事关联不能用设计示例金额替换。",
+      "findingIds": [
+        "F03"
+      ],
+      "resolvedFindingIds": [
+        "F03"
+      ],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/extra-approved-quote-390-0.png",
+        "screenshots/extra-approved-quote-390-1.png",
+        "screenshots/extra-approved-quote-390-2.png",
+        "screenshots/extra-approved-quote-390-3.png",
+        "screenshots/extra-approved-quote-390-4.png",
+        "screenshots/extra-approved-quote-390-5.png"
+      ],
+      "screenshotCount": 6,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "stock-unlisted-public",
+      "width": 390,
+      "route": "/stock/video?listingId=00eaab72-67ae-4fd8-b929-65e7ccbab51d",
+      "figmaId": "2004:6541",
+      "referenceName": "C09 / 公共状态 · 内容已下架",
+      "referenceFile": "references/2004-6541.png",
+      "verdict": "CLOSED_WITH_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "作品未公开销售的409被明确显示，未展示原商品媒体或购买动作；已购权益是否继续可用需由原订单独立核对。",
+      "findingIds": [
+        "F05"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F05"
+      ],
+      "screenshots": [
+        "screenshots/extra-stock-unlisted-public-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "public-empty",
+      "width": 390,
+      "route": "/stock/catalog?city=%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "figmaId": "2004:6374",
+      "referenceName": "C05 / 公共状态 · 暂无内容",
+      "referenceFile": "references/2004-6374.png",
+      "verdict": "CONTEXTUAL_EMPTY_STATE",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。"
+      ],
+      "businessAdaptation": "C05原稿示例是收藏空态，本截图是现货目录无结果；按真实目录语境说明，不套用“没有收藏”。",
+      "findingIds": [
+        "F07"
+      ],
+      "resolvedFindingIds": [],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-public-empty-390-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "search",
+      "width": 320,
+      "route": "/search",
+      "figmaId": "22:738",
+      "referenceName": "09 / 搜索与智能匹配",
+      "referenceFile": "references/22-738.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。",
+        "已复拍确认选中页签为文字下方短红线。"
+      ],
+      "businessAdaptation": "只有已支持的城市、艺人标签与类型目录跳转；未开放的语义匹配关闭，没有伪造姓名、图片或匹配率。",
+      "findingIds": [
+        "F01",
+        "F02",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01",
+        "F02"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-search-320-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "producer-public",
+      "width": 320,
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "figmaId": "22:1031",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "390/320/768三宽的标题、媒体空槽、长主体编号、统计与关闭投稿可读。"
+      ],
+      "businessAdaptation": "公开名单只给主体编号、核实统计和资格；保留左纸右媒体槽构图，但不使用设计姓名肖像或把完成订单伪装为作品部数。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/extra-producer-public-320-0.png",
+        "screenshots/extra-producer-public-320-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "help",
+      "width": 320,
+      "route": "/help",
+      "figmaId": "2004:4618",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "verdict": "FAQ_USABLE_FEEDBACK_CLOSED",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。"
+      ],
+      "businessAdaptation": "已开放本地FAQ阅读与原业务跳转；反馈提交、附件、记录及统一客服尚未接通，不能按设计示例收集私人材料。",
+      "findingIds": [
+        "F01",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-help-320-0.png",
+        "screenshots/extra-help-320-1.png",
+        "screenshots/extra-help-320-2.png"
+      ],
+      "screenshotCount": 3,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "search",
+      "width": 768,
+      "route": "/search",
+      "figmaId": "22:738",
+      "referenceName": "09 / 搜索与智能匹配",
+      "referenceFile": "references/22-738.png",
+      "verdict": "REVIEWED_WITH_MINOR_VISUAL_GAP",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。",
+        "已复拍确认选中页签为文字下方短红线。"
+      ],
+      "businessAdaptation": "只有已支持的城市、艺人标签与类型目录跳转；未开放的语义匹配关闭，没有伪造姓名、图片或匹配率。",
+      "findingIds": [
+        "F01",
+        "F02",
+        "F07"
+      ],
+      "resolvedFindingIds": [
+        "F01",
+        "F02"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-search-768-0.png"
+      ],
+      "screenshotCount": 1,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "producer-public",
+      "width": 768,
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "figmaId": "22:1031",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "verdict": "REVIEWED_BUSINESS_ADAPTATION",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "390/320/768三宽的标题、媒体空槽、长主体编号、统计与关闭投稿可读。"
+      ],
+      "businessAdaptation": "公开名单只给主体编号、核实统计和资格；保留左纸右媒体槽构图，但不使用设计姓名肖像或把完成订单伪装为作品部数。",
+      "findingIds": [],
+      "resolvedFindingIds": [],
+      "openFindingIds": [],
+      "screenshots": [
+        "screenshots/extra-producer-public-768-0.png",
+        "screenshots/extra-producer-public-768-1.png"
+      ],
+      "screenshotCount": 2,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    },
+    {
+      "group": "extra",
+      "name": "help",
+      "width": 768,
+      "route": "/help",
+      "figmaId": "2004:4618",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "verdict": "FAQ_USABLE_FEEDBACK_CLOSED",
+      "observations": [
+        "纸色、墨色、宋体标题、矩形动作与细分隔线沿用校准方向；已入镜内容无横向溢出，有底部片段的页面末项未被固定底栏遮挡。",
+        "已复拍确认字段白底与底线修复，细小上角圆角另记录F07。",
+        "768px首屏/末端补拍已完整核对。"
+      ],
+      "businessAdaptation": "已开放本地FAQ阅读与原业务跳转；反馈提交、附件、记录及统一客服尚未接通，不能按设计示例收集私人材料。",
+      "findingIds": [
+        "F01",
+        "F07",
+        "F04"
+      ],
+      "resolvedFindingIds": [
+        "F01",
+        "F04"
+      ],
+      "openFindingIds": [
+        "F07"
+      ],
+      "screenshots": [
+        "screenshots/extra-help-768-0.png",
+        "screenshots/extra-help-768-1.png",
+        "screenshots/extra-help-768-2.png",
+        "screenshots/extra-help-768-4.png",
+        "screenshots/extra-help-768-5.png"
+      ],
+      "screenshotCount": 5,
+      "reviewMethod": "实际逐张查看联系图；768px同时查看完整原图，避免缩略图裁切误判。"
+    }
+  ],
+  "screenshots": [
+    {
+      "group": "story",
+      "file": "story-list-390-0.png",
+      "name": "story-list",
+      "figmaId": "2004:3737",
+      "route": "/customization",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "029017adf87e8801022881ea918ceb8035391569857f151bff15b6ff3943ecec",
+      "copiedFile": "screenshots/story-story-list-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-list-390-1.png",
+      "name": "story-list",
+      "figmaId": "2004:3737",
+      "route": "/customization",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "1950ea7e13e34f79bb7e2b52c8f347a8b3549af0ef9b8fd4247129179f252999",
+      "copiedFile": "screenshots/story-story-list-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-new-390-0.png",
+      "name": "story-new",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "4513caacc65797c66825ea11cedea6c9094a87fc95c4aab71dc71df6d9675845",
+      "copiedFile": "screenshots/story-story-new-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-new-family-390-0.png",
+      "name": "story-new-family",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "3582fe944b540b47eab44d5e2fcd081edd379b5ce4504bb1d5fa3027fd959ef0",
+      "copiedFile": "screenshots/story-story-new-family-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-new-family-390-1.png",
+      "name": "story-new-family",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "58f13ba4ba6019bc5f0f3c38d44dd1bdff9329ee07dff3957070647a42591cf9",
+      "copiedFile": "screenshots/story-story-new-family-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-new-life-390-0.png",
+      "name": "story-new-life",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "a5c3c3012c7f4c551e561553199057711cf4d788d0d3353aa636f235e9b565d8",
+      "copiedFile": "screenshots/story-story-new-life-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-new-life-390-1.png",
+      "name": "story-new-life",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "90f2237099f7f7084ff97cb2eb25e5c85173515bb33bd423d87b4ea00f2125c2",
+      "copiedFile": "screenshots/story-story-new-life-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-new-life-390-2.png",
+      "name": "story-new-life",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 2,
+      "sha256": "6a4688f5deb861f7436df463e27978d5fc3b0f6221faabde1c8292efa9e70986",
+      "copiedFile": "screenshots/story-story-new-life-390-2.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-attachment-blocked-390-0.png",
+      "name": "story-attachment-blocked",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "f3ef94ff9ec6026ca21f1ba462ad99fee051b84c18c6623a7bda1bcc9ff463ee",
+      "copiedFile": "screenshots/story-story-attachment-blocked-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-attachment-blocked-390-1.png",
+      "name": "story-attachment-blocked",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "e7679b682cbe86e5d686c6d30c4d4854e72556fcd83c2d9adf36cde3376c1578",
+      "copiedFile": "screenshots/story-story-attachment-blocked-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-draft-390-0.png",
+      "name": "story-draft",
+      "figmaId": "2004:3737",
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "c62557eb0b283c985e509c4ed372de105c61d0ff0d8d1a537fc99394edd0858a",
+      "copiedFile": "screenshots/story-story-draft-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-draft-390-1.png",
+      "name": "story-draft",
+      "figmaId": "2004:3737",
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "02e16bf309aa001bb8f773c9dc2f6ada3f69e01554193142afa94fbccd28691b",
+      "copiedFile": "screenshots/story-story-draft-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-submitted-390-0.png",
+      "name": "story-submitted",
+      "figmaId": "2004:3737",
+      "route": "/customization/7935c8dd-0af8-4ab5-bcd0-49b9ff2ca93a",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "c94781696e25f7ee0e208972b4adf6bf129f786c1e887f14b9561b0f157af42d",
+      "copiedFile": "screenshots/story-story-submitted-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-submitted-390-1.png",
+      "name": "story-submitted",
+      "figmaId": "2004:3737",
+      "route": "/customization/7935c8dd-0af8-4ab5-bcd0-49b9ff2ca93a",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "d1fbe4fccbd226fbc6dade1bd96bfbde21689425ff95b96b2c9ef2ed44ef64ba",
+      "copiedFile": "screenshots/story-story-submitted-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-submitted-390-2.png",
+      "name": "story-submitted",
+      "figmaId": "2004:3737",
+      "route": "/customization/7935c8dd-0af8-4ab5-bcd0-49b9ff2ca93a",
+      "role": "buyer",
+      "width": 390,
+      "position": 2,
+      "sha256": "0674d22698964582280429d8021cce88400db1faccc3863cafcf1075c36a5a7d",
+      "copiedFile": "screenshots/story-story-submitted-390-2.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-submitted-390-3.png",
+      "name": "story-submitted",
+      "figmaId": "2004:3737",
+      "route": "/customization/7935c8dd-0af8-4ab5-bcd0-49b9ff2ca93a",
+      "role": "buyer",
+      "width": 390,
+      "position": 3,
+      "sha256": "79f73900f57d0ef6c075318c0996d76381e4f62239c19effcf09efd58e5422f8",
+      "copiedFile": "screenshots/story-story-submitted-390-3.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-supplement-390-0.png",
+      "name": "story-supplement",
+      "figmaId": "2004:3737",
+      "route": "/customization/8b726abe-6cbc-47c5-950d-1926d7599854",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "d9e94b6219f09b4e2d0b4a1a0e22e29964ae18102e8dcafe9bc33f3acd2b85b7",
+      "copiedFile": "screenshots/story-story-supplement-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-supplement-390-1.png",
+      "name": "story-supplement",
+      "figmaId": "2004:3737",
+      "route": "/customization/8b726abe-6cbc-47c5-950d-1926d7599854",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "c52d6830807097175da929a03b456ffda859cd3188dd9eb73decd8cd879a0c46",
+      "copiedFile": "screenshots/story-story-supplement-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-supplement-390-2.png",
+      "name": "story-supplement",
+      "figmaId": "2004:3737",
+      "route": "/customization/8b726abe-6cbc-47c5-950d-1926d7599854",
+      "role": "buyer",
+      "width": 390,
+      "position": 2,
+      "sha256": "27f3ebd1ad5018a87fdd229c0457a2c3b4d2e1fdff364154392f0e50c0beee06",
+      "copiedFile": "screenshots/story-story-supplement-390-2.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-quote-390-0.png",
+      "name": "story-quote",
+      "figmaId": "2004:3737",
+      "route": "/customization/d9db6c19-beea-4a2b-bbfb-b98905b00d87",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "a23ff4cc7d4c480526b623f6443359f395bf7941967456c3d208dd59fda2542d",
+      "copiedFile": "screenshots/story-story-quote-390-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-quote-390-1.png",
+      "name": "story-quote",
+      "figmaId": "2004:3737",
+      "route": "/customization/d9db6c19-beea-4a2b-bbfb-b98905b00d87",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "919f8c1ee7866e2dd8623fb1422fd062542af9d53d49d77df6ca625752538252",
+      "copiedFile": "screenshots/story-story-quote-390-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "quote-detail-390-0.png",
+      "name": "quote-detail",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=ac23b91c-5027-43d6-9d2a-7e3ca1911619",
+      "role": "merchant",
+      "width": 390,
+      "position": 0,
+      "sha256": "b973c158c94e031273dc44337766ad894f9f291db45105074af88a4087dd4145",
+      "copiedFile": "screenshots/story-quote-detail-390-0.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "story",
+      "file": "orders-390-0.png",
+      "name": "orders",
+      "figmaId": "2004:2898",
+      "route": "/orders",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "a3561d593fbe22758eb66c40c44c19c65afc0e54b7a3e1c2050b503ec8854ebf",
+      "copiedFile": "screenshots/story-orders-390-0.png",
+      "referenceName": "54 / 我的订单",
+      "referenceFile": "references/2004-2898.png",
+      "referenceSha256": "ce9f484eff094279c6f19757f373212f34f596a4084b34ba16538f1adb7755b6"
+    },
+    {
+      "group": "story",
+      "file": "contract-directory-390-0.png",
+      "name": "contract-directory",
+      "figmaId": "2004:3302",
+      "route": "/contract",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "453f5cc56b8597bf445204e6e7e0d38f113de76187ee6cf17fdbbd2d72b7e4e8",
+      "copiedFile": "screenshots/story-contract-directory-390-0.png",
+      "referenceName": "59 / 我的合同与许可",
+      "referenceFile": "references/2004-3302.png",
+      "referenceSha256": "96387f48049249a9f561b0083eb6a9cf8a7aa46864b9c7c678090ae4cff97407"
+    },
+    {
+      "group": "story",
+      "file": "private-forbidden-390-0.png",
+      "name": "private-forbidden",
+      "figmaId": "2004:6502",
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "role": "outsider",
+      "width": 390,
+      "position": 0,
+      "sha256": "af60c017cf19dae5679f624b440343c187bf399969901bfb90cd0ee923758a00",
+      "copiedFile": "screenshots/story-private-forbidden-390-0.png",
+      "referenceName": "C08 / 公共状态 · 无查看权限",
+      "referenceFile": "references/2004-6502.png",
+      "referenceSha256": "07c8700c4e01fe45d28a679444f022ada2c5868644796f8ba00ea921f6514bac"
+    },
+    {
+      "group": "story",
+      "file": "story-new-320-0.png",
+      "name": "story-new",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 320,
+      "position": 0,
+      "sha256": "8ec5f93beaca601c233b33e46fb2ba14843568896a6291402ff93eb38bd453ec",
+      "copiedFile": "screenshots/story-story-new-320-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-draft-320-0.png",
+      "name": "story-draft",
+      "figmaId": "2004:3737",
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "role": "buyer",
+      "width": 320,
+      "position": 0,
+      "sha256": "5724df71e49448e731da16b98f56e362458520b1221563196a61604c42681311",
+      "copiedFile": "screenshots/story-story-draft-320-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-draft-320-1.png",
+      "name": "story-draft",
+      "figmaId": "2004:3737",
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "role": "buyer",
+      "width": 320,
+      "position": 1,
+      "sha256": "7a530ab63c1254b19d0da74e4f3a7adb1559ee2ff09eee38de1c1d7a68fc363e",
+      "copiedFile": "screenshots/story-story-draft-320-1.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "quote-detail-320-0.png",
+      "name": "quote-detail",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=ac23b91c-5027-43d6-9d2a-7e3ca1911619",
+      "role": "merchant",
+      "width": 320,
+      "position": 0,
+      "sha256": "3c8d5d25fdf6a7cf4cda3b251c084afeb76d10095ca6b4cf3ff0f1232348a13a",
+      "copiedFile": "screenshots/story-quote-detail-320-0.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "story",
+      "file": "story-new-768-0.png",
+      "name": "story-new",
+      "figmaId": "2004:3737",
+      "route": "/customization/new",
+      "role": "buyer",
+      "width": 768,
+      "position": 0,
+      "sha256": "21c089d5c6b6babe4a1322745871ae2e5094ee4a05cb266c3f38a259f4aadf7f",
+      "copiedFile": "screenshots/story-story-new-768-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "story-draft-768-0.png",
+      "name": "story-draft",
+      "figmaId": "2004:3737",
+      "route": "/customization/e3233040-2a78-4fd7-8923-daa2fe110840",
+      "role": "buyer",
+      "width": 768,
+      "position": 0,
+      "sha256": "5a63a9a1a4390286119854f0419d1b3533ec8e7a3e246d118e681548f4d070ee",
+      "copiedFile": "screenshots/story-story-draft-768-0.png",
+      "referenceName": "64 / 定制和共创需求",
+      "referenceFile": "references/2004-3737.png",
+      "referenceSha256": "28a5787f75bb2617e6ad7ae05174017ecd5e385a532a07dc95467c5c1156f736"
+    },
+    {
+      "group": "story",
+      "file": "quote-detail-768-0.png",
+      "name": "quote-detail",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=ac23b91c-5027-43d6-9d2a-7e3ca1911619",
+      "role": "merchant",
+      "width": 768,
+      "position": 0,
+      "sha256": "8770817fe4612cec17699fc07e00451f62820496621c24291cd08c749d24f571",
+      "copiedFile": "screenshots/story-quote-detail-768-0.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "search-390-0.png",
+      "name": "search",
+      "figmaId": "22:738",
+      "route": "/search",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "f528daca7eab475f7cbbf69b8dc52a4c29677df70e95ba8e2abd877369c39dda",
+      "copiedFile": "screenshots/extra-search-390-0.png",
+      "referenceName": "09 / 搜索与智能匹配",
+      "referenceFile": "references/22-738.png",
+      "referenceSha256": "689390b3f35acb4eb857c10e11768c56393ac328864e3383dcd47bc3a536dc6e"
+    },
+    {
+      "group": "extra",
+      "file": "producer-public-390-0.png",
+      "name": "producer-public",
+      "figmaId": "22:1031",
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "0b253c5898862a1ba4af71c45c54429d9789e7190ff6352f6bb9657be7a876ee",
+      "copiedFile": "screenshots/extra-producer-public-390-0.png",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "referenceSha256": "8f9779274781785789c90c9f55591f17510660315aaee18fb9384aed79c603c4"
+    },
+    {
+      "group": "extra",
+      "file": "producer-public-390-1.png",
+      "name": "producer-public",
+      "figmaId": "22:1031",
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "58cee71c9e3e8e14b369757dbe56df0f81394a0d493ca7ed35dd782f943cb847",
+      "copiedFile": "screenshots/extra-producer-public-390-1.png",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "referenceSha256": "8f9779274781785789c90c9f55591f17510660315aaee18fb9384aed79c603c4"
+    },
+    {
+      "group": "extra",
+      "file": "invoices-390-0.png",
+      "name": "invoices",
+      "figmaId": "2004:3564",
+      "route": "/invoices",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "b6079cf3b458a3f7d702758d172f3d079be18e8d2daa3a742c4ffde7c180c406",
+      "copiedFile": "screenshots/extra-invoices-390-0.png",
+      "referenceName": "62 / 发票与票据",
+      "referenceFile": "references/2004-3564.png",
+      "referenceSha256": "3cf5f657a0390f80ed770b6f259a1e567883d1098193dd1d9b4a3ebc9306e296"
+    },
+    {
+      "group": "extra",
+      "file": "saved-390-0.png",
+      "name": "saved",
+      "figmaId": "2004:4444",
+      "route": "/saved",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "c006ff7c95dc9d2be29f4ebc0165529b5eead9419f847e1b08e677d33532106d",
+      "copiedFile": "screenshots/extra-saved-390-0.png",
+      "referenceName": "72 / 收藏与足迹",
+      "referenceFile": "references/2004-4444.png",
+      "referenceSha256": "b2f1a89b35295ef2b13c1201f1551096f58a155cf3b2455ede38573fc34c3c65"
+    },
+    {
+      "group": "extra",
+      "file": "saved-390-1.png",
+      "name": "saved",
+      "figmaId": "2004:4444",
+      "route": "/saved",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "9df4b2a14a220e78cfbc19aa8d6e48f703849921c1c4f10d96c4d55123e3c0b5",
+      "copiedFile": "screenshots/extra-saved-390-1.png",
+      "referenceName": "72 / 收藏与足迹",
+      "referenceFile": "references/2004-4444.png",
+      "referenceSha256": "b2f1a89b35295ef2b13c1201f1551096f58a155cf3b2455ede38573fc34c3c65"
+    },
+    {
+      "group": "extra",
+      "file": "help-390-0.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "2f6aaa7e279eb5c64d5f67f5b7e0a312e58330f3d8e48b95a79d8afead0b0590",
+      "copiedFile": "screenshots/extra-help-390-0.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-390-1.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "734cb8c95c56fcf45289f426bedce3e3f8207c179e9e4e398ec0c7351f78e270",
+      "copiedFile": "screenshots/extra-help-390-1.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-390-2.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 390,
+      "position": 2,
+      "sha256": "73130d01a0a4fb2b9d9a4f86a8211c289f48aed594dbcddf5095a28e090b9d60",
+      "copiedFile": "screenshots/extra-help-390-2.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "approved-quote-390-0.png",
+      "name": "approved-quote",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "b38666e948754338e3760d6e96996515bb8bad1756bee0a1ab1cb21889cf8d56",
+      "copiedFile": "screenshots/extra-approved-quote-390-0.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "approved-quote-390-1.png",
+      "name": "approved-quote",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "role": "buyer",
+      "width": 390,
+      "position": 1,
+      "sha256": "09e1c8807fe576c7491b4a5243d88475d81e04d6529636c9cbd9b8fbbd5e7ccc",
+      "copiedFile": "screenshots/extra-approved-quote-390-1.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "approved-quote-390-2.png",
+      "name": "approved-quote",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "role": "buyer",
+      "width": 390,
+      "position": 2,
+      "sha256": "d46b26cd025df8f135ba47b7283a4fc8bfcb92cd18542d35b7b3025a4c239693",
+      "copiedFile": "screenshots/extra-approved-quote-390-2.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "approved-quote-390-3.png",
+      "name": "approved-quote",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "role": "buyer",
+      "width": 390,
+      "position": 3,
+      "sha256": "6b8b37940088e541a7d77008a27e26885b59fe79786f22365a99795fdd509091",
+      "copiedFile": "screenshots/extra-approved-quote-390-3.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "approved-quote-390-4.png",
+      "name": "approved-quote",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "role": "buyer",
+      "width": 390,
+      "position": 4,
+      "sha256": "95550278b37e2de31c1d6dd2e588e567c369b61d51fd649d5ca22f31cb173754",
+      "copiedFile": "screenshots/extra-approved-quote-390-4.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "approved-quote-390-5.png",
+      "name": "approved-quote",
+      "figmaId": "2004:3091",
+      "route": "/trade/record?recordId=fa40fdb6-8247-4cb1-af1d-8caccb390910",
+      "role": "buyer",
+      "width": 390,
+      "position": 5,
+      "sha256": "702a0d1e16fcaccd878f0b62359fb97eb634c86a43f12ddb7c1004c126f909a2",
+      "copiedFile": "screenshots/extra-approved-quote-390-5.png",
+      "referenceName": "56 / 报价与订单确认",
+      "referenceFile": "references/2004-3091.png",
+      "referenceSha256": "0935124e39dbff6f149ea15ce62cf0aa7eed201f07dadda65607484fded7d829"
+    },
+    {
+      "group": "extra",
+      "file": "stock-unlisted-public-390-0.png",
+      "name": "stock-unlisted-public",
+      "figmaId": "2004:6541",
+      "route": "/stock/video?listingId=00eaab72-67ae-4fd8-b929-65e7ccbab51d",
+      "role": "stock_buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "3870b8bbc04e13b97d34ccdefe09ba08379ff42dd10d0b5f403cd4f3423b6e0d",
+      "copiedFile": "screenshots/extra-stock-unlisted-public-390-0.png",
+      "referenceName": "C09 / 公共状态 · 内容已下架",
+      "referenceFile": "references/2004-6541.png",
+      "referenceSha256": "f190083d2e73cd39824cc87815568a4c4d7bf3d5bce2004e4ec38cb5dc709d30"
+    },
+    {
+      "group": "extra",
+      "file": "public-empty-390-0.png",
+      "name": "public-empty",
+      "figmaId": "2004:6374",
+      "route": "/stock/catalog?city=%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 390,
+      "position": 0,
+      "sha256": "3db6a8c2d0ef16bfdb611257b973cf28af9a68a8d8313d7b7c92c66afa4aacaa",
+      "copiedFile": "screenshots/extra-public-empty-390-0.png",
+      "referenceName": "C05 / 公共状态 · 暂无内容",
+      "referenceFile": "references/2004-6374.png",
+      "referenceSha256": "b9d01c3e0ef31f4fa1eecb0f322f5169faf9ae38ddda483a05f8ed49a230e430"
+    },
+    {
+      "group": "extra",
+      "file": "search-320-0.png",
+      "name": "search",
+      "figmaId": "22:738",
+      "route": "/search",
+      "role": "buyer",
+      "width": 320,
+      "position": 0,
+      "sha256": "a2caad1d79622048254196799a739d55a909d122b5744ad997e623be3aa8b6e2",
+      "copiedFile": "screenshots/extra-search-320-0.png",
+      "referenceName": "09 / 搜索与智能匹配",
+      "referenceFile": "references/22-738.png",
+      "referenceSha256": "689390b3f35acb4eb857c10e11768c56393ac328864e3383dcd47bc3a536dc6e"
+    },
+    {
+      "group": "extra",
+      "file": "producer-public-320-0.png",
+      "name": "producer-public",
+      "figmaId": "22:1031",
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 320,
+      "position": 0,
+      "sha256": "9f573ba1afa9854f7965a43321318ba09dc37c6013cf1026267639d6d084f2ee",
+      "copiedFile": "screenshots/extra-producer-public-320-0.png",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "referenceSha256": "8f9779274781785789c90c9f55591f17510660315aaee18fb9384aed79c603c4"
+    },
+    {
+      "group": "extra",
+      "file": "producer-public-320-1.png",
+      "name": "producer-public",
+      "figmaId": "22:1031",
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 320,
+      "position": 1,
+      "sha256": "33d63040ff2dfde7b4bdfd857ca728d85b3515905c81c99ceb87efb978249e68",
+      "copiedFile": "screenshots/extra-producer-public-320-1.png",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "referenceSha256": "8f9779274781785789c90c9f55591f17510660315aaee18fb9384aed79c603c4"
+    },
+    {
+      "group": "extra",
+      "file": "help-320-0.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 320,
+      "position": 0,
+      "sha256": "e43ede7e83e2ab6562eac198ea3360ad16f0d362b82c17938d5da56481092b89",
+      "copiedFile": "screenshots/extra-help-320-0.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-320-1.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 320,
+      "position": 1,
+      "sha256": "a1d3b9405e3efa012c682fb9c37677399e698410d5da6210c77d3bc12a64d22c",
+      "copiedFile": "screenshots/extra-help-320-1.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-320-2.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 320,
+      "position": 2,
+      "sha256": "94803e8f700753eb01c4736354c7489f7e9c704d47af871d172fe5e1d97a555c",
+      "copiedFile": "screenshots/extra-help-320-2.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "search-768-0.png",
+      "name": "search",
+      "figmaId": "22:738",
+      "route": "/search",
+      "role": "buyer",
+      "width": 768,
+      "position": 0,
+      "sha256": "8b5106afbc729771c01969e8f50c81073649a0660a02963730696f34e9f5f166",
+      "copiedFile": "screenshots/extra-search-768-0.png",
+      "referenceName": "09 / 搜索与智能匹配",
+      "referenceFile": "references/22-738.png",
+      "referenceSha256": "689390b3f35acb4eb857c10e11768c56393ac328864e3383dcd47bc3a536dc6e"
+    },
+    {
+      "group": "extra",
+      "file": "producer-public-768-0.png",
+      "name": "producer-public",
+      "figmaId": "22:1031",
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 768,
+      "position": 0,
+      "sha256": "a2025787f80c3d9e8053e2075b3492c5efef30539559ff0ad0dcf2e7be51430c",
+      "copiedFile": "screenshots/extra-producer-public-768-0.png",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "referenceSha256": "8f9779274781785789c90c9f55591f17510660315aaee18fb9384aed79c603c4"
+    },
+    {
+      "group": "extra",
+      "file": "producer-public-768-1.png",
+      "name": "producer-public",
+      "figmaId": "22:1031",
+      "route": "/producers/public?partyId=c0352227-7a93-4031-8d6e-06a7cdf526e1&city=%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "role": "buyer",
+      "width": 768,
+      "position": 1,
+      "sha256": "d6f1bf4190432d579cb9c6e96008392b000e2117218da2c465d465fc4f90a547",
+      "copiedFile": "screenshots/extra-producer-public-768-1.png",
+      "referenceName": "13 / 出品人和机构主页",
+      "referenceFile": "references/22-1031.png",
+      "referenceSha256": "8f9779274781785789c90c9f55591f17510660315aaee18fb9384aed79c603c4"
+    },
+    {
+      "group": "extra",
+      "file": "help-768-0.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 768,
+      "position": 0,
+      "sha256": "eda7d8c1fa0eb2eeffd3df0b27d4eb161fefcf26305add2027e29547de687d29",
+      "copiedFile": "screenshots/extra-help-768-0.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-768-1.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 768,
+      "position": 1,
+      "sha256": "39c4762fc201ddec062a1d3d8ab04db852270ccc3327bb14e86fc660a16b9cb0",
+      "copiedFile": "screenshots/extra-help-768-1.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-768-2.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 768,
+      "position": 2,
+      "sha256": "9441db4ded49c1ad6b888437582e7f5b7d615547b11919d9f63f845ea2bf691c",
+      "copiedFile": "screenshots/extra-help-768-2.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-768-4.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 768,
+      "position": 4,
+      "sha256": "58fe9d16040e19efa3c3737002f5ec30fb7dd6d3b996cccb59c5f7f68787946e",
+      "copiedFile": "screenshots/extra-help-768-4.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    },
+    {
+      "group": "extra",
+      "file": "help-768-5.png",
+      "name": "help",
+      "figmaId": "2004:4618",
+      "route": "/help",
+      "role": "buyer",
+      "width": 768,
+      "position": 5,
+      "sha256": "a8fdc4ec2f88f7866c8da1af6745070fc84882655ba80ad45748eaccdafc00cd",
+      "copiedFile": "screenshots/extra-help-768-5.png",
+      "referenceName": "74 / 帮助与反馈",
+      "referenceFile": "references/2004-4618.png",
+      "referenceSha256": "b0d802b2e13366b48a7d603a90cda3e2d82fdbdd0a229ef679dad71a2181aca3"
+    }
+  ]
+}

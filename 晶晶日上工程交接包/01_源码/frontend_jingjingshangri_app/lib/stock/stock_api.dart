@@ -141,7 +141,8 @@ class StockApi extends V5Api {
   }
 
   Future<StockPurchase> notification(StockPurchase purchase,
-      {required bool opened}) async {
+      {required bool opened,
+      void Function(bool writing)? onMarkReadPhase}) async {
     final p = owner(personal: true), epoch = session.epoch;
     final current = await this.purchase(purchase.orderId),
         id = current.data['notification_event_id'];
@@ -158,7 +159,9 @@ class StockApi extends V5Api {
         n.recordId == current.orderId &&
         ['STOCK_DELIVERY_AVAILABLE', 'STOCK_DELIVERY_REISSUED']
             .contains(n.code));
+    onMarkReadPhase?.call(true);
     await ops.markRead(id);
+    onMarkReadPhase?.call(false);
     check(epoch, p);
     return this.purchase(current.orderId);
   }

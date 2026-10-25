@@ -195,7 +195,7 @@ String communityError(Object error) {
   if ([401, 403, 404].contains(error.status)) return '记录不存在或当前身份已无权办理，私有内容已清空。';
   return const {
         'CUSTODY_PROVIDER_NOT_CONNECTED': '资金托管服务尚未接通，不能充值或以托管余额付款。',
-        'CUSTOMIZATION_ORDER_EXISTS': '原故事追加报价暂受服务器限制，已保留原来源，请联系平台处理。',
+        'CUSTOMIZATION_ORDER_EXISTS': '这份故事已有原订单，请从原订单继续；追加制作需关联有效创意工单。',
         'COCREATION_NOT_READY': '有效人数、资料、授权或首款尚未齐备。',
         'COCREATION_INVITATION_REQUIRED': '请先取得属于你本人的邀请。',
         'COCREATION_PARTICIPATION_REQUIRED': '参与条款已变化，请核对本次授权后重新确认。',
@@ -206,6 +206,7 @@ String communityError(Object error) {
             '这笔订单尚未同时满足正式付款、实际履约、无争议和双方独立要求，请先核对原订单。',
         'INVALID_REVIEW_MEDIA': '评价证明最多十份，请使用本人的评价或作品文件。',
         'VOTE_DAILY_LIMIT': '今天的投票次数已用完，请读取实际剩余次数。',
+        'APPEAL_CLOSED': '当前不在公示异议期，或异议截止时间已过，请读取当前记录。',
         'VOTING_NOT_OPEN': '活动尚未开始、已经结束或候选状态有变，请重新核对。',
         'CONFIRMATION_RESULT_UNKNOWN': '尚未查到本人的准确会签记录，原内容和原编号已保留，请先重新核对。',
         'POINTS_INSUFFICIENT': '当前可用晶钻不足。',
@@ -606,22 +607,17 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   }
 }
 
-Widget communityHeading(String title, String subtitle) => Padding(
-    padding: const EdgeInsets.fromLTRB(0, 12, 0, 24),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(title,
-          style: const TextStyle(
-              fontFamily: 'EditorialSerif',
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              height: 1.25)),
-      const SizedBox(height: 12),
-      Text(subtitle,
-          style: const TextStyle(
-              fontSize: 14, height: 1.6, color: AccountTheme.muted)),
-      const SizedBox(height: 18),
-      const Divider(height: 1, color: AccountTheme.text)
-    ]));
+Widget communityHeading(String title, String subtitle, {String? eyebrow}) =>
+    Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        tradeHeading(title, eyebrow: eyebrow),
+        Text(subtitle,
+            style: const TextStyle(
+                fontSize: 14, height: 1.6, color: AccountTheme.muted)),
+      ]),
+    );
+
 Widget communitySection(String title, List<Widget> children) => Container(
     margin: const EdgeInsets.only(bottom: 20),
     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -629,10 +625,7 @@ Widget communitySection(String title, List<Widget> children) => Container(
         border: Border(top: BorderSide(color: AccountTheme.border))),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
-          style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'EditorialSerif')),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 14),
       ...children
     ]));

@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
+import 'package:jingjingshangri_app/account/read_failure_widgets.dart';
+import 'package:jingjingshangri_app/operations/operation_api.dart';
 import 'package:jingjingshangri_app/stock/stock_api.dart';
 import 'package:jingjingshangri_app/stock/stock_models.dart';
 import 'package:jingjingshangri_app/stock/stock_pages.dart';
@@ -10,6 +12,7 @@ import 'package:jingjingshangri_app/stock/v5_support.dart';
 import '../account/fake_account_api.dart';
 import '../trade/trade_api_test.dart' show buyerSession;
 import '../trade/trade_fixtures.dart';
+import '../operations/operation_fixtures.dart' show noticeData;
 import 'v5_test_host.dart';
 
 const stockId = 'b1000000-0000-4000-8000-000000000001';
@@ -67,6 +70,144 @@ Map<String, dynamic> stockPurchase(
     };
 
 void main() {
+  testWidgets('现货目录503用C06，返回保留城市，原条件重读成功才显示真空态', (t) async {
+    var failed = true;
+    final a = FakeAccountAdapter(
+        handler: (r) => r.path.endsWith('/stock/catalog')
+            ? failed
+                ? envelope({'code': 'SERVICE_UNAVAILABLE'},
+                    status: 503, error: true)
+                : envelope({'items': [], 'next_cursor': null})
+            : FakeAccountAdapter().defaultReply(r));
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, const StockPage(city: '杭州'));
+    expect(find.byType(ReadFailureContent), findsOneWidget);
+    await t.tap(find.byKey(const ValueKey('read-failure-back')));
+    await frames(t);
+    final city = find.widgetWithText(TextField, '城市筛选（可留空）');
+    expect(t.widget<TextField>(city).controller!.text, '杭州');
+    expect(find.text('当前筛选没有可公开销售的已审作品。'), findsNothing);
+    await reveal(t, city);
+    await t.enterText(city, '上海');
+    await reveal(t, find.text('按城市读取'));
+    await t.tap(find.text('按城市读取'));
+    await frames(t);
+    expect(find.byType(ReadFailureContent), findsOneWidget);
+    failed = false;
+    await t.tap(find.byKey(const ValueKey('read-failure-retry')));
+    await frames(t);
+    expect(find.byType(ReadFailureContent), findsNothing);
+    await reveal(t, find.text('当前筛选没有可公开销售的已审作品。'));
+    expect(
+        a.requests
+            .lastWhere((r) => r.path.endsWith('/stock/catalog'))
+            .queryParameters['city'],
+        '上海');
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.startsWith('/api/v1/stock/')),
+        isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
+  for (final failure in ['before-read', 'mark-read', 'after-read']) {
+    test('现货通知在$failure失败仅真实写入阶段恢复原请求，不受其他pending影响', () async {
+      const readPath = '/api/v1/operations/notifications/71/read';
+      var purchaseReads = 0, markReads = 0;
+      final viewed = stockPurchase();
+      viewed['data']['viewed_at'] = stockDate;
+      viewed['data']['observed_rights_epoch'] = 1;
+      final a = FakeAccountAdapter(handler: (r) {
+        if (r.path == '/api/v1/operations/notifications/7/read') {
+          return envelope({'code': 'SERVICE_UNAVAILABLE'},
+              status: 503, error: true);
+        }
+        if (r.path.endsWith('/purchases/$orderId')) {
+          purchaseReads++;
+          if (failure == 'before-read' ||
+              failure == 'after-read' && purchaseReads == 2) {
+            return envelope({'code': 'SERVICE_UNAVAILABLE'},
+                status: 503, error: true);
+          }
+          return envelope(viewed);
+        }
+        if (r.path == '/api/v1/operations/notifications') {
+          return envelope({
+            'items': [
+              {
+                ...noticeData(id: 71, domain: 'TRADE', recordId: orderId),
+                'event_code': 'STOCK_DELIVERY_AVAILABLE',
+              }
+            ],
+            'next_cursor': null
+          });
+        }
+        if (r.path == readPath) {
+          markReads++;
+          return failure == 'mark-read' && markReads == 1
+              ? envelope({'code': 'SERVICE_UNAVAILABLE'},
+                  status: 503, error: true)
+              : envelope({'id': 71, 'read': true});
+        }
+        return FakeAccountAdapter().defaultReply(r);
+      });
+      final s = await buyerSession(a), api = StockApi(s);
+      if (failure == 'before-read') {
+        await expectLater(
+            OperationApi(s).markRead(7), throwsA(isA<AccountError>()));
+        expect(s.operationsPending.single['path'], endsWith('/7/read'));
+      }
+      var writing = false;
+      final phases = <bool>[];
+      try {
+        await api.notification(StockPurchase(viewed, personId), opened: true,
+            onMarkReadPhase: (value) {
+          phases.add(value);
+          writing = value;
+        });
+        fail('Expected the selected failure phase.');
+      } on AccountError catch (e) {
+        final message = v5Error(e, writing: writing);
+        if (failure == 'mark-read') {
+          expect(writing, isTrue);
+          expect(message, contains('恢复原请求'));
+        } else {
+          expect(writing, isFalse);
+          expect(message, contains('重读不会重复提交业务'));
+          expect(message, isNot(contains('恢复原请求')));
+        }
+      }
+      expect(
+          phases,
+          failure == 'before-read'
+              ? []
+              : failure == 'mark-read'
+                  ? [true]
+                  : [true, false]);
+      if (failure == 'mark-read') {
+        expect(s.operationsPending.single['path'], readPath);
+        final firstWrite = a.requests.singleWhere((r) => r.path == readPath);
+        await api.notification(StockPurchase(viewed, personId), opened: true);
+        expect(
+            a.requests
+                .lastWhere((r) => r.path == readPath)
+                .headers['Idempotency-Key'],
+            firstWrite.headers['Idempotency-Key']);
+        expect(s.operationsPending, isEmpty);
+      } else if (failure == 'before-read') {
+        expect(markReads, 0);
+        expect(s.operationsPending.single['path'], endsWith('/7/read'));
+      } else {
+        expect(markReads, 1);
+        expect(s.operationsPending, isEmpty);
+      }
+      expect(
+          a.requests.where(
+              (r) => r.method == 'POST' && r.path.startsWith('/api/v1/stock/')),
+          isEmpty);
+    });
+  }
+
   test('许可固定个人非商用且绑定本人，金额用整数分', () {
     expect(StockOffer(stockOffer()).price, 2901);
     expect(v5InputMoney('0.29'), 29);

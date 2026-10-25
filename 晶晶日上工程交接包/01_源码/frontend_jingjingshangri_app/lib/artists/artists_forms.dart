@@ -6,7 +6,8 @@ import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
 import '../gigs/gig_api.dart';
 import '../gigs/gig_models.dart';
-import '../supply/supply_widgets.dart' show shortSupplyId;
+import '../supply/supply_widgets.dart' show shortSupplyId, supplyNote;
+import '../stock/v5_support.dart' show v5DateField;
 import '../trade/trade_widgets.dart';
 import 'artists_api.dart';
 import 'artists_files.dart';
@@ -512,7 +513,7 @@ class _ArtistFormState extends State<_ArtistForm> {
     } on AccountError catch (e) {
       if (mounted) {
         setState(() {
-          error = artistError(e);
+          error = artistError(e, writing: true);
           if (e.status == 412) {
             conflict = true;
             latest = null;
@@ -566,6 +567,17 @@ class _ArtistFormState extends State<_ArtistForm> {
                   labelText: '$label${required ? ' · 必填' : ''}',
                   hintText: hint),
               onChanged: (_) => change(() {})));
+  Widget date(String key, String label, {String? hint}) => Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: KeyedSubtree(
+          key: ValueKey('artist-field-$key'),
+          child: v5DateField(context,
+              label: '$label · 必填',
+              value: controller(key).text,
+              enabled: enabled,
+              hint: hint,
+              onChanged: (value) =>
+                  change(() => controller(key).text = value))));
   Widget select(String label, String? value, List<(String, String)> options,
           ValueChanged<String?> update, {String? key}) =>
       Padding(
@@ -574,11 +586,15 @@ class _ArtistFormState extends State<_ArtistForm> {
               key: ValueKey(key ?? 'artist-select-$label-$value'),
               initialValue: options.any((o) => o.$1 == value) ? value : null,
               isExpanded: true,
+              isDense: false,
+              itemHeight: null,
               decoration: InputDecoration(labelText: label),
               items: options
                   .map((o) => DropdownMenuItem(
                       value: o.$1,
-                      child: Text(o.$2, overflow: TextOverflow.ellipsis)))
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(o.$2))))
                   .toList(),
               onChanged: enabled ? (v) => change(() => update(v)) : null));
   Widget choices(Map<String, String> names, Set<String> picked,
@@ -614,6 +630,13 @@ class _ArtistFormState extends State<_ArtistForm> {
             if (mounted) setState(() => fileBusy = b);
           },
           onChanged: (ids) => change(() => files = ids));
+  Widget haloMaterials() => tradeSection('认证材料准备提示', [
+        appNotice('按本次认证要求准备材料，统一在下方上传。以下分类是准备提示，不会新增必填项或根据文件数量认定缺项。'),
+        tradeFact('形象模卡', '按认证模板提供本人模卡。'),
+        tradeFact('生活照', '清楚呈现本人当前形象。'),
+        tradeFact('全身照', '按模板要求提供完整照片。'),
+        tradeFact('补充材料（选填）', '一寸照或简历，可按认证要求补充。'),
+      ]);
   Widget avatarInput() => select('具体数字人', avatar, [
         for (final a in detail?.avatars ?? <ArtistAvatar>[]) (a.id, a.name)
       ], (v) {
@@ -677,8 +700,8 @@ class _ArtistFormState extends State<_ArtistForm> {
           ]),
           text('grantee', '使用方主体编号', max: 36),
           text('territories', '适用地区', hint: '多个地区以逗号分隔', max: 2000),
-          text('from', '开始时间', hint: '年-月-日 时:分', max: 30),
-          text('until', '截止时间', hint: '年-月-日 时:分', max: 30),
+          date('from', '开始时间'),
+          date('until', '截止时间'),
           text('terms', '本人同意条款', lines: 3, max: 8000),
           tradeSection('本人同意证据', [fileInput()])
         ];
@@ -703,8 +726,8 @@ class _ArtistFormState extends State<_ArtistForm> {
             const Text('机构名单可见需要单独允许“查看艺人资料”。',
                 style: TextStyle(fontSize: 12, color: AccountTheme.muted))
           ]),
-          text('from', '委托开始时间', hint: '年-月-日 时:分', max: 30),
-          text('until', '委托截止时间', hint: '不得超出已接受合作关系的期限', max: 30),
+          date('from', '委托开始时间'),
+          date('until', '委托截止时间', hint: '不得超出已接受合作关系的期限。'),
           text('terms', '委托约定', lines: 3, max: 8000),
           fileInput(),
         ];
@@ -759,6 +782,7 @@ class _ArtistFormState extends State<_ArtistForm> {
                 ],
                 (v) => serviceId = v),
           appNotice('L1免费。L2先核对已付款的同一笔审核服务；补件沿用原申请。L3尚不开放。'),
+          haloMaterials(),
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: promise,
@@ -851,6 +875,21 @@ class _ArtistFormState extends State<_ArtistForm> {
       case 'SUPPLEMENT':
       case 'APPEAL':
         return [
+          if (mode == 'SUPPLEMENT' && record?.kind == 'HALO') ...[
+            tradeSection('沿用原认证申请', [
+              tradeFact('原申请等级', 'L${record!.data['level']}'),
+              tradeFact(
+                  '原审核服务',
+                  record!.data['service_id'] == null
+                      ? '本份申请未关联付费审核服务。'
+                      : shortSupplyId(record!.data['service_id'])),
+              appNotice('补件仍提交到这份原申请，沿用其原审核服务与费用，不另建服务或重复收费。'),
+              if (record!.data['review'] != null)
+                tradeFact('本次实际补件意见', record!.data['review']['reason']),
+              supplyNote('按实际审核意见补充。当前记录未提供逐分类缺项清单，不能将下方提示当作已核定缺项。'),
+            ]),
+            haloMaterials(),
+          ],
           text('reason', mode == 'SUPPLEMENT' ? '补充说明' : '异议原因',
               lines: 3, max: 2000),
           fileInput(),

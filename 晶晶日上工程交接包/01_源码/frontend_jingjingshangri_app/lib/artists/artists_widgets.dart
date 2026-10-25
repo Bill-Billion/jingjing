@@ -3,14 +3,20 @@ import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
+import '../account/read_failure_widgets.dart';
 import '../trade/trade_widgets.dart';
 import 'artists_models.dart';
 
 class ArtistsGate extends StatelessWidget {
   const ArtistsGate(
-      {super.key, required this.builder, this.accountOnly = false});
+      {super.key,
+      required this.builder,
+      this.accountOnly = false,
+      this.showExpired = false,
+      this.returnRoute = '/my-humans'});
   final Widget Function(AccountSession) builder;
-  final bool accountOnly;
+  final bool accountOnly, showExpired;
+  final String returnRoute;
   @override
   Widget build(BuildContext context) {
     final s = context.watch<AccountSession>();
@@ -25,6 +31,18 @@ class ArtistsGate extends StatelessWidget {
       return KeyedSubtree(
           key: ValueKey('artists:${s.epoch}:${s.account?['id']}:${s.partyId}'),
           child: builder(s));
+    }
+    if (showExpired && readSessionExpired(s)) {
+      return ReadSessionExpiredPage(returnRoute: returnRoute, label: '公开艺人目录');
+    }
+    if (s.artistsAccessDenied) {
+      return ReadAccessDeniedPage(
+          reason: '当前账号暂时无法读取这页，私有内容已清空。请核对账号、当前身份和有效委托。',
+          onRetry: () async {
+            try {
+              await s.retryArtistsAccess();
+            } catch (_) {}
+          });
     }
     return tradeScaffold(context, '艺人与数字人', [
       tradeHeading(s.artistsAccessDenied ? '先核对查看权限' : '从你的本人档案开始',
@@ -173,3 +191,63 @@ Widget artistEditorScaffold(String title, List<Widget> children,
                           child: SizedBox(
                               width: double.infinity, child: footer)))))),
     ));
+
+/// The full-width archive cover and black identity strip from screens 34/36.
+/// A private material is never selected as a portrait without a cover contract.
+Widget artistIdentityCover(String name, String subtitle,
+        {VoidCallback? onTap, Key? key, String imageLabel = '未提供本人肖像封面'}) =>
+    Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Material(
+          color: AccountTheme.text,
+          child: InkWell(
+              key: key,
+              onTap: onTap,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AspectRatio(
+                        aspectRatio: 350 / 216,
+                        child: ColoredBox(
+                            color: const Color(0xFFE7E4DA),
+                            child: Center(
+                                child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Text(imageLabel,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            height: 1.6,
+                                            color: AccountTheme.muted)))))),
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                    Text(name,
+                                        style: const TextStyle(
+                                            fontFamily: AccountTheme.serif,
+                                            fontSize: 24,
+                                            height: 1.25,
+                                            fontWeight: FontWeight.w700,
+                                            color: AccountTheme.canvas)),
+                                    const SizedBox(height: 8),
+                                    Text(subtitle,
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            height: 1.6,
+                                            color: AccountTheme.canvas)),
+                                  ])),
+                              if (onTap != null)
+                                const Padding(
+                                    padding: EdgeInsets.only(left: 12),
+                                    child: Icon(Icons.north_east,
+                                        size: 18, color: AccountTheme.canvas)),
+                            ])),
+                  ])),
+        ));

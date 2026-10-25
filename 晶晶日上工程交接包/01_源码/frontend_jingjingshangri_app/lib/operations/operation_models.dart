@@ -162,21 +162,27 @@ String operationEvent(String code) =>
     }[code] ??
     '业务记录有新的变更';
 String operationError(AccountError e, {bool writing = false}) {
-  if (writing && e.uncertain) return '操作结果尚未确认。原请求与内容已保留，请先恢复原请求核对。';
   if (e.status == 412) return '留言状态或版本已更新，请重新查看并重新决定撤回。旧决定不会自动重放。';
-  return const {
-        'COMMENT_REPLY_MISMATCH': '这条回复已不可见或不属于同一对象，请重新选择可见留言。',
-        'COMMENT_AUTHOR_REQUIRED': '只能撤回当前账号以当前身份发布的留言。',
-        'COMMENT_ALREADY_HIDDEN': '留言已撤回或隐藏，请刷新当前记录。',
-        'COMMENT_TARGET_NOT_SUPPORTED': '这类业务对象暂不支持留言。',
-        'PARTY_ACTION_FORBIDDEN': '当前身份成员资格已失效，私有内容已清空。',
-        'INVALID_OPERATIONS_RESPONSE': '服务器未返回有效的通知或留言，请重新核对。'
-      }[e.code] ??
-      (e.status == 401
-          ? '登录已失效，请重新验证手机号。'
-          : [403, 404].contains(e.status)
-              ? '记录不存在或当前身份无权查看，私有内容已清空。'
-              : e.status == 0 || e.status == 503
-                  ? '暂时无法核对，请稍后恢复原请求。'
-                  : e.message);
+  final specific = const {
+    'COMMENT_REPLY_MISMATCH': '这条回复已不可见或不属于同一对象，请重新选择可见留言。',
+    'COMMENT_AUTHOR_REQUIRED': '只能撤回当前账号以当前身份发布的留言。',
+    'COMMENT_ALREADY_HIDDEN': '留言已撤回或隐藏，请刷新当前记录。',
+    'COMMENT_TARGET_NOT_SUPPORTED': '这类业务对象暂不支持留言。',
+    'PARTY_ACTION_FORBIDDEN': '当前身份成员资格已失效，私有内容已清空。',
+    'INVALID_OPERATIONS_RESPONSE': '服务器未返回有效的通知或留言，请重新核对。'
+  }[e.code];
+  if (specific != null &&
+      !(writing && e.uncertain && e.code == 'INVALID_OPERATIONS_RESPONSE')) {
+    return specific;
+  }
+  if (writing && e.uncertain) return '操作结果尚未确认。原请求与内容已保留，请先恢复原请求核对。';
+  return e.status == 401
+      ? '登录已失效，请重新验证手机号。'
+      : [403, 404].contains(e.status)
+          ? '记录不存在或当前身份无权查看，私有内容已清空。'
+          : e.status == 0 || e.status == 503
+              ? writing
+                  ? '暂时无法办理，请稍后核对原记录。'
+                  : '暂时无法读取通知或留言，请检查网络后重新读取。重读不会重复提交业务。'
+              : e.message;
 }

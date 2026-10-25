@@ -40,7 +40,10 @@ const showCode = computed(() => hit.value.known && hit.value.text !== hit.value.
   gap: 6px;
   font-size: 13px;
   line-height: 1.5;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .dot {

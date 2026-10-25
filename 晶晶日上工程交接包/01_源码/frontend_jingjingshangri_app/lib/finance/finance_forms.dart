@@ -153,22 +153,21 @@ class _FormState extends State<_Form> {
   }
 
   List<Widget> payout() => [
-        supplyCard('收款主体', [
+        financeEditorialBanner(
+            mine == null
+                ? '当前可申请金额待核对'
+                : '当前可申请 ${financeMoneyText(mine!['available_minor'])}',
+            '这是当前约定下本人的可付金额，不包含消费钱包余额。'),
+        tradeSection('收款主体', [
           financeIdFact('当前主体', api.owner()),
-          supplyNote('本次申请的收款主体为当前登录身份。')
+          supplyNote('本次申请的收款主体为当前登录身份，收款资料另行核验。')
         ]),
-        supplyCard('可申请金额', [
-          if (mine != null) ...[
-            tradeFact('当前可申请', financeMoneyText(mine!['available_minor']),
-                accent: true),
-            if (mine!['reason_code'] != null)
-              appNotice(financeError(AccountError(409, mine!['reason_code']))),
-            if (mine!['meaning'] == 'MERCHANT_RETAINED_NOT_TRANSFER')
-              appNotice('这是商户留存，不形成给自己的付款申请。')
-          ] else
-            supplyNote('服务器没有返回本人可申请额度，不能填写其他主体金额。')
-        ]),
-        supplyCard('申请金额', [
+        if (mine == null) supplyNote('服务器没有返回本人可申请额度，不能填写其他主体金额。'),
+        if (mine?['reason_code'] != null)
+          appNotice(financeError(AccountError(409, mine!['reason_code']))),
+        if (mine?['meaning'] == 'MERCHANT_RETAINED_NOT_TRANSFER')
+          appNotice('这是商户留存，不形成给自己的付款申请。'),
+        tradeSection('申请金额', [
           projectField(amount, '申请金额（元）',
               keyboard: const TextInputType.numberWithOptions(decimal: true),
               max: 16,
@@ -176,7 +175,7 @@ class _FormState extends State<_Form> {
               changed: (_) => setState(() {})),
           supplyNote('金额精确到分，不默认填写额度；并发申请共同占用当前可付金额。')
         ]),
-        supplyCard('收款资料', [
+        tradeSection('收款资料', [
           supplyNote('上传私有收款资料，仅用于本次付款核验。'),
           SupplyFiles(
               api: supply,
@@ -186,15 +185,15 @@ class _FormState extends State<_Form> {
               enabled: !locked,
               onChanged: (v) => setState(() => assets = v))
         ]),
-        supplyCard('备注', [
+        tradeSection('备注', [
           projectField(note, '备注',
               lines: 3,
               max: 4000,
               enabled: !locked,
               changed: (_) => setState(() {}))
         ]),
-        supplyCard('付款方式', [appNotice('实际付款后核验凭据；自动出款未启用。申请通过不代表已付款。')]),
-        tradeButton('提交付款申请', canSubmit ? submit : null)
+        tradeSection('申请与到账',
+            [financeParagraph('申请提交后进入独立审核，实际付款后核验凭据。自动出款未启用，申请通过不代表已付款。')])
       ];
   List<Widget> dispute() => [
         if (target != null)
@@ -234,6 +233,8 @@ class _FormState extends State<_Form> {
       context,
       widget.mode == 'PAYOUT' ? '申请付款' : '结算或权利异议',
       [
+        tradeHeading(widget.mode == 'PAYOUT' ? '收益收款申请' : '提出结算异议',
+            eyebrow: '本人确认 / 按原约定办理'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (api.pending(path) != null)
@@ -244,5 +245,21 @@ class _FormState extends State<_Form> {
         if (target != null) ...(widget.mode == 'PAYOUT' ? payout() : dispute()),
         tradeButton('重新核对当前记录', locked ? null : load, outline: true)
       ],
-      locked: locked);
+      locked: locked,
+      footer: widget.mode == 'PAYOUT' && target != null
+          ? Row(children: [
+              Expanded(
+                  child: OutlinedButton(
+                      onPressed: locked
+                          ? null
+                          : () => Navigator.pushNamed(context,
+                              '/finance/records?agreementId=${widget.id}&kind=PAYOUT'),
+                      child: const Text('查看收款记录'))),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: FilledButton(
+                      onPressed: canSubmit ? submit : null,
+                      child: const Text('提交付款申请')))
+            ])
+          : null);
 }

@@ -1,0 +1,84 @@
+{
+  "result": "CAPTURED_PENDING_VISUAL_REVIEW",
+  "synthetic_only": true,
+  "controlled_faults_not_business_facts": true,
+  "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+  "results": [
+    {
+      "name": "catalog-read-failure",
+      "route": "/notices/catalog",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - banner \"通告\":\n    - button \"发布 ＋\"\n  - text: 本次操作结果待核对。请恢复原请求，不能另换内容或重复发起。\n  - group:\n    - button \"全部\"\n    - button \"剧与角色\"\n    - button \"商演\"\n    - button \"商单\"\n    - button \"活动\"\n    - button \"招募\"\n    - button \"平台官方\"\n  - textbox \"城市（可留空）\"\n  - textbox \"指定有效时间（可留空）\"\n  - text: 按本机本地时间显示\n  - button \"筛选通告\"\n  - button \"核对资格并发布通告\"\n  - button \"我的投稿与接收箱\"\n  - button \"我的已发通告\"\n  - button \"合作客服处理\"\n  - button \"重新读取\""
+    },
+    {
+      "name": "own-records-read-failure",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "503",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"我的通告与投稿\" [level=2]\n- group:\n  - heading \"单向意向 / 交给明确的人处理 我的通告与投稿\" [level=2]\n  - text: 本次操作结果待核对。请恢复原请求，不能另换内容或重复发起。\n  - button \"查看本人记录 我发布的通告\"\n  - button \"重新读取\""
+    },
+    {
+      "name": "catalog-loading",
+      "route": "/notices/catalog",
+      "mode": "delay",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"通告现场\" [level=2]\n- group:\n  - banner \"通告\":\n    - button \"发布 ＋\" [disabled]\n  - group:\n    - button \"全部\" [disabled]\n    - button \"剧与角色\" [disabled]\n    - button \"商演\" [disabled]\n    - button \"商单\" [disabled]\n    - button \"活动\" [disabled]\n    - button \"招募\" [disabled]\n    - button \"平台官方\" [disabled]\n  - textbox \"城市（可留空）\"\n  - textbox \"指定有效时间（可留空）\" [disabled]\n  - text: 按本机本地时间显示\n  - button \"筛选通告\" [disabled]\n  - button \"核对资格并发布通告\"\n  - button \"我的投稿与接收箱\"\n  - button \"我的已发通告\"\n  - button \"合作客服处理\"\n  - button \"重新读取\" [disabled]"
+    },
+    {
+      "name": "session-401",
+      "route": "/notices/records?kind=NOTICE",
+      "mode": "401",
+      "intercepted": 1,
+      "text": "- button \"Back\"\n- heading \"账号与权限\" [level=2]\n- group:\n  - heading \"本人记录 / 私有资料 先确认办事身份\" [level=2]\n  - text: 登录并选择有效负责人身份后办理。\n  - button \"前往账号与身份\""
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "catalog-read-failure.png",
+      "case": "catalog-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+      "sha256": "bf78c9fd5dfc2ee7c52f1c3abac2fbad509a5687decf4c65b7c2e5b0a9d634d6",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "own-records-read-failure.png",
+      "case": "own-records-read-failure",
+      "width": 390,
+      "figmaIds": [
+        "2004:6412"
+      ],
+      "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+      "sha256": "9c360dbd05afda49384ec50160f5f39f9987a1a45876ee2cb08e08334ce157b9",
+      "stateControl": "受控HTTP503故障；不是正式服务状态"
+    },
+    {
+      "file": "catalog-loading.png",
+      "case": "catalog-loading",
+      "width": 390,
+      "figmaIds": [
+        "2004:6580"
+      ],
+      "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+      "sha256": "27315f2538abb6e468cfb6632cc573eace1735496fea4ecd0af70b16a7d79998",
+      "stateControl": "实际GET延迟后放行"
+    },
+    {
+      "file": "session-401.png",
+      "case": "session-401",
+      "width": 390,
+      "figmaIds": [
+        "2004:6457"
+      ],
+      "sourceBundleSha256": "504a07b0b6b68578e58e5e7e8cc2d6892ff454a3e112656a7c3a3c2e79eb6879",
+      "sha256": "c5b2a0c0207a2034a28a0a12eb72de73b106ac7b18dc02fe877badecb2b8782d",
+      "stateControl": "受控HTTP401故障；不是正式服务状态"
+    }
+  ],
+  "errors": [],
+  "business_writes": []
+}

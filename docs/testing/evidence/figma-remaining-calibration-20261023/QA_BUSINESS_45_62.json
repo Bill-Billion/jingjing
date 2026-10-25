@@ -1,0 +1,316 @@
+[
+  {
+    "id": "2004:2122",
+    "name": "45 / 艺人成长与好评",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "认证光环、接单成长和评分明确分开；成长与履约按实际核验更新。静态140/200、12单不单独判错。"
+    ],
+    "screenshot": "before/2004-2122.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2203",
+    "name": "46 / 晶钻中心",
+    "verdict": "NEEDS_TEXT_CORRECTION",
+    "findings": [
+      {
+        "kind": "growth_dimension",
+        "old_text": "用于成长定级，兑换消耗不会扣减累计值",
+        "suggested_text": "累计含各类来源；成长另按合格消费核定，使用不影响累计",
+        "reason": "当前可用/累计获得晶钻和合格消费成长是独立维度；注册与签到免费奖励不增加消费成长。保留累计12600和可用8600的演示值，不据此重新计算。",
+        "required": true,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R08_HANDOFF.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/DECISIONS.md"
+        ]
+      }
+    ],
+    "screenshot": "before/2004-2203.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2291",
+    "name": "47 / 星探中心",
+    "verdict": "NEEDS_TEXT_CORRECTION",
+    "findings": [
+      {
+        "kind": "growth_dimension",
+        "old_text": "累计获得晶钻",
+        "suggested_text": "合格消费成长",
+        "reason": "本页以此数字展示星探等级和下一成长门槛，应读取qualifying_growth，不能用含免费来源的累计获得晶钻直接升星探等级。",
+        "required": true,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R08_HANDOFF.md"
+        ]
+      },
+      {
+        "kind": "growth_dimension",
+        "old_text": "还差 37,400 晶钻",
+        "suggested_text": "距下一级还差 37,400 消费成长",
+        "reason": "与星探门槛对应的单位应为消费成长，数值留作示例。",
+        "required": true,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R08_HANDOFF.md"
+        ]
+      }
+    ],
+    "screenshot": "before/2004-2291.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2383",
+    "name": "48 / 消费钱包",
+    "verdict": "NEEDS_CURRENT_SERVICE_STATE",
+    "findings": [
+      {
+        "kind": "integration_state",
+        "old_text": "由持牌支付机构托管",
+        "suggested_text": "当前托管渠道暂未接通",
+        "reason": "当前后端充值明确CUSTODY_PROVIDER_NOT_CONNECTED。现有余额/充值到账可保留为未来渠道已接通的示例状态，但必须另有当前不可充值状态；不能据此设计宣称真实托管已开通。不是要求删除示例余额。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R08_HANDOFF.md"
+        ]
+      }
+    ],
+    "notes": [
+      "消费者余额与艺人收益分开、充值非会费、余额不转让的既有文字保留。"
+    ],
+    "screenshot": "before/2004-2383.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2461",
+    "name": "49 / 余额充值",
+    "verdict": "NEEDS_TEXT_CORRECTION_AND_SERVICE_STATE",
+    "findings": [
+      {
+        "kind": "growth_dimension",
+        "old_text": "晶钻来自实际消费。星探的后续等级只按累计晶钻成长，不能通过充值购买等级。",
+        "suggested_text": "星探后续等级按合格消费成长，充值与免费奖励不计入。晶钻来源及数额以规则为准。",
+        "reason": "晶钻可包括已配置注册/签到奖励，不应一概称只来自实际消费；免费奖励不增消费成长。",
+        "required": true,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R08_HANDOFF.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/DECISIONS.md"
+        ]
+      },
+      {
+        "kind": "integration_state",
+        "old_text": "确认充值 ¥300",
+        "suggested_text": "充值服务暂未开通",
+        "reason": "当前缺真实托管渠道，增加当前阻断状态并禁用提交。已接通后的充值金额预览可以保留为设计状态，不将其当正式可用事实。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md"
+        ]
+      }
+    ],
+    "screenshot": "before/2004-2461.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2539",
+    "name": "50 / 资金流水",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "消费钱包与艺人收益分别查看；真实状态、原订单、付款凭据分开；退款已核实只是演示记录，不单独判错。"
+    ],
+    "screenshot": "before/2004-2539.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2640",
+    "name": "51 / 我的收入",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "待结算、可付、累计已核实实付分开；推荐待售后、退款冲回和原订单保留符合当前流程。"
+    ],
+    "screenshot": "before/2004-2640.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2726",
+    "name": "52 / 结算单详情",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "现货18%平台佣金、供给侧80/20及已含推荐奖励72的示例数学一致；税费待核、实付尚未付款及历史规则分别显示，不修改示例比例。证据V5_R02_CUSTOMIZATION_FINANCE.md区分现货18%与商单22%。"
+    ],
+    "screenshot": "before/2004-2726.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2818",
+    "name": "53 / 收款资料与收益收款申请",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "收益可付额度不含充值余额；本人收款主体、受控材料、申请通过不等于到账均已说明。"
+    ],
+    "screenshot": "before/2004-2818.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:2898",
+    "name": "54 / 我的订单",
+    "verdict": "PASS_WITH_SCOPE",
+    "findings": [],
+    "notes": [
+      "现货已交付、试镜待履约、定制待最终验收与尾款、非标参演待签署为不同示例状态；不能据待签署示例将不具备各方确认的约定实际下单。"
+    ],
+    "screenshot": "before/2004-2898.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3003",
+    "name": "55 / 订单详情",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "已接受与款项已核实并列后开放会话；交通包含总价；试镜取样不等于出演/商业使用/未来分红授权。"
+    ],
+    "screenshot": "before/2004-3003.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3091",
+    "name": "56 / 报价与订单确认",
+    "verdict": "PASS_WITH_SCOPE",
+    "findings": [],
+    "notes": [
+      "明确是非标参演合同，50/50示例可按原约定，不应误套私人定制30/60/10；未来发行收入不能据本笔报酬22/62.4/15.6比例自动分配。"
+    ],
+    "screenshot": "before/2004-3091.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3160",
+    "name": "57 / 收银台",
+    "verdict": "CLARIFY_STAGE_LABEL",
+    "findings": [
+      {
+        "kind": "stage_wording",
+        "old_text": "样片确认后的约定付款节点",
+        "suggested_text": "带水印正式预览确认后的中间款",
+        "reason": "本页为私人定制中款：总2500，首750，中款1500，尾250，顺序正确。用正式预览避免与独立人工样片50/50商品混淆，数额不修改。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/DECISIONS.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R04_HANDOFF.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_COMPLETION_HANDOFF.md"
+        ]
+      }
+    ],
+    "notes": [
+      "原付款结果未知先查询原记录的文字应保留。渠道以实际服务可用状态为准。"
+    ],
+    "screenshot": "before/2004-3160.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3238",
+    "name": "58 / 付款结果与凭证",
+    "verdict": "CLARIFY_STAGE_LABEL",
+    "findings": [
+      {
+        "kind": "stage_wording",
+        "old_text": "90秒定制片 · 样片确认后付款",
+        "suggested_text": "90秒定制片 · 正式预览确认后中款",
+        "reason": "确认后补至累计90%的例子正确；精确名称可避免误把人工样片中款接入。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/DECISIONS.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R04_HANDOFF.md"
+        ]
+      }
+    ],
+    "notes": [
+      "本次1500和累计2250/2500为一致的已核实成功演示状态；不是实际支付服务已开通的证据。"
+    ],
+    "screenshot": "before/2004-3238.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3302",
+    "name": "59 / 我的合同与许可",
+    "verdict": "PASS",
+    "findings": [],
+    "notes": [
+      "现货许可、制作服务、试镜及参演约定分开；历史合同与旧许可不被新版本覆盖。"
+    ],
+    "screenshot": "before/2004-3302.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3398",
+    "name": "60 / 合同签署与许可凭证",
+    "verdict": "NEEDS_CONFIRMATION_VS_SIGNING_CONTEXT",
+    "findings": [
+      {
+        "kind": "integration_boundary",
+        "old_text": "周见川核对并完成真实签署流程",
+        "suggested_text": "周见川确认本版内容；真实签署另按实际服务流程办理",
+        "reason": "若本图对应当前参演confirmation接口，其结果只是各方同版确认，不是已接通正式电子签署。可保留真实签署目标设计，但应另标服务未接通/外部签署凭据状态，不能据本图宣称点击已完成电子签。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R12_HANDOFF.md",
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R05_R12_FRONTEND_BACKEND_BLOCKERS.md"
+        ]
+      },
+      {
+        "kind": "integration_boundary",
+        "old_text": "签署本版本",
+        "suggested_text": "确认本版本约定",
+        "reason": "仅在对应当前confirmation接口的版本使用该替换；若真实电子签流程未来接入，该按钮需走实际签署，不能无条件把合同历史签署文字全部替成确认。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R12_HANDOFF.md"
+        ]
+      }
+    ],
+    "notes": [
+      "非标参演总价与分期、本人所有权、MCN比例、许可要待对应条件齐备，当前文字无算术错误。"
+    ],
+    "screenshot": "before/2004-3398.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3477",
+    "name": "61 / 售后与争议办理",
+    "verdict": "PASS_WITH_OPTIONAL_CLARIFICATION",
+    "findings": [
+      {
+        "kind": "correction_scope",
+        "old_text": "平台客服与制作专员处理中",
+        "suggested_text": "平台核对原约定；纠正平台错误不扣创意修改次数",
+        "reason": "当前示例诉求是署名不符原合同，应作为平台纠错处理，避免后续视觉统一时和付费创意追加混同。现图未明确宣称扣次，故属于补充提示。",
+        "required": false,
+        "sources": [
+          "/Users/yanghaoran/Code/jingjing-v5-r01-frontend/docs/collaboration/V5_R04_HANDOFF.md"
+        ]
+      }
+    ],
+    "notes": [
+      "申请、处理、核定结果分开；补正或退款分别列明，没有把申请当退款已到账。"
+    ],
+    "screenshot": "before/2004-3477.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  },
+  {
+    "id": "2004:3564",
+    "name": "62 / 发票与票据",
+    "verdict": "PASS_WITH_SCOPE",
+    "findings": [],
+    "notes": [
+      "发票抬头、收件邮箱、原订单已发生费用、开票方/可开金额需核对分开；提交申请不表示票已开具。企业税号由独立S15状态覆盖，不能仅因本页选个人而报漏。"
+    ],
+    "screenshot": "before/2004-3564.png",
+    "review_method": "实际查看正常Figma网页导出的原生PNG并对照仓库交接，未修改Figma；未见明显截字或重叠"
+  }
+]

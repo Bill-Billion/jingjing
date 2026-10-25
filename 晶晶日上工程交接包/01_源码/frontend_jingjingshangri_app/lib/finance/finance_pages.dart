@@ -70,8 +70,15 @@ class _AgreementsState extends State<_Agreements> {
   @override
   Widget build(BuildContext context) => tradeScaffold(
       context,
-      '我的结算',
+      '我的收入',
       [
+        tradeHeading('我的收入', eyebrow: '艺人经营收入 / 独立记账'),
+        supplyCard('按账户分别查看', [
+          financeParagraph('当前为经营结算约定。消费者余额及消费流水单独记账，不与本页金额相加。'),
+          tradeButton('查看消费余额与流水',
+              locked ? null : () => Navigator.pushNamed(context, '/wallet'),
+              outline: true),
+        ]),
         supplyCard('当前身份', [
           tradeFact('办事身份', widget.session.party?['display_name']),
           financeParagraph('先选择一份结算约定，再查看本人金额。客户付款、约定分成与合作方实际收款分别核对。')
@@ -199,8 +206,9 @@ class _OverviewState extends State<_Overview> {
         .firstOrNull;
     return tradeScaffold(
         context,
-        '我的结算',
+        '我的收入',
         [
+          tradeHeading('我的收入', eyebrow: '本人结算约定 / 独立记账'),
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (g != null) ...[
@@ -382,6 +390,7 @@ class _RecordsState extends State<_Records> {
       context,
       financeKinds[widget.kind] ?? '结算记录',
       [
+        tradeHeading(financeKinds[widget.kind] ?? '结算记录', eyebrow: '每一笔实付都有依据'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!),
         for (final r in rows)
@@ -541,8 +550,8 @@ class _RecordState extends State<_Record> {
       '查看${financeKinds[x.kind]!} · ${shortSupplyId(x.id)}',
       locked ? null : () => open('/finance/record?recordId=${x.id}'),
       outline: true);
-  List<Widget> rules() => [
-        supplyCard('规则说明', [
+  List<Widget> rules({bool editorial = false}) => [
+        (editorial ? tradeSection : supplyCard)('规则说明', [
           tradeFact('规则版本', g!.data['rules']['version']),
           tradeFact('约定结算时间', tradeDate(g!.data['rules']['settlement_at'])),
           tradeFact(
@@ -591,32 +600,35 @@ class _RecordState extends State<_Record> {
             .where((b) => b['party_id'] == p)
             .firstOrNull
         : null;
+    final settlement = x.kind == 'SETTLEMENT';
+    final section = settlement ? tradeSection : supplyCard;
     return [
-      appNotice(x.kind == 'SETTLEMENT'
-          ? '本次结算需审核与准确确认。这里只确认本人可见份额及原约定，实付另行核实。'
-          : '审核通过后，由相关方确认本份准确约定。确认不替代签约或转账。'),
-      supplyCard(x.kind == 'SETTLEMENT' ? '结算期间' : '本次约定', [
-        if (x.kind == 'SETTLEMENT')
-          tradeFact('结算期间', x.data['period_reference']),
-        financeIdFact('来源', g!.data['source_id']),
-        tradeFact('环境', g!.data['environment'] == 'SANDBOX' ? '测试数据' : '正式环境'),
-        financeIdFact('准确版本', x.id),
-        tradeFact('记录版本', '第 ${x.version} 版'),
-        ExpansionTile(
-            title: const Text('原始确认指纹'), children: [SelectableText(x.hash)]),
-        if (x.kind == 'SETTLEMENT')
-          supplyNote('指纹绑定原始不可变快照。本人投影不重新生成指纹，也不表示看过其他主体余额。')
-      ]),
-      if (x.kind == 'SETTLEMENT')
-        supplyCard('本人份额', [
-          if (snapshot != null) ...[
-            tradeFact('本期应得', financeMoneyText(snapshot['accrued_minor'])),
-            tradeFact('已核实调整', financeMoneyText(snapshot['adjustment_minor'])),
-            tradeFact('已核实付款', financeMoneyText(snapshot['paid_minor'])),
-            tradeFact('尚未付款', financeMoneyText(snapshot['balance_minor']),
-                accent: true)
-          ] else
-            supplyNote('本版未返回本人份额，不能推算其他人的金额。'),
+      if (settlement) ...[
+        financeEditorialBanner(
+            x.status != 'APPROVED'
+                ? financeStatuses[x.status]!
+                : mine == null
+                    ? '结算核对中 · 待本人确认'
+                    : mine['decision'] == 'APPROVED'
+                        ? '本人已确认本版'
+                        : '本人不同意本版',
+            '按本版原约定核对本人可见份额。确认不代表真实付款，实付与税费另行核验。'),
+        if (snapshot != null) ...[
+          financeEditorialFact(
+              '本期本人应得', financeMoneyText(snapshot['accrued_minor']),
+              description: '本版原始结算快照中的本人份额'),
+          financeEditorialFact(
+              '已核实调整', financeMoneyText(snapshot['adjustment_minor'])),
+          financeEditorialFact(
+              '本人已核实付款', financeMoneyText(snapshot['paid_minor']),
+              description: '以已核实的实际付款凭据为准'),
+          financeEditorialFact(
+              '尚未付款', financeMoneyText(snapshot['balance_minor']),
+              accent: true)
+        ] else
+          supplyNote('本版未返回本人份额，不能推算其他人的金额。'),
+        tradeSection('结算期间', [
+          financeParagraph(x.data['period_reference']),
           financeParagraph(x.data['note']),
           ExpansionTile(title: const Text('查看本次来源'), children: [
             for (final source in x.data['source_references']) ...[
@@ -630,10 +642,33 @@ class _RecordState extends State<_Record> {
                           ? '发行账单'
                           : '已核实收款')
             ]
+          ]),
+          ExpansionTile(title: const Text('准确版本与原始依据'), children: [
+            financeIdFact('来源', g!.data['source_id']),
+            tradeFact(
+                '环境', g!.data['environment'] == 'SANDBOX' ? '测试数据' : '正式环境'),
+            financeIdFact('准确版本', x.id),
+            tradeFact('记录版本', '第 ${x.version} 版'),
+            ExpansionTile(
+                title: const Text('原始确认指纹'),
+                children: [SelectableText(x.hash)]),
+            supplyNote('指纹绑定原始不可变快照。本人投影不重新生成指纹，也不表示看过其他主体余额。')
           ])
         ]),
-      ...rules(),
-      supplyCard('确认状态', [
+      ] else ...[
+        appNotice('审核通过后，由相关方确认本份准确约定。确认不替代签约或转账。'),
+        supplyCard('本次约定', [
+          financeIdFact('来源', g!.data['source_id']),
+          tradeFact(
+              '环境', g!.data['environment'] == 'SANDBOX' ? '测试数据' : '正式环境'),
+          financeIdFact('准确版本', x.id),
+          tradeFact('记录版本', '第 ${x.version} 版'),
+          ExpansionTile(
+              title: const Text('原始确认指纹'), children: [SelectableText(x.hash)])
+        ])
+      ],
+      ...rules(editorial: settlement),
+      section('确认状态', [
         for (final party in g!.data['parties'])
           tradeFact(
               '主体 · ${shortSupplyId(party)}',
@@ -652,7 +687,7 @@ class _RecordState extends State<_Record> {
         ]
       ]),
       if (eligible)
-        supplyCard('意见', [
+        section('意见', [
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: read,
@@ -929,6 +964,15 @@ class _RecordState extends State<_Record> {
                           ? '结算记录'
                           : financeKinds[r!.kind]!,
       [
+        tradeHeading(
+            r?.kind == 'SETTLEMENT'
+                ? '结算单详情'
+                : r?.kind == 'PAYOUT'
+                    ? '收益收款申请'
+                    : r?.kind == 'DISPUTE'
+                        ? '结算异议'
+                        : '结算约定',
+            eyebrow: '原约定 / 真实凭据'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (notice != null)
@@ -953,7 +997,7 @@ class _RecordState extends State<_Record> {
           else
             ...other(r!),
           ...evidence(r!),
-          if (r!.kind != 'DISPUTE')
+          if (!['DISPUTE', 'SETTLEMENT'].contains(r!.kind))
             tradeButton(
                 '提出结算或权利异议',
                 locked
@@ -979,7 +1023,25 @@ class _RecordState extends State<_Record> {
         ],
         tradeButton('刷新结果', locked ? null : load, outline: true)
       ],
-      locked: locked);
+      locked: locked,
+      footer: r?.kind == 'SETTLEMENT' && g != null
+          ? Row(children: [
+              Expanded(
+                  child: OutlinedButton(
+                      onPressed: locked
+                          ? null
+                          : () =>
+                              open('/finance/dispute/new?recordId=${r!.id}'),
+                      child: const Text('提出结算异议'))),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: FilledButton(
+                      onPressed: locked
+                          ? null
+                          : () => open('/finance/record?recordId=${g!.id}'),
+                      child: const Text('查看原始约定')))
+            ])
+          : null);
 }
 
 class FinanceEntriesPage extends StatelessWidget {
@@ -1049,6 +1111,7 @@ class _NotificationsState extends State<_Notifications> {
       context,
       '结算通知',
       [
+        tradeHeading('结算通知', eyebrow: '获准约定的业务进展'),
         supplyNote('仅当前身份的结算业务通知。请进入约定查看获准事实，不提供全平台未读总数。'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!),
@@ -1123,6 +1186,7 @@ class _EntriesState extends State<_Entries> {
       context,
       '本约定流水',
       [
+        tradeHeading('收益流水', eyebrow: '当前约定 / 真实资金事实'),
         supplyNote('追加保存的真实事实，按当前身份权限读取。此列表不是全平台收入或钱包。'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!),

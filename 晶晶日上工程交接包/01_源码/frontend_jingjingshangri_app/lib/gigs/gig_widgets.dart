@@ -61,10 +61,8 @@ class GigGate extends StatelessWidget {
   }
 }
 
-Widget gigHeading(String title) => Padding(
-    padding: const EdgeInsets.only(bottom: 16),
-    child: Text(title,
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)));
+Widget gigHeading(String title) => tradeHeading(title);
+
 Widget gigParagraph(String value) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
     child: SelectableText(value,

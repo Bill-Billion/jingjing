@@ -165,23 +165,25 @@ class AppTheme {
             blurRadius: 22,
             spreadRadius: 0,
             offset: Offset(0, 6)),
-        BoxShadow(color: Color(0x59000000), blurRadius: 24, offset: Offset(0, 10)),
+        BoxShadow(
+            color: Color(0x59000000), blurRadius: 24, offset: Offset(0, 10)),
       ];
 
   /// 金底按钮上的深色文字（档案21：#1A1408 保证对比）
   static const Color onGold = Color(0xFF1A1408);
 
   /// 标题衬线字体（仅品牌名/影视标题点缀），找不到字体时回退系统衬线
-  static const String serifFont = 'serif';
+  static const String serifFont = 'EditorialSerif';
 
   /// 全局正文无衬线字体族：真机走 Roboto + 系统中文回退；离屏/测试统一命中注入字体
-  static const String sansFont = 'Roboto';
+  static const String sansFont = 'NotoSansSC';
 
   // ── Liquid Glass 材质（档案21 §三.5，克制使用）──
   static Color glassWhite = Colors.white.withValues(alpha: 0.08); // 玻璃填充 8%
   static Color glassWhiteStrong = Colors.white.withValues(alpha: 0.10); // 10%
   static Color glassBorder = Colors.white.withValues(alpha: 0.10); // 玻璃细边
-  static Color glassHighlight = Colors.white.withValues(alpha: 0.18); // 顶部 1px 内高光
+  static Color glassHighlight =
+      Colors.white.withValues(alpha: 0.18); // 顶部 1px 内高光
 
   /// 固定层真实毛玻璃模糊区间（仅顶/底栏与浮层，列表卡不用实时模糊）
   static const double glassSigmaLow = 18;
@@ -233,8 +235,10 @@ class AppTheme {
   // ── 圆角（档案21 §三.5：卡/Bento 20、控件/输入 14、Sheet 顶 24、按钮胶囊）──
   static const BorderRadius pillRadius = BorderRadius.all(Radius.circular(999));
   static const BorderRadius cardRadius = BorderRadius.all(Radius.circular(20));
-  static const BorderRadius cardRadiusMedium = BorderRadius.all(Radius.circular(20));
-  static const BorderRadius controlRadius = BorderRadius.all(Radius.circular(14));
+  static const BorderRadius cardRadiusMedium =
+      BorderRadius.all(Radius.circular(20));
+  static const BorderRadius controlRadius =
+      BorderRadius.all(Radius.circular(14));
   static const double radiusCard = 20;
   static const double radiusControl = 14;
   static const double radiusSheet = 24;
@@ -360,8 +364,8 @@ class AppTheme {
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        hintStyle:
-            const TextStyle(color: textHint, fontSize: 14, fontFamily: sansFont),
+        hintStyle: const TextStyle(
+            color: textHint, fontSize: 14, fontFamily: sansFont),
       ),
       // V15.6（A1 收口）：全局 SnackBar 曜石化——全站 60+ 处 SnackBar 不再走
       // Material 默认深灰，统一曜石深色底 + 克制金描边 + 浮起圆角，一处接管零逐页改。
@@ -370,7 +374,10 @@ class AppTheme {
         backgroundColor: surfaceDark,
         elevation: 12,
         contentTextStyle: const TextStyle(
-            color: textPrimary, fontSize: 13.5, height: 1.4, fontFamily: sansFont),
+            color: textPrimary,
+            fontSize: 13.5,
+            height: 1.4,
+            fontFamily: sansFont),
         actionTextColor: goldLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(14)),
@@ -415,18 +422,18 @@ class AppTheme {
             fontSize: 32,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.5),
-        headlineMedium:
-            TextStyle(color: textPrimary, fontSize: 24, fontWeight: FontWeight.w700),
-        titleLarge:
-            TextStyle(color: textPrimary, fontSize: 20, fontWeight: FontWeight.w700),
-        titleMedium:
-            TextStyle(color: textPrimary, fontSize: 16, fontWeight: FontWeight.w700),
-        bodyLarge:
-            TextStyle(color: textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
+        headlineMedium: TextStyle(
+            color: textPrimary, fontSize: 24, fontWeight: FontWeight.w700),
+        titleLarge: TextStyle(
+            color: textPrimary, fontSize: 20, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(
+            color: textPrimary, fontSize: 16, fontWeight: FontWeight.w700),
+        bodyLarge: TextStyle(
+            color: textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
         bodyMedium: TextStyle(color: textPrimary, fontSize: 14),
         bodySmall: TextStyle(color: textSecondary, fontSize: 12),
-        labelLarge:
-            TextStyle(color: goldMain, fontSize: 14, fontWeight: FontWeight.w700),
+        labelLarge: TextStyle(
+            color: goldMain, fontSize: 14, fontWeight: FontWeight.w700),
       ),
       dividerColor: border,
       chipTheme: ChipThemeData(
@@ -511,8 +518,8 @@ class ObsidianPageTransitionsBuilder extends PageTransitionsBuilder {
     return FadeTransition(
       opacity: curved,
       child: SlideTransition(
-        position:
-            Tween(begin: const Offset(0.06, 0), end: Offset.zero).animate(curved),
+        position: Tween(begin: const Offset(0.06, 0), end: Offset.zero)
+            .animate(curved),
         child: child,
       ),
     );

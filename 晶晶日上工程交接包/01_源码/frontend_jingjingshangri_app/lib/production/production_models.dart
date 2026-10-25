@@ -236,7 +236,6 @@ const productionChecks = {
 };
 String productionError(AccountError e, {bool writing = false}) {
   if (e.status == 412) return '内容已更新，请重新查看当前版本，再填写并确认。本次旧决定不会自动重放。';
-  if (writing && e.uncertain) return '提交结果尚未确认。请保留本页，恢复原请求核对，系统不会另建同一份意见。';
   const messages = {
     'CUSTOMIZATION_NOT_STARTED': '尚未由受派制作人开工，请核对首款与项目审核。',
     'CUSTOMIZATION_PAUSED': '项目已暂停，请从原项目查看问题与处理记录。',
@@ -264,6 +263,18 @@ String productionError(AccountError e, {bool writing = false}) {
     'PRODUCTION_BUYER_REQUIRED': '仅买方当前负责人可以提交版本意见。',
     'PROVIDER_NOT_ENABLED': '生成服务尚未开通，不会创建演示任务或视频。',
   };
-  return messages[e.code] ??
-      (e.status >= 500 ? '制作服务暂时无法读取，请稍后重新核对。' : e.message);
+  final specific = messages[e.code];
+  if (specific != null &&
+      !(writing &&
+          e.uncertain &&
+          ['INVALID_PRODUCTION_RESPONSE', 'PRIVATE_CONTENT_MISMATCH']
+              .contains(e.code))) {
+    return specific;
+  }
+  if (writing && e.uncertain) return '提交结果尚未确认。请保留本页，恢复原请求核对，系统不会另建同一份意见。';
+  return e.status >= 500 || e.code == 'NETWORK_UNKNOWN'
+      ? writing
+          ? '制作办理暂未完成，请核对原记录后再办理。'
+          : '制作服务暂时无法读取，请检查网络后重新读取。重读不会重复提交业务。'
+      : e.message;
 }
