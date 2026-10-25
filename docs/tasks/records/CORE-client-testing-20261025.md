@@ -31,3 +31,7 @@ PR36精确来源b11c441d的8项远端检查成功；本机App548、Web301及构�
 ## 本阶段交付入口
 
 新增测试工具已集中上传[PR37](https://github.com/Bill-Billion/jingjing/pull/37)，目标integration；远端整套检查结果以申请当前提交为准，另一方实际审阅尚未完成。PR36已合入，新工具暂不自行合入。无需等待本工具即可从integration继续产品开发。此次网页自动测试不是Android原生或甲方所在地弱网验收。
+
+## 最终核对
+
+PR37提交49d12946的8项远端检查全部成功，检查明细见docs/testing/evidence/client-testing-20261025/REMOTE_CHECKS.json。另一方实际审阅仍待进行，未合入新工具或开放公网。最终检查补记本地保存，随下一阶段集中同步；PR37在线说明已同步结果。测试进程已关闭，私有反馈保留。
