@@ -44,3 +44,7 @@
 不要把邀请码、运行配置、问题原文或截图整包上传Git。本仓库只保存合成验证证据。页面导出包含问题、处理历史和测试结果，不含截图二进制；原截图仍随私有记录保留。真实验收批次的保留时间由项目负责人确认，本工具不擅自定时删除甲方反馈。
 
 [本机准备与启停说明](../../scripts/client-testing/README.md) · [本轮任务](../tasks/records/CORE-client-testing-20261025.md) · [反馈实际浏览器证据](evidence/client-testing-20261025/browser/RESULTS.json) · [测试入口检查](evidence/client-testing-20261025/routes/RESULTS.json)
+
+## 本阶段交付入口
+
+新增测试工具已集中上传[PR37](https://github.com/Bill-Billion/jingjing/pull/37)，目标integration；远端整套检查结果以申请当前提交为准，另一方实际审阅尚未完成。PR36已合入，新工具暂不自行合入。无需等待本工具即可从integration继续产品开发。此次网页自动测试不是Android原生或甲方所在地弱网验收。

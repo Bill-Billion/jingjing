@@ -20,7 +20,7 @@ node scripts/client-testing/review.cjs <批次名>生成独立问题工作台配
 ## 验证
 
 - node --test scripts/client-testing/portal.test.cjs：无外部依赖，检查鉴权、隔离、去重、版本冲突、截图、代理绑定、失效关闭、重启和离线问题处理。
-- browser-check.mjs：实际故事App/运营网页与反馈闭环，需要.local/client-session-verified中的本轮私有配置和构建。默认Edge，可用CHROME_PATH指定本机浏览器。
+- browser-check.mjs：实际故事App/运营网页与反馈闭环，需要.local/client-session-verified中的本轮私有配置和构建。可用CLIENT_TEST_SESSION指定另一份当前会话目录，例如.local/client-session-final2。默认Edge，可用CHROME_PATH指定本机浏览器。
 - route-check.mjs：同一私有会话下逐个打开测试入口；只读检查不代表每条完整业务验收。
 
 首次脚本诊断失败、测试版本、已知限制和最终记录见docs/testing/CLIENT_BROWSER_TESTING_20261025.md。真实手机号短信、真实支付和生产部署没有随本工具授权。
