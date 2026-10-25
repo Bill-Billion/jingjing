@@ -113,5 +113,5 @@ if(require.main===module){
     const server=createPortal(config,{current:()=>proofs.every(v=>{try{return sha(fs.readFileSync(v.p))===v.hash;}catch{return false;}})});
     server.listen(config.port,'127.0.0.1',()=>console.log(JSON.stringify({local:true,port:config.port,version:config.version,expires_at:config.expires_at})));
     const stop=()=>{server.closeAllConnections();server.close();};const stopFile=path.join(path.dirname(file),'stop');const watcher=setInterval(()=>{if(fs.existsSync(stopFile))stop();},500);watcher.unref();server.on('close',()=>clearInterval(watcher));setTimeout(stop,Date.parse(config.expires_at)-Date.now()).unref();process.on('SIGINT',stop);process.on('SIGTERM',stop);
-  })().catch(()=>{console.error('无法启动：请核对隔离资料、配置、记录目录锁和有效期。私有配置不会输出。');process.exitCode=1;});
+  })().catch(e=>{console.error(JSON.stringify({error:e.code||e.name,location:e.stack?.split('\n').find(line=>line.includes('server.cjs:'))?.trim()}));console.error('无法启动：请核对隔离资料、配置、记录目录锁和有效期。私有配置不会输出。');process.exitCode=1;});
 }
