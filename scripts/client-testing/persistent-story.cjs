@@ -6,7 +6,7 @@ const assert = require('node:assert/strict');
 const http = require('node:http');
 const root = path.resolve(__dirname, '../..');
 const backend = path.join(root, '晶晶日上工程交接包/01_源码/backend_server');
-const namePattern = /^jx_test_(?:story|artists)_[0-9]+_[a-f0-9]{12}$/;
+const namePattern = /^jx_test_(?:story|artists|explore)_[0-9]+_[a-f0-9]{12}$/;
 function assertEnv(env, database) {
   assert(env.NODE_ENV === 'test' && env.DB_CLIENT === 'mysql');
   assert(env.MYSQL_HOST === '127.0.0.1' && env.MYSQL_PORT === '33316' && env.MYSQL_USER === 'jx_local');
@@ -17,7 +17,8 @@ function validateManifest(m, name) {
   assertEnv(m.database_env, name);
   assert(typeof m.environment_id === 'string' && /^[a-f0-9-]{36}$/.test(m.environment_id));
   assert(typeof m.secret === 'string' && m.secret.length >= 40);
-  assert(m.access.synthetic_only === true && (name.startsWith('jx_test_story_') ? m.access.accounts.buyer : m.access.accounts.artist));
+  assert(m.access.synthetic_only === true && (name.startsWith('jx_test_artists_') ? m.access.accounts.artist : m.access.accounts.buyer));
+  if(name.startsWith('jx_test_explore_'))assert(m.file_store===true && m.access.payment_simulation===true);
   if(name.startsWith('jx_test_artists_')){assert(m.file_store===true);assert(Object.keys(m.supplyEnv||{}).join(',')==='ARTIST_PLATFORM_MERCHANT_PARTY_ID');assert(/^[a-f0-9-]{36}$/.test(m.supplyEnv.ARTIST_PLATFORM_MERCHANT_PARTY_ID));}
   assert(Array.isArray(m.rules) && m.rules.length > 0);
   assert(m.rules.every(r => ['GET', 'POST', 'PATCH'].includes(r.method) && r.pattern.startsWith('^') && r.pattern.endsWith('$')));
@@ -64,10 +65,11 @@ async function start(name, { hours = 72, port = 0 } = {}) {
     db = await openDatabase(m.database_env);
     const [markers] = await db.execute('SELECT id, synthetic_only FROM client_test_environment');
     assert(markers.length === 1 && markers[0].id === m.environment_id && markers[0].synthetic_only === 1);
-    const auth = createAuthRepository(db, { secret: m.secret }), accounts = {};
+    const auth = createAuthRepository(db, { secret: m.secret }), accounts = {}, tokens = new Map();
     await db.withTransaction(async tx => {
       for (const [role, a] of Object.entries(m.access.accounts)) {
-        const token = crypto.randomBytes(32).toString('base64url');
+        const token = tokens.get(a.account_id)||crypto.randomBytes(32).toString('base64url');
+        tokens.set(a.account_id,token);
         // Only the initialized test accounts; auth issuance is never exposed on this server.
         await tx.execute('DELETE FROM auth_sessions WHERE account_id=?', [a.account_id]);
         await tx.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,?)', [auth.secure.digest('token', token), a.account_id, expires]);
@@ -75,12 +77,16 @@ async function start(name, { hours = 72, port = 0 } = {}) {
       }
     });
     const supplyStorageFactory=m.file_store?()=>require('./synthetic-files.cjs').openFiles(path.join(dir,'assets')):undefined;
-    const app = createAccountApi({ db, secret: m.secret, tradeEnv: m.tradeEnv, supplyEnv:m.supplyEnv, supplyStorageFactory, allowedOrigins: ['http://127.0.0.1:3490'] });
+    const simulation=name.startsWith('jx_test_explore_')?await require('./explore-providers.cjs').create({db,env:m.database_env,secret:m.secret,merchant:m.tradeEnv.CUSTOMIZATION_MERCHANT_PARTY_ID}):null;
+    const app = createAccountApi({ db, secret: m.secret, tradeEnv: m.tradeEnv, supplyEnv:m.supplyEnv, supplyStorageFactory, ...(simulation?simulation.factories:{}), allowedOrigins: ['http://127.0.0.1:3490'] });
+    const application=simulation?simulation.wrap(app):app;
     const rules = m.rules.map(r => ({ method: r.method, re: new RegExp(r.pattern) }));
     server = http.createServer((req, res) => {
       const pathname = req.url.split('?')[0];
+      if(simulation && pathname.startsWith('/api/v1/testing/'))return simulation.handle(req,res);
+      if(simulation && (/^\/api\/v1\/(?:auth|trade\/notifications|operations\/providers)(?:\/|$)/.test(pathname))){res.writeHead(403);return res.end();}
       if(name.startsWith('jx_test_artists_')&&((pathname==='/api/v1/gigs/records'&&new URL(req.url,'http://local').searchParams.get('kind')!=='RELATION')||/\/artists\/people\/[^/]+\/identity$/.test(pathname))){res.writeHead(403,{'Content-Type':'application/json'});return res.end(JSON.stringify({error:{code:'LOCAL_FIXTURE_ROUTE_DISABLED'}}));}
-      if (rules.some(r => (req.method === r.method || req.method === 'OPTIONS') && r.re.test(pathname))) return app(req, res);
+      if (rules.some(r => (req.method === r.method || req.method === 'OPTIONS') && r.re.test(pathname))) return application(req, res);
       res.writeHead(403, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
       res.end(JSON.stringify({ error: { code: 'LOCAL_FIXTURE_ROUTE_DISABLED' } }));
     });

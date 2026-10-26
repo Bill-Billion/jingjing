@@ -277,12 +277,15 @@ class _WalletScreenState extends State<_WalletScreen> {
               _metric('可消费余额', v5Money(s.raw['available_balance_minor'])),
               tradeFact('预留', v5Money(s.raw['reserved_balance_minor']))
             ]),
-            appNotice(
-                '消费者充值托管尚未接通。本页按实际接口核对未开通结果；未产生充值、到账或自动扣款事实。充值不是会费，也不直接赠消费晶钻。'),
+            appNotice(const bool.fromEnvironment('CLIENT_TEST_ONLY')
+                ? '模拟余额充值，不涉及真实资金。成功后记入测试账本，充值不直接赠消费晶钻。'
+                : '消费者充值托管尚未接通。本页按实际接口核对未开通结果；未产生充值、到账或自动扣款事实。充值不是会费，也不直接赠消费晶钻。'),
             V5Form(
                 api: api,
                 title: '核对本次充值',
-                action: '核对充值服务状态',
+                action: const bool.fromEnvironment('CLIENT_TEST_ONLY')
+                    ? '模拟充值'
+                    : '核对充值服务状态',
                 suffix: '/recharges',
                 fields: const [V5Field('amount', '本次申请充值金额（元）', type: 'money')],
                 restore: (b) => {

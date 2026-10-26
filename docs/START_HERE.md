@@ -1,3 +1,5 @@
+2026-10-26最新：客户自由体验版本机检查完成，正在集中交付；取消客户邀请码和业务路线下拉框。当前worktrees/client-testing，core/client-free-exploration-20261026。先读docs/testing/CLIENT_FREE_EXPLORATION_20261026.md和当前进度；公网及上传状态以交付补记为准。以下旧入口作为历史。
+
 2026-10-26最新：本侧core/client-route-expansion-20261026已扩充艺人/机构持续测试并完成公网跨端检查。请先读docs/testing/CLIENT_ROUTES_20261026.md和当前进度。原故事与邀请保留，仍只有两组模拟业务，其他路线尚未开放。
 
 2026-10-26最新决定：用户改为本机托管、通过穿透访问，并明确只开放使用模拟资料的甲方测试网站；不再等外部服务器和自有域名。当前工作树worktrees/client-testing、core/client-fixed-hosting-20261026。计划与授权见docs/testing/LOCAL_TUNNEL_20261026.md；公网最终状态见其补记。仅网站3490进入隧道，数据库等内部端口不公开，生产和收费服务不启用。以下旧“公网不可进行”和资源待办仅保留历史。

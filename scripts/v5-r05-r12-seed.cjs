@@ -6,11 +6,12 @@ const {randomUUID:key,createHash}=require('node:crypto');
 const backend=path.resolve(__dirname,'../晶晶日上工程交接包/01_源码/backend_server');
 const load=rel=>require(path.join(backend,rel));
 
-async function prepare(db,checkRunning){
+async function prepare(db,checkRunning,options={}){
  const stock=await load('test/helpers/stock-seed.cjs').seedStock(db);checkRunning();
  const notices=await load('test/helpers/notices-seed.cjs').seedNotices(db);checkRunning();
  const auditions=await load('test/helpers/auditions-seed.cjs').seedAuditions(db);checkRunning();
  const common=await load('test/support/customization-delivery.cjs').seed(db);checkRunning();
+ if(options.samples){const make=common.newOrder;common.newOrder=(args={})=>make({title:'测试定制短片 · 家庭记忆',...args});}
  const people={...common.people},scenarios={},extraFiles=new Map();
  for(const [prefix,seed]of Object.entries({stock,notices,auditions})){
   for(const role of ['seller','buyer','reviewer','outsider','buyer2']){
@@ -25,11 +26,13 @@ async function prepare(db,checkRunning){
   try{await fs.access(dest);}catch(e){if(e.code!=='ENOENT')throw e;require('node:child_process').execFileSync(ffmpeg,['-nostdin','-hide_banner','-loglevel','error','-f','lavfi','-i',filter,'-t','1','-an','-c:v','libx264','-pix_fmt','yuv420p',dest],{stdio:'pipe'});}
  }
 
- const full=await fs.readFile(path.join(mediaDir,'full.mp4')),preview=await fs.readFile(path.join(mediaDir,'preview.mp4'));
- if([full,preview].some(b=>b.length>1024*1024||b.length<16||b.toString('ascii',4,8)!=='ftyp')||full.equals(preview))throw Error('BOUNDED_SYNTHETIC_MP4_REQUIRED');
+ const full=await fs.readFile(options.samples?path.join(options.samples,'sample-1-full.mp4'):path.join(mediaDir,'full.mp4')),preview=await fs.readFile(options.samples?path.join(options.samples,'sample-1-preview.mp4'):path.join(mediaDir,'preview.mp4'));
+ if([full,preview].some(b=>b.length>(options.samples?16:1)*1024*1024||b.length<16||b.toString('ascii',4,8)!=='ftyp')||full.equals(preview))throw Error('BOUNDED_SYNTHETIC_MP4_REQUIRED');
  for(const [field,body]of [['file_id',full],['preview_file_id',preview]]){
   stock.listingInput[field]=(await stock.supply.upload(stock.seller.ctx,{party_id:stock.seller.personal_party_id,purpose:'WORK_CONTENT',media_type:'video/mp4',body,operation_key:key()})).id;
  }
+ if(options.samples){const d=stock.spec.data;let spec=await stock.trade.createSpec(stock.seller.ctx,{party_id:stock.seller.personal_party_id,previous_spec_id:stock.spec.id,title:'样片体验 · 私人观看许可',provider_party_id:stock.seller.personal_party_id,line_kind:d.line_kind,unit_minor:d.unit_minor,currency:d.currency,specification:{...d.specification,terms:'只用于测试购买、预览与售后，不产生真实销售或真人授权。'},product_profile:d.product_profile,operation_key:key()});spec=await stock.trade.review(stock.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'独立检查模拟商品',operation_key:key()});stock.listingInput.spec_id=spec.id;}
+ if(options.samples){stock.listingInput.description='甲方样片 1 · 测试展示，不代表销售或真人授权';stock.listingInput.city='郑州';}
  for(const state of ['unpaid','paid','unlisted','dispute']){
   const listing=await stock.listing(),order=await stock.checkout(listing);
   if(state!=='unpaid')await stock.payment(order);
@@ -41,6 +44,7 @@ async function prepare(db,checkRunning){
   scenarios['stock_'+state]={listing_id:listing.id,order_id:order.id};
  }
  const pending=await stock.stock.create(stock.seller.ctx,{...stock.listingInput,operation_key:key()});scenarios.stock_pending={listing_id:pending.id};
+ if(options.samples){Object.assign(notices.body,{title:'测试招募：城市记忆短片',description:'面向成年体验艺人的模拟报名，不是真实活动。',city:'郑州'});Object.assign(notices.submission,{purpose:'模拟短片合作',content:'虚构艺人报名资料，仅供测试'});}
  const reviewNotice=r=>notices.notices.review(notices.reviewer.ctx,{record_id:r.id,expected_version:r.object_version,decision:'APPROVE',reason:'synthetic independent review',checks:{content_reviewed:true,materials_reviewed:true,no_private_contact:true},operation_key:key()});
  const notice=await reviewNotice(await notices.notices.createNotice(notices.buyer.ctx,{party_id:notices.buyer.personal_party_id,rule_id:notices.rule.id,notice:notices.body,operation_key:key()}));scenarios.notice={notice_id:notice.id};
  for(const state of ['pending','sent','interested']){
@@ -49,6 +53,7 @@ async function prepare(db,checkRunning){
   if(state==='interested')r=await notices.notices.decision(notices.buyer.ctx,{party_id:notices.buyer.personal_party_id,record_id:r.id,expected_version:r.object_version,decision:'INTERESTED',operation_key:key()});
   scenarios['notice_'+state]={submission_id:r.id,case_id:r.data.case_id};
  }
+ if(options.samples){Object.assign(auditions.offer,{title:'测试试镜：线上资料交付',city:'郑州',service_area:'线上测试',terms:'只体验预约与交付，样片不代表真人试镜授权。'});const photos=[];for(let i=0;i<6;i++)photos.push((await auditions.upload('image/jpeg',await fs.readFile(path.join(options.samples,'test-portrait.jpg')))).id);auditions.delivery.photos=photos;auditions.delivery.videos=[(await auditions.upload('video/mp4',await fs.readFile(path.join(options.samples,'sample-3-full.mp4')))).id];}
  let offer=await auditions.auditions.createOffer(auditions.seller.ctx,{party_id:auditions.seller.personal_party_id,offer:{...auditions.offer,mode:'ONLINE_MATERIALS'},operation_key:key()});
  offer=await auditions.auditions.reviewOffer(auditions.reviewer.ctx,{record_id:offer.id,expected_version:offer.object_version,decision:'APPROVE',reason:'synthetic independent review',operation_key:key()});
  scenarios.audition_offer={offer_id:offer.id};
@@ -65,7 +70,7 @@ async function prepare(db,checkRunning){
    if(state!=='awaiting')r=await auditions.auditions.decide(auditions.seller.ctx,{...args(),party_id:auditions.seller.personal_party_id,decision:'ACCEPT',reason:'synthetic accepted'});
    if(['delivered','fulfilled'].includes(state)){
     r=await auditions.auditions.deliver(auditions.seller.ctx,{...args(),party_id:auditions.seller.personal_party_id,delivery:auditions.delivery});
-    r=await auditions.auditions.reviewDelivery(auditions.reviewer.ctx,{...args(),decision:'APPROVE',checks:{content_reviewed:true,files_viewable:true,consent_verified:true},reason:'synthetic placeholder materials only'});
+    r=await auditions.auditions.reviewDelivery(auditions.reviewer.ctx,{...args(),decision:'APPROVE',checks:{content_reviewed:true,files_viewable:true,consent_verified:true},reason:options.samples?'模拟授权与真实可播放测试副本；不授予真实业务权利':'synthetic placeholder materials only'});
     if(state==='fulfilled'){
      for(const asset_id of [...auditions.delivery.photos,...auditions.delivery.videos])await auditions.auditions.observed(auditions.buyer.ctx,{record_id:r.id,party_id:auditions.buyer.personal_party_id,asset_id});
      r=await auditions.auditions.read(auditions.buyer.ctx,{record_id:r.id,party_id:auditions.buyer.personal_party_id});
@@ -88,7 +93,7 @@ async function prepare(db,checkRunning){
  }
  // Grant rule review to the separately seeded wallet/ranking reviewers too.
  for(const u of [stock.reviewer,stock.outsider])for(const action of ['WALLET_RULE_REVIEW','ENGAGEMENT_REVIEW'])await common.grant(u,action);
- return {people,scenarios,secret,storageFactory,merchantId:common.org.party_id,
+ return {people,scenarios,secret,storageFactory,common,stock,notices,auditions,allFiles:()=>new Map(maps.flatMap(m=>[...m])),merchantId:common.org.party_id,
   async setup(base){
    async function call(route,u,{body=null,version,party=true,operation=key()}={}){
     const res=await fetch(base+route,{method:body===null?'GET':'POST',headers:{Authorization:'Bearer '+u.token,...party?{'X-Acting-Party':u.acting_party_id}:{},...body===null?{}:{'Content-Type':'application/json','Idempotency-Key':operation},...version?{'If-Match':'"'+version+'"'}:{}},...body===null?{}:{body:JSON.stringify(body)}});
@@ -223,7 +228,7 @@ async function prepare(db,checkRunning){
    const benefit=(await call('/cocreation/benefits',buyer)).items.find(v=>v.parent_id===readyRoom.id);
    scenarios.cocreation_ready={room_id:readyRoom.id,member_id:readyMember.id,order_id:ready.order.id,project_id:projectReady.id,snippet_id:snippet.id,benefit_id:benefit?.id};
    }
-   await seedMcn({db,people,scenarios,call});
+   await seedMcn({db,people,scenarios,call,storageFactory});
    await seedCommercial({db,people,scenarios,call});
    return {call,common,stock,notices,auditions,cast};
   }
@@ -232,7 +237,7 @@ async function prepare(db,checkRunning){
 async function quoteOnly(seed,unitMinor){let result;const stop=Error('SYNTHETIC_QUOTE_ONLY');try{await seed.newOrder({unitMinor,beforeAccept:async data=>{result=data;throw stop;}});}catch(e){if(e!==stop)throw e;}if(!result)throw Error('SYNTHETIC_QUOTE_MISSING');return result;}
 module.exports={prepare};
 
-async function seedMcn({db,people,scenarios,call}){
+async function seedMcn({db,people,scenarios,call,storageFactory}){
  const owner=people.auditions_outsider,employee=people.auditions_buyer2,artist=people.auditions_seller;
  const org=await call('/organizations',owner,{party:false,body:{display_name:'隔离MCN机构'}});
  const orgId=org.party_id;
@@ -242,8 +247,12 @@ async function seedMcn({db,people,scenarios,call}){
  const mcnOwner={...owner,acting_party_id:orgId},mcnStaff={...employee,acting_party_id:orgId};
  const invitation=await call('/parties/'+orgId+'/invitations',mcnOwner,{body:{invitee_account_id:employee.account_id,expires_at:new Date(Date.now()+3600000).toISOString()}});
  await call('/parties/'+orgId+'/invitations/'+invitation.invitation_id+'/responses',mcnStaff,{version:1,body:{decision:'ACCEPT'}});
- const relation=key(),data={valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',accepted_by:artist.account_id,synthetic_only:true};
- await db.execute("INSERT INTO gig_records(id,kind,owner_party_id,counterparty_id,created_by,current_status,data_json,data_sha256) VALUES (?,'RELATION',?,?,?,'ACTIVE',?,?)",[relation,orgId,artist.acting_party_id,owner.account_id,JSON.stringify(data),load('src/modules/governance/content').digest(data)]);
+ const [[account]]=await db.execute('SELECT subject_ref FROM identity_accounts WHERE id=?',[owner.account_id]);
+ const resolvePrincipal=async ctx=>ctx,repository=load('src/modules/works/repository').createSupplyRepository(db,{resolvePrincipal}),assets=load('src/modules/works/assets').createSupplyAssets({db,repository,storageFactory});
+ const proof=await assets.upload({subject_ref:account.subject_ref},{party_id:orgId,purpose:'CONSENT_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic agency agreement, no real rights.'),operation_key:key()});
+ let agreement=await call('/gigs/relations',mcnOwner,{body:{artist_party_id:artist.acting_party_id,scope:'COMMERCIAL',valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',exclusive:false,terms:'模拟机构与艺人直接合作，艺人本人确认；不代表真实签约。',commission:{platform_bps:2000,mcn_bps:0},v5_terms:{version:'V5',supply_share_bps:2000},evidence_asset_ids:[proof.id]}});
+ agreement=await call('/gigs/relations/'+agreement.id+'/decision',artist,{version:agreement.object_version,body:{decision:'ACCEPT',reason:'模拟艺人本人确认测试合作'}});
+ const relation=agreement.id,data=agreement.data;
  const offer=await call('/auditions/records/'+scenarios.audition_offer.offer_id,artist),personId=offer.data.offer.person_id;
  const evidence=(await db.execute("SELECT id FROM supply_assets WHERE owner_party_id=? AND purpose='CONSENT_EVIDENCE' LIMIT 1",[artist.acting_party_id]))[0][0].id;
  await call('/artists/people/'+personId+'/delegations',artist,{body:{delegation:{organization_party_id:orgId,relation_id:relation,actions:['READ_PROFILE','MANAGE_AUDITIONS'],valid_from:data.valid_from,valid_until:data.valid_until,evidence_asset_ids:[evidence],terms:'仅隔离验收的逐人试镜委派，不改变本人权利。'}}});

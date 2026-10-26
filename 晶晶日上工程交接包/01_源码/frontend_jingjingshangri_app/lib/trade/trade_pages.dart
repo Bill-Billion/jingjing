@@ -476,7 +476,9 @@ class _TradeDetailState extends State<_TradeDetail> {
           facts: [
             tradeFact('节点', tradeTriggers[installment['trigger']]),
             tradeFact('本次金额', tradeMoney(installmentAmount(installment))),
-            const Text('此操作不会在客户端发起实际支付。')
+            const Text(bool.fromEnvironment('CLIENT_TEST_ONLY')
+                ? '接下来选择模拟付款结果，不会真实扣款。'
+                : '此操作不会在客户端发起实际支付。')
           ]);
 
   Future<void> cancel() async {
@@ -822,7 +824,9 @@ class _TradeDetailState extends State<_TradeDetail> {
           r.isBuyer(api.owner()) &&
           ['OPEN', 'PARTIALLY_PAID'].contains(r.status))
         tradeSection('办理付款记录', [
-          appNotice('当前客户端不能发起实际支付。可以建立并核对原付款记录，真实结果以服务器核对为准。未开通渠道将返回暂不可用。'),
+          appNotice(const bool.fromEnvironment('CLIENT_TEST_ONLY')
+              ? '本测试版本使用模拟支付。选择结果后由服务器核对本笔订单，不会扣款。'
+              : '当前客户端不能发起实际支付。可以建立并核对原付款记录，真实结果以服务器核对为准。未开通渠道将返回暂不可用。'),
           for (final i in tradeInstallments(r.quote)) ...[
             Text(tradeTriggers[i['trigger']]!,
                 style:
