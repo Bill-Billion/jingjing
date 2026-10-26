@@ -5,7 +5,7 @@ const labels={buyer:'客户',outsider:'另一位客户',operator:'受理运营',
 const groupNames={story:'故事与报价',artists:'艺人与数字人',delivery:'制作与交付',r05r12:'综合业务'};
 function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-session',campaign='acceptance'}={}){
  assert(/^[a-zA-Z0-9-]+$/.test(folder)&&/^[a-zA-Z0-9-]+$/.test(campaign));assert(Number.isSafeInteger(port)&&port>1024&&port<65536);
- const campaignDir=path.join(root,'.local','client-feedback',campaign);fs.mkdirSync(campaignDir,{recursive:true});const peopleFile=path.join(campaignDir,'people.json');const people=fs.existsSync(peopleFile)?JSON.parse(fs.readFileSync(peopleFile,'utf8')):{};
+ const campaignDir=path.join(root,'.local','client-feedback',campaign);fs.mkdirSync(campaignDir,{recursive:true});assert(!fs.existsSync(path.join(campaignDir,'RESTORE_INCOMPLETE')),'恢复尚未完成');const peopleFile=path.join(campaignDir,'people.json');const people=fs.existsSync(peopleFile)?JSON.parse(fs.readFileSync(peopleFile,'utf8')):{};
  const identity=(key,name)=>{if(!people[key])people[key]={id:crypto.randomUUID(),name,code:crypto.randomBytes(24).toString('base64url')};return people[key];};
  const accounts={},routes=[],invites=[],privateInvites=[],proofs=[];let expiry=Date.now()+55*60000;
  for(const input of files){const f=fs.realpathSync(input);assert(f.startsWith(fs.realpathSync(path.join(root,'.local'))+path.sep)&&path.basename(f)==='access.json');

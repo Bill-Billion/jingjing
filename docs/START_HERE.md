@@ -1,3 +1,5 @@
+当前2026-10-26：用户已选固定测试服务器和域名；本侧worktrees/client-testing，分支core/client-fixed-hosting-20261026，依赖待审PR37。先读docs/operations/client-testing/FIXED_HOSTING_20261026.md及docs/status/CORE_CURRENT.md。反馈备份恢复已本机验证，业务跨天保留和部署未完成；实际域名与主机连接资料待补，不再询问临时还是固定。下文按日期保留历史。
+
 当前2026-10-25：本侧工作目录worktrees/client-testing，分支core/client-browser-testing-20261025。PR36已复审并合入integration/767d2ffc。甲方浏览器测试工具已本机实现和验证，尚未合入或开放公网；已集中上传PR37，远端检查以当前申请为准，请读docs/testing/CLIENT_BROWSER_TESTING_20261025.md、docs/status/CORE_CURRENT.md和任务CORE-client-testing-20261025。普通产品登录/业务接口不变，测试邀请和代理边界须另一方实际检查；禁止把工具检查或15个入口检查称为全部业务验收。测试业务库已清理，私有反馈独立保留。以下均按日期保留历史，不能覆盖当前实际状态。
 
 # 2026-10-24：24类问题已逐项处理，本地检查已完成

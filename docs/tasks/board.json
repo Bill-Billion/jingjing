@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-25",
+  "updated_on": "2026-10-26",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -2389,6 +2389,47 @@
         "failed": 0,
         "pending": 0
       }
+    },
+    {
+      "id": "CORE-FIXED-TEST-20261026",
+      "title": "准备甲方连续多天测试环境并保护测试记录",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/client-fixed-hosting-20261026",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-043"
+      ],
+      "dependencies": [
+        "CORE-CLIENT-TEST-20261025"
+      ],
+      "deliverables": [
+        "docs/operations/client-testing/FIXED_HOSTING_20261026.md",
+        "scripts/client-testing/backup.cjs"
+      ],
+      "acceptance": "固定域名下按角色连续测试，重启不丢业务和反馈，恢复演练及外网浏览器验收通过；当前仅反馈备份通过",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "component_checks": {
+        "feedback_tools": 11,
+        "feedback_recovery": "PASS",
+        "fixed_server": "NOT_RUN"
+      },
+      "evidence": [
+        "docs/tasks/records/CORE-fixed-hosting-20261026.md",
+        "docs/testing/evidence/client-fixed-hosting-20261026/BACKUP_RESTORE.json"
+      ],
+      "blockers": [
+        "实际测试域名与服务器连接资料路径待补；固定环境运行代码仍待开发"
+      ],
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false
     }
   ],
   "delivery_policy": {

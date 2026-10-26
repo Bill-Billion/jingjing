@@ -24,3 +24,7 @@ node scripts/client-testing/review.cjs <批次名>生成独立问题工作台配
 - route-check.mjs：同一私有会话下逐个打开测试入口；只读检查不代表每条完整业务验收。
 
 首次脚本诊断失败、测试版本、已知限制和最终记录见docs/testing/CLIENT_BROWSER_TESTING_20261025.md。真实手机号短信、真实支付和生产部署没有随本工具授权。
+
+## 固定环境与备份
+
+2026-10-26用户已选固定测试服务器和域名。现有一小时资料脚本不能直接用于多天测试；具体准备、缺项和已实现的加密备份/恢复命令见docs/operations/client-testing/FIXED_HOSTING_20261026.md。业务跨天保留与公网部署尚未完成。
