@@ -1,7 +1,7 @@
 // Isolated acceptance tooling. Not mounted in the production application.
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
 const {openStore,fault,sha}=require('./store.cjs');
-const ui=__dirname;
+const ui=__dirname;const {pipeline}=require('node:stream'),{createGzip}=require('node:zlib');
 function safeRoute(value){
   if(typeof value!=='string'||value.length>600||!value.startsWith('/')||value.startsWith('//')||/[\\<>\r\n]/.test(value))return '/';
   const u=new URL(value,'http://local');const clean=p=>/^[A-Za-z0-9_/.%-]*$/.test(p)?p:'/';
@@ -93,7 +93,12 @@ function createPortal(config,{current=()=>true}={}){
         const ext=path.extname(file),types={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.wasm':'application/wasm','.ttf':'font/ttf','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.bin':'application/octet-stream'};
         res.setHeader('Content-Type',types[ext]||'application/octet-stream');if(['.ttf','.woff2','.woff'].includes(ext))res.setHeader('Cache-Control','private, max-age=86400');if(req.method==='HEAD')return res.end();
         if(ext==='.html'){let html=fs.readFileSync(file,'utf8');if(kind==='workspace')html=html.replace(/<script type="module" crossorigin src="([^"]+)"><\/script>/,(_,entry)=>`<script type="module" src="/__test/workspace-bootstrap.js" data-test-entry="${entry}"></script>`);return res.end(html.replace('</head>','<script src="/__test/bridge.js"></script></head>'));}
-        return fs.createReadStream(file).pipe(res);
+        const input=fs.createReadStream(file);
+        const gzip=/\.(?:ttf|js|css|wasm)$/.test(file)&&fs.statSync(file).size>1024&&(req.headers['accept-encoding']||'').split(',').some(v=>{const [name,...params]=v.trim().split(';');const q=params.find(p=>p.trim().startsWith('q='));return name==='gzip'&&(!q||Number(q.trim().slice(2))>0);});
+        res.setHeader('Vary','Accept-Encoding');
+        if(gzip){res.setHeader('Content-Encoding','gzip');pipeline(input,createGzip({level:4}),res,()=>{});}else pipeline(input,res,()=>{});
+        return;
+
       }
       throw fault(404,'地址不存在');
     }catch(e){if(!res.headersSent)json(res,e.status||500,{message:e.status?e.message:'测试服务处理失败，请保留原页面联系负责人'});else res.destroy();}

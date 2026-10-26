@@ -71,7 +71,7 @@ async function start(name, { hours = 72, port = 0 } = {}) {
         // Only the initialized test accounts; auth issuance is never exposed on this server.
         await tx.execute('DELETE FROM auth_sessions WHERE account_id=?', [a.account_id]);
         await tx.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,?)', [auth.secure.digest('token', token), a.account_id, expires]);
-        accounts[role] = { account_id: a.account_id, party_id: a.party_id, bearer_token: token };
+        accounts[role] = { account_id: a.account_id, party_id: name.startsWith('jx_test_story_') && role==='merchant' ? m.access.trade.merchant_party_id : a.party_id, bearer_token: token };
       }
     });
     const supplyStorageFactory=m.file_store?()=>require('./synthetic-files.cjs').openFiles(path.join(dir,'assets')):undefined;

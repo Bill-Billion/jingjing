@@ -34,7 +34,7 @@ try{
  const logout=await c.post('/__test/logout',{data:{}});assert.equal(logout.status(),200);await status(c,'/__test/bootstrap',401);checks.push('退出后旧会话不可继续使用');
 }catch(e){failure=e.message;process.exitCode=1;}finally{
  await Promise.all(contexts.map(c=>c.dispose()));
- const out=resolve('docs/testing/evidence/client-local-hosting-20261026');await mkdir(out,{recursive:true});
+ const out=resolve(process.env.CLIENT_TEST_EVIDENCE||'docs/testing/evidence/client-local-hosting-20261026');await mkdir(out,{recursive:true});
  await writeFile(resolve(out,'PUBLIC_HTTPS.json'),JSON.stringify({result:failure?'FAIL':'PASS',checked_at:new Date().toISOString(),checks,failure,scope:'Public HTTPS via this machine; not client mobile network or all business acceptance.'},null,2)+'\n');
  console.log(JSON.stringify({result:failure?'FAIL':'PASS',checks:checks.length,failure}));
 }
