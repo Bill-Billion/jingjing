@@ -31,6 +31,17 @@ try{
  checks.push('私有配置、源码映射与未开放业务路径拒绝访问');
  const csrf=await c.post('/__test/issues',{headers:{Origin:'https://example.invalid'},data:{}});assert.equal(csrf.status(),403);checks.push('外站不能借用登录身份写入反馈');
  const reviewer=await client();await login(reviewer,'feedback-reviewer');await status(reviewer,'/__test/issues',200);await status(reviewer,'/__test/bootstrap',403);await status(reviewer,'/app/',403);checks.push('问题负责人可看反馈但没有业务权限');
+ if(config.accounts['artists-artist']){
+ const a=JSON.parse(await readFile(config.fixture_files.find(f=>f.includes('jx_test_artists_')),'utf8'));
+ const merchant=await client();await login(merchant,'story-merchant');const mb=await(await status(merchant,'/__test/bootstrap',200)).json();
+ const story=JSON.parse(await readFile(config.fixture_files.find(f=>f.includes('jx_test_story_')),'utf8'));assert.equal(mb.party_id,story.trade.merchant_party_id);
+ const quotes=await(await status(merchant,'/api/v1/trade/records?kind=QUOTE&limit=20',200,{headers:{Authorization:'Bearer '+mb.bearer_token,'X-Acting-Party':mb.party_id}})).json();assert(quotes.data.items.some(q=>q.id===story.trade.quote_id));checks.push('平台报价邀请绑定机构并读取原报价，不用个人身份代替');
+ const owner=await client();await login(owner,'artists-artist');const ob=await(await status(owner,'/__test/bootstrap',200)).json();const oh={Authorization:'Bearer '+ob.bearer_token,'X-Acting-Party':ob.party_id};
+ const image=await status(owner,'/api/v1/artists/assets/'+a.material_id+'/content',200,{headers:oh});assert.equal((await image.body())[0],137);checks.push('本人可经公网读取保留的模拟附件');
+ const agency=await client();await login(agency,'artists-agency');const ab=await(await status(agency,'/__test/bootstrap',200)).json();assert.equal(ab.party_id,a.agency_party_id);const ah={Authorization:'Bearer '+ab.bearer_token,'X-Acting-Party':ab.party_id};await status(agency,'/api/v1/artists/people/'+a.person_id,200,{headers:ah});await status(agency,'/api/v1/artists/people/'+a.person_id,403,{headers:{...ah,'X-Acting-Party':ob.party_id}});checks.push('机构按受托关系访问，同一邀请不能改成本人身份');
+ const pending=await owner.post('/api/v1/artists/people/'+a.person_id+'/consents',{headers:{...oh,'Idempotency-Key':'public-artist-consent-'+config.version},data:{avatar_id:a.avatar_id,consent:{features:['FACE'],purposes:['PRIVATE_ARCHIVE'],grantee_party_id:ob.party_id,territories:['CN'],valid_from:new Date(Date.parse(config.expires_at)-72*3600000).toISOString(),valid_until:config.expires_at,terms:'公网模拟授权待独立审核；没有真实肖像或授权效力。',evidence_asset_ids:[a.evidence_id]}}});assert.equal(pending.status(),200);const pid=(await pending.json()).data.id;
+ const ar=await client();await login(ar,'artists-reviewer');const rb=await(await status(ar,'/__test/bootstrap',200)).json();const inbox=await(await status(ar,'/api/v1/artists/reviews?kind=CONSENT',200,{headers:{Authorization:'Bearer '+rb.bearer_token}})).json();assert(inbox.data.items.some(x=>x.id===pid));checks.push('本人提交的同意记录进入独立审核人待办，未自动批准');
+ }
  const logout=await c.post('/__test/logout',{data:{}});assert.equal(logout.status(),200);await status(c,'/__test/bootstrap',401);checks.push('退出后旧会话不可继续使用');
 }catch(e){failure=e.message;process.exitCode=1;}finally{
  await Promise.all(contexts.map(c=>c.dispose()));

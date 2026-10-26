@@ -34,3 +34,7 @@ node scripts/client-testing/review.cjs <批次名>生成独立问题工作台配
 browser-check.mjs默认仅本机。公网检查须显式设置CLIENT_TEST_PUBLIC_ORIGIN等于当前私有配置中的HTTPS地址，并设置CLIENT_TEST_SESSION；只接受本轮trycloudflare测试域名。public-check.mjs同样要求明确地址和本机私有会话，检查公开路径、会话和身份边界。公网调用不放进自动CI。
 
 反馈加密备份与恢复命令仍见docs/operations/client-testing/FIXED_HOSTING_20261026.md。业务库目前只验证保留重启，独立备份恢复未完成。
+
+## 艺人和机构测试扩充
+
+JX_RETAIN_CLIENT_ARTISTS=true可显式保留艺人合成资料及模拟附件，仍由persistent-story.cjs加载，原短会话默认清理行为不变。新路线、实际公网检查与其他业务清单见docs/testing/CLIENT_ROUTES_20261026.md；不直接放开所有业务。工具检查同时运行synthetic-files.test.cjs。artist-browser-check的实际脚本名为artists-browser-check.mjs，PUBLIC_ORIGIN约束与其他公网检查一致。平台报价邀请必须对应平台机构；过期报价保持过期，不自动改期限。
