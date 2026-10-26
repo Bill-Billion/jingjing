@@ -1,4 +1,4 @@
-2026-10-26最新：客户自由体验版本机检查完成，正在集中交付；取消客户邀请码和业务路线下拉框。当前worktrees/client-testing，core/client-free-exploration-20261026。先读docs/testing/CLIENT_FREE_EXPLORATION_20261026.md和当前进度；公网及上传状态以交付补记为准。以下旧入口作为历史。
+2026-10-26最新：客户自由体验版已更新原公网网址，本机及公网检查通过，集中更新原PR37；取消客户邀请码和业务路线下拉框。当前worktrees/client-testing，core/client-free-exploration-20261026。先读docs/testing/CLIENT_FREE_EXPLORATION_20261026.md和当前进度；公网及上传状态以交付补记为准。以下旧入口作为历史。
 
 2026-10-26最新：本侧core/client-route-expansion-20261026已扩充艺人/机构持续测试并完成公网跨端检查。请先读docs/testing/CLIENT_ROUTES_20261026.md和当前进度。原故事与邀请保留，仍只有两组模拟业务，其他路线尚未开放。
 

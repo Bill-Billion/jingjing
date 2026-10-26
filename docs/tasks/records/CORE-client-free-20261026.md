@@ -13,3 +13,7 @@
 独立验证：`node --test scripts/client-testing/free-entry.test.cjs scripts/client-testing/portal.test.cjs scripts/client-testing/backup.test.cjs scripts/client-testing/persistent-story.test.cjs scripts/client-testing/synthetic-files.test.cjs`；有本机隔离数据库后运行本轮explore检查。真实费用、生产库和外部服务不在这些命令的授权范围。
 
 当前交付准备完成，集中上传、公网替换与最新远端结果在交付补记登记。下一步本侧负责维护与问题闭环，队友建议检查公共边界，甲方自由验收；不把这次模拟验收写成所有业务正式可用。
+
+## 本轮交付结果
+
+原公网网址已更新；公网11项接口及7项实际页面操作通过。网站329c63bf，后续仅修正自动测试等候与补记录。原视频3份摘要未变。窗口10月29日10:29:34结束，关闭脚本已更新。集中更新原PR37，未新建申请、未合入integration、未启用正式服务，另一方实际审阅待进行。
