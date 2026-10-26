@@ -2392,7 +2392,7 @@
     },
     {
       "id": "CORE-FIXED-TEST-20261026",
-      "title": "准备甲方连续多天测试环境并保护测试记录",
+      "title": "本机穿透供甲方连续测试并保留记录",
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
@@ -2416,17 +2416,18 @@
       "review_status": "PENDING",
       "test_status": "NOT_RUN",
       "component_checks": {
-        "feedback_tools": 11,
-        "feedback_recovery": "PASS",
-        "fixed_server": "NOT_RUN"
+        "feedback_and_portal": 13,
+        "database_restart_and_permissions": 6,
+        "story_browser": 7,
+        "short_session_cleanup": "PASS",
+        "public_access": "PENDING"
       },
       "evidence": [
         "docs/tasks/records/CORE-fixed-hosting-20261026.md",
-        "docs/testing/evidence/client-fixed-hosting-20261026/BACKUP_RESTORE.json"
+        "docs/testing/evidence/client-fixed-hosting-20261026/BACKUP_RESTORE.json",
+        "docs/testing/LOCAL_TUNNEL_20261026.md"
       ],
-      "blockers": [
-        "用户已确认测试域名与服务器均未准备；资源提供方和费用预算未确定，只阻止实际部署，不阻止本机开发"
-      ],
+      "blockers": [],
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -2435,7 +2436,10 @@
         "server": "NOT_PREPARED",
         "confirmed_by_user_on": "2026-10-26",
         "procurement_owner": "UNASSIGNED",
-        "purchase_authorized": false
+        "purchase_authorized": false,
+        "selected_hosting": "LOCAL_TUNNEL",
+        "external_resources_required": false,
+        "public_test_authorized": true
       }
     }
   ],

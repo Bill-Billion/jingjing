@@ -3,15 +3,16 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const {sha}=require('./store.cjs');const root=path.resolve(__dirname,'../..');
 const labels={buyer:'客户',outsider:'另一位客户',operator:'受理运营',merchant:'平台报价人',reviewer:'独立审核人',producer:'制作方',artist:'艺人本人',agency:'机构管理人',employee:'机构员工',moderator:'内容审核',finance:'财务审核'};
 const groupNames={story:'故事与报价',artists:'艺人与数字人',delivery:'制作与交付',r05r12:'综合业务'};
-function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-session',campaign='acceptance'}={}){
+function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-session',campaign='acceptance',durationMinutes=55}={}){
+ assert(Number.isInteger(durationMinutes)&&durationMinutes>=1&&durationMinutes<=4320);
  assert(/^[a-zA-Z0-9-]+$/.test(folder)&&/^[a-zA-Z0-9-]+$/.test(campaign));assert(Number.isSafeInteger(port)&&port>1024&&port<65536);
  const campaignDir=path.join(root,'.local','client-feedback',campaign);fs.mkdirSync(campaignDir,{recursive:true});assert(!fs.existsSync(path.join(campaignDir,'RESTORE_INCOMPLETE')),'恢复尚未完成');const peopleFile=path.join(campaignDir,'people.json');const people=fs.existsSync(peopleFile)?JSON.parse(fs.readFileSync(peopleFile,'utf8')):{};
  const identity=(key,name)=>{if(!people[key])people[key]={id:crypto.randomUUID(),name,code:crypto.randomBytes(24).toString('base64url')};return people[key];};
- const accounts={},routes=[],invites=[],privateInvites=[],proofs=[];let expiry=Date.now()+55*60000;
+ const accounts={},routes=[],invites=[],privateInvites=[],proofs=[];let expiry=Date.now()+durationMinutes*60000;
  for(const input of files){const f=fs.realpathSync(input);assert(f.startsWith(fs.realpathSync(path.join(root,'.local'))+path.sep)&&path.basename(f)==='access.json');
    const parent=path.basename(path.dirname(f)),match=/^jx_test_(story|artists|delivery|r05r12)_\d+_[0-9a-f]{12}$/.exec(parent);assert(match,'仅接入已知隔离资料');const group=match[1];
    const data=JSON.parse(fs.readFileSync(f,'utf8')),statusFile=path.join(path.dirname(f),'status.json'),state=JSON.parse(fs.readFileSync(statusFile,'utf8'));
-   assert(data.synthetic_only===true&&state.synthetic_only===true&&state.status==='RUNNING');assert(state.database===parent);assert(data.base_url===`http://127.0.0.1:${state.port}/api/v1`);
+   assert(data.synthetic_only===true&&state.synthetic_only===true&&state.status==='RUNNING');if(durationMinutes>55){assert(state.persistent===true&&data.persistent===true);assert(f.startsWith(path.join(root,'.local/client-persistent')+path.sep));assert(fs.existsSync(path.join(path.dirname(f),'manifest.json')));}assert(state.database===parent);assert(data.base_url===`http://127.0.0.1:${state.port}/api/v1`);
    expiry=Math.min(expiry,fs.statSync(statusFile).mtimeMs+state.expires_in_minutes*60000-60000);proofs.push(f);
    const keys=[];
    for(const [role,a]of Object.entries(data.accounts)){if(role.includes('outsider')||role==='minor'||role==='publisher'||role.includes('buyer2')||role.startsWith('co_actor_'))continue;const key=group+'-'+role;keys.push(key);assert(!accounts[key]);accounts[key]={...a,base_url:data.base_url,label:groupNames[group]+' / '+(labels[role]||({stock_seller:'现货卖方',stock_buyer:'现货买方',stock_reviewer:'现货审核',notices_seller:'通告发布方',notices_buyer:'通告报名方',notices_reviewer:'通告审核',auditions_seller:'试镜服务方',auditions_buyer:'试镜用户',auditions_reviewer:'试镜审核',participant:'共创参与者',mcn_owner:'机构管理人',mcn_staff:'机构员工'}[role])||role)};
