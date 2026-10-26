@@ -2409,23 +2409,30 @@
       ],
       "deliverables": [
         "docs/operations/client-testing/FIXED_HOSTING_20261026.md",
-        "scripts/client-testing/backup.cjs"
+        "scripts/client-testing/backup.cjs",
+        "scripts/client-testing/persistent-story.cjs",
+        "scripts/client-testing/public-check.mjs",
+        "docs/testing/LOCAL_TUNNEL_20261026.md"
       ],
-      "acceptance": "固定域名下按角色连续测试，重启不丢业务和反馈，恢复演练及外网浏览器验收通过；当前仅反馈备份通过",
+      "acceptance": "用户授权的本机HTTPS网站按角色使用模拟资料；故事与反馈重启保留，邀请与权限及公网浏览器检查通过；人工体验和业务独立备份恢复单列",
       "shared_boundaries": [],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PASS",
       "component_checks": {
         "feedback_and_portal": 13,
         "database_restart_and_permissions": 6,
         "story_browser": 7,
         "short_session_cleanup": "PASS",
-        "public_access": "PENDING"
+        "public_access": "PASS",
+        "public_browser": 7,
+        "public_permissions": 11
       },
       "evidence": [
         "docs/tasks/records/CORE-fixed-hosting-20261026.md",
         "docs/testing/evidence/client-fixed-hosting-20261026/BACKUP_RESTORE.json",
-        "docs/testing/LOCAL_TUNNEL_20261026.md"
+        "docs/testing/LOCAL_TUNNEL_20261026.md",
+        "docs/testing/evidence/client-local-hosting-20261026/PUBLIC_HTTPS.json",
+        "docs/testing/evidence/client-local-hosting-20261026/public-browser/RESULTS.json"
       ],
       "blockers": [],
       "uploaded": false,
@@ -2440,7 +2447,13 @@
         "selected_hosting": "LOCAL_TUNNEL",
         "external_resources_required": false,
         "public_test_authorized": true
-      }
+      },
+      "review_requirement": "邀请、代理和持续资料边界待另一方实际审阅；不自动合入",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
+      "delivery_branch": "core/client-browser-testing-20261025",
+      "public_test_enabled": true,
+      "public_test_expires_at": "2026-10-29T02:30:19.459Z",
+      "business_backup_restore": "NOT_RUN"
     }
   ],
   "delivery_policy": {

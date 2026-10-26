@@ -25,6 +25,12 @@ node scripts/client-testing/review.cjs <批次名>生成独立问题工作台配
 
 首次脚本诊断失败、测试版本、已知限制和最终记录见docs/testing/CLIENT_BROWSER_TESTING_20261025.md。真实手机号短信、真实支付和生产部署没有随本工具授权。
 
-## 固定环境与备份
+## 本机连续测试与备份
 
-2026-10-26用户已选固定测试服务器和域名。现有一小时资料脚本不能直接用于多天测试；具体准备、缺项和已实现的加密备份/恢复命令见docs/operations/client-testing/FIXED_HOSTING_20261026.md。业务跨天保留与公网部署尚未完成。
+2026-10-26用户改为本机穿透，当前故事到报价路线已公网实测。最新范围、关闭与恢复步骤见docs/testing/LOCAL_TUNNEL_20261026.md；不再等待外部主机和自有域名。
+
+持续方式须首次以JX_RETAIN_CLIENT_STORY=true初始化，再用persistent-story.cjs <本轮隔离库名>启动原库；正常停止保留资料。prepare(files,{durationMinutes:4320,...})仅对已标记的持续资料允许多日窗口。步骤6所述删除只适用于原短会话；持续会话应检查database_retained=true，不应删除原库。
+
+browser-check.mjs默认仅本机。公网检查须显式设置CLIENT_TEST_PUBLIC_ORIGIN等于当前私有配置中的HTTPS地址，并设置CLIENT_TEST_SESSION；只接受本轮trycloudflare测试域名。public-check.mjs同样要求明确地址和本机私有会话，检查公开路径、会话和身份边界。公网调用不放进自动CI。
+
+反馈加密备份与恢复命令仍见docs/operations/client-testing/FIXED_HOSTING_20261026.md。业务库目前只验证保留重启，独立备份恢复未完成。
