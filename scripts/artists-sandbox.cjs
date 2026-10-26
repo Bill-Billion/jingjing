@@ -25,7 +25,7 @@ async function main() {
   }
   const name = 'jx_test_artists_' + process.pid + '_' + randomBytes(6).toString('hex');
   const out = path.join(root, '.local/artists-sandbox', name);
-  let control, created=false, db, server, cleanupPromise, stopRequested=false, starting=true, timer, stopWatcher;
+  let control, created=false, retainedForClient=false, db, server, cleanupPromise, stopRequested=false, starting=true, timer, stopWatcher;
   const checkRunning=()=>{ if(stopRequested) throw Object.assign(new Error('Stopped'),{code:'LOCAL_STOP_REQUESTED'}); };
   function cleanup() {
     if(cleanupPromise) return cleanupPromise;
@@ -39,9 +39,9 @@ async function main() {
       if(db) await step('pool',()=>db.close());
       let databaseRemoved=!created;
       // Only this invocation's successfully created random database can be removed.
-      if(created && /^jx_test_artists_[0-9]+_[a-f0-9]{12}$/.test(name)) databaseRemoved=await step('database',()=>control.query('DROP DATABASE '+mysql.escapeId(name)));
+      if(created && !retainedForClient && /^jx_test_artists_[0-9]+_[a-f0-9]{12}$/.test(name)) databaseRemoved=await step('database',()=>control.query('DROP DATABASE '+mysql.escapeId(name)));
       if(control) await step('control',()=>control.end());
-      const result={status:failures.length?'CLEANUP_FAILED':'STOPPED',synthetic_only:true,database_removed:databaseRemoved,credentials_removed:credentialsRemoved,failed_steps:failures};
+      const result={status:failures.length?'CLEANUP_FAILED':'STOPPED',synthetic_only:true,database_retained:retainedForClient,database_removed:databaseRemoved,credentials_removed:credentialsRemoved,failed_steps:failures};
       await fs.mkdir(out,{recursive:true});
       await fs.writeFile(path.join(out,'status.json'),JSON.stringify(result,null,2));
       if(failures.length) process.exitCode=1;
@@ -122,6 +122,16 @@ async function main() {
     const accounts=Object.fromEntries(Object.entries(people).map(([role,p])=>[role,{account_id:p.account_id,party_id:p.personal_party_id,bearer_token:p.token,...(p.person_id?{person_id:p.person_id}:{})}]));
     await fs.writeFile(path.join(out,'access.json'),JSON.stringify({synthetic_only:true,base_url,accounts,merchant_party_id:merchant.party_id,agency_party_id:agency.party_id,person_id:person.id,avatar_id:avatar.id,consent_id:consent.id,look_id:look.id,halo_id:halo.id,listing_id:listing.id,delegation_id:delegation.id,hosting_id:hosting.id,material_id:material.id,evidence_id:evidence.id,specs,rule_id:ruleId},null,2),{mode:0o600});
     await fs.writeFile(path.join(out,'status.json'),JSON.stringify({status:'RUNNING',synthetic_only:true,host:'127.0.0.1',port:server.address().port,expires_in_minutes:60,database:name},null,2));
+    checkRunning();
+    if(process.env.JX_RETAIN_CLIENT_ARTISTS==='true'){
+      const access=JSON.parse(await fs.readFile(path.join(out,'access.json'),'utf8'));
+      access.accounts.agency.party_id=agency.party_id;
+      access.accounts.merchant.party_id=merchant.party_id;
+      const retainedRules=[['GET',/^\/api\/v1\/me(?:\/parties)?$/],['GET',/^\/api\/v1\/privacy\/preferences$/],['GET',/^\/api\/v1\/gigs\/records$/],...['GET','POST'].map(method=>[method,/^\/api\/v1\/artists(?:\/.*)?$/]),...['GET','POST'].map(method=>[method,/^\/api\/v1\/trade\/(?:records|specifications|quotes)(?:\/.*)?$/])];
+      const retainedDir=await require('./client-testing/persistent-story.cjs').retain({env,database:name,secret,access,tradeEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'},supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id},files,rules:retainedRules,db});
+      retainedForClient=true;starting=false;await cleanup();
+      console.log(JSON.stringify({status:'INITIALIZED',synthetic_only:true,database_retained:true,manifest_file:path.relative(root,path.join(retainedDir,'manifest.json'))}));return;
+    }
     starting=false;timer=setTimeout(stop,60*60*1000);
     console.log(JSON.stringify({status:'READY',base_url,access_file:path.relative(root,path.join(out,'access.json')),stop_file:path.relative(root,path.join(out,'stop')),synthetic_only:true,scenarios:['艺人本人','机构受托列表','已批准公开预览','私人材料越权','免费认证','托管有效期','服务订购待报价','未成年人受限','无外部服务不假成功']}));
   } catch(e) {

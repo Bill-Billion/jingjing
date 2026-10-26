@@ -1,0 +1,121 @@
+{
+  "checked_at": "2026-10-26T03:49:37.992Z",
+  "transport": "LOCAL_LOOPBACK",
+  "scope": "Read-only entry checks with synthetic accounts; not a complete workflow acceptance.",
+  "results": [
+    {
+      "id": "artists-own",
+      "title": "艺人本人：查看档案、创建形象和管理授权",
+      "role": "artists-artist",
+      "path": "/app/#/artists",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/artists/people",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "artists-catalog",
+      "title": "查看已审核的公开艺人资料",
+      "role": "artists-artist",
+      "path": "/app/#/artists/catalog",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/artists/catalog",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "artists-manage",
+      "title": "机构：管理已受托艺人",
+      "role": "artists-agency",
+      "path": "/workspace/artists/people",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/artists/people",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "artists-review",
+      "title": "运营：独立审核艺人资料",
+      "role": "artists-reviewer",
+      "path": "/workspace/artists/reviews/CONSENT",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/artists/reviews",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    }
+  ]
+}

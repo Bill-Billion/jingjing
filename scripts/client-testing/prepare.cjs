@@ -15,7 +15,7 @@ function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-
    assert(data.synthetic_only===true&&state.synthetic_only===true&&state.status==='RUNNING');if(durationMinutes>55){assert(state.persistent===true&&data.persistent===true);assert(f.startsWith(path.join(root,'.local/client-persistent')+path.sep));assert(fs.existsSync(path.join(path.dirname(f),'manifest.json')));}assert(state.database===parent);assert(data.base_url===`http://127.0.0.1:${state.port}/api/v1`);
    expiry=Math.min(expiry,fs.statSync(statusFile).mtimeMs+state.expires_in_minutes*60000-60000);proofs.push(f);
    const keys=[];
-   for(const [role,a]of Object.entries(data.accounts)){if(role.includes('outsider')||role==='minor'||role==='publisher'||role.includes('buyer2')||role.startsWith('co_actor_'))continue;const key=group+'-'+role;keys.push(key);assert(!accounts[key]);accounts[key]={...a,base_url:data.base_url,label:groupNames[group]+' / '+(labels[role]||({stock_seller:'现货卖方',stock_buyer:'现货买方',stock_reviewer:'现货审核',notices_seller:'通告发布方',notices_buyer:'通告报名方',notices_reviewer:'通告审核',auditions_seller:'试镜服务方',auditions_buyer:'试镜用户',auditions_reviewer:'试镜审核',participant:'共创参与者',mcn_owner:'机构管理人',mcn_staff:'机构员工'}[role])||role)};
+   for(const [role,a]of Object.entries(data.accounts)){if((group==='artists'&&role==='merchant')||role.includes('outsider')||role==='minor'||role==='publisher'||role.includes('buyer2')||role.startsWith('co_actor_'))continue;const key=group+'-'+role;keys.push(key);assert(!accounts[key]);accounts[key]={...a,base_url:data.base_url,label:groupNames[group]+' / '+(labels[role]||({stock_seller:'现货卖方',stock_buyer:'现货买方',stock_reviewer:'现货审核',notices_seller:'通告发布方',notices_buyer:'通告报名方',notices_reviewer:'通告审核',auditions_seller:'试镜服务方',auditions_buyer:'试镜用户',auditions_reviewer:'试镜审核',participant:'共创参与者',mcn_owner:'机构管理人',mcn_staff:'机构员工'}[role])||role)};
      const name=accounts[key].label,{id,code}=identity(key,name);
      invites.push({id,name,reviewer:false,account:key,code_hash:sha(code)});privateInvites.push({name,account:key,code});
    }
@@ -28,8 +28,10 @@ function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-
      add('quote','报价及独立复核','/workspace/trade/quotes',['merchant'],'报价人办理已受理故事报价，审核人检查并独立复核；同一人不能代替双方确认。'+limit);
    add('review','独立复核故事报价','/workspace/trade/reviews/quotes',['reviewer'],'查看待审核报价和冻结的原故事，独立审核；不能代客户确认。'+limit);
    } else if(group==='artists'){
-     add('own','本人档案与形象授权','/app/#/artists',['person','owner','artist'],'查看合成档案、形象及本人同意；核对机构代办不能代替本人授权。'+limit);
-     add('manage','机构及艺人工作区','/workspace/artists/people',Object.keys(data.accounts),'只查看此测试身份被授权的档案；权限拒绝应按实际身份判断，不能直接算页面失败。'+limit);
+     add('own','艺人本人：查看档案、创建形象和管理授权','/app/#/artists',['artist'],'打开合成艺人甲，查看本人资料、数字人档案、授权、造型及服务记录；可新增虚构形象档案。档案不等于模型已训练。'+limit);
+     add('catalog','查看已审核的公开艺人资料','/app/#/artists/catalog',['artist'],'查看合成公开资料和占位预览；撤回公开授权后目录应隐藏，不能据此取得商用许可。'+limit);
+     add('manage','机构：管理已受托艺人','/workspace/artists/people',['agency'],'当前身份已绑定合成MCN机构。查看旗下受托艺人及有效委托，按授权管理形象；不能代艺人作本人同意或签署。'+limit);
+     add('review','运营：独立审核艺人资料','/workspace/artists/reviews/CONSENT',['reviewer'],'查看待审资料。独立判断并留下原因；没有待审记录时需由艺人先提交，不虚构审核成功。'+limit);
    } else if(group==='delivery'){
      add('orders','原订单、付款与制作进度','/app/#/trade',['buyer','producer'],'查看原订单付款计划、原付款记录与对应制作项目；新建记录不代表实际付款。'+limit);
      add('production','制作交付工作台','/workspace/production/projects',Object.keys(data.accounts),'从本人有权访问的制作记录检查版本、反馈与交付门槛；本组部分媒体为占位字节，不验实际影像质量。'+limit);

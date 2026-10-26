@@ -11,3 +11,5 @@ test('长期测试保留清单需要独立环境标识和原有受限路由',()=
  assert.doesNotThrow(()=>validateManifest(m,database));
  for(const patch of [{synthetic_only:false},{database:'other'},{environment_id:'missing'},{rules:[{method:'DELETE',pattern:'.*'}]}])assert.throws(()=>validateManifest({...m,...patch},database));
 });
+
+test('艺人持续资料必须保留附件并只使用隔离服务主体',()=>{const name='jx_test_artists_123_aabbccddeeff';const m={format:1,synthetic_only:true,database:name,database_env:{...env,MYSQL_DATABASE:name},environment_id:'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',secret:'s'.repeat(44),access:{synthetic_only:true,accounts:{artist:{}}},rules:[{method:'GET',pattern:'^/api/v1/me$'}],file_store:true,supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'}};assert.doesNotThrow(()=>validateManifest(m,name));assert.throws(()=>validateManifest({...m,file_store:false},name));assert.throws(()=>validateManifest({...m,supplyEnv:{...m.supplyEnv,OSS_ENABLED:'true'}},name));});

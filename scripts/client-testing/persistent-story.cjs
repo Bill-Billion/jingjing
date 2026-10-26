@@ -1,4 +1,4 @@
-// Only a retained, synthetic story database on the existing local test MySQL.
+// Retained story or artist fixtures on the existing local test MySQL; no production providers.
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -6,7 +6,7 @@ const assert = require('node:assert/strict');
 const http = require('node:http');
 const root = path.resolve(__dirname, '../..');
 const backend = path.join(root, '晶晶日上工程交接包/01_源码/backend_server');
-const namePattern = /^jx_test_story_[0-9]+_[a-f0-9]{12}$/;
+const namePattern = /^jx_test_(?:story|artists)_[0-9]+_[a-f0-9]{12}$/;
 function assertEnv(env, database) {
   assert(env.NODE_ENV === 'test' && env.DB_CLIENT === 'mysql');
   assert(env.MYSQL_HOST === '127.0.0.1' && env.MYSQL_PORT === '33316' && env.MYSQL_USER === 'jx_local');
@@ -17,11 +17,12 @@ function validateManifest(m, name) {
   assertEnv(m.database_env, name);
   assert(typeof m.environment_id === 'string' && /^[a-f0-9-]{36}$/.test(m.environment_id));
   assert(typeof m.secret === 'string' && m.secret.length >= 40);
-  assert(m.access.synthetic_only === true && m.access.accounts.buyer);
+  assert(m.access.synthetic_only === true && (name.startsWith('jx_test_story_') ? m.access.accounts.buyer : m.access.accounts.artist));
+  if(name.startsWith('jx_test_artists_')){assert(m.file_store===true);assert(Object.keys(m.supplyEnv||{}).join(',')==='ARTIST_PLATFORM_MERCHANT_PARTY_ID');assert(/^[a-f0-9-]{36}$/.test(m.supplyEnv.ARTIST_PLATFORM_MERCHANT_PARTY_ID));}
   assert(Array.isArray(m.rules) && m.rules.length > 0);
   assert(m.rules.every(r => ['GET', 'POST', 'PATCH'].includes(r.method) && r.pattern.startsWith('^') && r.pattern.endsWith('$')));
 }
-async function retain({ env, database, secret, access, tradeEnv, rules, db }) {
+async function retain({ env, database, secret, access, tradeEnv, rules, db, supplyEnv, files }) {
   const selected = { NODE_ENV: 'test', DB_CLIENT: 'mysql', MYSQL_HOST: env.MYSQL_HOST, MYSQL_PORT: env.MYSQL_PORT, MYSQL_USER: env.MYSQL_USER, MYSQL_PASSWORD: env.MYSQL_PASSWORD, MYSQL_DATABASE: database };
   assertEnv(selected, database);
   const parent = path.join(root, '.local/client-persistent'); fs.mkdirSync(parent, { recursive: true, mode: 0o700 });
@@ -31,6 +32,7 @@ async function retain({ env, database, secret, access, tradeEnv, rules, db }) {
   await db.execute('CREATE TABLE client_test_environment (id VARCHAR(36) PRIMARY KEY, synthetic_only TINYINT NOT NULL) ENGINE=InnoDB');
   await db.execute('INSERT INTO client_test_environment(id,synthetic_only) VALUES (?,1)', [environmentId]);
   const manifest = { format: 1, synthetic_only: true, database, environment_id: environmentId, database_env: selected, secret, access, tradeEnv, rules: rules.map(([method, re]) => ({ method, pattern: re.source })), created_at: new Date().toISOString() };
+  if(files){manifest.file_store=true;manifest.supplyEnv=supplyEnv;const store=require('./synthetic-files.cjs').openFiles(path.join(dir,'assets'));for(const [key,body] of files)await store.put({key,body:Buffer.from(body)});}
   validateManifest(manifest, database);
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest, null, 2), { flag: 'wx', mode: 0o600 });
   return dir;
@@ -72,10 +74,12 @@ async function start(name, { hours = 72, port = 0 } = {}) {
         accounts[role] = { account_id: a.account_id, party_id: a.party_id, bearer_token: token };
       }
     });
-    const app = createAccountApi({ db, secret: m.secret, tradeEnv: m.tradeEnv, allowedOrigins: ['http://127.0.0.1:3490'] });
+    const supplyStorageFactory=m.file_store?()=>require('./synthetic-files.cjs').openFiles(path.join(dir,'assets')):undefined;
+    const app = createAccountApi({ db, secret: m.secret, tradeEnv: m.tradeEnv, supplyEnv:m.supplyEnv, supplyStorageFactory, allowedOrigins: ['http://127.0.0.1:3490'] });
     const rules = m.rules.map(r => ({ method: r.method, re: new RegExp(r.pattern) }));
     server = http.createServer((req, res) => {
       const pathname = req.url.split('?')[0];
+      if(name.startsWith('jx_test_artists_')&&((pathname==='/api/v1/gigs/records'&&new URL(req.url,'http://local').searchParams.get('kind')!=='RELATION')||/\/artists\/people\/[^/]+\/identity$/.test(pathname))){res.writeHead(403,{'Content-Type':'application/json'});return res.end(JSON.stringify({error:{code:'LOCAL_FIXTURE_ROUTE_DISABLED'}}));}
       if (rules.some(r => (req.method === r.method || req.method === 'OPTIONS') && r.re.test(pathname))) return app(req, res);
       res.writeHead(403, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
       res.end(JSON.stringify({ error: { code: 'LOCAL_FIXTURE_ROUTE_DISABLED' } }));
