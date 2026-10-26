@@ -78,7 +78,8 @@ void main() {
 
   testWidgets('栏目分别保留滚动位置，重复点击不归零，详情返回仍在原栏目', (tester) async {
     final adapter = FakeAccountAdapter();
-    await openApp(tester, AccountSession(api: adapter.createApi()));
+    final session = (await tester.runAsync(() => contractSession(adapter)))!;
+    await openApp(tester, session);
     await tester.drag(find.byType(ListView), const Offset(0, -420));
     await frames(tester);
     final homePosition = sectionScroll(tester).position.pixels;
@@ -136,9 +137,13 @@ void main() {
         .where((r) => r.path == '/api/v1/projects/catalogue')
         .length;
     expect(reads(), 0);
-    await tester.scrollUntilVisible(find.text('公开项目与角色'), 250,
+    final projects = find.text('公开项目与角色');
+    await tester.scrollUntilVisible(projects, 250,
         scrollable: find.byType(Scrollable).first);
-    await tester.tap(find.text('公开项目与角色'));
+    await Scrollable.ensureVisible(tester.element(projects), alignment: .5);
+    await tester.pump();
+    expect(projects.hitTestable(), findsOneWidget);
+    await tester.tap(projects);
     await frames(tester);
     expect(find.byType(NavigationBar), findsNothing);
     expect(reads(), 1);
@@ -235,10 +240,16 @@ void main() {
     await frames(tester);
     await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
-    await tester.tap(find.byTooltip('通知'));
+    await tester.tap(find.text('全部'));
+    await frames(tester);
+    await tester.scrollUntilVisible(find.text('系统与业务通知'), 300,
+        scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('系统与业务通知'));
     await frames(tester);
     expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('先确认办事身份'), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await frames(tester);
     await tester.tap(find.byType(BackButton));
     await frames(tester);
     expectFiveTabs();
@@ -345,6 +356,12 @@ void main() {
         [
           '/api/v1/auth/sessions',
           '/api/v1/privacy/preferences',
+          '/api/v1/artists/catalog',
+          '/api/v1/stock/catalog',
+          '/api/v1/notices/catalog',
+          '/api/v1/artists/catalog',
+          '/api/v1/stock/catalog',
+          '/api/v1/notices/catalog',
           '/api/v1/auditions/catalog',
           '/api/v1/notices/catalog',
           '/api/v1/notices/catalog',

@@ -255,12 +255,30 @@ void main() {
       tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
       2,
     );
+    final beforeSwitch = a.requests.length;
     for (final i in [4, 0, 2]) {
       await tester.tap(find.byKey(Key('app-tab-$i')));
       await tester.pump();
       nav.expectFiveTabs();
     }
+    // The new plaza starts three public GETs on its first mount. Complete their
+    // fake-async IO before disposing, while keeping the instant-switch checks.
+    await nav.frames(tester);
+    final plazaReads = a.requests.skip(beforeSwitch).toList();
+    expect(
+        plazaReads.map((r) => r.path),
+        unorderedEquals([
+          '/api/v1/artists/catalog',
+          '/api/v1/stock/catalog',
+          '/api/v1/notices/catalog',
+        ]));
+    expect(
+        plazaReads.every(
+            (r) => r.method == 'GET' && r.headers['X-Acting-Party'] == null),
+        isTrue);
     expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await nav.frames(tester);
   });
   testWidgets('佣金明确沙盒与无出款，负退款变动不变成已到账', (tester) async {
     late FakeAccountAdapter a;

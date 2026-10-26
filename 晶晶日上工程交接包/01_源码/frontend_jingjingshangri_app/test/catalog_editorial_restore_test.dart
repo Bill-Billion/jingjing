@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jingjingshangri_app/account/editorial_widgets.dart';
+import 'package:dio/dio.dart';
 import 'package:jingjingshangri_app/artists/artists_pages.dart';
 import 'package:jingjingshangri_app/auditions/auditions_pages.dart';
 import 'package:jingjingshangri_app/notices/notices_pages.dart';
@@ -53,6 +53,7 @@ void main() {
   });
 
   testWidgets('公开艺人详情沿用真实资料，预览撤权后不保留名称与简介', (t) async {
+    var revoked = false;
     final adapter = artistAdapter(override: (request) {
       if (request.path == '$artistRoot/catalog') {
         return envelope({
@@ -61,8 +62,10 @@ void main() {
         });
       }
       if (request.path.endsWith('/assets/$assetKey/content')) {
-        return envelope({'code': 'ARTIST_CONSENT_REQUIRED'},
-            status: 409, error: true);
+        return revoked
+            ? envelope({'code': 'ARTIST_CONSENT_REQUIRED'},
+                status: 409, error: true)
+            : ResponseBody.fromBytes([1, 2, 3], 200);
       }
       return null;
     });
@@ -74,10 +77,15 @@ void main() {
             .lastWhere((r) => r.path == '$artistRoot/catalog')
             .queryParameters['city'],
         '杭州');
-    await artists.press(t, find.text('查看艺人详情'));
-    expect(find.byType(EditorialFeature), findsOneWidget);
+    await artists.press(t, find.text('当前公开艺人'));
+    expect(t.widget<Text>(find.text('当前公开艺人')).style!.fontSize, 32);
     expect(find.text('当前公开艺人'), findsOneWidget);
-    expect(adapter.requests.where((r) => r.path.endsWith('/content')), isEmpty);
+    expect(
+        adapter.requests.where((r) => r.path.endsWith('/content')).every((r) =>
+            r.path ==
+            '$artistRoot/catalog/$listingKey/assets/$assetKey/content'),
+        isTrue);
+    revoked = true;
     await artists.press(t, find.text('读取获准预览 1'));
     expect(find.text('当前公开艺人'), findsNothing);
     expect(find.text('已审核的公开介绍'), findsNothing);

@@ -1,0 +1,4213 @@
+{
+  "status": "FAIL",
+  "checked_at": "2026-10-26T18:57:40.040Z",
+  "synthetic_only": true,
+  "true_http_business_responses": true,
+  "mocked_success_responses": 0,
+  "visual_review": "Screenshots require human/model comparison; browser execution does not assert pixel fidelity.",
+  "build": {
+    "bundle": "main.dart.js",
+    "bytes": 5702103,
+    "sha256": "b95b7ffe415cc0502737b8680cb162858d77f1e3249df9eb43286d73afb3594c",
+    "identity_entry": "test/support/figma_restore_browser_main.dart",
+    "identity_only_fixture": true,
+    "integration_base_commit": "767d2ffc6153d8f1986dd02641d5b88ddcbca907",
+    "working_tree_changes": true
+  },
+  "widths": [
+    320,
+    390,
+    768
+  ],
+  "fixture_counts": {
+    "artists": 7,
+    "stock": 6,
+    "notices": 6
+  },
+  "cases": 9,
+  "failed_cases": [
+    "notice-forms-320"
+  ],
+  "write_enabled": false,
+  "actual_request_count": 260,
+  "browser_request_count": 253,
+  "synthetic_write_count": 0,
+  "screenshot_count": 74,
+  "results": [
+    {
+      "case": "search-directory-320",
+      "sequence": 1,
+      "width": 320,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "找艺人 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "找作品 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "找通告 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "艺人目录 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "现成作品 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "通告与投稿 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Public audition destination, city and actual offer verified",
+          "status": "PASS",
+          "canonical_route": "/auditions/catalog",
+          "city": "郑州",
+          "confirmed_public_offer_id": "8e6898ca-4cff-4f6b-9750-e952191399fc",
+          "generic_failure_absent": true
+        },
+        {
+          "name": "试镜预约 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "我已购买的作品 enters and returns",
+          "status": "PASS"
+        }
+      ],
+      "limitations": [
+        "全部功能其余业务只核对入口保留：本联合沙箱未开放 engagement/customization/production/supply/payment；不得视作那些业务已通过。"
+      ],
+      "input_checks": [
+        {
+          "label": "搜索或手动输入城市",
+          "intended_characters": 2,
+          "observed_characters": 2,
+          "focus": {
+            "tag": "INPUT",
+            "label": "搜索或手动输入城市\n输入城市名称"
+          }
+        }
+      ],
+      "actual_request_count": 44,
+      "final_route": "/stock/purchases"
+    },
+    {
+      "case": "artist-detail-320",
+      "sequence": 2,
+      "width": 320,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "Explicit approved PNG read uses current public asset HTTP permission",
+          "status": "PASS"
+        },
+        {
+          "name": "Public audition destination, city and actual offer verified",
+          "status": "PASS",
+          "canonical_route": "/auditions/catalog",
+          "city": "郑州",
+          "confirmed_public_offer_id": "8e6898ca-4cff-4f6b-9750-e952191399fc",
+          "generic_failure_absent": true
+        },
+        {
+          "name": "Return from public audition catalogue to original artist detail; no realtime availability inferred from artist flag",
+          "status": "PASS"
+        }
+      ],
+      "limitations": [],
+      "actual_request_count": 15,
+      "final_route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E"
+    },
+    {
+      "case": "notice-forms-320",
+      "sequence": 3,
+      "width": 320,
+      "result": "FAIL",
+      "checks": [
+        {
+          "name": "Own scoped consent selected: PROFILE",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        }
+      ],
+      "limitations": [],
+      "input_checks": [
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        },
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        },
+        {
+          "label": "想演的明确角色",
+          "intended_characters": 6,
+          "observed_characters": 0,
+          "focus": {
+            "tag": "FLUTTER-VIEW",
+            "label": null
+          }
+        }
+      ],
+      "error": "AssertionError [ERR_ASSERTION]: Actual focused Flutter input: 想演的明确角色\n\n'' !== '合成测试角色'\n\n    at fill (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/docs/testing/plaza-dense-20261026/api/browser-check.mjs:168:10)\n    at async expandedSubmission (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/docs/testing/plaza-dense-20261026/api/browser-check.mjs:270:24)\n    at async file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/docs/testing/plaza-dense-20261026/api/browser-check.mjs:475:9\n    at async run (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/docs/testing/plaza-dense-20261026/api/browser-check.mjs:233:5)\n    at async file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/docs/testing/plaza-dense-20261026/api/browser-check.mjs:469:5",
+      "actual_request_count": 20,
+      "final_route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE"
+    },
+    {
+      "case": "search-directory-390",
+      "sequence": 4,
+      "width": 390,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "找艺人 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "找作品 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "找通告 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "艺人目录 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "现成作品 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "通告与投稿 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Public audition destination, city and actual offer verified",
+          "status": "PASS",
+          "canonical_route": "/auditions/catalog",
+          "city": "郑州",
+          "confirmed_public_offer_id": "8e6898ca-4cff-4f6b-9750-e952191399fc",
+          "generic_failure_absent": true
+        },
+        {
+          "name": "试镜预约 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "我已购买的作品 enters and returns",
+          "status": "PASS"
+        }
+      ],
+      "limitations": [
+        "全部功能其余业务只核对入口保留：本联合沙箱未开放 engagement/customization/production/supply/payment；不得视作那些业务已通过。"
+      ],
+      "input_checks": [
+        {
+          "label": "搜索或手动输入城市",
+          "intended_characters": 2,
+          "observed_characters": 2,
+          "focus": {
+            "tag": "INPUT",
+            "label": "搜索或手动输入城市\n输入城市名称"
+          }
+        }
+      ],
+      "actual_request_count": 44,
+      "final_route": "/stock/purchases"
+    },
+    {
+      "case": "artist-detail-390",
+      "sequence": 5,
+      "width": 390,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "Explicit approved PNG read uses current public asset HTTP permission",
+          "status": "PASS"
+        },
+        {
+          "name": "Public audition destination, city and actual offer verified",
+          "status": "PASS",
+          "canonical_route": "/auditions/catalog",
+          "city": "郑州",
+          "confirmed_public_offer_id": "8e6898ca-4cff-4f6b-9750-e952191399fc",
+          "generic_failure_absent": true
+        },
+        {
+          "name": "Return from public audition catalogue to original artist detail; no realtime availability inferred from artist flag",
+          "status": "PASS"
+        }
+      ],
+      "limitations": [],
+      "actual_request_count": 15,
+      "final_route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E"
+    },
+    {
+      "case": "notice-forms-390",
+      "sequence": 6,
+      "width": 390,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "Own scoped consent selected: PROFILE",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        },
+        {
+          "name": "Own scoped consent selected: ROLE",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        },
+        {
+          "name": "Own scoped consent selected: CREATE_DRAMA",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        }
+      ],
+      "limitations": [
+        "附件上传未测试；联合沙箱未开放 supply 上传。"
+      ],
+      "input_checks": [
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        },
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        },
+        {
+          "label": "想演的明确角色",
+          "intended_characters": 6,
+          "observed_characters": 6,
+          "focus": {
+            "tag": "INPUT",
+            "label": "想演的明确角色"
+          }
+        },
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        }
+      ],
+      "actual_request_count": 28,
+      "final_route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA"
+    },
+    {
+      "case": "search-directory-768",
+      "sequence": 7,
+      "width": 768,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "Desktop tap height 找艺人",
+          "status": "PASS",
+          "actual_height": 86,
+          "minimum": 44
+        },
+        {
+          "name": "找艺人 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 找作品",
+          "status": "PASS",
+          "actual_height": 86,
+          "minimum": 44
+        },
+        {
+          "name": "找作品 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 找通告",
+          "status": "PASS",
+          "actual_height": 86,
+          "minimum": 44
+        },
+        {
+          "name": "找通告 enters catalogue and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 艺人目录",
+          "status": "PASS",
+          "actual_height": 68,
+          "minimum": 44
+        },
+        {
+          "name": "艺人目录 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 现成作品",
+          "status": "PASS",
+          "actual_height": 68,
+          "minimum": 44
+        },
+        {
+          "name": "现成作品 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 通告与投稿",
+          "status": "PASS",
+          "actual_height": 68,
+          "minimum": 44
+        },
+        {
+          "name": "通告与投稿 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 试镜预约",
+          "status": "PASS",
+          "actual_height": 68,
+          "minimum": 44
+        },
+        {
+          "name": "Public audition destination, city and actual offer verified",
+          "status": "PASS",
+          "canonical_route": "/auditions/catalog",
+          "city": "郑州",
+          "confirmed_public_offer_id": "8e6898ca-4cff-4f6b-9750-e952191399fc",
+          "generic_failure_absent": true
+        },
+        {
+          "name": "试镜预约 enters and returns",
+          "status": "PASS"
+        },
+        {
+          "name": "Desktop tap height 我已购买的作品",
+          "status": "PASS",
+          "actual_height": 68,
+          "minimum": 44
+        },
+        {
+          "name": "我已购买的作品 enters and returns",
+          "status": "PASS"
+        }
+      ],
+      "limitations": [
+        "全部功能其余业务只核对入口保留：本联合沙箱未开放 engagement/customization/production/supply/payment；不得视作那些业务已通过。"
+      ],
+      "input_checks": [
+        {
+          "label": "搜索或手动输入城市",
+          "intended_characters": 2,
+          "observed_characters": 2,
+          "focus": {
+            "tag": "INPUT",
+            "label": "搜索或手动输入城市\n输入城市名称"
+          }
+        }
+      ],
+      "actual_request_count": 44,
+      "final_route": "/stock/purchases"
+    },
+    {
+      "case": "artist-detail-768",
+      "sequence": 8,
+      "width": 768,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "Explicit approved PNG read uses current public asset HTTP permission",
+          "status": "PASS"
+        },
+        {
+          "name": "Public audition destination, city and actual offer verified",
+          "status": "PASS",
+          "canonical_route": "/auditions/catalog",
+          "city": "郑州",
+          "confirmed_public_offer_id": "8e6898ca-4cff-4f6b-9750-e952191399fc",
+          "generic_failure_absent": true
+        },
+        {
+          "name": "Return from public audition catalogue to original artist detail; no realtime availability inferred from artist flag",
+          "status": "PASS"
+        }
+      ],
+      "limitations": [],
+      "actual_request_count": 15,
+      "final_route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E"
+    },
+    {
+      "case": "notice-forms-768",
+      "sequence": 9,
+      "width": 768,
+      "result": "PASS_PENDING_VISUAL_REVIEW",
+      "checks": [
+        {
+          "name": "Desktop tap height 提交本次单向投稿审核",
+          "status": "PASS",
+          "actual_height": 44,
+          "minimum": 44
+        },
+        {
+          "name": "Own scoped consent selected: PROFILE",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        },
+        {
+          "name": "Desktop tap height 提交本次单向投稿审核",
+          "status": "PASS",
+          "actual_height": 44,
+          "minimum": 44
+        },
+        {
+          "name": "Own scoped consent selected: ROLE",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        },
+        {
+          "name": "Desktop tap height 提交本次单向投稿审核",
+          "status": "PASS",
+          "actual_height": 44,
+          "minimum": 44
+        },
+        {
+          "name": "Own scoped consent selected: CREATE_DRAMA",
+          "status": "PASS",
+          "consent_status": "APPROVED",
+          "target_matches_notice": true
+        }
+      ],
+      "limitations": [
+        "附件上传未测试；联合沙箱未开放 supply 上传。"
+      ],
+      "input_checks": [
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        },
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        },
+        {
+          "label": "想演的明确角色",
+          "intended_characters": 6,
+          "observed_characters": 6,
+          "focus": {
+            "tag": "INPUT",
+            "label": "想演的明确角色"
+          }
+        },
+        {
+          "label": "本次投稿用途",
+          "intended_characters": 17,
+          "observed_characters": 17,
+          "focus": {
+            "tag": "INPUT",
+            "label": "本次投稿用途"
+          }
+        },
+        {
+          "label": "给接收方的投稿内容",
+          "intended_characters": 23,
+          "observed_characters": 23,
+          "focus": {
+            "tag": "TEXTAREA",
+            "label": "给接收方的投稿内容"
+          }
+        }
+      ],
+      "actual_request_count": 28,
+      "final_route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA"
+    }
+  ],
+  "screenshots": [
+    {
+      "case": "search-directory-320",
+      "phase": "search",
+      "file": "search-directory-320-visual-final-recheck-search-00.png",
+      "route": "/search?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "2e615c0012a6b13b67eaa2170c9914c27021d0568be767e8c846d265c49ec83c",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "search-artists",
+      "file": "search-directory-320-visual-final-recheck-search-artists-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "1fe2a3bd3f348a8aa8aa7f799715d857b15a7e83976ed853e0758cb1a90e18c5",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "search-works",
+      "file": "search-directory-320-visual-final-recheck-search-works-00.png",
+      "route": "/stock/catalog",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "9c4e640dc0b76a37398ce84beaa06ec881145e614ba6a57d1873da5291d9e4b6",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "search-notices",
+      "file": "search-directory-320-visual-final-recheck-search-notices-00.png",
+      "route": "/notices/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "8fe605d2948638df58af0a19b44bbee6b7cd188b3fd37acb0d3960557c4731bf",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "all-functions",
+      "file": "search-directory-320-visual-final-recheck-all-functions-00.png",
+      "route": "/square",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "d9072a314f2550ee7a310f258847d89b2b481dceb8d79377ebbfab45eb828ea6",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "all-functions",
+      "file": "search-directory-320-visual-final-recheck-all-functions-01.png",
+      "route": "/square",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "192742ef5bba761ffb1019de319a5d8d54793afdd5d93bb50a672f4293e85ea0",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "all-functions",
+      "file": "search-directory-320-visual-final-recheck-all-functions-02.png",
+      "route": "/square",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "900986a9cfb1d1bf349160690a9fcc67df160c6c290db144a9e80fd43bd20ab8",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "directory-artists-catalog",
+      "file": "search-directory-320-visual-final-recheck-directory-artists-catalog-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "1fe2a3bd3f348a8aa8aa7f799715d857b15a7e83976ed853e0758cb1a90e18c5",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "directory-stock-catalog",
+      "file": "search-directory-320-visual-final-recheck-directory-stock-catalog-00.png",
+      "route": "/stock/catalog",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "9c4e640dc0b76a37398ce84beaa06ec881145e614ba6a57d1873da5291d9e4b6",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "directory-notices-catalog",
+      "file": "search-directory-320-visual-final-recheck-directory-notices-catalog-00.png",
+      "route": "/notices/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "8fe605d2948638df58af0a19b44bbee6b7cd188b3fd37acb0d3960557c4731bf",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "directory-auditions-catalog",
+      "file": "search-directory-320-visual-final-recheck-directory-auditions-catalog-00.png",
+      "route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "9a982d13ac3c4ab0fb5c6229e0630c8863d18972259b611c07636622148c33a2",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-320",
+      "phase": "directory-stock-purchases",
+      "file": "search-directory-320-visual-final-recheck-directory-stock-purchases-00.png",
+      "route": "/stock/purchases",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "141282815a29b54253e2cadbc8610fbd61898711a3da78d17d023de9882251fd",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-320",
+      "phase": "initial",
+      "file": "artist-detail-320-visual-final-recheck-initial-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "f134873d4351b5bf0006f1ec56f8c8551cb160241f679d4519be4ae967947057",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-320",
+      "phase": "initial",
+      "file": "artist-detail-320-visual-final-recheck-initial-01.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "0d54aff682c482ba23eb480ba6062556941c9428686b2ffd5a36a4b82db29e6d",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-320",
+      "phase": "authorized-preview",
+      "file": "artist-detail-320-visual-final-recheck-authorized-preview-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "3159886dda979dedc0eaed135f4ca89a0033cb3ecfd97c0fe862e73a029db2b0",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-320",
+      "phase": "authorized-preview",
+      "file": "artist-detail-320-visual-final-recheck-authorized-preview-01.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "0a08202c09961e72704a73a4540a96d91dfd034dfd4e4f75efdbcf70dfa55889",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-320",
+      "phase": "auditions",
+      "file": "artist-detail-320-visual-final-recheck-auditions-00.png",
+      "route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "9a982d13ac3c4ab0fb5c6229e0630c8863d18972259b611c07636622148c33a2",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-320",
+      "phase": "notice-detail",
+      "file": "notice-forms-320-visual-final-recheck-notice-detail-00.png",
+      "route": "/notices/public?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "0638889b5b033bc4fafda57b4119de56c36034f1ac59a7354474c2780c680396",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-320",
+      "phase": "notice-detail",
+      "file": "notice-forms-320-visual-final-recheck-notice-detail-01.png",
+      "route": "/notices/public?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "7f69765f44d91410551fb93219c2c48aa9e1af662728434a1f3a0550e8c78332",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-320",
+      "phase": "form-profile",
+      "file": "notice-forms-320-visual-final-recheck-form-profile-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "4d4a7a7078deecd3d4c521d6f6a6ec1348134e7a35dacaab41f4e75ba1fcca46",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-320",
+      "phase": "form-profile",
+      "file": "notice-forms-320-visual-final-recheck-form-profile-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "86225d7442cf78f0fb8c0855721268f9b8d2214b64d6db5e3835ae6531a643a0",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-320",
+      "phase": "form-profile",
+      "file": "notice-forms-320-visual-final-recheck-form-profile-02.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "sha256": "1307003973d094edd5c8fcab67c0e5da462aa07d7bf7eed0fc9e42e675e41ce0",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "search",
+      "file": "search-directory-390-visual-final-recheck-search-00.png",
+      "route": "/search?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "1b06abbe31405f0a02f2f44c7d3544c128f4331ca64182a5ec1f3f04841052d2",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "search-artists",
+      "file": "search-directory-390-visual-final-recheck-search-artists-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "23b9c9796acaf9f03f30b9bdbd172bece8e4f66b9ab47f2dcffeda2d196ae641",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "search-works",
+      "file": "search-directory-390-visual-final-recheck-search-works-00.png",
+      "route": "/stock/catalog",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "bc9ed71d34a076807d50cc8efa92b2675fce99d904390514c25dfdac21f5775f",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "search-notices",
+      "file": "search-directory-390-visual-final-recheck-search-notices-00.png",
+      "route": "/notices/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "9c3ba82f58d1eb90e88d165b319aed83a4cdda4bb460e8f45778b3228818798b",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "all-functions",
+      "file": "search-directory-390-visual-final-recheck-all-functions-00.png",
+      "route": "/square",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "ba04e355331e5cb4066fc3e775ecff69190febb3598aedf38a4309e52a0e45c9",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "all-functions",
+      "file": "search-directory-390-visual-final-recheck-all-functions-01.png",
+      "route": "/square",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "76865305c86b55ac7728032d20f78157ae49bd346754df3db43fb8af390e3bcc",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "all-functions",
+      "file": "search-directory-390-visual-final-recheck-all-functions-02.png",
+      "route": "/square",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "df4739c5ac24ff2a8e9c39008830499901607cf7437e527a726f861877dd111e",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "directory-artists-catalog",
+      "file": "search-directory-390-visual-final-recheck-directory-artists-catalog-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "23b9c9796acaf9f03f30b9bdbd172bece8e4f66b9ab47f2dcffeda2d196ae641",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "directory-stock-catalog",
+      "file": "search-directory-390-visual-final-recheck-directory-stock-catalog-00.png",
+      "route": "/stock/catalog",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "bc9ed71d34a076807d50cc8efa92b2675fce99d904390514c25dfdac21f5775f",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "directory-notices-catalog",
+      "file": "search-directory-390-visual-final-recheck-directory-notices-catalog-00.png",
+      "route": "/notices/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "9c3ba82f58d1eb90e88d165b319aed83a4cdda4bb460e8f45778b3228818798b",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "directory-auditions-catalog",
+      "file": "search-directory-390-visual-final-recheck-directory-auditions-catalog-00.png",
+      "route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "918b92c44f8ceed0221f596f828c04bca7224c519004d3cba691e6c973f4003b",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-390",
+      "phase": "directory-stock-purchases",
+      "file": "search-directory-390-visual-final-recheck-directory-stock-purchases-00.png",
+      "route": "/stock/purchases",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "abf88264873527337d08fd3455ff93b1f2e48190f07f3395dedea44455852631",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-390",
+      "phase": "initial",
+      "file": "artist-detail-390-visual-final-recheck-initial-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "bd55b3b2c6a272291ef64ff2acceeb67d362df87b798d53795ee332bd7a053d0",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-390",
+      "phase": "initial",
+      "file": "artist-detail-390-visual-final-recheck-initial-01.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "0ab66d7062785603a5d069b63c49c8c8576482671ff0bf4f21bc3a20358bed7f",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-390",
+      "phase": "authorized-preview",
+      "file": "artist-detail-390-visual-final-recheck-authorized-preview-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "c82460c69683012ed9aedf321f4e413c0e6d9023a199a780338a03db4922afd8",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-390",
+      "phase": "authorized-preview",
+      "file": "artist-detail-390-visual-final-recheck-authorized-preview-01.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "0ab66d7062785603a5d069b63c49c8c8576482671ff0bf4f21bc3a20358bed7f",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-390",
+      "phase": "auditions",
+      "file": "artist-detail-390-visual-final-recheck-auditions-00.png",
+      "route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "918b92c44f8ceed0221f596f828c04bca7224c519004d3cba691e6c973f4003b",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "notice-detail",
+      "file": "notice-forms-390-visual-final-recheck-notice-detail-00.png",
+      "route": "/notices/public?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "6447b02bd4f71d2ea714a04419160490181a56b889fbe7e54e0975af3d6d71bc",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "notice-detail",
+      "file": "notice-forms-390-visual-final-recheck-notice-detail-01.png",
+      "route": "/notices/public?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "1dd06526a0a5b6bd797cedf383ba5c56dc306bc1fc5d6dfb6e26cc4ea70174bc",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-profile",
+      "file": "notice-forms-390-visual-final-recheck-form-profile-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "ee7625df5066206a80b5ca462b315b51480d378559b0e45dc00506109ad49c89",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-profile",
+      "file": "notice-forms-390-visual-final-recheck-form-profile-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "ef41f85a378ddcc38b0426e3ff72c47ef522e47fd964c0f40c849b490a6a40a9",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-profile",
+      "file": "notice-forms-390-visual-final-recheck-form-profile-02.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "b1f19d8ab5f356ffe36e11ae53c09d6fbfefe91b2c682b61816652ace95285ca",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-role",
+      "file": "notice-forms-390-visual-final-recheck-form-role-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "9ae36324c6b476ba5f4f2e40cf0fcb93d68eeee4679da390feef5592377e609c",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-role",
+      "file": "notice-forms-390-visual-final-recheck-form-role-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "487be62589f6dd1801285035dadb7f92c4c174e343562542626ee58a0127a2b2",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-role",
+      "file": "notice-forms-390-visual-final-recheck-form-role-02.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "857d80efda7a654d749c6cee265e036bae2ec0636a0f9ae63ba923e0ae53dea3",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-create_drama",
+      "file": "notice-forms-390-visual-final-recheck-form-create_drama-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "dd45b65d5eec4c0ad9309e44447edb1a002d46f1c85fc0122399d1d963e836eb",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-create_drama",
+      "file": "notice-forms-390-visual-final-recheck-form-create_drama-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "060828da7ead0ec9e23215c02ce48f1e26aa95bcfb346e3ce4ea18b0f4578c07",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-390",
+      "phase": "form-create_drama",
+      "file": "notice-forms-390-visual-final-recheck-form-create_drama-02.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "832d78d346fe12bf045c46cea880ced3113f91a0c51abb534469667f41a7314e",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "search",
+      "file": "search-directory-768-visual-final-recheck-search-00.png",
+      "route": "/search?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "fe23ff5c623c36ef6ca1df1244e5ce587985afff1e83bc037f775959852c4100",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "search-artists",
+      "file": "search-directory-768-visual-final-recheck-search-artists-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "b6788c542138d2d22ef6cb91394fcc90e13c1c49947092d6860530c555964b4f",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "search-works",
+      "file": "search-directory-768-visual-final-recheck-search-works-00.png",
+      "route": "/stock/catalog",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "3a78fbfa60eb25829c02df7846e8164f884add1de46b32b8687bea882c879330",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "search-notices",
+      "file": "search-directory-768-visual-final-recheck-search-notices-00.png",
+      "route": "/notices/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "87adabe1f138a27b47b721d564faba1899df93926f60474fdb530bc15d3fa0be",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "all-functions",
+      "file": "search-directory-768-visual-final-recheck-all-functions-00.png",
+      "route": "/square",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "358c22fc9e42e0721774b7ee24f8252b67f93a9ed593e6c668571bbc87671563",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "all-functions",
+      "file": "search-directory-768-visual-final-recheck-all-functions-01.png",
+      "route": "/square",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "fa33303c081baea6c91f204e0bf940a29dcf91c3dd3b195b3e5e874d37b779e1",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "all-functions",
+      "file": "search-directory-768-visual-final-recheck-all-functions-02.png",
+      "route": "/square",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "6b1155aa6da4ffe48272163603fe0aeb1d5b085601c874d61f8033e5221f1626",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "directory-artists-catalog",
+      "file": "search-directory-768-visual-final-recheck-directory-artists-catalog-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "b6788c542138d2d22ef6cb91394fcc90e13c1c49947092d6860530c555964b4f",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "directory-stock-catalog",
+      "file": "search-directory-768-visual-final-recheck-directory-stock-catalog-00.png",
+      "route": "/stock/catalog",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "3a78fbfa60eb25829c02df7846e8164f884add1de46b32b8687bea882c879330",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "directory-notices-catalog",
+      "file": "search-directory-768-visual-final-recheck-directory-notices-catalog-00.png",
+      "route": "/notices/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "87adabe1f138a27b47b721d564faba1899df93926f60474fdb530bc15d3fa0be",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "directory-auditions-catalog",
+      "file": "search-directory-768-visual-final-recheck-directory-auditions-catalog-00.png",
+      "route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "f466f654e62278229adc9d5e4fc5e2de54745fca08587b5239ebcc1dbeb15c9e",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "search-directory-768",
+      "phase": "directory-stock-purchases",
+      "file": "search-directory-768-visual-final-recheck-directory-stock-purchases-00.png",
+      "route": "/stock/purchases",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "6c60b12bad6c08b9d4f3d4a2e9b83b464632222840c007647cdc2d41086c26ff",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-768",
+      "phase": "initial",
+      "file": "artist-detail-768-visual-final-recheck-initial-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "5f9eb8fa46b1c2db1d45c491e59d8618295a9d3bd5113deb6b0c64d5b6404a69",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-768",
+      "phase": "initial",
+      "file": "artist-detail-768-visual-final-recheck-initial-01.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "92bc89e6360d1f37da9de65af727b5a03e3c99d7b362d2982cf83b07378a95d2",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-768",
+      "phase": "authorized-preview",
+      "file": "artist-detail-768-visual-final-recheck-authorized-preview-00.png",
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "873f176d382b17fc1e97d67ddf2fe0caea480f7269c19f34df80b38c2cccd1de",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "artist-detail-768",
+      "phase": "auditions",
+      "file": "artist-detail-768-visual-final-recheck-auditions-00.png",
+      "route": "/auditions/catalog?city=%E9%83%91%E5%B7%9E",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "f466f654e62278229adc9d5e4fc5e2de54745fca08587b5239ebcc1dbeb15c9e",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "notice-detail",
+      "file": "notice-forms-768-visual-final-recheck-notice-detail-00.png",
+      "route": "/notices/public?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "d680d5f9444d8eccd47c107ac0a847379e88a47146d536551fdcefeed723fddb",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-profile",
+      "file": "notice-forms-768-visual-final-recheck-form-profile-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "5b7d01a7c02b6af000bed5e0e65897434b9c9ac78155e6794f22900031089885",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-profile",
+      "file": "notice-forms-768-visual-final-recheck-form-profile-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=PROFILE",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "41222b3925b5884d51efca79c1925c400bfa314a5c2751e6ce280322b31e7ac1",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-role",
+      "file": "notice-forms-768-visual-final-recheck-form-role-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "2b3ad88761c33c49b67fe1228b2790e1fed34b9a6e64a4afaa1be224c4a760f6",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-role",
+      "file": "notice-forms-768-visual-final-recheck-form-role-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "a9cd3e93dbbac355eaeef65d7cdd172a790f0c94a3545bc18bce4ccd7d379953",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-role",
+      "file": "notice-forms-768-visual-final-recheck-form-role-02.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=ROLE",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "c7d267bf4801818c9f152aee8f659173981d15f75da4e9c7a1877976fb848e98",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-create_drama",
+      "file": "notice-forms-768-visual-final-recheck-form-create_drama-00.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "ebbf1cea6c1735f9eb62e2741d4647ddee9f40300116c90114c67e1334533e04",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    },
+    {
+      "case": "notice-forms-768",
+      "phase": "form-create_drama",
+      "file": "notice-forms-768-visual-final-recheck-form-create_drama-01.png",
+      "route": "/notices/submit?noticeId=f59c6b61-887a-46d0-8e1f-b393fc34c5e7&kind=CREATE_DRAMA",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "sha256": "50edb8d5227d845033d0c1d05bf533ebdede5beb60d57a0524faf74d9ac66c33",
+      "status": "CAPTURED_PENDING_VISUAL_REVIEW",
+      "synthetic_media": true
+    }
+  ],
+  "requests": [
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "bytes": 3843,
+      "error_code": null
+    },
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "bytes": 5594,
+      "error_code": null
+    },
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "bytes": 3330,
+      "error_code": null
+    },
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "bytes": 697,
+      "error_code": null
+    },
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "artist_8",
+      "method": "GET",
+      "path": "/api/v1/artists/people/f78420bd-4d16-43b9-89c3-f1578f06191f/records/f0961698-9fb4-4426-a5e5-eaf20ca69f18",
+      "status": 200,
+      "bytes": 1358,
+      "error_code": null
+    },
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "bytes": 890,
+      "error_code": null
+    },
+    {
+      "case": "preflight",
+      "source": "real-http-control",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records/30231624-e3f1-461f-92a8-ac848e5186d3",
+      "status": 200,
+      "bytes": 1159,
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/purchases?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-320",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-320",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/purchases?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-390",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-390",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/catalog?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "search-directory-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/stock/purchases?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog?city=%E9%83%91%E5%B7%9E&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/0264580a-0d1d-420d-b53a-3212f5640bf7/assets/90f658cf-8d52-44da-bffd-8201475ad9dc/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/47a1fdd5-4e83-42fc-8e9b-92a72dfd38c3/assets/202a578d-02a8-43fe-9977-62250f05f053/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/7097da0e-5057-40ad-88e5-d99e91313f0d/assets/4cfa4af3-434f-4bcb-8847-25b77543f7eb/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/883d6166-fa36-459d-ac65-6fc534776d5f/assets/610e0f70-2bae-4aca-8ef8-ece081d4dc60/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/8758987b-0d5b-4788-8f0c-01874a7a162b/assets/784e68d9-c9cc-465c-879d-ac891286f179/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/9d16bc06-f196-4c0d-961a-814f43c3707c/assets/50f9f35b-bc49-40dd-8b42-4251e2ffc4a7/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/artists/catalog/010657f2-f8c4-4070-bc5f-f77f0967c3bb/assets/87f02549-b439-499b-b093-c651bdc79180/content",
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "error_code": null
+    },
+    {
+      "case": "artist-detail-768",
+      "source": "browser-real-http",
+      "role": "stock_buyer",
+      "method": "GET",
+      "path": "/api/v1/auditions/catalog?limit=20&city=%E9%83%91%E5%B7%9E",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/me/parties?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/f59c6b61-887a-46d0-8e1f-b393fc34c5e7",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/notices/rules?limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    },
+    {
+      "case": "notice-forms-768",
+      "source": "browser-real-http",
+      "role": "notices_seller",
+      "method": "GET",
+      "path": "/api/v1/artists/people/e5f517c6-12c3-4cc2-af13-6dea2ba3d0d4/records?kind=CONSENT&limit=20",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "error_code": null
+    }
+  ],
+  "writes": [],
+  "blocked_requests": [],
+  "errors": [],
+  "network": [],
+  "controlled_transport_faults": [],
+  "controlled_http_responses": [],
+  "limitations": [
+    "Synthetic identity bootstrap intercepts one login inside the dedicated test entry; all business reads/writes use real isolated HTTP.",
+    "No production, true provider, payment, SMS, private real-person media, final-file download or colleague review.",
+    "Stars, IP location, city normalization and stock covers remain separately documented backend/product gaps.",
+    "The sandbox does not open engagement/customization/production/supply upload/payment. Unavailable fixture routes are not production defects.",
+    "Ordinary main.dart build and design comparison are separate evidence."
+  ]
+}

@@ -3,7 +3,6 @@ import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../account/account_theme.dart';
-import '../account/editorial_widgets.dart';
 import '../account/read_failure_widgets.dart';
 import '../stock/v5_support.dart';
 import '../stock/v5_media.dart';
@@ -33,6 +32,9 @@ class NoticesPage extends StatelessWidget {
       route: Uri(path: '/notices/$mode', queryParameters: {
         if (mode == 'records' && kind != null) 'kind': kind!,
         if (mode == 'catalog' && initialCity.isNotEmpty) 'city': initialCity,
+        if (['public', 'submit'].contains(mode) && id != null) 'noticeId': id!,
+        if (mode == 'record' && id != null) 'recordId': id!,
+        if (mode == 'submit' && kind != null) 'kind': kind!,
       }).toString(),
       account: ['catalog', 'public'].contains(mode),
       showExpired: ['catalog', 'records'].contains(mode),
@@ -106,6 +108,8 @@ class _NoticeScreenState extends State<_NoticeScreen> {
       if (!more) {
         publicRows.clear();
         rows.clear();
+        publicNotice = null;
+        record = null;
         cursor = null;
       }
     });
@@ -183,60 +187,48 @@ class _NoticeScreenState extends State<_NoticeScreen> {
         tradeFact('开始', tradeDate(n['valid_from'])),
         tradeFact('截止', tradeDate(n['valid_until']))
       ];
-  Widget _featuredNotice(NoticePublic item) {
-    final title = item.notice['title'] as String;
-    final longTitle = title.runes.length > 8;
-    final cover = Container(
-        height: longTitle ? 216 : 320,
-        color: const Color(0xFFE7E4DA),
-        alignment: Alignment.center,
-        child: const Padding(
-            padding: EdgeInsets.all(12),
-            child: Text('未提供通告封面',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AccountTheme.muted))));
-    final summary = Container(
-        constraints: BoxConstraints(minHeight: longTitle ? 0 : 320),
-        color: AccountTheme.text,
-        padding: const EdgeInsets.fromLTRB(14, 18, 14, 16),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(noticeTypes[item.notice['type']]!,
-              style: const TextStyle(color: AccountTheme.canvas, fontSize: 12)),
-          const SizedBox(height: 20),
-          Text(title,
-              style: TextStyle(
-                  fontFamily: AccountTheme.serif,
-                  fontSize: longTitle
-                      ? (MediaQuery.sizeOf(context).width < 350 ? 36 : 42)
-                      : 44,
-                  height: 1.1,
-                  fontWeight: FontWeight.w700,
-                  color: AccountTheme.canvas)),
-          const SizedBox(height: 20),
-          Text(item.notice['city'],
-              style: const TextStyle(color: AccountTheme.canvas, fontSize: 12)),
-          const SizedBox(height: 16),
-          TextButton(
-              style: TextButton.styleFrom(
-                  foregroundColor: AccountTheme.canvas,
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.zero),
-              onPressed:
-                  busy ? null : () => go('/notices/public?noticeId=${item.id}'),
-              child: const Text('查看要求 ↗')),
-        ]));
-    return Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: longTitle
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [summary, cover])
-            : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Expanded(flex: 4, child: cover),
-                Expanded(flex: 3, child: summary),
-              ]));
-  }
+  Widget _noticeRow(NoticePublic item) => Material(
+      color: AccountTheme.canvas,
+      child: InkWell(
+          key: ValueKey('notice-catalog-${item.id}'),
+          onTap: busy ? null : () => go('/notices/public?noticeId=${item.id}'),
+          child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: const BoxDecoration(
+                  border:
+                      Border(bottom: BorderSide(color: AccountTheme.border))),
+              child:
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                SizedBox(
+                    width: 58,
+                    child: Text(noticeTypes[item.notice['type']]!,
+                        style: const TextStyle(
+                            fontSize: 11,
+                            color: AccountTheme.accent,
+                            fontWeight: FontWeight.w600,
+                            height: 1.5))),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text(item.notice['title'],
+                          style: const TextStyle(
+                              fontFamily: AccountTheme.serif,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              height: 1.45)),
+                      const SizedBox(height: 4),
+                      Text(
+                          '${item.notice['city']} · 截止 ${tradeDate(item.notice['valid_until'])}',
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: AccountTheme.muted,
+                              height: 1.5)),
+                    ])),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward, size: 20),
+              ]))));
 
   @override
   Widget build(BuildContext context) {
@@ -260,6 +252,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
         type == null &&
         !changedKind) {
       return V5Frame(
+          plaza: ['catalog', 'public', 'record'].contains(widget.mode),
           api: api,
           title: title,
           embedded: widget.embedded,
@@ -273,6 +266,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
         rows.isEmpty &&
         api.pendingOperations.isEmpty) {
       return V5Frame(
+          plaza: ['catalog', 'public', 'record'].contains(widget.mode),
           api: api,
           title: title,
           embedded: widget.embedded,
@@ -282,6 +276,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           children: [ReadFailureContent(reason: error!)]);
     }
     return V5Frame(
+        plaza: ['catalog', 'public', 'record'].contains(widget.mode),
         api: api,
         title: title,
         embedded: widget.embedded,
@@ -291,19 +286,24 @@ class _NoticeScreenState extends State<_NoticeScreen> {
               Expanded(
                   child: Semantics(
                       header: true,
-                      child: const Text('通告',
+                      child: const Text('找到下一次合作',
                           style: TextStyle(
                               fontFamily: AccountTheme.serif,
-                              fontSize: 56,
+                              fontSize: 24,
                               height: 1.1,
                               fontWeight: FontWeight.w900)))),
               OutlinedButton(
                   onPressed: busy ? null : () => go('/notices/new'),
                   child: const Text('发布 ＋')),
             ]),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            const Text('六类公开通告，按城市与有效时间浏览。',
+                style: TextStyle(fontSize: 14, color: AccountTheme.muted)),
+            const SizedBox(height: 20),
           ] else if (n == null)
-            tradeHeading(title, eyebrow: '单向意向 / 交给明确的人处理'),
+            tradeHeading(r == null ? title : noticeStates[r.status] ?? title,
+                fontSize: widget.mode == 'record' ? 24 : 32,
+                eyebrow: '单向意向 / 交给明确的人处理'),
           V5RecoveryPanel(
               api: api,
               label: api.recoveryLabel,
@@ -312,35 +312,26 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (widget.mode == 'catalog') ...[
-            SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(children: [
-                  for (final e
-                      in <String, String>{'': '全部', ...noticeTypes}.entries)
-                    Container(
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: (type ?? '') == e.key
-                                      ? AccountTheme.accent
-                                      : Colors.transparent,
-                                  width: 3))),
-                      child: TextButton(
-                          onPressed: busy
-                              ? null
-                              : () {
-                                  setState(() =>
-                                      type = e.key.isEmpty ? null : e.key);
-                                  load();
-                                },
-                          child: Text(e.value,
-                              style: TextStyle(
-                                  fontWeight: (type ?? '') == e.key
-                                      ? FontWeight.w700
-                                      : FontWeight.w400))),
-                    ),
-                ])),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              for (final e
+                  in <String, String>{'': '全部', ...noticeTypes}.entries)
+                OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: (type ?? '') == e.key
+                            ? AccountTheme.accent
+                            : AccountTheme.text,
+                        side: BorderSide(
+                            color: (type ?? '') == e.key
+                                ? AccountTheme.accent
+                                : AccountTheme.border)),
+                    onPressed: busy
+                        ? null
+                        : () {
+                            setState(() => type = e.key.isEmpty ? null : e.key);
+                            load();
+                          },
+                    child: Text(e.value)),
+            ]),
             const SizedBox(height: 20),
             TextField(
                 controller: city,
@@ -353,20 +344,11 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                 required: false,
                 onChanged: (v) => setState(() => at.text = v)),
             tradeButton('筛选通告', busy ? null : () => load(), outline: true),
-            for (final item in publicRows) ...[
-              if (item == publicRows.first) _featuredNotice(item),
-              tradeSection(
-                  item == publicRows.first ? '通告要求与投稿' : item.notice['title'], [
-                Text(
-                    '${noticeTypes[item.notice['type']]} · ${item.notice['city']}'),
-                tradeFact('截止', tradeDate(item.notice['valid_until'])),
-                tradeButton(
-                    '查看这份通告', () => go('/notices/public?noticeId=${item.id}'),
-                    outline: true)
-              ]),
-            ],
+            for (final item in publicRows) _noticeRow(item),
             if (!busy && error == null && publicRows.isEmpty)
-              appNotice('当前筛选没有仍有效的已审公开通告。'),
+              appNotice(cursor == null
+                  ? '当前筛选没有仍有效的已审公开通告。'
+                  : '本页没有符合条件的通告，可继续读取下一页。'),
             tradeButton('核对资格并发布通告', () => go('/notices/new')),
             tradeButton(
                 '我的投稿与接收箱', () => go('/notices/records?kind=SUBMISSION'),
@@ -377,11 +359,17 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                 outline: true),
           ],
           if (n != null) ...[
-            EditorialFeature(
-                title: n.notice['title'],
-                eyebrow:
-                    '${noticeTypes[n.notice['type']]} / ${n.notice['city']}',
-                description: n.notice['description']),
+            Text('${noticeTypes[n.notice['type']]} / ${n.notice['city']}',
+                style:
+                    const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+            const SizedBox(height: 16),
+            Text(n.notice['title'],
+                style: const TextStyle(
+                    fontFamily: AccountTheme.serif,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    height: 1.45)),
+            const SizedBox(height: 16),
             tradeSection('通告要求', noticeFacts(n.notice)),
             appNotice(n.raw['official'] == true
                 ? '此为平台官方发布；普通机构不能冒用官方身份。'

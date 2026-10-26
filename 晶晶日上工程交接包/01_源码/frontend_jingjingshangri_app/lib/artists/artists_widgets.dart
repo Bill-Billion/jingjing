@@ -51,8 +51,14 @@ class ArtistsGate extends StatelessWidget {
           ? '当前账号无法查看这份资料，私有内容已清空。请核对账号、当前身份和有效委托。'
           : '登录并选择有效负责人身份后办理。机构仅可管理本人已明确委托的事项。'),
       FilledButton(
-          onPressed: () => Navigator.pushNamed(context,
-              s.isLoggedIn ? '/account' : '/login?returnRoute=%2Fmy-humans'),
+          onPressed: () => Navigator.pushNamed(
+              context,
+              s.isLoggedIn
+                  ? '/account'
+                  : Uri(
+                          path: '/login',
+                          queryParameters: {'returnRoute': returnRoute})
+                      .toString()),
           child: const Text('前往账号与身份')),
       if (s.artistsAccessDenied)
         OutlinedButton(

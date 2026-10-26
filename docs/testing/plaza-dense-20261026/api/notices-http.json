@@ -1,0 +1,370 @@
+{
+  "status": "PASS",
+  "mode": "notices",
+  "checked_at": "2026-10-26T16:02:19.241Z",
+  "synthetic_only": true,
+  "source_commit": "767d2ffc6153d8f1986dd02641d5b88ddcbca907",
+  "http": "Real Node routes and MySQL; GET-only client; no paid providers or production traffic",
+  "checks": 23,
+  "passed": 23,
+  "results": [
+    {
+      "name": "公开目录目前要求登录，匿名返回401",
+      "status": "PASS"
+    },
+    {
+      "name": "已登录可读取当前公开目录",
+      "status": "PASS"
+    },
+    {
+      "name": "城市参数真实过滤且保留对应记录",
+      "status": "PASS"
+    },
+    {
+      "name": "无资料城市返回空目录，不返回其他城市记录",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的关键字搜索参数被拒绝",
+      "status": "PASS"
+    },
+    {
+      "name": "通告详情有类型、城市、有效期、投稿开关",
+      "status": "PASS"
+    },
+    {
+      "name": "通告详情保持单向投稿，无自由聊天入口",
+      "status": "PASS"
+    },
+    {
+      "name": "六类通告筛选参数可调用：DRAMA",
+      "status": "PASS"
+    },
+    {
+      "name": "六类通告筛选参数可调用：PERFORMANCE",
+      "status": "PASS"
+    },
+    {
+      "name": "六类通告筛选参数可调用：COMMERCIAL",
+      "status": "PASS"
+    },
+    {
+      "name": "六类通告筛选参数可调用：EVENT",
+      "status": "PASS"
+    },
+    {
+      "name": "六类通告筛选参数可调用：RECRUITMENT",
+      "status": "PASS"
+    },
+    {
+      "name": "六类通告筛选参数可调用：OFFICIAL",
+      "status": "PASS"
+    },
+    {
+      "name": "未知通告类别被拒绝",
+      "status": "PASS"
+    },
+    {
+      "name": "投稿人可读真实状态：pending_review",
+      "status": "PASS"
+    },
+    {
+      "name": "投稿人可读真实状态：sent",
+      "status": "PASS"
+    },
+    {
+      "name": "投稿人可读真实状态：declined",
+      "status": "PASS"
+    },
+    {
+      "name": "投稿人可读真实状态：withdrawn",
+      "status": "PASS"
+    },
+    {
+      "name": "投稿人可读真实状态：expired",
+      "status": "PASS"
+    },
+    {
+      "name": "收件方不能提前看到未审投稿",
+      "status": "PASS"
+    },
+    {
+      "name": "无关用户不能读取投稿",
+      "status": "PASS"
+    },
+    {
+      "name": "感兴趣进入客服处理，不自动生成订单",
+      "status": "PASS"
+    },
+    {
+      "name": "关联报价仍需买家确认",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "name": "public_catalog_fields",
+      "fields": [
+        "chat_enabled",
+        "id",
+        "notice",
+        "object_version",
+        "official",
+        "owner_party_id",
+        "rule_id"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "route": "/notices/catalog",
+      "method": "GET",
+      "role": "anonymous",
+      "acting_party": false,
+      "status": 401,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 218,
+      "cache_control": "no-store",
+      "error_code": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "route": "/notices/catalog",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 689,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?city=synthetic-city",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 689,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?city=%E6%97%A0%E8%B5%84%E6%96%99%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?q=synthetic",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    },
+    {
+      "route": "/notices/catalog/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 658,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=DRAMA",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=PERFORMANCE",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=COMMERCIAL",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=EVENT",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=RECRUITMENT",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 689,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=OFFICIAL",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/catalog?type=UNKNOWN",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 256,
+      "cache_control": "no-store",
+      "error_code": "INVALID_LIST"
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "seller",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1308,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "seller",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1525,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "seller",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1526,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "seller",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1561,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "seller",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1517,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 294,
+      "cache_control": "no-store",
+      "error_code": "NOTICE_NOT_FOUND"
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": true,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 294,
+      "cache_control": "no-store",
+      "error_code": "NOTICE_NOT_FOUND"
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 783,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/notices/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1104,
+      "cache_control": "no-store",
+      "error_code": null
+    }
+  ],
+  "not_tested": [
+    "production services",
+    "real identity or likeness consent",
+    "real payments/refunds",
+    "UI screenshots",
+    "device/IP geolocation",
+    "portrait/video quality"
+  ]
+}
