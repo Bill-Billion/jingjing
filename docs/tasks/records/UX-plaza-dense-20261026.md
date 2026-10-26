@@ -21,3 +21,7 @@
 双方下一步：本侧集中推送并核对本申请的远端检查；请另一位同事按报告实际审阅。Core/产品可确认明星编排、城市标准/定位和缩略素材契约，接手状态仍待其确认；未约定内容不以假成功代替。
 
 本次联合随机库、短期凭据及专用5500/53781服务已清理并独立核实，共用MySQL与PR37体验环境保留；见[joint-cleanup.json](../../testing/plaza-dense-20261026/api/joint-cleanup.json)。
+
+远端代码提交`0cdba9b91417772bf94e1b868b40958c2cafb80c`已推送，服务器与前端自动检查已启动。GitHub连接创建PR返回403 `Resource not accessible by integration`；未绕过权限拒绝，PR尚未创建。申请正文见[准备稿](../../reviews/plaza-dense-20261026/PR_DESCRIPTION.md)，等待用户恢复该连接的PR写权限或提供其创建的PR链接。
+
+上述实现提交的两套远端工作流、四组检查均已成功：[远端结果](../../testing/plaza-dense-20261026/REMOTE_CHECKS.json)。后续仅提交交接文档，不改变已验业务源码；PR权限阻塞仍单列。
