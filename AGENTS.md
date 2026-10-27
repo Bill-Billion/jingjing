@@ -1,4 +1,4 @@
-2026-10-27???????????????????worktrees/client-testing???core/plaza-client-integration-20261027?????????docs/tasks/records/CORE-plaza-client-20261027.md????????????????????????????????
+2026-10-27：新广场与甲方自由体验已完成本机联合复验，正准备更新原测试网址并集中交付PR37。当前worktrees/client-testing、core/plaza-client-integration-20261027。修复城市简称查询、入口可读名称、模拟收银台文案和访客反馈备份，补9名公开模拟艺人及六类通告。实际状态、限制和分工见docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md；下方为双方历史记录。
 
 当前2026-10-27：用户已确认紧凑广场dense-v2。原Figma主页及26份相关子页/状态已更新，Flutter已按稿修正并联通现有真实隔离接口；CI范围597个实际测试、分析和普通/专用构建通过，三宽复验见[本轮报告](docs/reviews/plaza-dense-20261026/REPORT.md)和[图册](docs/ux/plaza-dense-20261026/index.html)。新密集艺人/明星首区/唯一作品矩阵在本轮广场范围替代旧大海报构图，保留原先锋刊物语言、最新V5业务和权限。明星、定位、城市标准及封面/缩略资料仍需产品/Core约定，未代另一方认领或审阅。代码报告已推送；GitHub连接创建PR返回403，申请尚未创建，见本轮报告的准备入口。本次交付目标integration，未合入或部署；分支ux/plaza-dense-subpages-20261026。先读本轮任务与报告，下方均为各自日期历史，不沿用旧PR36待办。
 

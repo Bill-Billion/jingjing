@@ -333,38 +333,45 @@ class _PlazaPageState extends State<PlazaPage> {
         ]);
       });
 
-  Widget _artistCard(Map<String, dynamic> row) => Material(
-      color: AccountTheme.canvas,
-      child: InkWell(
-          onTap: () => _openArtist(row),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ArtistPublicPortrait(
-                key: ValueKey('${data.artists.revision}:${row['listing_id']}'),
-                session: widget.session,
-                listing: row,
-                onUnavailable: () =>
-                    data.removeUnavailableArtist(row['listing_id'])),
-            const SizedBox(height: 6),
-            Text(row['display_name'],
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontFamily: AccountTheme.serif,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    height: 1.4)),
-            const SizedBox(height: 2),
-            Text(
-                [
-                  plazaCityLabel(row['city']),
-                  ...(row['tags'] as List).cast<String>().take(1)
-                ].join(' · '),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 11, height: 1.4, color: AccountTheme.muted)),
-          ])));
+  Widget _artistCard(Map<String, dynamic> row) => Semantics(
+      button: true,
+      label: '查看艺人详情，${row['display_name']}，${row['city']}',
+      child: Material(
+          color: AccountTheme.canvas,
+          child: InkWell(
+              onTap: () => _openArtist(row),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ArtistPublicPortrait(
+                        key: ValueKey(
+                            '${data.artists.revision}:${row['listing_id']}'),
+                        session: widget.session,
+                        listing: row,
+                        onUnavailable: () =>
+                            data.removeUnavailableArtist(row['listing_id'])),
+                    const SizedBox(height: 6),
+                    Text(row['display_name'],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontFamily: AccountTheme.serif,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            height: 1.4)),
+                    const SizedBox(height: 2),
+                    Text(
+                        [
+                          plazaCityLabel(row['city']),
+                          ...(row['tags'] as List).cast<String>().take(1)
+                        ].join(' · '),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 11,
+                            height: 1.4,
+                            color: AccountTheme.muted)),
+                  ]))));
 
   Future<void> _artistFilters() async {
     final selected = await openArtistFilters(context,
@@ -913,48 +920,53 @@ class _PlazaDirectoryEntry extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Material(
-      color: AccountTheme.canvas,
-      child: InkWell(
-          onTap: onTap,
-          child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              constraints: const BoxConstraints(minHeight: 68),
-              decoration: const BoxDecoration(
-                  border: Border(
-                      bottom:
-                          BorderSide(color: AccountTheme.border, width: .6))),
-              child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                SizedBox(
-                    width: 64,
-                    child: Row(children: [
-                      const SizedBox(
-                          width: 7,
-                          height: 7,
-                          child: ColoredBox(color: AccountTheme.vermilion)),
-                      const SizedBox(width: 7),
-                      const Text('入口',
-                          style: TextStyle(fontSize: 11, height: 1.8)),
-                    ])),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Text(title,
-                          style: const TextStyle(
-                              fontFamily: AccountTheme.serif,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              height: 1.4)),
-                      const SizedBox(height: 3),
-                      Text(subtitle,
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: AccountTheme.muted,
-                              height: 1.6)),
-                    ])),
-                const SizedBox(width: 8),
-                const Icon(EditorialIcons.arrowRight, size: 20),
-              ]))));
+  Widget build(BuildContext context) => Semantics(
+      button: true,
+      label: '$title，$subtitle',
+      child: Material(
+          color: AccountTheme.canvas,
+          child: InkWell(
+              onTap: onTap,
+              child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  constraints: const BoxConstraints(minHeight: 68),
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              color: AccountTheme.border, width: .6))),
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                            width: 64,
+                            child: Row(children: [
+                              const SizedBox(
+                                  width: 7,
+                                  height: 7,
+                                  child: ColoredBox(
+                                      color: AccountTheme.vermilion)),
+                              const SizedBox(width: 7),
+                              const Text('入口',
+                                  style: TextStyle(fontSize: 11, height: 1.8)),
+                            ])),
+                        Expanded(
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                              Text(title,
+                                  style: const TextStyle(
+                                      fontFamily: AccountTheme.serif,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.4)),
+                              const SizedBox(height: 3),
+                              Text(subtitle,
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AccountTheme.muted,
+                                      height: 1.6)),
+                            ])),
+                        const SizedBox(width: 8),
+                        const Icon(EditorialIcons.arrowRight, size: 20),
+                      ])))));
 }

@@ -47,3 +47,19 @@ test('篡改、错误密钥及记录身份缺失均拒绝，恢复失败不新�
   assert.throws(() => manager.backup('original'), /记录与邀请身份不一致/);
   assert(!fs.existsSync(path.join(dir, 'records/writer.lock')));
 });
+
+
+test('免邀请码访客反馈与签名凭据加密备份后可恢复，其他访客仍不可见', t => {
+  const { root, dir, manager } = setup(t), visitor = 'a'.repeat(64), other = 'b'.repeat(64), secret = 'c'.repeat(64);
+  fs.writeFileSync(path.join(dir, 'visitor-secret'), secret);
+  const store = openStore(path.join(dir, 'records'));
+  const issue = store.create({ id: visitor, name: '体验访客' }, 'free-feedback-command-1234', { description: '免邀请码反馈' }); store.close();
+  const snapshot = manager.backup('original'); assert.equal(manager.verify(snapshot.file).issues, 2);
+  assert(!fs.readFileSync(path.join(root, 'client-backups', snapshot.file)).includes(Buffer.from(secret)));
+  manager.restore(snapshot.file, 'free-restored');
+  assert.equal(fs.readFileSync(path.join(root, 'client-feedback/free-restored/visitor-secret'), 'utf8'), secret);
+  const restored = openStore(path.join(root, 'client-feedback/free-restored/records'));
+  assert.equal(restored.list({ id: visitor }).issues[0].id, issue.id);
+  assert.equal(restored.list({ id: other }).issues.length, 0); restored.close();
+  fs.writeFileSync(path.join(dir, 'visitor-secret'), 'invalid'); assert.throws(() => manager.backup('original'), /自由体验身份凭据无效/);
+});

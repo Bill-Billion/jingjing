@@ -993,7 +993,10 @@ class _TradeDetailState extends State<_TradeDetail> {
       else if (!ready)
         appNotice('当前付款节点尚未确认可办理，请返回原订单核对当前版本与履约条件。'),
       tradeSection('建立记录后', [
-        const Text('建立付款记录不表示实际扣款或到账。当前客户端不能发起实际支付；每笔付款均保留原记录，结果以服务器核实为准。',
+        const Text(
+            bool.fromEnvironment('CLIENT_TEST_ONLY')
+                ? '这是模拟付款，不会真实扣款。核对金额并勾选确认后，可选择模拟成功、失败或暂未确认；每笔结果仍由服务器核对原订单。'
+                : '建立付款记录不表示实际扣款或到账。当前客户端不能发起实际支付；每笔付款均保留原记录，结果以服务器核实为准。',
             style: TextStyle(height: 1.6, color: AccountTheme.muted)),
         const SizedBox(height: 12),
         appNotice('结果仍在处理或待核对时，保留本页并恢复原请求；不要重复建立付款或把预计金额记为已到账。'),

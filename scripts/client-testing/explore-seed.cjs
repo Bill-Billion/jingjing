@@ -34,6 +34,7 @@ async function main(){
   const rules=['GET','POST','PATCH'].map(m=>[m,/^\/api\/v1\/(?:me|parties|organizations|customization-categories|contract-snapshots|rule-versions|finance|categories|governance|supply|artists|licensing|trade|customization-requests|operations|production|projects|gigs|notices|auditions|stock|wallet|engagement|cocreation|redemption|privacy|media)(?:\/.*)?$/]);
   const dir=await require('./persistent-story.cjs').retain({env,database:name,secret:f.secret,access,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.merchantId},supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:f.merchantId},rules,db,files:f.allFiles()});
   const enrichment=await require('./explore-enrich.cjs').enrich(db,JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'))),dir);fs.writeFileSync(path.join(dir,'enrichment.json'),JSON.stringify(enrichment,null,2));
+  const plaza=await require('./plaza-enrich.cjs').enrich(db,JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'))),dir);fs.writeFileSync(path.join(dir,'plaza-enrichment.json'),JSON.stringify(plaza,null,2));
   console.log(JSON.stringify({database:name,retained:true,manifest:path.relative(root,path.join(dir,'manifest.json')),scenarios:Object.keys(f.scenarios)}));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.end();}
 }

@@ -25,7 +25,10 @@ function fileBytes(file, limit = LIMIT) {
   return fs.readFileSync(file);
 }
 function validate(payload) {
-  assert(payload.format === 1 && typeof payload.people === 'string' && typeof payload.records === 'string');
+  assert([1, 2].includes(payload.format) && typeof payload.people === 'string' && typeof payload.records === 'string');
+  const free = payload.format === 2;
+  if (free) assert(typeof payload.visitor_secret === 'string' && /^[a-f0-9]{64}$/.test(payload.visitor_secret), '自由体验身份凭据无效');
+  else assert(payload.visitor_secret === undefined, '旧备份格式不接受访客凭据');
   const people = JSON.parse(payload.people), records = JSON.parse(payload.records);
   assert(people && !Array.isArray(people) && typeof people === 'object');
   const identities = Object.values(people);
@@ -34,7 +37,7 @@ function validate(payload) {
   assert(people['feedback-reviewer'], '缺少问题负责人身份');
   assert(Array.isArray(records.issues) && Array.isArray(records.results) && records.commands && typeof records.commands === 'object');
   const ids = new Set(identities.map(p => p.id));
-  assert([...records.issues, ...records.results].every(r => ids.has(r.owner)), '记录与邀请身份不一致');
+  assert([...records.issues, ...records.results].every(r => ids.has(r.owner) || (free && /^[a-f0-9]{64}$/.test(r.owner))), '记录与邀请身份不一致');
   return { issues: records.issues.length, results: records.results.length, identities: identities.length };
 }
 function createManager(localRoot) {
@@ -65,6 +68,8 @@ function createManager(localRoot) {
       const store = openStore(records);
       try {
         const payload = { format: 1, campaign, created_at: new Date().toISOString(), people: fileBytes(path.join(dir, 'people.json'), 1024 * 1024).toString('utf8'), records: fileBytes(path.join(records, 'records.json')).toString('utf8') };
+        const visitorFile = path.join(dir, 'visitor-secret');
+        if (fs.existsSync(visitorFile)) { payload.format = 2; payload.visitor_secret = fileBytes(visitorFile, 64).toString('utf8'); }
         const counts = validate(payload), raw = Buffer.from(JSON.stringify(payload));
         assert(raw.length <= LIMIT, '备份内容过大');
         const iv = crypto.randomBytes(12), cipher = crypto.createCipheriv('aes-256-gcm', key(true), iv);
@@ -87,6 +92,7 @@ function createManager(localRoot) {
       fs.writeFileSync(marker, 'Do not use until restore succeeds.', { flag: 'wx', mode: 0o600 });
       fs.mkdirSync(path.join(destination, 'records'), { mode: 0o700 });
       fs.writeFileSync(path.join(destination, 'people.json'), payload.people, { flag: 'wx', mode: 0o600 });
+      if (payload.format === 2) fs.writeFileSync(path.join(destination, 'visitor-secret'), payload.visitor_secret, { flag: 'wx', mode: 0o600 });
       fs.writeFileSync(path.join(destination, 'records/records.json'), payload.records, { flag: 'wx', mode: 0o600 });
       fs.unlinkSync(marker);
       return { restored_to: campaign, ...counts, business_database_restored: false };
