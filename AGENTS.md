@@ -1,3 +1,7 @@
+2026-10-27???????????????????worktrees/client-testing???core/plaza-client-integration-20261027?????????docs/tasks/records/CORE-plaza-client-20261027.md????????????????????????????????
+
+当前2026-10-27：用户已确认紧凑广场dense-v2。原Figma主页及26份相关子页/状态已更新，Flutter已按稿修正并联通现有真实隔离接口；CI范围597个实际测试、分析和普通/专用构建通过，三宽复验见[本轮报告](docs/reviews/plaza-dense-20261026/REPORT.md)和[图册](docs/ux/plaza-dense-20261026/index.html)。新密集艺人/明星首区/唯一作品矩阵在本轮广场范围替代旧大海报构图，保留原先锋刊物语言、最新V5业务和权限。明星、定位、城市标准及封面/缩略资料仍需产品/Core约定，未代另一方认领或审阅。代码报告已推送；GitHub连接创建PR返回403，申请尚未创建，见本轮报告的准备入口。本次交付目标integration，未合入或部署；分支ux/plaza-dense-subpages-20261026。先读本轮任务与报告，下方均为各自日期历史，不沿用旧PR36待办。
+
 2026-10-26最新：客户自由体验版已更新原公网网址，本机及公网检查通过，集中更新原PR37；取消客户邀请码和业务路线下拉框。当前worktrees/client-testing，core/client-free-exploration-20261026。先读docs/testing/CLIENT_FREE_EXPLORATION_20261026.md和当前进度；公网及上传状态以交付补记为准。以下旧入口作为历史。
 
 2026-10-26最新：本侧core/client-route-expansion-20261026已扩充艺人/机构持续测试并完成公网跨端检查。请先读docs/testing/CLIENT_ROUTES_20261026.md和当前进度。原故事与邀请保留，仍只有两组模拟业务，其他路线尚未开放。

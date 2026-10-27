@@ -396,9 +396,10 @@ class V5Frame extends StatelessWidget {
       required this.title,
       required this.children,
       this.embedded = false,
+      this.plaza = false,
       this.footer});
   final Widget? footer;
-  final bool embedded;
+  final bool embedded, plaza;
   final V5Api api;
   final String title;
   final List<Widget> children;
@@ -413,7 +414,7 @@ class V5Frame extends StatelessWidget {
                 null;
         if (!embedded) {
           return tradeScaffold(context, title, children,
-              locked: locked, footer: footer);
+              locked: locked, footer: footer, plaza: plaza);
         }
         return PopScope(
             canPop: !locked,
@@ -423,9 +424,11 @@ class V5Frame extends StatelessWidget {
                     const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
               }
             },
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [...children, if (footer != null) footer!]));
+            child: AccountTheme(
+                plaza: plaza,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [...children, if (footer != null) footer!])));
       });
 }
 
@@ -562,15 +565,20 @@ String v5Error(AccountError e, {bool writing = false}) {
 
 class V5Field {
   const V5Field(this.keyName, this.label,
-      {this.type = 'text', this.required = true, this.choices, this.hint});
+      {this.type = 'text',
+      this.required = true,
+      this.choices,
+      this.hint,
+      this.wrapChoices = false});
   final String keyName, label, type;
-  final bool required;
+  final bool required, wrapChoices;
   final Map<String, String>? choices;
   final String? hint;
 }
 
 Future<bool> v5Confirm(
-    BuildContext context, V5Api api, String title, List<Widget> facts) {
+    BuildContext context, V5Api api, String title, List<Widget> facts,
+    {ThemeData? theme}) {
   final epoch = api.session.epoch, party = api.session.partyId;
   return showDialog<bool>(
       context: context,
@@ -581,7 +589,8 @@ Future<bool> v5Confirm(
                 party == api.session.partyId &&
                 api.session.isLoggedIn &&
                 !api.denied;
-            return AccountTheme(
+            return Theme(
+                data: theme ?? AccountTheme.data,
                 child: AlertDialog(
                     title: Text(title),
                     content: SingleChildScrollView(
@@ -592,13 +601,13 @@ Future<bool> v5Confirm(
                                 ? facts
                                 : [appNotice('办事身份已变化，原确认内容已清空。')])),
                     actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(c, false),
-                      child: const Text('返回核对')),
-                  FilledButton(
-                      onPressed: same ? () => Navigator.pop(c, true) : null,
-                      child: const Text('确认办理'))
-                ]));
+                      TextButton(
+                          onPressed: () => Navigator.pop(c, false),
+                          child: const Text('返回核对')),
+                      FilledButton(
+                          onPressed: same ? () => Navigator.pop(c, true) : null,
+                          child: const Text('确认办理'))
+                    ]));
           })).then((v) => v == true);
 }
 
@@ -734,22 +743,28 @@ class _V5FormState extends State<V5Form> {
     }
     final epoch = widget.api.session.epoch, party = widget.api.owner();
     if (op == null &&
-        !await v5Confirm(context, widget.api, widget.action, [
-          for (final f in widget.fields)
-            tradeFact(
-                f.label,
-                f.type == 'bool'
-                    ? values[f.keyName] == true
-                        ? '已勾选'
-                        : '未勾选'
-                    : f.type == 'slots'
-                        ? (values[f.keyName] as List? ?? [])
-                            .map((slot) =>
-                                '${v5LocalDate(slot['starts_at'])} 至 ${v5LocalDate(slot['ends_at'])}')
-                            .join('\n')
-                        : f.choices?[values[f.keyName]] ?? values[f.keyName]),
-          ...widget.facts
-        ])) {
+        !await v5Confirm(
+            context,
+            widget.api,
+            widget.action,
+            [
+              for (final f in widget.fields)
+                tradeFact(
+                    f.label,
+                    f.type == 'bool'
+                        ? values[f.keyName] == true
+                            ? '已勾选'
+                            : '未勾选'
+                        : f.type == 'slots'
+                            ? (values[f.keyName] as List? ?? [])
+                                .map((slot) =>
+                                    '${v5LocalDate(slot['starts_at'])} 至 ${v5LocalDate(slot['ends_at'])}')
+                                .join('\n')
+                            : f.choices?[values[f.keyName]] ??
+                                values[f.keyName]),
+              ...widget.facts
+            ],
+            theme: Theme.of(context))) {
       return;
     }
     if (epoch != widget.api.session.epoch ||
@@ -799,6 +814,60 @@ class _V5FormState extends State<V5Form> {
     }
   }
 
+  Widget choiceField(V5Field field, bool enabled) {
+    final selected = field.choices!.containsKey(values[field.keyName])
+        ? values[field.keyName] as String
+        : null;
+    final dropdown = DropdownButtonFormField<String>(
+        initialValue: selected,
+        isExpanded: true,
+        isDense: !field.wrapChoices,
+        itemHeight: field.wrapChoices ? null : kMinInteractiveDimension,
+        style:
+            field.wrapChoices ? Theme.of(context).textTheme.bodyMedium : null,
+        decoration: InputDecoration(labelText: field.label),
+        selectedItemBuilder: field.wrapChoices
+            ? (context) => [
+                  for (final value in field.choices!.values)
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Text(value,
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyMedium)),
+                ]
+            : null,
+        items: field.choices!.entries
+            .map((entry) => DropdownMenuItem(
+                value: entry.key,
+                child: Text(entry.value,
+                    softWrap: field.wrapChoices,
+                    overflow: field.wrapChoices
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis)))
+            .toList(),
+        onChanged: enabled ? (value) => change(field.keyName, value) : null,
+        validator: (value) =>
+            field.required && value == null ? '请选择${field.label}' : null);
+    if (!field.wrapChoices) return dropdown;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      dropdown,
+      if (selected != null)
+        ExpansionTile(
+            key: ValueKey('v5-choice-detail-${field.keyName}'),
+            tilePadding: EdgeInsets.zero,
+            childrenPadding: const EdgeInsets.only(bottom: 16),
+            title: const Text('查看完整选中内容', style: TextStyle(fontSize: 14)),
+            children: [
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: SelectableText(field.choices![selected]!,
+                      style: const TextStyle(fontSize: 14, height: 1.6))),
+            ]),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final op = pending,
@@ -838,26 +907,7 @@ class _V5FormState extends State<V5Form> {
                                   required: f.required,
                                   onChanged: (v) => change(f.keyName, v))
                               : f.choices != null
-                                  ? DropdownButtonFormField<String>(
-                                      initialValue: f.choices!.containsKey(values[f.keyName])
-                                          ? values[f.keyName] as String
-                                          : null,
-                                      isExpanded: true,
-                                      decoration:
-                                          InputDecoration(labelText: f.label),
-                                      items: f.choices!.entries
-                                          .map((e) => DropdownMenuItem(
-                                              value: e.key,
-                                              child: Text(e.value,
-                                                  overflow:
-                                                      TextOverflow.ellipsis)))
-                                          .toList(),
-                                      onChanged: enabled
-                                          ? (v) => change(f.keyName, v)
-                                          : null,
-                                      validator: (v) => f.required && v == null
-                                          ? '请选择${f.label}'
-                                          : null)
+                                  ? choiceField(f, enabled)
                                   : TextFormField(
                                       controller: controllers[f.keyName],
                                       enabled: enabled,
@@ -865,14 +915,18 @@ class _V5FormState extends State<V5Form> {
                                       maxLines: f.type == 'multiline' ? 8 : 1,
                                       maxLength:
                                           f.type == 'multiline' ? 8000 : 500,
-                                      keyboardType: ['money', 'int'].contains(f.type)
-                                          ? const TextInputType.numberWithOptions(
-                                              decimal: true)
+                                      keyboardType: ['money', 'int']
+                                              .contains(f.type)
+                                          ? const TextInputType
+                                              .numberWithOptions(decimal: true)
                                           : TextInputType.text,
                                       decoration: InputDecoration(
                                           labelText: f.label,
                                           helperText: f.hint),
-                                      validator: (v) => f.required && (v == null || v.trim().isEmpty) ? '请填写${f.label}' : null)),
+                                      validator: (v) => f.required &&
+                                              (v == null || v.trim().isEmpty)
+                                          ? '请填写${f.label}'
+                                          : null)),
             ...?widget.extra?.call(values, change, enabled),
           ])),
       if (conflict && widget.reload != null) ...[

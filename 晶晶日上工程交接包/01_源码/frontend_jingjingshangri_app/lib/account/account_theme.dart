@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../widgets/editorial_icons.dart';
 
 /// Paper, ink and vermilion from the supplied film editorial prototype.
 class AccountTheme extends StatelessWidget {
-  const AccountTheme({super.key, required this.child});
+  const AccountTheme({super.key, required this.child, this.plaza = false});
   final Widget child;
+  final bool plaza;
   static const canvas = Color(0xFFF3F1E8);
   static const surface = Color(0xFFF3F1E8);
   static const text = Color(0xFF151515);
@@ -199,6 +201,75 @@ class AccountTheme extends StatelessWidget {
                         ? FontWeight.w600
                         : FontWeight.w400))),
       );
+  static ThemeData get plazaData {
+    final base = data;
+    const fieldBorder = OutlineInputBorder(
+        borderRadius: BorderRadius.zero, borderSide: BorderSide(color: border));
+    return base.copyWith(
+        visualDensity: VisualDensity.standard,
+        actionIconTheme: ActionIconThemeData(
+            backButtonIconBuilder: (_) =>
+                const Icon(EditorialIcons.arrowLeft, size: 22)),
+        colorScheme:
+            base.colorScheme.copyWith(primary: accent, onPrimary: Colors.white),
+        appBarTheme: base.appBarTheme.copyWith(
+            titleTextStyle: const TextStyle(
+                fontFamily: serif,
+                fontFamilyFallback: sansFallback,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: text)),
+        textTheme: base.textTheme.copyWith(
+            titleMedium: const TextStyle(
+                fontFamily: sans,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                color: text),
+            bodyLarge: const TextStyle(
+                fontFamily: sans, fontSize: 14, height: 1.6, color: text)),
+        inputDecorationTheme: base.inputDecorationTheme.copyWith(
+            fillColor: canvas,
+            filled: true,
+            border: fieldBorder,
+            enabledBorder: fieldBorder,
+            focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.zero,
+                borderSide: BorderSide(color: text, width: 1.5)),
+            errorBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.zero,
+                borderSide: BorderSide(color: danger)),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 14)),
+        filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+                // White 14px labels need the readable deep-red token.
+                backgroundColor: accent,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(44, 44),
+                shape: _square,
+                textStyle:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                elevation: 0)),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+                foregroundColor: text,
+                minimumSize: const Size(44, 44),
+                side: const BorderSide(color: border),
+                textStyle:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                shape: _square)),
+        dialogTheme: base.dialogTheme.copyWith(
+            titleTextStyle: const TextStyle(
+                fontFamily: serif,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: text),
+            contentTextStyle: const TextStyle(
+                fontFamily: sans, fontSize: 14, height: 1.6, color: text)));
+  }
+
   @override
-  Widget build(BuildContext context) => Theme(data: data, child: child);
+  Widget build(BuildContext context) =>
+      Theme(data: plaza ? plazaData : data, child: child);
 }

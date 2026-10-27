@@ -9,6 +9,7 @@ import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
 import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
+import 'plaza/plaza_pages.dart';
 import 'discovery/discovery_pages.dart';
 import 'support/support_pages.dart';
 import 'customization/customization_page.dart';
@@ -108,7 +109,7 @@ class JingjingShangriApp extends StatelessWidget {
                   recordId: uri.queryParameters['recordId'] ?? ''),
               '/settings' => const AppHelpPage(),
               '/help' => const HelpFeedbackPage(),
-              '/search' => DiscoverySearchPage(
+              '/search' => PlazaSearchPage(
                   initialCity: uri.queryParameters['city'] ?? ''),
               '/saved' => const SavedHistoryPage(),
               '/invoices' =>
@@ -193,7 +194,8 @@ class JingjingShangriApp extends StatelessWidget {
                   agreementId: uri.queryParameters['agreementId'] ?? '',
                   agreementSha256:
                       uri.queryParameters['agreementSha256'] ?? ''),
-              '/auditions/catalog' => const AuditionsPage(),
+              '/auditions' || '/auditions/catalog' => AuditionsPage(
+                  initialCity: uri.queryParameters['city'] ?? ''),
               '/auditions/bookings' => const AuditionsPage(mode: 'bookings'),
               '/auditions/booking' => AuditionsPage(
                   mode: 'booking', id: uri.queryParameters['bookingId']),

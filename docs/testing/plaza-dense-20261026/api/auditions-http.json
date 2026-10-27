@@ -1,0 +1,303 @@
+{
+  "status": "PASS",
+  "mode": "auditions",
+  "checked_at": "2026-10-26T16:02:19.224Z",
+  "synthetic_only": true,
+  "source_commit": "767d2ffc6153d8f1986dd02641d5b88ddcbca907",
+  "http": "Real Node routes and MySQL; GET-only client; no paid providers or production traffic",
+  "checks": 24,
+  "passed": 24,
+  "results": [
+    {
+      "name": "公开目录目前要求登录，匿名返回401",
+      "status": "PASS"
+    },
+    {
+      "name": "已登录可读取当前公开目录",
+      "status": "PASS"
+    },
+    {
+      "name": "城市参数真实过滤且保留对应记录",
+      "status": "PASS"
+    },
+    {
+      "name": "无资料城市返回空目录，不返回其他城市记录",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的关键字搜索参数被拒绝",
+      "status": "PASS"
+    },
+    {
+      "name": "公开试镜有模式、时段和报价版本",
+      "status": "PASS"
+    },
+    {
+      "name": "公开试镜目录不暴露联系卡",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：ready_to_pay",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：ready_to_pay",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：awaiting_acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：awaiting_acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：delivered",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：delivered",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：disputed",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：disputed",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：refund_required",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：refund_required",
+      "status": "PASS"
+    },
+    {
+      "name": "试镜预约状态可读：fulfilled",
+      "status": "PASS"
+    },
+    {
+      "name": "预约普通详情不泄露联系卡：fulfilled",
+      "status": "PASS"
+    },
+    {
+      "name": "无关用户不能读取试镜预约",
+      "status": "PASS"
+    },
+    {
+      "name": "联系卡按订单状态限制：awaiting_acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "联系卡按订单状态限制：disputed",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "name": "public_catalog_fields",
+      "fields": [
+        "avatar_id",
+        "city",
+        "currency",
+        "id",
+        "mode",
+        "offer_sha256",
+        "person_id",
+        "public_price",
+        "service_area",
+        "slots",
+        "title",
+        "transport_included",
+        "unit_minor"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "route": "/auditions/catalog",
+      "method": "GET",
+      "role": "anonymous",
+      "acting_party": false,
+      "status": 401,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 218,
+      "cache_control": "no-store",
+      "error_code": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "route": "/auditions/catalog",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 697,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/catalog?city=synthetic-city",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 697,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/catalog?city=%E6%97%A0%E8%B5%84%E6%96%99%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/catalog?q=synthetic",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 3004,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 3145,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 3130,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 4562,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 5076,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 3218,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 4921,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/auditions/records/{id}",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": true,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 294,
+      "cache_control": "no-store",
+      "error_code": "ARTIST_NOT_FOUND"
+    },
+    {
+      "route": "/auditions/bookings/{id}/contacts",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 308,
+      "cache_control": "no-store",
+      "error_code": "AUDITION_CONTACT_NOT_AVAILABLE"
+    },
+    {
+      "route": "/auditions/bookings/{id}/contacts",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 308,
+      "cache_control": "no-store",
+      "error_code": "AUDITION_CONTACT_NOT_AVAILABLE"
+    }
+  ],
+  "not_tested": [
+    "production services",
+    "real identity or likeness consent",
+    "real payments/refunds",
+    "UI screenshots",
+    "device/IP geolocation",
+    "portrait/video quality"
+  ]
+}

@@ -146,11 +146,12 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
     final d = detail;
     final invitation = widget.kind == 'INVITATION';
     return V5Frame(
+        plaza: true,
         api: api,
         title: submissionKinds[widget.kind] ?? '单向投稿',
         children: [
           tradeHeading(invitation ? '把意向交给对方' : '投递这一次可能',
-              eyebrow: '本人授权 / 单向递交 / 平台客服跟进'),
+              fontSize: 24, eyebrow: '本人授权 / 单向递交 / 平台客服跟进'),
           V5RecoveryPanel(
               api: api,
               label: api.recoveryLabel,
@@ -277,16 +278,16 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           V5Field('rule_id', '本次已生效投稿规则',
               choices: {for (final r in rules) r.id: r.rule['version']}),
         if (delegated)
-          V5Field('consent_id', '选择本人已提供的本次接收方授权', choices: {
+          V5Field('consent_id', '选择本人已提供的本次接收方授权', wrapChoices: true, choices: {
             for (final c in delegatedRefs.entries)
               c.key:
                   '${d.avatars.where((a) => a.id == c.value['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 原投稿授权（提交时重核）'
           })
         else
-          V5Field('consent_id', '选择本人对明确接收方的已审授权', choices: {
+          V5Field('consent_id', '选择本人对明确接收方的已审授权', wrapChoices: true, choices: {
             for (final c in consents)
               c.id:
-                  '${d.avatars.where((a) => a.id == c.avatarId).map((a) => a.name).firstOrNull ?? '原数字人'} · ${c.data['terms']}'
+                  '${d.avatars.where((a) => a.id == c.avatarId).map((a) => a.name).firstOrNull ?? '原数字人'} · ${c.data['terms']}\n用途：合作投稿\n有效期：${artistWhen(c.data['valid_from'])} 至 ${artistWhen(c.data['valid_until'])}\n接收通告：${notice?.notice['title'] ?? '以本次已审授权为准'}'
           }),
         const V5Field('purpose', '本次投稿用途'),
         const V5Field('content', '给接收方的投稿内容', type: 'multiline'),
