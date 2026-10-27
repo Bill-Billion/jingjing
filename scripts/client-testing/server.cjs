@@ -5,7 +5,7 @@ const ui=__dirname;const {pipeline}=require('node:stream'),{createGzip}=require(
 function safeRoute(value){
   if(typeof value!=='string'||value.length>600||!value.startsWith('/')||value.startsWith('//')||/[\\<>\r\n]/.test(value))return '/';
   const u=new URL(value,'http://local');const clean=p=>/^[A-Za-z0-9_/.%-]*$/.test(p)?p:'/';
-  const keys=new Set(['recordId','id','requestId','projectId','section','installmentKey','view','kind','personId','agreementId','orderId']);
+  const keys=new Set(['recordId','id','requestId','projectId','section','installmentKey','view','kind','personId','agreementId','orderId','listingId','noticeId']);
   const filter=q=>{const out=new URLSearchParams();for(const [k,v]of q)if(keys.has(k)&&/^[A-Za-z0-9_-]{1,80}$/.test(v))out.set(k,v);return out.size?'?'+out:'';};
   const h=u.hash?new URL(u.hash.slice(1),'http://local'):null;
   return clean(u.pathname)+filter(u.searchParams)+(h?'#'+clean(h.pathname)+filter(h.searchParams):'');
