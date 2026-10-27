@@ -1,4 +1,4 @@
-2026-10-27：新广场与甲方自由体验已完成本机联合复验，正准备更新原测试网址并集中交付PR37。当前worktrees/client-testing、core/plaza-client-integration-20261027。修复城市简称查询、入口可读名称、模拟收银台文案和访客反馈备份，补9名公开模拟艺人及六类通告。实际状态、限制和分工见docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md；下方为双方历史记录。
+2026-10-27交付：新广场已接入甲方自由体验并更新原测试网址，保留原订单和反馈；公网新版页面4组、城市查询5组、付款核验样片6项通过。16个岗位、9名公开模拟艺人及六类通告可体验。仍集中交付PR37，另一方审阅和共同版本合入未完成，最终远端检查按PR当前HEAD核对。当前worktrees/client-testing、core/plaza-client-integration-20261027；范围、限制和下一步见docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md。以下双方记录按日期保留。
 
 # 2026-10-27：新广场、子页与接口已完成本侧验证
 

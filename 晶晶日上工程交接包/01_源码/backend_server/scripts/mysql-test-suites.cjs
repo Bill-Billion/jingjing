@@ -28,6 +28,6 @@ module.exports=Object.freeze({
  mysql:['test/mysql-config.test.cjs','test/mysql.integration.test.cjs'],
  worker:['test/worker.integration.test.cjs','test/worker.test.cjs'],
  providers:['test/sms-transport.test.cjs','test/provider-foundation.test.cjs','test/provider-readiness.integration.test.cjs','test/storage.test.cjs'],
- party:['test/party.integration.test.cjs'],
+ party:['test/catalog-city.test.cjs','test/party.integration.test.cjs'],
  'account-api':['test/account-api.integration.test.cjs','test/auth-security.test.cjs'],
 });
