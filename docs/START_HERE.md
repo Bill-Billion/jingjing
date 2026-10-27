@@ -2,7 +2,7 @@
 
 2026-10-27，按甲方确认的紧凑广场新稿推进：原主页已原位替换，并补齐26份频道、子页及状态稿；Flutter四频道、选城、搜索、全部、公开详情、许可预览与三类投稿已还原。最后普通/测试专用构建、CI范围分析及597个实际测试通过，三宽实拍与真实隔离接口已核对。明星名单、自动城市、城市标准、主头像/缩略图及作品封面等缺口在报告中单列。
 
-[本轮问题报告](reviews/plaza-dense-20261026/REPORT.md) · [26页设计与实拍入口](ux/plaza-dense-20261026/index.html) · [任务与双方下一步](tasks/records/UX-plaza-dense-20261026.md)。当前分支`ux/plaza-dense-subpages-20261026`，共同起点`integration/767d2ffc`；已再次核对PR37仍为`2b07109e`，本轮不依赖其测试工具。代码和报告已推送[远端分支](https://github.com/Bill-Billion/jingjing/tree/ux/plaza-dense-subpages-20261026)。GitHub连接创建PR返回403，申请尚未创建；[准备入口](https://github.com/Bill-Billion/jingjing/compare/integration...ux/plaza-dense-subpages-20261026?expand=1)及报告正文已备好。另一位同事尚未实际审阅，未合入或部署。
+[本轮问题报告](reviews/plaza-dense-20261026/REPORT.md) · [26页设计与实拍入口](ux/plaza-dense-20261026/index.html) · [任务与双方下一步](tasks/records/UX-plaza-dense-20261026.md)。当前分支`ux/plaza-dense-subpages-20261026`，共同起点`integration/767d2ffc`；已再次核对PR37仍为`2b07109e`，本轮不依赖其测试工具。代码和报告已推送[远端分支](https://github.com/Bill-Billion/jingjing/tree/ux/plaza-dense-subpages-20261026)。已通过本机既有Bill-Billion授权创建[草稿PR38](https://github.com/Bill-Billion/jingjing/pull/38)，目标integration；此前连接器403为已处理的发布路径限制。另一位同事尚未实际审阅，未合入或部署。
 
 本侧已完成设计、前端修正和验证。Core/产品可按报告确认明星编排、粗定位/城市编码和授权缩略素材的最小约定；未代其认领。旧大图构图在本轮广场范围由已确认密集版替代，纸色、墨黑、朱红、宋体及其他业务流程保留。
 

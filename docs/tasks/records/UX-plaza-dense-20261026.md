@@ -22,6 +22,8 @@
 
 本次联合随机库、短期凭据及专用5500/53781服务已清理并独立核实，共用MySQL与PR37体验环境保留；见[joint-cleanup.json](../../testing/plaza-dense-20261026/api/joint-cleanup.json)。
 
-远端代码提交`0cdba9b91417772bf94e1b868b40958c2cafb80c`已推送，服务器与前端自动检查已启动。GitHub连接创建PR返回403 `Resource not accessible by integration`；未绕过权限拒绝，PR尚未创建。申请正文见[准备稿](../../reviews/plaza-dense-20261026/PR_DESCRIPTION.md)，等待用户恢复该连接的PR写权限或提供其创建的PR链接。
+发布历史：实现提交`0cdba9b91417772bf94e1b868b40958c2cafb80c`推送后，GitHub应用连接创建PR返回403 `Resource not accessible by integration`。此前据此记录的“PR尚未创建”为阶段状态，已由下面实际创建结果替代。
 
-上述实现提交的两套远端工作流、四组检查均已成功：[远端结果](../../testing/plaza-dense-20261026/REMOTE_CHECKS.json)。后续仅提交交接文档，不改变已验业务源码；PR权限阻塞仍单列。
+上述实现提交的两套远端工作流、四组检查均已成功：[远端结果](../../testing/plaza-dense-20261026/REMOTE_CHECKS.json)。后续仅提交交接文档，不改变已验业务源码；实际PR状态以下方创建记录为准。
+
+2026-10-27补记：已创建[草稿PR38](https://github.com/Bill-Billion/jingjing/pull/38)，base=integration，head=ux/plaza-dense-subpages-20261026，创建账号Bill-Billion；已附加到本聊天并通过GitHub读回open/draft/未合入。连接器安装的写权限限制与本机已授权账号分开：使用既有gh会话和本机已配置代理完成创建，未修改账号或权限。当前请求只创建PR；同事实审、合入和部署仍未执行。

@@ -2,7 +2,7 @@
 
 2026-10-27，批次20261026。依据用户确认的dense-v2，更新原Figma并还原Flutter广场及其可到达的公开目录、详情、筛选、预览、购买确认和投稿流程。既有私有业务、运营网页及后端规则继续沿用共同版本。
 
-当前：原Figma已保存并读回最终命名版本；前端最后普通/专用构建、静态分析和597个实际测试通过，320/390/768三宽逐图复核完成。最终检查和每组截图的真实编译哈希分别见[检查清单](../../testing/plaza-dense-20261026/CHECKS.json)及[覆盖表](../../testing/plaza-dense-20261026/api/COVERAGE.md)。代码和报告已推送[远端分支](https://github.com/Bill-Billion/jingjing/tree/ux/plaza-dense-subpages-20261026)；创建PR被GitHub连接403权限拒绝，申请尚未创建。[申请正文与准备入口](PR_DESCRIPTION.md)已备妥，待恢复连接写权限。本侧检查不等于同事实审、合入或正式启用。
+当前：原Figma已保存并读回最终命名版本；前端最后普通/专用构建、静态分析和597个实际测试通过，320/390/768三宽逐图复核完成。最终检查和每组截图的真实编译哈希分别见[检查清单](../../testing/plaza-dense-20261026/CHECKS.json)及[覆盖表](../../testing/plaza-dense-20261026/api/COVERAGE.md)。代码和报告已推送[远端分支](https://github.com/Bill-Billion/jingjing/tree/ux/plaza-dense-subpages-20261026)；已创建[草稿PR38](https://github.com/Bill-Billion/jingjing/pull/38)，目标integration；[申请正文](PR_DESCRIPTION.md)含报告和验收入口。本侧检查不等于同事实审、合入或正式启用。
 
 ## 本轮交付
 
@@ -71,4 +71,4 @@ P01—P07及P01R由主频道审阅记录对照实际应用；P08—P18、S05/S06
 
 联合测试现场已按本轮范围清理：[清理记录](../../testing/plaza-dense-20261026/api/joint-cleanup.json)确认随机库与短期凭据均删除、5500及53781服务停止；共用MySQL、PR37独立甲方体验环境和历史证据保留。
 
-实现提交`0cdba9b91417772bf94e1b868b40958c2cafb80c`的远端App/网页浏览器、接口格式及数据库服务器检查全部成功，见[逐项远端记录](../../testing/plaza-dense-20261026/REMOTE_CHECKS.json)。随后仅补交接文档，不变更已测试业务源码。GitHub连接创建PR仍返回403，申请尚未创建；等待恢复权限或用户提供其创建的申请链接。
+实现提交`0cdba9b91417772bf94e1b868b40958c2cafb80c`的远端App/网页浏览器、接口格式及数据库服务器检查全部成功，见[逐项远端记录](../../testing/plaza-dense-20261026/REMOTE_CHECKS.json)。随后仅补交接文档，不变更已测试业务源码。此前GitHub应用连接创建返回403；2026-10-27已核实本机独立Bill-Billion会话具有repo授权，并沿用系统已有代理通过gh创建草稿PR38。未改账号、安装权限或系统代理；此限制已不阻塞交付。
