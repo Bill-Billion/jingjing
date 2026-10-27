@@ -12,6 +12,7 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
         {bool locked = false,
         Widget? footer,
         VoidCallback? onBack,
+        bool plaza = false,
         String lockedMessage = '操作结果尚未确认，请先恢复原请求核对。'}) =>
     PopScope(
         canPop: !locked,
@@ -22,6 +23,7 @@ Widget tradeScaffold(BuildContext context, String title, List<Widget> children,
           }
         },
         child: AccountTheme(
+            plaza: plaza,
             child: Scaffold(
                 bottomNavigationBar: footer == null
                     ? null
@@ -112,24 +114,26 @@ class TradeGate extends StatelessWidget {
   }
 }
 
-Widget tradeHeading(String title, {String? eyebrow}) => Padding(
-    padding: const EdgeInsets.only(bottom: 20),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (eyebrow != null) ...[
-        Text(eyebrow,
-            style: const TextStyle(
-                fontSize: 12, color: AccountTheme.accent, height: 1.5)),
-        const SizedBox(height: 14),
-      ],
-      Semantics(
-          header: true,
-          child: Text(title,
-              style: const TextStyle(
-                  fontFamily: 'EditorialSerif',
-                  fontSize: 32,
-                  height: 1.25,
-                  fontWeight: FontWeight.w900))),
-    ]));
+Widget tradeHeading(String title, {String? eyebrow, double fontSize = 32}) =>
+    Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          if (eyebrow != null) ...[
+            Text(eyebrow,
+                style: const TextStyle(
+                    fontSize: 12, color: AccountTheme.accent, height: 1.5)),
+            const SizedBox(height: 14),
+          ],
+          Semantics(
+              header: true,
+              child: Text(title,
+                  style: TextStyle(
+                      fontFamily: 'EditorialSerif',
+                      fontSize: fontSize,
+                      height: 1.25,
+                      fontWeight: FontWeight.w900))),
+        ]));
 
 /// Paper sections follow the ruled, card-free layout of the film editorial.
 Widget tradeSection(String title, List<Widget> children) => Container(

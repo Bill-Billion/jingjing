@@ -476,7 +476,9 @@ class _TradeDetailState extends State<_TradeDetail> {
           facts: [
             tradeFact('节点', tradeTriggers[installment['trigger']]),
             tradeFact('本次金额', tradeMoney(installmentAmount(installment))),
-            const Text('此操作不会在客户端发起实际支付。')
+            const Text(bool.fromEnvironment('CLIENT_TEST_ONLY')
+                ? '接下来选择模拟付款结果，不会真实扣款。'
+                : '此操作不会在客户端发起实际支付。')
           ]);
 
   Future<void> cancel() async {
@@ -822,7 +824,9 @@ class _TradeDetailState extends State<_TradeDetail> {
           r.isBuyer(api.owner()) &&
           ['OPEN', 'PARTIALLY_PAID'].contains(r.status))
         tradeSection('办理付款记录', [
-          appNotice('当前客户端不能发起实际支付。可以建立并核对原付款记录，真实结果以服务器核对为准。未开通渠道将返回暂不可用。'),
+          appNotice(const bool.fromEnvironment('CLIENT_TEST_ONLY')
+              ? '本测试版本使用模拟支付。选择结果后由服务器核对本笔订单，不会扣款。'
+              : '当前客户端不能发起实际支付。可以建立并核对原付款记录，真实结果以服务器核对为准。未开通渠道将返回暂不可用。'),
           for (final i in tradeInstallments(r.quote)) ...[
             Text(tradeTriggers[i['trigger']]!,
                 style:
@@ -989,7 +993,10 @@ class _TradeDetailState extends State<_TradeDetail> {
       else if (!ready)
         appNotice('当前付款节点尚未确认可办理，请返回原订单核对当前版本与履约条件。'),
       tradeSection('建立记录后', [
-        const Text('建立付款记录不表示实际扣款或到账。当前客户端不能发起实际支付；每笔付款均保留原记录，结果以服务器核实为准。',
+        const Text(
+            bool.fromEnvironment('CLIENT_TEST_ONLY')
+                ? '这是模拟付款，不会真实扣款。核对金额并勾选确认后，可选择模拟成功、失败或暂未确认；每笔结果仍由服务器核对原订单。'
+                : '建立付款记录不表示实际扣款或到账。当前客户端不能发起实际支付；每笔付款均保留原记录，结果以服务器核实为准。',
             style: TextStyle(height: 1.6, color: AccountTheme.muted)),
         const SizedBox(height: 12),
         appNotice('结果仍在处理或待核对时，保留本页并恢复原请求；不要重复建立付款或把预计金额记为已到账。'),

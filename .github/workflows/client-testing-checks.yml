@@ -1,0 +1,21 @@
+name: 甲方测试工具检查
+on:
+  pull_request:
+    branches: [integration]
+    paths: ['scripts/client-testing/**', '.github/workflows/client-testing-checks.yml']
+  push:
+    branches: ['core/**']
+    paths: ['scripts/client-testing/**', '.github/workflows/client-testing-checks.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    name: 甲方测试入口与反馈权限检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - run: node --test scripts/client-testing/free-entry.test.cjs scripts/client-testing/portal.test.cjs scripts/client-testing/backup.test.cjs scripts/client-testing/persistent-story.test.cjs scripts/client-testing/synthetic-files.test.cjs

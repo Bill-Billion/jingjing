@@ -1,0 +1,311 @@
+{
+  "status": "PASS",
+  "mode": "stock",
+  "checked_at": "2026-10-26T16:02:19.255Z",
+  "synthetic_only": true,
+  "source_commit": "767d2ffc6153d8f1986dd02641d5b88ddcbca907",
+  "http": "Real Node routes and MySQL; GET-only client; no paid providers or production traffic",
+  "checks": 19,
+  "passed": 19,
+  "results": [
+    {
+      "name": "公开目录目前要求登录，匿名返回401",
+      "status": "PASS"
+    },
+    {
+      "name": "已登录可读取当前公开目录",
+      "status": "PASS"
+    },
+    {
+      "name": "城市参数真实过滤且保留对应记录",
+      "status": "PASS"
+    },
+    {
+      "name": "无资料城市返回空目录，不返回其他城市记录",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的关键字搜索参数被拒绝",
+      "status": "PASS"
+    },
+    {
+      "name": "作品详情含价格和具体个人非商用许可",
+      "status": "PASS"
+    },
+    {
+      "name": "个人许可明确排除商业广告和二次生成",
+      "status": "PASS"
+    },
+    {
+      "name": "作品预览接口可取得预览文件",
+      "status": "PASS"
+    },
+    {
+      "name": "作品预览禁止长期HTTP缓存",
+      "status": "PASS"
+    },
+    {
+      "name": "未审核作品不能作为可售详情读取",
+      "status": "PASS"
+    },
+    {
+      "name": "普通下架作品从公开详情退出",
+      "status": "PASS"
+    },
+    {
+      "name": "已购详情状态可读：unpaid",
+      "status": "PASS"
+    },
+    {
+      "name": "已购详情状态可读：paid",
+      "status": "PASS"
+    },
+    {
+      "name": "已购详情状态可读：refunded",
+      "status": "PASS"
+    },
+    {
+      "name": "无关用户不能读他人已购许可",
+      "status": "PASS"
+    },
+    {
+      "name": "下载限制正确：unpaid",
+      "status": "PASS"
+    },
+    {
+      "name": "下载限制正确：refunded",
+      "status": "PASS"
+    },
+    {
+      "name": "下载限制正确：dispute",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的作品题材参数被拒绝",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "name": "public_catalog_fields",
+      "fields": [
+        "city",
+        "currency",
+        "description",
+        "id",
+        "license",
+        "object_version",
+        "offer_sha256",
+        "person_ids",
+        "seller_party_id",
+        "title",
+        "unit_minor"
+      ]
+    },
+    {
+      "name": "stock_media_metadata",
+      "present": []
+    },
+    {
+      "name": "stock_preview_fixture",
+      "value": "Synthetic non-playable bytes; no real playback/watermark acceptance claim"
+    }
+  ],
+  "requests": [
+    {
+      "route": "/stock/catalog",
+      "method": "GET",
+      "role": "anonymous",
+      "acting_party": false,
+      "status": 401,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 218,
+      "cache_control": "no-store",
+      "error_code": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "route": "/stock/catalog",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 3522,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/catalog?city=synthetic+city",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 3522,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/catalog?city=%E6%97%A0%E8%B5%84%E6%96%99%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/catalog?q=synthetic",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    },
+    {
+      "route": "/stock/catalog/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 986,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/catalog/{id}/preview",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "video/mp4",
+      "byte_length": 51,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/catalog/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 260,
+      "cache_control": "no-store",
+      "error_code": "STOCK_NOT_LISTED"
+    },
+    {
+      "route": "/stock/catalog/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 260,
+      "cache_control": "no-store",
+      "error_code": "STOCK_NOT_LISTED"
+    },
+    {
+      "route": "/stock/purchases/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1378,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/purchases/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1387,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/purchases/{id}",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 1721,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/stock/purchases/{id}",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": true,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 293,
+      "cache_control": "no-store",
+      "error_code": "STOCK_NOT_FOUND"
+    },
+    {
+      "route": "/stock/purchases/{id}/content",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 302,
+      "cache_control": "no-store",
+      "error_code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "route": "/stock/purchases/{id}/content",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 302,
+      "cache_control": "no-store",
+      "error_code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "route": "/stock/purchases/{id}/content",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": true,
+      "status": 409,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 302,
+      "cache_control": "no-store",
+      "error_code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "route": "/stock/catalog?genre=%E5%89%A7%E6%83%85",
+      "method": "GET",
+      "role": "buyer",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    }
+  ],
+  "not_tested": [
+    "production services",
+    "real identity or likeness consent",
+    "real payments/refunds",
+    "UI screenshots",
+    "device/IP geolocation",
+    "portrait/video quality"
+  ]
+}

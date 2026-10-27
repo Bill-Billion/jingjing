@@ -1,3 +1,29 @@
+2026-10-27交付：新广场已接入甲方自由体验并更新原测试网址，保留原订单和反馈；公网新版页面4组、城市查询5组、付款核验样片6项通过。16个岗位、9名公开模拟艺人及六类通告可体验。仍集中交付PR37，另一方审阅和共同版本合入未完成，最终远端检查按PR当前HEAD核对。当前worktrees/client-testing、core/plaza-client-integration-20261027；范围、限制和下一步见docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md。以下双方记录按日期保留。
+
+# 2026-10-27：紧凑广场与子页面已完成本侧检查
+
+2026-10-27，按甲方确认的紧凑广场新稿推进：原主页已原位替换，并补齐26份频道、子页及状态稿；Flutter四频道、选城、搜索、全部、公开详情、许可预览与三类投稿已还原。最后普通/测试专用构建、CI范围分析及597个实际测试通过，三宽实拍与真实隔离接口已核对。明星名单、自动城市、城市标准、主头像/缩略图及作品封面等缺口在报告中单列。
+
+[本轮问题报告](reviews/plaza-dense-20261026/REPORT.md) · [26页设计与实拍入口](ux/plaza-dense-20261026/index.html) · [任务与双方下一步](tasks/records/UX-plaza-dense-20261026.md)。当前分支`ux/plaza-dense-subpages-20261026`，共同起点`integration/767d2ffc`；已再次核对PR37仍为`2b07109e`，本轮不依赖其测试工具。代码和报告已推送[远端分支](https://github.com/Bill-Billion/jingjing/tree/ux/plaza-dense-subpages-20261026)。已通过本机既有Bill-Billion授权创建[草稿PR38](https://github.com/Bill-Billion/jingjing/pull/38)，目标integration；此前连接器403为已处理的发布路径限制。另一位同事尚未实际审阅，未合入或部署。
+
+本侧已完成设计、前端修正和验证。Core/产品可按报告确认明星编排、粗定位/城市编码和授权缩略素材的最小约定；未代其认领。旧大图构图在本轮广场范围由已确认密集版替代，纸色、墨黑、朱红、宋体及其他业务流程保留。
+
+---
+
+以下按日期保留旧记录，不作为当前PR或新稿验收结论。
+
+2026-10-26最新：客户自由体验版已更新原公网网址，本机及公网检查通过，集中更新原PR37；取消客户邀请码和业务路线下拉框。当前worktrees/client-testing，core/client-free-exploration-20261026。先读docs/testing/CLIENT_FREE_EXPLORATION_20261026.md和当前进度；公网及上传状态以交付补记为准。以下旧入口作为历史。
+
+2026-10-26最新：本侧core/client-route-expansion-20261026已扩充艺人/机构持续测试并完成公网跨端检查。请先读docs/testing/CLIENT_ROUTES_20261026.md和当前进度。原故事与邀请保留，仍只有两组模拟业务，其他路线尚未开放。
+
+2026-10-26最新决定：用户改为本机托管、通过穿透访问，并明确只开放使用模拟资料的甲方测试网站；不再等外部服务器和自有域名。当前工作树worktrees/client-testing、core/client-fixed-hosting-20261026。计划与授权见docs/testing/LOCAL_TUNNEL_20261026.md；公网最终状态见其补记。仅网站3490进入隧道，数据库等内部端口不公开，生产和收费服务不启用。以下旧“公网不可进行”和资源待办仅保留历史。
+
+2026-10-26最新资源答复：测试域名与服务器均未准备，提供方和采购预算未确定；不再重复索要已有连接路径，不自行采购。独立本机开发可以继续，公网部署尚不可进行。
+
+当前2026-10-26：用户已选固定测试服务器和域名；本侧worktrees/client-testing，分支core/client-fixed-hosting-20261026，依赖待审PR37。先读docs/operations/client-testing/FIXED_HOSTING_20261026.md及docs/status/CORE_CURRENT.md。反馈备份恢复已本机验证，业务跨天保留和部署未完成；实际域名与主机连接资料待补，不再询问临时还是固定。下文按日期保留历史。
+
+当前2026-10-25：本侧工作目录worktrees/client-testing，分支core/client-browser-testing-20261025。PR36已复审并合入integration/767d2ffc。甲方浏览器测试工具已本机实现和验证，尚未合入或开放公网；已集中上传PR37，远端检查以当前申请为准，请读docs/testing/CLIENT_BROWSER_TESTING_20261025.md、docs/status/CORE_CURRENT.md和任务CORE-client-testing-20261025。普通产品登录/业务接口不变，测试邀请和代理边界须另一方实际检查；禁止把工具检查或15个入口检查称为全部业务验收。测试业务库已清理，私有反馈独立保留。以下均按日期保留历史，不能覆盖当前实际状态。
+
 # 2026-10-24：24类问题已逐项处理，本地检查已完成
 
 本轮继续按最早“先锋电影刊物”原稿还原App与Web，并保留最新需求、现有业务流程、API、权限和原请求恢复。24类审计已逐项拆清本侧可实现修正、仍需Core或产品的最小事项，以及真实服务/素材验收；现有榜单、认证补件沿费和偏好接口不重复列为后端未开发。

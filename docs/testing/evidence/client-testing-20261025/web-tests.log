@@ -1,0 +1,535 @@
+
+> frontend_ops_workspace@0.0.0 test
+> npm run test:contracts && npm run test:supply && npm run test:licensing && npm run test:trade && npm run test:gigs && npm run test:production && npm run test:delivery && npm run test:projects && npm run test:finance && npm run test:operations && npm run test:customization && npm run test:artists && npm run test:business
+
+
+> frontend_ops_workspace@0.0.0 test:contracts
+> node tools/test-contracts.mjs
+
+14:52:49 [vite] (client) Re-optimizing dependencies because vite config has changed
+✓ 登录仅返回工作台或指定合同，拒绝外站、双斜杠及伪UUID
+✓ 首次加载自动选身份不使会话过期，并以该身份读取直达合同
+✓ 三项 GET 使用精确地址、会话和身份，不带写入或缓存条件
+✓ 旧元数据、缺字段、未知格式或不正确的签署状态均拒绝
+✓ 开放正文保留数组、零、布尔、空值与嵌套文本
+✓ 四项服务和八种未启用原因可读，SERVICE_READY 仅为服务条件
+✓ 无身份或错误编号不发请求，无负责人角色前置门槛
+✓ 身份 A→B→A 后最初 A 的迟到成功仍被丢弃
+✓ 同身份改合同、连续读取，只接受最新查询及其收尾
+✓ 更换规则或服务动作时迟到响应不回填
+✓ 权限被撤回、版本错误或读取失败清除整份私有内容
+✓ 规则响应须属于合同保留的版本，拒绝当前规则替代历史规则
+✓ 退出、换账号、离开页面立即清理且阻止旧请求回填
+✓ 401 沿用账号失效处理，旧令牌的401不会清除新会话
+✓ 网络失败、非正文2xx和意外304不能恢复旧正文
+✓ 服务端 Retry-After 等待期不会再次读取，无效值不编造倒计时
+✓ 正文组件实际渲染为转义纯文本，完整保留开放结构
+
+17 contract checks passed.
+14:52:50 [vite] (client) [optimizer] bundling dependencies...
+
+> frontend_ops_workspace@0.0.0 test:supply
+> node tools/test-supply.mjs
+
+✓ 安全登录返回覆盖本批各路由，拒绝外站和伪编号
+✓ 负责人列表准确带身份头，审核列表不带身份且只用kind/cursor/limit
+✓ 记录DTO允许声明中的空证据，但拒绝错主体、错类型和状态错配
+✓ 新投稿写请求仍要求非空证明，不因历史读取兼容而放宽
+✓ 原始二进制上传准确query及Content-Type，READY才可引用
+✓ 下载是受控字节，验证大小与指纹，拒绝公开URL或HTML假成功
+✓ 审核POST不携身份头，使用准确轨道、理由和原If-Match
+✓ 分页合并去重，完整记录可按修订判新旧，重复游标拒绝
+✓ 失败后重试保留同一幂等键和完整payload，成功后GET最新状态
+✓ 写入已成功但GET失败时只重读，不再次POST
+✓ 提交、撤回和独立审核后详情、列表及历史使用同一最新状态，保留其他版本意见
+✓ 409处理中原键可重试，上传需核对和确定冲突禁止盲重试
+✓ 412刷新目标且要求重新确认，不自动重放旧决定
+✓ 403清除申请、详情、材料、上传和待操作，不用别的身份回退
+✓ 身份A→B→A、换轨道、退出均清理且丢弃迟到上传与记录
+✓ 同身份更换记录，旧成功、错误与收尾不得覆盖新请求
+✓ 旧401不退出新会话，当前401清理私有内容
+✓ 账号、合同、供给及审核页面保留同一菜单，详情和内容审核正确标记当前入口
+✓ 实际组件缩略编号保留完整title，内容审核正文优先且权属顺序不变
+
+19 supply checks passed.
+
+> frontend_ops_workspace@0.0.0 test:licensing
+> node tools/test-licensing.mjs
+
+✓ 所有正式许可入口可安全恢复，拒绝外站、查询角色、未知页面及伪编号
+✓ 目录和审核查询的身份、分页及no-store准确，权限不由前端角色参数代替
+✓ 写入携带固定版本和幂等键，不自动重试或补商业默认值
+✓ 返回记录拒绝不匹配身份、错误币种金额、范围、全文生成标志和旧格式
+✓ CNY整数分准确显示人民币，不猜未知币种，不接受浮点或超安全整数
+✓ ACTIVE仍受开始、有效及开发期限和用途额度限制
+✓ 项目改稿要求真实绑定、来源、项目、当前负责人和有效ADAPT，不能从制作权推导
+✓ 项目登记和绑定不冒充许可生效，地域语言名称保留原代码且不改使用范围
+✓ 未知预留结果只重试完整原请求和同一键，成功重放后重新读当前记录
+✓ 未知写入阻止真实路由导航并保留原key/body，核对成功后才允许切换
+✓ 提交已确认但刷新失败仅重新读取，不再次创建许可
+✓ 412清除原审核决定并读取最新版本，必须重新作出决定
+✓ 冲突预留不可重试为成功；结束后重新核对
+✓ 晚到发放HTTP200只显示人工补救，并拒绝无关许可回包
+✓ 403清除私有列表、合同、全文及待操作；迟到返回不得恢复
+✓ 身份A→B→A、退出、换页面及会话修订丢弃迟到读写
+✓ 同身份更换记录时，旧403不能清除后来的有效详情
+✓ 受控阅读在正文前后验证指定账号、身份、版本及期限，并禁止缓存
+✓ 正文迟到换身份、到期或撤销不显示，后续核验失败立即清除
+✓ 所有新旧工作区保留同一完整菜单，详情与审核仅一个正确高亮
+✓ 短试读和合同按纯文本渲染，核验默认项不被填成true
+
+21 licensing checks passed.
+
+> frontend_ops_workspace@0.0.0 test:trade
+> node tools/test-trade.mjs
+
+✓ 实DTO包含六类记录；拒绝错误金额、币种、规格和款项计算
+✓ 列表按kind和cursor分页，普通OWNER有身份，审核不传身份；私有读取no-store
+✓ 报价确认原样提交指纹，If-Match保留原版本；后台审核不传身份
+✓ 所有503按结果未知保留原key/body/version；先核对再同key重放
+✓ 断流和网络异常保留原请求，不自动另建付款或退款
+✓ 已知POST记录读取失败保留resultId，核对只GET不重POST
+✓ 412读取最新版本，清空旧操作并要求重新确认，不自动重放
+✓ 401/403/404清空私有内容、原操作和关联材料状态
+✓ 身份A→B→A、会话修订、退出和换页丢弃迟到请求
+✓ 同身份换记录，旧403不清除新的有效详情；分页不能循环
+✓ 金额整数分精确显示元，输入不接受小数/指数/隐含商业值
+✓ 退款逐付款明细扣除已有申请，Apple仅全额，待核实款不能申请
+✓ 付款核对不传If-Match，支付宝transaction_id必须null；退款执行空JSON
+✓ 历史附件走本记录私有字节接口，保留原报告状态不伪造到账
+✓ 真实SSR记录组件转义合同和旧条款，支付字符串/令牌不展示
+✓ 真实SSR规格/报价表单商业字段空白且存在多行、分期和30项约束
+✓ 正式交易路由与安全登录返回一致，新版本/审核/详情都有唯一菜单高亮
+✓ V5故事报价读取customization并识别新中间节点，固定自营财务约定不套撮合比例
+✓ 故事报价表单按原正式来源只读买方，过滤旧规格和现货，不产生默认价格或规则
+✓ 真实报价组件显示原故事与原财务快照，正式条款纯文本并区分未付款与已签
+✓ 缺少履约条款的历史定制仍阻止付款，既有旧订单保留；组件直接核验原约定
+✓ 报价按元输入，精确转分且拒绝多余小数或不合法金额
+✓ 三种数字人服务使用独立规格及原服务快照，拒绝错配或混入影视参数
+✓ 数字人订单组件展示托管期限与服务来源，不伪填样片或长期模型结果
+✓ 原数字人服务报价只选择匹配商品，固定数量及一次付款，客户主体仍明确填写
+
+25 trade checks passed.
+
+> frontend_ops_workspace@0.0.0 test:gigs
+> node tools/test-gigs.mjs
+
+✓ 合作名称限定双方、旧服务器404兼容，403/503不得假成功
+✓ 六类实际DTO逐种验证；拒绝伪公开地址、错误类型、金额和商业范围
+✓ 18个真实API：ordinary party、独立无party、If-Match与exact acceptance
+✓ actor/party/kind/id/可见性不匹配拒绝；分页不能循环
+✓ 503/网络断流未知写入先核对原记录，同key/body/version且阻止导航
+✓ 已知POST结果刷新失败保留ID，只GET恢复，绝不再POST
+✓ 412先读最新版本再触发重新确认，旧动作不自动重放
+✓ 上传503保留同一个原Blob，核对后同key重试；用原字节SHA核实result
+✓ 错误上传指纹保留已知resultId，不显示上传完成
+✓ 401/403/404清空私有DTO与pending，身份/会话/路由变化忽略迟到响应
+✓ 私有材料只走记录evidence字节接口；权限失败清理，对象URL身份变化回收
+✓ 人民币整数分BigInt floor，MCN只分平台费；累计退款产生负delta而非支付
+✓ 榜单UTC完整历史日期、public summary拒绝私有fact/order/流水，不模拟INSUFFICIENT_DATA
+✓ 重新下载失败不保留上次成功提示，恢复后可再次读取
+✓ 本人数字人/同意真实分页与scope，伪实名状态和错kind拒绝
+✓ 真实SSR条款转义、价格空白、人工五核验与出款边界
+✓ 12真实页面路由/原trade桥接、单一菜单、safe deep link与全43入口共享
+✓ 真实GigsView MCN详情按钮可据原COMMISSION重算，无trade列表/未获准链接
+✓ 真实商单报价表单保留原offer ID/terms，显式数量分期，拒绝错误双方规格或价格默认
+
+19 gigs checks passed.
+
+> frontend_ops_workspace@0.0.0 test:production
+> node tools/test-production.mjs
+
+✓ 六类真实制作DTO、可用状态及job按真实字段核验，拒绝假ready/publicURL
+✓ 项目列表及五类记录仅真实kind/cursor/limit，主体和reviewer头准确no-store
+✓ 全部写接口显式body、原版本和key；独立核验与恢复不传party，retry无If-Match
+✓ 上传原始私有Blob不转公开地址，技术大小及五种格式约束
+✓ 503与断流均保留原body/key/version，先核对再同key重放，路由不可离开
+✓ 上传503保留同一个Blob，核对文件列表后原键重放，不新选File
+✓ POST已知结果ID后刷新失败只GET，不重建版本/反馈/任务
+✓ 412重新读取实际项目，清旧决定与版本，不自动重放
+✓ 失权和新定制明确撤权清私有记录、文件payload、预览URL；晚回复不可恢复
+✓ 身份A→B→A、会话修订、路由及注销忽略迟到读写和上传回调
+✓ 同身份更换记录旧403不得清新记录，所有分页拒绝循环
+✓ 剧本→样片→粗剪→成片只按当前前阶段验收开放，旧验收不开放新版本
+✓ 内部审片不代客户验收；指定当前版本、真实逐项检查才可验收
+✓ 15接口中的证据/preview/final都为受控字节，HTML/publicURL拒绝且不缓存
+✓ 生成可用状态和实际job分开查询，不把排队/BLOCKED/删除请求当完成
+✓ 真实SSR事实组件转义剧本和原条款；上传空白无商业默认，实际检查默认不勾选
+✓ 所有实际新路由/原订单桥接安全登录返回、共享43项菜单且唯一高亮
+✓ 通用制作新建阻止新定制订单进入旧流程，保留旧订单可建制作的实际组件判断
+
+18 production checks passed.
+
+> frontend_ops_workspace@0.0.0 test:delivery
+> node tools/test-delivery.mjs
+
+✓ 履约DTO独立校验全部状态、整数事件、出演归属及原条款，不冒充ProductionRecord
+✓ 委托艺人本人下载后的实际交付允许buyer_account_id为null并保留artist_account_id
+✓ 真实story DTO按原正式提交验证，拒绝最新收件详情冒充原成交故事
+✓ 6类写接口明确空正文/工单/版本、原If-Match与同一key，独审不传acting party
+✓ 503/断流保存原请求而非后改输入，先GET原项目才同键恢复
+✓ 412只刷新原履约版本并要求重确认，原编辑内容不自动重放
+✓ 失权、撤权和未知上下文变化清除原私密内容，迟到响应不恢复
+✓ 同上下文较早读取不能覆盖新项目，也不能把旧403应用到新记录
+✓ 视频独审6项与买方4项严格分开，SCRIPT仍只需剧本核对
+✓ 3条新路由安全返回、共享43菜单并唯一高亮；不接外链或任意query
+✓ 私人定制新建独立校验无人物或逐位完整归属，历史/人工样片不混入通用入口
+✓ 收讫需真实可看本版、买家账号、原通知已读和显式勾选；服务端观察不等于可播
+✓ 原订单付款入口自动读取并固定原订单，办理人只需明确选择原分期
+✓ 取消保留金额按元精确转整数分，明确0允许全退，多余小数拒绝
+✓ 新定制的原约定纠错超出创意次数仍可提交，并发送原VERSION版本和明确change_kind
+✓ 新条款订单开放原分期付款、历史缺条款仍关闭，退款条款按纯文本显示
+✓ 原项目工单变更报价只读原买方、固定一行一次付款，新增范围由实际输入
+
+17 delivery checks passed.
+
+> frontend_ops_workspace@0.0.0 test:projects
+> node tools/test-projects.mjs
+
+✓ 八类真实DTO逐kind严格解析；六层、整数金额、指纹及手工核验准确
+✓ V5项目、独立收入指针、已付改版与方案参演快照兼容当前契约且拒绝未知字段
+✓ 公开目录只取角色版本与摘要，拒绝候选、身份、证据及额外私有字段
+✓ 元转整数分无浮点舍入、空白无价格；零元须明确输入
+✓ 列表实际cursor/limit及kind范围；普通身份带party，独立核验不带party
+✓ 目录仅账号请求、读取与会签回复核验actor和当前party；wrong ID/kind不接受
+✓ 15个POST均传原内容、key与If-Match，独审完全不传party
+✓ 7种GET路径包括受控私有证明，不接受HTML/publicURL且no-store
+✓ readiness只返回一个阻止原因，不虚构全量通过或制作完成
+✓ 会签必须指定本方、准确hash、批准前置顺序；旧版/拒绝不能解锁
+✓ POST确认不升版：必须GET真实确认列表；已知结果核对失败只GET
+✓ 会签after-commit503以准确party/hash/decision/reason证据结束，不重复写
+✓ 503/网络/断流保留原body/key/version，必须先核对再同key重试且阻止导航
+✓ 公开报名unknown核对目录版本，不读取尚无授权的私有ROLE；412清旧确认
+✓ 私有上传503保留同一个Blob，核对原操作后同key重放不新建文件
+✓ 已知新增记录ID刷新503只GET，412重读新版本并要求重新确认
+✓ 401/403/404立即清私有记录、原上传payload及blobURL，不保留伪成功
+✓ 身份A→B→A、会话修订、路由及注销忽略迟到读写和上传回调
+✓ 旧请求403不清新记录；过滤后的空页继续翻页，分页循环拒绝
+node.exe : [Vue warn]: Failed to resolve component: RouterLink
+所在位置 行:1 字符: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([Vue warn]: Fai...ent: RouterLink:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ProjectRecordPanel record= {
+  id: '00000010-0000-4000-8000-000000000001',
+  kind: 'PROJECT',
+  project_id: null,
+  owner_party_id: '00000002-0000-4000-8000-000000000001',
+  created_by: '00000001-0000-4000-8000-000000000001',
+  current_status: 'PREPARING',
+  object_version: 1,
+  content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  data: {
+    title: '真实项目 <script>private</script>',
+    scope: {
+      purpose: 'RELEASE',
+      territory: 'CN',
+      language: 'zh',
+      valid_until: '2030-10-03T00:00:00.000Z'
+    },
+    current_plan_id: '00000013-0000-4000-8000-000000000001',
+    current_edition_id: null,
+    cancel_reason: null
+  }
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ProjectRecordPanel record= {
+  id: '00000011-0000-4000-8000-000000000001',
+  kind: 'ROLE',
+  project_id: '00000010-0000-4000-8000-000000000001',
+  owner_party_id: '00000002-0000-4000-8000-000000000001',
+  created_by: '00000001-0000-4000-8000-000000000001',
+  current_status: 'OPEN',
+  object_version: 1,
+  content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  data: {
+    title: '真实招募角色',
+    capacity: 1,
+    pricing: 'FIXED',
+    amount_minor: 12505,
+    terms: '原角色条款 <script>private</script>'
+  }
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ProjectRecordPanel record= {
+  id: '00000013-0000-4000-8000-000000000001',
+  kind: 'PLAN',
+  project_id: '00000010-0000-4000-8000-000000000001',
+  owner_party_id: '00000002-0000-4000-8000-000000000001',
+  created_by: '00000001-0000-4000-8000-000000000001',
+  current_status: 'APPROVED',
+  object_version: 1,
+  content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  data: {
+    production_project_id: '00000040-0000-4000-8000-000000000001',
+    rights: [ [Object], [Object], [Object], [Object], [Object], [Object] ],
+    confirmers: [ [Object], [Object] ],
+    funding: [ [Object] ],
+    terms: '明确方案原条款',
+    roster_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    review: null
+  }
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ProjectRecordPanel record= {
+  id: '00000014-0000-4000-8000-000000000001',
+  kind: 'EDITION',
+  project_id: '00000010-0000-4000-8000-000000000001',
+  owner_party_id: '00000002-0000-4000-8000-000000000001',
+  created_by: '00000001-0000-4000-8000-000000000001',
+  current_status: 'IN_REVIEW',
+  object_version: 1,
+  content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  data: {
+    plan_id: '00000013-0000-4000-8000-000000000001',
+    final_version_id: '00000042-0000-4000-8000-000000000001',
+    final_content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    material_asset_ids: [ '00000032-0000-4000-8000-000000000001' ],
+    confirmers: [ [Object], [Object] ],
+    note: '本版准确成片与实际材料',
+    review: null
+  }
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ProjectRecordPanel record= {
+  id: '00000016-0000-4000-8000-000000000001',
+  kind: 'RELEASE',
+  project_id: '00000010-0000-4000-8000-000000000001',
+  owner_party_id: '00000002-0000-4000-8000-000000000001',
+  created_by: '00000001-0000-4000-8000-000000000001',
+  current_status: 'INTERNAL_PENDING',
+  object_version: 1,
+  content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  data: {
+    edition_id: '00000014-0000-4000-8000-000000000001',
+    channel_id: '00000015-0000-4000-8000-000000000001',
+    prior_release_id: null,
+    material_asset_ids: [ '00000032-0000-4000-8000-000000000001' ],
+    note: '本次实际送出申请',
+    review: null,
+    last_external_event_id: null
+  }
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ProjectRecordPanel record= {
+  id: '00000017-0000-4000-8000-000000000001',
+  kind: 'EXTERNAL_EVENT',
+  project_id: '00000010-0000-4000-8000-000000000001',
+  owner_party_id: '00000002-0000-4000-8000-000000000001',
+  created_by: '00000001-0000-4000-8000-000000000001',
+  current_status: 'IN_REVIEW',
+  object_version: 1,
+  content_sha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  data: {
+    release_id: '00000016-0000-4000-8000-000000000001',
+    outcome: 'PUBLISHED',
+    external_reference: 'actual-external-ref',
+    occurred_at: '2026-10-01T12:00:00.000Z',
+    evidence_asset_id: '00000032-0000-4000-8000-000000000001',
+    note: '实际外部结果待核验',
+    review: null,
+✓ 真实SSR事实组件安全转义六层/条款，技术字段折叠，外部报告不冒充发行成功
+    provenance: 'EXTERNAL_MANUAL_EVIDENCE'
+  }
+} >
+  at <App>
+✓ 真实六层分组表单无商业默认，OTHER费用来源与确认顺序都显式填写
+✓ 全部实际项目路由安全登录返回，SSR25项同菜单且始终唯一正确高亮
+✓ 真实制作链保留项目桥接、失权清理及412重确认；权限由服务器授予
+
+23 projects checks passed.
+
+> frontend_ops_workspace@0.0.0 test:finance
+> node tools/test-finance.mjs
+
+✓ 十类真实DTO严格kind/嵌套shape/人民币整数分/私有材料，不接受钱包或ready字段
+✓ 元/分和百分比精确解析，空白/隐式零/浮点/范围外拒绝；零和调整和扣除归属校验
+✓ 全23真实端点与原body/key/If-Match、OWNER与独审头精确no-store
+✓ 普通参与方SETTLEMENT保留原hash且仅本人余额，全量投影被客户端拒绝
+✓ balances/entries本方隔离及身份echo；不能读取其他方available/账项
+✓ 列表分页空投影继续下一cursor、错kind/约定和重复cursor拒绝
+✓ 503与网络断流先核对，同key/body/version恢复，未知阻止路由离开
+✓ POST已知ID刷新失败仅重新GET结果，不能另写或改金额
+✓ 准确确认正常POST返回原记录必须GET confirmations，版本不变也能核实
+✓ 确认after-commit503核对四字段实际证据，无升版也不再POST
+✓ 确认历史其它主体/旧hash/决定/理由不能假报本方成功
+✓ 确认gate为实际约定参与方/已独审且未历史决定；不要求客户端全量他人余额
+✓ 412强制重新读取原记录并清原pending/确认，禁止自动重放
+✓ 401/403/404清私有记录与原File/Blob操作并回收下载URL
+✓ 身份A→B→A、路由、revision和logout忽略迟到读写
+✓ 上传503保留同Blob/key，实际SHA核对才完成，不接受错误SHA已知结果
+✓ 私有证明拒绝HTML和JSON兜底，不产生公开URL
+✓ 20图册所有实际路由、safe来源deep link、43菜单与唯一高亮
+✓ 实际SSR规则表单显式无商业默认、原条款转义、金额与待核实文案
+✓ 分配表单允许候选以外的明确参与主体，原候选保留，非法编号不可形成约定
+[Vue warn]: App already provides property with key "Symbol(v-scx)". It will be overwritten with the new value.
+✓ 实际FinanceView独审不依赖me.allowed_actions，参与方拒绝；付款全额/412/响应/来源约束
+✓ 所有20图编号真实映射，桥接保留制作/商单/项目且隐含grant不误禁渠道登记
+✓ 服务器只读试算仅账号权限，精确传显式基数和可选关系；不带主体也不写财务
+✓ 未填关系编号允许服务器自动采用唯一有效MCN，显式编号仍必须匹配
+✓ 真实试算组件显示PREVIEW_ONLY，输入变更或失权即清服务器结果，不把旧结果当新试算
+✓ 定制结算从原订单复制固定规则，报价以后新规则不替换历史条款
+✓ 只读试算子路由保留43项共享导航和安全返回，拒绝伪授权参数
+
+27 finance checks passed.
+
+> frontend_ops_workspace@0.0.0 test:operations
+> node tools/test-operations.mjs
+
+✓ 11实际API路径、参数、body、普通party、独立无acting及仅留言状态If-Match
+✓ 真实DTO拒绝额外字段、错domain/kind/身份与隐藏原文，未知通知事件保留实际code
+✓ UTC半开期间366天限制，人民币整数分精确显示，不隐式本地时区或金额默认
+✓ 报表JSON实际规范化hash，与CSV字节hash分离；来源业务hash不同于流水hash
+✓ SETTLEMENT本方隔离、真实签名负额与WORKLOAD实际状态计数，CASH不造利润
+✓ PENDING与失败状态没有虚构结果；200申请保存只得到等待任务
+✓ 空权限投影页继续cursor，通知倒序游标与留言UUID游标不能当未读水位
+✓ 留言503/断流先核对，同key/body/version恢复，普通换页被保护
+✓ 新留言未知不能以相似正文/隐藏原文推定原请求成功，必须原key回放
+✓ 新报表未知无目录，核对当前账号再原请求取回，不能重建期间
+✓ 已知任务ID刷新503或JSON指纹错误只GET，不另POST；不可信身份不接受结果ID
+✓ 留言已知隐藏ID但当前仍VISIBLE不能假报隐藏成功，只重读结果
+✓ 已知留言编号但正文/回复/作者与原创建不一致不能确认成功
+✓ 已读after-commit503核对当前本账号本party事件已读，无须重复POST
+✓ 412清原确认并重读；重读失权403覆盖412且清除私有状态
+✓ 401/403/404清通知、留言、报表、pending及Blob URL；源权限撤销拒绝完整报表
+✓ 身份A→B→A、revision、logout及路由忽略迟到的私有读写/下载内容
+✓ CSV严格实际MIME/私有字节，HTML/JSON不可兜底，BOM/CRLF与公式保护由服务器结果保留
+✓ 六最终图实际路由、安全登录返回、43共享菜单唯一高亮，旧全入口仍存在
+✓ 真实SSR纯文本转义、隐藏不显示body；等待无CSV、已生成精确金额与折叠指纹
+[Vue warn]: App already provides property with key "Symbol(v-scx)". It will be overwritten with the new value.
+[Vue warn]: App already provides property with key "Symbol(v-scx)". It will be overwritten with the new value.
+✓ 实际OperationsView独立权限不靠me.allowed_actions；本人不能独审，OWNER才可申请本方报表
+✓ 实际图册、对象桥接、私有清理和导航保护可追溯，不引入假授权/公共下载
+
+22 operations checks passed.
+
+> frontend_ops_workspace@0.0.0 test:customization
+> node tools/test-customization.mjs
+
+✓ 运营列表、详情和受理只带Bearer，保留原游标、空正文和强版本
+✓ 草稿、正文混入摘要、身份错配和缺失ETag不得作为正式提交展示
+✓ 提交模板和答案必须一致，拒绝未声明字段、非法选择与附件冒充
+✓ 状态切换从首屏读取，游标原值传递且不接受重复游标
+✓ 受理按钮使用服务端动作权限，重复点击只发送一次
+✓ 网络未知结果先查询，再用原key、原空正文、原版本恢复
+✓ 412刷新原提交并要求重新核对，409已受理不再创建受理
+✓ 读写失权401/403/404清空提交、列表、游标及未知操作
+✓ 412后的重新读取若失权，不能残留旧正文和旧确认
+✓ 账号、主体、revision及离页清理隔离迟到读取，A到B再到A也不恢复旧正文
+✓ 详情切换时先清旧内容，较早响应不覆盖较新记录
+✓ 登录安全返回只接受列表及UUID详情，拒绝外链、query、伪岗位及不完整编号
+✓ 提交内容和模板按纯文本渲染，空值不回填；受理人员和时间独立展示
+✓ 两个路由都沿用共享菜单，收件入口唯一高亮且保留旧工作区
+✓ 补件上下文和写入只带账号，无用户草稿；严格原版本及逐项要求
+✓ 补件可写权限来自当前上下文，禁止未受理、开放补件、重复字段和重复提交
+✓ 补件未知结果保留原逐项正文、版本与键，先核对后重放不跟随后改输入
+✓ 补件412保留输入、重读故事与上下文，明确核对后才允许再发
+✓ 补件、历史与报价读取失权清除所有私人上下文和编辑输入，迟到响应不恢复
+✓ 正式历史保留原版本和要求回复，分页游标原样传递；摘要不接受私有正文
+✓ 故事报价摘要不含正文和价格；旧故事只显示来源状态而不推导付款
+✓ 运营真实页面补件和历史只渲染正式纯文本，原故事入口自动带来源而不允许手填
+✓ 同故事刷新新版提交清除旧报价来源标记和历史选择，同时保留未发送补件输入
+
+23 customization checks passed.
+
+> frontend_ops_workspace@0.0.0 test:artists
+> node tools/test-artists.mjs
+
+✓ 本人、多数字人绑定与九类真实DTO；不接纳伪实名、模型或交叉归属
+✓ HALO_REVIEW按真人办理且不填数字人，冻结服务规格结构必须一致
+✓ 主体与账号请求分别传身份；目录/服务/独审无acting且全部no-store
+✓ GET严格核对meta、person/record关联和ETag，错误版本不采用
+✓ 审核/results按账号且保留If-Match，拒绝错记录与错kind
+✓ 原文件以Blob上传，核对真实归属、字节、用途、媒体与SHA
+✓ 503未知恢复保留原body/key/version；原输入后来改动不改变原请求
+✓ 409上传待核对也是未知结果，保留同一Blob/key并先查当前状态
+✓ POST已有编号但GET失败时只继续GET，不重新POST或建立第二份记录
+✓ 412保留原输入对象，重读最新记录并要求再次明确确认
+✓ 401/403/404或委托撤销清本人、记录、原请求及私有预览
+✓ 身份A→B→A、会话修订、退出及换页，迟到响应不能恢复私有资料
+✓ 同页重复读取采用最新请求；旧403不能清掉新记录
+✓ 目录和长列表分页，重复cursor不能陷入循环或重复显示
+✓ 私有字节核对大小与SHA；目录和独审材料每次重新GET且无acting
+✓ 替换预览、撤权或上下文切换立即回收BlobURL，不执行HTML内容
+✓ 同意撤回或托管过期以409拒绝预览时同步清除已过期目录与私有详情
+✓ 十四类领域表单不使用原始JSON，不预先勾选同意，L3和长期模型不启用
+✓ SERVICE表单真实HALO_REVIEW提交null数字人及false提醒，已审规格不填价
+✓ 本人同意的实际表单逐项选定，checkbox数组替换后立即更新准确payload
+✓ 异步读取签名时换身份，迟到Blob不能创建或恢复预览
+✓ 记录按纯文本展示，退款待办与实退分开，原订单仅采用服务详情真实关联
+✓ 所有新路由安全登录返回；43入口保留旧41且每页只有一个实际高亮
+[Vue warn]: App already provides property with key "Symbol(v-scx)". It will be overwritten with the new value.
+✓ 本人、受托机构和独审实际View采用各自上下文与表单边界
+✓ PENDING_REVIEW个人和机构主体的有效OWNER仍实际读取本人或获托名单
+
+25 artists checks passed.
+
+> frontend_ops_workspace@0.0.0 test:business
+> node tools/test-business.mjs
+
+✓ 8轮业务按11域注册，每域有真实读取、字段表单与独立业务按钮
+✓ 新路由逐域严格登录恢复，拒绝未知参数与外链
+✓ 引用仅接受真实UUID，hash不能任意文本，动态路径不能注入
+✓ 元金额精确编码为整数分，0与过多小数按各业务边界处理
+✓ 所有本人同意和独审勾选初始未勾选，无原始JSON编辑字段
+✓ 现货个人许可与多人权利输入通过当前后端纯校验
+✓ 现货内容和权利独审字段分开，退回不要求伪造通过核验
+✓ 六类通告只提交本类字段并通过后端校验
+✓ 试镜方案时段、安全安排和取样按原约定数量编码
+✓ 试镜消息与商单媒体使用各自实际枚举，不互相替代
+✓ 钱包如实保留资金未接通，兑换抽奖使用独立业务接口
+✓ MCN成员授权仅限后端允许的逐人动作
+✓ MCN非负责人展示仅保留当前账号派单及对应订单，不显示机构关系和总额
+✓ 冠军规则结构、独立权重和风险票处置使用实际契约
+✓ 共创人数规则和额度不默认生成正式参数
+✓ 共创本人片段四项独审使用当前真实字段
+✓ 固定制作券与面试权益按后端当前约束编码
+✓ 单抽与十连固定合法次数，兑现结果与补救使用当前后端枚举
+✓ 新建素材任务先提交实际来源，不为未知新任务预造GET编号；材料入口对账号级GET保留
+✓ 参演固定片酬及独立未来收入保留完整分期和角色
+✓ 独立审核退回参演约定允许真实未通过项，不强迫勾选通过
+✓ 资料权益请求、分类留存与未执行结果不冒充全清理
+✓ 素材机审仅对明确REVIEW结果独审，不制造缺失的恢复服务
+✓ 业务返回校验账号、主体和有界数据，错误元信息不能显示为成功
+✓ 未知请求先核对再用原键恢复，修改输入不能改变已发原请求
+✓ 关联主体取原项目已确认候选的owner，不拿候选编号冒充主体；本人执行使用实际账号或获准副本
+✓ 联系卡仅在自身合法读取后取同单会话版本；失权不借其他GET，冻结时不显示发送和开放联系卡动作
+✓ 原请求恢复存储绑定账号主体会话，不额外保存token
+✓ 412保留输入并要求重新核对，独立岗位请求不带主体头
+✓ 同身份较早GET和迟到403不能覆盖后来记录
+✓ 失权、权利暂停或换身份清除旧私密内容与Blob
+✓ 所有领域首页原43菜单完整保留、唯一高亮且沿刊物版式
+✓ 主体和表单哈希不允许普通用户手填，原JSON仅是折叠文本记录
+✓ 只读审核校验值来自当前实际源与提案，逐项勾选不自动通过
+✓ 公开缺少合法邀约来源时不提供INVITATION，合法原投递保留
+✓ 人工样片本人专用下载不依赖generic production GET，原绑定与确认分开
+✓ 现货许可订单采用真实stock_license规格，保留原个人范围
+✓ 试镜及独立追加订单接受真实最小规格，拒绝缺失原业务快照
+✓ 参演生成订单保留原会签来源，托管渠道只保存未接通事实
+✓ 全额权益订单允许零现金空分期，普通订单不得借零金额通过
+✓ 选券组件确认准确的adjusted hash，保存与释放保留原操作
+✓ 工作区入口可按名称或路径筛选，完整43菜单与未知查询不混为空业务结果
+✓ 同名获准引用保留区分编号，当前选择完整可见且不自动代选
+✓ 明确中文状态仍保留服务器原值，未知状态不猜成通过
+✓ 读取503/断线与提交未知文案分开，读取失败不清除原写入恢复
+
+45 business checks passed.

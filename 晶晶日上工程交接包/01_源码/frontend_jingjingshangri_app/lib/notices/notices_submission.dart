@@ -146,11 +146,12 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
     final d = detail;
     final invitation = widget.kind == 'INVITATION';
     return V5Frame(
+        plaza: true,
         api: api,
         title: submissionKinds[widget.kind] ?? '单向投稿',
         children: [
           tradeHeading(invitation ? '把意向交给对方' : '投递这一次可能',
-              eyebrow: '本人授权 / 单向递交 / 平台客服跟进'),
+              fontSize: 24, eyebrow: '本人授权 / 单向递交 / 平台客服跟进'),
           V5RecoveryPanel(
               api: api,
               label: api.recoveryLabel,
@@ -162,7 +163,7 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           appNotice('投稿或邀约经过独立审核后单向送达。感兴趣只进入客服处理，不自动成交、付款、授角或开放自由聊天。'),
           if (invitation && source == null && !busy) ...[
             appNotice(
-                '暂不能从公开艺人发起邀约，需要平台补齐引用信息。当前公开目录未提供合法接收方与公开同意引用，不能用私人资料兜底。'),
+                '暂不能从公开艺人主页发起新的邀约。你可以继续查看已有邀约的客服处理记录，或浏览公开通告。'),
             tradeButton(
                 '查看已有客服处理记录',
                 () =>
@@ -195,13 +196,13 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
               tradeFact('本人档案', d.person.name),
               if (!permitted) appNotice('当前机构未取得本人的合作投稿委托。请先由本人明确授权。'),
               if (permitted && delegated && notice == null)
-                appNotice('机构直接投递需要平台提供明确接收方上下文。请从具体公开通告进入，不能猜测接收主体。'),
+                appNotice('机构代艺人投稿，请先打开具体通告，再选择本次投稿的艺人。'),
               if (permitted &&
                   delegated &&
                   notice != null &&
                   delegatedRefs.isEmpty)
                 appNotice(
-                    '平台尚未提供首次受托投稿所需的可选择授权引用。机构不能读取本人私有同意，也不要求手填技术编号；请平台补齐安全授权上下文。'),
+                    '机构首次代这位艺人向该接收方投稿暂未开放。请由艺人本人确认本次接收方、用途和期限后投稿；机构不能代替本人同意。'),
               if (permitted && !delegated && consents.isEmpty) ...[
                 appNotice('还没有覆盖本次接收方的已审合作投稿同意。请先在我的艺人中明确接收方、用途和有效期限。'),
                 tradeButton(
@@ -277,16 +278,16 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           V5Field('rule_id', '本次已生效投稿规则',
               choices: {for (final r in rules) r.id: r.rule['version']}),
         if (delegated)
-          V5Field('consent_id', '选择本人已提供的本次接收方授权', choices: {
+          V5Field('consent_id', '选择本人已提供的本次接收方授权', wrapChoices: true, choices: {
             for (final c in delegatedRefs.entries)
               c.key:
                   '${d.avatars.where((a) => a.id == c.value['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 原投稿授权（提交时重核）'
           })
         else
-          V5Field('consent_id', '选择本人对明确接收方的已审授权', choices: {
+          V5Field('consent_id', '选择本人对明确接收方的已审授权', wrapChoices: true, choices: {
             for (final c in consents)
               c.id:
-                  '${d.avatars.where((a) => a.id == c.avatarId).map((a) => a.name).firstOrNull ?? '原数字人'} · ${c.data['terms']}'
+                  '${d.avatars.where((a) => a.id == c.avatarId).map((a) => a.name).firstOrNull ?? '原数字人'} · ${c.data['terms']}\n用途：合作投稿\n有效期：${artistWhen(c.data['valid_from'])} 至 ${artistWhen(c.data['valid_until'])}\n接收通告：${notice?.notice['title'] ?? '以本次已审授权为准'}'
           }),
         const V5Field('purpose', '本次投稿用途'),
         const V5Field('content', '给接收方的投稿内容', type: 'multiline'),

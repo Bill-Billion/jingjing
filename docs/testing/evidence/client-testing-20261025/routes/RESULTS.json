@@ -1,0 +1,445 @@
+{
+  "scope": "Read-only entry checks with synthetic accounts; not a complete workflow acceptance.",
+  "results": [
+    {
+      "id": "story-new",
+      "title": "提交一份私人故事",
+      "role": "story-buyer",
+      "path": "/app/#/customization/new",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/customization-categories",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "story-supplement",
+      "title": "补资料与查看报价",
+      "role": "story-buyer",
+      "path": "/app/#/customization",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/customization-requests",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "story-intake",
+      "title": "运营受理故事",
+      "role": "story-operator",
+      "path": "/workspace/operations/customization",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/operations/customization-requests",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "story-quote",
+      "title": "报价及独立复核",
+      "role": "story-merchant",
+      "path": "/workspace/trade/quotes",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "story-review",
+      "title": "独立复核故事报价",
+      "role": "story-reviewer",
+      "path": "/workspace/trade/reviews/quotes",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "artists-own",
+      "title": "本人档案与形象授权",
+      "role": "artists-artist",
+      "path": "/app/#/artists",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/artists/people",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "artists-manage",
+      "title": "机构及艺人工作区",
+      "role": "artists-artist",
+      "path": "/workspace/artists/people",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/artists/people",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "delivery-orders",
+      "title": "原订单、付款与制作进度",
+      "role": "delivery-buyer",
+      "path": "/app/#/trade",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/trade/records",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "delivery-production",
+      "title": "制作交付工作台",
+      "role": "delivery-producer",
+      "path": "/workspace/production/projects",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/production/projects",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "r05r12-stock",
+      "title": "购买现成视频",
+      "role": "r05r12-stock_buyer",
+      "path": "/app/#/stock/catalog",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/stock/catalog",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "r05r12-notices",
+      "title": "通告与报名",
+      "role": "r05r12-notices_buyer",
+      "path": "/app/#/notices",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/notices/catalog",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "r05r12-wallet",
+      "title": "钱包与晶钻",
+      "role": "r05r12-buyer",
+      "path": "/app/#/wallet",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/wallet/summary",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "r05r12-rewards",
+      "title": "权益与抽奖",
+      "role": "r05r12-buyer",
+      "path": "/app/#/redemption",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/cocreation/benefits",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/redemption/catalog",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "r05r12-privacy",
+      "title": "个人信息保护申请",
+      "role": "r05r12-buyer",
+      "path": "/app/#/privacy?view=requests",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/requests",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/preferences",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    },
+    {
+      "id": "r05r12-workbench",
+      "title": "运营与机构综合工作台",
+      "role": "r05r12-producer",
+      "path": "/workspace/workspace",
+      "result": "READ_PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/invitations",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/parties/12359c4b-4ec7-460f-9240-655d20d88461/members",
+          "status": 200
+        }
+      ],
+      "errors": [],
+      "external": []
+    }
+  ]
+}

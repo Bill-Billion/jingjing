@@ -336,7 +336,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         value = {'display_name': input('name', '名称')};
         break;
       case 'IDENTITY':
-        value = {'session_ref': input('session', '实名服务会话引用')};
+        value = {
+          'session_ref': const bool.fromEnvironment('CLIENT_TEST_ONLY')
+              ? 'synthetic:interactive'
+              : input('session', '实名服务会话引用')
+        };
         break;
       case 'CONSENT':
         if (features.isEmpty ||
@@ -687,6 +691,9 @@ class _ArtistFormState extends State<_ArtistForm> {
           appNotice('这里只建立属于这位真人的数字人档案，不扣款，也不表示长期模型可用。')
         ];
       case 'IDENTITY':
+        if (const bool.fromEnvironment('CLIENT_TEST_ONLY')) {
+          return [appNotice('本页使用模拟核验，不采集人脸或身份证。点击提交后选择模拟结果；不会产生真实实名。')];
+        }
         return [
           appNotice('请提供实名服务方当前会话引用。仅接收受信结果，不能自行选择“已实名”。'),
           text('session', '实名服务会话引用', max: 128)

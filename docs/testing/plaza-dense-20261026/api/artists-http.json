@@ -1,0 +1,270 @@
+{
+  "status": "PASS",
+  "mode": "artists",
+  "checked_at": "2026-10-26T16:03:34.735Z",
+  "synthetic_only": true,
+  "source_commit": "767d2ffc6153d8f1986dd02641d5b88ddcbca907",
+  "http": "Real Node routes and MySQL; GET-only client; no paid providers or production traffic",
+  "checks": 16,
+  "passed": 16,
+  "results": [
+    {
+      "name": "公开目录目前要求登录，匿名返回401",
+      "status": "PASS"
+    },
+    {
+      "name": "已登录可读取当前公开目录",
+      "status": "PASS"
+    },
+    {
+      "name": "城市参数真实过滤且保留对应记录",
+      "status": "PASS"
+    },
+    {
+      "name": "无资料城市返回空目录，不返回其他城市记录",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的关键字搜索参数被拒绝",
+      "status": "PASS"
+    },
+    {
+      "name": "公开资料不带私有授权证据或联系信息",
+      "status": "PASS"
+    },
+    {
+      "name": "城市别名目前不会自动归一（郑州/郑州市）",
+      "status": "PASS"
+    },
+    {
+      "name": "已有艺人标签过滤可调用",
+      "status": "PASS"
+    },
+    {
+      "name": "未开放试镜展示的艺人不进入可约筛选",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的明星/排序参数被拒绝：star",
+      "status": "PASS"
+    },
+    {
+      "name": "未定义的明星/排序参数被拒绝：sort",
+      "status": "PASS"
+    },
+    {
+      "name": "不存在独立公开艺人详情GET，不能误用私有详情",
+      "status": "PASS"
+    },
+    {
+      "name": "无关用户不能读取艺人私有档案",
+      "status": "PASS"
+    },
+    {
+      "name": "已批准PNG预览字节可按公开预览接口读取",
+      "status": "PASS"
+    },
+    {
+      "name": "公开艺人预览禁止长期HTTP缓存",
+      "status": "PASS"
+    },
+    {
+      "name": "目录不可用预览接口读取未公开证据文件",
+      "status": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "name": "public_catalog_fields",
+      "fields": [
+        "audition_public",
+        "avatar_id",
+        "city",
+        "display_name",
+        "halo_level",
+        "introduction",
+        "listing_id",
+        "person_id",
+        "preview_asset_ids",
+        "tags"
+      ]
+    },
+    {
+      "name": "artist_preview_fixture",
+      "value": "1-pixel synthetic PNG; verifies transport and permissions, not portrait quality"
+    },
+    {
+      "name": "artist_preview_content_type",
+      "value": "application/octet-stream",
+      "consequence": "The API sends octet-stream; the UI must decode bounded preview bytes and handle non-image/error content, not require an image MIME header."
+    },
+    {
+      "name": "star_fields",
+      "present": []
+    }
+  ],
+  "requests": [
+    {
+      "route": "/artists/catalog",
+      "method": "GET",
+      "role": "anonymous",
+      "acting_party": false,
+      "status": 401,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 218,
+      "cache_control": "no-store",
+      "error_code": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "route": "/artists/catalog",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 614,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 614,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog?city=%E6%97%A0%E8%B5%84%E6%96%99%E9%9A%94%E7%A6%BB%E5%9F%8E%E5%B8%82",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog?q=synthetic",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    },
+    {
+      "route": "/artists/catalog?city=%E9%83%91%E5%B7%9E%E5%B8%82",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog?tag=%E5%90%88%E6%88%90%E6%B5%8B%E8%AF%95",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 614,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog?audition=true",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 183,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog?star=true",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    },
+    {
+      "route": "/artists/catalog?sort=star",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 400,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 257,
+      "cache_control": "no-store",
+      "error_code": "INVALID_INPUT"
+    },
+    {
+      "route": "/artists/catalog/{id}",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 253,
+      "cache_control": "no-store",
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "route": "/artists/people/{id}",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": true,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 294,
+      "cache_control": "no-store",
+      "error_code": "ARTIST_NOT_FOUND"
+    },
+    {
+      "route": "/artists/catalog/{id}/assets/{id}/content",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 200,
+      "content_type": "application/octet-stream",
+      "byte_length": 68,
+      "cache_control": "no-store",
+      "error_code": null
+    },
+    {
+      "route": "/artists/catalog/{id}/assets/{id}/content",
+      "method": "GET",
+      "role": "outsider",
+      "acting_party": false,
+      "status": 404,
+      "content_type": "application/json; charset=utf-8",
+      "byte_length": 266,
+      "cache_control": "no-store",
+      "error_code": "ARTIST_ASSET_NOT_FOUND"
+    }
+  ],
+  "not_tested": [
+    "production services",
+    "real identity or likeness consent",
+    "real payments/refunds",
+    "UI screenshots",
+    "device/IP geolocation",
+    "portrait/video quality"
+  ]
+}

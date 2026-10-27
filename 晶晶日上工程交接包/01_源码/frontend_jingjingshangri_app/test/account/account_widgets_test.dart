@@ -507,7 +507,13 @@ void main() {
     await pump(tester, session, const MainScaffold(initialTab: 4));
     await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
-    expect(find.text('故事制作'), findsOneWidget);
+    final story = find.widgetWithText(FilledButton, '写下故事');
+    await tester.scrollUntilVisible(story, 250,
+        scrollable: find.byType(Scrollable).first);
+    await Scrollable.ensureVisible(tester.element(story), alignment: .5);
+    await tester.pump();
+    expect(story.hitTestable(), findsOneWidget);
+    expect(tester.widget<FilledButton>(story).onPressed, isNotNull);
     expect(
         find.descendant(
             of: find.byType(NavigationBar), matching: find.text('试镜')),

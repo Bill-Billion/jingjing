@@ -1,0 +1,52 @@
+const $=id=>document.getElementById(id);let me=null,currentRoute='/',selected=null,issueData={issues:[],results:[]},imageData=null,feedbackCommand=null,resultCommand=null;
+async function api(url,options={}){const response=await fetch('/__test/'+url,{...options,headers:{'Content-Type':'application/json',...options.headers}});const b=await response.json();if(!response.ok)throw Object.assign(Error(b.message||'请求失败，请保留原内容重试'),{status:response.status});return b;}
+function message(e){$('message').textContent=e.message||String(e);}
+function add(parent,tag,value,cls){const n=document.createElement(tag);n.textContent=value;if(cls)n.className=cls;parent.append(n);return n;}
+const statuses={NEW:'待查看',NEEDS_INFO:'待补充',REPRODUCED:'已复现',FIXING:'正在修复',RETEST:'待甲方复测',RESOLVED:'甲方已确认解决',REOPENED:'复测仍有问题'};
+const outcomes={PASSED:'流程已走通',BLOCKED:'卡住了',NEEDS_CHANGE:'需要调整'};
+function commands(form,fn){form.addEventListener('submit',async e=>{e.preventDefault();const submit=form.querySelector('button[type=submit]')||form.querySelector('button');submit.disabled=true;try{await fn();}catch(e){const target=form.id==='feedbackForm'?$('feedbackMessage'):form.id==='resultForm'?$('resultMessage'):$('message');target.textContent=e.message;if(e.status&&e.status<500){if(form.id==='feedbackForm')feedbackCommand=null;if(form.id==='resultForm')resultCommand=null;}else if(form.id==='feedbackForm'||form.id==='resultForm'){target.textContent+='；结果尚未核实，再次提交会恢复刚才的原请求。请勿改动内容。';}}finally{submit.disabled=false;const pending=form.id==='feedbackForm'?!!feedbackCommand:form.id==='resultForm'?!!resultCommand:false;for(const field of form.querySelectorAll('input,textarea,select'))field.disabled=pending;submit.textContent=pending?'恢复刚才的提交':form.id==='feedbackForm'?'提交问题':form.id==='resultForm'?'保存结果':'进入测试';}});}
+async function load(){
+ me=await api('me');$('main').hidden=false;$('logout').hidden=false;$('identity').textContent=me.name+' · 模拟体验';
+ $('app').src=me.home;$('app').hidden=false;currentRoute=me.home;selected=null;
+ $('personaList').replaceChildren();for(const p of me.personas){const b=add($('personaList'),'button',p.title);b.onclick=async()=>{if(!confirm('切换体验身份会离开当前页面，请确认已保存表单。'))return;try{await api('enter',{method:'POST',body:JSON.stringify({account:p.account})});$('personaDialog').close();await load();}catch(e){message(e);}};}
+}
+$('personas').onclick=()=>$('personaDialog').showModal();
+$('backToApp').onclick=()=>{$('issues').hidden=true;$('app').scrollIntoView();};
+$('logout').onclick=async()=>{try{await api('logout',{method:'POST',body:'{}'});location.reload();}catch(e){message(e);}};
+let activeSimulation=null;
+window.addEventListener('message',e=>{
+ if(e.origin!==location.origin||e.source!==$('app').contentWindow||e.data?.type!=='jx-simulate'||!['payment','identity','refund'].includes(e.data.kind))return;
+ if(activeSimulation){e.source.postMessage({type:'jx-simulate-result',id:e.data.id,state:'CANCEL'},e.origin);return;}
+ activeSimulation={source:e.source,origin:e.origin,id:e.data.id};
+ const identity=e.data.kind==='identity';$('simulationTitle').textContent=identity?'模拟人脸核验':e.data.kind==='refund'?'模拟退款':'模拟付款';
+ $('simulationDescription').textContent=identity?'请选择本次模拟核验结果。测试不需要上传身份证、拍照或开启摄像头。':'当前记录 '+String(e.data.record||'').slice(0,36)+'。请选择模拟结果；之后页面会向服务器核对原记录。';
+ $('simulationActions').replaceChildren();for(const [state,title]of [['SUCCEEDED',identity?'模拟核验通过':'模拟成功'],['FAILED',identity?'模拟核验失败':'模拟失败'],['UNKNOWN','模拟结果暂未确认'],['CANCEL','取消并返回']]){const b=add($('simulationActions'),'button',title);b.onclick=()=>finishSimulation(state);}
+ $('simulationDialog').showModal();
+});
+function finishSimulation(state){if(!activeSimulation)return;$('message').textContent=state==='CANCEL'?'已取消，未产生真实收费或核验。':'已选择模拟结果，正在核对原业务记录；请以业务页面显示的状态为准。';activeSimulation.source.postMessage({type:'jx-simulate-result',id:activeSimulation.id,state},activeSimulation.origin);activeSimulation=null;$('simulationDialog').close();}
+$('simulationDialog').addEventListener('cancel',e=>{e.preventDefault();finishSimulation('CANCEL');});
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('app').contentWindow||e.data?.type!=='jx-test-context'||typeof e.data.route!=='string')return;currentRoute=e.data.route.slice(0,600);});
+$('feedback').onclick=()=>{$('context').textContent='当前流程：'+'自由体验'+'；页面：'+currentRoute+'；身份：'+me.name;$('feedbackDialog').showModal();};
+for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>$(b.dataset.close).close();
+$('attachment').onchange=async()=>{imageData=null;$('imagePreview').hidden=true;$('imageConfirmed').checked=false;const file=$('attachment').files[0];if(!file)return;if(file.size>2*1024*1024||!['image/png','image/jpeg'].includes(file.type)){$('feedbackMessage').textContent='请选择2MB以内PNG或JPEG图片';$('attachment').value='';return;}imageData=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});$('imagePreview').src=imageData;$('imagePreview').hidden=false;};
+commands($('feedbackForm'),async()=>{
+ if(imageData&&!$('imageConfirmed').checked)throw Error('请先检查并确认截图内容');
+ // Keep the exact request after an uncertain response. Never silently create a second issue.
+ if(!feedbackCommand)feedbackCommand={key:crypto.randomUUID(),body:{category:$('category').value,description:$('description').value,expected:$('expected').value,context:{route:currentRoute,scenario:selected?.id,reference:$('reference').value,device:navigator.userAgent.slice(0,160)},image:imageData,image_confirmed:$('imageConfirmed').checked}};
+ const r=await api('issues',{method:'POST',headers:{'Idempotency-Key':feedbackCommand.key},body:JSON.stringify(feedbackCommand.body)});feedbackCommand=null;$('feedbackForm').reset();imageData=null;$('imagePreview').hidden=true;$('feedbackDialog').close();$('message').textContent=r.number+' 已记录，您可以继续原来的操作。';$('feedbackMessage').textContent='';
+});
+async function showIssues(){try{issueData=await api('issues');$('issues').hidden=false;render();$('issues').scrollIntoView({behavior:'smooth'});}catch(e){message(e);}}
+$('showIssues').onclick=showIssues;$('refresh').onclick=showIssues;$('filter').oninput=render;
+function render(){
+ $('issueList').replaceChildren();const query=$('filter').value.toLowerCase();
+ for(const r of issueData.issues.filter(r=>(r.number+r.description+r.reporter).toLowerCase().includes(query))){const box=add($('issueList'),'article','','issue');add(box,'h3',r.number+' · '+statuses[r.status]);add(box,'small',r.reporter+' · '+r.context.role+' · '+r.context.route+' · 版本 '+r.context.version.slice(0,8));add(box,'p',r.description);if(r.expected)add(box,'p','希望：'+r.expected);if(r.context.reference)add(box,'p','关联记录：'+r.context.reference);
+ if(r.category==='REQUIREMENT'||r.category==='SUGGESTION')add(box,'small','需求／建议需另行评估，提交不表示已批准变更。');
+ if(r.has_image){const a=add(box,'a','查看截图');a.href='/__test/issues/'+r.id+'/image';a.target='_blank';a.rel='noopener';}
+ for(const h of r.history)add(box,'p',h.actor+' · '+statuses[h.status]+'：'+h.note,'history');
+ const choices=me.reviewer?['NEEDS_INFO','REPRODUCED','FIXING','RETEST']:r.status==='RETEST'?['RESOLVED','REOPENED']:r.status==='NEEDS_INFO'?['NEW']:[];
+ if(choices.length){const sel=add(box,'select','');sel.setAttribute('aria-label',r.number+'处理结果');for(const s of choices){const o=add(sel,'option',s==='NEW'?'已补充资料':statuses[s]);o.value=s;}const note=add(box,'textarea','');note.placeholder='处理说明／复测结果（至少2字）';note.maxLength=2000;const button=add(box,'button','保存处理');button.onclick=async()=>{button.disabled=true;try{await api('issues/'+r.id,{method:'PATCH',headers:{'If-Match':String(r.version)},body:JSON.stringify({status:sel.value,note:note.value})});await showIssues();}catch(e){message(e);}finally{button.disabled=false;}};}
+ }
+ if(!issueData.issues.length)add($('issueList'),'p','还没有反馈问题。');$('resultList').replaceChildren();for(const r of issueData.results)add($('resultList'),'p',r.reporter+' · '+(r.scenario_title||me.routes.find(x=>x.id===r.scenario)?.title||r.scenario)+' · '+outcomes[r.outcome]+(r.note?'：'+r.note:''));
+}
+$('export').onclick=async()=>{try{const b=await api('export');const url=URL.createObjectURL(new Blob([JSON.stringify(b,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='甲方测试记录.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){message(e);}};
+load().catch(async()=>{try{await api('enter',{method:'POST',body:'{}'});await load();}catch(e){message(e);}});

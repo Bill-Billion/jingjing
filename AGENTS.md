@@ -1,3 +1,19 @@
+2026-10-27交付：新广场已接入甲方自由体验并更新原测试网址，保留原订单和反馈；公网新版页面4组、城市查询5组、付款核验样片6项通过。16个岗位、9名公开模拟艺人及六类通告可体验。仍集中交付PR37，另一方审阅和共同版本合入未完成，最终远端检查按PR当前HEAD核对。当前worktrees/client-testing、core/plaza-client-integration-20261027；范围、限制和下一步见docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md。以下双方记录按日期保留。
+
+当前2026-10-27：用户已确认紧凑广场dense-v2。原Figma主页及26份相关子页/状态已更新，Flutter已按稿修正并联通现有真实隔离接口；CI范围597个实际测试、分析和普通/专用构建通过，三宽复验见[本轮报告](docs/reviews/plaza-dense-20261026/REPORT.md)和[图册](docs/ux/plaza-dense-20261026/index.html)。新密集艺人/明星首区/唯一作品矩阵在本轮广场范围替代旧大海报构图，保留原先锋刊物语言、最新V5业务和权限。明星、定位、城市标准及封面/缩略资料仍需产品/Core约定，未代另一方认领或审阅。代码报告已推送并创建[草稿PR38](https://github.com/Bill-Billion/jingjing/pull/38)；使用本机既有Bill-Billion授权，未修改账号权限。本次交付目标integration，未合入或部署；分支ux/plaza-dense-subpages-20261026。先读本轮任务与报告，下方均为各自日期历史，不沿用旧PR36待办。
+
+2026-10-26最新：客户自由体验版已更新原公网网址，本机及公网检查通过，集中更新原PR37；取消客户邀请码和业务路线下拉框。当前worktrees/client-testing，core/client-free-exploration-20261026。先读docs/testing/CLIENT_FREE_EXPLORATION_20261026.md和当前进度；公网及上传状态以交付补记为准。以下旧入口作为历史。
+
+2026-10-26最新：本侧core/client-route-expansion-20261026已扩充艺人/机构持续测试并完成公网跨端检查。请先读docs/testing/CLIENT_ROUTES_20261026.md和当前进度。原故事与邀请保留，仍只有两组模拟业务，其他路线尚未开放。
+
+2026-10-26最新决定：用户改为本机托管、通过穿透访问，并明确只开放使用模拟资料的甲方测试网站；不再等外部服务器和自有域名。当前工作树worktrees/client-testing、core/client-fixed-hosting-20261026。计划与授权见docs/testing/LOCAL_TUNNEL_20261026.md；公网最终状态见其补记。仅网站3490进入隧道，数据库等内部端口不公开，生产和收费服务不启用。以下旧“公网不可进行”和资源待办仅保留历史。
+
+2026-10-26最新资源答复：测试域名与服务器均未准备，提供方和采购预算未确定；不再重复索要已有连接路径，不自行采购。独立本机开发可以继续，公网部署尚不可进行。
+
+当前2026-10-26：用户已选固定测试服务器和域名；本侧worktrees/client-testing，分支core/client-fixed-hosting-20261026，依赖待审PR37。先读docs/operations/client-testing/FIXED_HOSTING_20261026.md及docs/status/CORE_CURRENT.md。反馈备份恢复已本机验证，业务跨天保留和部署未完成；实际域名与主机连接资料待补，不再询问临时还是固定。下文按日期保留历史。
+
+当前2026-10-25：本侧工作目录worktrees/client-testing，分支core/client-browser-testing-20261025。PR36已复审并合入integration/767d2ffc。甲方浏览器测试工具已本机实现和验证，尚未合入或开放公网；已集中上传PR37，远端检查以当前申请为准，请读docs/testing/CLIENT_BROWSER_TESTING_20261025.md、docs/status/CORE_CURRENT.md和任务CORE-client-testing-20261025。普通产品登录/业务接口不变，测试邀请和代理边界须另一方实际检查；禁止把工具检查或15个入口检查称为全部业务验收。测试业务库已清理，私有反馈独立保留。以下均按日期保留历史，不能覆盖当前实际状态。
+
 当前任务2026-10-24：“先锋电影刊物”新版前端还原已完成本地检查，24类审计已逐项区分本侧可修、最小Core/产品协作及真实服务/素材验收。本侧已实施本地Noto字库及真实700/900标题字重、独立平台制作介绍与收银台、业务入口、当前版本制作进度、日期时间、消息四频道，以及Web菜单查找/窄屏滚动、授权记录选择并保留完整编号输入、中文状态与原值、报表类别单选布局；保留现有API、权限和原请求恢复。已有榜单、认证补件沿费、偏好接口不重复计作后端未开发。App正式范围548/548、Dart分析及普通main.dart构建通过；Web301/301、类型检查及普通构建通过，最后只读补拍已验收。选图、来源与具体结果以动态检查清单为准，不沿用下方旧计数。[24类逐项结论](docs/reviews/figma-frontend-restore-20261023/REPORT.md) · [最小Core/产品事项与真实服务验收](docs/reviews/figma-frontend-restore-20261023/NEEDS_CORE_OR_PRODUCT.md) · [逐页图册](docs/testing/evidence/figma-frontend-restore-20261023/index.html) · [当前检查清单](docs/testing/evidence/figma-frontend-restore-20261023/CHECKS.json) · [原草稿PR36](https://github.com/Bill-Billion/jingjing/pull/36)。下一步更新原草稿PR36、目标integration，再核对本轮远端CI并等待另一方实际审阅；尚未合入或部署，未代Core、产品或同事认领、审阅或批准。下方保留各阶段归档记录，不能覆盖本轮状态。
 
 归档（2026-10-23原状态）：当前任务2026-10-23：新版前端还原本地检查已完成；103幅逐一映射，App491/Web297与静态检查、普通网页构建通过。主报告docs/reviews/figma-frontend-restore-20261023/REPORT.md，逐页646张App选图与174张Web图在对应evidence。16类问题已修、24类需求/设计差异待明确，不能称全103逐像素通过。已集中上传ux/figma-frontend-restore-20261023，草稿PR36目标integration；远端检查以当前申请为准。未合入或部署，同事未实际审阅。下方保留原设计阶段及历史。

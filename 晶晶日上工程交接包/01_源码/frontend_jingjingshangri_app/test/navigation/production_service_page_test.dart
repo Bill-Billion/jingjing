@@ -26,14 +26,22 @@ void main() {
     expect(t.takeException(), isNull);
   });
 
-  testWidgets('主页平台制作入口先进入服务介绍', (t) async {
+  testWidgets('主页全部功能中的平台制作先进入服务介绍', (t) async {
     final adapter = FakeAccountAdapter();
     await openApp(t, AccountSession(api: adapter.createApi()),
         route: '/square');
-    await v5.reveal(t, find.text('开始创作 ↗'));
-    await t.tap(find.text('开始创作 ↗'));
+    await t.tap(find.text('全部'));
+    await v5.frames(t);
+    final service = find.text('平台制作服务');
+    await v5.reveal(t, service);
+    await Scrollable.ensureVisible(t.element(service), alignment: .5);
+    await t.pump();
+    expect(service.hitTestable(), findsOneWidget);
+    await t.tap(service);
     await v5.frames(t);
     expect(find.byType(ProductionServicePage), findsOneWidget);
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(adapter.requests, isEmpty);
     expect(t.takeException(), isNull);
   });
 

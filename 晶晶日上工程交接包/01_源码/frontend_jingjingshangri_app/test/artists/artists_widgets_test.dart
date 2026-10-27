@@ -113,15 +113,16 @@ void main() {
         t, s, const ArtistCataloguePage(initialCity: '杭州', initialTag: '对白'));
     expect(find.byType(ReadFailureContent), findsOneWidget);
     await press(t, find.byKey(const ValueKey('read-failure-back')));
+    await press(t, find.byKey(const ValueKey('artist-catalog-filters')));
     expect(
         t
-            .widget<TextField>(find.widgetWithText(TextField, '城市筛选'))
+            .widget<TextField>(find.widgetWithText(TextField, '城市'))
             .controller!
             .text,
         '杭州');
     expect(
         t
-            .widget<TextField>(find.widgetWithText(TextField, '标签筛选'))
+            .widget<TextField>(find.widgetWithText(TextField, '标签'))
             .controller!
             .text,
         '对白');
@@ -253,13 +254,15 @@ void main() {
         return null;
       });
       final s = (await t.runAsync(() => artistSession(a)))!;
-      await host(t, s, const ArtistCataloguePage());
-      await show(t, find.text('已撤回的公开名称'));
-      expect(find.text('已撤回的公开名称'), findsOneWidget);
-      await press(t, find.text('读取这份获准预览'));
+      await host(t, s, const ArtistCataloguePage(initialCity: '测试城市'));
       expect(find.text('已撤回的公开名称'), findsNothing);
       expect(find.text('不应继续展示的公开简介'), findsNothing);
       expect(find.text('读取这份获准预览'), findsNothing);
+      expect(
+          a.requests.where((r) =>
+              r.path ==
+              '$artistRoot/catalog/$listingKey/assets/$assetKey/content'),
+          hasLength(1));
       expect(s.isLoggedIn, true);
       expect(t.takeException(), isNull);
     });

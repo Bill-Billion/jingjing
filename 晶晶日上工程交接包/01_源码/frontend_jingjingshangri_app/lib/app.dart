@@ -9,6 +9,7 @@ import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
 import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
+import 'plaza/plaza_pages.dart';
 import 'discovery/discovery_pages.dart';
 import 'support/support_pages.dart';
 import 'customization/customization_page.dart';
@@ -44,7 +45,8 @@ import 'pages/splash/splash_page.dart';
 import 'pages/legal/legal_docs.dart';
 
 class JingjingShangriApp extends StatelessWidget {
-  const JingjingShangriApp({super.key});
+  const JingjingShangriApp({super.key, this.navigatorObservers = const []});
+  final List<NavigatorObserver> navigatorObservers;
 
   Route<dynamic> _generate(RouteSettings settings) {
     final uri = Uri.tryParse(settings.name ?? '/');
@@ -107,7 +109,7 @@ class JingjingShangriApp extends StatelessWidget {
                   recordId: uri.queryParameters['recordId'] ?? ''),
               '/settings' => const AppHelpPage(),
               '/help' => const HelpFeedbackPage(),
-              '/search' => DiscoverySearchPage(
+              '/search' => PlazaSearchPage(
                   initialCity: uri.queryParameters['city'] ?? ''),
               '/saved' => const SavedHistoryPage(),
               '/invoices' =>
@@ -192,7 +194,8 @@ class JingjingShangriApp extends StatelessWidget {
                   agreementId: uri.queryParameters['agreementId'] ?? '',
                   agreementSha256:
                       uri.queryParameters['agreementSha256'] ?? ''),
-              '/auditions/catalog' => const AuditionsPage(),
+              '/auditions' || '/auditions/catalog' => AuditionsPage(
+                  initialCity: uri.queryParameters['city'] ?? ''),
               '/auditions/bookings' => const AuditionsPage(mode: 'bookings'),
               '/auditions/booking' => AuditionsPage(
                   mode: 'booking', id: uri.queryParameters['bookingId']),
@@ -385,6 +388,7 @@ class JingjingShangriApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: '晶晶日上',
+        navigatorObservers: navigatorObservers,
         debugShowCheckedModeBanner: false,
         theme: AccountTheme.data,
         builder: (context, child) => RestReminder(

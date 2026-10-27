@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-24",
+  "updated_on": "2026-10-27",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
@@ -2348,6 +2348,299 @@
         "docs/testing/evidence/figma-frontend-restore-20261023/followup/SELECTED_MANIFEST.json"
       ],
       "blockers": []
+    },
+    {
+      "id": "CORE-CLIENT-TEST-20261025",
+      "title": "复审新版前端并准备甲方浏览器操作与反馈",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/client-browser-testing-20261025",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-043"
+      ],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/CORE-client-testing-20261025.md"
+      ],
+      "acceptance": "PR36复审及测试；邀请隔离、持久反馈、业务测试结果和浏览器验证；外网状态如实记录",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-client-testing-20261025.md",
+        "docs/testing/CLIENT_BROWSER_TESTING_20261025.md",
+        "docs/testing/evidence/client-testing-20261025/CLEANUP.json",
+        "docs/testing/evidence/client-testing-20261025/REVIEW_AFTER_CLEANUP.json",
+        "docs/testing/evidence/client-testing-20261025/REMOTE_CHECKS.json"
+      ],
+      "blockers": [],
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "remote_checks": {
+        "head": "8132d9f5e5e317d985114160b084688de2509e23",
+        "success_workflows": 1,
+        "pending_workflows": 3,
+        "failed_workflows": 0,
+        "scope": "current workflow snapshot; not all checks complete"
+      }
+    },
+    {
+      "id": "CORE-FIXED-TEST-20261026",
+      "title": "本机穿透供甲方连续测试并保留记录",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/client-fixed-hosting-20261026",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-043"
+      ],
+      "dependencies": [
+        "CORE-CLIENT-TEST-20261025"
+      ],
+      "deliverables": [
+        "docs/operations/client-testing/FIXED_HOSTING_20261026.md",
+        "scripts/client-testing/backup.cjs",
+        "scripts/client-testing/persistent-story.cjs",
+        "scripts/client-testing/public-check.mjs",
+        "docs/testing/LOCAL_TUNNEL_20261026.md"
+      ],
+      "acceptance": "用户授权的本机HTTPS网站按角色使用模拟资料；故事与反馈重启保留，邀请与权限及公网浏览器检查通过；人工体验和业务独立备份恢复单列",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "component_checks": {
+        "feedback_and_portal": 13,
+        "database_restart_and_permissions": 6,
+        "story_browser": 7,
+        "short_session_cleanup": "PASS",
+        "public_access": "PASS",
+        "public_browser": 7,
+        "public_permissions": 11
+      },
+      "evidence": [
+        "docs/tasks/records/CORE-fixed-hosting-20261026.md",
+        "docs/testing/evidence/client-fixed-hosting-20261026/BACKUP_RESTORE.json",
+        "docs/testing/LOCAL_TUNNEL_20261026.md",
+        "docs/testing/evidence/client-local-hosting-20261026/PUBLIC_HTTPS.json",
+        "docs/testing/evidence/client-local-hosting-20261026/public-browser/RESULTS.json"
+      ],
+      "blockers": [],
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "resource_status": {
+        "domain": "NOT_PREPARED",
+        "server": "NOT_PREPARED",
+        "confirmed_by_user_on": "2026-10-26",
+        "procurement_owner": "UNASSIGNED",
+        "purchase_authorized": false,
+        "selected_hosting": "LOCAL_TUNNEL",
+        "external_resources_required": false,
+        "public_test_authorized": true
+      },
+      "review_requirement": "邀请、代理和持续资料边界待另一方实际审阅；不自动合入",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
+      "delivery_branch": "core/client-browser-testing-20261025",
+      "public_test_enabled": true,
+      "public_test_expires_at": "2026-10-29T02:30:19.459Z",
+      "business_backup_restore": "NOT_RUN",
+      "remote_checks": {
+        "head": "8132d9f5e5e317d985114160b084688de2509e23",
+        "success_workflows": 1,
+        "pending_workflows": 3,
+        "failed_workflows": 0,
+        "scope": "current workflow snapshot; not all checks complete"
+      }
+    },
+    {
+      "id": "CORE-CLIENT-ROUTES-20261026",
+      "title": "补齐甲方可测业务路线，先开放艺人和机构操作",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/client-route-expansion-20261026",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-043"
+      ],
+      "dependencies": [
+        "CORE-FIXED-TEST-20261026"
+      ],
+      "deliverables": [
+        "docs/testing/CLIENT_ROUTES_20261026.md"
+      ],
+      "acceptance": "本人和机构按实际授权操作同一艺人，档案与附件重启保留，页面和越权实测通过；其余路线按缺项分批，不冒称全部可测",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-client-routes-20261026.md",
+        "docs/testing/evidence/client-routes-20261026/ARTISTS_PERSISTENCE.json",
+        "docs/testing/evidence/client-routes-20261026/public-functional-final/RESULTS.json",
+        "docs/testing/evidence/client-routes-20261026/PUBLIC_HTTPS.json"
+      ],
+      "blockers": [],
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "component_checks": {
+        "tools": 16,
+        "database_and_files": 9,
+        "local_entry_reads": 4,
+        "local_cross_role": 4,
+        "public_cross_role": 4,
+        "public_permissions": 15,
+        "short_session_cleanup": "PASS"
+      },
+      "public_test_enabled": true,
+      "public_test_expires_at": "2026-10-29T02:30:19.459Z",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
+      "delivery_branch": "core/client-browser-testing-20261025",
+      "remote_checks": {
+        "status": "CURRENT_HEAD_PENDING",
+        "previous_head": "8132d9f5",
+        "previous_passed_checks": 7
+      }
+    },
+    {
+      "id": "CORE-CLIENT-FREE-20261026",
+      "title": "让甲方免邀请码自由体验，补齐模拟业务和样片",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/client-free-exploration-20261026",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [
+        "REQ-043"
+      ],
+      "dependencies": [
+        "CORE-CLIENT-ROUTES-20261026"
+      ],
+      "deliverables": [
+        "docs/testing/CLIENT_FREE_EXPLORATION_20261026.md"
+      ],
+      "acceptance": "进入首页无需邀请码和路线选择；各业务使用统一隔离资料；模拟付款、实名和样片实际操作可核对；反馈与旧记录保留，限制如实列明",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-client-free-20261026.md",
+        "docs/testing/evidence/client-free-20261026/README.md"
+      ],
+      "blockers": [],
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
+      "public_test_only": true,
+      "public_test_expires_at": "2026-10-29T02:29:34.873Z",
+      "remote_checks": "按PR37当前HEAD核对，旧提交成功不能替代本次检查"
+    },
+    {
+      "id": "UX-plaza-dense-20261026",
+      "title": "紧凑广场与相关子页：Figma、前端和接口联调",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/plaza-dense-subpages-20261026",
+      "dependencies": [],
+      "deliverables": [
+        "docs/ux/plaza-dense-20261026/FIGMA_UPDATE.md",
+        "docs/reviews/plaza-dense-20261026/REPORT.md"
+      ],
+      "acceptance": "原Figma可编辑页面和关键状态更新；前端按稿实现；真实隔离接口和逐页截图核对；问题报告随PR上传",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-plaza-dense-20261026.md",
+        "docs/reviews/plaza-dense-20261026/REPORT.md",
+        "docs/testing/plaza-dense-20261026/CHECKS.json",
+        "docs/testing/plaza-dense-20261026/api/COVERAGE.md",
+        "docs/ux/plaza-dense-20261026/figma-evidence/MANIFEST.json",
+        "docs/testing/plaza-dense-20261026/REMOTE_CHECKS.json"
+      ],
+      "blockers": [],
+      "work_refs": [
+        "WORK-06"
+      ],
+      "req_refs": [],
+      "updated_on": "2026-10-27",
+      "current_increment": "原Figma主页及26页、密集广场和子页已实现；597实际测试、三宽联调与实现提交远端检查通过。已创建草稿PR38，目标integration，报告及截图随申请交付；同事实审待进行，未合入或部署。"
+    },
+    {
+      "id": "CORE-PLAZA-CLIENT-20261027",
+      "title": "整合新广场与甲方自由体验，修复并复测",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/plaza-client-integration-20261027",
+      "dependencies": [
+        "CORE-CLIENT-FREE-20261026",
+        "UX-plaza-dense-20261026"
+      ],
+      "deliverables": [
+        "docs/tasks/records/CORE-plaza-client-20261027.md",
+        "docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md",
+        "docs/reviews/combined-acceptance-20261027/REPORT.md"
+      ],
+      "acceptance": "新旧功能组合检查通过，保留客户数据反馈与原测试期限，阶段集中交付",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/testing/evidence/plaza-client-20261027/CHECKS.json",
+        "docs/testing/evidence/plaza-client-20261027/public/final/RESULTS.json",
+        "docs/testing/evidence/plaza-client-20261027/public/functional/RESULTS.json",
+        "docs/testing/evidence/combined-acceptance-20261027/CHECKS.json"
+      ],
+      "blockers": [],
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "work_refs": [
+        "WORK-06",
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "shared_boundary_note": "六城查询简称兼容、免邀请码访客备份恢复；原权限不放宽",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
+      "public_test_only": true,
+      "public_test_expires_at": "2026-10-29T02:29:34.873Z",
+      "remote_checks": "首批任务登记校验失败已修正，本机校验通过；最终远端结果以PR37当前HEAD为准",
+      "review_followup": {
+        "requested_on": "2026-10-27",
+        "scope": "对照紧凑广场最后需求、甲方自由测试要求及V5未决边界，复审前后端组合并按用户授权合入integration",
+        "owner": "chengcongcong222",
+        "status": "LOCAL_REVIEW_PASSED_WITH_DOCUMENTED_GAPS",
+        "frontend_head": "97b1ffa7",
+        "combined_review_start": "28056fc0",
+        "actual_peer_review": false,
+        "merge_authorization": "用户本轮明确要求分析、合并最新成果；由本侧实际复审，不冒称队友审批",
+        "report": "docs/reviews/combined-acceptance-20261027/REPORT.md"
+      }
     }
   ],
   "delivery_policy": {

@@ -20,6 +20,8 @@ class V5Media extends StatefulWidget {
       this.fileName = 'private-file',
       this.onOpened,
       this.onInvalid,
+      this.caption,
+      this.outline = false,
       this.allowSave = false,
       this.account = false});
   final V5Api api;
@@ -27,7 +29,8 @@ class V5Media extends StatefulWidget {
   final Future<Uint8List> Function() load;
   final Future<void> Function()? onOpened;
   final VoidCallback? onInvalid;
-  final bool allowSave, account;
+  final Widget? caption;
+  final bool allowSave, account, outline;
   @override
   State<V5Media> createState() => _V5MediaState();
 }
@@ -163,7 +166,6 @@ class _V5MediaState extends State<V5Media> {
           AspectRatio(
               aspectRatio: video!.controller.value.aspectRatio,
               child: VideoPlayer(video!.controller)),
-          tradeButton('暂停预览', () => video!.controller.pause(), outline: true),
         ] else if (widget.type == 'video')
           AspectRatio(
               aspectRatio: 16 / 9,
@@ -178,8 +180,13 @@ class _V5MediaState extends State<V5Media> {
                         style: TextStyle(
                             color: AccountTheme.canvas, fontSize: 12)),
                   ])))),
-        tradeButton(widget.label,
-            busy ? null : () => open(save: widget.type == 'file')),
+        if (widget.caption != null) widget.caption!,
+        if (video?.controller.value.isInitialized == true)
+          tradeButton('暂停预览', () => video!.controller.pause(), outline: true),
+        tradeButton(
+            widget.label, busy ? null : () => open(save: widget.type == 'file'),
+            outline: widget.outline &&
+                video?.controller.value.isInitialized != true),
         if (widget.allowSave && widget.type != 'file')
           tradeButton('下载本次私有文件', busy ? null : () => open(save: true),
               outline: true),

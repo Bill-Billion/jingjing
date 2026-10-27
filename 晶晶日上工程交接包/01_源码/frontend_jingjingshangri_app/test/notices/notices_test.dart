@@ -291,7 +291,7 @@ void main() {
     final a = FakeAccountAdapter(),
         s = (await t.runAsync(() => buyerSession(a)))!;
     await host(t, s, const NoticesPage(mode: 'submit', kind: 'INVITATION'));
-    expect(find.textContaining('暂不能从公开艺人发起邀约'), findsOneWidget);
+    expect(find.textContaining('暂不能从公开艺人主页发起新的邀约'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(a.requests.where((r) => r.path.startsWith('/api/v1/artists/')),
         isEmpty);
