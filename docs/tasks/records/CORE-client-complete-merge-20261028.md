@@ -53,3 +53,5 @@
 可独立检查：服务器目录运行 `node scripts/test-mysql.js stock`、`auditions`、`privacy`或`wallet`，必须指定本机隔离数据库配置；App目录运行 `flutter test test/stock test/auditions test/privacy test/wallet test/engagement`；网页目录运行 `npm run type-check` 和 `npm run test:business`。真实浏览器脚本为 `scripts/client-complete-stock-browser.mjs` 与 `scripts/client-complete-first-audition-browser.mjs`，只接受本机一次性模拟服务，不会自动取得线上凭据。
 
 交付检查已收齐，代码合并提交d464f459。下一个提交仅保存本记录、后台结果和同步说明；集中更新原PR39，不新开重复申请。远端上传及检查以PR39最新记录为准，公共接口审阅、合入和网站更新继续分开。
+
+最终上传：0ba61449已推送原PR39，仍为草稿，申请标题与完整说明已更新。记录时接口/权限与测试站工具远端检查通过，App/网页/数据库检查进行中。此次本地记录提交仅补上传事实，未再次上传；代码与完整交接已在远端0ba61449。共同版本和甲方网站未修改。
