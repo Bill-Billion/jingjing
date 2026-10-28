@@ -442,9 +442,13 @@ class V5Gate extends StatelessWidget {
       this.personal = false,
       this.embedded = false,
       this.showExpired = false,
-      this.expiredLabel});
+      this.expiredLabel,
+      this.stateKey});
   final bool embedded, showExpired;
   final String? expiredLabel;
+  // Only public catalogue filters keep state across global-city updates.
+  // Account/party/epoch changes still discard all prior state.
+  final String? stateKey;
   final String domain, route;
   final bool account, personal;
   final Widget Function(AccountSession) builder;
@@ -489,7 +493,8 @@ class V5Gate extends StatelessWidget {
     ];
     return allowed
         ? KeyedSubtree(
-            key: ValueKey('${s.epoch}:${s.partyId}:$domain:$route'),
+            key: ValueKey(
+                '${s.epoch}:${s.partyId}:$domain:${stateKey ?? route}'),
             child: builder(s))
         : embedded
             ? Column(

@@ -20,7 +20,6 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
   late final api = AuditionsApi(widget.session),
       artists = ArtistsApi(widget.session);
   final people = <ArtistPerson>[],
-      existing = <AuditionRecord>[],
       rules = <String, String>{},
       contexts = <String, Map<String, dynamic>>{},
       contextNames = <String, String>{};
@@ -51,22 +50,9 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
         cursor = r.cursor;
         if (cursor != null) v5Require(seen.add(cursor));
       } while (cursor != null);
-      cursor = null;
-      seen.clear();
-      do {
-        final r = await api.records('OFFER', cursor: cursor);
-        existing.addAll(r.items);
-        cursor = r.cursor;
-        if (cursor != null) v5Require(seen.add(cursor));
-      } while (cursor != null);
-      for (final r in existing) {
-        rules[r.data['offer']['rule_id']] =
-            '原试镜已审规则 · ${r.data['rules']['version']}';
-      }
       final op = api.pending('/offers');
       if (op != null) {
         personId = op['body']['offer']['person_id'];
-        rules.putIfAbsent(op['body']['offer']['rule_id'], () => '原请求规则（待核对）');
         await person(personId!);
       }
       if (mounted) setState(() {});
@@ -81,27 +67,22 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
     final d = await artists.person(id), actions = await artists.actions(d);
     contexts.clear();
     contextNames.clear();
-    for (final r in existing.where((r) => r.data['offer']['person_id'] == id)) {
-      final o = v5Map(r.data['offer']),
-          key = contextKey(o['avatar_id'], o['public_consent_id']);
-      contexts[key] = {
-        'avatar_id': o['avatar_id'],
-        'public_consent_id': o['public_consent_id']
-      };
-      contextNames[key] =
-          '${d.avatars.where((a) => a.id == o['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 本人原已提供公开展示引用';
+    rules.clear();
+    for (final r in await api.offerOptions(id, 'RULE')) {
+      v5Require(v5Id(r['id']) && r['person_id'] == id);
+      final terms = v5Map(r['terms']);
+      rules[r['id']] = '${terms['version']} · ${terms['terms']}';
     }
-    if (d.person.owner == api.owner()) {
-      for (final c in (await artists.allRecords(id, 'CONSENT')).where((c) =>
-          c.status == 'APPROVED' &&
-          (c.data['purposes'] as List).contains('PUBLIC_DISPLAY') &&
-          DateTime.parse(c.data['valid_from']).isBefore(DateTime.now()) &&
-          DateTime.parse(c.data['valid_until']).isAfter(DateTime.now()))) {
-        final key = contextKey(c.avatarId, c.id);
-        contexts[key] = {'avatar_id': c.avatarId, 'public_consent_id': c.id};
-        contextNames[key] =
-            '${d.avatars.where((a) => a.id == c.avatarId).map((a) => a.name).firstOrNull ?? '原数字人'} · ${c.data['terms']}';
-      }
+    for (final r in await api.offerOptions(id, 'AUTHORIZATION')) {
+      v5Require(r['person_id'] == id &&
+          v5Id(r['avatar_id']) &&
+          v5Id(r['public_consent_id']));
+      final key = contextKey(r['avatar_id'], r['public_consent_id']);
+      contexts[key] = {
+        'avatar_id': r['avatar_id'],
+        'public_consent_id': r['public_consent_id']
+      };
+      contextNames[key] = '${r['avatar_name']} · 本人公开展示同意至 ${r['valid_until']}';
     }
     detail = d;
     permitted = actions.contains('MANAGE_AUDITIONS');
@@ -153,9 +134,7 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
       if (d != null) ...[
         tradeFact('当前真实光环', 'L${d.halo}'),
         if (!permitted || d.halo < 2) appNotice('本方案需要有效 L2、成年资格和本人的明确试镜经营授权。'),
-        if (rules.isEmpty)
-          appNotice(
-              '暂不能完成首次方案发布：平台尚未提供可选择的有效试镜经营规则。保留业务填写，需平台补齐规则上下文，不能手填技术编号。'),
+        if (rules.isEmpty) appNotice('暂无有效试镜经营规则，请平台发布后刷新；无需先有旧方案。'),
         if (contexts.isEmpty)
           appNotice('尚无本人可读或已明确提供的公开展示授权上下文，请先办理本人同意；机构不读取私人同意原件。'),
         V5Form(
@@ -171,7 +150,7 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
             fields: [
               const V5Field('title', '方案名称'),
               V5Field('context', '具体数字人与已审公开同意', choices: contextNames),
-              V5Field('rule_id', '原可读的已审试镜规则', choices: rules),
+              V5Field('rule_id', '当前生效的试镜规则', choices: rules),
               const V5Field('city', '所在城市'),
               const V5Field('service_area', '明确服务范围'),
               const V5Field('mode', '试镜形式',

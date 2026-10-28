@@ -22,6 +22,7 @@ class StockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'stock',
+      stateKey: mode == 'catalog' ? '/stock/catalog' : null,
       route: Uri(path: '/stock/$mode', queryParameters: {
         if (mode == 'catalog' && city?.trim().isNotEmpty == true)
           'city': city!.trim(),
@@ -84,12 +85,39 @@ class _StockScreenState extends State<_StockScreen> {
       quoteChanged = false,
       loadFailed = false,
       hasRead = false;
+  bool independentCity = false;
+  String queryCity = '';
   int ticket = 0;
   @override
   void initState() {
     super.initState();
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _StockScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = (widget.initialCity ?? '').trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = (widget.initialCity ?? '').trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -108,6 +136,7 @@ class _StockScreenState extends State<_StockScreen> {
       error = null;
       loadFailed = false;
       if (!more) {
+        queryCity = city.text.trim();
         offers.clear();
         listings.clear();
         purchases.clear();
@@ -124,8 +153,10 @@ class _StockScreenState extends State<_StockScreen> {
     try {
       switch (widget.mode) {
         case 'catalog':
-          final r = await api.catalog(
-              cursor: more ? cursor : null, city: city.text.trim());
+          final r =
+              await api.catalog(cursor: more ? cursor : null, city: queryCity);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'video':
@@ -438,8 +469,10 @@ class _StockScreenState extends State<_StockScreen> {
           ],
           if (widget.mode == 'catalog') ...[
             appNotice('选择已完成的作品，按已审个人使用许可购买，无需先创建自己的数字人或填写故事。'),
+            cityScope(),
             TextField(
                 controller: city,
+                onChanged: (_) => setState(() => independentCity = true),
                 decoration: const InputDecoration(labelText: '城市筛选（可留空）')),
             tradeButton('按城市读取', busy ? null : () => load(), outline: true),
             catalogueCards(),

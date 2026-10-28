@@ -64,6 +64,24 @@ class AuditionsApi extends V5Api {
     return r;
   }
 
+  Future<List<Map<String, dynamic>>> offerOptions(
+      String personId, String kind) async {
+    final items = <Map<String, dynamic>>[], seen = <String>{};
+    String? cursor;
+    do {
+      final r = await get('/offer-options', (d) => v5Map(d), query: {
+        'person_id': key(personId),
+        'kind': kind,
+        'limit': 100,
+        if (cursor != null) 'cursor': cursor
+      });
+      items.addAll(v5Rows(r['items'], max: 100).map(v5Map));
+      cursor = r['next_cursor'];
+      if (cursor != null) v5Require(v5Id(cursor) && seen.add(cursor));
+    } while (cursor != null);
+    return items;
+  }
+
   Future<V5Page<AuditionOffer>> catalog(
           {String? cursor, String? city, String? invitationId}) =>
       get(invitationId == null ? '/catalog' : '/invitation-offers',

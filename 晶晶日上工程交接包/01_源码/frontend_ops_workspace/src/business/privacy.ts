@@ -9,6 +9,7 @@ export const privacy:Domain={key:'privacy',title:'本人资料与权益',journal
 {key:'actions',label:'本次撤回与模型处理',path:'/privacy/requests/:request_id/actions',party:'none'},
 {key:'models',label:'本次登记模型',path:'/privacy/requests/:request_id/model-assets',party:'none'},
 {key:'model-creations',label:'本次登记的模型创建',path:'/privacy/requests/:request_id/model-creations',party:'none'},
+{key:'files',label:'核对待删除的本人原始素材',path:'/privacy/requests/:request_id/file-options',party:'none',query:[fixed('kind','本人原始素材','FILE')],files:[{label:'保存本份原始素材核对',path:'/privacy/requests/:request_id/files/:asset_id/content',party:'none'}]},
 {key:'executions',label:'具体执行与范围',path:'/privacy/requests/:request_id/executions',party:'none'},
 {key:'history',label:'本次办理历史',path:'/privacy/requests/:request_id/history',party:'none'},
 {key:'operations',label:'运营处理本人申请',path:'/privacy/operations/requests',detail:'/privacy/operations/requests/:request_id',party:'none'},

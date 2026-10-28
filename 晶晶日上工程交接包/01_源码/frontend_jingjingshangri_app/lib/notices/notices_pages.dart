@@ -29,6 +29,7 @@ class NoticesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'notices',
+      stateKey: mode == 'catalog' ? '/notices/catalog' : null,
       embedded: embedded,
       route: Uri(path: '/notices/$mode', queryParameters: {
         if (mode == 'records' && kind != null) 'kind': kind!,
@@ -85,6 +86,9 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   String? cursor, error, type, ruleId;
   String recordKind = 'SUBMISSION';
   bool busy = false, loadFailed = false, hasRead = false, changedKind = false;
+  bool independentCity = false;
+  String queryCity = '';
+  String? queryType, queryAt;
   int ticket = 0;
   @override
   void initState() {
@@ -93,6 +97,31 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     recordKind = widget.kind ?? 'SUBMISSION';
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _NoticeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = widget.initialCity.trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = widget.initialCity.trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -112,6 +141,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
       error = null;
       loadFailed = false;
       if (!more) {
+        queryCity = city.text.trim();
         publicRows.clear();
         rows.clear();
         publicNotice = null;
@@ -122,11 +152,14 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     try {
       switch (widget.mode) {
         case 'catalog':
+          if (!more) { queryType=type; queryAt=at.text.trim().isEmpty?null:v5InputDate(at.text); }
           final r = await api.catalog(
               cursor: more ? cursor : null,
-              type: type,
-              city: city.text.trim(),
-              at: at.text.trim().isEmpty ? null : v5InputDate(at.text));
+              type: queryType,
+              city: queryCity,
+              at: queryAt);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           publicRows.addAll(r.items);
           cursor = r.cursor;
         case 'public':
@@ -339,8 +372,10 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     child: Text(e.value)),
             ]),
             const SizedBox(height: 20),
+            cityScope(),
             TextField(
                 controller: city,
+                onChanged: (_) => setState(() => independentCity = true),
                 decoration: const InputDecoration(labelText: '城市（可留空）')),
             v5DateField(context,
                 label: '指定有效时间（可留空）',

@@ -63,7 +63,12 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   AccountSession get session => widget.session;
   @override
   String get domain => 'privacy';
-  late final details = field(), why = field(), minutes = field();
+  late final details = field(),
+      why = field(),
+      minutes = field(),
+      fileReason = field();
+  String? selectedFile, selectedPolicy;
+  List<Map<String, dynamic>> fileTargets = [], filePolicies = [];
   String type = 'QUERY', copyCategory = 'PROFILE';
   final scopes = <String>{};
   bool personalization = false,
@@ -99,6 +104,10 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     rows = [];
     history = [];
     executions = [];
+    fileTargets = [];
+    filePolicies = [];
+    selectedFile = null;
+    selectedPolicy = null;
     models = [];
     creations = [];
     actions = [];
@@ -148,7 +157,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           ex = [],
           m = [],
           c = [],
-          a = [];
+          a = [],
+          files = [],
+          policies = [];
       String? next;
       if (widget.view == 'preferences') {
         final p = await api.read('preferences');
@@ -190,6 +201,26 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           copyCategory = allowed.first;
         }
         if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
+            (q['scopes'] as List)
+                .any((v) => ['ALL', 'ARTIST_MATERIALS'].contains(v))) {
+          files = await allRows('$base/file-options', query: {'kind': 'FILE'});
+          policies =
+              await allRows('$base/file-options', query: {'kind': 'POLICY'});
+          for (final f in files) {
+            communityRequire(communityId(f['id']) &&
+                f['label'] is String &&
+                f['media_type'] is String &&
+                f['byte_size'] is int &&
+                f['explanation'] is String &&
+                f['dependencies'] is List);
+          }
+          for (final p in policies) {
+            communityRequire(communityId(p['id']) &&
+                p['basis'] is String &&
+                p['contact_reference'] is String);
+          }
+        }
+        if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
             (q['scopes'] as List).any((v) =>
                 ['ALL', 'ARTIST_MATERIALS', 'DIGITAL_MODELS'].contains(v))) {
           m = await allRows('$base/model-assets');
@@ -209,6 +240,12 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           rows = list;
           history = h;
           executions = ex;
+          fileTargets = files;
+          filePolicies = policies;
+          if (!files.any((f) => f['id'] == selectedFile)) selectedFile = null;
+          if (!policies.any((p) => p['id'] == selectedPolicy)) {
+            selectedPolicy = null;
+          }
           models = m;
           creations = c;
           actions = a;
@@ -255,12 +292,13 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> allRows(String suffix) async {
+  Future<List<Map<String, dynamic>>> allRows(String suffix,
+      {Map<String, dynamic> query = const {}}) async {
     final rows = <Map<String, dynamic>>[], seen = <String>{};
     String? cursor;
     do {
       final p = await api.read(suffix,
-          query: {'limit': 50, if (cursor != null) 'cursor': cursor});
+          query: {...query, 'limit': 50, if (cursor != null) 'cursor': cursor});
       rows.addAll(communityItems(p));
       cursor = p['next_cursor'];
       communityRequire(
@@ -506,6 +544,10 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             outline: true)
       ]),
       if (['QUERY', 'COPY'].contains(q['type'])) ...copySection(q),
+      if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
+          (q['scopes'] as List)
+              .any((v) => ['ALL', 'ARTIST_MATERIALS'].contains(v)))
+        ...fileSection(r),
       communitySection('具体处理方案与执行结果', [
         if (executions.isEmpty)
           const Text('尚无已登记的具体执行方案。可补充申请说明，由工作人员核对适用依据和下一步。'),
@@ -513,7 +555,13 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           communitySection(
               privacyActions[x['action']] ?? communityText(x['action']), [
             communityFact('执行进展', communityState(x['current_status'])),
-            communityFact('处理对象', communityShort(x['target_id'])),
+            communityFact(
+                '处理对象',
+                x['target_summary'] is Map
+                    ? communityMap(x['target_summary'])['label']
+                    : communityShort(x['target_id'])),
+            if (x['target_summary'] is Map)
+              ...fileFacts(communityMap(x['target_summary'])),
             if (x['action'] == 'PROFILE_CORRECTION' &&
                 x['proposed_change'] is Map)
               communityFact(
@@ -569,7 +617,30 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                       : null,
                   outline: true),
             if (x['current_status'] == 'APPROVED' &&
+                x['action'] == 'FILE_ERASURE' &&
+                x['target_summary'] is Map)
+              tradeButton(
+                  '本人确认删除这份原始素材',
+                  enabled
+                      ? () => submit(() async {
+                            final f = communityMap(x['target_summary']);
+                            communityRequire(f['id'] == x['target_id'] &&
+                                f['label'] is String &&
+                                f['byte_size'] is int);
+                            if (await confirm('确认删除这份原始素材',
+                                '${f['label']}，${f['media_type']}，${f['byte_size']} 字节。只处理这份当前文件；模型、历史合同和备份分别核对。')) {
+                              await act(
+                                  'requests/${r['id']}/executions/${x['id']}/execute',
+                                  {'confirmed': true},
+                                  version: x['object_version']);
+                            }
+                          })
+                      : null,
+                  outline: true),
+            if (x['current_status'] == 'APPROVED' &&
                 x['action'] != 'ACCOUNT_CLOSURE' &&
+                !(x['action'] == 'FILE_ERASURE' &&
+                    x['target_summary'] is Map) &&
                 !(x['action'] == 'PROFILE_CORRECTION' &&
                     x['proposed_change'] is Map &&
                     communityMap(x['proposed_change'])['display_name']
@@ -586,6 +657,83 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       communityRecordId(r)
     ];
   }
+
+  List<Widget> fileFacts(Map<String, dynamic> f) => [
+        communityFact('文件类型与大小', '${f['media_type']} · ${f['byte_size']} 字节'),
+        communityFact('上传时间', communityDate(f['created_at'])),
+        appNotice(communityText(f['explanation'])),
+        for (final d in communityRows(f['dependencies']))
+          communityFact('需复核事项', d['message']),
+      ];
+  List<Widget> fileSection(Map<String, dynamic> r) => [
+        communitySection('先核对要删除的原始素材', [
+          if (fileTargets.isEmpty)
+            appNotice('本申请范围内没有本人原始素材；作品、合同、模型和备份按各自处理记录核对。'),
+          for (final f in fileTargets)
+            communitySection(communityText(f['label']), [
+              ...fileFacts(f),
+              if (f['current_status'] == 'READY')
+                tradeButton(
+                    '保存这份文件核对内容',
+                    enabled
+                        ? () => savePrivate(
+                            'requests/${r['id']}/files/${f['id']}/content',
+                            'personal-material.${f['media_type'] == 'image/jpeg' ? 'jpg' : f['media_type'] == 'image/png' ? 'png' : f['media_type'] == 'video/mp4' ? 'mp4' : 'bin'}',
+                            hash: f['content_sha256'])
+                        : null,
+                    outline: true),
+              if (f['disposition'] == 'READY_FOR_REVIEW')
+                CheckboxListTile(
+                    title: const Text('选择这份素材申请删除'),
+                    value: selectedFile == f['id'],
+                    onChanged: enabled
+                        ? (v) => setState(
+                            () => selectedFile = v == true ? f['id'] : null)
+                        : null),
+            ]),
+          if (filePolicies.isEmpty)
+            appNotice('当前没有经审核的资料处理依据，不能直接执行删除。已提交的申请仍由工作人员受理，请在原申请补充需要处理的文件。'),
+          if (filePolicies.isNotEmpty) ...[
+            DropdownButtonFormField<String>(
+                initialValue: selectedPolicy,
+                isExpanded: true,
+                decoration: const InputDecoration(labelText: '本次处理依据'),
+                items: filePolicies
+                    .map((p) => DropdownMenuItem<String>(
+                        value: p['id'],
+                        child: Text('${p['version']} · ${p['basis']}',
+                            maxLines: 2, overflow: TextOverflow.ellipsis)))
+                    .toList(),
+                onChanged:
+                    enabled ? (v) => setState(() => selectedPolicy = v) : null),
+            for (final p
+                in filePolicies.where((p) => p['id'] == selectedPolicy)) ...[
+              communityFact('处理依据', p['basis']),
+              communityFact('处理联系渠道', p['contact_reference'])
+            ],
+            communityField(fileReason, '删除这份素材的原因', lines: 2),
+            tradeButton(
+                '提交这份素材的删除方案',
+                enabled && selectedFile != null && selectedPolicy != null
+                    ? () => submit(() async {
+                          await act(
+                              'requests/${r['id']}/executions',
+                              {
+                                'action': 'FILE_ERASURE',
+                                'target_id': selectedFile,
+                                'policy_rule_id': selectedPolicy,
+                                'details': {
+                                  'reason':
+                                      communityRequired(fileReason.text, '删除原因')
+                                }
+                              },
+                              version: r['object_version']);
+                        })
+                    : null),
+          ],
+          appNotice('提交方案后仍须独立审核，再由本人核对并确认。执行中和存储方回执分别显示，不把提交成功写成已删除。'),
+        ])
+      ];
 
   List<Widget> executionResult(Map<String, dynamic> d) => [
         communityFact(

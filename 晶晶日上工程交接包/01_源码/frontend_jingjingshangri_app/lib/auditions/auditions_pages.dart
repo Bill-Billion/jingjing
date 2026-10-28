@@ -85,6 +85,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   Map<String, dynamic>? contacts, itinerary;
   String? cursor, messageCursor, error, notice;
   bool busy = false;
+  bool independentCity = false;
+  String queryCity = '';
   int ticket = 0, messageForm = 0;
   @override
   void initState() {
@@ -92,6 +94,31 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
     city.text = widget.initialCity;
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _AuditionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = widget.initialCity.trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = widget.initialCity.trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -131,6 +158,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       busy = true;
       error = null;
       if (!more) {
+        queryCity = city.text.trim();
         offers.clear();
         records.clear();
         cursor = null;
@@ -143,8 +171,10 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         case 'catalog':
           final r = await api.catalog(
               cursor: more ? cursor : null,
-              city: city.text.trim(),
+              city: queryCity,
               invitationId: widget.invitationId);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'book':
@@ -298,8 +328,10 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 ? '只展示当前可公开预约的已审方案；价格可由艺人选择不公开。'
                 : '这里只读取本次已接受定向邀约匹配的真实方案。'),
             if (widget.invitationId == null) ...[
+              cityScope(),
               TextField(
                   controller: city,
+                  onChanged: (_) => setState(() => independentCity = true),
                   decoration: const InputDecoration(labelText: '城市筛选')),
               tradeButton('按城市查找', busy ? null : () => load(), outline: true)
             ],
