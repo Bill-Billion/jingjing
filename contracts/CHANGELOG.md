@@ -6,7 +6,7 @@
 
 新INVITATION可携带可选source_listing_id，提交、审核、对方决定时重查公开资料及接收方。旧邀约无此字段沿原规则，不补造公开来源。隐私执行返回可选proposed_change：仅PROFILE_CORRECTION提供display_name，其他动作null；本人读到具体新名称后明确确认，原版本和重复请求保护不变，不自动开放盲目删除。
 
-新增6种返回格式，累计457操作、593结构。页面已接、隔离检查通过，另一方实际审阅和阶段交付仍待完成。[全业务计划](../docs/testing/FULL_BUSINESS_CLOSURE_20261028.md)。
+新增6种返回格式，累计457操作、593结构。页面已接、隔离检查通过，已集中上传PR39；另一方实际审阅、共同版本合入仍待完成。[全业务计划](../docs/testing/FULL_BUSINESS_CLOSURE_20261028.md)。
 
 ---
 
