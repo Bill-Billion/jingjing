@@ -1,3 +1,5 @@
+2026-10-28本次集中同步已推送 [PR39](https://github.com/Bill-Billion/jingjing/pull/39)，完整任务见 [执行入口](docs/collaboration/client-complete-20261028/README.md)。计划可供双方开发，未称18组已实现；前端尚未实际认领，自动检查/审阅/合入分别记录。以下按日期保留。
+
 2026-10-28当前执行入口：[前后端完整测试版任务](docs/collaboration/client-complete-20261028/README.md)。用户已授权本侧合理暂定待决方案并推送Git；18组前后端任务、23项暂定规则按批连续推进。旧“等待甲方确认”仅保留历史，普通开发按新方案继续；真实服务条件和既定儿童关闭边界不变。本次集中同步含既有5项修复，未称全部实现、合入或部署。
 
 2026-10-28当前：本侧在worktrees/client-testing、core/full-business-closure-20261028核查全业务并补断点，起点integration/468df28a。本次5项修复已自测，仍有10项明确缺口及12条整链待补；仅本地，未代队友审阅，未更新甲方网站。先读 [完整计划与当前事实](docs/testing/FULL_BUSINESS_CLOSURE_20261028.md) 和本流CURRENT；以下按日期保留。
