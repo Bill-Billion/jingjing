@@ -33,8 +33,9 @@ class StockPage extends StatelessWidget {
       personal: ['purchases', 'purchase'].contains(mode),
       showExpired: mode == 'catalog',
       expiredLabel: '现成视频',
-      builder: (s) => mode == 'new'
-          ? StockListingForm(session: s)
+      builder: (s) => mode == 'new' || mode == 'listing' && action == 'revise'
+          ? StockListingForm(
+              session: s, revisionId: mode == 'listing' ? id : null)
           : _StockScreen(
               session: s,
               mode: mode,
@@ -494,6 +495,26 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice('本人当前没有上架材料。'),
           ],
           if (l != null) ...[
+            if (['REJECTED', 'UNLISTED', 'LISTED'].contains(l.status) &&
+                l.data['rights_hold'] != true &&
+                l.data['revision_id'] == null &&
+                l.data['replaced_by_listing_id'] == null)
+              tradeButton(
+                  '修改材料并重新提交审核',
+                  busy
+                      ? null
+                      : () =>
+                          go('/stock/listing?listingId=${l.id}&action=revise')),
+            if (l.data['revision_id'] != null)
+              tradeButton('查看已提交的新版本',
+                  () => go('/stock/listing?listingId=${l.data['revision_id']}'),
+                  outline: true),
+            if (l.data['previous_listing_id'] != null)
+              tradeButton(
+                  '查看修改前版本',
+                  () => go(
+                      '/stock/listing?listingId=${l.data['previous_listing_id']}'),
+                  outline: true),
             tradeSection('上架状态与审核', [
               tradeFact('状态', stockStatuses[l.status]),
               tradeFact('卖方具体真人', '本次已授权真人'),

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.30.2-rc.1
+  version: 0.31.0-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -11228,6 +11228,307 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+
+  /api/v1/stock/listings/{record_id}/revisions:
+    post:
+      operationId: reviseStockListing
+      summary: 保存独立修改版本并重新双审
+      description: 首次上架、逐人授权与不可变修订；隔离环境验证与正式启用分别记录。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockListingRequest'
+  /api/v1/stock/sales-publications:
+    post:
+      operationId: createStockSalesPublication
+      summary: 运营拟定规格绑定的销售说明
+      description: 首次上架、逐人授权与不可变修订；隔离环境验证与正式启用分别记录。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockSalesPublicationRequest'
+    get:
+      operationId: listStockSalesPublications
+      summary: 卖家读取可用销售说明或运营查询审核
+      description: 首次上架、逐人授权与不可变修订；隔离环境验证与正式启用分别记录。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/stock/sales-publications/{record_id}/reviews:
+    post:
+      operationId: reviewStockSalesPublication
+      summary: 另一位运营发布、退回或停用销售说明
+      description: 首次上架、逐人授权与不可变修订；隔离环境验证与正式启用分别记录。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockSalesPublicationReviewRequest'
+  /api/v1/stock/participant-options:
+    get:
+      operationId: listStockParticipantOptions
+      summary: 当前身份逐人查询现货上架授权
+      description: 首次上架、逐人授权与不可变修订；隔离环境验证与正式启用分别记录。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: person_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/stock/sales-publication-sources:
+    get:
+      operationId: listStockSalesPublicationSources
+      summary: 授权运营读取规格和规则用于拟定销售说明
+      description: 首次上架、逐人授权与不可变修订；隔离环境验证与正式启用分别记录。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/Cursor'
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: kind
+        required: true
+        schema:
+          enum:
+          - SPEC
+          - RULE
+      - in: query
+        name: seller_party_id
+        required: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
@@ -43672,6 +43973,9 @@ components:
       type: object
       additionalProperties: false
       properties:
+        sales_publication_id:
+          type: string
+          format: uuid
         spec_id:
           type: string
           format: uuid
@@ -44029,6 +44333,18 @@ components:
               type: string
               minLength: 1
               maxLength: 2000
+            sales_publication_id:
+              type: string
+              format: uuid
+            previous_listing_id:
+              type: string
+              format: uuid
+            revision_id:
+              type: string
+              format: uuid
+            replaced_by_listing_id:
+              type: string
+              format: uuid
           required:
           - spec_id
           - rule_id
@@ -44356,6 +44672,7 @@ components:
           - $ref: '#/components/schemas/StockOffer'
           - $ref: '#/components/schemas/StockPurchase'
           - $ref: '#/components/schemas/StockAsset'
+          - $ref: '#/components/schemas/StockSalesPublication'
           - type: object
             additionalProperties: false
             properties:
@@ -44367,6 +44684,10 @@ components:
                   - $ref: '#/components/schemas/StockListing'
                   - $ref: '#/components/schemas/StockOffer'
                   - $ref: '#/components/schemas/StockPurchase'
+                  - $ref: '#/components/schemas/StockSalesPublication'
+                  - $ref: '#/components/schemas/StockSalesOption'
+                  - $ref: '#/components/schemas/StockParticipantOption'
+                  - $ref: '#/components/schemas/StockPublicationSource'
               next_cursor:
                 anyOf:
                 - type: string
@@ -52206,3 +52527,265 @@ components:
       required:
       - meta
       - data
+
+    StockSalesPublicationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        seller_party_id:
+          type: string
+          format: uuid
+        spec_id:
+          type: string
+          format: uuid
+        rule_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - seller_party_id
+      - spec_id
+      - rule_id
+      - title
+      - terms
+    StockSalesPublicationReviewRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVED
+          - REJECTED
+          - WITHDRAWN
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+    StockSalesPublication:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        seller_party_id:
+          type: string
+          format: uuid
+        spec_id:
+          type: string
+          format: uuid
+        rule_id:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - PUBLISHED
+          - REJECTED
+          - WITHDRAWN
+        object_version:
+          type: integer
+          minimum: 1
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            title:
+              type: string
+              minLength: 1
+              maxLength: 200
+            terms:
+              type: string
+              minLength: 1
+              maxLength: 8000
+            rule_version:
+              type: string
+              minLength: 1
+              maxLength: 64
+            rule_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+            spec_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  account_id:
+                    type: string
+                    format: uuid
+                  decision:
+                    enum:
+                    - APPROVED
+                    - REJECTED
+                    - WITHDRAWN
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  at:
+                    type: string
+                    format: date-time
+                required:
+                - account_id
+                - decision
+                - reason
+                - at
+              - type: 'null'
+          required:
+          - title
+          - terms
+          - rule_version
+          - rule_sha256
+          - spec_sha256
+          - review
+      required:
+      - id
+      - seller_party_id
+      - spec_id
+      - rule_id
+      - current_status
+      - object_version
+      - data
+    StockSalesOption:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        spec_id:
+          type: string
+          format: uuid
+        rule_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        rule_version:
+          type: string
+          minLength: 1
+          maxLength: 64
+        spec_title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        unit_minor:
+          type: integer
+          minimum: 1
+        currency:
+          const: CNY
+      required:
+      - id
+      - spec_id
+      - rule_id
+      - title
+      - terms
+      - rule_version
+      - spec_title
+      - unit_minor
+      - currency
+    StockParticipantOption:
+      type: object
+      additionalProperties: false
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        person_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        avatar_id:
+          type: string
+          format: uuid
+        avatar_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        consent_id:
+          type: string
+          format: uuid
+        seller_party_id:
+          type: string
+          format: uuid
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+      required:
+      - person_id
+      - person_name
+      - avatar_id
+      - avatar_name
+      - consent_id
+      - seller_party_id
+      - valid_from
+      - valid_until
+    StockPublicationSource:
+      anyOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          seller_party_id:
+            type: string
+            format: uuid
+          id:
+            type: string
+            format: uuid
+          title:
+            type: string
+            minLength: 1
+            maxLength: 200
+          unit_minor:
+            type: integer
+            minimum: 1
+          currency:
+            const: CNY
+        required:
+        - seller_party_id
+        - id
+        - title
+        - unit_minor
+        - currency
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          title:
+            type: string
+            minLength: 1
+            maxLength: 200
+          version:
+            type: string
+            minLength: 1
+            maxLength: 64
+          terms:
+            type: object
+        required:
+        - id
+        - title
+        - version
+        - terms

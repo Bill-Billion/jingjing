@@ -14,6 +14,9 @@ class StockApi extends V5Api {
     final suffix = path.startsWith(base) ? path.substring(base.length) : '';
     if (suffix == '/checkout') return '购买';
     if (suffix == '/listings') return '上架';
+    if (RegExp(r'^/listings/[0-9a-fA-F-]{36}/revisions$').hasMatch(suffix)) {
+      return '修改后重新提交审核';
+    }
     if (RegExp(r'^/listings/[0-9a-fA-F-]{36}/status$').hasMatch(suffix)) {
       return '下架';
     }
@@ -39,7 +42,10 @@ class StockApi extends V5Api {
     }
     if (suffix == '/listings' || suffix.startsWith('/listings/')) {
       final id = suffix == '/listings' ? null : suffix.split('/')[2];
-      return (await retry(suffix, (d) => StockListing(d, p, id: id),
+      return (await retry(
+              suffix,
+              (d) => StockListing(d, p,
+                  id: suffix.endsWith('/revisions') ? null : id),
               reread: () async {
         if (id == null) {
           await listings();
@@ -55,6 +61,28 @@ class StockApi extends V5Api {
       await purchase(id);
     }))
         .raw;
+  }
+
+  Future<List<Map<String, dynamic>>> salesPublications() =>
+      _options('/sales-publications');
+  Future<List<Map<String, dynamic>>> participantOptions(String personId) =>
+      _options('/participant-options', query: {'person_id': key(personId)});
+  Future<List<Map<String, dynamic>>> _options(String path,
+      {Map<String, dynamic> query = const {}}) async {
+    final rows = <Map<String, dynamic>>[], seen = <String>{};
+    String? cursor;
+    do {
+      final page = await get(
+          path, (d) => V5Page.parse(d, v5Map, previous: cursor), query: {
+        ...query,
+        'limit': 100,
+        if (cursor != null) 'cursor': cursor
+      });
+      rows.addAll(page.items);
+      cursor = page.cursor;
+      if (cursor != null) v5Require(seen.add(cursor));
+    } while (cursor != null);
+    return rows;
   }
 
   Future<V5Page<StockOffer>> catalog(

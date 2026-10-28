@@ -1,3 +1,5 @@
+当前候选0.31.0-rc.1：首次上架、机构逐人授权和退回重提，新增6项操作与迁移0166；与页面成套获取。兼容、权限和版本保护见[变更说明](CHANGELOG.md)，测试与上传事实见[本批记录](../docs/tasks/records/CORE-client-complete-A-20261028.md)。以下按原日期保留。
+
 当前候选0.30.2-rc.1：首次机构投稿、新公开邀约、独立公开详情与可读展示名更正。旧接口保留，无数据库迁移。接法、兼容和本机结果见 [变更说明](CHANGELOG.md) 与 [完整计划](../docs/testing/FULL_BUSINESS_CLOSURE_20261028.md)。已集中上传PR39（https://github.com/Bill-Billion/jingjing/pull/39）；实际审阅、合入和正式启用仍未完成。以下记录按原日期保留。
 
 当前个人信息执行接口候选为0.28.0-rc.1：新增本人模型列表、授权撤回、删除申请与动作进度4项，原接口保持兼容。只覆盖已登记制作模型，不代表整体注销完成；详见[接法](../docs/collaboration/V5_PRIVACY_HANDOFF.md)。

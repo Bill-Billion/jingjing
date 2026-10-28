@@ -109,8 +109,8 @@ class JingjingShangriApp extends StatelessWidget {
                   recordId: uri.queryParameters['recordId'] ?? ''),
               '/settings' => const AppHelpPage(),
               '/help' => const HelpFeedbackPage(),
-              '/search' => PlazaSearchPage(
-                  initialCity: uri.queryParameters['city'] ?? ''),
+              '/search' =>
+                PlazaSearchPage(initialCity: uri.queryParameters['city'] ?? ''),
               '/saved' => const SavedHistoryPage(),
               '/invoices' =>
                 InvoicePage(orderId: uri.queryParameters['orderId']),
@@ -194,8 +194,9 @@ class JingjingShangriApp extends StatelessWidget {
                   agreementId: uri.queryParameters['agreementId'] ?? '',
                   agreementSha256:
                       uri.queryParameters['agreementSha256'] ?? ''),
-              '/auditions' || '/auditions/catalog' => AuditionsPage(
-                  initialCity: uri.queryParameters['city'] ?? ''),
+              '/auditions' ||
+              '/auditions/catalog' =>
+                AuditionsPage(initialCity: uri.queryParameters['city'] ?? ''),
               '/auditions/bookings' => const AuditionsPage(mode: 'bookings'),
               '/auditions/booking' => AuditionsPage(
                   mode: 'booking', id: uri.queryParameters['bookingId']),
@@ -335,7 +336,9 @@ class JingjingShangriApp extends StatelessWidget {
               '/stock/listings' => const StockPage(mode: 'listings'),
               '/stock/new' => const StockPage(mode: 'new'),
               '/stock/listing' => StockPage(
-                  mode: 'listing', id: uri.queryParameters['listingId']),
+                  mode: 'listing',
+                  id: uri.queryParameters['listingId'],
+                  action: uri.queryParameters['action']),
               '/stock/purchases' ||
               '/video-order' =>
                 const StockPage(mode: 'purchases'),

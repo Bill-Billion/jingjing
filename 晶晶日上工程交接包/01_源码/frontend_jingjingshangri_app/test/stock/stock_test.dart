@@ -14,6 +14,8 @@ import '../trade/trade_api_test.dart' show buyerSession;
 import '../trade/trade_fixtures.dart';
 import '../operations/operation_fixtures.dart' show noticeData;
 import 'v5_test_host.dart';
+import '../artists/artists_fixtures.dart' as artist;
+import 'package:jingjingshangri_app/stock/stock_listing_form.dart';
 
 const stockId = 'b1000000-0000-4000-8000-000000000001';
 const stockDate = '2026-10-22T00:00:00.000Z';
@@ -70,6 +72,113 @@ Map<String, dynamic> stockPurchase(
     };
 
 void main() {
+  testWidgets('首次上架读取已发布销售说明和当前授权，不读取旧商品', (t) async {
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/artists/people') {
+        return envelope({
+          'items': [artist.personData()],
+          'next_cursor': null
+        });
+      }
+      if (r.path == '/api/v1/stock/sales-publications') {
+        return envelope({
+          'items': [
+            {
+              'id': stockId,
+              'spec_id': artist.specKey,
+              'rule_id': artist.recordKey,
+              'title': '个人使用许可',
+              'terms': '本版仅个人非商用，不含改编或发行',
+              'rule_version': '测试1',
+              'spec_title': '测试影片',
+              'unit_minor': 100,
+              'currency': 'CNY'
+            }
+          ],
+          'next_cursor': null
+        });
+      }
+      if (r.path == '/api/v1/stock/participant-options') {
+        return envelope({
+          'items': [
+            {
+              'person_id': artist.personKey,
+              'person_name': '本人测试艺人',
+              'avatar_id': artist.avatarKey,
+              'avatar_name': '本人测试形象',
+              'consent_id': artist.recordKey,
+              'seller_party_id': personId,
+              'valid_from': '2020-01-01T00:00:00.000Z',
+              'valid_until': '2099-01-01T00:00:00.000Z'
+            }
+          ],
+          'next_cursor': null
+        });
+      }
+      if (r.path == '/api/v1/artists/people/${artist.personKey}') {
+        return envelope(artist.detailData());
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, StockListingForm(session: s));
+    final person = find.byType(DropdownButtonFormField<String>).first;
+    await t.tap(person);
+    await frames(t);
+    await t.tap(find.text('本人测试艺人').last);
+    await frames(t);
+    final count = find.byType(DropdownButtonFormField<int>);
+    await reveal(t, count);
+    await t.tap(count);
+    await frames(t);
+    await t.tap(find.text('1 位（逐人选择已审授权）').last);
+    await frames(t);
+    expect(find.byType(V5Form), findsOneWidget);
+    final form = t.widget<V5Form>(find.byType(V5Form));
+    expect(form.canSubmit, isTrue);
+    expect(form.fields.first.keyName, 'publication_id');
+    expect(form.fields.first.choices!.values.single, contains('测试影片'));
+    expect(
+        form.fields
+            .firstWhere((f) => f.keyName == 'participant_0')
+            .choices!
+            .values
+            .single,
+        contains('本人测试形象'));
+    expect(
+        a.requests.where((r) => r.path == '/api/v1/stock/listings'), isEmpty);
+    expect(
+        a.requests.where((r) =>
+            r.path.contains('/records') &&
+            r.queryParameters['kind'] == 'CONSENT'),
+        isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
+  test('销售说明分页中空页仍继续读取，不把过滤空页当无资格', () async {
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/stock/sales-publications') {
+        return envelope(r.queryParameters['cursor'] == null
+            ? {'items': [], 'next_cursor': stockId}
+            : {
+                'items': [
+                  {'id': artist.recordKey}
+                ],
+                'next_cursor': null
+              });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = await buyerSession(a);
+    final result = await StockApi(s).salesPublications();
+    expect(result.single['id'], artist.recordKey);
+    expect(
+        a.requests
+            .where((r) => r.path == '/api/v1/stock/sales-publications')
+            .length,
+        2);
+  });
+
   testWidgets('现货目录503用C06，返回保留城市，原条件重读成功才显示真空态', (t) async {
     var failed = true;
     final a = FakeAccountAdapter(

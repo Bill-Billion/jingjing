@@ -135,7 +135,12 @@ def validate():
         check(t['stream'] in ('Core', 'Experience'), 'Unknown stream: ' + t['id'])
         prefix = 'core/' if t['stream'] == 'Core' else 'ux/'
         if t['owner']:
-            check(bool(t['branch']) and t['branch'].startswith(prefix), 'Claim must have correct branch: ' + t['id'])
+            cross_stream = (t['stream'] == 'Experience' and t.get('actual_implementer') == t['owner']
+                and t.get('implementation_branch') == t['branch']
+                and bool(t.get('implementation_authority'))
+                and bool(t.get('implementation_scope')) and bool(t.get('evidence')))
+            check(bool(t['branch']) and (t['branch'].startswith(prefix) or
+                cross_stream and t['branch'].startswith('core/')), 'Claim must have correct branch: ' + t['id'])
         check(t['status'] in ('READY', 'PLANNED', 'CLAIMED', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'BLOCKED'), 'Unknown status: ' + t['id'])
         if t['status'] in ('CLAIMED', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'):
             check(bool(t['owner']), 'Missing owner: ' + t['id'])
