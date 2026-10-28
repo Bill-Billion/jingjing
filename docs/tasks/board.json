@@ -3,7 +3,7 @@
   "updated_on": "2026-10-28",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
-  "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
+  "dependency_semantics": "dependencies列出整项工作最终验收前必须完成的成果，不是开工顺序；可先设计、约定接口、准备隔离资料及检查已可用路线。第17组最终验收须前16组服务器与页面成果齐备，不能以部分路线通过提前完成。",
   "tasks": [
     {
       "id": "CORE-S0-000",
@@ -2695,7 +2695,7 @@
     },
     {
       "id": "CORE-CLIENT-COMPLETE-01",
-      "title": "新卖家首次上架：服务器与接口",
+      "title": "首次现货上架与试镜方案：服务器与接口",
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
@@ -2709,7 +2709,7 @@
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "空商品账号完成第一次双审；不得从历史商品推断权限",
+      "acceptance": "空商品账号完成第一次双审；空试镜方案账号完成首次审核并公开可约；停用或撤权阻止提交，不从历史记录推断权限",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -2722,23 +2722,37 @@
       "blockers": [],
       "delivery_batch": "A",
       "v5_refs": [
-        "DEL-05"
+        "DEL-05",
+        "DEL-09",
+        "DEL-26"
       ],
       "provisional_rule_refs": [
         "P01"
       ],
       "implementation": "DESIGN_IN_PROGRESS",
-      "implementation_scope": "发布卖家可用的销售规则和商品规格绑定，停用重查，只读最小公开内容",
+      "implementation_scope": "分别提供卖家可用的现货销售规则和规格、本人可用的试镜经营规则及人物/形象/公开同意上下文；支持首次提交，重查版本、权限和生效状态",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "E2E-01",
+        "E2E-03",
+        "TASK-01"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-01",
-      "title": "新卖家首次上架：App与网页",
+      "title": "首次现货上架与试镜方案：App与网页",
       "stage": 6,
       "stream": "Experience",
       "owner": null,
@@ -2754,7 +2768,7 @@
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "空商品账号完成第一次双审；不得从历史商品推断权限",
+      "acceptance": "空商品账号完成第一次双审；空试镜方案账号完成首次审核并公开可约；停用或撤权阻止提交，不从历史记录推断权限",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -2767,19 +2781,33 @@
       "blockers": [],
       "delivery_batch": "A",
       "v5_refs": [
-        "DEL-05"
+        "DEL-05",
+        "DEL-09",
+        "DEL-26"
       ],
       "provisional_rule_refs": [
         "P01"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "规则/规格选择、素材上传、首次提交和审核结果",
+      "implementation_scope": "无历史记录也能选择现货或试镜对应规则、人物和素材，首次提交并查看独立审核结果；无可用规则时说明原因和后续办理方式",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "E2E-01",
+        "E2E-03",
+        "TASK-01"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-02",
@@ -2824,7 +2852,24 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.04",
+        "ACC-DEL-05.02",
+        "ACC-DEL-11.02",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "E2E-01",
+        "E2E-04",
+        "E2E-10",
+        "TASK-02"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-02",
@@ -2871,7 +2916,24 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.04",
+        "ACC-DEL-05.02",
+        "ACC-DEL-11.02",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "E2E-01",
+        "E2E-04",
+        "E2E-10",
+        "TASK-02"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-03",
@@ -2918,7 +2980,16 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "E2E-01",
+        "TASK-03"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-03",
@@ -2964,7 +3035,16 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "E2E-01",
+        "TASK-03"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-04",
@@ -3008,7 +3088,15 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.03",
+        "E2E-11",
+        "TASK-04"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-04",
@@ -3054,7 +3142,15 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.03",
+        "E2E-11",
+        "TASK-04"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-05",
@@ -3101,7 +3197,20 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "E2E-01",
+        "E2E-11",
+        "TASK-05"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-05",
@@ -3150,7 +3259,20 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "E2E-01",
+        "E2E-11",
+        "TASK-05"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-06",
@@ -3196,7 +3318,15 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-10.04",
+        "ACC-DEL-19.02",
+        "TASK-06"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-06",
@@ -3244,7 +3374,15 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-10.04",
+        "ACC-DEL-19.02",
+        "TASK-06"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-07",
@@ -3262,7 +3400,7 @@
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "手选可完成业务；定位拒绝不阻断；重复翻页无遗漏且权限一致",
+      "acceptance": "手选可完成业务，定位拒绝不阻断；先打开试镜再回广场换城，返回后筛选与列表一致；独立筛选明确提示，重复翻页无遗漏且权限一致",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -3283,13 +3421,21 @@
         "P13"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "统一城市代码、公开字段搜索、确定排序与游标；不计算无来源匹配率",
+      "implementation_scope": "统一城市代码、公开字段搜索、确定排序与游标；查询与分页保持同一城市，不计算无来源匹配率",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.04",
+        "TASK-07"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-07",
@@ -3309,7 +3455,7 @@
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "手选可完成业务；定位拒绝不阻断；重复翻页无遗漏且权限一致",
+      "acceptance": "手选可完成业务，定位拒绝不阻断；先打开试镜再回广场换城，返回后筛选与列表一致；独立筛选明确提示，重复翻页无遗漏且权限一致",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -3330,13 +3476,21 @@
         "P13"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "手选城市、可选定位、搜索、空结果和权限拒绝恢复",
+      "implementation_scope": "手选城市、可选定位、搜索、空结果和权限拒绝恢复；已打开的试镜/通告列表跟随全局城市刷新，本页主动独立筛选明确提示并可恢复跟随",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.04",
+        "TASK-07"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-08",
@@ -3380,7 +3534,14 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-28.01",
+        "TASK-08"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-08",
@@ -3426,7 +3587,14 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-28.01",
+        "TASK-08"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-09",
@@ -3471,7 +3639,17 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "E2E-11",
+        "TASK-09"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-09",
@@ -3518,7 +3696,17 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "E2E-11",
+        "TASK-09"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-10",
@@ -3561,7 +3749,15 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.04",
+        "E2E-03",
+        "E2E-04",
+        "TASK-10"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-10",
@@ -3606,7 +3802,15 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.04",
+        "E2E-03",
+        "E2E-04",
+        "TASK-10"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-11",
@@ -3652,7 +3856,21 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-15.04",
+        "ACC-DEL-25.04",
+        "ACC-DEL-27.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-10",
+        "E2E-12",
+        "TASK-11"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-11",
@@ -3700,7 +3918,21 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-15.04",
+        "ACC-DEL-25.04",
+        "ACC-DEL-27.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-10",
+        "E2E-12",
+        "TASK-11"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-12",
@@ -3744,7 +3976,14 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.04",
+        "ACC-DEL-07.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "TASK-12"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-12",
@@ -3790,7 +4029,14 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.04",
+        "ACC-DEL-07.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "TASK-12"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-13",
@@ -3834,7 +4080,14 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-23.01",
+        "TASK-13"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-13",
@@ -3880,7 +4133,14 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-23.01",
+        "TASK-13"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-14",
@@ -3923,7 +4183,18 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-17.01",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.03",
+        "E2E-06",
+        "E2E-08",
+        "TASK-14"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-14",
@@ -3968,11 +4239,22 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-17.01",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.03",
+        "E2E-06",
+        "E2E-08",
+        "TASK-14"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-15",
-      "title": "自由创作草稿入口：服务器与接口",
+      "title": "故事草稿与共创发起：服务器与接口",
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
@@ -3986,7 +4268,7 @@
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "默认私有，未提交不派单，未报价不付款；不另建通用协作平台",
+      "acceptance": "默认私有，未提交不派单，未报价不付款；空房间账号在本次正式报价前自行建房并接上邀请、去重授权和本人片段，不能预置房间代替首次发起",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -4000,23 +4282,42 @@
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-14",
-        "DEL-15"
+        "DEL-15",
+        "DEL-16"
       ],
       "provisional_rule_refs": [
         "P18"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "复用私人故事的自由创作模板和私有附件；版本、保存、补件和平台报价",
+      "implementation_scope": "复用私人故事的自由创作模板和私有附件、版本、保存及补件；提供获准承制方和已审共创规则选择、本人建房与重复保护，沿用现有报价流程和共创权限",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-24.01",
+        "E2E-02",
+        "E2E-05",
+        "TASK-15"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-15",
-      "title": "自由创作草稿入口：App与网页",
+      "title": "故事草稿与共创发起：App与网页",
       "stage": 6,
       "stream": "Experience",
       "owner": null,
@@ -4032,7 +4333,7 @@
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "默认私有，未提交不派单，未报价不付款；不另建通用协作平台",
+      "acceptance": "默认私有，未提交不派单，未报价不付款；空房间账号在本次正式报价前自行建房并接上邀请、去重授权和本人片段，不能预置房间代替首次发起",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -4046,19 +4347,38 @@
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-14",
-        "DEL-15"
+        "DEL-15",
+        "DEL-16"
       ],
       "provisional_rule_refs": [
         "P18"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "新建/保存/续写/附件/提交，再进入原故事报价链",
+      "implementation_scope": "新建、保存、续写、附件和提交后进入原故事报价链；本人从已提交故事选择承制方和规则建房，保存后进入邀请、授权和进度",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-24.01",
+        "E2E-02",
+        "E2E-05",
+        "TASK-15"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-16",
@@ -4109,7 +4429,31 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.02",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-23.03",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-16"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-16",
@@ -4162,7 +4506,31 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.02",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-23.03",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-16"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-17",
@@ -4176,11 +4544,44 @@
         "WORK-14"
       ],
       "req_refs": [],
-      "dependencies": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-01",
+        "UX-CLIENT-COMPLETE-01",
+        "CORE-CLIENT-COMPLETE-02",
+        "UX-CLIENT-COMPLETE-02",
+        "CORE-CLIENT-COMPLETE-03",
+        "UX-CLIENT-COMPLETE-03",
+        "CORE-CLIENT-COMPLETE-04",
+        "UX-CLIENT-COMPLETE-04",
+        "CORE-CLIENT-COMPLETE-05",
+        "UX-CLIENT-COMPLETE-05",
+        "CORE-CLIENT-COMPLETE-06",
+        "UX-CLIENT-COMPLETE-06",
+        "CORE-CLIENT-COMPLETE-07",
+        "UX-CLIENT-COMPLETE-07",
+        "CORE-CLIENT-COMPLETE-08",
+        "UX-CLIENT-COMPLETE-08",
+        "CORE-CLIENT-COMPLETE-09",
+        "UX-CLIENT-COMPLETE-09",
+        "CORE-CLIENT-COMPLETE-10",
+        "UX-CLIENT-COMPLETE-10",
+        "CORE-CLIENT-COMPLETE-11",
+        "UX-CLIENT-COMPLETE-11",
+        "CORE-CLIENT-COMPLETE-12",
+        "UX-CLIENT-COMPLETE-12",
+        "CORE-CLIENT-COMPLETE-13",
+        "UX-CLIENT-COMPLETE-13",
+        "CORE-CLIENT-COMPLETE-14",
+        "UX-CLIENT-COMPLETE-14",
+        "CORE-CLIENT-COMPLETE-15",
+        "UX-CLIENT-COMPLETE-15",
+        "CORE-CLIENT-COMPLETE-16",
+        "UX-CLIENT-COMPLETE-16"
+      ],
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "每条同一组记录从新建到结果及主要逆向走通；133条逐条给证据或明确边界",
+      "acceptance": "前16组双端成果通过验收；12条同记录从首次发起到结果和关键逆向走通，133条及暂定规则专项有当前预期与证据；登录回跳、未提交输入、字段错误、重试和分页返回适用检查通过",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -4193,19 +4594,156 @@
       "blockers": [],
       "delivery_batch": "D",
       "v5_refs": [
+        "DEL-28",
         "DEL-29"
       ],
       "provisional_rule_refs": [
         "P23"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "准备隔离数据、岗位、接口/数据库证据，复现修复权限/账务/状态问题",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "implementation_scope": "准备隔离数据、岗位、接口和数据库证据；按当前决定核对133条来源与暂定规则专项，复现修复权限、账务、状态与失败恢复问题",
+      "frontend_can_start": "可立即设计用例、准备隔离资料和检查已可用路线；所列依赖只约束整项最终验收，不要求等待前16组全部完成才开工",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.01",
+        "ACC-DEL-03.02",
+        "ACC-DEL-03.03",
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.01",
+        "ACC-DEL-06.02",
+        "ACC-DEL-06.03",
+        "ACC-DEL-06.04",
+        "ACC-DEL-07.01",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-08.01",
+        "ACC-DEL-08.02",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-09.02",
+        "ACC-DEL-09.03",
+        "ACC-DEL-09.04",
+        "ACC-DEL-10.01",
+        "ACC-DEL-10.02",
+        "ACC-DEL-10.03",
+        "ACC-DEL-10.04",
+        "ACC-DEL-11.01",
+        "ACC-DEL-11.02",
+        "ACC-DEL-11.03",
+        "ACC-DEL-11.04",
+        "ACC-DEL-12.01",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-13.01",
+        "ACC-DEL-13.02",
+        "ACC-DEL-13.03",
+        "ACC-DEL-13.04",
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-17.01",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.01",
+        "ACC-DEL-19.02",
+        "ACC-DEL-19.03",
+        "ACC-DEL-19.04",
+        "ACC-DEL-20.01",
+        "ACC-DEL-20.02",
+        "ACC-DEL-20.03",
+        "ACC-DEL-20.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-22.01",
+        "ACC-DEL-22.02",
+        "ACC-DEL-22.03",
+        "ACC-DEL-22.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-23.03",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "ACC-DEL-25.04",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "ACC-DEL-26.03",
+        "ACC-DEL-26.04",
+        "ACC-DEL-27.01",
+        "ACC-DEL-27.02",
+        "ACC-DEL-27.03",
+        "ACC-DEL-27.04",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.02",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04",
+        "ACC-DEL-29.01",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-03",
+        "E2E-04",
+        "E2E-05",
+        "E2E-06",
+        "E2E-07",
+        "E2E-08",
+        "E2E-09",
+        "E2E-10",
+        "E2E-11",
+        "E2E-12",
+        "ACC-DEL-19.05",
+        "TASK-17"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-17",
@@ -4220,12 +4758,44 @@
       ],
       "req_refs": [],
       "dependencies": [
+        "CORE-CLIENT-COMPLETE-01",
+        "UX-CLIENT-COMPLETE-01",
+        "CORE-CLIENT-COMPLETE-02",
+        "UX-CLIENT-COMPLETE-02",
+        "CORE-CLIENT-COMPLETE-03",
+        "UX-CLIENT-COMPLETE-03",
+        "CORE-CLIENT-COMPLETE-04",
+        "UX-CLIENT-COMPLETE-04",
+        "CORE-CLIENT-COMPLETE-05",
+        "UX-CLIENT-COMPLETE-05",
+        "CORE-CLIENT-COMPLETE-06",
+        "UX-CLIENT-COMPLETE-06",
+        "CORE-CLIENT-COMPLETE-07",
+        "UX-CLIENT-COMPLETE-07",
+        "CORE-CLIENT-COMPLETE-08",
+        "UX-CLIENT-COMPLETE-08",
+        "CORE-CLIENT-COMPLETE-09",
+        "UX-CLIENT-COMPLETE-09",
+        "CORE-CLIENT-COMPLETE-10",
+        "UX-CLIENT-COMPLETE-10",
+        "CORE-CLIENT-COMPLETE-11",
+        "UX-CLIENT-COMPLETE-11",
+        "CORE-CLIENT-COMPLETE-12",
+        "UX-CLIENT-COMPLETE-12",
+        "CORE-CLIENT-COMPLETE-13",
+        "UX-CLIENT-COMPLETE-13",
+        "CORE-CLIENT-COMPLETE-14",
+        "UX-CLIENT-COMPLETE-14",
+        "CORE-CLIENT-COMPLETE-15",
+        "UX-CLIENT-COMPLETE-15",
+        "CORE-CLIENT-COMPLETE-16",
+        "UX-CLIENT-COMPLETE-16",
         "CORE-CLIENT-COMPLETE-17"
       ],
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md"
       ],
-      "acceptance": "每条同一组记录从新建到结果及主要逆向走通；133条逐条给证据或明确边界",
+      "acceptance": "前16组双端成果通过验收；12条同记录从首次发起到结果和关键逆向走通，133条及暂定规则专项有当前预期与证据；登录回跳、未提交输入、字段错误、重试和分页返回适用检查通过",
       "shared_boundaries": [
         "OpenAPI",
         "auth/permission"
@@ -4238,19 +4808,156 @@
       "blockers": [],
       "delivery_batch": "D",
       "v5_refs": [
+        "DEL-28",
         "DEL-29"
       ],
       "provisional_rule_refs": [
         "P23"
       ],
       "implementation": "NOT_STARTED",
-      "implementation_scope": "逐页实际办理、操作反馈、恢复、窄屏与回原业务；修复页面问题",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "implementation_scope": "逐页实际办理，首次试镜和本人建房不靠预置记录绕过；登录后回原记录，离开或切操作保护未提交输入，定位字段错误，检查重试、分页返回、窄屏和回原业务；结果未知保留原请求，换身份清私密缓存",
+      "frontend_can_start": "可立即设计用例、准备隔离资料和检查已可用路线；所列依赖只约束整项最终验收，不要求等待前16组全部完成才开工",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.01",
+        "ACC-DEL-03.02",
+        "ACC-DEL-03.03",
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.01",
+        "ACC-DEL-06.02",
+        "ACC-DEL-06.03",
+        "ACC-DEL-06.04",
+        "ACC-DEL-07.01",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-08.01",
+        "ACC-DEL-08.02",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-09.02",
+        "ACC-DEL-09.03",
+        "ACC-DEL-09.04",
+        "ACC-DEL-10.01",
+        "ACC-DEL-10.02",
+        "ACC-DEL-10.03",
+        "ACC-DEL-10.04",
+        "ACC-DEL-11.01",
+        "ACC-DEL-11.02",
+        "ACC-DEL-11.03",
+        "ACC-DEL-11.04",
+        "ACC-DEL-12.01",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-13.01",
+        "ACC-DEL-13.02",
+        "ACC-DEL-13.03",
+        "ACC-DEL-13.04",
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-17.01",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.01",
+        "ACC-DEL-19.02",
+        "ACC-DEL-19.03",
+        "ACC-DEL-19.04",
+        "ACC-DEL-20.01",
+        "ACC-DEL-20.02",
+        "ACC-DEL-20.03",
+        "ACC-DEL-20.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-22.01",
+        "ACC-DEL-22.02",
+        "ACC-DEL-22.03",
+        "ACC-DEL-22.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-23.03",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "ACC-DEL-25.04",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "ACC-DEL-26.03",
+        "ACC-DEL-26.04",
+        "ACC-DEL-27.01",
+        "ACC-DEL-27.02",
+        "ACC-DEL-27.03",
+        "ACC-DEL-27.04",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.02",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04",
+        "ACC-DEL-29.01",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-03",
+        "E2E-04",
+        "E2E-05",
+        "E2E-06",
+        "E2E-07",
+        "E2E-08",
+        "E2E-09",
+        "E2E-10",
+        "E2E-11",
+        "E2E-12",
+        "ACC-DEL-19.05",
+        "TASK-17"
+      ]
     },
     {
       "id": "CORE-CLIENT-COMPLETE-18",
@@ -4298,7 +5005,18 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-28.02",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-18"
+      ]
     },
     {
       "id": "UX-CLIENT-COMPLETE-18",
@@ -4345,7 +5063,49 @@
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
-      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-28.02",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-18"
+      ]
+    },
+    {
+      "id": "UX-pr39-delivery-review-20261028",
+      "title": "PR39需求、验收与交付流程复核",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-delivery-review-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/UX-pr39-delivery-review-20261028.md",
+        "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "测试版验收登记检查与反例测试"
+      ],
+      "acceptance": "核对18组任务、133条来源与12条完整流程；防止漏项、跳过、旧证据被误记为完整通过；修复已证实漏洞并验证，更新PR39，保留未完成和未审状态。",
+      "shared_boundaries": [
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-pr39-delivery-review-20261028.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-28",
+      "current_increment": "本轮复核、三处实际修复及针对性验证完成；18组原业务任务仍按各自状态继续，公共权限待另一方审阅，上传和远端检查以PR39当前提交为准。"
     }
   ],
   "delivery_policy": {
@@ -10285,6 +11045,11 @@
     "client_test_version_ready": false,
     "planning_uploaded": true,
     "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
-    "initial_uploaded_commit": "21c8d76ba203460757a80ecca9edf073f8c70b2f"
+    "initial_uploaded_commit": "21c8d76ba203460757a80ecca9edf073f8c70b2f",
+    "provisional_rule_version": "TEST-20261028-2",
+    "rule_priority": "历史订单和合同使用固化承诺；新业务先用最近已确认决定，再用未被替代的V5/D1要求；暂定规则只补测试版未决细节，不解除真实服务条件。来源原文与当前有效预期分别保留。",
+    "delivery_order": "每批先交付一条接口、页面、隔离资料、实际办理和逆向恢复齐备的路线，再接下一条；独立准备可并行，整链从首条可用就开始检查。",
+    "final_acceptance_scope": "第17组最终验收依赖前16组双端成果、12条整链和133条来源及暂定规则专项；提前施工或部分路线通过不等于整项完成。",
+    "acceptance_guide": "docs/collaboration/client-complete-20261028/ACCEPTANCE.md"
   }
 }

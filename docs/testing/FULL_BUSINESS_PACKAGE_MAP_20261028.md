@@ -13,14 +13,14 @@
 |DEL-06 现成视频的购买、许可和受控下载|stock|stock|购买下载售后已有，App播放收讫验收实测；首次供给整链待补|
 |DEL-07 报价合同、各商品收银与退款恢复|trade|trade, participation|类型化收银退款补差已有；现金分期全页面整链待验|
 |DEL-08 V5分账规则、历史订单与财务校验迁移|finance|finance, settlement-routes.js|账务及历史隔离回归；实际资金和跨端清分待验|
-|DEL-09 真实试镜预约、到场取样与清分|auditions|auditions|预约会话到场补差已有；从零预约全程待验|
+|DEL-09 真实试镜预约、到场取样与清分|auditions|auditions|预约会话到场补差已有；首次方案规则来源纳入01组，从无方案至预约履约全程待验|
 |DEL-10 六类通告与发布资格|notices|notices|六类和资格已有；逐类发布关闭矩阵待验|
 |DEL-11 意向卡、反向投稿与客服转单|notices|notices|首次代投及新邀约已补；客服至成交整链待验|
 |DEL-12 订单会话、通知与客服权限|gigs, operations|gigs, operations|商单消息实际发送；跨频道未读和批量已读未补|
 |DEL-13 剧本商务供稿与运营入库|supply, licensing|works, licensing|商务入库及旧许可读取保留；非标受控阅读整链待验|
 |DEL-14 定制品类与动态故事采集|customization|customization|动态故事补件及平台人工报价已有；故事接口21项|
 |DEL-15 真人承制、报价里程碑与交付|customization-delivery, production|production, customization|交付接口29项；付款预览返修终验整链待验|
-|DEL-16 多人共创、去重授权及10/20权益|cocreation|cocreation|10/20人、去重退出和额度已有；多人跨端待验|
+|DEL-16 多人共创、去重授权及10/20权益|cocreation|cocreation|10/20人、去重退出和额度已有；本人建房入口仍阻断，纳入15组；从无房间开始的多人跨端待验|
 |DEL-17 消费者储值与星探会员|wallet|wallet|模拟账户资格已有；真实托管未开，年度退款页面待验|
 |DEL-18 晶钻、消费成长与积分事件账|wallet|wallet|事件账及待冲回已有；消费兑换退款整链待验|
 |DEL-19 艺人六榜、买家城市榜及成长评价|engagement|engagement|六榜及冠军已有；配置前不排名，完整评选待验|
