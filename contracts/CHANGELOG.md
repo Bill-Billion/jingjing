@@ -18,7 +18,7 @@
 
 旧写入路径、订单与授权保持，无数据库迁移。新页面须与本版服务器一起交付；旧服务器缺少新读取时明确不可用，不能回退到历史投稿推断权限。投稿空items仍可有next_cursor，客户端继续翻页；不返回私有证据全文，不扩大员工原权限。
 
-新INVITATION可携带可选source_listing_id，提交、审核、对方决定时重查公开资料及接收方。旧邀约无此字段沿原规则，不补造公开来源。隐私执行返回可选proposed_change：仅PROFILE_CORRECTION提供display_name，其他动作null；本人读到具体新名称后明确确认，原版本和重复请求保护不变，不自动开放盲目删除。
+新INVITATION可携带可选source_listing_id，提交、审核、对方决定时重查公开资料及接收方。旧客户端新建时省略此字段，服务器按真人、数字人、同意记录和接收方解析当前有效的公开资料并冻结来源；无有效来源返回NOTICE_ARTIST_NOT_PUBLIC，多条有效来源返回NOTICE_PUBLIC_SOURCE_AMBIGUOUS，须明确选择来源后提交。已有无此字段的历史邀约沿原规则，不补造公开来源。隐私执行返回可选proposed_change：仅PROFILE_CORRECTION提供display_name，其他动作null；本人读到具体新名称后明确确认，原版本和重复请求保护不变，不自动开放盲目删除。
 
 新增6种返回格式，累计457操作、593结构。页面已接、隔离检查通过，已集中上传PR39；另一方实际审阅、共同版本合入仍待完成。[全业务计划](../docs/testing/FULL_BUSINESS_CLOSURE_20261028.md)。
 

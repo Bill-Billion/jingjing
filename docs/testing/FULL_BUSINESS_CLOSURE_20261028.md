@@ -1,3 +1,5 @@
+2026-10-28 PR39复核更新：首次试镜方案、本人成立共创房间、城市保活刷新及登录/草稿恢复已补入既有18组施工范围。验收登记现有133条来源与18组专项，均保持未执行；日常结构检查与完整测试版定版检查分开，见 [执行办法](../collaboration/client-complete-20261028/ACCEPTANCE.md)。下文的“本地/尚未上传”和测试计数是首次核查时的历史快照，当前交付事实以 [PR39](https://github.com/Bill-Billion/jingjing/pull/39) 与 [本轮复核记录](../tasks/records/UX-pr39-delivery-review-20261028.md) 为准。
+
 2026-10-28执行更新：用户已授权合理暂定待决方案并集中上传。本文保留此前查实的缺口和证据；“待规则确定”的后续处理已收敛为 [23项暂定方案](../collaboration/client-complete-20261028/PROVISIONAL_RULES.md)，前后端施工以 [18组配对任务](../collaboration/client-complete-20261028/README.md) 为入口。未把测试默认写成甲方正式批准或真实服务可用。
 
 # 全业务检查与补齐（2026-10-28）
