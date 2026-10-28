@@ -12,6 +12,7 @@ import 'navigation/app_shell.dart';
 import 'plaza/plaza_pages.dart';
 import 'discovery/discovery_pages.dart';
 import 'support/support_pages.dart';
+import 'account/business_library.dart';
 import 'customization/customization_page.dart';
 import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
@@ -109,8 +110,12 @@ class JingjingShangriApp extends StatelessWidget {
                   recordId: uri.queryParameters['recordId'] ?? ''),
               '/settings' => const AppHelpPage(),
               '/help' => const HelpFeedbackPage(),
-              '/search' => PlazaSearchPage(
+              '/search' =>
+                PlazaSearchPage(initialCity: uri.queryParameters['city'] ?? ''),
+              '/search/filters' => DiscoverySearchPage(
                   initialCity: uri.queryParameters['city'] ?? ''),
+              '/library' => BusinessLibraryPage(
+                  section: uri.queryParameters['section'] ?? 'contracts'),
               '/saved' => const SavedHistoryPage(),
               '/invoices' =>
                 InvoicePage(orderId: uri.queryParameters['orderId']),
@@ -195,7 +200,8 @@ class JingjingShangriApp extends StatelessWidget {
                   agreementSha256:
                       uri.queryParameters['agreementSha256'] ?? ''),
               '/auditions' || '/auditions/catalog' => AuditionsPage(
-                  initialCity: uri.queryParameters['city'] ?? ''),
+                  initialCity: uri.queryParameters['city'] ?? '',
+                  invitationId: uri.queryParameters['invitationId']),
               '/auditions/bookings' => const AuditionsPage(mode: 'bookings'),
               '/auditions/booking' => AuditionsPage(
                   mode: 'booking', id: uri.queryParameters['bookingId']),

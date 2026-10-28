@@ -52,11 +52,11 @@ try{
  test('412保留输入并要求重新核对，独立岗位请求不带主体头',async()=>{storage.clear();const {ui,scope}=state(),calls=[];globalThis.fetch=async(url,o)=>{calls.push(o);return failure(412,'VERSION_MISMATCH')};const body={decision:'REJECT',reason:'original'};await ui.execute({path:'/stock/listings/'+id(3)+'/reviews',body,method:'POST',party:'none',version:1,label:'synthetic'});assert.equal(ui.conflict.value,true);assert.equal(ui.confirmed.value,false);assert.deepEqual(body,{decision:'REJECT',reason:'original'});assert.equal(calls[0].headers['X-Acting-Party'],undefined);assert.equal(ui.pending.value,null);scope.stop()})
  test('同身份较早GET和迟到403不能覆盖后来记录',async()=>{storage.clear();const {ui,scope}=state();let one,two,n=0;globalThis.fetch=()=>new Promise(resolve=>{if(++n===1)one=resolve;else two=resolve});const a=ui.load('/stock/catalog/'+id(3),'none'),b=ui.load('/stock/catalog/'+id(4),'none');one(failure(403,'FORBIDDEN'));await a;two(response({id:id(4)},null));await b;assert.equal(ui.data.value.id,id(4));assert.equal(ui.error.value,null);scope.stop()})
  test('失权、权利暂停或换身份清除旧私密内容与Blob',async()=>{for(const [status,code]of [[403,'FORBIDDEN'],[404,'NOT_FOUND'],[409,'STOCK_RIGHTS_HOLD'],[409,'ARTIST_CONSENT_REQUIRED']]){storage.clear();const {ui,scope}=state();ui.data.value={id:id(3),private_story:'synthetic'};globalThis.fetch=async()=>failure(status,code);await ui.load('/stock/catalog/'+id(3),'none');assert.equal(ui.data.value,null);assert(ui.securityRevision.value>0);scope.stop()}})
- async function render(path,record){const pinia=createPinia(),session=useSessionStore(pinia);session.token='synthetic-token';session.account={id:id(1),display_name:'合成账号',current_status:'ACTIVE',object_version:1,allowed_actions:[]};session.expiresAt=until;session.parties=[{party:{id:id(2),kind:'PERSON',display_name:'本人合成身份',current_status:'ACTIVE',object_version:1,capabilities:[],allowed_actions:[]},membership:{id:id(8),account_id:id(1),party_id:id(2),current_status:'ACTIVE',roles:['OWNER'],object_version:1,allowed_actions:[]}}];session.selectParty(id(2));const router=createRouter({history:createMemoryHistory(),routes:[...businessRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(path);await router.isReady();let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='BusinessView'){vm=this.$.setupState;vm.loading=false;if(record){vm.selected=record;vm.ui.data.value=record;vm.bindReferences(record)}}}});const html=await renderToString(app);return{html,vm}}
+ async function render(path,record,exercise){const pinia=createPinia(),session=useSessionStore(pinia);session.token='synthetic-token';session.account={id:id(1),display_name:'合成账号',current_status:'ACTIVE',object_version:1,allowed_actions:[]};session.expiresAt=until;session.parties=[{party:{id:id(2),kind:'PERSON',display_name:'本人合成身份',current_status:'ACTIVE',object_version:1,capabilities:[],allowed_actions:[]},membership:{id:id(8),account_id:id(1),party_id:id(2),current_status:'ACTIVE',roles:['OWNER'],object_version:1,allowed_actions:[]}}];session.selectParty(id(2));const router=createRouter({history:createMemoryHistory(),routes:[...businessRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(path);await router.isReady();let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='BusinessView'){vm=this.$.setupState;vm.loading=false;if(record){vm.selected=record;vm.ui.data.value=record;vm.bindReferences(record)}}},serverPrefetch(){if(this.$options.__name==='BusinessView')return exercise?.(vm,session)}});const html=await renderToString(app);return{html,vm}}
  test('所有领域首页原43菜单完整保留、唯一高亮且沿刊物版式',async()=>{for(const d of Object.values(domains)){const {html}=await render(`/${d.key}/${d.sections[0].key}`);assert.equal((html.match(/<aside[^>]*>(.*?)<\/aside>/s)[1].match(/aria-current="page"/g)||[]).length,1);const nav=html.match(/<nav[^>]*class="workspace-nav"[^>]*>(.*?)<\/nav>/s)[1];assert.equal((nav.match(/<a /g)||[]).length,43);assert(html.includes('editorial-workspace'));assert(html.includes(d.journal.replaceAll('&','&amp;')))}})
  test('主体和表单哈希不允许普通用户手填，原JSON仅是折叠文本记录',async()=>{const {default:Fields}=await server.ssrLoadModule('/src/components/business/BusinessFields.vue'),html=await renderToString(createSSRApp({render:()=>h(Fields,{fields:[model.id('person_id','真实人物'),model.hash(),model.ids('materials','本人材料')],modelValue:{person_id:'',content_sha256:sha,materials:''}})}));assert(html.includes('<select'));assert.match(html,/<input[^>]*readonly/);assert(!html.includes('<textarea'));const {html:page}=await render('/stock/catalog/'+id(5),{id:id(5),title:'实际合成影片',object_version:1,offer_sha256:sha,unit_minor:1000,description:'<script>literal</script>'});assert(page.includes('business-overview'));assert(page.includes('核对原约定'));assert(page.includes('&lt;script&gt;literal&lt;/script&gt;'));assert(!page.includes('<script>literal</script>'))})
  test('只读审核校验值来自当前实际源与提案，逐项勾选不自动通过',async()=>{const source='b'.repeat(64),proposal='c'.repeat(64);const {vm}=await render('/stock/reviews/'+id(5),{id:id(5),object_version:1,current_status:'IN_REVIEW',content_sha256:sha,data:{files:{full_sha256:source}}});vm.operationKey='rights';vm.draft=model.initial(operation('stock','rights').fields);vm.prefill();assert.equal(vm.draft.verification.source_sha256,source);assert.equal(vm.draft.verification.rights_verified,false);const p=await render('/privacy/operations/'+id(6),{id:id(6),object_version:1,current_status:'AWAITING_REVIEW',proposal_sha256:proposal,request:{type:'COPY',scopes:['PROFILE'],details:'synthetic'}});p.vm.operationKey='response-review';p.vm.draft=model.initial(operation('privacy','response-review').fields);p.vm.prefill();assert.equal(p.vm.draft.proposal_sha256,proposal);assert.equal(p.vm.draft.evidence_verified,false)})
- test('公开缺少合法邀约来源时不提供INVITATION，合法原投递保留',async()=>{const {vm}=await render('/notices/submissions');vm.operationKey='submission';await Promise.resolve();const field=vm.actionFields.find(f=>f.key==='submission').fields.find(f=>f.key==='kind');assert(!field.choices.some(c=>c[0]==='INVITATION'));vm.selected={id:id(5),kind:'SUBMISSION',object_version:1,data:{submission:{consent_id:id(6)}}};assert(vm.actionFields.find(f=>f.key==='submission').fields.find(f=>f.key==='kind').choices.some(c=>c[0]==='INVITATION'))})
+ test('新邀约使用独立表单与当前公开来源，不从历史投递取得公开资格',async()=>{const {vm}=await render('/notices/submissions');vm.operationKey='submission';const field=vm.actionFields.find(f=>f.key==='submission').fields.find(f=>f.key==='kind');assert(!field.choices.some(c=>c[0]==='INVITATION'));vm.selected={id:id(5),kind:'SUBMISSION',object_version:1,data:{submission:{consent_id:id(6)}}};assert(!vm.actionFields.find(f=>f.key==='submission').fields.find(f=>f.key==='kind').choices.some(c=>c[0]==='INVITATION'));assert(operation('notices','invitation').fields.find(f=>f.key==='submission').fields.some(f=>f.key==='source_listing_id'))})
  test('人工样片本人专用下载不依赖generic production GET，原绑定与确认分开',()=>{const sections=domains.participation.sections,source=sections.find(s=>s.key==='manual-sample'),confirmation=sections.find(s=>s.key==='manual-confirmation');assert.equal(source.path,'/customization-requests/:request_id');assert.equal(confirmation.path,'/customization-requests/:request_id/manual-sample');assert.equal(confirmation.files[0].path,'/production/projects/:project_id/manual-sample-content');assert.equal(operation('participation','manual-confirm').sections[0],'manual-confirmation')})
 
  const film=()=>({version:'synthetic',service_tier:'synthetic',sample_seconds:1,final_seconds:2,revision_limit:1,deliverables:['synthetic'],terms:'synthetic',customization_delivery:{version:'synthetic',source_ref:'synthetic',preview_payment_order:'PREVIEW_BEFORE_INTERIM',acceptance_hours:72,cancellation_terms:'synthetic'}})
@@ -99,5 +99,208 @@ try{
   globalThis.fetch=async()=>failure(503,'SERVICE_UNAVAILABLE')
   const {ui,scope}=state();try{await ui.execute({path:'/stock/purchases/'+id(3)+'/cases',body:{reason:'original'},method:'POST',party:'required',label:'synthetic',readPath:'/stock/purchases/'+id(3),readParty:'required'});const original=ui.pending.value;assert(original);await ui.check('/stock/purchases/'+id(3),'required');assert.equal(ui.pending.value,original);assert.equal(ui.pending.value.checked,false);assert.equal(ui.error.value.requestMethod,'GET');assert(explainError(ui.error.value).includes('重新读取'))}finally{scope.stop()}
  })
+
+ test('字段校验保留嵌套行路径，错误文案和控件关联可定位',async()=>{
+  const fields=[model.group('offer','方案',[model.rows('slots','时段',[model.date('starts_at','开始时间')])])]
+  let error;try{model.encode(fields,{offer:{slots:[{starts_at:'invalid'}]}})}catch(e){error=e}
+  assert(error instanceof model.BusinessFormError);assert.deepEqual(error.fieldPath,['offer','slots','0','starts_at'])
+  const {explainError}=await server.ssrLoadModule('/src/api/errors.ts');assert(explainError(error).includes('开始时间'))
+  const {default:Fields}=await server.ssrLoadModule('/src/components/business/BusinessFields.vue'),html=await renderToString(createSSRApp({render:()=>h(Fields,{fields,modelValue:{offer:{slots:[{starts_at:'invalid'}]}},prefix:'offer',errors:{'offer-offer-slots-0-starts_at':error.message}})}))
+  assert(html.includes('aria-invalid="true"'));assert(html.includes('aria-describedby="offer-offer-slots-0-starts_at-error"'));assert(html.includes('id="offer-offer-slots-0-starts_at-field"'));assert(html.includes('请核对“开始时间”'))
+ })
+ test('未提交草稿在切换动作和离页时保护，取消确认不丢输入，待核对原请求仍阻止离开',async()=>{
+  const descriptor=Object.getOwnPropertyDescriptor(globalThis,'window');let confirms=0,discard=false
+  Object.defineProperty(globalThis,'window',{configurable:true,value:{confirm:()=>{confirms++;return discard}}})
+  try{await render('/stock/listings/'+id(5),{id:id(5),seller_party_id:id(2),current_status:'LISTED',object_version:2,data:{rule_id:id(6)}},async vm=>{
+   vm.chooseAction('listing');assert.equal(vm.dirty,false);assert.equal(vm.draft.rule_id,'');vm.draft.description='本次未提交影片介绍';assert.equal(vm.dirty,true)
+   vm.chooseAction('unlist');assert.equal(vm.operationKey,'listing');assert.equal(vm.draft.description,'本次未提交影片介绍');assert.equal(vm.leave(),false);assert.equal(confirms,2)
+   let prevented=false;vm.unload({preventDefault:()=>prevented=true,returnValue:undefined});assert(prevented)
+   discard=true;vm.chooseAction('unlist');assert.equal(vm.operationKey,'unlist');assert.equal(vm.dirty,false)
+   vm.ui.pending.value={label:'original'};assert.equal(vm.leave(),false);assert.equal(confirms,3)
+  })}finally{if(descriptor)Object.defineProperty(globalThis,'window',descriptor);else delete globalThis.window}
+ })
+ test('列表支持前后页与过滤位置恢复，重筛从第一页开始',async()=>{
+  storage.clear();const {vm}=await render('/stock/listings',{items:[],next_cursor:id(7)});vm.filters={city:'北京'};const urls=[]
+  globalThis.fetch=async url=>{urls.push(String(url));return response({items:[],next_cursor:null})}
+  await vm.page('next');assert.equal(vm.cursor,id(7));assert.deepEqual(vm.previousCursors,['']);assert(urls[0].includes('cursor='+id(7)))
+  vm.reset();assert.equal(vm.cursor,id(7));assert.equal(vm.filters.city,'北京');await vm.page('previous');assert.equal(vm.cursor,'');assert.deepEqual(vm.previousCursors,[])
+  vm.cursor=id(7);vm.previousCursors=[''];await vm.applyFilters();assert.equal(vm.cursor,'');assert.deepEqual(vm.previousCursors,[])
+  const navigation=await server.ssrLoadModule('/src/business/navigation.ts');navigation.clearBusinessLists();vm.reset();assert.equal(vm.cursor,'')
+ })
+ test('默认城市通过各目录现有city参数读取，不引入搜索或定位参数',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts')
+  navigation.clearBusinessLists();city.setDirectoryCity(' 杭州 ')
+  try{for(const path of ['/stock/catalog','/notices/catalog','/auditions/catalog','/engagement/buyers']){
+   const urls=[];globalThis.fetch=async url=>{urls.push(String(url));return response({items:[],next_cursor:null},null)}
+   await render(path,null,async vm=>{vm.reset();await vm.load();assert.equal(vm.filters.city,'杭州')})
+   assert.equal(urls.length,1);const query=new URL(urls[0],'https://test.invalid').searchParams;assert.equal(query.get('city'),'杭州');assert.equal(query.has('q'),false)
+  }}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('返回目录保留局部过滤与页码，默认城市改变只重置跟随目录的游标',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts')
+  navigation.clearBusinessLists();city.setDirectoryCity('杭州')
+  try{await render('/stock/catalog',null,async vm=>{
+   const urls=[];globalThis.fetch=async url=>{urls.push(String(url));return response({items:[],next_cursor:id(7)},null)}
+   vm.reset();vm.filters.person_id=id(9);await vm.load();await vm.page('next');assert.equal(vm.cursor,id(7));vm.reset();assert.equal(vm.cursor,id(7));assert.equal(vm.filters.person_id,id(9))
+   city.setDirectoryCity('北京');vm.reset();assert.equal(vm.filters.city,'北京');assert.equal(vm.filters.person_id,id(9));assert.equal(vm.cursor,'');assert.deepEqual(vm.previousCursors,[])
+   vm.filters.city='南京';await vm.applyFilters();await vm.page('next');assert.equal(vm.localCity,true);city.setDirectoryCity('上海');vm.reset();assert.equal(vm.filters.city,'南京');assert.equal(vm.cursor,id(7))
+   await vm.useDefaultCity();assert.equal(vm.localCity,false);assert.equal(vm.filters.city,'上海');assert.equal(vm.cursor,'');assert.equal(vm.filters.person_id,id(9));assert(!urls.at(-1).includes('cursor='))
+  })}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('同页改默认城市先保护未提交内容和未知写入，取消不改全局或游标',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts'),descriptor=Object.getOwnPropertyDescriptor(globalThis,'window')
+  let discard=false,confirms=0,reads=0
+  Object.defineProperty(globalThis,'window',{configurable:true,value:{confirm:()=>{confirms++;return discard}}})
+  navigation.clearBusinessLists();city.setDirectoryCity('杭州');globalThis.fetch=async()=>{reads++;return response({items:[],next_cursor:null},null)}
+  try{await render('/engagement/buyers',null,async vm=>{
+   vm.reset();vm.operationKey='buyer-city';vm.draft.city='尚未提交城市';vm.cursor=id(7)
+   await vm.changeDefaultCity('北京');assert.equal(city.directoryCity.value,'杭州');assert.equal(vm.cursor,id(7));assert.equal(vm.draft.city,'尚未提交城市');assert.equal(reads,0);assert.equal(confirms,1)
+   discard=true;await vm.changeDefaultCity('北京');assert.equal(city.directoryCity.value,'北京');assert.equal(vm.operationKey,'');assert.equal(vm.cursor,'');assert.equal(reads,1)
+   vm.ui.pending.value={label:'原请求'};await vm.changeDefaultCity('上海');assert.equal(city.directoryCity.value,'北京');assert.equal(reads,1);assert(vm.ui.notice.value.includes('先在本页完成核对'))
+  })}finally{city.setDirectoryCity('');navigation.clearBusinessLists();if(descriptor)Object.defineProperty(globalThis,'window',descriptor);else delete globalThis.window}
+ })
+ test('默认城市仍服从当前目录字段上限，不截断也不发送非法过滤',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts');navigation.clearBusinessLists();city.setDirectoryCity('杭州');let reads=0
+  globalThis.fetch=async()=>{reads++;return response({items:[],next_cursor:null},null)}
+  try{await render('/notices/catalog',null,async vm=>{vm.reset();await vm.changeDefaultCity('城'.repeat(81));assert.equal(city.directoryCity.value,'杭州');assert.equal(vm.ui.error.value.code,'BUSINESS_FORM_INVALID');assert.equal(reads,0)})}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('换默认城市后旧分页响应不能覆盖结果或恢复旧游标',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts');navigation.clearBusinessLists();city.setDirectoryCity('杭州')
+  try{await render('/stock/catalog',null,async vm=>{
+   vm.reset();globalThis.fetch=async()=>response({items:[],next_cursor:id(7)},null);await vm.load()
+   let resolve;const waiting=new Promise(done=>{resolve=done});globalThis.fetch=()=>waiting
+   const oldPage=vm.page('next');assert.equal(vm.cursor,id(7))
+   globalThis.fetch=async()=>response({items:[{id:id(9),title:'北京结果'}],next_cursor:null},null)
+   await vm.changeDefaultCity('北京');assert.equal(vm.cursor,'')
+   resolve(response({items:[{id:id(8),title:'杭州旧页'}],next_cursor:null},null));await oldPage
+   assert.equal(vm.filters.city,'北京');assert.equal(vm.ui.data.value.items[0].title,'北京结果');assert.equal(vm.cursor,'');assert.deepEqual(vm.previousCursors,[])
+  })}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('手动城市尚未重新筛选时，下一页重新读首屏而不混用旧游标',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts');navigation.clearBusinessLists();city.setDirectoryCity('杭州')
+  try{await render('/stock/catalog',null,async vm=>{
+   vm.reset();const urls=[];globalThis.fetch=async url=>{urls.push(String(url));return response({items:[],next_cursor:id(7)},null)};await vm.load();vm.filters.city='北京';await vm.page('next')
+   const query=new URL(urls.at(-1),'https://test.invalid').searchParams;assert.equal(query.get('city'),'北京');assert.equal(query.has('cursor'),false);assert.equal(vm.cursor,'')
+  })}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('可办动作遵从明确权限和业务状态，缺权限清单不显示为已确认可办',async()=>{
+  const {actionAvailability}=await server.ssrLoadModule('/src/business/availability.ts'),ctx={accountId:id(1),partyId:id(2),membershipActive:true,owner:true}
+  assert(actionAvailability('cocreation',operation('cocreation','invite'),{id:id(5),object_version:2,current_status:'OPEN',allowed_actions:['READ','SUBMIT_OWN']},ctx).blocked)
+  const uncertain=actionAvailability('stock',operation('stock','unlist'),{id:id(5),object_version:2,current_status:'LISTED',seller_party_id:id(2)},ctx);assert(!uncertain.blocked);assert.equal(uncertain.explicit,false);assert(uncertain.reason.includes('未提供完整可办清单'))
+  assert(actionAvailability('stock',operation('stock','unlist'),{id:id(5),object_version:2,current_status:'RIGHTS_HOLD',data:{rights_hold:true}},ctx).blocked)
+  assert(actionAvailability('stock',operation('stock','rights'),{id:id(5),object_version:2,current_status:'IN_REVIEW',created_by:id(1)},ctx).blocked)
+  assert(!actionAvailability('auditions',operation('auditions','checkout'),{id:id(5),object_version:2,current_status:'READY_TO_PAY',kind:'BOOKING',owner_party_id:id(2)},ctx).blocked)
+  assert(actionAvailability('auditions',operation('auditions','decision'),{id:id(5),object_version:2,current_status:'AWAITING_ACCEPTANCE',kind:'BOOKING',owner_party_id:id(2)},ctx).blocked)
+  assert(actionAvailability('notices',operation('notices','decision'),{id:id(5),object_version:2,current_status:'SENT',counterparty_id:id(9)},ctx).blocked)
+ })
+ test('首次供给缺规则目录时保留准备表单，禁止从旧记录推断资格和提交',async()=>{
+  const {businessPrerequisite}=await server.ssrLoadModule('/src/business/prerequisites.ts')
+  for(const [domain,key] of [['stock','listing'],['auditions','offer'],['cocreation','room']])assert(businessPrerequisite(domain,key))
+  await render('/stock/listings/'+id(5),{id:id(5),object_version:2,current_status:'LISTED',data:{rule_id:id(6)}},async vm=>{vm.operationKey='listing';vm.prefill();assert.equal(vm.draft.rule_id,'');assert(vm.prerequisite)
+  let writes=0;globalThis.fetch=async()=>{writes++;return response({})};vm.agreed=true;await vm.submit();assert.equal(writes,0)
+  vm.chosenReferences=[{id:id(5),rule_id:id(6)}];await vm.loadChoices({field:model.id('rule_id','规则'),context:{},key:'listing-rule_id'});assert.deepEqual(vm.refOptions['listing-rule_id'],[]);assert.equal(writes,0)})
+ })
+ test('通告投稿授权只读取当前人物和通告的匹配上下文，拒绝错人回包',async()=>{
+  const source=references.sourceFor('consent_id',{person_id:id(3),notice_id:id(4)},'notices',id(2));assert(source.path.startsWith('/notices/submission-options?'));assert.equal(references.sourceFor('consent_id',{person_id:id(3)},'notices',id(2)).path,'/artists/people/'+id(3)+'/records?kind=CONSENT')
+  const data={notice_id:id(4),rule_id:id(5),items:[{person_id:id(3),avatar_id:id(6),consent_id:id(7),target_party_id:id(8),valid_from:at,valid_until:until}],next_cursor:null}
+  globalThis.fetch=async()=>response(data);const result=await references.readReferences(source,{token:'test',accountId:id(1),partyId:id(2)});const choice=references.referenceOptions(result.items,'consent_id')[0];assert.equal(choice.value,id(7));assert.equal(choice.record.rule_id,id(5));assert.equal(choice.record.notice_id,id(4))
+  globalThis.fetch=async()=>response({...data,items:[{...data.items[0],person_id:id(9)}]});await assert.rejects(references.readReferences(source,{token:'test',accountId:id(1),partyId:id(2)}),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+ })
+ test('公开邀约通过当前上下文绑定来源，换来源清除旧授权，过期失败不保留旧资格',async()=>{
+  storage.clear();await render('/notices/submissions',null,async vm=>{vm.operationKey='invitation';vm.draft.rule_id=id(5);vm.draft.submission.source_listing_id=id(6)
+  const context={rule_id:id(5),listing_id:id(6),person_id:id(7),avatar_id:id(8),consent_id:id(9),target_party_id:id(10),display_name:'当前公开艺人'};let path=''
+  globalThis.fetch=async url=>{path=String(url);return response(context)};await vm.readInvitationContext();assert(path.includes('/notices/invitation-context?'));assert.equal(vm.draft.submission.person_id,id(7));assert.equal(vm.draft.submission.consent_id,id(9));assert(vm.invitationContext)
+  vm.draft.submission.source_listing_id=id(11);assert.equal(vm.invitationContext,null);assert.equal(vm.draft.submission.consent_id,'')
+  globalThis.fetch=async()=>failure(409,'NOTICE_ARTIST_NOT_PUBLIC');await vm.readInvitationContext();assert.equal(vm.invitationContext,null);assert.equal(vm.draft.submission.person_id,'')})
+  assert.equal(loginRedirect('/notices/submissions?action=invitation&sourceListing='+id(6)),'/notices/submissions?action=invitation&sourceListing='+id(6));assert.equal(loginRedirect('/notices/submissions?action=invitation&sourceListing=https://example.com'),'/workspace')
+ })
+ test('隐私展示名只适用于资料更正，删除或注销明确提交null',()=>{
+  const fields=operation('privacy','propose').fields,value={action:'FILE_ERASURE',target_id:id(3),policy_rule_id:id(4),details:{display_name:'不应带入',target_kind:'ASSET',reason:'本人请求'}}
+  assert.equal(model.encode(fields,value).details.display_name,null);assert.equal(model.encode(fields,{...value,action:'PROFILE_CORRECTION'}).details.display_name,'不应带入')
+ })
+
+
+ test('迟到邀约响应不能覆盖新规则、新来源或切换后的身份',async()=>{
+  storage.clear();await render('/notices/submissions',null,async(vm,session)=>{
+   vm.operationKey='invitation';vm.draft.rule_id=id(5);vm.draft.submission.source_listing_id=id(6)
+   const context=(listing,rule=id(5))=>({rule_id:rule,listing_id:listing,person_id:id(7),avatar_id:id(8),consent_id:id(9),target_party_id:id(10),display_name:'合成公开艺人'})
+   let releaseOld;globalThis.fetch=()=>new Promise(resolve=>releaseOld=resolve);const old=vm.readInvitationContext()
+   vm.draft.submission.source_listing_id=id(11);vm.draft.rule_id=id(12);globalThis.fetch=async()=>response(context(id(11),id(12)));await vm.readInvitationContext();assert.equal(vm.invitationContext.listing_id,id(11))
+   releaseOld(response(context(id(6))));await old;assert.equal(vm.invitationContext.listing_id,id(11));assert.equal(vm.draft.rule_id,id(12));assert.equal(vm.refBusy,false)
+   let releaseIdentity;globalThis.fetch=()=>new Promise(resolve=>releaseIdentity=resolve);const changing=vm.readInvitationContext();session.selectedId=id(99);releaseIdentity(response(context(id(11),id(12))));await changing;assert.equal(vm.invitationContext,null);assert.equal(vm.operationKey,'');assert.deepEqual(vm.draft,{})
+  })
+ })
+ test('合法共创入组与试镜后续状态保持可填写，已证实错误身份或阶段阻止提交',async()=>{
+  await render('/cocreation/rooms/'+id(5),{id:id(5),object_version:1,current_status:'OPEN',participation_sha256:sha,allowed_actions:['READ','SUBMIT_OWN','WITHDRAW']},async vm=>{
+   assert(vm.actions.some(a=>a.key==='join'));vm.chooseAction('join');assert.equal(vm.operationKey,'join');assert.equal(vm.actionUnavailable,false);assert.equal(vm.availability(vm.action).explicit,false);assert.equal(vm.draft.participation_sha256,sha)
+   vm.ui.pending.value={label:'original'};assert.equal(vm.leave(),false)
+  })
+  await render('/auditions/bookings/'+id(5),{id:id(5),kind:'BOOKING',object_version:1,current_status:'ACCEPTED',owner_party_id:id(3),counterparty_id:id(2),data:{appointment:{mode:'ONLINE_MATERIALS'},departed_at:null,reschedule:null,dispute:null}},async vm=>{
+   vm.chooseAction('travel');assert.equal(vm.operationKey,'travel');assert.equal(vm.actionUnavailable,false)
+   vm.chooseAction('delivery');assert.equal(vm.operationKey,'delivery');assert.equal(vm.actionUnavailable,false)
+   vm.chooseAction('reschedule');assert.equal(vm.operationKey,'reschedule');assert.equal(vm.actionUnavailable,false)
+   vm.selected={...vm.selected,current_status:'DEPARTED',data:{...vm.selected.data,departed_at:at}};assert.equal(vm.actionUnavailable,true)
+  })
+  await render('/auditions/bookings/'+id(5),{id:id(5),kind:'BOOKING',object_version:1,current_status:'AWAITING_ACCEPTANCE',owner_party_id:id(3),counterparty_id:id(2),data:{}},async vm=>{vm.chooseAction('decision');assert.equal(vm.operationKey,'decision');assert.equal(vm.actionUnavailable,false)})
+ })
+
+
+ test('读取邀约资格期间修改用途和内容，结果合并到当前表单且保留新文本',async()=>{
+  storage.clear();await render('/notices/submissions',null,async vm=>{
+   vm.operationKey='invitation';vm.draft.rule_id=id(5);vm.draft.submission.source_listing_id=id(6)
+   let release;globalThis.fetch=()=>new Promise(resolve=>release=resolve);const reading=vm.readInvitationContext()
+   vm.draft={...vm.draft,submission:{...vm.draft.submission,purpose:'等待期间填写的新用途',content:'等待期间填写的新合作内容'}}
+   release(response({rule_id:id(5),listing_id:id(6),person_id:id(7),avatar_id:id(8),consent_id:id(9),target_party_id:id(10),display_name:'合成公开艺人'}));await reading
+   assert.equal(vm.draft.submission.purpose,'等待期间填写的新用途');assert.equal(vm.draft.submission.content,'等待期间填写的新合作内容');assert.equal(vm.draft.submission.person_id,id(7));assert.equal(vm.draft.submission.consent_id,id(9));assert.equal(vm.invitationContext.listing_id,id(6))
+  })
+ })
+
+
+ test('本人主动投稿可不挂通告，从本人当前可读合作授权带入接收方和数字人',async()=>{
+  storage.clear();await render('/notices/submissions',null,async vm=>{
+   vm.operationKey='submission';vm.draft.submission.person_id=id(3);vm.draft.rule_id=id(5);vm.draft.submission.kind='PROFILE';vm.draft.submission.purpose='本人合作用途';vm.draft.submission.content='本人主动投递内容'
+   const fields=vm.actionFields.find(f=>f.key==='submission').fields;assert(!fields.find(f=>f.key==='target_party_id').readonly);assert(!fields.find(f=>f.key==='avatar_id').readonly)
+   const consent={id:id(7),kind:'CONSENT',person_id:id(3),avatar_id:id(6),object_version:1,current_status:'APPROVED',data:{grantee_party_id:id(8),purposes:['COOPERATION_SUBMISSION'],valid_from:at,valid_until:until}}
+   let url='';globalThis.fetch=async path=>{url=String(path);return response({items:[consent],next_cursor:null})};await vm.loadChoices({field:model.id('consent_id','投稿授权'),context:vm.draft.submission,key:'submission-submission-consent_id'});assert(url.includes('/artists/people/'+id(3)+'/records?kind=CONSENT'));assert.equal(vm.refOptions['submission-submission-consent_id'][0].value,id(7))
+   vm.selectedReference({field:model.id('consent_id','投稿授权'),record:consent});const payload=model.encode(vm.actionFields,vm.draft);assert.equal(payload.submission.notice_id,null);assert.equal(payload.submission.target_party_id,id(8));assert.equal(payload.submission.avatar_id,id(6));assert.equal(payload.submission.consent_id,id(7))
+   vm.draft.submission.notice_id=id(4);const scoped=vm.actionFields.find(f=>f.key==='submission').fields;assert.equal(scoped.find(f=>f.key==='target_party_id').readonly,true);assert.equal(scoped.find(f=>f.key==='avatar_id').readonly,true);assert.equal(vm.draft.submission.consent_id,'')
+  })
+ })
+
+
+ test('选择人物只清本行依赖选项，保留本人友好名、规则和其他人物行',async()=>{
+  storage.clear();let snapshot
+  await render('/notices/submissions',null,async(vm,session)=>{
+   vm.operationKey='submission';const person={id:id(3),display_name:'本人友好名称',current_status:'ACTIVE'},personKey='submission-submission-person_id'
+   vm.refOptions={[personKey]:[{value:id(3),label:'本人友好名称',record:person}], 'submission-rule_id':[{value:id(5),label:'已读取规则',record:{id:id(5)}}], 'submission-submission-avatar_id':[{value:id(6),label:'旧数字人',record:{id:id(6)}}], 'submission-submission-consent_id':[{value:id(7),label:'旧授权',record:{id:id(7)}}], 'other-person-avatar_id':[{value:id(8),label:'另一人物数字人',record:{id:id(8)}}]}
+   vm.refCursor={[personKey]:id(20),'submission-rule_id':id(21),'submission-submission-consent_id':id(22)};vm.referenceSources={[personKey]:'/artists/people','submission-rule_id':'/notices/rules','submission-submission-consent_id':'old-person'}
+   vm.draft.submission.person_id=id(3);vm.selectedReference({field:model.id('person_id','本人'),record:person,key:personKey})
+   assert.equal(vm.refOptions[personKey][0].label,'本人友好名称');assert.equal(vm.refCursor[personKey],id(20));assert.equal(vm.referenceSources[personKey],'/artists/people');assert.equal(vm.refOptions['submission-rule_id'][0].label,'已读取规则');assert.equal(vm.refOptions['other-person-avatar_id'][0].label,'另一人物数字人');assert.equal(vm.refOptions['submission-submission-avatar_id'],undefined);assert.equal(vm.refOptions['submission-submission-consent_id'],undefined);assert.equal(vm.refCursor['submission-submission-consent_id'],undefined)
+   snapshot={value:{person_id:id(3)},options:JSON.parse(JSON.stringify(vm.refOptions))};session.selectedId=id(99);assert.deepEqual(vm.refOptions,{})
+  })
+  const {default:Fields}=await server.ssrLoadModule('/src/components/business/BusinessFields.vue'),html=await renderToString(createSSRApp({render:()=>h(Fields,{fields:[model.id('person_id','本人')],modelValue:snapshot.value,prefix:'submission-submission',references:snapshot.options})}));assert(html.includes('本人友好名称'));assert(!html.includes('当前关联编号，仍需读取核对'));assert(!html.includes('原记录已关联'))
+ })
+ test('投稿匹配上下文为只读绑定提供已核对标签，变更来源仅清依赖标签',async()=>{
+  storage.clear();let snapshot
+  await render('/notices/submissions',null,async vm=>{
+   vm.operationKey='submission';vm.draft.submission.person_id=id(3);vm.draft.submission.notice_id=id(4)
+   vm.refOptions={'submission-submission-person_id':[{value:id(3),label:'已读取本人姓名',record:{id:id(3)}}],'submission-rule_id':[{value:id(5),label:'已读取规则一',record:{id:id(5)}},{value:id(9),label:'已读取规则二',record:{id:id(9)}}]};vm.referenceSources={'submission-rule_id':'/notices/rules'}
+   const option={person_id:id(3),notice_id:id(4),rule_id:id(5),avatar_id:id(6),consent_id:id(7),target_party_id:id(8)};vm.selectedReference({field:model.id('consent_id','授权'),record:option,key:'submission-submission-consent_id'})
+   assert.equal(vm.refOptions['submission-submission-avatar_id'][0].label,'本次获准投稿的数字人');assert.equal(vm.refOptions['submission-submission-target_party_id'][0].label,'本通告接收方（本次授权已核对）');assert.equal(vm.refOptions['submission-rule_id'].length,2);assert.equal(vm.referenceSources['submission-rule_id'],'/notices/rules')
+   snapshot={value:JSON.parse(JSON.stringify(vm.draft.submission)),options:JSON.parse(JSON.stringify(vm.refOptions))};vm.draft.submission.notice_id=id(10);assert.equal(vm.refOptions['submission-submission-avatar_id'],undefined);assert.equal(vm.refOptions['submission-submission-target_party_id'],undefined);assert.equal(vm.refOptions['submission-submission-person_id'][0].label,'已读取本人姓名');assert.equal(vm.refOptions['submission-rule_id'].length,2)
+  })
+  const {default:Fields}=await server.ssrLoadModule('/src/components/business/BusinessFields.vue'),html=await renderToString(createSSRApp({render:()=>h(Fields,{fields:[{...model.id('avatar_id','数字人'),readonly:true},{...model.id('target_party_id','接收方'),readonly:true}],modelValue:snapshot.value,prefix:'submission-submission',references:snapshot.options})}));assert(html.includes('本次获准投稿的数字人'));assert(html.includes('本通告接收方（本次授权已核对）'));assert(!html.includes('当前关联编号，仍需读取核对'));assert(!html.includes('原记录已关联'))
+ })
+ test('邀约上下文绑定有明确标签，换规则或读取失败清绑定但不清公开来源与规则选项',async()=>{
+  storage.clear();await render('/notices/submissions',null,async vm=>{
+   vm.operationKey='invitation';vm.draft.rule_id=id(5);vm.draft.submission.source_listing_id=id(6)
+   vm.refOptions={'invitation-rule_id':[{value:id(5),label:'规则一',record:{id:id(5)}},{value:id(12),label:'规则二',record:{id:id(12)}}],'invitation-submission-source_listing_id':[{value:id(6),label:'公开艺人甲',record:{listing_id:id(6)}},{value:id(11),label:'公开艺人乙',record:{listing_id:id(11)}}]}
+   globalThis.fetch=async()=>response({rule_id:id(5),listing_id:id(6),person_id:id(7),avatar_id:id(8),consent_id:id(9),target_party_id:id(10),display_name:'公开艺人甲'});await vm.readInvitationContext()
+   assert(vm.refOptions['invitation-submission-person_id'][0].label.includes('公开艺人甲'));assert.equal(vm.refOptions['invitation-submission-avatar_id'][0].label,'本次公开展示对应的数字人');assert.equal(vm.refOptions['invitation-submission-target_party_id'][0].label,'本次邀约的艺人接收方');assert.equal(vm.refOptions['invitation-submission-source_listing_id'].length,2)
+   vm.draft.rule_id=id(12);assert.equal(vm.refOptions['invitation-submission-person_id'],undefined);assert.equal(vm.refOptions['invitation-submission-avatar_id'],undefined);assert.equal(vm.refOptions['invitation-submission-source_listing_id'].length,2);assert.equal(vm.refOptions['invitation-rule_id'].length,2)
+   globalThis.fetch=async()=>failure(409,'NOTICE_ARTIST_NOT_PUBLIC');await vm.readInvitationContext();assert.equal(vm.invitationContext,null);assert.equal(vm.refOptions['invitation-submission-consent_id'],undefined);assert.equal(vm.refOptions['invitation-submission-source_listing_id'][0].label,'公开艺人甲')
+  })
+ })
+
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} business checks passed.`)
 }finally{globalThis.fetch=savedFetch;if(storageDescriptor)Object.defineProperty(globalThis,'sessionStorage',storageDescriptor);else delete globalThis.sessionStorage;await server.close()}

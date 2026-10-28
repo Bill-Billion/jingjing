@@ -26,11 +26,45 @@ class AuditionsPage extends StatelessWidget {
   final String? id, action, invitationId;
   final bool embedded;
   final String initialCity;
+
+  String get returnRoute {
+    final query = {
+      if (['book', 'offer'].contains(mode) && v5Id(id)) 'offerId': id!,
+      if (['booking', 'messages', 'action'].contains(mode) && v5Id(id))
+        'bookingId': id!,
+      if (['catalog', 'book'].contains(mode) && v5Id(invitationId))
+        'invitationId': invitationId!,
+      if (mode == 'catalog' && initialCity.trim().isNotEmpty)
+        'city': initialCity.trim(),
+      if (mode == 'action' &&
+          const [
+            'decision',
+            'travel',
+            'delivery',
+            'cancel',
+            'reschedule',
+            'reschedule-response',
+            'contact',
+            'support',
+            'supplements',
+            'baseplate'
+          ].contains(action))
+        'action': action!,
+    };
+    return Uri(
+            path: '/auditions/$mode',
+            queryParameters: query.isEmpty ? null : query)
+        .toString();
+  }
+
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'auditions',
       embedded: embedded,
-      route: '/auditions/$mode',
+      route: returnRoute,
+      stateKey: embedded && mode == 'catalog'
+          ? '/auditions/catalog:${invitationId ?? ''}'
+          : null,
       account: mode == 'catalog',
       builder: (s) => mode == 'action'
           ? AuditionActionPage(session: s, id: id ?? '', action: action ?? '')
@@ -84,13 +118,25 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   AuditionRecord? record;
   Map<String, dynamic>? contacts, itinerary;
   String? cursor, messageCursor, error, notice;
-  bool busy = false;
+  bool busy = false, followsGlobalCity = true;
   int ticket = 0, messageForm = 0;
   @override
   void initState() {
     super.initState();
     city.text = widget.initialCity;
     load();
+  }
+
+  @override
+  void didUpdateWidget(covariant _AuditionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        widget.invitationId == null &&
+        oldWidget.initialCity != widget.initialCity &&
+        followsGlobalCity) {
+      city.text = widget.initialCity;
+      load();
+    }
   }
 
   @override
@@ -145,6 +191,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
               cursor: more ? cursor : null,
               city: city.text.trim(),
               invitationId: widget.invitationId);
+          if (!mounted || t != ticket) return;
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'book':
@@ -300,8 +347,28 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             if (widget.invitationId == null) ...[
               TextField(
                   controller: city,
+                  onChanged: (_) => setState(() => followsGlobalCity = false),
                   decoration: const InputDecoration(labelText: '城市筛选')),
-              tradeButton('按城市查找', busy ? null : () => load(), outline: true)
+              tradeButton('按城市查找', busy ? null : () => load(), outline: true),
+              if (widget.embedded) ...[
+                Text(
+                    followsGlobalCity
+                        ? '城市随广场更新；在这里修改仅筛选试镜。'
+                        : '当前使用本页城市，广场换城不会覆盖。',
+                    style: const TextStyle(
+                        fontSize: 12, color: AccountTheme.muted)),
+                if (!followsGlobalCity)
+                  tradeButton(
+                      '使用广场城市${widget.initialCity.isEmpty ? '（全部）' : '：${widget.initialCity}'}',
+                      busy
+                          ? null
+                          : () {
+                              followsGlobalCity = true;
+                              city.text = widget.initialCity;
+                              load();
+                            },
+                      outline: true),
+              ],
             ],
             for (final x in offers)
               Container(

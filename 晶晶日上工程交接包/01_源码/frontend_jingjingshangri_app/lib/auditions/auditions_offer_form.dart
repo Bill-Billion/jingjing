@@ -20,10 +20,11 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
   late final api = AuditionsApi(widget.session),
       artists = ArtistsApi(widget.session);
   final people = <ArtistPerson>[],
-      existing = <AuditionRecord>[],
       rules = <String, String>{},
       contexts = <String, Map<String, dynamic>>{},
       contextNames = <String, String>{};
+  GlobalKey<V5FormState> formKey = GlobalKey<V5FormState>();
+  final personSelector = GlobalKey<FormFieldState<String>>();
   ArtistDetail? detail;
   String? personId, error;
   bool busy = false, permitted = false;
@@ -43,6 +44,8 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
       if (!widget.session.isOwner) {
         throw const AccountError(403, 'AUDITION_OFFER_OWNER_CONTEXT_REQUIRED');
       }
+      people.clear();
+      rules.clear();
       String? cursor;
       final seen = <String>{};
       do {
@@ -51,18 +54,8 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
         cursor = r.cursor;
         if (cursor != null) v5Require(seen.add(cursor));
       } while (cursor != null);
-      cursor = null;
-      seen.clear();
-      do {
-        final r = await api.records('OFFER', cursor: cursor);
-        existing.addAll(r.items);
-        cursor = r.cursor;
-        if (cursor != null) v5Require(seen.add(cursor));
-      } while (cursor != null);
-      for (final r in existing) {
-        rules[r.data['offer']['rule_id']] =
-            '原试镜已审规则 · ${r.data['rules']['version']}';
-      }
+      // An old offer is not evidence that its rule is eligible for a new one.
+      // Keep only the original pending request's rule for idempotent recovery.
       final op = api.pending('/offers');
       if (op != null) {
         personId = op['body']['offer']['person_id'];
@@ -81,15 +74,16 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
     final d = await artists.person(id), actions = await artists.actions(d);
     contexts.clear();
     contextNames.clear();
-    for (final r in existing.where((r) => r.data['offer']['person_id'] == id)) {
-      final o = v5Map(r.data['offer']),
+    final pendingOffer = api.pending('/offers')?['body']?['offer'];
+    if (pendingOffer is Map && pendingOffer['person_id'] == id) {
+      final o = v5Map(pendingOffer),
           key = contextKey(o['avatar_id'], o['public_consent_id']);
       contexts[key] = {
         'avatar_id': o['avatar_id'],
         'public_consent_id': o['public_consent_id']
       };
       contextNames[key] =
-          '${d.avatars.where((a) => a.id == o['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 本人原已提供公开展示引用';
+          '${d.avatars.where((a) => a.id == o['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 原请求授权（待核对）';
     }
     if (d.person.owner == api.owner()) {
       for (final c in (await artists.allRecords(id, 'CONSENT')).where((c) =>
@@ -108,11 +102,20 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
   }
 
   Future<void> choose(String id) async {
+    if (id == personId) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      personSelector.currentState?.didChange(personId);
+      return;
+    }
     setState(() {
       busy = true;
       error = null;
       personId = id;
       detail = null;
+      formKey = GlobalKey<V5FormState>();
     });
     try {
       await person(id);
@@ -140,7 +143,14 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
                   : '/auditions/bookings')),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
+      if (!busy && (error != null || people.isEmpty)) ...[
+        if (error == null) appNotice('当前身份暂无可办理的真人档案。先完善本人资料，或切换到获准经营该人物的身份。'),
+        tradeButton('重新读取本人资格', load, outline: true),
+        tradeButton('查看人物与授权', () => Navigator.pushNamed(context, '/artists'),
+            outline: true),
+      ],
       DropdownButtonFormField<String>(
+          key: personSelector,
           initialValue: personId,
           isExpanded: true,
           decoration: const InputDecoration(labelText: '选择具体真人'),
@@ -155,23 +165,22 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
         if (!permitted || d.halo < 2) appNotice('本方案需要有效 L2、成年资格和本人的明确试镜经营授权。'),
         if (rules.isEmpty)
           appNotice(
-              '暂不能完成首次方案发布：平台尚未提供可选择的有效试镜经营规则。保留业务填写，需平台补齐规则上下文，不能手填技术编号。'),
+              '当前试镜经营规则待开放。可以先填写本页方案；离开前会提醒未提交内容。平台开放本人可用规则后再提交，旧试镜规则不能用于新方案。'),
         if (contexts.isEmpty)
           appNotice('尚无本人可读或已明确提供的公开展示授权上下文，请先办理本人同意；机构不读取私人同意原件。'),
         V5Form(
-            key: ValueKey(personId),
+            key: formKey,
             api: api,
             title: '本人的完整试镜约定',
             action: '提交本版试镜方案独立审核',
             suffix: '/offers',
-            canSubmit: permitted &&
-                d.halo >= 2 &&
-                rules.isNotEmpty &&
-                contexts.isNotEmpty,
+            // A pending offer may be recovered, but its rule must never be
+            // reused for a new request after a definitive rejection.
+            canSubmit: false,
             fields: [
               const V5Field('title', '方案名称'),
               V5Field('context', '具体数字人与已审公开同意', choices: contextNames),
-              V5Field('rule_id', '原可读的已审试镜规则', choices: rules),
+              V5Field('rule_id', '本次有效试镜规则（待开放）', choices: rules),
               const V5Field('city', '所在城市'),
               const V5Field('service_area', '明确服务范围'),
               const V5Field('mode', '试镜形式',

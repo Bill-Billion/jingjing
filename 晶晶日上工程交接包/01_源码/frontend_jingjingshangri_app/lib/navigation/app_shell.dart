@@ -6,6 +6,7 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../auditions/auditions_pages.dart';
 import '../notices/notices_pages.dart';
+import '../operations/notification_preview.dart';
 import '../plaza/plaza_pages.dart';
 import '../widgets/editorial_icons.dart';
 import 'package:flutter/services.dart';
@@ -259,6 +260,7 @@ class _AppShellState extends State<AppShell> {
         '业务与作品',
         '订单 · 出品参演 · 已购作品',
         [
+          ('合同、作品与收入目录', '/library'),
           ('我的故事与草稿', '/customization'),
           ('发起制作需求', '/customization/new'),
           ('订单与付款', '/orders'),
@@ -268,7 +270,7 @@ class _AppShellState extends State<AppShell> {
           ('我购买的现成视频', '/stock/purchases'),
           ('参演条款与会签', '/projects/participation'),
           ('独立发行收入约定', '/projects/income'),
-          ('合同与原约定', '/contract'),
+          ('合同与原约定', '/library?section=contracts'),
         ]
       ),
       (
@@ -433,9 +435,14 @@ class _AppShellState extends State<AppShell> {
           if (_messageChannel == 2)
             _entry('活动、投票与异议', '按城市和原规则查看已公示活动；未读总数仍由各原业务分别核对。',
                 Icons.how_to_vote_outlined, () => _open('/engagement')),
-          if (_messageChannel == 3)
+          if (_messageChannel == 3) ...[
+            NotificationPreview(
+                session: session,
+                key: ValueKey(
+                    'notification-preview:${session.epoch}:${session.partyId}')),
             _entry('系统与业务通知', '查看当前账号和身份获准的通知。', Icons.notifications_outlined,
                 () => _open('/operations/notifications')),
+          ],
           const SizedBox(height: 28),
           const Text('订单沟通、投稿意向、活动投票与系统提醒，按原业务分别查看。',
               style: TextStyle(

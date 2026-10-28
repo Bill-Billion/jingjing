@@ -5,7 +5,7 @@ export type PartyMode = 'required' | 'optional' | 'none'
 export interface Field {
   key: string; label: string; type?: 'text'|'textarea'|'id'|'hash'|'integer'|'money'|'datetime'|'select'|'values'|'boolean'|'group'|'list'|'ids'|'numbers'|'lines'
   choices?: readonly (string | readonly [string,string])[]; fields?: Field[]; nullable?: boolean; optional?: boolean
-  fixed?: unknown; min?: number; max?: number; length?: number; hint?: string; agree?: boolean
+  fixed?: unknown; min?: number; max?: number; length?: number; hint?: string; agree?: boolean; readonly?: boolean
   visible?: (root: Record<string,unknown>) => boolean; inactive?:unknown
 }
 export interface Operation { key:string; label:string; path:string; fields:Field[]; party:PartyMode; match?:boolean; method?:'POST'|'PATCH'; note?:string; sections?:string[] }
@@ -35,10 +35,16 @@ export const checks=(names:readonly (readonly [string,string])[],key='verificati
 export const operation=(key:string,label:string,path:string,fields:Field[],party:PartyMode='required',match=false,sections?:string[]):Operation=>({key,label,path,fields,party,match,sections})
 export const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(v)
 export function initial(fields:Field[]):Record<string,unknown>{return Object.fromEntries(fields.map(f=>[f.key,f.fixed!==undefined?structuredClone(f.fixed):f.type==='group'?(f.nullable?null:initial(f.fields||[])):['list','values'].includes(f.type||'')?[]:f.type==='boolean'?false:'']))}
-function invalid(f:Field):never{throw new ApiError({status:400,code:'BUSINESS_FORM_INVALID',message:`请核对“${f.label}”。${f.hint||''}`})}
-export function encode(fields:Field[],value:Record<string,unknown>,root=value):Record<string,unknown>{const result:Record<string,unknown>={};for(const f of fields){if(f.visible&&!f.visible(root)){if('inactive'in f)result[f.key]=f.inactive;continue}const v=value[f.key];if(f.fixed!==undefined){result[f.key]=structuredClone(f.fixed);continue}if((v===undefined||v===null||v==='')&&f.optional)continue;if((v===undefined||v===null||v==='')&&f.nullable){result[f.key]=null;continue}
-  switch(f.type){case 'group':if(!v||typeof v!=='object'||Array.isArray(v))invalid(f);result[f.key]=encode(f.fields||[],v as Record<string,unknown>,root);break;
-  case 'list':if(!Array.isArray(v)||v.length<(f.min??1)||v.length>(f.max??20))invalid(f);result[f.key]=v.map(row=>{if(!row||typeof row!=='object'||Array.isArray(row))invalid(f);return encode(f.fields||[],row as Record<string,unknown>,root)});break;
+export class BusinessFormError extends ApiError {
+  readonly fieldPath: string[]
+  constructor(field: Field, path: string[]) {
+    super({ status: 400, code: 'BUSINESS_FORM_INVALID', message: `请核对“${field.label}”。${field.hint || ''}` })
+    this.fieldPath = path
+  }
+}
+export function encode(fields:Field[],value:Record<string,unknown>,root=value,path:string[]=[]):Record<string,unknown>{const result:Record<string,unknown>={};for(const f of fields){const fieldPath=[...path,f.key];const invalid=(_field:Field):never=>{throw new BusinessFormError(f,fieldPath)};if(f.visible&&!f.visible(root)){if('inactive'in f)result[f.key]=f.inactive;continue}const v=value[f.key];if(f.fixed!==undefined){result[f.key]=structuredClone(f.fixed);continue}if((v===undefined||v===null||v==='')&&f.optional)continue;if((v===undefined||v===null||v==='')&&f.nullable){result[f.key]=null;continue}
+  switch(f.type){case 'group':if(!v||typeof v!=='object'||Array.isArray(v))invalid(f);result[f.key]=encode(f.fields||[],v as Record<string,unknown>,root,fieldPath);break;
+  case 'list':if(!Array.isArray(v)||v.length<(f.min??1)||v.length>(f.max??20))invalid(f);result[f.key]=(v as unknown[]).map((row,index)=>{if(!row||typeof row!=='object'||Array.isArray(row))invalid(f);return encode(f.fields||[],row as Record<string,unknown>,root,[...fieldPath,String(index)])});break;
   case 'boolean':if(typeof v!=='boolean'||f.agree&&!v&&!['REJECT','REJECTED'].includes(String(root.decision)))invalid(f);result[f.key]=v;break;
   case 'values':if(!Array.isArray(v)||!v.length||v.some(x=>!f.choices?.some(c=>(typeof c==='string'?c:c[0])===x)))invalid(f);result[f.key]=v;break;
   case 'money':{const n=yuanInput(String(v??''),f.min===0||f.min===undefined?0:1);if(n===null||n<(f.min??0))invalid(f);result[f.key]=n;break}

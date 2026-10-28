@@ -24,7 +24,10 @@ class StockListingForm extends StatefulWidget {
 class _StockListingFormState extends State<StockListingForm> {
   late final api = StockApi(widget.session),
       artists = ArtistsApi(widget.session);
-  final people = <ArtistPerson>[], existing = <StockListing>[];
+  final people = <ArtistPerson>[];
+  GlobalKey<V5FormState> formKey = GlobalKey<V5FormState>();
+  final personSelector = GlobalKey<FormFieldState<String>>();
+  final countSelector = GlobalKey<FormFieldState<int>>();
   final specs = <String, String>{},
       rules = <String, String>{},
       participants = <String, Map<String, dynamic>>{},
@@ -45,6 +48,9 @@ class _StockListingFormState extends State<StockListingForm> {
       error = null;
     });
     try {
+      people.clear();
+      specs.clear();
+      rules.clear();
       String? cursor;
       final seen = <String>{};
       do {
@@ -58,24 +64,8 @@ class _StockListingFormState extends State<StockListingForm> {
           r.data['product_profile']?['type'] == 'STOCK_VIDEO')) {
         specs[r.id] = '${r.data['title']} · ${v5Money(r.data['unit_minor'])}';
       }
-      cursor = null;
-      seen.clear();
-      do {
-        final r = await api.listings(cursor: cursor);
-        existing.addAll(r.items);
-        cursor = r.cursor;
-        if (cursor != null) v5Require(seen.add(cursor));
-      } while (cursor != null);
-      for (final r in existing) {
-        rules[r.data['rule_id']] =
-            '原上架销售规则 · ${r.data['rule_snapshot']['content']['version']}';
-        for (final raw in r.data['participants']) {
-          final c = v5Map(raw), key = _participantKey(c);
-          participants[key] = c;
-          participantNames[key] =
-              '${people.where((p) => p.id == c['person_id']).map((p) => p.name).firstOrNull ?? '原作品出镜人'} · 原作品已授权引用';
-        }
-      }
+      // Historical snapshots only authorize the original request. New supply
+      // needs an eligible-rule directory; the current contract has none.
       final op = api.pending('/listings');
       if (op != null) {
         final b = v5Map(op['body']);
@@ -103,6 +93,10 @@ class _StockListingFormState extends State<StockListingForm> {
   Future<void> _person(String id) async {
     final d = await artists.person(id);
     final actions = await artists.actions(d);
+    if (api.pending('/listings') == null) {
+      participants.clear();
+      participantNames.clear();
+    }
     if (d.person.owner == api.owner()) {
       final consent = await artists.allRecords(id, 'CONSENT');
       for (final c in consent.where((c) =>
@@ -129,11 +123,21 @@ class _StockListingFormState extends State<StockListingForm> {
   }
 
   Future<void> choose(String id) async {
+    if (id == personId) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      personSelector.currentState?.didChange(personId);
+      return;
+    }
     setState(() {
       busy = true;
       error = null;
       personId = id;
       person = null;
+      count = null;
+      formKey = GlobalKey<V5FormState>();
     });
     try {
       await _person(id);
@@ -143,6 +147,21 @@ class _StockListingFormState extends State<StockListingForm> {
     } finally {
       if (mounted) setState(() => busy = false);
     }
+  }
+
+  Future<void> chooseCount(int? value) async {
+    if (value == count) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      countSelector.currentState?.didChange(count);
+      return;
+    }
+    setState(() {
+      count = value;
+      formKey = GlobalKey<V5FormState>();
+    });
   }
 
   Map<String, dynamic> restore(Map<String, dynamic> b) => {
@@ -167,10 +186,17 @@ class _StockListingFormState extends State<StockListingForm> {
                   : r['order_id'] != null
                       ? '/stock/purchase?orderId=${r['order_id']}'
                       : '/stock/listing?listingId=${r['id']}')),
-      appNotice('选择本人可读的已发布商品规格、原规则及逐人授权。App不生成水印或冒认审核，机构批量经营走网页。'),
+      appNotice('按真人资格、商品与规则、逐人授权、作品文件依次准备。每次新上架都须核对当前有效规则，历史作品不代表本次已获准。'),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
+      if (!busy && (error != null || people.isEmpty)) ...[
+        if (error == null) appNotice('当前身份还没有可办理的真人档案。先完善本人资料，或切换到获准经营该人物的身份。'),
+        tradeButton('重新读取本人资格与商品', load, outline: true),
+        tradeButton('查看人物与授权', () => Navigator.pushNamed(context, '/artists'),
+            outline: true),
+      ],
       DropdownButtonFormField<String>(
+          key: personSelector,
           initialValue: personId,
           isExpanded: true,
           decoration: const InputDecoration(labelText: '卖方具体真人'),
@@ -185,6 +211,7 @@ class _StockListingFormState extends State<StockListingForm> {
         if (!permitted || d.halo < 1)
           appNotice('须有本人的有效 L1 和明确上架委托，不要求先购买 L2。'),
         DropdownButtonFormField<int>(
+            key: countSelector,
             initialValue: count,
             isExpanded: true,
             decoration: const InputDecoration(labelText: '本作品可识别出镜人数'),
@@ -193,29 +220,25 @@ class _StockListingFormState extends State<StockListingForm> {
                 DropdownMenuItem(
                     value: i, child: Text(i == 0 ? '无可识别人物' : '$i 位（逐人选择已审授权）'))
             ],
-            onChanged: api.pending('/listings') != null
-                ? null
-                : (v) => setState(() => count = v)),
+            onChanged: api.pending('/listings') != null ? null : chooseCount),
         if (rules.isEmpty)
           appNotice(
-              '暂不能完成首次上架：平台尚未提供可选择的有效销售规则目录。已填业务内容可保留，需平台补齐规则引用；不要求手填技术编号。'),
+              '当前销售规则待开放。可以先填写本页材料；离开前会提醒未提交内容。平台开放本人可用规则后再提交，旧作品规则不能用于新上架。'),
         if (specs.isEmpty) appNotice('当前没有已发布现货规格，请先在网页完成商品与价格的独立审核。'),
         if (count != null)
           V5Form(
-              key: ValueKey('$personId:$count'),
+              key: formKey,
               api: api,
               title: '本版上架材料',
               action: '提交内容与权利双审核',
               suffix: '/listings',
-              canSubmit: permitted &&
-                  d.halo >= 1 &&
-                  rules.isNotEmpty &&
-                  specs.isNotEmpty &&
-                  (count == 0 || participants.isNotEmpty),
+              // Original uncertain writes remain recoverable through V5Form.
+              // New writes await the eligible-rule selection contract.
+              canSubmit: false,
               restore: restore,
               fields: [
                 V5Field('spec_id', '已发布现货规格与价格', choices: specs),
-                V5Field('rule_id', '本人原作品可读的销售规则', choices: rules),
+                V5Field('rule_id', '本次有效销售规则（待开放）', choices: rules),
                 const V5Field('city', '城市'),
                 const V5Field('description', '作品内容与范围', type: 'multiline'),
                 for (var i = 0; i < count!; i++)

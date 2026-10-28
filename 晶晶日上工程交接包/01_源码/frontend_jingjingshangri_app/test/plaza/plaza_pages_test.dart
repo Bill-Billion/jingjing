@@ -99,7 +99,7 @@ Future<void> selectChannel(WidgetTester t, int index) async {
 }
 
 void main() {
-  testWidgets('搜索按三类真实目录衔接，作品入口不限定城市', (t) async {
+  testWidgets('搜索按四类真实目录衔接，保留城市并可继续筛选', (t) async {
     final opened = <String>[];
     await t.pumpWidget(MaterialApp(
         theme: AccountTheme.plazaData,
@@ -109,12 +109,13 @@ void main() {
           return MaterialPageRoute<void>(
               builder: (_) => const Scaffold(body: Text('真实目录入口')));
         }));
-    expect(find.text('入口'), findsNWidgets(3));
+    expect(find.text('入口'), findsNWidgets(4));
     expect(find.text('公开'), findsNothing);
     for (final entry in [
       ('找艺人', '/artists/catalog?city=%E9%83%91%E5%B7%9E'),
-      ('找作品', '/stock/catalog'),
+      ('找作品', '/stock/catalog?city=%E9%83%91%E5%B7%9E'),
       ('找通告', '/notices/catalog?city=%E9%83%91%E5%B7%9E'),
+      ('找试镜', '/auditions/catalog?city=%E9%83%91%E5%B7%9E'),
     ]) {
       expect(t.getTopLeft(find.text(entry.$1)).dx, closeTo(82, .1));
       await t.tap(find.text(entry.$1));

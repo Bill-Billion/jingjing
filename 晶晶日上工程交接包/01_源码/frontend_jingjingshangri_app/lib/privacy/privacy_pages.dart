@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../trade/trade_widgets.dart';
 import '../engagement/community_support.dart';
+import '../customization/private_draft_guard.dart';
 
 const privacyTypes = {
   'QUERY': '查询本人资料',
@@ -35,6 +37,38 @@ const privacyActions = {
   'RELEASE_CONTENT': '解除一项内容限制'
 };
 
+String privacyStatus(Object? value) =>
+    const {
+      'OPEN': '待受理',
+      'RECEIVED': '已收到申请',
+      'PROCESSING': '工作人员处理中',
+      'AWAITING_REVIEW': '答复待独立复核',
+      'RESPONDED': '已有正式答复',
+      'FOLLOW_UP': '仍有后续事项',
+      'REOPENED': '异议已收到，待重新处理',
+      'PROPOSED': '处理方案待独立审核',
+      'APPROVED': '方案已审核，待本人核对确认',
+      'REJECTED': '方案未通过审核',
+      'QUEUED': '处理已登记，等待执行',
+      'EXECUTED': '本项已执行，核对下方结果',
+      'RUNNING': '正在执行',
+      'LEASED': '正在执行',
+      'RETRY_WAIT': '等待服务重试',
+      'RETRY': '等待服务重试',
+      'SUCCEEDED': '本项处理已核实',
+      'FAILED': '本项处理失败，待工作人员核对',
+      'DEAD': '本项处理失败，待工作人员核对',
+    }[value] ??
+    '状态待核对';
+
+String privacyTargetLabel(Object? action) => switch (action) {
+      'PROFILE_CORRECTION' => '本人账号的展示名称',
+      'ACCOUNT_CLOSURE' => '本人账号的登录与成员访问',
+      'FILE_ERASURE' => '一份原始素材（文件名称与保留影响待核对）',
+      'RESTRICT_CONTENT' || 'RELEASE_CONTENT' => '一项作品内容（作品名称与限制范围待核对）',
+      _ => '具体对象待核对',
+    };
+
 class PrivacyPage extends StatelessWidget {
   const PrivacyPage({super.key, this.view = 'requests', this.recordId});
   final String view;
@@ -59,10 +93,18 @@ class _Privacy extends StatefulWidget {
 }
 
 class _PrivacyState extends CommunityPageState<_Privacy> {
+  final draftGuard = GlobalKey<PrivateDraftGuardState>();
+  bool initializedDraft = false;
+  final previousCursors = <String?>[];
   @override
   AccountSession get session => widget.session;
   @override
   String get domain => 'privacy';
+  @override
+  bool get enabled =>
+      super.enabled &&
+      !checking &&
+      (widget.view != 'preferences' || loadedPreferences);
   late final details = field(), why = field(), minutes = field();
   String type = 'QUERY', copyCategory = 'PROFILE';
   final scopes = <String>{};
@@ -137,6 +179,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   @override
   Future<void> load() async {
     final t = ++ticket;
+    final hadDraft = draftGuard.currentState?.dirty ?? false;
     setState(() {
       checking = true;
       error = null;
@@ -214,6 +257,14 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           actions = a;
           nextCursor = next;
         });
+        if (!initializedDraft) {
+          initializedDraft = true;
+          if (!hadDraft) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              draftGuard.currentState?.markSaved();
+            });
+          }
+        }
       }
     } catch (e) {
       if (mounted && t == ticket) setState(() => fail(e));
@@ -255,6 +306,12 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     }
   }
 
+  @override
+  Future<void> recovered(Map<String, dynamic> value) async {
+    await super.recovered(value);
+    if (mounted) draftGuard.currentState?.markSaved();
+  }
+
   Future<List<Map<String, dynamic>>> allRows(String suffix) async {
     final rows = <Map<String, dynamic>>[], seen = <String>{};
     String? cursor;
@@ -275,6 +332,27 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     } catch (e) {
       if (mounted) setState(() => fail(e));
     }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> act(String suffix, Map<String, dynamic> body,
+      {int? version,
+      bool account = false,
+      String method = 'POST',
+      bool reload = true,
+      FutureOr<void> Function(Map<String, dynamic>)? validate}) async {
+    final out = await super.act(suffix, body,
+        version: version,
+        account: account,
+        method: method,
+        reload: reload,
+        validate: validate);
+    if (out != null && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        draftGuard.currentState?.markSaved();
+      });
+    }
+    return out;
   }
 
   Future<bool> confirm(String title, String body) async =>
@@ -309,7 +387,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         for (final r in rows)
           communitySection(
               privacyTypes[communityMap(r['request'])['type']] ?? '本人申请', [
-            communityFact('当前进展', communityState(r['current_status'])),
+            communityFact('当前进展', privacyStatus(r['current_status'])),
             communityFact('答复目标日期', r['response_due_on']),
             communityFact(
                 '日期依据',
@@ -319,12 +397,25 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             tradeButton('查看答复和实际处理', () => open('request', r['id']),
                 outline: true)
           ]),
+        if (previousCursors.isNotEmpty)
+          tradeButton(
+              '返回上一页申请',
+              enabled && !checking
+                  ? () {
+                      setState(() => cursor = previousCursors.removeLast());
+                      load();
+                    }
+                  : null,
+              outline: true),
         if (nextCursor != null)
           tradeButton(
               '读取下一页申请',
-              enabled
+              enabled && !checking
                   ? () {
-                      setState(() => cursor = nextCursor);
+                      setState(() {
+                        previousCursors.add(cursor);
+                        cursor = nextCursor;
+                      });
                       load();
                     }
                   : null,
@@ -353,7 +444,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                         v == true ? scopes.add(x.key) : scopes.remove(x.key))
                     : null)
         ]),
-        communityField(details, '具体说明', lines: 5),
+        communityField(details, '具体说明', lines: 5, enabled: enabled),
         appNotice('提交申请只表示平台收到你的诉求。删除、注销、投诉限制、返款等实际结果会分别记录，不会因此自动完成。'),
         tradeButton(
             '提交本次申请',
@@ -407,7 +498,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             enabled ? (v) => setState(() => personalization = v) : null),
         _preferenceSwitch('营销消息提醒', '营销偏好不代替必要业务记录与业务通知', marketing,
             enabled ? (v) => setState(() => marketing = v) : null),
-        communityField(minutes, '休息提醒间隔（分钟）', keyboard: TextInputType.number),
+        communityField(minutes, '休息提醒间隔（分钟）',
+            keyboard: TextInputType.number, enabled: enabled),
         const Text('0为关闭；开启时15—240分钟。'),
         tradeButton(
             '保存本次偏好',
@@ -480,7 +572,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           privacyTypes[q['type']] ?? '本人申请', '明确这一份申请涉及的资料、答复和剩余事项。'),
       menu(),
       const SizedBox(height: 20),
-      communityFact('进展', communityState(r['current_status'])),
+      communityFact('进展', privacyStatus(r['current_status'])),
       communityFact('申请范围',
           (q['scopes'] as List).map((s) => privacyScopes[s] ?? s).join('、')),
       communityFact('原申请说明', q['details']),
@@ -488,12 +580,24 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       if (r['deadline_basis'] != 'REVIEWED_CALENDAR')
         appNotice('该日期按普通工作日估算，仍需人工核对工作日历，不作为已确认的法定期限。'),
       if (result.isNotEmpty) communitySection('当前审核答复', responseFacts(result)),
+      if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']))
+        communitySection('下一步核对', [
+          const Text('先看正式答复中的保留原因，再逐项核对处理方案和实际结果。'),
+          if (executions.isEmpty)
+            appNotice('尚无具体处理方案。收到申请或审核答复不表示资料已删除。')
+          else if (executions.any((x) => x['current_status'] == 'APPROVED'))
+            appNotice('有已审核方案待确认。仅在处理对象与影响已明确展示时，才可由本人确认。')
+          else if (executions.any((x) => x['current_status'] == 'QUEUED'))
+            appNotice('已有处理进入执行队列。可以重新读取进度，服务返回结果后再核对。')
+          else
+            appNotice('各项记录分别说明当前结果；本申请整体完成仍需核对剩余资料、版本和备份。'),
+        ]),
       for (final h in history)
         ExpansionTile(
             title: Text('历史正式答复 · 版本${h['object_version']}'),
             children: responseFacts(communityMap(h['result']))),
       communitySection('提出异议或补充情况', [
-        communityField(why, '需要重新处理的原因', lines: 3),
+        communityField(why, '需要重新处理的原因', lines: 3, enabled: enabled),
         tradeButton(
             '提交本次异议',
             enabled
@@ -512,14 +616,14 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         for (final x in executions)
           communitySection(
               privacyActions[x['action']] ?? communityText(x['action']), [
-            communityFact('执行进展', communityState(x['current_status'])),
-            communityFact('处理对象', communityShort(x['target_id'])),
+            communityFact('执行进展', privacyStatus(x['current_status'])),
+            communityFact('处理对象', privacyTargetLabel(x['action'])),
             if (x['action'] == 'PROFILE_CORRECTION' &&
                 x['proposed_change'] is Map)
               communityFact(
                   '确认后将改为', communityMap(x['proposed_change'])['display_name']),
             if (x['job_status'] != null)
-              communityFact('后台任务', communityState(x['job_status'])),
+              communityFact('处理服务', privacyStatus(x['job_status'])),
             if (x['result'] != null)
               ...executionResult(communityMap(x['result'])),
             if (x['current_status'] == 'APPROVED' &&
@@ -618,7 +722,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             communitySection('本人模型 ${communityShort(x['asset_id'])}', [
               communityFact('模型进展', communityState(x['asset_status'])),
               communityFact('所用授权', communityState(x['consent_status'])),
-              communityField(why, '撤回授权的明确原因', lines: 2),
+              communityField(why, '撤回授权的明确原因', lines: 2, enabled: enabled),
               tradeButton(
                   '撤回这份本人授权',
                   enabled && x['consent_status'] != 'WITHDRAWN'
@@ -793,18 +897,26 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   }
 
   @override
-  Widget build(BuildContext context) => tradeScaffold(
-      context,
-      '隐私与个人信息',
-      [
-        ...feedback,
-        ...switch (widget.view) {
-          'new' || 'correction' || 'complaint' => newView(),
-          'preferences' => preferenceView(),
-          'request' => requestView(),
-          _ => listView()
-        },
-        tradeButton('重新读取当前记录', busy ? null : load, outline: true)
-      ],
-      locked: recovery != null);
+  Widget build(BuildContext context) => PrivateDraftGuard(
+      key: draftGuard,
+      session: session,
+      controllers: controllers,
+      value: () =>
+          [type, scopes.toList()..sort(), personalization, marketing, agreed],
+      locked: busy || recovery != null,
+      child: tradeScaffold(
+          context,
+          '隐私与个人信息',
+          [
+            ...feedback,
+            ...switch (widget.view) {
+              'new' || 'correction' || 'complaint' => newView(),
+              'preferences' => preferenceView(),
+              'request' => requestView(),
+              _ => listView()
+            },
+            tradeButton('重新读取当前记录', busy || checking ? null : load,
+                outline: true)
+          ],
+          onBack: () => draftGuard.currentState?.back()));
 }

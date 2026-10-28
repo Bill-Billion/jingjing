@@ -520,6 +520,9 @@ class _StockScreenState extends State<_StockScreen> {
                   ]),
               if (l.data['rights_hold'] == true)
                 appNotice('权利暂停会限制已购下载；恢复须重新双审。'),
+              if (l.status == 'REJECTED')
+                appNotice(
+                    '请按权利审核和内容审核的退回原因准备修改。关联原商品的新修订尚未开放，当前不能修改重提；已有记录和已售许可继续保留。'),
               if (l.status == 'UNLISTED') appNotice('普通下架停止新销售，已售许可仍按原约定核对。')
             ]),
             V5Media(

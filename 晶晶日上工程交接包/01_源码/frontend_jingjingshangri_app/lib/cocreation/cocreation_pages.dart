@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_theme.dart';
@@ -10,6 +11,7 @@ import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
 import '../customization/customization_api.dart';
 import '../customization/customization_models.dart';
+import '../customization/private_draft_guard.dart';
 import '../engagement/community_support.dart';
 import 'cocreation_cast.dart';
 
@@ -36,10 +38,15 @@ class _Cocreation extends StatefulWidget {
 }
 
 class _CocreationState extends CommunityPageState<_Cocreation> {
+  final draftGuard = GlobalKey<PrivateDraftGuardState>();
+  bool initializedDraft = false;
+  final previousCursors = <String?>[];
   @override
   AccountSession get session => widget.session;
   @override
   String get domain => 'cocreation';
+  @override
+  bool get enabled => super.enabled && !checking;
   late final title = field(),
       request = field(),
       producer = field(),
@@ -94,6 +101,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   @override
   Future<void> load() async {
     final t = ++ticket;
+    final hadDraft = draftGuard.currentState?.dirty ?? false;
     setState(() {
       checking = true;
       error = null;
@@ -112,7 +120,14 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           c = page.cursor;
           communityRequire(c == null || seen.add(c));
         } while (c != null);
-        if (mounted && t == ticket) stories = list;
+        if (mounted && t == ticket) {
+          stories = list;
+          if (!initializedDraft &&
+              widget.id != null &&
+              list.any((s) => s.id == widget.id && s.status != 'DRAFT')) {
+            request.text = widget.id!;
+          }
+        }
       } else if (widget.view == 'room' ||
           widget.view == 'join' ||
           widget.view == 'member') {
@@ -190,6 +205,14 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           ownMembers = ms;
           nextCursor = next;
         });
+        if (!initializedDraft) {
+          initializedDraft = true;
+          if (!hadDraft) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              draftGuard.currentState?.markSaved();
+            });
+          }
+        }
       }
     } catch (e) {
       if (mounted && t == ticket) setState(() => fail(e));
@@ -210,12 +233,39 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     }
   }
 
+  @override
+  Future<void> recovered(Map<String, dynamic> value) async {
+    await super.recovered(value);
+    if (mounted) draftGuard.currentState?.markSaved();
+  }
+
   Future<void> submit(Future<void> Function() work) async {
     try {
       await work();
     } catch (e) {
       if (mounted) setState(() => fail(e));
     }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> act(String suffix, Map<String, dynamic> body,
+      {int? version,
+      bool account = false,
+      String method = 'POST',
+      bool reload = true,
+      FutureOr<void> Function(Map<String, dynamic>)? validate}) async {
+    final out = await super.act(suffix, body,
+        version: version,
+        account: account,
+        method: method,
+        reload: reload,
+        validate: validate);
+    if (out != null && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        draftGuard.currentState?.markSaved();
+      });
+    }
+    return out;
   }
 
   void open(String view, [Object? id]) => Navigator.pushNamed(
@@ -300,12 +350,25 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               ],
               communityRecordId(r)
             ]),
+      if (previousCursors.isNotEmpty && kind == 'rooms')
+        tradeButton(
+            '返回上一页共创',
+            enabled && !checking
+                ? () {
+                    setState(() => cursor = previousCursors.removeLast());
+                    load();
+                  }
+                : null,
+            outline: true),
       if (nextCursor != null && kind == 'rooms')
         tradeButton(
             '读取下一页共创',
-            enabled
+            enabled && !checking
                 ? () {
-                    setState(() => cursor = nextCursor);
+                    setState(() {
+                      previousCursors.add(cursor);
+                      cursor = nextCursor;
+                    });
                     load();
                   }
                 : null,
@@ -315,7 +378,20 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
 
   List<Widget> createView() => [
         communityHeading('发起多人共创', '先有自己的故事和明确活动规则，再邀请每位参与者。'),
-        communityField(title, '共创名称'),
+        communitySection('建房前准备', [
+          communityFact(
+              '1 · 故事',
+              stories.any((s) => s.status != 'DRAFT')
+                  ? '已有本人正式提交的故事，可在下方选择'
+                  : '请先正式提交一份自己的故事'),
+          communityFact(
+              '2 · 共创规则', rules.isEmpty ? '当前暂无可用的已发布规则' : '阅读本次条款后选择'),
+          const Text('3 · 承制方：当前尚未开放获准承制方选择，建房暂不可提交。'),
+          tradeButton('查看或继续填写我的故事',
+              () => Navigator.pushNamed(context, '/customization'),
+              outline: true),
+        ]),
+        communityField(title, '共创名称', enabled: enabled),
         communitySelect(
             '本人已提交故事',
             request.text,
@@ -324,8 +400,12 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 (r.id, '${r.title} · 版本${r.version}')
             ],
             enabled ? (v) => setState(() => request.text = v ?? '') : null),
-        appNotice(
-            '发起新房间需要选择已提交故事和平台当前承制方。服务器尚未提供可安全选择的承制方目录，暂请平台协助建立；收到邀请、本人参加及已有房间办理可继续。'),
+        DropdownButtonFormField<String>(
+            isExpanded: true,
+            decoration: const InputDecoration(labelText: '本次获准承制方'),
+            hint: const Text('承制方选择待开放'),
+            items: const [],
+            onChanged: null),
         communitySelect(
             '已发布共创规则',
             selectedRule,
@@ -345,8 +425,9 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             appNotice('房间必须先于正式报价建立，后加房间不能沿用旧报价。')
           ]),
         communityDateField(context, deadline, '招募截止', enabled: enabled),
-        communityField(purpose, '拍摄用途'),
-        communityField(territory, '使用地域'),
+        communityField(purpose, '拍摄用途', enabled: enabled),
+        communityField(territory, '使用地域', enabled: enabled),
+        appNotice('本页尚未建立房间，也不会发出邀请或产生费用。已收到的邀请和已有房间仍可办理；离开本页前会提醒未提交内容。'),
         tradeButton('保存共创房间', null)
       ];
   List<Widget> roomView() {
@@ -467,7 +548,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 ('RESUME', '核对退出后恢复制作')
               ],
               enabled ? (v) => setState(() => caseKind = v!) : null),
-          communityField(why, '申请原因', lines: 3),
+          communityField(why, '申请原因', lines: 3, enabled: enabled),
           if (caseKind == 'EXTEND')
             communityDateField(context, newDeadline, '申请新的招募截止',
                 enabled: enabled),
@@ -560,7 +641,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 ? () => setState(() => casts.add(CocreationCastInput(field)))
                 : null,
             outline: true),
-      communityField(story, '我本人的私人故事', lines: 5),
+      communityField(story, '我本人的私人故事', lines: 5, enabled: enabled),
       communitySection('我本人的私有素材', [
         SupplyFiles(
             api: SupplyApi(session),
@@ -613,7 +694,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       ]),
       if (editing && member!['current_status'] == 'ACTIVE')
         communitySection('退出本次共创', [
-          communityField(why, '退出原因', lines: 3),
+          communityField(why, '退出原因', lines: 3, enabled: enabled),
           communityCheck(
               '我知道退出会停止自己的资料和旧片段继续使用，退款另按原约定处理',
               withdrawAgreed,
@@ -637,18 +718,33 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   }
 
   @override
-  Widget build(BuildContext context) => tradeScaffold(
-      context,
-      '多人共创',
-      [
-        ...feedback,
-        ...switch (widget.view) {
-          'new' => createView(),
-          'room' => roomView(),
-          'join' || 'member' => participationView(),
-          _ => listView()
-        },
-        tradeButton('重新读取当前记录', busy ? null : load, outline: true)
-      ],
-      locked: recovery != null);
+  Widget build(BuildContext context) => PrivateDraftGuard(
+      key: draftGuard,
+      session: session,
+      controllers: controllers,
+      value: () => [
+            selectedRule,
+            materials,
+            agreed,
+            sharing,
+            withdrawAgreed,
+            caseKind,
+            casts.length
+          ],
+      locked: busy || recovery != null,
+      child: tradeScaffold(
+          context,
+          '多人共创',
+          [
+            ...feedback,
+            ...switch (widget.view) {
+              'new' => createView(),
+              'room' => roomView(),
+              'join' || 'member' => participationView(),
+              _ => listView()
+            },
+            tradeButton('重新读取当前记录', busy || checking ? null : load,
+                outline: true)
+          ],
+          onBack: () => draftGuard.currentState?.back()));
 }

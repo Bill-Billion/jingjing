@@ -149,5 +149,65 @@ try{
    const router=createRouter({history:createMemoryHistory(),routes:[...artistsRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push('/artists/people');await router.isReady();let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='ArtistsView')vm=this.$.setupState}});await renderToString(app);const calls=[];globalThis.fetch=async(url,o)=>{calls.push({url,o});return response({items:[{...person(),owner_party_id:kind==='PERSON'?id(2):id(9)}],next_cursor:null})};await vm.loadPage();assert.equal(vm.ownerActive,true);assert.equal(vm.people.length,1);assert.equal(calls.length,1);assert(calls[0].url.startsWith('/api/v1/artists/people?'));assert.equal(calls[0].o.headers['X-Acting-Party'],id(2));session.parties[0].party.current_status='SUSPENDED';assert.equal(vm.ownerActive,false);session.token=null
   }
  })
+
+ test('公开详情按展示编号重新核权，错编号和额外私密字段拒绝显示',async()=>{
+  const paths=[];globalThis.fetch=async(url,options)=>{paths.push({url,options});return response(catalog(),reviewer)}
+  const value=await api.getArtistCatalogItem(reviewer,id(22));assert.equal(value.listing_id,id(22));assert.equal(paths[0].url,'/api/v1/artists/catalog/'+id(22));assert.equal(paths[0].options.headers['X-Acting-Party'],undefined)
+  globalThis.fetch=async()=>response({...catalog(),listing_id:id(23)},reviewer);await assert.rejects(api.getArtistCatalogItem(reviewer,id(22)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+  globalThis.fetch=async()=>response({...catalog(),phone:'private'},reviewer);await assert.rejects(api.getArtistCatalogItem(reviewer,id(22)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+ })
+ test('公开资料失效或切换身份后不保留旧详情和迟到响应',async()=>{
+  const {ui,context,scope}=state(true)
+  try{globalThis.fetch=async()=>response(catalog(),reviewer);await ui.loadPublicListing(id(22));assert.equal(ui.publicListing.value.listing_id,id(22))
+   globalThis.fetch=async()=>failure(404,'ARTIST_NOT_FOUND');await ui.loadPublicListing(id(22));assert.equal(ui.publicListing.value,null)
+   const delayed=defer();globalThis.fetch=()=>delayed.promise;const reading=ui.loadPublicListing(id(22));context.accountId=id(99);delayed.resolve(response(catalog(),reviewer));await reading;assert.equal(ui.publicListing.value,null)
+  }finally{scope.stop()}
+ })
+
+ test('替换目录GET可取消旧城市和旧公开详情，仍阻止未知写入期间改查',async()=>{
+  const {ui,scope}=state(true)
+  try{
+   const first=defer();globalThis.fetch=()=>first.promise
+   const oldRead=ui.loadCatalog({city:'杭州',tag:'',audition:''})
+   globalThis.fetch=async()=>response({items:[{...catalog(),city:'北京'}],next_cursor:null},reviewer)
+   await ui.loadCatalog({city:'北京',tag:'',audition:''})
+   first.resolve(response({items:[{...catalog(),city:'杭州'}],next_cursor:id(66)},reviewer));await oldRead
+   assert.equal(ui.catalog.value[0].city,'北京');assert.equal(ui.catalogCursor.value,null)
+   const oldDetail=defer();globalThis.fetch=()=>oldDetail.promise;const reading=ui.loadPublicListing(id(22))
+   globalThis.fetch=async()=>response({items:[],next_cursor:null},reviewer);await ui.loadCatalog({city:'上海',tag:'',audition:''})
+   oldDetail.resolve(response(catalog(),reviewer));await reading;assert.equal(ui.publicListing.value,null);assert.deepEqual(ui.catalog.value,[])
+   let reads=0;globalThis.fetch=async()=>{reads++;return response({items:[],next_cursor:null},reviewer)}
+   ui.pending.value={command:command(),key:'original',checked:false,state:'unknown'};await ui.loadCatalog({city:'广州',tag:'',audition:''});assert.equal(reads,0);assert.equal(ui.pending.value.key,'original')
+  }finally{scope.stop()}
+ })
+ async function renderCatalog(exercise){
+  const {useSessionStore}=await server.ssrLoadModule('/src/stores/session.ts'),pinia=createPinia(),session=useSessionStore(pinia)
+  session.token=who.token;session.account={id:id(1),display_name:'目录测试账号',current_status:'ACTIVE',object_version:1,allowed_actions:[]};session.parties=[{party:{id:id(2),kind:'PERSON',current_status:'ACTIVE',display_name:'本人',object_version:1,capabilities:[],allowed_actions:[]},membership:{id:id(80),account_id:id(1),party_id:id(2),current_status:'ACTIVE',roles:['OWNER'],object_version:1,allowed_actions:[]}}];session.selectParty(id(2))
+  const router=createRouter({history:createMemoryHistory(),routes:[...artistsRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push('/artists/catalog');await router.isReady();let vm
+  const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='ArtistsView'){vm=this.$.setupState;vm.initializing=false}},serverPrefetch(){if(this.$options.__name==='ArtistsView')return exercise(vm,session)}})
+  try{return await renderToString(app)}finally{session.token=null}
+ }
+ test('艺人真实View跟随默认城市、保留本页标签与分页，换默认不带旧游标',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts');navigation.clearBusinessLists();city.setDirectoryCity('杭州')
+  const urls=[];globalThis.fetch=async url=>{urls.push(String(url));const q=new URL(url,'https://test.invalid').searchParams;return response({items:[{...catalog(),listing_id:q.has('cursor')?id(23):id(22),city:q.get('city')||''}],next_cursor:q.has('cursor')?null:id(66)},reviewer)}
+  try{const html=await renderCatalog(async vm=>{
+   await vm.loadPage();assert.equal(vm.filters.city,'杭州');assert.equal(new URL(urls.at(-1),'https://test.invalid').searchParams.get('city'),'杭州')
+   vm.filters.tag='表演';await vm.searchCatalog();await vm.searchCatalog(true);assert.equal(vm.catalogPages,2);assert.equal(vm.catalog.length,2);assert.equal(vm.leave(),true)
+   vm.restoreCatalog();await vm.readCatalogPosition();assert.equal(vm.filters.tag,'表演');assert.equal(vm.catalogPages,2);assert.equal(vm.catalog.length,2)
+   city.setDirectoryCity('北京');vm.restoreCatalog();await vm.readCatalogPosition();assert.equal(vm.catalogPages,1);assert.equal(vm.filters.city,'北京');assert.equal(vm.filters.tag,'表演');assert(!urls.at(-1).includes('cursor='))
+   vm.filters.city='南京';await vm.searchCatalog();await vm.searchCatalog(true);city.setDirectoryCity('上海');vm.restoreCatalog();await vm.readCatalogPosition();assert.equal(vm.localCity,true);assert.equal(vm.filters.city,'南京');assert.equal(vm.catalogPages,2)
+   await vm.useDefaultCity();assert.equal(vm.filters.city,'上海');assert.equal(vm.localCity,false);assert.equal(vm.catalogPages,1);assert.equal(vm.filters.tag,'表演');assert(!urls.at(-1).includes('cursor='));assert(urls.every(url=>!new URL(url,'https://test.invalid').searchParams.has('q')))
+  });assert(html.includes('目录默认城市'));assert(html.includes('当前城市仅用于艺人目录')||html.includes('本页城市跟随目录默认城市'))}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('艺人目录未核对写入不能改变默认城市，换账号清除原目录位置与过滤',async()=>{
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts');navigation.clearBusinessLists();city.setDirectoryCity('杭州')
+  globalThis.fetch=async()=>response({items:[],next_cursor:null},reviewer)
+  try{await renderCatalog(async(vm,session)=>{
+   await vm.loadPage();vm.filters.city='本页城市';vm.filters.tag='本页标签';await vm.searchCatalog();vm.pending={command:command(),key:'original',checked:false,state:'unknown'}
+   await vm.changeDefaultCity('北京');assert.equal(city.directoryCity.value,'杭州');assert.equal(vm.filters.city,'本页城市');assert.equal(vm.pending.key,'original')
+   session.token=null;assert.equal(vm.pending,null);assert.equal(vm.filters.city,'杭州');assert.equal(vm.filters.tag,'');assert.equal(vm.localCity,false);assert.equal(vm.catalog.length,0)
+  })}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} artists checks passed.`)
 }finally{globalThis.fetch=originalFetch;if(oldStorage)Object.defineProperty(globalThis,'sessionStorage',oldStorage);else delete globalThis.sessionStorage;await server.close()}

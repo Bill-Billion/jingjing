@@ -13,8 +13,10 @@ class Responsive {
   static const double mediumMax = 840;
   static const double contentLimit = 1100; // 超大屏内容最大宽度，避免拉变形
 
-  static double widthOf(BuildContext context) => MediaQuery.sizeOf(context).width;
-  static double heightOf(BuildContext context) => MediaQuery.sizeOf(context).height;
+  static double widthOf(BuildContext context) =>
+      MediaQuery.sizeOf(context).width;
+  static double heightOf(BuildContext context) =>
+      MediaQuery.sizeOf(context).height;
 
   static ScreenSize sizeOf(BuildContext context) {
     final w = widthOf(context);
@@ -44,7 +46,8 @@ class Responsive {
   }
 
   /// 卡片宽高比随宽度微调，避免大屏卡片过高
-  static double childAspectRatio(BuildContext context, {double compact = 0.72}) {
+  static double childAspectRatio(BuildContext context,
+      {double compact = 0.72}) {
     final w = widthOf(context);
     if (w >= mediumMax) return 0.80;
     if (w >= compactMax) return 0.76;
@@ -105,7 +108,7 @@ class ContentConstraint extends StatelessWidget {
   }
 }
 
-/// 限制系统字体放大倍数，避免超大字体在小屏溢出；超出按比例收敛而非撑破布局
+/// 保留系统字体缩放曲线，并支持常用的两倍无障碍大字。
 class LimitedTextScale extends StatelessWidget {
   final Widget child;
   final double minScale;
@@ -114,15 +117,16 @@ class LimitedTextScale extends StatelessWidget {
     super.key,
     required this.child,
     this.minScale = 0.85,
-    this.maxScale = 1.15,
+    this.maxScale = 2,
   });
 
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final scale = mq.textScaler.scale(1).clamp(minScale, maxScale);
     return MediaQuery(
-      data: mq.copyWith(textScaler: TextScaler.linear(scale)),
+      data: mq.copyWith(
+          textScaler: mq.textScaler
+              .clamp(minScaleFactor: minScale, maxScaleFactor: maxScale)),
       child: child,
     );
   }
