@@ -53,6 +53,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   const p=r.payload||checked(r.payload_json,r.payload_sha256),j=r.job_id?await one(tx,'SELECT status,last_error FROM platform_jobs WHERE id=?',[r.job_id]):null;
   return {id:r.id,request_id:r.request_id,action:r.action_code,target_id:r.target_id,object_version:r.object_version,
    current_status:r.current_status,proposal_sha256:r.payload_sha256,policy_rule_id:p.policy.id,
+   proposed_change:r.action_code==='PROFILE_CORRECTION'?{display_name:p.details.display_name}:null,
    job_status:j?.status||null,result:r.result_json?checked(r.result_json,r.result_sha256):null,
    request_completion:'NOT_CONFIRMED'};
  }

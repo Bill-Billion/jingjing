@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.30.1-rc.1
+  version: 0.30.2-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -24128,6 +24128,154 @@ paths:
               - decision
               - reason
               - result_sha256
+  /api/v1/notices/submission-options:
+    get:
+      operationId: listNoticeSubmissionOptions
+      summary: Read currently authorized context; does not create consent or submission
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: person_id
+        in: query
+        required: true
+        schema: &fullpath001
+          type: string
+          format: uuid
+      - name: notice_id
+        in: query
+        required: true
+        schema: *fullpath001
+      - name: cursor
+        in: query
+        schema: *fullpath001
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeSubmissionOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/notices/invitation-context:
+    get:
+      operationId: readNoticeInvitationContext
+      summary: Read currently authorized context; does not create consent or submission
+      description: 通告与单向投稿接口；感兴趣只转客服，既有报价仍由买家确认。资格凭据须独立核验；不代表钱包或真实服务已开通。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: listing_id
+        in: query
+        required: true
+        schema: *fullpath001
+      - name: rule_id
+        in: query
+        required: true
+        schema: *fullpath001
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeInvitationContextResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/artists/catalog/{listing_id}:
+    get:
+      operationId: readPublicArtistListing
+      summary: 按城市和标签查找已获准公开的艺人
+      description: 本侧后端隔离测试；双方尚未审阅合入。儿童实际处理按用户确认关闭。机构受托不改变所有权。所有修改须提供独立请求键；列表游标是记录编号，换主体后仍重新核权。
+      tags:
+      - artists
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - name: listing_id
+        in: path
+        required: true
+        schema: *fullpath001
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistCatalogueItemResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -24358,6 +24506,103 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    NoticeSubmissionOption:
+      type: object
+      additionalProperties: false
+      properties:
+        person_id: &fullschema001
+          type: string
+          format: uuid
+        avatar_id: *fullschema001
+        consent_id: *fullschema001
+        target_party_id: *fullschema001
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+      required:
+      - person_id
+      - avatar_id
+      - consent_id
+      - target_party_id
+      - valid_from
+      - valid_until
+    NoticeSubmissionOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        notice_id: *fullschema001
+        rule_id: *fullschema001
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/NoticeSubmissionOption'
+        next_cursor:
+          anyOf:
+          - *fullschema001
+          - type: 'null'
+      required:
+      - notice_id
+      - rule_id
+      - items
+      - next_cursor
+    NoticeInvitationContext:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id: *fullschema001
+        listing_id: *fullschema001
+        person_id: *fullschema001
+        avatar_id: *fullschema001
+        consent_id: *fullschema001
+        target_party_id: *fullschema001
+        display_name:
+          type: string
+          maxLength: 120
+      required:
+      - rule_id
+      - listing_id
+      - person_id
+      - avatar_id
+      - consent_id
+      - target_party_id
+      - display_name
+    NoticeSubmissionOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/NoticeSubmissionOptions'
+      required:
+      - meta
+      - data
+    NoticeInvitationContextResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/NoticeInvitationContext'
+      required:
+      - meta
+      - data
+    ArtistCatalogueItemResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ArtistCatalogueItem'
+      required:
+      - meta
+      - data
     PrivacyConsentWithdrawalInput:
       type: object
       additionalProperties: false
@@ -34599,7 +34844,7 @@ components:
       properties:
         decision:
           type: string
-          enum: &id005
+          enum: &fullschema005
           - APPROVED
           - CHANGES_REQUESTED
           - REJECTED
@@ -34607,10 +34852,10 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
-        reviewer_account_id: &id004
+        reviewer_account_id: &fullschema004
           type: string
           pattern: ^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$
-        recorded_at: &id003
+        recorded_at: &fullschema003
           type: string
           format: date-time
           pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
@@ -34625,7 +34870,7 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
-        recorded_at: *id003
+        recorded_at: *fullschema003
     SupplyCredit:
       type: object
       additionalProperties: false
@@ -34634,16 +34879,16 @@ components:
       - role
       - evidence_asset_ids
       properties:
-        party_id: *id004
+        party_id: *fullschema004
         role:
           type: string
           enum:
           - AUTHOR
           - RIGHTS_HOLDER
           - AGENT
-        evidence_asset_ids: &id007
+        evidence_asset_ids: &fullschema007
           type: array
-          items: *id004
+          items: *fullschema004
           minItems: 1
           maxItems: 100
           uniqueItems: true
@@ -34663,9 +34908,9 @@ components:
       - content_sha256
       - evidence_ids
       properties:
-        id: *id004
-        work_id: *id004
-        revision: &id006
+        id: *fullschema004
+        work_id: *fullschema004
+        revision: &fullschema006
           type: integer
           minimum: 1
           maximum: 4294967294
@@ -34676,24 +34921,24 @@ components:
           - PROJECT_ADAPTATION
         source_version_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
         project_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
-        owner_party_id: *id004
+        owner_party_id: *fullschema004
         title:
           type: string
           minLength: 1
           maxLength: 200
-        content_asset_id: *id004
-        content_sha256: &id008
+        content_asset_id: *fullschema004
+        content_sha256: &fullschema008
           type: string
           pattern: ^[a-f0-9]{64}$
         evidence_ids:
           type: array
-          items: *id004
+          items: *fullschema004
           minItems: 0
           maxItems: 100
           uniqueItems: true
@@ -34716,8 +34961,8 @@ components:
           - CONTENT
         decision:
           type: string
-          enum: *id005
-        reviewer_account_id: *id004
+          enum: *fullschema005
+        reviewer_account_id: *fullschema004
         evidence_ref:
           type: string
           minLength: 1
@@ -34726,8 +34971,8 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
-        recorded_at: *id003
-        version_id: *id004
+        recorded_at: *fullschema003
+        version_id: *fullschema004
     SupplyWorkVersion:
       type: object
       additionalProperties: false
@@ -34741,7 +34986,7 @@ components:
       properties:
         content:
           $ref: '#/components/schemas/SupplyWorkContent'
-        object_version: *id006
+        object_version: *fullschema006
         current_status:
           type: string
           enum:
@@ -34750,7 +34995,7 @@ components:
           - WITHDRAWN
         submitted_at:
           anyOf:
-          - *id003
+          - *fullschema003
           - type: 'null'
         reviews:
           type: array
@@ -34775,8 +35020,8 @@ components:
       - terms
       - evidence_asset_ids
       properties:
-        avatar_id: *id004
-        subject_party_id: *id004
+        avatar_id: *fullschema004
+        subject_party_id: *fullschema004
         features:
           type: array
           items:
@@ -34805,13 +35050,13 @@ components:
           minItems: 1
           maxItems: 100
           uniqueItems: true
-        valid_from: *id003
-        valid_until: *id003
+        valid_from: *fullschema003
+        valid_until: *fullschema003
         terms:
           type: string
           minLength: 1
           maxLength: 8000
-        evidence_asset_ids: *id007
+        evidence_asset_ids: *fullschema007
     SupplyProfileData:
       type: object
       additionalProperties: false
@@ -34829,7 +35074,7 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
-        evidence_asset_ids: *id007
+        evidence_asset_ids: *fullschema007
         review:
           anyOf:
           - $ref: '#/components/schemas/SupplyReview'
@@ -34843,7 +35088,7 @@ components:
       properties:
         version:
           $ref: '#/components/schemas/SupplyWorkVersion'
-        credits: &id009
+        credits: &fullschema009
           type: array
           items:
             $ref: '#/components/schemas/SupplyCredit'
@@ -34861,7 +35106,7 @@ components:
           type: string
           minLength: 1
           maxLength: 120
-        material_asset_ids: *id007
+        material_asset_ids: *fullschema007
         provider_asset_ref:
           type: 'null'
     SupplyConsentData:
@@ -34900,8 +35145,8 @@ components:
       - content_sha256
       - current_status
       properties:
-        id: *id004
-        owner_party_id: *id004
+        id: *fullschema004
+        owner_party_id: *fullschema004
         purpose:
           type: string
           enum:
@@ -34925,7 +35170,7 @@ components:
           type: integer
           minimum: 1
           maximum: 8388608
-        content_sha256: *id008
+        content_sha256: *fullschema008
         current_status:
           const: READY
     SupplyRecord:
@@ -34943,16 +35188,16 @@ components:
         - object_version
         - data
         properties:
-          id: *id004
+          id: *fullschema004
           kind:
             const: PROFILE
           stream_ref:
             type: string
             minLength: 1
             maxLength: 128
-          revision: *id006
-          owner_party_id: *id004
-          created_by: *id004
+          revision: *fullschema006
+          owner_party_id: *fullschema004
+          created_by: *fullschema004
           current_status:
             type: string
             enum:
@@ -34960,7 +35205,7 @@ components:
             - APPROVED
             - CHANGES_REQUESTED
             - REJECTED
-          object_version: *id006
+          object_version: *fullschema006
           data:
             $ref: '#/components/schemas/SupplyProfileData'
       - type: object
@@ -34976,16 +35221,16 @@ components:
         - object_version
         - data
         properties:
-          id: *id004
+          id: *fullschema004
           kind:
             const: WORK_VERSION
           stream_ref:
             type: string
             minLength: 1
             maxLength: 128
-          revision: *id006
-          owner_party_id: *id004
-          created_by: *id004
+          revision: *fullschema006
+          owner_party_id: *fullschema004
+          created_by: *fullschema004
           current_status:
             type: string
             enum:
@@ -34995,7 +35240,7 @@ components:
             - CHANGES_REQUESTED
             - REJECTED
             - WITHDRAWN
-          object_version: *id006
+          object_version: *fullschema006
           data:
             $ref: '#/components/schemas/SupplyWorkData'
       - type: object
@@ -35011,21 +35256,21 @@ components:
         - object_version
         - data
         properties:
-          id: *id004
+          id: *fullschema004
           kind:
             const: AVATAR
           stream_ref:
             type: string
             minLength: 1
             maxLength: 128
-          revision: *id006
-          owner_party_id: *id004
-          created_by: *id004
+          revision: *fullschema006
+          owner_party_id: *fullschema004
+          created_by: *fullschema004
           current_status:
             type: string
             enum:
             - RECORDED
-          object_version: *id006
+          object_version: *fullschema006
           data:
             $ref: '#/components/schemas/SupplyAvatarData'
       - type: object
@@ -35041,16 +35286,16 @@ components:
         - object_version
         - data
         properties:
-          id: *id004
+          id: *fullschema004
           kind:
             const: CONSENT
           stream_ref:
             type: string
             minLength: 1
             maxLength: 128
-          revision: *id006
-          owner_party_id: *id004
-          created_by: *id004
+          revision: *fullschema006
+          owner_party_id: *fullschema004
+          created_by: *fullschema004
           current_status:
             type: string
             enum:
@@ -35059,7 +35304,7 @@ components:
             - APPROVED
             - CHANGES_REQUESTED
             - REJECTED
-          object_version: *id006
+          object_version: *fullschema006
           data:
             $ref: '#/components/schemas/SupplyConsentData'
     SupplyRecordList:
@@ -35076,7 +35321,7 @@ components:
           maxItems: 100
         next_cursor:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
     ConsentScope:
       type: object
@@ -35087,7 +35332,7 @@ components:
       - usable_for_generation
       - reason_code
       properties:
-        consent_id: *id004
+        consent_id: *fullschema004
         scope_matches:
           type: boolean
         usable_for_generation:
@@ -35158,10 +35403,10 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
-        evidence_asset_ids: *id007
+        evidence_asset_ids: *fullschema007
         previous_profile_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
     SupplyReviewRequest:
       type: object
@@ -35172,7 +35417,7 @@ components:
       properties:
         decision:
           type: string
-          enum: *id005
+          enum: *fullschema005
         reason:
           type: string
           minLength: 1
@@ -35193,11 +35438,11 @@ components:
       properties:
         work_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
         previous_version_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
         title:
           type: string
@@ -35210,15 +35455,15 @@ components:
           - PROJECT_ADAPTATION
         source_version_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
         project_id:
           anyOf:
-          - *id004
+          - *fullschema004
           - type: 'null'
-        content_asset_id: *id004
-        evidence_ids: *id007
-        credits: *id009
+        content_asset_id: *fullschema004
+        evidence_ids: *fullschema007
+        credits: *fullschema009
     SupplyWorkActionRequest:
       type: object
       additionalProperties: false
@@ -35252,7 +35497,7 @@ components:
           - CONTENT
         decision:
           type: string
-          enum: *id005
+          enum: *fullschema005
         reason:
           type: string
           minLength: 1
@@ -35268,7 +35513,7 @@ components:
           type: string
           minLength: 1
           maxLength: 120
-        material_asset_ids: *id007
+        material_asset_ids: *fullschema007
     SupplyConsentRequest:
       type: object
       additionalProperties: false
@@ -44671,7 +44916,17 @@ components:
     NoticeSubmission:
       type: object
       additionalProperties: false
+      allOf:
+      - if:
+          required: [source_listing_id]
+        then:
+          properties:
+            kind:
+              const: INVITATION
       properties:
+        source_listing_id:
+          type: string
+          format: uuid
         kind:
           enum:
           - PROFILE
@@ -45636,6 +45891,8 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           anyOf:
+          - $ref: '#/components/schemas/NoticeSubmissionOptions'
+          - $ref: '#/components/schemas/NoticeInvitationContext'
           - $ref: '#/components/schemas/NoticeRecord'
           - $ref: '#/components/schemas/NoticePublic'
           - $ref: '#/components/schemas/NoticeEligibility'
@@ -51690,6 +51947,17 @@ components:
         proposal_sha256: &seven_schemas_003
           type: string
           pattern: ^[a-f0-9]{64}$
+        proposed_change:
+          anyOf:
+          - type: 'null'
+          - type: object
+            additionalProperties: false
+            properties:
+              display_name:
+                type: string
+                minLength: 1
+                maxLength: 80
+            required: [display_name]
         policy_rule_id: *seven_schemas_001
         job_status:
           type:

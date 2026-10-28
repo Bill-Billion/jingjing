@@ -14,9 +14,9 @@ function createArtistRepository(db,{resolvePrincipal=async()=>null}={}){
  const {consentFor,archiveVersions}=require('./archive-materials');
  async function records(tx,p,kind){const [rows]=await tx.execute('SELECT * FROM artist_records WHERE person_id=? AND kind=? ORDER BY created_at,id FOR SHARE',[p.id,kind]);return rows.map(C.checked);}
 
- async function liveHalos(tx,p,at){const all=await records(tx,p,'HALO'),out=[];for(const h of all){if(h.current_status!=='APPROVED'||h.data.valid_until<=at)continue;if(h.data.service_id){try{await require('./services').fullyPaid(tx,await C.load(tx,h.data.service_id,'SERVICE'));}catch(e){if(e.code==='ARTIST_SERVICE_PAYMENT_REQUIRED')continue;throw e;}}out.push(h);}if(!out.some(h=>h.data.level===1))return [];return out;}
- async function verified(tx,p){P.adult(p,await C.now(tx));await C.activeParty(tx,p.owner_party_id);}
+ const {liveHalos,verified,listingUsable,loadPublicListing,publicDTO}=require('./public-access');
  const api={
+ async publicDetail(ctx,i){shape(i,['listing_id']);return db.withTransaction(async tx=>{await actor(tx,ctx);const {p,r}=await loadPublicListing(tx,id(i.listing_id));return publicDTO(tx,p,r);});},
  async createPerson(ctx,i){i=copy(i);shape(i,['party_id','display_name','operation_key']);label(i.display_name,120);return db.withTransaction(async tx=>{
   const a=await actor(tx,ctx),q=await C.owner(tx,a,id(i.party_id));if(q.kind!=='PERSON'||q.personal_account_id!==a.id)throw error('ARTIST_PERSONAL_CONFIRMATION_REQUIRED',403);
   return C.command(tx,a,'PERSON',q.id,i,async()=>{if(await C.one(tx,'SELECT id FROM artist_people WHERE owner_party_id=?',[q.id]))throw error('ARTIST_PERSON_EXISTS',409);
@@ -92,10 +92,6 @@ function createArtistRepository(db,{resolvePrincipal=async()=>null}={}){
   const level=P.haloLevel(await liveHalos(tx,p,at),at);if(b.level>1&&level<b.level-1)throw error('HALO_PREVIOUS_LEVEL_REQUIRED',409);
   // Higher levels cannot be sold/approved until the paid review and objective metrics are linked.
   if(b.level===1){if(b.service_id)throw error('HALO_L1_IS_FREE',409);return;}if(!b.service_id)throw error('HALO_PAID_REVIEW_REQUIRED',409);const service=await C.load(tx,b.service_id,'SERVICE');if(service.person_id!==p.id||service.data.kind!=='HALO_REVIEW'||service.data.specification.service.halo_level!==b.level||service.current_status!=='READY')throw error('HALO_PAID_REVIEW_REQUIRED',409);await require('./services').fullyPaid(tx,service);const [applications]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='HALO' FOR SHARE",[p.id]);if(applications.map(C.checked).some(h=>h.data.service_id===b.service_id&&h.current_status!=='SUBMITTED'&&h.current_status!=='NEEDS_MATERIAL'))throw error('HALO_REVIEW_SERVICE_CONSUMED',409);const [rights]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='CONSENT' AND current_status='APPROVED' FOR SHARE",[p.id]);const approved=rights.map(C.checked).filter(c=>P.active(c.data,at)&&c.data.grantee_party_id===p.owner_party_id);if(!['FACE','VOICE'].every(f=>approved.some(c=>c.data.features.includes(f))))throw error('HALO_FACE_VOICE_CONSENT_REQUIRED',409);if(b.level===3)throw error('HALO_VERIFIED_METRICS_NOT_AVAILABLE',409);
- }
- async function listingUsable(tx,p,r,at){if(r.id)await require('../privacy/restrictions').assertUnrestricted(tx,'ARTIST_LISTING',r.id);await verified(tx,p);await require('./services').hosting(tx,p,r.avatar_id,at);if(P.haloLevel(await liveHalos(tx,p,at),at)<1)throw error('HALO_REQUIRED',409);await C.avatar(tx,r.avatar_id,p);await C.assets(tx,r.data.preview_asset_ids,p.owner_party_id,['AVATAR_MATERIAL']);
-  await consentFor(tx,p,r.data.consent_id,{avatar_id:r.avatar_id,feature:'FACE',purpose:'PUBLIC_DISPLAY',grantee:p.owner_party_id},at);
-  for(const [kind,key] of [['LOOK',r.data.look_version_id],['VOICE',r.data.voice_version_id]]){if(!key)continue;const v=await C.load(tx,key,kind);if(v.person_id!==p.id||v.avatar_id!==r.avatar_id||v.current_status!=='RECORDED')throw error('ARTIST_VARIANT_NOT_USABLE',409);await consentFor(tx,p,v.data.consent_id,{avatar_id:r.avatar_id,feature:kind==='LOOK'?'FACE':'VOICE',purpose:'PRIVATE_ARCHIVE',grantee:p.owner_party_id},at);if(kind==='VOICE')await consentFor(tx,p,r.data.consent_id,{avatar_id:r.avatar_id,feature:'VOICE',purpose:'PUBLIC_DISPLAY',grantee:p.owner_party_id},at);}
  }
  return Object.freeze(api);
 }

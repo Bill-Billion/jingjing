@@ -169,9 +169,12 @@ void main() {
 
   testWidgets('公开艺人详情在身份切换后不重显旧目录快照', (t) async {
     final adapter = FakeAccountAdapter(
-        handler: (request) => request.path.endsWith('/content')
-            ? ResponseBody.fromBytes([1, 2, 3], 200)
-            : FakeAccountAdapter().defaultReply(request));
+        handler: (request) => request.path ==
+                '/api/v1/artists/catalog/${publicListing()['listing_id']}'
+            ? envelope(publicListing())
+            : request.path.endsWith('/content')
+                ? ResponseBody.fromBytes([1, 2, 3], 200)
+                : FakeAccountAdapter().defaultReply(request));
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     await host(
         t,

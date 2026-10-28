@@ -36,9 +36,12 @@ Future<void> layoutHost(WidgetTester t, AccountSession session, Widget page,
 void main() {
   testWidgets('公开详情为32px紧凑肖像并按真实城市进入有效试镜目录', (t) async {
     final adapter = FakeAccountAdapter(
-        handler: (request) => request.path.endsWith('/content')
-            ? ResponseBody.fromBytes([1, 2, 3], 200)
-            : FakeAccountAdapter().defaultReply(request));
+        handler: (request) => request.path ==
+                '/api/v1/artists/catalog/${publicListing()['listing_id']}'
+            ? envelope(publicListing())
+            : request.path.endsWith('/content')
+                ? ResponseBody.fromBytes([1, 2, 3], 200)
+                : FakeAccountAdapter().defaultReply(request));
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     String? destination;
     t.view.physicalSize = const Size(390, 844);

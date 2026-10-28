@@ -18,6 +18,8 @@ function createNoticesRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/cases/:record_id/quote','linkQuote',['quote_id','quote_sha256','reason'],'none',true);
  const page=req=>{if(req.query.limit!==undefined&&!/^[1-9][0-9]{0,2}$/.test(req.query.limit))throw error('INVALID_LIMIT',400);return {after:req.query.cursor?id(req.query.cursor):'',limit:req.query.limit?Number(req.query.limit):20};};
  router.get('/rules',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);party(req,'none');reply(req,res,await repo.publicRules(req,page(req)));}));
+ router.get('/submission-options',wrap(async(req,res)=>{shape(req.query,['person_id','notice_id','cursor','limit']);reply(req,res,await repo.submissionOptions(req,{...page(req),person_id:id(req.query.person_id),notice_id:id(req.query.notice_id),party_id:party(req,'required')}));}));
+ router.get('/invitation-context',wrap(async(req,res)=>{shape(req.query,['listing_id','rule_id']);reply(req,res,await repo.invitationContext(req,{listing_id:id(req.query.listing_id),rule_id:id(req.query.rule_id),party_id:party(req,'required')}));}));
  router.get('/eligibility',wrap(async(req,res)=>{shape(req.query,['rule_id']);reply(req,res,await repo.eligibility(req,{party_id:party(req,'required'),rule_id:id(req.query.rule_id)}));}));
  router.get('/records',wrap(async(req,res)=>{shape(req.query,['kind','cursor','limit']);reply(req,res,await repo.list(req,{...page(req),kind:req.query.kind,party_id:party(req)}));}));
  router.get('/records/:record_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.read(req,{record_id:id(req.params.record_id),party_id:party(req)}));}));

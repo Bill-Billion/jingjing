@@ -231,6 +231,26 @@ class ArtistsApi {
         if (tag?.trim().isNotEmpty == true) 'tag': tag!.trim(),
         if (audition) 'audition': 'true'
       });
+  Future<Map<String, dynamic>> publicDetail(String id) async {
+    if (!artistId(id)) throw const AccountError(400, 'INVALID_ID');
+    final epoch = session.epoch;
+    final d = await session.read('$base/catalog/$id');
+    check(epoch, null);
+    artistRequire(d['listing_id'] == id &&
+        artistId(d['person_id']) &&
+        artistId(d['avatar_id']) &&
+        d['display_name'] is String &&
+        d['city'] is String &&
+        d['introduction'] is String &&
+        d['audition_public'] is bool &&
+        d['halo_level'] is int &&
+        d['halo_level'] >= 0 &&
+        d['halo_level'] <= 3);
+    artistStrings(d['tags'], max: 15);
+    artistStrings(d['preview_asset_ids'], ids: true, max: 6);
+    return d;
+  }
+
   Future<Uint8List> publicPreview(String listingId, String assetId) async {
     if (!artistId(listingId) || !artistId(assetId)) {
       throw const AccountError(400, 'INVALID_ID');

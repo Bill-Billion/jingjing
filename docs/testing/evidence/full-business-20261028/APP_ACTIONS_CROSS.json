@@ -1,0 +1,295 @@
+{
+  "result": "PASS",
+  "phase": "cross",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:61601/api/v1",
+  "checks": [
+    {
+      "name": "Web到App同记录 notice-case",
+      "result": "PASS"
+    },
+    {
+      "name": "Web到App同记录 privacy",
+      "result": "PASS"
+    },
+    {
+      "name": "Web到App同记录 mcn-accepted",
+      "result": "PASS"
+    },
+    {
+      "name": "发行 buyer 独立会签后读取原文证据",
+      "result": "PASS"
+    },
+    {
+      "name": "发行 producer 独立会签后读取原文证据",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "cross-notice-case.png",
+      "route": "/notices/record?recordId=4182dc1d-914a-40b8-b9e0-60cbbccc45eb",
+      "source": "40-states-a-top.png",
+      "note": "同一隔离会话内Web实际办理记录",
+      "width": 390,
+      "height": 844,
+      "sha256": "94d7512e0de0fb711019f2eb9934d062a8f98bdd107d009c2f14eab9b84428b1"
+    },
+    {
+      "file": "cross-privacy.png",
+      "route": "/privacy?view=request&recordId=99ada83e-42e2-42cf-83b4-353e744a8b26",
+      "source": "40-states-a-top.png",
+      "note": "同一隔离会话内Web实际办理记录",
+      "width": 390,
+      "height": 844,
+      "sha256": "04f5579840e7c600273c107a8a02a728be2bee9db5a5b68b5a5a647f18dfbac9"
+    },
+    {
+      "file": "cross-mcn-accepted.png",
+      "route": "/auditions/booking?bookingId=2adb1b14-b749-4d5b-b36b-ca462db007a1",
+      "source": "21-audition-top.png",
+      "note": "同一隔离会话内Web实际办理记录",
+      "width": 390,
+      "height": 844,
+      "sha256": "9fad788cea43ba8250861cac3f8720e58b29821781a05019d44582a87bc4cebe"
+    },
+    {
+      "file": "action-income-buyer.png",
+      "route": "/projects/income?view=agreement&recordId=d685b4d3-b97b-49a1-a566-92df2abc3ca3",
+      "source": "38-custom-extra.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "d031e2ab0e7f8ed6a1fa2052d4c0671f62e933f7ee5b21631859decbdae7768f"
+    },
+    {
+      "file": "action-income-producer.png",
+      "route": "/projects/income?view=agreement&recordId=d685b4d3-b97b-49a1-a566-92df2abc3ca3",
+      "source": "38-custom-extra.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "3bfb75d24b7f1517a82c53095f6de9a027b0e446b3e7165710d6c7fe0fdce2e6"
+    }
+  ],
+  "network": [
+    {
+      "role": "notices_seller",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_seller",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_seller",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "notices_seller",
+      "path": "/api/v1/notices/records/4182dc1d-914a-40b8-b9e0-60cbbccc45eb",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/99ada83e-42e2-42cf-83b4-353e744a8b26",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/99ada83e-42e2-42cf-83b4-353e744a8b26/history",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/99ada83e-42e2-42cf-83b4-353e744a8b26/executions",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "mcn_staff",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "mcn_staff",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "mcn_staff",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "mcn_staff",
+      "path": "/api/v1/auditions/records/2adb1b14-b749-4d5b-b36b-ca462db007a1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "mcn_staff",
+      "path": "/api/v1/auditions/bookings/2adb1b14-b749-4d5b-b36b-ca462db007a1/supplements",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/income-agreements/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/income-agreements/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmations",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "producer",
+      "path": "/api/v1/projects/records/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmations",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/projects/income-agreements/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmation",
+      "method": "POST",
+      "body_sha256": "f29457c5e33bca8168883069b8bdb986c8b21112810d3a30c499dd0eb671b570",
+      "key_sha256": "dde0cb082a36cdff239333f27288aa1843e86456477bd59925026c5d636ecccc",
+      "version": "\"2\""
+    },
+    {
+      "path": "/api/v1/projects/income-agreements/d685b4d3-b97b-49a1-a566-92df2abc3ca3/confirmation",
+      "method": "POST",
+      "body_sha256": "f29457c5e33bca8168883069b8bdb986c8b21112810d3a30c499dd0eb671b570",
+      "key_sha256": "52bd468b242265c49fbad45b014892773a173f30d9df9a37e1822c18383f80fc",
+      "version": "\"2\""
+    }
+  ],
+  "created": {
+    "income_agreement_id": "d685b4d3-b97b-49a1-a566-92df2abc3ca3"
+  },
+  "errors": []
+}

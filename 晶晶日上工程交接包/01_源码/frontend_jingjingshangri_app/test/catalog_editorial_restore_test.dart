@@ -61,6 +61,11 @@ void main() {
           'next_cursor': null
         });
       }
+      if (request.path == '$artistRoot/catalog/$listingKey') {
+        return revoked
+            ? envelope({'code': 'ARTIST_CONSENT_REQUIRED'}, status: 409, error: true)
+            : envelope(publicListing());
+      }
       if (request.path.endsWith('/assets/$assetKey/content')) {
         return revoked
             ? envelope({'code': 'ARTIST_CONSENT_REQUIRED'},

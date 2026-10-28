@@ -514,6 +514,10 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
               privacyActions[x['action']] ?? communityText(x['action']), [
             communityFact('执行进展', communityState(x['current_status'])),
             communityFact('处理对象', communityShort(x['target_id'])),
+            if (x['action'] == 'PROFILE_CORRECTION' &&
+                x['proposed_change'] is Map)
+              communityFact(
+                  '确认后将改为', communityMap(x['proposed_change'])['display_name']),
             if (x['job_status'] != null)
               communityFact('后台任务', communityState(x['job_status'])),
             if (x['result'] != null)
@@ -544,7 +548,32 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                       : null,
                   outline: true),
             if (x['current_status'] == 'APPROVED' &&
-                x['action'] != 'ACCOUNT_CLOSURE')
+                x['action'] == 'PROFILE_CORRECTION' &&
+                x['proposed_change'] is Map &&
+                communityMap(x['proposed_change'])['display_name'] is String)
+              tradeButton(
+                  '本人确认更正展示名',
+                  enabled
+                      ? () => submit(() async {
+                            final name = communityMap(
+                                x['proposed_change'])['display_name'];
+                            if (await confirm(
+                                '确认更正展示名', '本次将账号展示名改为：$name。历史合同和订单保持原记录。')) {
+                              await act(
+                                  'requests/${r['id']}/executions/${x['id']}/execute',
+                                  {'confirmed': true},
+                                  version: x['object_version'],
+                                  account: true);
+                            }
+                          })
+                      : null,
+                  outline: true),
+            if (x['current_status'] == 'APPROVED' &&
+                x['action'] != 'ACCOUNT_CLOSURE' &&
+                !(x['action'] == 'PROFILE_CORRECTION' &&
+                    x['proposed_change'] is Map &&
+                    communityMap(x['proposed_change'])['display_name']
+                        is String))
               appNotice('请先核对完整方案内容和具体资料，再由本人确认。当前返回未提供完整变更内容，暂不开放盲目执行。'),
             communityRecordId(x)
           ]),

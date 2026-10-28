@@ -681,14 +681,18 @@ class _TradeDetailState extends State<_TradeDetail> {
 
   List<Widget> orderView(TradeRecord r) {
     final f = r.data['financial'];
+    final fullyCovered = r.quote['discount']?['coverage'] == 'FULL' &&
+        r.quote['total_minor'] == 0;
     return [
       tradeSection('订单 ${shortSupplyId(r.id)}', [
         tradeStatus(r),
-        appNotice(r.quote['stock_video'] != null
-            ? '付款核实后查看本单内容、个人许可与售后。'
-            : r.quote['audition'] != null
-                ? '按本单接单与核实收款状态办理预约、材料和售后。'
-                : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
+        appNotice(fullyCovered
+            ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
+            : r.quote['stock_video'] != null
+                ? '付款核实后查看本单内容、个人许可与售后。'
+                : r.quote['audition'] != null
+                    ? '按本单接单与核实收款状态办理预约、材料和售后。'
+                    : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
       ]),
       if (r.quote['stock_video'] != null)
         tradeButton(
@@ -711,7 +715,9 @@ class _TradeDetailState extends State<_TradeDetail> {
             '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
       if (r.quote['customization'] != null)
         appNotice(tradeCustomizationRulesReady(r)
-            ? '原故事、报价与合同已固定。先核对首款，再按原单预览、确认和后续付款节点办理；生成订单不代表已付款或签署。'
+            ? fullyCovered
+                ? '原故事、报价与合同已固定。按原单预览、确认和验收；本单现金应付为0，生成订单不代表已开工、已交付或已签署。'
+                : '原故事、报价与合同已固定。先核对首款，再按原单预览、确认和后续付款节点办理；生成订单不代表已付款或签署。'
             : '这笔历史定制订单未保存完整付款和交付条款。请由平台核对原约定，不会自动补用新单规则。'),
       if (r.quote['commercial'] != null)
         tradeSection('关联商业约定', [

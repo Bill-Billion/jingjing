@@ -356,6 +356,7 @@ class JingjingShangriApp extends StatelessWidget {
                 const NoticesPage(mode: 'qualification'),
               '/notices/submit' => NoticesPage(
                   mode: 'submit',
+                  listingId: uri.queryParameters['listingId'],
                   id: uri.queryParameters['noticeId'] ??
                       uri.queryParameters['sourceId'],
                   kind: uri.queryParameters['kind']),

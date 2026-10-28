@@ -19,10 +19,11 @@ class NoticesPage extends StatelessWidget {
       this.mode = 'catalog',
       this.id,
       this.kind,
+      this.listingId,
       this.embedded = false,
       this.initialCity = ''});
   final String mode;
-  final String? id, kind;
+  final String? id, kind, listingId;
   final bool embedded;
   final String initialCity;
   @override
@@ -35,12 +36,17 @@ class NoticesPage extends StatelessWidget {
         if (['public', 'submit'].contains(mode) && id != null) 'noticeId': id!,
         if (mode == 'record' && id != null) 'recordId': id!,
         if (mode == 'submit' && kind != null) 'kind': kind!,
+        if (mode == 'submit' && listingId != null) 'listingId': listingId!,
       }).toString(),
       account: ['catalog', 'public'].contains(mode),
       showExpired: ['catalog', 'records'].contains(mode),
       expiredLabel: mode == 'records' ? '我的通告与投稿' : '通告现场',
       builder: (s) => mode == 'submit'
-          ? NoticesSubmission(session: s, noticeId: id, kind: kind ?? 'PROFILE')
+          ? NoticesSubmission(
+              session: s,
+              noticeId: id,
+              listingId: listingId,
+              kind: kind ?? 'PROFILE')
           : _NoticeScreen(
               session: s,
               mode: mode,

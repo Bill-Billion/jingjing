@@ -101,8 +101,16 @@ test('notices and one-way submissions in isolated MySQL',{skip:!process.env.JX_M
   const org=await S.parties.createOrganization(outsider.ctx,{display_name:'synthetic authorized MCN',operation_key:key()});await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]);const relation=key(),data={valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',accepted_by:seller.account_id};await db.execute("INSERT INTO gig_records(id,kind,owner_party_id,counterparty_id,created_by,current_status,data_json,data_sha256) VALUES (?,'RELATION',?,?,?,'ACTIVE',?,?)",[relation,org.party_id,seller.personal_party_id,outsider.account_id,JSON.stringify(data),digest(data)]);
   bad(await call('POST','/notices/submissions',outsider,{rule_id:S.rule.id,submission:S.submission},org.party_id,headers()),'ARTIST_DELEGATION_REQUIRED');
   const d=await S.artists.createDelegation(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,delegation:{organization_party_id:org.party_id,relation_id:relation,actions:['SUBMIT_COOPERATION'],valid_from:data.valid_from,valid_until:data.valid_until,evidence_asset_ids:[S.evidence.id],terms:'synthetic submit delegation'},operation_key:key()});
+  const optionsPath='/notices/submission-options?person_id='+seller.person.id+'&notice_id='+notice.id;
+  const options=ok(await call('GET',optionsPath,outsider,undefined,org.party_id));
+  assert.equal(options.items.length,1);assert.equal(options.items[0].consent_id,S.consent.id);assert.equal(options.items[0].avatar_id,S.avatar.id);
+  assert.ok(!JSON.stringify(options).includes('evidence'));assert.ok(!JSON.stringify(options).includes('terms'));
+  bad(await call('GET',optionsPath,buyer2,undefined,buyer2.personal_party_id),'ARTIST_NOT_FOUND');
+  await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[S.consent.id]);
+  assert.equal(ok(await call('GET',optionsPath,outsider,undefined,org.party_id)).items.length,0);
+  await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.consent.id]);
   let r=ok(await call('POST','/notices/submissions',outsider,{rule_id:S.rule.id,submission:S.submission},org.party_id,headers()));r=await review(r);assert.equal(ok(await read(r)).data.submission.person_id,seller.person.id);
-  await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:d.id,expected_version:d.object_version,reason:'stop delegation',operation_key:key()});bad(await read(r),'NOTICE_NOT_FOUND');
+  await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:d.id,expected_version:d.object_version,reason:'stop delegation',operation_key:key()});bad(await read(r),'NOTICE_NOT_FOUND');bad(await call('GET',optionsPath,outsider,undefined,org.party_id),'ARTIST_DELEGATION_REQUIRED');
  });
  await t.test('rule API uses independent approval, rejection and closure; unauthenticated route remains closed',async()=>{
   const r=ok(await call('POST','/notices/rules',outsider,{rule:{...S.ruleInput,version:'synthetic-v2'}},null,headers()));

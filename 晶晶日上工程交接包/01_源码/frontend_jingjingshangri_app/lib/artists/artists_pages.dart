@@ -1046,8 +1046,38 @@ class _PublicArtistDetails extends StatefulWidget {
 class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
   late final api = ArtistsApi(widget.session);
   final previews = <String, Uint8List>{};
-  bool busy = false, available = true;
+  bool busy = false, available = false;
+  Map<String, dynamic>? current;
   String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    reload();
+  }
+
+  Future<void> reload() async {
+    setState(() {
+      busy = true;
+      available = false;
+      error = null;
+      current = null;
+      previews.clear();
+    });
+    try {
+      final d = await api.publicDetail(widget.listing['listing_id']);
+      if (mounted) {
+        setState(() {
+          current = d;
+          available = true;
+        });
+      }
+    } on AccountError catch (e) {
+      if (mounted) setState(() => error = artistError(e));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
 
   Future<void> preview(String id, {bool save = false}) async {
     if (busy) return;
@@ -1150,7 +1180,7 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final r = widget.listing;
+    final r = current ?? widget.listing;
     final ids = artistStrings(r['preview_asset_ids'], ids: true);
     final loaded = ids.where(previews.containsKey).firstOrNull;
     return tradeScaffold(
@@ -1196,7 +1226,14 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
                             'city': (r['city'] as String).trim(),
                         }).toString())),
             appNotice('试镜方案按本人已审核并公开的目录展示；预约前请核对具体艺人与本单用途。'),
-          ] else ...[
+            tradeButton(
+                '向这位艺人发起合作邀约',
+                busy
+                    ? null
+                    : () => Navigator.pushNamed(context,
+                        '/notices/submit?kind=INVITATION&listingId=${r['listing_id']}')),
+            tradeButton('重新核对公开资料', busy ? null : reload, outline: true),
+          ] else if (!busy) ...[
             Container(
                 height: 170,
                 color: const Color(0xFFE5E1D7),
@@ -1208,6 +1245,7 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
             const Text('可以返回目录，查看其他当前可用内容。',
                 style: TextStyle(fontSize: 14, height: 1.6)),
             const SizedBox(height: 32),
+            tradeButton('重新核对公开资料', reload, outline: true),
             tradeButton('返回目录重新读取', () => Navigator.pop(context)),
           ],
         ],
