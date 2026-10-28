@@ -1,3 +1,5 @@
+当前可交接前端：[私人故事附件与首次共创接线任务](collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md)。用户负责通知伙伴，尚未假称对方已读；完整范围继续施工。
+
 当前产品进度与分工先读[剩余工作和责任表](collaboration/client-complete-20261028/PRODUCT_STATUS.md)。完整18组仍在开发与联调；不要将下方历史记录的局部交付当全部完成。
 
 2026-10-28最新：队友133363f7页面已与本侧新接口组合复验，当前目录worktrees/client-testing，交付仍为PR39。双方实际贡献、可调用接口、验证和待办见[组合交接](tasks/records/CORE-client-complete-merge-20261028.md)。以下“前端未接手/接口未提供”按日期保留历史，不覆盖本次事实；18组整体验收仍未完成。

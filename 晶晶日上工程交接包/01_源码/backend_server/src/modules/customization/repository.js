@@ -104,6 +104,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
   return {request_id:r.id,submission_number:s.submission_number,submission:{id:s.id,answers:stored(s.answers_json,s.answers_sha256),template_snapshot:stored(s.template_snapshot_json,s.template_sha256),content_sha256:s.content_sha256,submitted_by:s.submitted_by,submitted_at:instant(s.submitted_at)},supplement_response:supplement?{supplement_id:supplement.id,base_submission_id:supplement.base_submission_id,items:stored(supplement.items_json,supplement.items_sha256),responses:stored(supplement.responses_json,supplement.responses_sha256),requested_by:supplement.requested_by,requested_at:instant(supplement.requested_at)}:null};
  }
  return Object.freeze({
+  ...require('./attachments').methods({db,actor,member,load,creator,visible,match,command,audit}),
   async quotes(ctx,{request_id,party_id=null,after='',limit=20}){
    id(request_id);if(party_id!==null)id(party_id);P.page({after,limit});
    return db.withTransaction(async tx=>{
@@ -138,6 +139,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
     return command(tx,a,'SUPPLEMENT_SAVE',r.id,i,async()=>{
      match(r,i.expected_version);const s=await latestSupplement(tx,r);pendingSupplement(r,s);
      const answers=P.normalizeAnswers(stored(r.template_snapshot_json,r.template_sha256),i.answers),responses=S.responses(stored(s.items_json,s.items_sha256),i.responses);
+     await require('./attachments').validate(tx,r,stored(r.template_snapshot_json,r.template_sha256),answers);
      await tx.execute('UPDATE customization_supplements SET draft_answers_json=?,draft_answers_sha256=?,responses_json=?,responses_sha256=? WHERE id=?',[JSON.stringify(answers),digest(answers),JSON.stringify(responses),digest(responses),s.id]);
      await tx.execute('UPDATE customization_requests SET object_version=object_version+1,updated_at=CURRENT_TIMESTAMP(3) WHERE id=?',[r.id]);
      await audit(tx,a,{request_id:r.id,event_code:'SUPPLEMENT_DRAFT_SAVED',object_version:r.object_version+1,content_sha256:digest([digest(answers),digest(responses)])});
@@ -155,6 +157,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
      const template=stored(r.template_snapshot_json,r.template_sha256),answers=P.validateSubmission(template,stored(pending.draft_answers_json,pending.draft_answers_sha256));
      S.responses(stored(pending.items_json,pending.items_sha256),stored(pending.responses_json,pending.responses_sha256),{submit:true});
      const time=(await one(tx,'SELECT CURRENT_TIMESTAMP(3) AS now')).now;
+     await require('./attachments').validate(tx,r,template,answers);
      const s={id:randomUUID(),request_id:r.id,template_version_id:r.template_version_id,template_sha256:r.template_sha256,answers_sha256:digest(answers),submitted_by:a.id,submitted_at:time},hash=submissionHash(s);
      await tx.execute('INSERT INTO customization_submissions(id,request_id,submission_number,template_version_id,template_snapshot_json,template_sha256,answers_json,answers_sha256,content_sha256,submitted_by,submitted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[s.id,r.id,r.submission_number+1,r.template_version_id,JSON.stringify(template),s.template_sha256,JSON.stringify(answers),s.answers_sha256,hash,a.id,time]);
      await tx.execute("UPDATE customization_supplements SET current_status='RESPONDED',response_submission_id=?,responded_at=? WHERE id=?",[s.id,time,pending.id]);
@@ -207,6 +210,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
     return command(tx,a,'REQUEST_CREATE',i.party_id,i,async()=>{
      const t=await one(tx,'SELECT * FROM customization_templates WHERE id=? FOR SHARE',[i.template_version_id]);if(!t)throw error('CUSTOMIZATION_TEMPLATE_NOT_FOUND',404);
      const template=stored(t.template_snapshot_json,t.template_sha256),answers=P.normalizeAnswers(template,i.answers),requestId=randomUUID();
+     await require('./attachments').validate(tx,{id:requestId,created_by:a.id},template,answers);
      await tx.execute('INSERT INTO customization_requests(id,created_by,party_id,template_version_id,category_title,template_snapshot_json,template_sha256,answers_json,answers_sha256) VALUES (?,?,?,?,?,?,?,?,?)',[requestId,a.id,i.party_id,t.id,template.title,JSON.stringify(template),t.template_sha256,JSON.stringify(answers),digest(answers)]);
      await audit(tx,a,{request_id:requestId,event_code:'REQUEST_CREATED',object_version:1,content_sha256:digest(answers)});
      return detail(tx,await load(tx,requestId));
@@ -234,6 +238,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
     const a=await actor(tx,ctx);await member(tx,a,i.party_id);const r=await load(tx,i.request_id,'FOR UPDATE');creator(a,r,i.party_id);
     return command(tx,a,'REQUEST_SAVE',r.id,i,async()=>{
      match(r,i.expected_version);draft(r);const template=stored(r.template_snapshot_json,r.template_sha256),answers=P.normalizeAnswers(template,i.answers),hash=digest(answers);
+     await require('./attachments').validate(tx,r,template,answers);
      await tx.execute('UPDATE customization_requests SET answers_json=?,answers_sha256=?,object_version=object_version+1,updated_at=CURRENT_TIMESTAMP(3) WHERE id=?',[JSON.stringify(answers),hash,r.id]);
      await audit(tx,a,{request_id:r.id,event_code:'REQUEST_SAVED',object_version:r.object_version+1,content_sha256:hash});return detail(tx,await load(tx,r.id));
     });
@@ -247,6 +252,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
     return command(tx,a,'REQUEST_SUBMIT',r.id,i,async()=>{
      match(r,i.expected_version);draft(r);
      const template=stored(r.template_snapshot_json,r.template_sha256),answers=P.validateSubmission(template,stored(r.answers_json,r.answers_sha256)),time=(await one(tx,'SELECT CURRENT_TIMESTAMP(3) AS now')).now;
+     await require('./attachments').validate(tx,r,template,answers);
      const s={id:randomUUID(),request_id:r.id,template_version_id:r.template_version_id,template_sha256:r.template_sha256,answers_sha256:digest(answers),submitted_by:a.id,submitted_at:time},hash=submissionHash(s);
      await tx.execute('INSERT INTO customization_submissions(id,request_id,submission_number,template_version_id,template_snapshot_json,template_sha256,answers_json,answers_sha256,content_sha256,submitted_by,submitted_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[s.id,r.id,r.submission_number+1,r.template_version_id,JSON.stringify(template),s.template_sha256,JSON.stringify(answers),s.answers_sha256,hash,a.id,time]);
      await tx.execute("UPDATE customization_requests SET current_status='SUBMITTED',submission_number=submission_number+1,submitted_at=?,object_version=object_version+1,updated_at=CURRENT_TIMESTAMP(3) WHERE id=?",[time,r.id]);

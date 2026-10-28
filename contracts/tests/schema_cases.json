@@ -1440,6 +1440,44 @@
         "evidence_asset_id": "00000000-0000-4000-8000-000000000001",
         "reason": "synthetic"
       }
+    },
+    {
+      "name": "attachment cannot expose object key",
+      "fixture": "CustomizationAttachmentResponse",
+      "mutate_path": [
+        "data",
+        "object_key"
+      ],
+      "replace_with": "private/forbidden"
+    },
+    {
+      "name": "attachment state cannot claim deletion",
+      "fixture": "CustomizationAttachmentResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "DELETED"
+    },
+    {
+      "name": "attachment size is bounded",
+      "fixture": "CustomizationAttachmentResponse",
+      "mutate_path": [
+        "data",
+        "byte_size"
+      ],
+      "replace_with": 8388609
+    },
+    {
+      "name": "creation choices have no private contacts",
+      "fixture": "CocreationCreationOptionsResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "private_phone"
+      ],
+      "replace_with": "synthetic"
     }
   ]
 }
