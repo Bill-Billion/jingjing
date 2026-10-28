@@ -1,3 +1,5 @@
+当前产品进度与分工先读[剩余工作和责任表](collaboration/client-complete-20261028/PRODUCT_STATUS.md)。完整18组仍在开发与联调；不要将下方历史记录的局部交付当全部完成。
+
 2026-10-28最新：队友133363f7页面已与本侧新接口组合复验，当前目录worktrees/client-testing，交付仍为PR39。双方实际贡献、可调用接口、验证和待办见[组合交接](tasks/records/CORE-client-complete-merge-20261028.md)。以下“前端未接手/接口未提供”按日期保留历史，不覆盖本次事实；18组整体验收仍未完成。
 
 2026-10-28本次集中同步已推送 [PR39](https://github.com/Bill-Billion/jingjing/pull/39)，完整任务见 [执行入口](collaboration/client-complete-20261028/README.md)。计划可供双方开发，未称18组已实现；前端尚未实际认领，自动检查/审阅/合入分别记录。以下按日期保留。
