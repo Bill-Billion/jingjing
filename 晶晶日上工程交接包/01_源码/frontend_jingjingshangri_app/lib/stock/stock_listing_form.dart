@@ -25,6 +25,9 @@ class _StockListingFormState extends State<StockListingForm> {
   late final api = StockApi(widget.session),
       artists = ArtistsApi(widget.session);
   final people = <ArtistPerson>[];
+  GlobalKey<V5FormState> formKey = GlobalKey<V5FormState>();
+  final personSelector = GlobalKey<FormFieldState<String>>();
+  final countSelector = GlobalKey<FormFieldState<int>>();
   final publications = <String, Map<String, dynamic>>{};
   StockListing? previous;
   String get suffix => widget.revisionId == null
@@ -49,6 +52,11 @@ class _StockListingFormState extends State<StockListingForm> {
       error = null;
     });
     try {
+      people.clear();
+      publications.clear();
+      participants.clear();
+      participantNames.clear();
+      rules.clear();
       String? cursor;
       final seen = <String>{};
       do {
@@ -117,11 +125,21 @@ class _StockListingFormState extends State<StockListingForm> {
   }
 
   Future<void> choose(String id) async {
+    if (id == personId) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      personSelector.currentState?.didChange(personId);
+      return;
+    }
     setState(() {
       busy = true;
       error = null;
       personId = id;
       person = null;
+      count = null;
+      formKey = GlobalKey<V5FormState>();
     });
     try {
       await _person(id);
@@ -131,6 +149,21 @@ class _StockListingFormState extends State<StockListingForm> {
     } finally {
       if (mounted) setState(() => busy = false);
     }
+  }
+
+  Future<void> chooseCount(int? value) async {
+    if (value == count) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      countSelector.currentState?.didChange(count);
+      return;
+    }
+    setState(() {
+      count = value;
+      formKey = GlobalKey<V5FormState>();
+    });
   }
 
   Map<String, dynamic> restore(Map<String, dynamic> b) => {
@@ -167,7 +200,14 @@ class _StockListingFormState extends State<StockListingForm> {
       if (previous != null) appNotice('本次另存新版本并重新双审；原订单的许可和已购文件保留。'),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
+      if (!busy && (error != null || people.isEmpty)) ...[
+        if (error == null) appNotice('当前身份还没有可办理的真人档案。先完善本人资料，或切换到获准经营该人物的身份。'),
+        tradeButton('重新读取本人资格与商品', load, outline: true),
+        tradeButton('查看人物与授权', () => Navigator.pushNamed(context, '/artists'),
+            outline: true),
+      ],
       DropdownButtonFormField<String>(
+          key: personSelector,
           initialValue: personId,
           isExpanded: true,
           decoration: const InputDecoration(labelText: '卖方具体真人'),
@@ -181,6 +221,7 @@ class _StockListingFormState extends State<StockListingForm> {
         if (!permitted || d.halo < 1)
           appNotice('须有本人的有效 L1 和明确上架委托，不要求先购买 L2。'),
         DropdownButtonFormField<int>(
+            key: countSelector,
             initialValue: count,
             isExpanded: true,
             decoration: const InputDecoration(labelText: '本作品可识别出镜人数'),
@@ -189,13 +230,11 @@ class _StockListingFormState extends State<StockListingForm> {
                 DropdownMenuItem(
                     value: i, child: Text(i == 0 ? '无可识别人物' : '$i 位（逐人选择已审授权）'))
             ],
-            onChanged: api.pending(suffix) != null
-                ? null
-                : (v) => setState(() => count = v)),
+            onChanged: api.pending(suffix) != null ? null : chooseCount),
         if (rules.isEmpty) appNotice('尚无已发布的商品与销售说明，请平台先完成规格绑定和独立审核，再返回刷新。'),
         if (count != null)
           V5Form(
-              key: ValueKey('$personId:$count'),
+              key: formKey,
               api: api,
               title: '本版上架材料',
               action: '提交内容与权利双审核',

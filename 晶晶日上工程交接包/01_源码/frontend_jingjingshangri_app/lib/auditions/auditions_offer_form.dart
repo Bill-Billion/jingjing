@@ -23,6 +23,8 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
       rules = <String, String>{},
       contexts = <String, Map<String, dynamic>>{},
       contextNames = <String, String>{};
+  GlobalKey<V5FormState> formKey = GlobalKey<V5FormState>();
+  final personSelector = GlobalKey<FormFieldState<String>>();
   ArtistDetail? detail;
   String? personId, error;
   bool busy = false, permitted = false;
@@ -42,6 +44,8 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
       if (!widget.session.isOwner) {
         throw const AccountError(403, 'AUDITION_OFFER_OWNER_CONTEXT_REQUIRED');
       }
+      people.clear();
+      rules.clear();
       String? cursor;
       final seen = <String>{};
       do {
@@ -89,11 +93,20 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
   }
 
   Future<void> choose(String id) async {
+    if (id == personId) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      personSelector.currentState?.didChange(personId);
+      return;
+    }
     setState(() {
       busy = true;
       error = null;
       personId = id;
       detail = null;
+      formKey = GlobalKey<V5FormState>();
     });
     try {
       await person(id);
@@ -121,7 +134,14 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
                   : '/auditions/bookings')),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
+      if (!busy && (error != null || people.isEmpty)) ...[
+        if (error == null) appNotice('当前身份暂无可办理的真人档案。先完善本人资料，或切换到获准经营该人物的身份。'),
+        tradeButton('重新读取本人资格', load, outline: true),
+        tradeButton('查看人物与授权', () => Navigator.pushNamed(context, '/artists'),
+            outline: true),
+      ],
       DropdownButtonFormField<String>(
+          key: personSelector,
           initialValue: personId,
           isExpanded: true,
           decoration: const InputDecoration(labelText: '选择具体真人'),
@@ -138,11 +158,13 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
         if (contexts.isEmpty)
           appNotice('尚无本人可读或已明确提供的公开展示授权上下文，请先办理本人同意；机构不读取私人同意原件。'),
         V5Form(
-            key: ValueKey(personId),
+            key: formKey,
             api: api,
             title: '本人的完整试镜约定',
             action: '提交本版试镜方案独立审核',
             suffix: '/offers',
+            // A pending offer may be recovered, but its rule must never be
+            // reused for a new request after a definitive rejection.
             canSubmit: permitted &&
                 d.halo >= 2 &&
                 rules.isNotEmpty &&

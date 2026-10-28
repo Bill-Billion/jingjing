@@ -59,6 +59,7 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
         <div id="customization-workspace-menu" class="customization-menu" :class="{ expanded: menuOpen }"><WorkspaceNav/><div class="supply-identity"><p>故事受理人员</p><p class="muted">以当前账号的受理岗位办理。</p></div></div>
       </aside>
       <main class="supply-main">
+        <nav aria-label="故事模块" class="supply-actions"><RouterLink to="/operations/customization/mine" class="table-link">我的故事 · 创建与续写</RouterLink><RouterLink to="/operations/customization" aria-current="page" class="table-link">运营收件与受理</RouterLink></nav>
         <RouterLink v-if="requestId" to="/operations/customization" class="customization-back">← 返回故事收件</RouterLink>
         <div class="supply-heading">
           <div><p class="eyebrow">定制制作 · 故事收件</p><h1>{{ requestId ? detail?.submission.template_snapshot.title || '故事提交详情' : '故事收件与受理' }}</h1><p class="muted">核对正式故事，逐项补资料，再按同一版本办理平台报价。</p></div>

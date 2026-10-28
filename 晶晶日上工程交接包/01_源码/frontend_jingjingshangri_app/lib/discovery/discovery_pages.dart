@@ -8,7 +8,7 @@ import '../notices/notices_api.dart';
 import '../notices/notices_models.dart';
 import '../trade/trade_widgets.dart';
 
-enum DiscoveryKind { artists, videos, notices }
+enum DiscoveryKind { artists, videos, notices, auditions }
 
 String discoveryDirectoryRoute(DiscoveryKind kind,
     {String city = '', String tag = ''}) {
@@ -22,6 +22,7 @@ String discoveryDirectoryRoute(DiscoveryKind kind,
             DiscoveryKind.artists => '/artists/catalog',
             DiscoveryKind.videos => '/stock/catalog',
             DiscoveryKind.notices => '/notices/catalog',
+            DiscoveryKind.auditions => '/auditions/catalog',
           },
           queryParameters: query.isEmpty ? null : query)
       .toString();
@@ -48,8 +49,8 @@ class _DiscoverySearchPageState extends State<DiscoverySearchPage> {
   }
 
   @override
-  Widget build(BuildContext context) => tradeScaffold(context, '搜索与匹配', [
-        tradeHeading('找一张合适的脸', eyebrow: '从公开目录开始寻找'),
+  Widget build(BuildContext context) => tradeScaffold(context, '公开目录筛选', [
+        tradeHeading('选择内容与城市', eyebrow: '从公开目录开始寻找'),
         TextField(
             key: const ValueKey('discovery-city'),
             controller: city,
@@ -61,7 +62,8 @@ class _DiscoverySearchPageState extends State<DiscoverySearchPage> {
           for (final option in [
             (DiscoveryKind.artists, '艺人'),
             (DiscoveryKind.videos, '视频'),
-            (DiscoveryKind.notices, '通告')
+            (DiscoveryKind.notices, '通告'),
+            (DiscoveryKind.auditions, '试镜')
           ])
             Expanded(
                 child: Semantics(

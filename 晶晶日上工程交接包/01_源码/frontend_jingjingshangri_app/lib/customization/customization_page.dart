@@ -918,6 +918,14 @@ class _StoryEditorState extends State<_StoryEditor> {
       if (record != null && record!.status != 'DRAFT')
         _section('正式记录与报价', [
           OutlinedButton(
+              key: const ValueKey('story-cocreation'),
+              onPressed: locked || dirty
+                  ? null
+                  : () => Navigator.pushNamed(
+                      context, '/cocreation?view=new&recordId=${record!.id}'),
+              child: const Text('以这份故事发起多人共创')),
+          _note('共创须在正式报价前建立。进入后继续选择当前承制方和已审规则；已有订单不能补建房间沿用旧报价。'),
+          OutlinedButton(
               key: const ValueKey('story-history'),
               onPressed: locked || dirty
                   ? null

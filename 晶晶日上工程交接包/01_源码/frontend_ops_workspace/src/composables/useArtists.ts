@@ -1,17 +1,18 @@
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { ApiError, asApiError, newIdempotencyKey, outcomeUnknown } from '@/api/client'
-import { getArtistPerson,getArtistRecord,getArtistService,getArtistServices,listArtistPeople,listArtistRecords,listArtistReviews,listArtistCatalog,getArtistAsset,postArtist,artistAssetBytes,artistReviewBytes,artistCatalogBytes,isArtistPerson,isArtistAvatar,isArtistRecord,sha256,type ArtistPerson,type ArtistDetail,type ArtistRecord,type ArtistServiceDetail,type ArtistServices,type ArtistReviewItem,type ArtistCatalogItem,type ArtistKind,type ArtistCommand,type ArtistWriteResult,type reviewKinds } from '@/api/modules/artists'
+import { getArtistPerson,getArtistRecord,getArtistService,getArtistServices,listArtistPeople,listArtistRecords,listArtistReviews,listArtistCatalog,getArtistCatalogItem,getArtistAsset,postArtist,artistAssetBytes,artistReviewBytes,artistCatalogBytes,isArtistPerson,isArtistAvatar,isArtistRecord,sha256,type ArtistPerson,type ArtistDetail,type ArtistRecord,type ArtistServiceDetail,type ArtistServices,type ArtistReviewItem,type ArtistCatalogItem,type ArtistKind,type ArtistCommand,type ArtistWriteResult,type reviewKinds } from '@/api/modules/artists'
 import { isSupplyAsset,type SupplyAsset,type SupplyIdentity } from '@/api/modules/supply'
 export interface ArtistContext {token:string|null;accountId:string;partyId:string|null;revision:number;scope:string}
 interface Pending {command:ArtistCommand;key:string;checked:boolean;state:'sending'|'unknown'|'refresh';resultId?:string}
 export function useArtists(context:()=>ArtistContext){
  const people=ref<ArtistPerson[]>([]),peopleCursor=ref<string|null>(null),person=ref<ArtistDetail|null>(null),records=ref<ArtistRecord[]>([]),recordsCursor=ref<string|null>(null),record=ref<ArtistRecord|null>(null),service=ref<ArtistServiceDetail|null>(null),services=ref<ArtistServices|null>(null),reviews=ref<ArtistReviewItem[]>([]),reviewsCursor=ref<string|null>(null),catalog=ref<ArtistCatalogItem[]>([]),catalogCursor=ref<string|null>(null),assets=ref<SupplyAsset[]>([])
+ const publicListing=ref<ArtistCatalogItem|null>(null)
  const error=ref<ApiError|null>(null),notice=ref(''),pending=shallowRef<Pending|null>(null),writing=ref(false),reading=ref<Record<string,boolean>>({}),securityRevision=ref(0),conflicted=ref(false),reconfirmed=ref(false),retryAt=ref(0)
  const preview=ref<{url:string;type:string;label:string;key:string}|null>(null),evidenceRead=ref<string[]>([])
  let epoch=0,previewGeneration=0,disposed=false;const tickets=new Map<string,number>(),aborts=new Map<string,AbortController>(),seen=new Map<string,Set<string>>()
  const busy=computed(()=>writing.value||Object.values(reading.value).some(Boolean)),locked=computed(()=>busy.value||!!pending.value||conflicted.value&&!reconfirmed.value)
  function revoke(){previewGeneration++;if(preview.value)URL.revokeObjectURL(preview.value.url);preview.value=null}
- function clear(){epoch++;for(const a of aborts.values())a.abort();aborts.clear();people.value=[];peopleCursor.value=null;person.value=null;records.value=[];recordsCursor.value=null;record.value=null;service.value=null;services.value=null;reviews.value=[];reviewsCursor.value=null;catalog.value=[];catalogCursor.value=null;assets.value=[];pending.value=null;reading.value={};writing.value=false;error.value=null;notice.value='';conflicted.value=reconfirmed.value=false;retryAt.value=0;evidenceRead.value=[];seen.clear();revoke();securityRevision.value++}
+ function clear(){epoch++;for(const a of aborts.values())a.abort();aborts.clear();people.value=[];peopleCursor.value=null;person.value=null;records.value=[];recordsCursor.value=null;record.value=null;service.value=null;services.value=null;reviews.value=[];reviewsCursor.value=null;catalog.value=[];catalogCursor.value=null;publicListing.value=null;assets.value=[];pending.value=null;reading.value={};writing.value=false;error.value=null;notice.value='';conflicted.value=reconfirmed.value=false;retryAt.value=0;evidenceRead.value=[];seen.clear();revoke();securityRevision.value++}
  watch(()=>[context().token,context().accountId,context().partyId,context().revision,context().scope],clear,{flush:'sync'})
  onScopeDispose(()=>{disposed=true;clear()})
  function identity(account=false):SupplyIdentity{const c=context();if(!c.token||!c.accountId)throw new ApiError({status:401,code:'AUTHENTICATION_REQUIRED',message:'请重新登录。'});return {token:c.token,accountId:c.accountId,partyId:account?null:c.partyId}}
@@ -26,7 +27,17 @@ export function useArtists(context:()=>ArtistContext){
  function loadService(personId:string,recordId:string){return read('service',(i,s)=>getArtistService(i,personId,recordId,s),r=>{service.value=r;const {order,...base}=r;record.value=base;void order})}
  function loadServices(){services.value=null;return read('services',getArtistServices,r=>services.value=r,true)}
  async function loadReviews(kind:keyof typeof reviewKinds,more=false){if(locked.value||more&&!reviewsCursor.value)return;const cursor=more?reviewsCursor.value:null;if(!more){reviews.value=[];reviewsCursor.value=null}return read('reviews',(i,s)=>listArtistReviews(i,kind,cursor,s),r=>{reviews.value=append('reviews',reviews.value,r,p=>p.id,cursor,more);reviewsCursor.value=r.next_cursor},true)}
- async function loadCatalog(filters:{city:string;tag:string;audition:string},more=false){if(locked.value||more&&!catalogCursor.value)return;const cursor=more?catalogCursor.value:null;if(!more){catalog.value=[];catalogCursor.value=null;revoke()}return read('catalog',(i,s)=>listArtistCatalog(i,filters,cursor,s),r=>{catalog.value=append('catalog',catalog.value,r,p=>p.listing_id,cursor,more);catalogCursor.value=r.next_cursor},true)}
+ async function loadCatalog(filters:{city:string;tag:string;audition:string},more=false){
+  if(writing.value||pending.value||conflicted.value&&!reconfirmed.value||retryAt.value>Date.now()||more&&(busy.value||!catalogCursor.value))return
+  const cursor=more?catalogCursor.value:null
+  if(!more){
+   // A changed catalog query replaces only reads. Original writes stay locked.
+   for(const name of ['public-listing','bytes']){tickets.set(name,(tickets.get(name)||0)+1);aborts.get(name)?.abort();aborts.delete(name);reading.value={...reading.value,[name]:false}}
+   catalog.value=[];catalogCursor.value=null;publicListing.value=null;revoke()
+  }
+  return read('catalog',(i,s)=>listArtistCatalog(i,filters,cursor,s),r=>{catalog.value=append('catalog',catalog.value,r,p=>p.listing_id,cursor,more);catalogCursor.value=r.next_cursor},true)
+ }
+ function loadPublicListing(listingId:string){if(locked.value)return;publicListing.value=null;revoke();return read('public-listing',(i,s)=>getArtistCatalogItem(i,listingId,s),r=>publicListing.value=r,true)}
  function loadAsset(assetId:string){return read('asset',(i,s)=>getArtistAsset(i,assetId,s),r=>{if(person.value&&r.owner_party_id!==person.value.person.owner_party_id)throw new ApiError({status:404,code:'ARTIST_ASSET_NOT_FOUND',message:'此材料不属于当前真人档案。'});assets.value=[...assets.value.filter(a=>a.id!==r.id),r]})}
  function apply(result:ArtistWriteResult){
   if(isArtistPerson(result)){people.value=[result,...people.value.filter(p=>p.id!==result.id)]}
@@ -46,5 +57,5 @@ export function useArtists(context:()=>ArtistContext){
  const previewAsset=(asset:SupplyAsset)=>showBytes('私人材料 '+asset.id,asset.id,(i,s)=>artistAssetBytes(i,asset,s))
  const previewReview=(personId:string,recordId:string,assetId:string)=>showBytes('本申请指定材料 '+assetId,assetId,(i,s)=>artistReviewBytes(i,personId,recordId,assetId,s),true)
  const previewCatalog=(listingId:string,assetId:string)=>showBytes('已批准展示材料 '+assetId,assetId,(i,s)=>artistCatalogBytes(i,listingId,assetId,s),true)
- return {people,peopleCursor,person,records,recordsCursor,record,service,services,reviews,reviewsCursor,catalog,catalogCursor,assets,error,notice,pending,busy,writing,reading,locked,securityRevision,conflicted,reconfirmed,retryAt,preview,evidenceRead,clear,revoke,read,loadPeople,loadPerson,refreshPerson,loadRecords,loadRecord,loadService,loadServices,loadReviews,loadCatalog,loadAsset,write,checkPending,retry:()=>send(),previewAsset,previewReview,previewCatalog,canNavigate:()=>!pending.value}
+ return {people,peopleCursor,person,records,recordsCursor,record,service,services,reviews,reviewsCursor,catalog,catalogCursor,publicListing,assets,error,notice,pending,busy,writing,reading,locked,securityRevision,conflicted,reconfirmed,retryAt,preview,evidenceRead,clear,revoke,read,loadPeople,loadPerson,refreshPerson,loadRecords,loadRecord,loadService,loadServices,loadReviews,loadCatalog,loadPublicListing,loadAsset,write,checkPending,retry:()=>send(),previewAsset,previewReview,previewCatalog,canNavigate:()=>!pending.value}
 }

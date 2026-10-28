@@ -389,7 +389,7 @@ class V5Api extends ChangeNotifier {
   }
 }
 
-class V5Frame extends StatelessWidget {
+class V5Frame extends StatefulWidget {
   const V5Frame(
       {super.key,
       required this.api,
@@ -404,32 +404,96 @@ class V5Frame extends StatelessWidget {
   final String title;
   final List<Widget> children;
   @override
+  State<V5Frame> createState() => _V5FrameState();
+}
+
+class _V5FrameState extends State<V5Frame> {
+  final _forms = <V5FormState>{};
+  bool _confirmingLeave = false, _updateScheduled = false;
+
+  bool get locked =>
+      widget.api.writes > 0 ||
+      widget.api.pendingOperations.isNotEmpty ||
+      widget.api.session.pending('POST', '/api/v1/supply/assets',
+              actingParty: widget.api.session.partyId) !=
+          null ||
+      _forms.any((form) => form.busy || form.pending != null);
+  bool get dirty => _forms.any((form) => form.dirty);
+
+  void formChanged() {
+    if (_updateScheduled) return;
+    _updateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScheduled = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  Future<void> leave() async {
+    if (_confirmingLeave) return;
+    if (locked) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+      return;
+    }
+    if (dirty) {
+      _confirmingLeave = true;
+      final confirmed = await _v5DiscardChanges(context, widget.api.session);
+      _confirmingLeave = false;
+      if (!mounted || !confirmed || locked) return;
+    }
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushReplacementNamed(context, '/my');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) => AnimatedBuilder(
-      animation: api,
+      animation: widget.api,
       builder: (context, _) {
-        final locked = api.writes > 0 ||
-            api.pendingOperations.isNotEmpty ||
-            api.session.pending('POST', '/api/v1/supply/assets',
-                    actingParty: api.session.partyId) !=
-                null;
-        if (!embedded) {
-          return tradeScaffold(context, title, children,
-              locked: locked, footer: footer, plaza: plaza);
-        }
         return PopScope(
-            canPop: !locked,
+            canPop: !locked && !dirty,
             onPopInvokedWithResult: (didPop, result) {
-              if (!didPop && locked) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
-              }
+              if (!didPop) leave();
             },
-            child: AccountTheme(
-                plaza: plaza,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [...children, if (footer != null) footer!])));
+            child: widget.embedded
+                ? AccountTheme(
+                    plaza: widget.plaza,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ...widget.children,
+                          if (widget.footer != null) widget.footer!
+                        ]))
+                : tradeScaffold(context, widget.title, widget.children,
+                    onBack: leave, footer: widget.footer, plaza: widget.plaza));
       });
+}
+
+Future<bool> _v5DiscardChanges(BuildContext context, AccountSession session,
+    {bool changingSelection = false}) async {
+  final epoch = session.epoch, party = session.partyId;
+  final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text(changingSelection ? '更换当前选择？' : '离开当前页面？'),
+            content: Text(
+                changingSelection ? '更换后将清空尚未提交的填写内容。' : '还有尚未提交的内容，离开后将丢失。'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('继续填写')),
+              FilledButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: Text(changingSelection ? '放弃填写并更换' : '放弃填写并离开')),
+            ],
+          ));
+  return confirmed == true &&
+      epoch == session.epoch &&
+      party == session.partyId;
 }
 
 class V5Gate extends StatelessWidget {
@@ -448,8 +512,9 @@ class V5Gate extends StatelessWidget {
   final String? expiredLabel;
   // Only public catalogue filters keep state across global-city updates.
   // Account/party/epoch changes still discard all prior state.
-  final String? stateKey;
   final String domain, route;
+  // A changing return query need not discard an embedded page's local filters.
+  final String? stateKey;
   final bool account, personal;
   final Widget Function(AccountSession) builder;
   @override
@@ -652,11 +717,12 @@ class V5Form extends StatefulWidget {
   final List<Widget> Function(
       Map<String, dynamic>, void Function(String, dynamic), bool)? extra;
   @override
-  State<V5Form> createState() => _V5FormState();
+  V5FormState createState() => V5FormState();
 }
 
-class _V5FormState extends State<V5Form> {
-  final form = GlobalKey<FormState>();
+class V5FormState extends State<V5Form>
+    with AutomaticKeepAliveClientMixin<V5Form> {
+  var form = GlobalKey<FormState>();
   final controllers = <String, TextEditingController>{};
   final values = <String, dynamic>{};
   String? error, notice;
@@ -667,7 +733,49 @@ class _V5FormState extends State<V5Form> {
       completed = false;
   int? version;
   int ticket = 0;
+  _V5FrameState? _frame;
+  late String _initialInput;
+  late (AccountSession, int, String?) _identity;
+  bool _confirmingLeave = false;
   Map<String, dynamic>? get pending => widget.api.pending(widget.suffix);
+  String get _input {
+    final input = {
+      ...values,
+      for (final field in widget.fields)
+        field.keyName: controllers[field.keyName]?.text ??
+            values[field.keyName] ??
+            (field.type == 'bool'
+                ? false
+                : field.type == 'slots'
+                    ? <dynamic>[]
+                    : null)
+    };
+    return jsonEncode(
+        {for (final key in input.keys.toList()..sort()) key: input[key]});
+  }
+
+  bool get dirty => !completed && _input != _initialInput;
+
+  /// Use before a parent changes the selection that replaces this form.
+  /// Unknown writes must be recovered even if the user wants another selection.
+  Future<bool> confirmDiscardChanges() async {
+    if (_confirmingLeave) return false;
+    if ((_frame?.locked ?? false) || busy || pending != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+      return false;
+    }
+    if (!dirty) return true;
+    _confirmingLeave = true;
+    final discard = await _v5DiscardChanges(context, widget.api.session,
+        changingSelection: true);
+    _confirmingLeave = false;
+    return mounted && discard && !busy && pending == null;
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -686,11 +794,75 @@ class _V5FormState extends State<V5Form> {
                 : '${values[f.keyName] ?? ''}');
       }
     }
+    _initialInput = _input;
+    _identity = (
+      widget.api.session,
+      widget.api.session.epoch,
+      widget.api.session.partyId
+    );
+    widget.api.session.addListener(_sessionChanged);
+    for (final controller in controllers.values) {
+      controller.addListener(_inputChanged);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final frame = context.findAncestorStateOfType<_V5FrameState>();
+    if (frame == _frame) return;
+    _frame?._forms.remove(this);
+    _frame?.formChanged();
+    _frame = frame;
+    _frame?._forms.add(this);
+    _frame?.formChanged();
+  }
+
+  void _inputChanged() {
+    if (!mounted) return;
+    setState(() {});
+    _frame?.formChanged();
+  }
+
+  void _sessionChanged() {
+    final identity = (
+      widget.api.session,
+      widget.api.session.epoch,
+      widget.api.session.partyId
+    );
+    if (_identity == identity) return;
+    _identity = identity;
+    ticket++;
+    form = GlobalKey<FormState>();
+    values.clear();
+    for (final controller in controllers.values) {
+      controller.clear();
+    }
+    _initialInput = _input;
+    setState(() {
+      busy = conflict = fresh = reviewed = completed = false;
+      error = notice = null;
+      version = null;
+    });
+    _frame?.formChanged();
+  }
+
+  @override
+  void didUpdateWidget(covariant V5Form oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.api.session != oldWidget.api.session) {
+      oldWidget.api.session.removeListener(_sessionChanged);
+      widget.api.session.addListener(_sessionChanged);
+      _sessionChanged();
+    }
   }
 
   @override
   void dispose() {
     ticket++;
+    widget.api.session.removeListener(_sessionChanged);
+    _frame?._forms.remove(this);
+    _frame?.formChanged();
     for (final c in controllers.values) {
       c.dispose();
     }
@@ -702,6 +874,7 @@ class _V5FormState extends State<V5Form> {
       values[key] = value;
       controllers[key]?.text = value is List ? value.join(', ') : '$value';
     });
+    _frame?.formChanged();
   }
 
   Future<void> latest() async {
@@ -712,6 +885,7 @@ class _V5FormState extends State<V5Form> {
       busy = true;
       error = null;
     });
+    _frame?.formChanged();
     try {
       final v = await widget.reload!();
       widget.api.check(epoch, p);
@@ -725,6 +899,7 @@ class _V5FormState extends State<V5Form> {
       if (mounted && t == ticket) setState(() => error = v5Error(e));
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
+      _frame?.formChanged();
     }
   }
 
@@ -787,6 +962,7 @@ class _V5FormState extends State<V5Form> {
       error = null;
       notice = null;
     });
+    _frame?.formChanged();
     try {
       if (op != null) await widget.reload?.call();
       final result = await widget.api.post(widget.suffix, body, (d) {
@@ -819,6 +995,7 @@ class _V5FormState extends State<V5Form> {
       }
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
+      _frame?.formChanged();
     }
   }
 
@@ -878,83 +1055,113 @@ class _V5FormState extends State<V5Form> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final op = pending,
         locked = busy || op != null,
         enabled = !locked && !completed;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (busy) const LinearProgressIndicator(),
-      if (error != null) appNotice(error!, icon: Icons.error_outline),
-      if (notice != null) appNotice(notice!),
-      if (op != null) appNotice('本次结果待核对，保留原内容、原版本及同一次操作标识。'),
-      Form(
-          key: form,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            for (final f in widget.fields)
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: f.type == 'bool'
-                      ? CheckboxListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(f.label),
-                          value: values[f.keyName] == true,
-                          onChanged: enabled
-                              ? (v) => change(f.keyName, v == true)
-                              : null)
-                      : f.type == 'slots'
-                          ? v5SlotsField(context,
-                              value: values[f.keyName],
-                              enabled: enabled,
-                              onChanged: (v) => change(f.keyName, v))
-                          : f.type == 'datetime'
-                              ? v5DateField(context,
-                                  label: f.label,
-                                  value: values[f.keyName],
-                                  controller: controllers[f.keyName],
-                                  enabled: enabled,
-                                  required: f.required,
-                                  onChanged: (v) => change(f.keyName, v))
-                              : f.choices != null
-                                  ? choiceField(f, enabled)
-                                  : TextFormField(
-                                      controller: controllers[f.keyName],
+    return PopScope(
+        canPop: _frame != null || !locked && !dirty,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop || _frame != null || _confirmingLeave) return;
+          if (locked) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+            return;
+          }
+          _confirmingLeave = true;
+          final leave = await _v5DiscardChanges(context, widget.api.session);
+          _confirmingLeave = false;
+          if (!context.mounted || !leave || busy || pending != null) return;
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushReplacementNamed(context, '/my');
+          }
+        },
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          if (busy) const LinearProgressIndicator(),
+          if (error != null) appNotice(error!, icon: Icons.error_outline),
+          if (notice != null) appNotice(notice!),
+          if (op != null) appNotice('本次结果待核对，保留原内容、原版本及同一次操作标识。'),
+          Form(
+              key: form,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final f in widget.fields)
+                      Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: f.type == 'bool'
+                              ? CheckboxListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(f.label),
+                                  value: values[f.keyName] == true,
+                                  onChanged: enabled
+                                      ? (v) => change(f.keyName, v == true)
+                                      : null)
+                              : f.type == 'slots'
+                                  ? v5SlotsField(context,
+                                      value: values[f.keyName],
                                       enabled: enabled,
-                                      minLines: f.type == 'multiline' ? 3 : 1,
-                                      maxLines: f.type == 'multiline' ? 8 : 1,
-                                      maxLength:
-                                          f.type == 'multiline' ? 8000 : 500,
-                                      keyboardType: ['money', 'int']
-                                              .contains(f.type)
-                                          ? const TextInputType
-                                              .numberWithOptions(decimal: true)
-                                          : TextInputType.text,
-                                      decoration: InputDecoration(
-                                          labelText: f.label,
-                                          helperText: f.hint),
-                                      validator: (v) => f.required &&
-                                              (v == null || v.trim().isEmpty)
-                                          ? '请填写${f.label}'
-                                          : null)),
-            ...?widget.extra?.call(values, change, enabled),
-          ])),
-      if (conflict && widget.reload != null) ...[
-        tradeButton('读取最新状态并保留输入', busy ? null : latest, outline: true),
-        if (fresh)
-          CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('我已核对最新记录，确认沿用本页输入办理'),
-              value: reviewed,
-              onChanged:
-                  busy ? null : (v) => setState(() => reviewed = v == true)),
-      ],
-      tradeButton(
-          op != null ? '恢复原请求核对' : widget.action,
-          busy ||
-                  completed ||
-                  op == null && (!widget.canSubmit || conflict && !reviewed)
-              ? null
-              : submit),
-    ]);
+                                      onChanged: (v) => change(f.keyName, v))
+                                  : f.type == 'datetime'
+                                      ? v5DateField(context,
+                                          label: f.label,
+                                          value: values[f.keyName],
+                                          controller: controllers[f.keyName],
+                                          enabled: enabled,
+                                          required: f.required,
+                                          onChanged: (v) =>
+                                              change(f.keyName, v))
+                                      : f.choices != null
+                                          ? choiceField(f, enabled)
+                                          : TextFormField(
+                                              controller:
+                                                  controllers[f.keyName],
+                                              enabled: enabled,
+                                              minLines:
+                                                  f.type == 'multiline' ? 3 : 1,
+                                              maxLines:
+                                                  f.type == 'multiline' ? 8 : 1,
+                                              maxLength: f.type == 'multiline'
+                                                  ? 8000
+                                                  : 500,
+                                              keyboardType: ['money', 'int']
+                                                      .contains(f.type)
+                                                  ? const TextInputType
+                                                      .numberWithOptions(
+                                                      decimal: true)
+                                                  : TextInputType.text,
+                                              decoration: InputDecoration(
+                                                  labelText: f.label,
+                                                  helperText: f.hint),
+                                              validator: (v) => f.required &&
+                                                      (v == null ||
+                                                          v.trim().isEmpty)
+                                                  ? '请填写${f.label}'
+                                                  : null)),
+                    ...?widget.extra?.call(values, change, enabled),
+                  ])),
+          if (conflict && widget.reload != null) ...[
+            tradeButton('读取最新状态并保留输入', busy ? null : latest, outline: true),
+            if (fresh)
+              CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('我已核对最新记录，确认沿用本页输入办理'),
+                  value: reviewed,
+                  onChanged: busy
+                      ? null
+                      : (v) => setState(() => reviewed = v == true)),
+          ],
+          tradeButton(
+              op != null ? '恢复原请求核对' : widget.action,
+              busy ||
+                      completed ||
+                      op == null && (!widget.canSubmit || conflict && !reviewed)
+                  ? null
+                  : submit),
+        ]));
   }
 }
 

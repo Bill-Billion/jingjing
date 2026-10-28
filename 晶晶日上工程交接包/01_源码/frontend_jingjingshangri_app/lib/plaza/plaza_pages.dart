@@ -889,11 +889,20 @@ class PlazaSearchPage extends StatelessWidget {
                     '城市、标签、试镜展示',
                     _cityRoute('/artists/catalog', initialCity)
                   ),
-                  ('找作品', '公开作品与个人许可', '/stock/catalog'),
+                  (
+                    '找作品',
+                    '公开作品与个人许可',
+                    _cityRoute('/stock/catalog', initialCity)
+                  ),
                   (
                     '找通告',
                     '城市、类别与有效状态',
                     _cityRoute('/notices/catalog', initialCity)
+                  ),
+                  (
+                    '找试镜',
+                    '当前城市可预约的服务',
+                    _cityRoute('/auditions/catalog', initialCity)
                   ),
                 ])
                   Padding(
@@ -902,6 +911,11 @@ class PlazaSearchPage extends StatelessWidget {
                           title: entry.$1,
                           subtitle: entry.$2,
                           onTap: () => Navigator.pushNamed(context, entry.$3))),
+                OutlinedButton.icon(
+                    onPressed: () => Navigator.pushNamed(
+                        context, _cityRoute('/search/filters', initialCity)),
+                    icon: const Icon(Icons.tune),
+                    label: const Text('调整城市与目录筛选')),
                 const SizedBox(height: 30),
                 const Text('先选择内容类型，再按城市或标签筛选。',
                     style: TextStyle(

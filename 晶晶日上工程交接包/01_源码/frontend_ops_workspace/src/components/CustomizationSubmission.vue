@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IntakeRequest } from '@/api/modules/customization'
-defineProps<{ request: IntakeRequest }>()
+defineProps<{ request: Pick<IntakeRequest, 'submission' | 'template_version_id'> }>()
 </script>
 
 <template>

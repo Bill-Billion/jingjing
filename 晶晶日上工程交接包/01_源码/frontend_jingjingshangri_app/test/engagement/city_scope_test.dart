@@ -16,8 +16,9 @@ void main() {
       final city = ValueNotifier('郑州');
       addTearDown(city.dispose);
       final a = FakeAccountAdapter(handler: (r) {
-        if (r.path.endsWith('/catalog'))
+        if (r.path.endsWith('/catalog')) {
           return envelope({'items': [], 'next_cursor': null});
+        }
         return FakeAccountAdapter().defaultReply(r);
       });
       final s = (await t.runAsync(() => communitySession(a)))!;
@@ -30,9 +31,10 @@ void main() {
           t,
           s,
           ValueListenableBuilder<String>(
-              valueListenable: city, builder: (_, value, child) => page(value)));
-      final reads =
-          () => a.requests.where((r) => r.path == '/api/v1/$kind/catalog');
+              valueListenable: city,
+              builder: (_, value, child) => page(value)));
+      Iterable<RequestOptions> reads() =>
+          a.requests.where((r) => r.path == '/api/v1/$kind/catalog');
       expect(reads().last.queryParameters['city'], '郑州');
       city.value = '北京';
       await frames(t);

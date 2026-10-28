@@ -347,6 +347,7 @@ export interface ErrorLike {
 
 /** 取一句给人看的中文说明。找不到就返回 null，让调用方决定怎么展示。 */
 export function explainError(e: ErrorLike): string | null {
+  if (e.code === 'BUSINESS_FORM_INVALID' && !e.requestMethod) return e.message;
   if (e.code.startsWith('CLIENT_')) return e.message;
   const byCode = CODE_MESSAGES[e.code];
   if (byCode && !['NETWORK_UNREACHABLE', 'UNEXPECTED_RESPONSE_SHAPE', 'SERVICE_UNAVAILABLE', 'COMMIT_OUTCOME_UNKNOWN'].includes(e.code)) return byCode;

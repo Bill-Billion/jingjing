@@ -26,11 +26,44 @@ class AuditionsPage extends StatelessWidget {
   final String? id, action, invitationId;
   final bool embedded;
   final String initialCity;
+
+  String get returnRoute {
+    final query = {
+      if (['book', 'offer'].contains(mode) && v5Id(id)) 'offerId': id!,
+      if (['booking', 'messages', 'action'].contains(mode) && v5Id(id))
+        'bookingId': id!,
+      if (['catalog', 'book'].contains(mode) && v5Id(invitationId))
+        'invitationId': invitationId!,
+      if (mode == 'catalog' && initialCity.trim().isNotEmpty)
+        'city': initialCity.trim(),
+      if (mode == 'action' &&
+          const [
+            'decision',
+            'travel',
+            'delivery',
+            'cancel',
+            'reschedule',
+            'reschedule-response',
+            'contact',
+            'support',
+            'supplements',
+            'baseplate'
+          ].contains(action))
+        'action': action!,
+    };
+    return Uri(
+            path: '/auditions/$mode',
+            queryParameters: query.isEmpty ? null : query)
+        .toString();
+  }
+
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'auditions',
       embedded: embedded,
-      route: '/auditions/$mode',
+      route: returnRoute,
+      stateKey:
+          mode == 'catalog' ? '/auditions/catalog:${invitationId ?? ''}' : null,
       account: mode == 'catalog',
       builder: (s) => mode == 'action'
           ? AuditionActionPage(session: s, id: id ?? '', action: action ?? '')
@@ -99,6 +132,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   void didUpdateWidget(covariant _AuditionsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.mode == 'catalog' &&
+        widget.invitationId == null &&
         !independentCity &&
         oldWidget.initialCity != widget.initialCity) {
       city.text = widget.initialCity.trim();
@@ -333,7 +367,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                   controller: city,
                   onChanged: (_) => setState(() => independentCity = true),
                   decoration: const InputDecoration(labelText: '城市筛选')),
-              tradeButton('按城市查找', busy ? null : () => load(), outline: true)
+              tradeButton('按城市查找', busy ? null : () => load(), outline: true),
             ],
             for (final x in offers)
               Container(

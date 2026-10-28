@@ -89,6 +89,9 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   bool independentCity = false;
   String queryCity = '';
   String? queryType, queryAt;
+  final ruleField = GlobalKey<FormFieldState<String>>(),
+      typeField = GlobalKey<FormFieldState<String>>();
+  var noticeForm = GlobalKey<V5FormState>();
   int ticket = 0;
   @override
   void initState() {
@@ -152,7 +155,10 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     try {
       switch (widget.mode) {
         case 'catalog':
-          if (!more) { queryType=type; queryAt=at.text.trim().isEmpty?null:v5InputDate(at.text); }
+          if (!more) {
+            queryType = type;
+            queryAt = at.text.trim().isEmpty ? null : v5InputDate(at.text);
+          }
           final r = await api.catalog(
               cursor: more ? cursor : null,
               type: queryType,
@@ -200,11 +206,18 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   }
 
   Future<void> chooseRule(String id) async {
+    if (id == ruleId) return;
+    if (!await canReplaceNoticeForm()) {
+      ruleField.currentState?.didChange(ruleId);
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       busy = true;
       error = null;
       ruleId = id;
       eligibility = null;
+      noticeForm = GlobalKey<V5FormState>();
     });
     try {
       final e = await api.eligibility(id);
@@ -214,6 +227,28 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     } finally {
       if (mounted) setState(() => busy = false);
     }
+  }
+
+  Future<bool> canReplaceNoticeForm() async {
+    if (api.writes > 0 || api.pending('/announcements') != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+      return false;
+    }
+    return await noticeForm.currentState?.confirmDiscardChanges() ?? true;
+  }
+
+  Future<void> chooseType(String? next) async {
+    if (next == type) return;
+    if (!await canReplaceNoticeForm()) {
+      typeField.currentState?.didChange(type);
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      type = next;
+      noticeForm = GlobalKey<V5FormState>();
+    });
   }
 
   void go(String route) => Navigator.pushNamed(context, route);
@@ -424,6 +459,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           if (widget.mode == 'new') ...[
             appNotice('发布资格由服务器按可信事实和当前规则计算；普通实名不能替代星探或机构资质。官方事项请由有权运营在网页办理。'),
             DropdownButtonFormField<String>(
+                key: ruleField,
                 initialValue: ruleId,
                 isExpanded: true,
                 decoration: const InputDecoration(labelText: '选择已生效发布规则'),
@@ -457,6 +493,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
             ],
             if (eligibility != null) ...[
               DropdownButtonFormField<String>(
+                  key: typeField,
                   initialValue:
                       eligibility!.canPublish(type ?? '') ? type : null,
                   isExpanded: true,
@@ -466,7 +503,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                       .map((x) => DropdownMenuItem<String>(
                           value: x, child: Text(noticeTypes[x]!)))
                       .toList(),
-                  onChanged: busy ? null : (v) => setState(() => type = v)),
+                  onChanged: busy ? null : chooseType),
               if (type != null && eligibility!.canPublish(type!))
                 _noticeForm(type!)
             ],
@@ -567,7 +604,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   }
 
   Widget _noticeForm(String type) => V5Form(
-      key: ValueKey('$ruleId:$type'),
+      key: noticeForm,
       api: api,
       title: '按类型填写',
       action: '提交正式通告审核',
