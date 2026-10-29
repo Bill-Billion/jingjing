@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import '../account/account_api.dart';
@@ -98,6 +99,42 @@ class StockApi extends V5Api {
           });
   Future<StockOffer> offer(String id) =>
       get('/catalog/${key(id)}', (d) => StockOffer(d, id: id), account: true);
+  Future<StockPublicMedia> publicMedia(StockOffer offer) =>
+      get('/catalog/${key(offer.id)}/media', (d) => StockPublicMedia(d, offer),
+          account: true);
+  Future<Uint8List> publicCover(
+      StockOffer offer, StockPublicMedia media) async {
+    v5Require(media.data['listing_id'] == offer.id &&
+        media.data['listing_version'] == offer.version);
+    final value = await bytes('/catalog/${key(offer.id)}/cover',
+        account: true, max: 2097151);
+    if (value.length != media.cover.size ||
+        sha256.convert(value).toString() != media.cover.hash) {
+      throw const AccountError(502, 'STOCK_COVER_MISMATCH');
+    }
+    return value;
+  }
+
+  // Derivation is bounded on the server; visible cards share one read at a time.
+  static Future<void>? _mediaRead;
+  Future<(StockPublicMedia, Uint8List)> publicPresentation(
+      StockOffer offer, bool Function() isCurrent) async {
+    final previous = _mediaRead, done = Completer<void>();
+    _mediaRead = done.future;
+    if (previous != null) await previous;
+    try {
+      if (!isCurrent()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      final metadata = await publicMedia(offer);
+      if (!isCurrent()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      final cover = await publicCover(offer, metadata);
+      if (!isCurrent()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      return (metadata, cover);
+    } finally {
+      if (identical(_mediaRead, done.future)) _mediaRead = null;
+      done.complete();
+    }
+  }
+
   Future<V5Page<StockListing>> listings({String? cursor}) {
     final p = owner();
     return get('/listings',

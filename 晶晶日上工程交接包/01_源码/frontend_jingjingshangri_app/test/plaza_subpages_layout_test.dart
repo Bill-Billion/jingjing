@@ -10,6 +10,7 @@ import 'package:jingjingshangri_app/notices/notices_api.dart';
 import 'package:jingjingshangri_app/stock/v5_support.dart';
 import 'package:jingjingshangri_app/stock/stock_pages.dart';
 import 'package:jingjingshangri_app/stock/stock_public_card.dart';
+import 'package:jingjingshangri_app/stock/stock_public_media.dart';
 import 'account/fake_account_api.dart';
 import 'artists/artists_fixtures.dart' show publicMediaData;
 import 'catalog_editorial_restore_test.dart' show publicListing;
@@ -215,7 +216,8 @@ void main() {
         } else {
           expect(second.dy, greaterThan(first.dy));
         }
-        expect(find.text('封面待提供'), findsNWidgets(6));
+        expect(find.byType(StockPublicMediaView), findsNWidgets(6));
+        expect(find.text('封面待提供'), findsNothing);
         expect(t.takeException(), isNull);
       });
     }

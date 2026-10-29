@@ -53,15 +53,14 @@ async function main() {
     await page.getByRole('button',{name:'核对附件记录',exact:true}).waitFor();checks.push({name:'确认离开后从列表重开',status:'PASS',story_id:story.id,native_dialogs:dialogs,page_confirmation_cancel_and_accept:true});
     await page.screenshot({path:path.join(out,'02-reopened.png'),fullPage:true});
     phase='cross-business';
-    const trigger=page.getByRole('button',{name:'展开工作区入口',exact:true});
-    await trigger.click();await page.getByRole('searchbox',{name:'查找工作区入口'}).fill('真人与数字人');
+    await page.getByRole('searchbox',{name:'查找工作区入口'}).fill('真人与数字人');
     await page.getByRole('link',{name:'真人与数字人',exact:true}).click();
     await page.getByRole('button',{name:'暂时离开',exact:true}).click();await page.waitForURL(origin+'/artists/people');
     await page.getByTestId('artists-party').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-testid=artists-party]')?.disabled);
     await page.goBack();await page.waitForURL(origin+base+'/'+story.id);
     await page.getByRole('button',{name:'核对附件记录',exact:true}).waitFor();
     assert.equal((await list())[0].id,before[0].id);
-    checks.push({name:'从抽屉切到艺人页再返回，原附件请求仍可恢复',status:'PASS',story_id:story.id,asset_id:before[0].id});
+    checks.push({name:'从分类导航切到艺人页再返回，原附件请求仍可恢复',status:'PASS',story_id:story.id,asset_id:before[0].id});
     phase='recover';await page.getByRole('button',{name:'核对附件记录',exact:true}).click();
     const restored=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes('/attachments?'));
     restored.catch(()=>{});
