@@ -33,7 +33,7 @@ function methods({db,actor,member,load,creator,visible,match,command,audit}){
   return db.withTransaction(async tx=>{
    const {a,r}=await own(tx,ctx,i.request_id,i.party_id),hash=createHash('sha256').update(i.body).digest('hex'),op=digest(['STORY_ATTACHMENT',a.id,r.id,i.operation_key]);
    const old=await one(tx,'SELECT * FROM customization_attachments WHERE operation_hash=? FOR UPDATE',[op]);
-   if(old){if(old.content_sha256!==hash||old.display_name!==i.display_name||old.media_type!==i.media_type||old.byte_size!==i.body.length)throw error('IDEMPOTENCY_CONFLICT',409);if(old.current_status==='REVOKED')throw error('CUSTOMIZATION_ATTACHMENT_REVOKED',409);return {asset:old,replay:true};}
+   if(old){if(old.content_sha256!==hash||old.display_name!==i.display_name||old.media_type!==i.media_type||old.byte_size!==i.body.length)throw error('IDEMPOTENCY_CONFLICT',409);if(old.current_status==='REVOKED')throw error('CUSTOMIZATION_ATTACHMENT_REVOKED',409);if(old.current_status==='UPLOADING')await editable(tx,r);return {asset:old,replay:true};}
    await editable(tx,r);
    const template=stored(r.template_snapshot_json,r.template_sha256);if(!template.fields.some(f=>f.type==='PRIVATE_ATTACHMENT'))throw error('CUSTOMIZATION_ATTACHMENT_FIELD_REQUIRED',409);
    const n=await one(tx,'SELECT COUNT(*) n FROM customization_attachments WHERE request_id=?',[r.id]);if(Number(n.n)>=40)throw error('CUSTOMIZATION_ATTACHMENT_LIMIT',409);
@@ -55,10 +55,13 @@ function methods({db,actor,member,load,creator,visible,match,command,audit}){
   if(!i.party_id&&!await submittedReference(tx,r,f.id))throw error('CUSTOMIZATION_ATTACHMENT_NOT_FOUND',404);
   return f;
  });},
- async attachments(ctx,i){P.page({after:i.after||'',limit:i.limit??20});return db.withTransaction(async tx=>{
+ async attachments(ctx,i){if(i.include_retention!==undefined&&typeof i.include_retention!=='boolean')throw error('INVALID_INPUT',400);P.page({after:i.after||'',limit:i.limit??20});return db.withTransaction(async tx=>{
   const a=await actor(tx,ctx),r=await load(tx,id(i.request_id));await visible(tx,a,r,i.party_id||null);
   const limit=i.limit??20,rows=(await tx.execute('SELECT * FROM customization_attachments WHERE request_id=? AND id>? ORDER BY id LIMIT ?',[r.id,i.after||'',limit+1]))[0],items=[];
-  for(const f of rows.slice(0,limit))if(i.party_id||await submittedReference(tx,r,f.id))items.push(metadata(f));
+  for(const f of rows.slice(0,limit)){
+   const retained=(!i.party_id||i.include_retention)?await submittedReference(tx,r,f.id):false;
+   if(i.party_id||retained)items.push({...metadata(f),...(i.include_retention?{retention_reason:retained?'FORMAL_SUBMISSION':null}:{})});
+  }
   return {items,next_cursor:rows.length>limit?rows[limit-1].id:null};
  });},
  async revokeAttachment(ctx,i){shape(i,['request_id','party_id','asset_id','expected_version','operation_key']);return db.withTransaction(async tx=>{
@@ -77,7 +80,18 @@ function service(repo,storage){
  async upload(ctx,i){
   const {asset:f,replay}=await repo.reserveAttachment(ctx,i);
   if(replay&&f.current_status==='READY')return metadata(f);
-  if(replay){let body;try{body=await storage.getBuffer(f.object_key);}catch{throw error('ASSET_UPLOAD_RECONCILIATION_REQUIRED',409);}if(body==null)throw error('ASSET_UPLOAD_RECONCILIATION_REQUIRED',409);check(f,body);}
+  if(replay){
+   const read=async()=>{try{return await (storage.getBufferIfExists||storage.getBuffer).call(storage,f.object_key);}catch{throw error('ASSET_UPLOAD_RECONCILIATION_REQUIRED',409);}};
+   let body=await read();
+   if(body==null){
+    // Explicit user retry uses the original immutable key/content. Production storage
+    // forbids overwrites; a concurrent writer or lost receipt is resolved by reading.
+    try{await storage.put({key:f.object_key,body:i.body,contentType:i.media_type,isPrivate:true});}catch{ /* Verify before claiming either failure or success. */ }
+    body=await read();
+    if(body==null)throw error('ASSET_UPLOAD_RECONCILIATION_REQUIRED',409);
+   }
+   check(f,body);
+  }
   else await storage.put({key:f.object_key,body:i.body,contentType:i.media_type,isPrivate:true});
   return repo.finishAttachment(ctx,{request_id:i.request_id,party_id:i.party_id,asset_id:f.id});
  },

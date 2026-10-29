@@ -16,6 +16,7 @@ function createCustomizationRouter({ db, resolvePrincipal, secret, env={}, stora
   const files=attachments.service(repo,{
     put:i=>withStorage('put',i.key,context=>storage.put(i,context)),
     getBuffer:key=>withStorage('get',key,context=>storage.getBuffer(key,context)),
+    getBufferIfExists:key=>withStorage('get',key,context=>storage.getBufferIfExists ? storage.getBufferIfExists(key,context) : storage.getBuffer(key,context)),
   });
   const key = req => ref(req.get('Idempotency-Key'));
   function acting(req, required = true) {
@@ -43,7 +44,7 @@ function createCustomizationRouter({ db, resolvePrincipal, secret, env={}, stora
     return createHmac('sha256', secret).update(JSON.stringify(['customization-cursor-v1', req.account.id, req.actingParty || null, scope, encoded])).digest('hex');
   }
   function page(req, isOperator = false, historyId = null) {
-    shape(req.query, historyId ? ['cursor','limit'] : ['cursor', 'limit', 'current_status']);
+    shape(req.query, historyId ? (historyId.startsWith('attachments:')?['cursor','limit','include_retention']:['cursor','limit']) : ['cursor', 'limit', 'current_status']);
     const limitText = req.query.limit;
     if (limitText !== undefined && (typeof limitText !== 'string' || !/^[1-9][0-9]{0,2}$/.test(limitText))) throw error('INVALID_LIMIT', 400);
     const limit = limitText === undefined ? 20 : Number(limitText);
@@ -78,7 +79,8 @@ function createCustomizationRouter({ db, resolvePrincipal, secret, env={}, stora
   }));
   router.get('/customization-requests/:request_id/attachments',wrap(async(req,res)=>{
     const request_id=id(req.params.request_id),party_id=acting(req,false),p=page(req,false,'attachments:'+request_id);
-    paged(req,res,await repo.attachments(req,{request_id,party_id,after:p.after,limit:p.limit}),p.scope);
+    if(req.query.include_retention!==undefined&&!['true','false'].includes(req.query.include_retention))throw error('INVALID_INPUT',400);
+    paged(req,res,await repo.attachments(req,{request_id,party_id,after:p.after,limit:p.limit,include_retention:req.query.include_retention==='true'}),p.scope);
   }));
   router.get('/customization-requests/:request_id/attachments/:asset_id/content',wrap(async(req,res)=>{
     shape(req.query,[]);const f=await files.download(req,{request_id:id(req.params.request_id),party_id:acting(req,false),asset_id:id(req.params.asset_id)});

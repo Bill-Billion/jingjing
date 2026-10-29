@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.3-rc.1
+  version: 0.31.4-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -27,6 +27,50 @@ tags:
 x-baseline-id: JX-R06-EXECUTION-BASELINE-20260921
 x-review-status: PENDING_EXPERIENCE_REVIEW
 paths:
+  /api/v1/artists/catalog/{listing_id}/media:
+    get:
+      operationId: readPublicArtistMedia
+      summary: 读取已审核公开艺人的主肖像选择与媒体类型
+      description: 仅返回当前有效公开展示中的素材摘要和本人或受托人明确选定、随展示审核的主肖像。旧展示未选择则为null，不自动从私人档案取图。原始字节继续通过既有受控下载接口读取并核对摘要；无公开URL，不声称已生成缩略图或已核实视频时长。
+      tags:
+      - artists
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - name: listing_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistPublicMediaResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
   /api/v1/customization-requests/{id}/attachments:
     get:
       operationId: customizationAttachments
@@ -52,6 +96,13 @@ paths:
         description: 本人携带故事原办理身份；平台受理人员不带此头，仅可读取已正式提交的附件。
       - $ref: '#/components/parameters/Cursor'
       - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: include_retention
+        required: false
+        schema:
+          type: boolean
+          default: false
+        description: 显式请求后，每条附件增加retention_reason；FORMAL_SUBMISSION表示被任一历史正式版本引用，null表示没有此类引用。默认不增加字段，以兼容既有严格客户端。
       responses:
         '200':
           description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
@@ -83,7 +134,7 @@ paths:
     post:
       operationId: uploadCustomizationAttachment
       summary: 上传私人参考附件，单文件不超过8MiB
-      description: 先新建故事草稿，再上传文件，将返回的附件id保存到对应PRIVATE_ATTACHMENT答案。重复上传须用原请求键和同一文件。结果未知时重试只核对原文件；不生成公开地址。撤回访问不等于彻底删除文件和备份。
+      description: 先新建故事草稿，再上传文件，将返回的附件id保存到对应PRIVATE_ATTACHMENT答案。重复上传须用原请求键和同一文件。结果未知时先核对原文件；仅当存储明确确认不存在时，用原键原内容补写并回读核验。读权限失败、超时或内容不符不覆盖文件；不生成公开地址。撤回访问不等于彻底删除文件和备份。
       tags:
       - cocreation
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -25296,6 +25347,72 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ArtistPublicMediaItem:
+      type: object
+      additionalProperties: false
+      properties:
+        asset_id: &artistmedia001
+          type: string
+          format: uuid
+        media_type:
+          type: string
+          enum:
+          - image/jpeg
+          - image/png
+          - video/mp4
+          - audio/mpeg
+          - audio/wav
+          - application/pdf
+          - text/plain
+        byte_size:
+          type: integer
+          minimum: 1
+          maximum: 8388608
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        media_kind:
+          type: string
+          enum:
+          - IMAGE
+          - AUDIO
+          - VIDEO
+          - DOCUMENT
+      required:
+      - asset_id
+      - media_type
+      - byte_size
+      - content_sha256
+      - media_kind
+    ArtistPublicMedia:
+      type: object
+      additionalProperties: false
+      properties:
+        listing_id: *artistmedia001
+        primary_portrait_asset_id:
+          anyOf:
+          - *artistmedia001
+          - type: 'null'
+        items:
+          type: array
+          maxItems: 6
+          items:
+            $ref: '#/components/schemas/ArtistPublicMediaItem'
+      required:
+      - listing_id
+      - primary_portrait_asset_id
+      - items
+    ArtistPublicMediaResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ArtistPublicMedia'
+      required:
+      - meta
+      - data
     CustomizationAttachment:
       type: object
       additionalProperties: false
@@ -25336,6 +25453,9 @@ components:
         object_version:
           type: integer
           minimum: 1
+        retention_reason:
+          enum: [FORMAL_SUBMISSION, null]
+          description: 仅附件清单显式include_retention=true时返回；历史正式版本引用不因补件替换而解除，不代表法定保留期限或文件已删除。
       required:
       - id
       - request_id
@@ -41179,6 +41299,12 @@ components:
           - type: 'null'
         audition_public:
           type: boolean
+        primary_portrait_asset_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: 可选主肖像，必须属于本次preview_asset_ids且为JPEG或PNG；与此展示一起审核。省略或null表示未选择，不自动挑选私人图片。
         preview_asset_ids:
           type: array
           items:
@@ -42292,6 +42418,12 @@ components:
           - type: 'null'
         audition_public:
           type: boolean
+        primary_portrait_asset_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          description: 可选主肖像，必须属于本次preview_asset_ids且为JPEG或PNG；与此展示一起审核。省略或null表示未选择，不自动挑选私人图片。
         preview_asset_ids:
           type: array
           items:

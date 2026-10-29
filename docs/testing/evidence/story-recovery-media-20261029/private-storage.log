@@ -1,0 +1,83 @@
+TAP version 13
+# Subtest: all declared provider interfaces fail closed without implementations
+ok 1 - all declared provider interfaces fail closed without implementations
+  ---
+  duration_ms: 3.4811
+  type: 'test'
+  ...
+# Subtest: configuration alone, wrong environment, stale proof and disabled status never call a provider
+ok 2 - configuration alone, wrong environment, stale proof and disabled status never call a provider
+  ---
+  duration_ms: 1.2941
+  type: 'test'
+  ...
+# Subtest: timeout reports unknown outcome, aborts and never automatically repeats payment
+ok 3 - timeout reports unknown outcome, aborts and never automatically repeats payment
+  ---
+  duration_ms: 13.4339
+  type: 'test'
+  ...
+# Subtest: provider error bodies and logger metadata do not leak credentials or private URLs
+ok 4 - provider error bodies and logger metadata do not leak credentials or private URLs
+  ---
+  duration_ms: 0.6636
+  type: 'test'
+  ...
+# Subtest: private files require permission and verified configuration, never local fallback
+ok 5 - private files require permission and verified configuration, never local fallback
+  ---
+  duration_ms: 1.4793
+  type: 'test'
+  ...
+# Subtest: private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+ok 6 - private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+  ---
+  duration_ms: 1.2837
+  type: 'test'
+  ...
+# Subtest: changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+ok 7 - changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+  ---
+  duration_ms: 3909.2263
+  type: 'test'
+  ...
+# Subtest: health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+ok 8 - health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+  ---
+  duration_ms: 63.61
+  type: 'test'
+  ...
+# Subtest: OSS failures never produce a successful or public result; revocation is checked before each read
+ok 9 - OSS failures never produce a successful or public result; revocation is checked before each read
+  ---
+  duration_ms: 1.2832
+  type: 'test'
+  ...
+# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-10-29T05:59:43.834Z","level":"warn","event":"legacy_private_upload_blocked"}
+# Subtest: legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+ok 10 - legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+  ---
+  duration_ms: 778.3024
+  type: 'test'
+  ...
+# Subtest: verified erasure confirms only the exact current object; access errors and changed bytes never pass
+ok 11 - verified erasure confirms only the exact current object; access errors and changed bytes never pass
+  ---
+  duration_ms: 1.639
+  type: 'test'
+  ...
+# Subtest: private missing-object probe distinguishes exact absence from denied or uncertain reads
+ok 12 - private missing-object probe distinguishes exact absence from denied or uncertain reads
+  ---
+  duration_ms: 1.2089
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5028.753

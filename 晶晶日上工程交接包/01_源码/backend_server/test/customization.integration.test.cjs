@@ -31,7 +31,7 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
   const org=await parties.createOrganization(buyer.ctx,{display_name:'合成故事测试机构',operation_key:key()});
   const invite=await parties.inviteMember(buyer.ctx,{party_id:org.party_id,invitee_account_id:member.account_id,expires_at:new Date(Date.now()+3600000).toISOString(),operation_key:key()});
   await parties.respondInvitation(member.ctx,{party_id:org.party_id,invitation_id:invite.invitation_id,decision:'ACCEPT',expected_version:1,operation_key:key()});
-  const files=new Map();let failAfterPut=false,onRead=null;const storageFactory=()=>({async put(i){files.set(i.key,Buffer.from(i.body));if(failAfterPut){failAfterPut=false;throw Object.assign(new Error('synthetic lost result'),{code:'PROVIDER_UNAVAILABLE',status:503});}},async getBuffer(k){const hook=onRead;onRead=null;if(hook)await hook();return files.get(k);}});
+  const files=new Map();let failAfterPut=false,failBeforePut=false,onRead=null;const storageFactory=()=>({async put(i){if(failBeforePut){failBeforePut=false;throw Object.assign(Error('synthetic write refused'),{code:'PROVIDER_CALL_FAILED',status:503});}files.set(i.key,Buffer.from(i.body));if(failAfterPut){failAfterPut=false;throw Object.assign(new Error('synthetic lost result'),{code:'PROVIDER_UNAVAILABLE',status:503});}},async getBuffer(k){const hook=onRead;onRead=null;if(hook)await hook();return files.get(k);}});
   server=createAccountApi({db,secret,supplyStorageFactory:storageFactory}).listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
   async function request(method,url,person=buyer,body,partyId=person?.personal_party_id,headers={}){
@@ -368,6 +368,11 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    let patched=await repo.saveSupplement(buyer.ctx,{request_id:r.id,party_id:buyer.personal_party_id,answers:{...fullAnswers,portrait:pending.id},responses:{portrait:'已换合成附件'},expected_version:correction.object_version,operation_key:key()});
    await repo.submitSupplement(buyer.ctx,{request_id:r.id,party_id:buyer.personal_party_id,expected_version:patched.object_version,operation_key:key()});
    assert.equal((await download(pending.id,operator,null)).status,200);assert.equal((await download(f.id,operator,null)).status,200);
+   const retained=capture(await request('GET',base+'?include_retention=true'),'CustomizationAttachmentPageResponse');
+   assert.equal(retained.items.find(x=>x.id===f.id).retention_reason,'FORMAL_SUBMISSION');
+   assert.equal(retained.items.find(x=>x.id===pending.id).retention_reason,'FORMAL_SUBMISSION');
+   assert.equal(capture(await request('GET',base),'CustomizationAttachmentPageResponse').items[0].retention_reason,undefined);
+   failed(await request('GET',base+'?include_retention=unknown'),400);
    const storedKey=[...files.keys()].find(k=>k.endsWith('/'+pending.id));files.set(storedKey,Buffer.from('corrupt'));
    assert.equal((await download(pending.id)).status,503);
   });
@@ -387,6 +392,28 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    const content=await fetch('http://127.0.0.1:'+server.address().port+'/api/v1/customization-requests/'+r.id+'/attachments/'+f.id+'/content',{headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.personal_party_id}});assert.equal(content.status,409);
    const another=await make({story:'另一个自由创作'},buyer,buyer.personal_party_id,template);
    failed(await save(another,{story:'another',material:f.id}),409);
+  });
+  await t.test('missing upload retries repair the same row; unreadable, corrupt and no-longer-editable files do not overwrite',async()=>{
+   let r=await make(fullAnswers,buyer,buyer.personal_party_id,attachment);
+   const base='/customization-requests/'+r.id+'/attachments',url=base+'?display_name=repair.txt&media_type=text%2Fplain',bytes=Buffer.from('repair original only'),op=key();
+   const send=()=>request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,op));
+   failBeforePut=true;failed(await send(),503);
+   let rows=capture(await request('GET',base+'?include_retention=true'),'CustomizationAttachmentPageResponse').items;
+   assert.equal(rows.length,1);assert.equal(rows[0].current_status,'UPLOADING');assert.equal(rows[0].retention_reason,null);
+   const reserved=rows[0].id;
+   onRead=async()=>{throw Error('synthetic temporary read failure');};
+   assert.equal(failed(await send(),409).body.error.code,'ASSET_UPLOAD_RECONCILIATION_REQUIRED');
+   assert.equal([...files.keys()].some(k=>k.endsWith('/'+reserved)),false);
+   const recovered=capture(await send(),'CustomizationAttachmentResponse');assert.equal(recovered.id,reserved);assert.equal(recovered.current_status,'READY');
+   const concurrent=await Promise.all([send(),send()]);for(const result of concurrent)assert.equal(capture(result,'CustomizationAttachmentResponse').id,reserved);
+   assert.equal(capture(await request('GET',base),'CustomizationAttachmentPageResponse').items.length,1);
+   const corruptOp=key(),corruptSend=()=>request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,corruptOp));
+   failAfterPut=true;failed(await corruptSend(),503);
+   rows=capture(await request('GET',base),'CustomizationAttachmentPageResponse').items;
+   const unfinished=rows.find(x=>x.current_status==='UPLOADING'),objectKey=[...files.keys()].find(k=>k.endsWith('/'+unfinished.id));
+   files.set(objectKey,Buffer.from('corrupt'));assert.equal(failed(await corruptSend(),503).body.error.code,'SERVICE_UNAVAILABLE');assert.equal(files.get(objectKey).toString(),'corrupt');
+   r=capture(await save(r,{...fullAnswers,portrait:recovered.id}),'CustomizationRequestResponse');r=capture(await submit(r),'CustomizationRequestResponse');
+   files.delete(objectKey);assert.equal(failed(await corruptSend(),409).body.error.code,'CUSTOMIZATION_ATTACHMENT_NOT_EDITABLE');assert.equal(files.has(objectKey),false);
   });
   await t.test('story intake has no order, payment, refund or production side effects',async()=>{
    for(const table of ['trade_records','trade_journal','production_records'])assert.equal(await count(table),0,table+' must remain empty');

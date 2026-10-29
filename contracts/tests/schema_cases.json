@@ -1478,6 +1478,39 @@
         "private_phone"
       ],
       "replace_with": "synthetic"
+    },
+    {
+      "name": "artist media has no private object key",
+      "fixture": "ArtistPublicMediaResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "object_key"
+      ],
+      "replace_with": "private/forbidden"
+    },
+    {
+      "name": "artist media has no unsupported kind",
+      "fixture": "ArtistPublicMediaResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "media_kind"
+      ],
+      "replace_with": "PUBLIC_URL"
+    },
+    {
+      "name": "story retention does not claim legal deadline",
+      "fixture": "CustomizationAttachmentPageResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "retention_reason"
+      ],
+      "replace_with": "FOREVER"
     }
   ]
 }
