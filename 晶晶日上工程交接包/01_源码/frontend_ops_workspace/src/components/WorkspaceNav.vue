@@ -1,17 +1,41 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { CircleCheck, Collection, Document, FolderOpened, OfficeBuilding, Reading, Tickets, User, View } from '@element-plus/icons-vue'
 import { domains } from '@/business'
 
 const route = useRoute()
 const query = ref('')
+const opened = ref(false), drawer = ref<HTMLDialogElement | null>(null), search = ref<HTMLInputElement | null>(null)
+const currentLabel = computed(() => typeof route.meta.title === 'string' ? route.meta.title : [...links, ...reviews].find(item => active(item.to))?.label || Object.values(domains).find(d => route.path.startsWith(`/${d.key}/`))?.title || '当前业务')
 const matches = (label: string, path: string) => `${label} ${path}`.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase())
 const visibleLinks = computed(() => links.filter(item => matches(item.label, item.to)))
 const visibleReviews = computed(() => reviews.filter(item => matches(item.label, item.to)))
 const visibleDomains = computed(() => Object.values(domains).filter(d => matches(d.title, `/${d.key}/`)))
 const resultCount = computed(() => visibleLinks.value.length + visibleReviews.value.length + visibleDomains.value.length)
-watch(() => route.path, () => { query.value = '' })
+function openDrawer() {
+  if (opened.value) return
+  query.value = ''
+  drawer.value?.showModal()
+  opened.value = true
+  void nextTick(() => { if (opened.value) search.value?.focus() })
+}
+function closeDrawer() {
+  drawer.value?.close()
+  opened.value = false
+  query.value = ''
+}
+function navigate(event: MouseEvent) {
+  if (!event.button && !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey) closeDrawer()
+}
+function dismissBackdrop(event: MouseEvent) {
+  const element = drawer.value
+  if (!element || event.target !== element) return
+  const rect = element.getBoundingClientRect()
+  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDrawer()
+}
+watch(() => route.fullPath, closeDrawer)
+onBeforeUnmount(closeDrawer)
 const links = [
   { to: '/workspace', label: '账号与机构', icon: User },
   { to: '/contracts', label: '合同与规则', icon: Document },
@@ -96,27 +120,40 @@ function active(target: string) {
 </script>
 
 <template>
-  <div class="workspace-nav-search"><label for="workspace-nav-query">查找工作区入口</label><input id="workspace-nav-query" v-model="query" type="search" autocomplete="off" placeholder="按业务名称查找" aria-controls="workspace-nav-results"><p v-if="query.trim()" role="status">找到 {{resultCount}} 个入口<button type="button" class="outline" @click="query=''">清除筛选</button></p></div>
+  <button class="workspace-nav-trigger outline" type="button" aria-label="展开工作区入口" aria-haspopup="dialog" aria-controls="workspace-nav-drawer" :aria-expanded="opened" @click="openDrawer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>工作区入口</span><span class="workspace-nav-trigger-hint" aria-hidden="true">展开</span></button>
+  <p class="workspace-nav-current"><span>当前位置</span><strong>{{ currentLabel }}</strong></p>
+  <dialog id="workspace-nav-drawer" ref="drawer" class="workspace-nav-drawer" aria-labelledby="workspace-nav-title" @cancel.prevent="closeDrawer" @close="opened=false" @click="dismissBackdrop">
+  <div class="workspace-nav-drawer-body">
+  <header class="workspace-nav-heading"><div><p>晶晶日上 · 工作区</p><h2 id="workspace-nav-title">选择业务入口</h2></div><button class="outline" type="button" aria-label="收起工作区入口" @click="closeDrawer">收起</button></header>
+  <div class="workspace-nav-search"><label for="workspace-nav-query">查找工作区入口</label><input id="workspace-nav-query" ref="search" v-model="query" type="search" autocomplete="off" placeholder="按业务名称查找" aria-controls="workspace-nav-results" autofocus><p v-if="query.trim()" role="status">找到 {{resultCount}} 个入口<button type="button" class="outline" @click="query=''">清除筛选</button></p></div>
   <div id="workspace-nav-results" class="workspace-nav-results" role="region" tabindex="0" aria-label="工作区入口列表">
-  <nav v-if="route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
+  <nav v-if="route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined" @click="navigate"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
   <nav class="workspace-nav" aria-label="工作区导航">
     <RouterLink v-for="item in visibleLinks" :key="item.to" :to="item.to"
-      :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
+      :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined" @click="navigate">
       <component :is="item.icon" aria-hidden="true" />{{ item.label }}
     </RouterLink>
     <p v-if="visibleReviews.length" class="nav-caption">独立审核</p>
     <RouterLink v-for="item in visibleReviews" :key="item.to" :to="item.to"
-      :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
+      :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined" @click="navigate">
       <CircleCheck aria-hidden="true" />{{ item.label }}
     </RouterLink>
   </nav>
 
-  <nav v-if="!route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
+  <nav v-if="!route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined" @click="navigate"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
   <p v-if="!resultCount" class="nav-empty" role="status">没有匹配入口，请更换名称或清除筛选。菜单显示不授予业务权限。</p>
   </div>
+  </div>
+  </dialog>
 </template>
 
 <style scoped>
+.workspace-nav-trigger{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;text-align:left}.workspace-nav-trigger svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;flex:none}.workspace-nav-trigger-hint{margin-left:auto;font-size:12px;color:var(--ops-text-2)}
+.workspace-nav-current{display:grid;gap:6px;margin:14px 0 0;line-height:1.6;overflow-wrap:anywhere}.workspace-nav-current>span{font-size:11px;color:var(--ops-text-2)}.workspace-nav-current strong{font-size:14px;font-weight:600}
+.workspace-nav-drawer{box-sizing:border-box;position:fixed;inset:0 auto 0 0;width:min(360px,calc(100vw - 24px));max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;border-right:1px solid var(--ops-ink);border-radius:0;background:var(--ops-bg);color:var(--ops-text);overflow:hidden}.workspace-nav-drawer::backdrop{background:rgb(0 0 0 / .42)}
+.workspace-nav-drawer-body{display:flex;flex-direction:column;height:100%;padding:24px 20px;box-sizing:border-box}.workspace-nav-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.workspace-nav-heading p{margin:0 0 8px;font-size:11px;letter-spacing:.08em;color:var(--ops-text-2)}.workspace-nav-heading h2{margin:0;font:700 24px/1.4 var(--ops-serif)}.workspace-nav-heading button{flex:none;min-height:44px}
+.workspace-nav-results{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 4px 8px 0}.workspace-nav-search{flex:none}
+:global(body:has(.workspace-nav-drawer[open])){overflow:hidden}
 .workspace-nav{display:grid;gap:6px}
 .workspace-nav-search{display:grid;gap:8px;margin:0 0 12px;font-size:13px}.workspace-nav-search input{width:100%;min-width:0;min-height:44px}.workspace-nav-search p{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0}.workspace-nav-search button{min-height:36px;font-size:12px}.workspace-nav-results:focus-visible{outline:2px solid var(--ops-ink);outline-offset:2px}.nav-empty{font-size:13px;line-height:1.7}
 .workspace-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;border-radius:var(--ops-radius-sm);font-size:14px}
@@ -124,5 +161,6 @@ function active(target: string) {
 .workspace-nav svg{width:20px;height:20px;flex:none}
 .nav-caption{margin:24px 12px 8px;font-size:12px;color:var(--ops-text-2)}
 .workspace-business-nav{display:grid;gap:2px}.workspace-business-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;font-size:14px}.workspace-business-nav a.active{background:var(--ops-ink);color:var(--ops-bg);font-weight:600}.workspace-business-nav svg{width:20px;height:20px;flex:none}
-@media(max-width:760px){.workspace-nav-results{max-height:50dvh;overflow-y:auto;overscroll-behavior-y:contain;padding-bottom:8px;border-bottom:1px solid var(--ops-border-strong)}.workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-nav a{gap:8px;padding:10px 8px}.nav-caption{grid-column:1/-1;margin:12px 8px 4px}}
+@media(max-width:760px){.workspace-nav-drawer-body{padding:20px 16px}.workspace-nav-current{display:flex;align-items:baseline;gap:12px;margin-top:8px}.workspace-nav a{gap:10px;padding:10px 8px}.nav-caption{margin:20px 8px 8px}}
+@media(prefers-reduced-motion:no-preference){.workspace-nav-drawer[open]{animation:workspace-drawer-in .16s ease-out}@keyframes workspace-drawer-in{from{transform:translateX(-100%)}to{transform:translateX(0)}}}
 </style>

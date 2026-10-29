@@ -80,11 +80,15 @@ try{
  test('选券组件确认准确的adjusted hash，保存与释放保留原操作',()=>{const source=readFileSync(root+'/src/components/business/TradeCouponSelector.vue','utf8'),view=readFileSync(root+'/src/views/TradeView.vue','utf8');assert(source.includes('/redemption/grants/'));assert(source.includes('/redemption/holds/'));assert(source.includes('adjusted_quote_sha256'));assert(source.includes('ui.pending.value.checked'));assert(view.includes('reward_selection:{hold_id:couponSelection.value.hold_id'));assert(view.includes('REWARD_FUNDED'))})
  test('工作区入口可按名称或路径筛选，完整43菜单与未知查询不混为空业务结果',async()=>{
   const {default:Nav}=await server.ssrLoadModule('/src/components/WorkspaceNav.vue')
-  async function nav(query){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push('/trade/quotes');await router.isReady();let vm;const app=createSSRApp({render:()=>h(Nav)}).use(router);app.mixin({created(){if(this.$options.__name==='WorkspaceNav'){vm=this.$.setupState;vm.query=query}}});return{html:await renderToString(app),vm}}
+  async function nav(query,path='/trade/quotes',meta={}){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/:pathMatch(.*)*',component:{render:()=>null},meta}]});await router.push(path);await router.isReady();let vm;const app=createSSRApp({render:()=>h(Nav)}).use(router);app.mixin({created(){if(this.$options.__name==='WorkspaceNav'){vm=this.$.setupState;vm.query=query}}});return{html:await renderToString(app),vm}}
   const all=await nav('');assert.equal(all.vm.visibleLinks.length+all.vm.visibleReviews.length,43);assert(all.html.includes('aria-current="page"'));assert(all.html.includes('查找工作区入口'))
   const one=await nav('故事');assert.deepEqual(one.vm.visibleLinks.map(r=>r.to),['/operations/customization']);assert(one.html.includes('找到 1 个入口'));assert(!one.html.includes('href="/contracts"'))
   const path=await nav('/finance/reviews/');assert.equal(path.vm.visibleReviews.length,1);assert(path.html.includes('独立财务核验'))
   const none=await nav('不存在的业务名称');assert.equal(none.vm.resultCount,0);assert(none.html.includes('没有匹配入口'));assert(!none.html.includes('暂无业务'))
+  assert(all.html.includes('aria-haspopup="dialog"'));assert(all.html.includes('aria-expanded="false"'));assert(!/<dialog[^>]*\sopen(?:[=>\s])/.test(all.html))
+  const own=await nav('',`/operations/customization/mine/${id(10)}`,{title:'我的故事与补件'});assert.equal(own.vm.currentLabel,'我的故事与补件');assert.equal(all.vm.currentLabel,'报价订单')
+  all.vm.openDrawer();all.vm.query='故事';all.vm.navigate({button:0,ctrlKey:true});assert.equal(all.vm.opened,true);assert.equal(all.vm.query,'故事');all.vm.navigate({button:0,metaKey:true});assert.equal(all.vm.opened,true);all.vm.navigate({button:0});assert.equal(all.vm.opened,false);assert.equal(all.vm.query,'')
+
  })
  test('同名获准引用保留区分编号，当前选择完整可见且不自动代选',async()=>{
   const rows={items:[{id:id(17),title:'相同名称',current_status:'ACTIVE',object_version:1},{id:id(18),title:'相同名称',current_status:'ACTIVE',object_version:1}]},options=references.referenceOptions(rows,'person_id');assert.notEqual(options[0].label,options[1].label);assert(options[0].label.includes(id(17).slice(-8)));assert.equal(options[0].value,id(17))
