@@ -63,8 +63,12 @@ void main() {
       }
       if (request.path == '$artistRoot/catalog/$listingKey') {
         return revoked
-            ? envelope({'code': 'ARTIST_CONSENT_REQUIRED'}, status: 409, error: true)
+            ? envelope({'code': 'ARTIST_CONSENT_REQUIRED'},
+                status: 409, error: true)
             : envelope(publicListing());
+      }
+      if (request.path == '$artistRoot/catalog/$listingKey/media') {
+        return envelope(publicMediaData(primary: null));
       }
       if (request.path.endsWith('/assets/$assetKey/content')) {
         return revoked
@@ -91,7 +95,7 @@ void main() {
             '$artistRoot/catalog/$listingKey/assets/$assetKey/content'),
         isTrue);
     revoked = true;
-    await artists.press(t, find.text('读取获准预览 1'));
+    await artists.press(t, find.text('读取图片预览 1'));
     expect(find.text('当前公开艺人'), findsNothing);
     expect(find.text('已审核的公开介绍'), findsNothing);
     expect(find.text('这份公开资料当前不可用'), findsOneWidget);

@@ -251,15 +251,34 @@ class ArtistsApi {
     return d;
   }
 
-  Future<Uint8List> publicPreview(String listingId, String assetId) async {
+  Future<ArtistPublicMedia> publicMedia(String listingId,
+      {List<String>? previewIds}) async {
+    if (!artistId(listingId)) throw const AccountError(400, 'INVALID_ID');
+    final epoch = session.epoch;
+    final data = await session.read('$base/catalog/$listingId/media');
+    check(epoch, null);
+    return ArtistPublicMedia.parse(data, listingId, previewIds: previewIds);
+  }
+
+  Future<Uint8List> publicPreview(String listingId, String assetId,
+      {ArtistPublicMediaItem? metadata}) async {
     if (!artistId(listingId) || !artistId(assetId)) {
       throw const AccountError(400, 'INVALID_ID');
     }
     final epoch = session.epoch;
+    final item = metadata ??
+        (await publicMedia(listingId))
+            .items
+            .where((item) => item.id == assetId)
+            .firstOrNull;
+    artistRequire(item != null && item.id == assetId);
     final bytes = await session
         .readBytes('$base/catalog/$listingId/assets/$assetId/content');
     check(epoch, null);
-    artistRequire(bytes.isNotEmpty && bytes.length <= maxArtistBytes);
+    if (bytes.length != item!.size ||
+        sha256.convert(bytes).toString() != item.hash) {
+      throw const AccountError(502, 'PUBLIC_CONTENT_MISMATCH');
+    }
     return bytes;
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -79,6 +80,10 @@ class _ArtistFormState extends State<_ArtistForm> {
       relations = <GigRecord>[];
   final features = <String>{}, purposes = <String>{}, delegated = <String>{};
   List<String> files = [];
+  final portraitOptions = <String, String>{};
+  String? primaryPortrait, portraitError;
+  int portraitRead = 0;
+  bool portraitBusy = false;
   String? avatar,
       consent,
       previous,
@@ -150,7 +155,8 @@ class _ArtistFormState extends State<_ArtistForm> {
   bool get unresolvedFile =>
       detail != null &&
       api.pending('${api.personPath(detail!.person.id)}/assets') != null;
-  bool get locked => busy || fileBusy || pending != null || unresolvedFile;
+  bool get locked =>
+      busy || fileBusy || portraitBusy || pending != null || unresolvedFile;
   bool get enabled => !locked && !conflict && allowed;
   bool get allowed {
     if (!_titles.containsKey(mode)) return false;
@@ -215,6 +221,7 @@ class _ArtistFormState extends State<_ArtistForm> {
 
   @override
   void dispose() {
+    portraitRead++;
     for (final c in fields.values) {
       c.dispose();
     }
@@ -280,6 +287,50 @@ class _ArtistFormState extends State<_ArtistForm> {
         dirty = true;
         notice = null;
       });
+
+  void clearPortrait() {
+    portraitRead++;
+    primaryPortrait = null;
+    portraitOptions.clear();
+    portraitBusy = false;
+    portraitError = null;
+  }
+
+  Future<void> readPortraitOptions() async {
+    if (mode != 'LISTING' ||
+        detail == null ||
+        !(self || actions.contains('MANAGE_MATERIALS'))) {
+      return;
+    }
+    final ticket = ++portraitRead, selected = List<String>.of(files);
+    setState(() {
+      portraitBusy = selected.isNotEmpty;
+      primaryPortrait = null;
+      portraitOptions.clear();
+      portraitError = null;
+    });
+    try {
+      final metadata = await Future.wait(selected.map(
+          (id) => api.asset(id, detail!.person, purpose: 'AVATAR_MATERIAL')));
+      if (!mounted || ticket != portraitRead) return;
+      for (var i = 0; i < metadata.length; i++) {
+        final type = metadata[i]['media_type'];
+        if (type == 'image/jpeg' || type == 'image/png') {
+          portraitOptions[selected[i]] =
+              '预览 ${i + 1} · ${type == 'image/png' ? 'PNG' : 'JPEG'} · ${shortSupplyId(selected[i])}';
+        }
+      }
+    } on AccountError catch (e) {
+      if (mounted && ticket == portraitRead) {
+        portraitError = '主肖像选项核对未完成：${artistError(e)}';
+      }
+    } finally {
+      if (mounted && ticket == portraitRead) {
+        setState(() => portraitBusy = false);
+      }
+    }
+  }
+
   String input(String key, String label, {bool required = true}) {
     final v = controller(key).text.trim();
     if (required && v.isEmpty) throw FormatException('请填写$label。');
@@ -410,6 +461,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         final materials = materialFiles;
         if (materials.isEmpty) throw const FormatException('请选择最多六份指定公开预览。');
         if (materials.length > 6) throw const FormatException('公开预览最多六份。');
+        if (primaryPortrait != null &&
+            (!materials.contains(primaryPortrait) ||
+                !portraitOptions.containsKey(primaryPortrait))) {
+          throw const FormatException('请重新核对本次预览中的主肖像。');
+        }
         value = {
           'avatar_id': chosen(a, '具体数字人'),
           'listing': {
@@ -423,7 +479,8 @@ class _ArtistFormState extends State<_ArtistForm> {
             'look_version_id': chosen(look, '造型版本'),
             'voice_version_id': voice,
             'audition_public': audition,
-            'preview_asset_ids': materials
+            'preview_asset_ids': materials,
+            'primary_portrait_asset_id': primaryPortrait
           }
         };
         break;
@@ -570,7 +627,9 @@ class _ArtistFormState extends State<_ArtistForm> {
               decoration: InputDecoration(
                   labelText: '$label${required ? ' · 必填' : ''}',
                   hintText: hint),
-              onChanged: (_) => change(() {})));
+              onChanged: (_) => change(() {
+                    if (key == 'existingMaterials') clearPortrait();
+                  })));
   Widget date(String key, String label, {String? hint}) => Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: KeyedSubtree(
@@ -633,7 +692,13 @@ class _ArtistFormState extends State<_ArtistForm> {
           onBusy: (b) {
             if (mounted) setState(() => fileBusy = b);
           },
-          onChanged: (ids) => change(() => files = ids));
+          onChanged: (ids) {
+            change(() {
+              files = ids;
+              clearPortrait();
+            });
+            unawaited(readPortraitOptions());
+          });
   Widget haloMaterials() => tradeSection('认证材料准备提示', [
         appNotice('按本次认证要求准备材料，统一在下方上传。以下分类是准备提示，不会新增必填项或根据文件数量认定缺项。'),
         tradeFact('形象模卡', '按认证模板提供本人模卡。'),
@@ -649,6 +714,10 @@ class _ArtistFormState extends State<_ArtistForm> {
         consent = null;
         look = null;
         voice = null;
+        if (mode == 'LISTING') {
+          clearPortrait();
+          scheduleMicrotask(readPortraitOptions);
+        }
       });
   List<ArtistRecord> get consentOptions => consents
       .where((r) =>
@@ -817,7 +886,7 @@ class _ArtistFormState extends State<_ArtistForm> {
           select(
               '声音版本（可不选）',
               voice ?? '',
-              const [('', '不展示声音')] +
+              const [('', '不指定声音版本')] +
                   [
                     for (final r in voices.where((r) => r.avatarId == avatar))
                       (r.id, r.data['display_name'] as String)
@@ -825,6 +894,7 @@ class _ArtistFormState extends State<_ArtistForm> {
             voice = v == '' ? null : v;
             consent = null;
           }),
+          appNotice('声音版本用于说明本次引用的版本；声音预览仍按下方指定材料随本次申请独立审核。'),
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: audition,
@@ -836,6 +906,26 @@ class _ArtistFormState extends State<_ArtistForm> {
               fileInput()
             else
               text('existingMaterials', '本人指定公开预览的材料编号', lines: 2, max: 300)
+          ]),
+          tradeSection('公开主肖像（可不选）', [
+            if (portraitBusy) const LinearProgressIndicator(),
+            select(
+                '选择本次预览中的照片',
+                primaryPortrait ?? '',
+                [
+                  ('', '不设置主肖像'),
+                  ...portraitOptions.entries.map((e) => (e.key, e.value))
+                ],
+                (v) => primaryPortrait = v == '' ? null : v),
+            if (portraitError != null) appNotice(portraitError!),
+            if (self || actions.contains('MANAGE_MATERIALS'))
+              tradeButton('重新核对主肖像选项',
+                  enabled && files.isNotEmpty ? readPortraitOptions : null,
+                  outline: true)
+            else
+              appNotice('当前委托仅允许提交指定材料编号。选择主肖像还需本人或有材料管理权限的受托方核对照片；本次可先不设置。'),
+            appNotice(
+                '只可选择本次预览中的 JPEG 或 PNG。更换材料会清除选择；不设置时公开页保留占位。主肖像随本次新申请独立审核，提交后不会立即替换现有公开资料。'),
           ]),
           appNotice(
               '需要独立公开同意、有效托管与审核。关闭试镜展示可提交新公开申请并取消勾选；仍需独立复核，原申请在新申请获批前保持原状态。本人也可撤回原公开申请。')
@@ -946,9 +1036,15 @@ class _ArtistFormState extends State<_ArtistForm> {
           if (!didPop) await goBack();
         },
         child: artistEditorScaffold(
-            _titles[mode] ?? '艺人办理',
+            mode == 'WITHDRAW' && record?.kind == 'LISTING'
+                ? '撤回这份公开展示'
+                : _titles[mode] ?? '艺人办理',
             [
-              tradeHeading(_titles[mode] ?? '这个入口不存在', eyebrow: '本人档案 / 明确用途'),
+              tradeHeading(
+                  mode == 'WITHDRAW' && record?.kind == 'LISTING'
+                      ? '撤回这份公开展示'
+                      : _titles[mode] ?? '这个入口不存在',
+                  eyebrow: '本人档案 / 明确用途'),
               if (detail != null)
                 tradeSection('这次为谁办理', [
                   tradeFact('真人本人', detail!.person.name),

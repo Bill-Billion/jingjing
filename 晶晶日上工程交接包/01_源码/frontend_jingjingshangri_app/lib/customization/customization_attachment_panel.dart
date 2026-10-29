@@ -318,12 +318,12 @@ class _StoryAttachmentPanelState extends State<StoryAttachmentPanel>
       if (notice != null) appNotice(notice!),
       if (pending != null) ...[
         appNotice(files.needsPlatformReview
-            ? '需要平台核对原上传。原文件和请求仍保留在当前登录会话；可通过页面返回暂时离开，重新打开同一故事后继续核对。退出账号或切换身份会清理这些私有临时数据。'
+            ? '原上传需要核对，可用下方按钮恢复。原文件和请求保留在当前登录会话；暂时离开后可重开同一故事继续，退出账号或切换身份会清理这些私有临时数据。'
             : '原上传结果尚未确认，原文件与请求已保留。请核对原操作，暂时不能选择另一文件或提交故事。'),
         OutlinedButton(
             key: const ValueKey('story-attachment-retry-upload'),
             onPressed: busy ? null : () => upload(null, retry: true),
-            child: Text(files.needsPlatformReview ? '平台处理后核对原上传' : '核对并重试原上传')),
+            child: const Text('核对并恢复原上传')),
       ],
       for (final pending in revocations)
         OutlinedButton(
@@ -397,8 +397,10 @@ class _StoryAttachmentPanelState extends State<StoryAttachmentPanel>
                 'UPLOADING': '上传待核对',
                 'REVOKED': '访问已撤回'
               }[file.status]}'),
-              if (widget.formalIds.contains(file.id) || widget.readOnly)
-                const Text('正式版本引用资料，按保留流程处理。',
+              if (file.retained ||
+                  widget.formalIds.contains(file.id) ||
+                  widget.readOnly)
+                const Text('正式版本已引用，需按资料保留流程处理。',
                     style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
               Wrap(spacing: 8, children: [
                 TextButton.icon(
@@ -410,6 +412,7 @@ class _StoryAttachmentPanelState extends State<StoryAttachmentPanel>
                     label: const Text('受控下载')),
                 if (!widget.readOnly &&
                     file.status != 'REVOKED' &&
+                    !file.retained &&
                     !widget.formalIds.contains(file.id))
                   TextButton(
                       key: ValueKey('story-attachment-revoke-${file.id}'),

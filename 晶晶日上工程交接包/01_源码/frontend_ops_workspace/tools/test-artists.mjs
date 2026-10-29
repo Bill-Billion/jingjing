@@ -32,6 +32,9 @@ try{
  const state=(account=false)=>{const context=reactive({...account?reviewer:who,revision:0,scope:'artists'}),scope=effectScope(),ui=scope.run(()=>useArtists(()=>context));return {ui,context,scope}}
  const command=()=>({path:`/artists/people/${id(10)}/consents`,personId:id(10),ownerPartyId:id(2),body:{avatar_id:id(11),consent:{terms:'原本人的明确内容'}},resultKind:'CONSENT',label:'本人同意'})
  const asset=async(blob,purpose='AVATAR_MATERIAL',media='image/png')=>({id:id(31),owner_party_id:id(2),purpose,media_type:media,byte_size:blob.size,content_sha256:await api.sha256(blob),current_status:'READY'})
+ const mediaItem=(asset,kind='IMAGE')=>({asset_id:asset.id,media_type:asset.media_type,media_kind:kind,byte_size:asset.byte_size,content_sha256:asset.content_sha256})
+ const media=(items=[{asset_id:id(31),media_type:'image/png',media_kind:'IMAGE',byte_size:8,content_sha256:hash}],portrait=null)=>({listing_id:id(22),primary_portrait_asset_id:portrait,items})
+ const mockPublic=(manifest,blob)=>async url=>url.endsWith('/content')?new Response(blob,{headers:{'Content-Type':'application/octet-stream'}}):response(url.endsWith('/media')?manifest:{...catalog(),preview_asset_ids:manifest.items.map(x=>x.asset_id)},reviewer)
  test('本人、多数字人绑定与九类真实DTO；不接纳伪实名、模型或交叉归属',async()=>{
   assert.ok(api.isArtistDetail(detail()));const bad=detail();bad.avatars[0].person_id=id(99);assert.equal(api.isArtistDetail(bad),false)
   const records=[consent(),variant(),{...variant(),kind:'VOICE'},listing(),service(),base('IDENTITY',24,'PENDING',{session_ref:'real-session',request_key:'original-provider-key',person_id:id(10),account_id:id(1),result:null},null),{...base('DELEGATION',25,'ACTIVE',{organization_party_id:id(3),relation_id:id(44),actions:['READ_PROFILE'],valid_from:stamp,valid_until:end,evidence_asset_ids:[],terms:'机构可见的委托范围',accepted_by:id(1),accepted_at:stamp},null),counterparty_id:id(3)},base('HALO',26,'SUBMITTED',{level:1,service_id:null,ownership_promise:true,evidence_asset_ids:[id(30)],rule_version:'rule-v1',review:null,valid_from:null,valid_until:null},null),base('APPEAL',27,'SUBMITTED',{target_id:id(22),target_sha256:hash,reason:'原拒绝的异议',evidence_asset_ids:[id(30)],review:null},null)]
@@ -100,12 +103,12 @@ try{
  })
  test('私有字节核对大小与SHA；目录和独审材料每次重新GET且无acting',async()=>{
   const blob=new Blob([new Uint8Array([137,80,78,71,13,10,26,10])]),stored=await asset(blob),calls=[];globalThis.fetch=async(url,o)=>{calls.push({url,o});return new Response(blob,{headers:{'Content-Type':'application/octet-stream'}})}
-  assert.equal((await api.artistAssetBytes(who,stored)).type,'image/png');await api.artistReviewBytes(reviewer,id(10),id(20),id(31));await api.artistCatalogBytes(reviewer,id(22),id(31));await api.artistCatalogBytes(reviewer,id(22),id(31));assert.equal(calls.length,4);assert(calls.slice(1).every(c=>c.o.headers['X-Acting-Party']===undefined));assert(calls.every(c=>c.o.cache==='no-store'));await assert.rejects(api.artistAssetBytes(who,{...stored,content_sha256:hash}))
+  assert.equal((await api.artistAssetBytes(who,stored)).type,'image/png');await api.artistReviewBytes(reviewer,id(10),id(20),id(31));await api.artistCatalogBytes(reviewer,media([mediaItem(stored)]),id(31));await api.artistCatalogBytes(reviewer,media([mediaItem(stored)]),id(31));assert.equal(calls.length,4);assert(calls.slice(1).every(c=>c.o.headers['X-Acting-Party']===undefined));assert(calls.every(c=>c.o.cache==='no-store'));await assert.rejects(api.artistAssetBytes(who,{...stored,content_sha256:hash}))
  })
  test('替换预览、撤权或上下文切换立即回收BlobURL，不执行HTML内容',async()=>{
-  const {ui,context,scope}=state(true),blob=new Blob(['<script>private</script>'],{type:'application/octet-stream'}),oldCreate=URL.createObjectURL,oldRevoke=URL.revokeObjectURL,created=[],revoked=[]
+  const {ui,context,scope}=state(true),blob=new Blob(['<script>private</script>'],{type:'application/octet-stream'}),oldCreate=URL.createObjectURL,oldRevoke=URL.revokeObjectURL,created=[],revoked=[],manifest=media([mediaItem(await asset(blob,'AVATAR_MATERIAL','text/plain'),'DOCUMENT')])
   URL.createObjectURL=()=>{const u='blob:isolated-'+created.length;created.push(u);return u};URL.revokeObjectURL=u=>revoked.push(u)
-  try{globalThis.fetch=async()=>new Response(blob);await ui.previewCatalog(id(22),id(31));assert.equal(ui.preview.value.type,'application/octet-stream');await ui.previewCatalog(id(22),id(31));assert.deepEqual(revoked,['blob:isolated-0']);context.revision++;assert.equal(ui.preview.value,null);assert.deepEqual(revoked,['blob:isolated-0','blob:isolated-1']);globalThis.fetch=async()=>failure(403,'ARTIST_CONSENT_REQUIRED');await ui.previewCatalog(id(22),id(31));assert.equal(ui.preview.value,null);assert.equal(ui.catalog.value.length,0)}finally{scope.stop();URL.createObjectURL=oldCreate;URL.revokeObjectURL=oldRevoke}
+  try{globalThis.fetch=mockPublic(manifest,blob);await ui.previewCatalog(id(22),id(31));assert.equal(ui.preview.value.type,'text/plain');await ui.previewCatalog(id(22),id(31));assert.deepEqual(revoked,['blob:isolated-0']);context.revision++;assert.equal(ui.preview.value,null);assert.deepEqual(revoked,['blob:isolated-0','blob:isolated-1']);globalThis.fetch=async()=>failure(403,'ARTIST_CONSENT_REQUIRED');await ui.previewCatalog(id(22),id(31));assert.equal(ui.preview.value,null);assert.equal(ui.catalog.value.length,0)}finally{scope.stop();URL.createObjectURL=oldCreate;URL.revokeObjectURL=oldRevoke}
  })
  test('同意撤回或托管过期以409拒绝预览时同步清除已过期目录与私有详情',async()=>{
   for(const code of ['ARTIST_CONSENT_REQUIRED','ARTIST_HOSTING_REQUIRED']){const {ui,scope}=state(true);ui.catalog.value=[catalog()];ui.record.value=consent();globalThis.fetch=async()=>failure(409,code);await ui.previewCatalog(id(22),id(31));assert.equal(ui.catalog.value.length,0);assert.equal(ui.record.value,null);assert.equal(ui.preview.value,null);assert.equal(ui.error.value.code,code);scope.stop()}
@@ -125,9 +128,9 @@ try{
   assert.equal(vm.payload,null);vm.selectedFeatures=['FACE'];vm.selectedPurposes=['PRIVATE_ARCHIVE'];assert.deepEqual(vm.payload.consent.features,['FACE']);vm.selectedFeatures=['FACE','VOICE'];vm.selectedPurposes=['PUBLIC_DISPLAY'];assert.deepEqual(vm.payload.consent.features,['FACE','VOICE']);assert.deepEqual(vm.payload.consent.purposes,['PUBLIC_DISPLAY']);assert.equal(vm.form.terms,'本人明确的原用途');assert.equal(vm.confirmed.checked,false)
  })
  test('异步读取签名时换身份，迟到Blob不能创建或恢复预览',async()=>{
-  const {ui,context,scope}=state(true),entered=defer(),finish=defer(),oldArrayBuffer=Blob.prototype.arrayBuffer,oldCreate=URL.createObjectURL;let creations=0
+  const {ui,context,scope}=state(true),entered=defer(),finish=defer(),oldArrayBuffer=Blob.prototype.arrayBuffer,oldCreate=URL.createObjectURL,blob=new Blob(['private']),manifest=media([mediaItem(await asset(blob,'AVATAR_MATERIAL','text/plain'),'DOCUMENT')]);let creations=0
   Blob.prototype.arrayBuffer=function(){entered.resolve();return finish.promise};URL.createObjectURL=()=>{creations++;return 'blob:must-not-exist'}
-  try{globalThis.fetch=async()=>({ok:true,status:200,headers:new Headers({'Content-Type':'application/octet-stream'}),blob:async()=>new Blob(['private'])});const waiting=ui.previewCatalog(id(22),id(31));await entered.promise;context.partyId=id(99);finish.resolve(new Uint8Array([137,80,78,71]).buffer);await waiting;assert.equal(creations,0);assert.equal(ui.preview.value,null)}finally{scope.stop();Blob.prototype.arrayBuffer=oldArrayBuffer;URL.createObjectURL=oldCreate}
+  try{globalThis.fetch=async url=>url.endsWith('/content')?{ok:true,status:200,headers:new Headers({'Content-Type':'application/octet-stream'}),blob:async()=>blob}:response(url.endsWith('/media')?manifest:catalog(),reviewer);const waiting=ui.previewCatalog(id(22),id(31));await entered.promise;context.partyId=id(99);finish.resolve(new Uint8Array([137,80,78,71]).buffer);await waiting;assert.equal(creations,0);assert.equal(ui.preview.value,null)}finally{scope.stop();Blob.prototype.arrayBuffer=oldArrayBuffer;URL.createObjectURL=oldCreate}
  })
  test('记录按纯文本展示，退款待办与实退分开，原订单仅采用服务详情真实关联',async()=>{
   const {default:Panel}=await server.ssrLoadModule('/src/components/artists/ArtistRecordPanel.vue'),r=service();r.current_status='REFUND_REQUIRED';r.data.refund={order_id:id(50),amount_minor:8700,status:'REQUEST_REQUIRED'};const router=createRouter({history:createMemoryHistory(),routes:[{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push('/artists/people');await router.isReady();const render=(record,service)=>renderToString(createSSRApp({render:()=>h(Panel,{record,service})}).use(router));const html=await render(r,{...r,order:{id:id(50),current_status:'PAID',financial:{received_minor:8700,refunded_minor:0,net_minor:8700}}});assert(html.includes('原订单退款待办理'));assert(html.includes('artists-original-order'));assert(html.includes('¥87.00'));assert(html.includes('artistService='+id(23)));const escaped=await render(consent());assert(escaped.includes('&lt;script&gt;literal&lt;/script&gt;'));assert.equal(escaped.includes('<script>literal</script>'),false);assert.equal((await render(r)).includes('尚未关联正式订单'),false)
@@ -158,7 +161,7 @@ try{
  })
  test('公开资料失效或切换身份后不保留旧详情和迟到响应',async()=>{
   const {ui,context,scope}=state(true)
-  try{globalThis.fetch=async()=>response(catalog(),reviewer);await ui.loadPublicListing(id(22));assert.equal(ui.publicListing.value.listing_id,id(22))
+  try{globalThis.fetch=mockPublic(media());await ui.loadPublicListing(id(22));assert.equal(ui.publicListing.value.listing_id,id(22))
    globalThis.fetch=async()=>failure(404,'ARTIST_NOT_FOUND');await ui.loadPublicListing(id(22));assert.equal(ui.publicListing.value,null)
    const delayed=defer();globalThis.fetch=()=>delayed.promise;const reading=ui.loadPublicListing(id(22));context.accountId=id(99);delayed.resolve(response(catalog(),reviewer));await reading;assert.equal(ui.publicListing.value,null)
   }finally{scope.stop()}
@@ -207,6 +210,72 @@ try{
    await vm.changeDefaultCity('北京');assert.equal(city.directoryCity.value,'杭州');assert.equal(vm.filters.city,'本页城市');assert.equal(vm.pending.key,'original')
    session.token=null;assert.equal(vm.pending,null);assert.equal(vm.filters.city,'杭州');assert.equal(vm.filters.tag,'');assert.equal(vm.localCity,false);assert.equal(vm.catalog.length,0)
   })}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+
+ test('主肖像兼容旧展示和null，拒绝未列入本次公开预览的编号',async()=>{
+  for(const portrait of [undefined,null,id(31)]){const r=listing();if(portrait!==undefined)r.data.primary_portrait_asset_id=portrait;assert(api.isArtistRecord(r))}
+  for(const portrait of [id(99),'bad',false]){const r=listing();r.data.primary_portrait_asset_id=portrait;assert.equal(api.isArtistRecord(r),false)}
+ })
+ test('媒体清单严格核对类型、大小、摘要、肖像、listing与预览归属，按账号读取',async()=>{
+  const valid=media(),calls=[]
+  globalThis.fetch=async(url,o)=>{calls.push({url,o});return response(valid,reviewer)}
+  assert.deepEqual(await api.getArtistPublicMedia(reviewer,catalog()),valid);assert.equal(calls[0].url,'/api/v1/artists/catalog/'+id(22)+'/media');assert.equal(calls[0].o.headers['X-Acting-Party'],undefined);assert.equal(calls[0].o.headers.Authorization,'Bearer '+who.token);assert.equal(calls[0].o.cache,'no-store')
+  for(const [mime,kind]of [['image/png','IMAGE'],['image/jpeg','IMAGE'],['audio/mpeg','AUDIO'],['audio/wav','AUDIO'],['video/mp4','VIDEO'],['application/pdf','DOCUMENT'],['text/plain','DOCUMENT']]){const v=media([{...valid.items[0],media_type:mime,media_kind:kind}]);assert(api.isArtistPublicMedia(v),mime)}
+  for(const change of [v=>v.listing_id=id(99),v=>v.items[0].asset_id=id(99),v=>v.items=[],v=>v.items.push({...v.items[0]}),v=>v.items[0].media_kind='AUDIO',v=>v.items[0].media_type='text/html',v=>v.items[0].byte_size=0,v=>v.items[0].byte_size=8388609,v=>v.items[0].content_sha256='bad',v=>v.items[0].private_url='https://private.invalid',v=>v.primary_portrait_asset_id=id(99),v=>{v.primary_portrait_asset_id=id(31);v.items[0].media_type='audio/mpeg';v.items[0].media_kind='AUDIO'},v=>v.internal_path='private']){const value=structuredClone(valid);change(value);globalThis.fetch=async()=>response(value,reviewer);await assert.rejects(api.getArtistPublicMedia(reviewer,catalog()),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')}
+  globalThis.fetch=async()=>response(valid,who);await assert.rejects(api.getArtistPublicMedia(reviewer,catalog()),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE');await assert.rejects(api.getArtistPublicMedia(who,catalog()),e=>e.code==='CLIENT_IDENTITY_REQUIRED')
+ })
+ test('公开字节核对清单内编号、真实大小和SHA后恢复明确媒体类型',async()=>{
+  const blob=new Blob(['real audio bytes']),stored=await asset(blob,'AVATAR_MATERIAL','audio/mpeg'),manifest=media([mediaItem(stored,'AUDIO')]);let gets=0
+  globalThis.fetch=async()=>{gets++;return new Response(blob,{headers:{'Content-Type':'application/octet-stream'}})}
+  assert.equal((await api.artistCatalogBytes(reviewer,manifest,id(31))).type,'audio/mpeg');await assert.rejects(api.artistCatalogBytes(reviewer,manifest,id(99)));assert.equal(gets,1)
+  for(const change of [v=>v.items[0].content_sha256=hash,v=>v.items[0].byte_size++]){const value=structuredClone(manifest);change(value);await assert.rejects(api.artistCatalogBytes(reviewer,value,id(31)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')}
+ })
+ test('主肖像只读取明确选择的图片，旧展示不猜首图，身份变化回收全部URL',async()=>{
+  const {ui,context,scope}=state(true),blob=new Blob(['portrait bytes']),first=mediaItem(await asset(blob)),second={...first,asset_id:id(32)},manifest=media([first,second],id(32)),create=URL.createObjectURL,revoke=URL.revokeObjectURL,created=[],revoked=[],paths=[]
+  URL.createObjectURL=()=>{const url='blob:portrait-'+created.length;created.push(url);return url};URL.revokeObjectURL=url=>revoked.push(url)
+  try{
+   globalThis.fetch=async(url,o)=>{paths.push(url);return mockPublic({...manifest,primary_portrait_asset_id:null},blob)(url,o)};await ui.loadPublicListing(id(22));assert.equal(ui.publicPortrait.value,null);assert.equal(created.length,0);assert.equal(paths.filter(p=>p.endsWith('/content')).length,0)
+   globalThis.fetch=async(url,o)=>{paths.push(url);return mockPublic(manifest,blob)(url,o)};await ui.loadPublicListing(id(22));assert.equal(ui.publicPortrait.value.assetId,id(32));assert(paths.at(-1).includes('/'+id(32)+'/content'));assert.equal(created.length,1)
+   await ui.previewCatalog(id(22),id(31));assert.equal(ui.publicPortrait.value.assetId,id(32));assert.equal(ui.preview.value.type,'image/png');assert.equal(created.length,2)
+   context.revision++;assert.equal(ui.publicListing.value,null);assert.equal(ui.publicMedia.value,null);assert.equal(ui.publicPortrait.value,null);assert.equal(ui.preview.value,null);assert.deepEqual(new Set(revoked),new Set(created))
+  }finally{scope.stop();URL.createObjectURL=create;URL.revokeObjectURL=revoke}
+ })
+ test('肖像解码失败可清除并重读；撤权或托管失效清除肖像和公开详情',async()=>{
+  const {ui,scope}=state(true),blob=new Blob(['portrait bytes']),manifest=media([mediaItem(await asset(blob))],id(31)),create=URL.createObjectURL,revoke=URL.revokeObjectURL,revoked=[];let count=0
+  URL.createObjectURL=()=>`blob:decode-${count++}`;URL.revokeObjectURL=url=>revoked.push(url)
+  try{
+   globalThis.fetch=mockPublic(manifest,blob);await ui.loadPublicListing(id(22));ui.revokePortrait();assert.equal(ui.publicPortrait.value,null);assert.equal(ui.publicMedia.value.primary_portrait_asset_id,id(31));assert.deepEqual(revoked,['blob:decode-0'])
+   await ui.loadPublicListing(id(22));assert.equal(ui.publicPortrait.value.url,'blob:decode-1');globalThis.fetch=async()=>failure(409,'ARTIST_HOSTING_REQUIRED');await ui.previewCatalog(id(22),id(31));assert.equal(ui.publicPortrait.value,null);assert.equal(ui.publicMedia.value,null);assert.equal(ui.publicListing.value,null);assert.deepEqual(revoked,['blob:decode-0','blob:decode-1'])
+  }finally{scope.stop();URL.createObjectURL=create;URL.revokeObjectURL=revoke}
+ })
+ test('肖像内容迟到时换身份或目录查询不能恢复旧URL',async()=>{
+  for(const change of [async(ui,context)=>{context.accountId=id(99)},async ui=>{globalThis.fetch=async()=>response({items:[],next_cursor:null},reviewer);await ui.loadCatalog({city:'新的城市',tag:'',audition:''})}]){
+   const {ui,context,scope}=state(true),blob=new Blob(['late portrait']),manifest=media([mediaItem(await asset(blob))],id(31)),entered=defer(),late=defer(),create=URL.createObjectURL;let count=0
+   URL.createObjectURL=()=>{count++;return 'blob:late'}
+   try{globalThis.fetch=async(url,o)=>{if(url.endsWith('/content')){entered.resolve();return late.promise}return mockPublic(manifest,blob)(url,o)};const waiting=ui.loadPublicListing(id(22));await entered.promise;await change(ui,context);late.resolve(new Response(blob,{headers:{'Content-Type':'application/octet-stream'}}));await waiting;assert.equal(count,0);assert.equal(ui.publicPortrait.value,null);assert.equal(ui.publicMedia.value,null)}finally{scope.stop();URL.createObjectURL=create}
+  }
+ })
+ test('展示真实表单只允许本次已核实JPEG/PNG肖像，移除材料清选择和确认，可明确不设置',async()=>{
+  const {default:Form}=await server.ssrLoadModule('/src/components/artists/ArtistForm.vue'),blob=new Blob(['image']),first=await asset(blob),assets=[first,{...first,id:id(32),media_type:'audio/mpeg'},{...first,id:id(33)},{...first,id:id(34),owner_party_id:id(99)},{...first,id:id(35),purpose:'CONSENT_EVIDENCE'}]
+  for(const permission of [true,false]){
+   let vm;const app=createSSRApp({render:()=>h(Form,{action:'LISTING',disabled:false,person:detail(),assets,canManageMaterials:permission})})
+   app.mixin({created(){if(this.$options.__name==='ArtistForm')vm=this.$.setupState},serverPrefetch(){if(this.$options.__name!=='ArtistForm')return
+    Object.assign(vm.form,{avatar_id:id(11),display_name:'公开名称',city:'上海',introduction:'本人核对的介绍',tags:'表演',consent_id:id(20),look_version_id:id(21),preview_asset_ids:[id(31),id(32),id(34),id(35)].join('\n')})
+    assert.equal(vm.payload.listing.primary_portrait_asset_id,null);assert.deepEqual(vm.portraitOptions.map(a=>a.id),permission?[id(31)]:[])
+    vm.form.primary_portrait_asset_id=id(32);assert.equal(vm.payload,null);vm.form.primary_portrait_asset_id=id(33);assert.equal(vm.payload,null);vm.form.primary_portrait_asset_id=''
+    if(permission){vm.form.primary_portrait_asset_id=id(31);assert.equal(vm.payload.listing.primary_portrait_asset_id,id(31));vm.confirmed.checked=true;vm.form.preview_asset_ids=id(32);assert.equal(vm.form.primary_portrait_asset_id,'');assert.equal(vm.confirmed.checked,false);assert.equal(vm.payload.listing.primary_portrait_asset_id,null)}
+   }})
+   const html=await renderToString(app);assert(html.includes('artists-portrait-choice'));assert(html.includes('不设置主肖像'));if(!permission)assert(html.includes('具有材料管理权限'))
+  }
+ })
+ test('媒体分类和控件对应真实类型，文档只下载且未选肖像有占位',async()=>{
+  const {default:Media}=await server.ssrLoadModule('/src/components/artists/ArtistPublicMedia.vue'),{default:Preview}=await server.ssrLoadModule('/src/components/artists/ArtistPreview.vue'),manifest=media([['image/png','IMAGE'],['audio/mpeg','AUDIO'],['video/mp4','VIDEO'],['application/pdf','DOCUMENT']].map(([media_type,media_kind],n)=>({asset_id:id(31+n),media_type,media_kind,byte_size:100,content_sha256:hash})))
+  const html=await renderToString(createSSRApp({render:()=>h(Media,{media:manifest,portrait:null,name:'公开姓名',disabled:false})}));for(const kind of ['IMAGE','AUDIO','VIDEO','DOCUMENT'])assert(html.includes('artists-media-'+kind));assert(html.includes('artists-portrait-placeholder'));assert.equal(html.includes('<img'),false);assert.equal(html.includes('时长'),false)
+  for(const [type,tag]of [['image/png','img'],['audio/mpeg','audio'],['audio/wav','audio'],['video/mp4','video'],['application/pdf',null],['text/plain',null]]){const rendered=await renderToString(createSSRApp({render:()=>h(Preview,{preview:{url:'blob:controlled-only',type,label:'公开材料'}})}));if(tag)assert(rendered.includes('<'+tag));else{assert(!/<(?:iframe|embed|object|img|audio|video)\b/.test(rendered));assert(rendered.includes('download='))}}
+ })
+ test('未知展示提交恢复仍保留原肖像、原预览和原请求键，不提前进入公开目录',async()=>{
+  const {ui,scope}=state(),r=listing();r.current_status='SUBMITTED';r.data.primary_portrait_asset_id=id(31);const c={path:`/artists/people/${id(10)}/listings`,personId:id(10),resultKind:'LISTING',label:'公开展示申请',body:{avatar_id:id(11),listing:{...r.data}}},calls=[];let posts=0
+  try{globalThis.fetch=async(url,o)=>{if(o.method==='POST'){calls.push(o);return ++posts===1?failure(503,'SERVICE_UNAVAILABLE'):response(r)}return response(url.includes('?')?{items:[r],next_cursor:null}:r)};await ui.write(c);c.body.listing.primary_portrait_asset_id=null;await ui.checkPending();await ui.retry();assert.equal(ui.pending.value,null);assert.equal(calls.length,2);assert.equal(calls[0].body,calls[1].body);assert.equal(JSON.parse(calls[1].body).listing.primary_portrait_asset_id,id(31));assert.equal(calls[0].headers['Idempotency-Key'],calls[1].headers['Idempotency-Key']);assert.equal(ui.record.value.current_status,'SUBMITTED');assert.equal(ui.publicMedia.value,null);assert.equal(ui.publicPortrait.value,null)}finally{scope.stop()}
  })
 
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} artists checks passed.`)

@@ -14,6 +14,8 @@ import '../navigation/app_navigation_test.dart' as nav;
 import 'artists_fixtures.dart';
 
 class Picker extends FilePickerPlatform {
+  Picker({this.name = 'consent.txt'});
+  final String name;
   @override
   Future<FilePickerResult?> pickFiles(
           {String? dialogTitle,
@@ -30,7 +32,7 @@ class Picker extends FilePickerPlatform {
           bool cancelUploadOnWindowBlur = true}) async =>
       FilePickerResult([
         PlatformFile(
-            name: 'consent.txt',
+            name: name,
             size: artistBytes.length,
             readStream: Stream.value(artistBytes))
       ]);
@@ -250,6 +252,9 @@ void main() {
         if (r.path ==
             '$artistRoot/catalog/$listingKey/assets/$assetKey/content') {
           return envelope({'code': code}, status: 409, error: true);
+        }
+        if (r.path == '$artistRoot/catalog/$listingKey/media') {
+          return envelope(publicMediaData());
         }
         return null;
       });

@@ -8,7 +8,7 @@ const labels = {UPLOADING:'上传结果待核对',READY:'可受控下载',REVOKE
 </script>
 <template>
   <div class="story-file-reference">
-    <template v-if="asset"><strong>{{ asset.display_name }}</strong><span class="muted">{{ attachmentSize(asset.byte_size) }} · {{ labels[asset.current_status] }}</span><button v-if="asset.current_status === 'READY'" type="button" class="outline" :disabled="busy" @click="$emit('download',asset)">受控下载</button></template>
+    <template v-if="asset"><strong>{{ asset.display_name }}</strong><span class="muted">{{ attachmentSize(asset.byte_size) }} · {{ labels[asset.current_status] }}</span><span v-if="asset.retention_reason === 'FORMAL_SUBMISSION'" class="muted">正式版本已引用，需按资料保留流程处理。</span><button v-if="asset.current_status === 'READY'" type="button" class="outline" :disabled="busy" @click="$emit('download',asset)">受控下载</button></template>
     <p v-else-if="assetId" class="muted">此版本已关联附件。请读取下方附件清单核对文件名；若还有下一页，请继续读取。</p>
     <p v-else class="muted">本字段未关联附件。</p>
   </div>

@@ -8,6 +8,7 @@ import 'package:jingjingshangri_app/notices/notices_pages.dart';
 import 'package:jingjingshangri_app/pages/login/login_page.dart';
 import 'package:jingjingshangri_app/stock/stock_pages.dart';
 import 'account/fake_account_api.dart';
+import 'artists/artists_fixtures.dart' show publicMediaData;
 import 'catalog_editorial_restore_test.dart' show publicListing;
 import 'notices/notices_test.dart'
     show noticeId, noticeData, noticeRecord, submissionId;
@@ -172,9 +173,11 @@ void main() {
         handler: (request) => request.path ==
                 '/api/v1/artists/catalog/${publicListing()['listing_id']}'
             ? envelope(publicListing())
-            : request.path.endsWith('/content')
-                ? ResponseBody.fromBytes([1, 2, 3], 200)
-                : FakeAccountAdapter().defaultReply(request));
+            : request.path.endsWith('/media')
+                ? envelope(publicMediaData(primary: null))
+                : request.path.endsWith('/content')
+                    ? ResponseBody.fromBytes([1, 2, 3], 200)
+                    : FakeAccountAdapter().defaultReply(request));
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     await host(
         t,

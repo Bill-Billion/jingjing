@@ -8,6 +8,7 @@ export type StoryFileType = typeof STORY_FILE_TYPES[number]
 export interface StoryAttachment {
   id:string; request_id:string; display_name:string; media_type:StoryFileType; byte_size:number
   content_sha256:string; current_status:'UPLOADING'|'READY'|'REVOKED'; object_version:number
+  retention_reason?:'FORMAL_SUBMISSION'|null
 }
 export type AttachmentIdentity = IntakeIdentity & {partyId?:string}
 export interface StoryFile { file:Blob; displayName:string; mediaType:StoryFileType }
@@ -16,7 +17,7 @@ const obj = (v:unknown): v is Record<string,unknown> => !!v && typeof v === 'obj
 export const validAttachmentName = (v:unknown): v is string => typeof v === 'string' && !!v.trim() && Array.from(v).length <= 120 && !/[\x00-\x1f\x7f]/.test(v)
 export const attachmentSize = (bytes:number) => bytes >= 1024 * 1024 ? `${(bytes/1024/1024).toFixed(2)} MiB` : bytes >= 1024 ? `${(bytes/1024).toFixed(1)} KiB` : `${bytes} 字节`
 export function isStoryAttachment(v:unknown): v is StoryAttachment {
-  return obj(v) && Object.keys(v).every(k => ['id','request_id','display_name','media_type','byte_size','content_sha256','current_status','object_version'].includes(k)) && validSupplyId(v.id) && validSupplyId(v.request_id) && validAttachmentName(v.display_name) && STORY_FILE_TYPES.includes(v.media_type as StoryFileType) && Number.isInteger(v.byte_size) && Number(v.byte_size) >= 1 && Number(v.byte_size) <= STORY_FILE_LIMIT && typeof v.content_sha256 === 'string' && /^[a-f0-9]{64}$/.test(v.content_sha256) && ['UPLOADING','READY','REVOKED'].includes(String(v.current_status)) && Number.isInteger(v.object_version) && Number(v.object_version) >= 1 && Number(v.object_version) <= 4294967294
+  return obj(v) && Object.keys(v).every(k => ['id','request_id','display_name','media_type','byte_size','content_sha256','current_status','object_version','retention_reason'].includes(k)) && validSupplyId(v.id) && validSupplyId(v.request_id) && validAttachmentName(v.display_name) && STORY_FILE_TYPES.includes(v.media_type as StoryFileType) && Number.isInteger(v.byte_size) && Number(v.byte_size) >= 1 && Number(v.byte_size) <= STORY_FILE_LIMIT && typeof v.content_sha256 === 'string' && /^[a-f0-9]{64}$/.test(v.content_sha256) && ['UPLOADING','READY','REVOKED'].includes(String(v.current_status)) && Number.isInteger(v.object_version) && Number(v.object_version) >= 1 && Number(v.object_version) <= 4294967294 && (!('retention_reason' in v) || v.retention_reason === null || v.retention_reason === 'FORMAL_SUBMISSION')
 }
 const options = (i:AttachmentIdentity,signal?:AbortSignal) => ({token:i.token,actingParty:i.partyId,signal,cache:'no-store' as const})
 function checked<T>(r:ApiResult<unknown>,i:AttachmentIdentity,guard:(v:unknown)=>v is T):T {
@@ -34,7 +35,7 @@ export function selectStoryFile(file:File):StoryFile {
 }
 export async function listStoryAttachments(i:AttachmentIdentity,id:string,cursor:string|null=null,signal?:AbortSignal) {
   if (!validSupplyId(id)) throw new ApiError({status:400,code:'INVALID_INPUT',message:'请先保存本故事草稿，再读取附件。'})
-  const q = new URLSearchParams({limit:'20'}); if (cursor) q.set('cursor',cursor)
+  const q = new URLSearchParams({limit:'20',include_retention:'true'}); if (cursor) q.set('cursor',cursor)
   return checked(await request<unknown>(`/customization-requests/${id}/attachments?${q}`,options(i,signal)),i,(v):v is {items:StoryAttachment[];next_cursor:string|null} => obj(v) && Object.keys(v).every(k => ['items','next_cursor'].includes(k)) && Array.isArray(v.items) && v.items.length <= 20 && v.items.every(a => isStoryAttachment(a) && a.request_id === id) && new Set(v.items.map(a=>a.id)).size === v.items.length && (v.next_cursor === null || typeof v.next_cursor === 'string' && !!v.next_cursor && v.next_cursor.length <= 512))
 }
 export async function uploadStoryAttachment(i:AttachmentIdentity,id:string,c:Extract<AttachmentCommand,{kind:'upload'}>,progress:(loaded:number,total:number)=>void,signal?:AbortSignal) {

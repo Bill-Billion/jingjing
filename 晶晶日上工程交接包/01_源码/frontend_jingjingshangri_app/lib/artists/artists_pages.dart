@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -676,7 +674,8 @@ class _RecordState extends State<_Record> {
             tradeButton('对本次拒绝提交异议', locked ? null : () => form('APPEAL'),
                 outline: true),
           if (r.canWithdraw)
-            tradeButton('撤回这份同意或委托', locked ? null : () => form('WITHDRAW'),
+            tradeButton(r.kind == 'LISTING' ? '撤回这份公开展示' : '撤回这份同意或委托',
+                locked ? null : () => form('WITHDRAW'),
                 outline: true),
           if (r.kind == 'SERVICE') ...[
             tradeButton('核对服务与原订单状态', locked ? null : () => form('SYNC'),
@@ -1045,99 +1044,97 @@ class _PublicArtistDetails extends StatefulWidget {
 
 class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
   late final api = ArtistsApi(widget.session);
-  final previews = <String, Uint8List>{};
+  ArtistPublicMedia? media;
   bool busy = false, available = false;
+  int read = 0;
   Map<String, dynamic>? current;
   String? error;
+  late (int, String?, bool) sessionContext;
+  (int, String?, bool) get currentContext => (
+        widget.session.epoch,
+        widget.session.partyId,
+        widget.session.artistsAccessDenied
+      );
 
   @override
   void initState() {
     super.initState();
+    sessionContext = currentContext;
+    widget.session.addListener(sessionChanged);
     reload();
   }
 
+  void sessionChanged() {
+    if (sessionContext == currentContext) return;
+    sessionContext = currentContext;
+    read++;
+    setState(() {
+      busy = false;
+      available = false;
+      current = null;
+      media = null;
+    });
+  }
+
+  void unavailable() {
+    if (!mounted) return;
+    read++;
+    setState(() {
+      available = false;
+      current = null;
+      media = null;
+      busy = false;
+    });
+  }
+
   Future<void> reload() async {
+    final ticket = ++read;
     setState(() {
       busy = true;
       available = false;
       error = null;
       current = null;
-      previews.clear();
+      media = null;
     });
     try {
       final d = await api.publicDetail(widget.listing['listing_id']);
-      if (mounted) {
+      if (!mounted || ticket != read) return;
+      final m = await api.publicMedia(d['listing_id'],
+          previewIds: artistStrings(d['preview_asset_ids'], ids: true, max: 6));
+      if (mounted && ticket == read) {
         setState(() {
           current = d;
+          media = m;
           available = true;
         });
       }
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = artistError(e));
+      if (mounted && ticket == read) setState(() => error = artistError(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (mounted && ticket == read) setState(() => busy = false);
     }
   }
 
-  Future<void> preview(String id, {bool save = false}) async {
-    if (busy) return;
-    setState(() {
-      busy = true;
-      error = null;
-      previews.remove(id);
-    });
-    final epoch = widget.session.epoch;
-    try {
-      final bytes = await api.publicPreview(widget.listing['listing_id'], id);
-      if (!mounted) return;
-      if (save) {
-        await FilePicker.saveFile(fileName: 'preview-$id', bytes: bytes);
-        api.check(epoch, null);
-      } else {
-        setState(() => previews[id] = bytes);
-      }
-    } on AccountError catch (e) {
-      if (mounted) {
-        setState(() {
-          error = artistError(e);
-          previews.clear();
-          if ([401, 403, 404, 409].contains(e.status)) available = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => error = '预览或保存未完成，请重新读取后再试。');
-    } finally {
-      if (mounted) setState(() => busy = false);
-    }
-  }
-
-  Widget portrait(Map<String, dynamic> listing, String? loaded) => SizedBox(
+  Widget portrait(Map<String, dynamic> listing) => SizedBox(
       key: const ValueKey('artist-public-portrait'),
       width: 180,
       height: 228,
       child: ClipRect(
-          child: loaded == null
-              ? ArtistPublicPortrait(
-                  session: widget.session,
-                  listing: listing,
-                  aspectRatio: 180 / 228,
-                  onUnavailable: () {
-                    if (!mounted) return;
-                    setState(() {
-                      available = false;
-                      previews.clear();
-                    });
-                  })
-              : Image.memory(previews[loaded]!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const ColoredBox(
-                      color: Color(0xFFE5E1D7),
-                      child: Center(
-                          child: Padding(
-                              padding: EdgeInsets.all(12),
-                              child: Text('此预览不是可显示的图片，请保存后查看。')))))));
+          child: ArtistPublicPortrait(
+              session: widget.session,
+              listing: listing,
+              media: media,
+              aspectRatio: 180 / 228,
+              onUnavailable: unavailable)));
 
-  Widget presentation(Map<String, dynamic> listing, String? loaded) =>
+  @override
+  void dispose() {
+    read++;
+    widget.session.removeListener(sessionChanged);
+    super.dispose();
+  }
+
+  Widget presentation(Map<String, dynamic> listing) =>
       LayoutBuilder(builder: (context, constraints) {
         final caption = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1166,23 +1163,21 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
               children: [
                 caption,
                 const SizedBox(height: 16),
-                portrait(listing, loaded)
+                portrait(listing)
               ]);
         }
         return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(child: caption),
           const SizedBox(width: 12),
           SizedBox(
-              width: constraints.maxWidth * .5085,
-              child: portrait(listing, loaded)),
+              width: constraints.maxWidth * .5085, child: portrait(listing)),
         ]);
       });
 
   @override
   Widget build(BuildContext context) {
     final r = current ?? widget.listing;
-    final ids = artistStrings(r['preview_asset_ids'], ids: true);
-    final loaded = ids.where(previews.containsKey).firstOrNull;
+    final items = media?.items ?? <ArtistPublicMediaItem>[];
     return tradeScaffold(
         context,
         available ? '艺人详情' : '公开资料',
@@ -1190,7 +1185,7 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!),
           if (available) ...[
-            presentation(r, loaded),
+            presentation(r),
             const SizedBox(height: 32),
             tradeHeading('关于这位艺人', fontSize: 24),
             Text(r['introduction'],
@@ -1201,20 +1196,15 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
                 style: TextStyle(
                     fontSize: 14, height: 1.6, color: AccountTheme.muted)),
             const SizedBox(height: 20),
-            if (ids.isEmpty) const Text('这份公开资料尚未提供可读预览。'),
-            for (var i = 0; i < ids.length; i++) ...[
-              if (loaded != ids[i] && previews[ids[i]] != null)
-                Image.memory(previews[ids[i]]!,
-                    height: 220,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Text('此预览请保存后查看。')),
-              tradeButton(
-                  '读取获准预览 ${i + 1}', busy ? null : () => preview(ids[i]),
-                  outline: true),
-              tradeButton('重新核权并保存预览 ${i + 1}',
-                  busy ? null : () => preview(ids[i], save: true),
-                  outline: true),
-            ],
+            if (items.isEmpty) const Text('这份公开资料尚未提供可读预览。'),
+            for (var i = 0; i < items.length; i++)
+              ArtistPublicMediaView(
+                  key: ValueKey('${r['listing_id']}-${items[i].id}'),
+                  session: widget.session,
+                  listingId: r['listing_id'],
+                  item: items[i],
+                  index: i + 1,
+                  onUnavailable: unavailable),
             tradeButton(
                 '查看公开试镜方案',
                 busy

@@ -36,7 +36,10 @@ class StoryAttachment {
         storyHash(data['content_sha256']) &&
         ['UPLOADING', 'READY', 'REVOKED'].contains(data['current_status']) &&
         data['object_version'] is int &&
-        data['object_version'] >= 1);
+        data['object_version'] >= 1 &&
+        (!data.containsKey('retention_reason') ||
+            data['retention_reason'] == null ||
+            data['retention_reason'] == 'FORMAL_SUBMISSION'));
   }
   final Map<String, dynamic> data;
   String get id => data['id'];
@@ -46,6 +49,7 @@ class StoryAttachment {
   int get version => data['object_version'];
   String get status => data['current_status'];
   bool get ready => status == 'READY';
+  bool get retained => data['retention_reason'] == 'FORMAL_SUBMISSION';
 }
 
 /// All attachment operations remain scoped to the current story creator.
@@ -79,6 +83,7 @@ class StoryAttachmentApi {
         account = story.session.account?['id'];
     final raw = await story.session.read(path, actingParty: party, query: {
       'limit': 20,
+      'include_retention': true,
       if (cursor != null) 'cursor': cursor,
     });
     story.check(epoch, account, party);
@@ -237,7 +242,7 @@ String storyAttachmentError(AccountError e) => switch (e.code) {
       'CUSTOMIZATION_ATTACHMENT_LIMIT' =>
         '这份故事已达到 40 条上传记录上限，包含待核对和已撤回记录；请联系平台核对。',
       'ASSET_UPLOAD_RECONCILIATION_REQUIRED' =>
-        '上传结果需要平台核对。原文件和原请求已保留；可在平台处理后重试，或暂时返回。请勿换键重复上传。',
+        '上传结果待核对。原文件和原请求已保留，请核对并恢复原上传；若仍无法确认，可将故事与请求编号交平台处理。请勿换键重复上传。',
       'CUSTOMIZATION_ATTACHMENT_RETENTION_REQUIRED' =>
         '这个附件已被正式版本引用，需要按资料保留流程处理；附件访问没有撤回。',
       'CUSTOMIZATION_ATTACHMENT_NOT_READY' ||
