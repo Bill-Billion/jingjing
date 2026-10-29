@@ -265,3 +265,37 @@ export async function requestBytes(path: string, options: RequestOptions, conten
   try { return await response.blob() }
   catch { throw new ApiError({ status: 0, code: 'NETWORK_UNREACHABLE', message: '材料下载未完成，请重新读取。', retryable: true, requestMethod: 'GET' }) }
 }
+
+/** Raw uploads use browser transfer events; 100% transferred is not a confirmed write. */
+export function requestUpload<T>(path: string, body: Blob, options: RequestOptions, progress: (loaded: number, total: number) => void): Promise<ApiResult<T>> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    const cleanup = () => options.signal?.removeEventListener('abort', abort)
+    const failed = () => { cleanup(); reject(new ApiError({status:0,code:'NETWORK_UNREACHABLE',message:'上传结果尚未确认，请保留原文件并恢复原请求。',retryable:true,requestMethod:'POST'})) }
+    const abort = () => xhr.abort()
+    xhr.open('POST',`${API_BASE}${path}`); xhr.timeout = 20000
+    xhr.setRequestHeader('Accept','application/json'); xhr.setRequestHeader('Content-Type','application/octet-stream'); xhr.setRequestHeader('X-Request-Id',newRequestId())
+    if (options.token) xhr.setRequestHeader('Authorization',`Bearer ${options.token}`)
+    if (options.actingParty) xhr.setRequestHeader('X-Acting-Party',options.actingParty)
+    if (options.idempotencyKey) xhr.setRequestHeader('Idempotency-Key',options.idempotencyKey)
+    xhr.upload.onprogress = event => { if (event.lengthComputable && event.total === body.size) progress(event.loaded,event.total) }
+    xhr.onerror = xhr.ontimeout = xhr.onabort = failed
+    xhr.onload = () => {
+      cleanup()
+      const requestId = xhr.getResponseHeader('X-Request-Id'), raw = xhr.responseText
+      let parsed: OkBody<T> | ErrBody | null = null
+      try { parsed = JSON.parse(raw) } catch { /* The response is validated below. */ }
+      if (xhr.status < 200 || xhr.status >= 300) {
+        if (xhr.status === 401 && options.token) unauthorized?.(options.token)
+        reject(toApiError(xhr.status,(parsed as ErrBody | null)?.error,requestId,raw,retryAfterAt(xhr.getResponseHeader('Retry-After')),'POST')); return
+      }
+      if (!parsed || typeof parsed !== 'object' || !('data' in parsed)) {
+        reject(new ApiError({status:xhr.status,code:'UNEXPECTED_RESPONSE_SHAPE',message:'上传回复未能核实，请保留原文件并恢复原请求。',requestId,requestMethod:'POST'})); return
+      }
+      resolve({data:parsed.data,meta:parsed.meta,requestId:requestId ?? parsed.meta?.request_id ?? '',version:xhr.getResponseHeader('ETag')?.replace(/"/g,'') ?? null})
+    }
+    if (options.signal?.aborted) { failed(); return }
+    options.signal?.addEventListener('abort',abort,{once:true})
+    xhr.send(body)
+  })
+}

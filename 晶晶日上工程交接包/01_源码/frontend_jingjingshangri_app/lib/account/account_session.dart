@@ -330,6 +330,7 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     int? version,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
@@ -344,6 +345,11 @@ class AccountSession extends ChangeNotifier {
           query: query,
           version: version,
           bytes: bytes,
+          onSendProgress: onSendProgress == null
+              ? null
+              : (sent, total) {
+                  if (started == _epoch) onSendProgress(sent, total);
+                },
           validate: validate);
       _check(started);
       if (path == '/api/v1/privacy/preferences' &&
@@ -459,11 +465,13 @@ class AccountSession extends ChangeNotifier {
   Future<Map<String, dynamic>> upload(String path, Uint8List bytes,
           {required String actingParty,
           required Map<String, dynamic> query,
+          void Function(int sent, int total)? onSendProgress,
           required void Function(Map<String, dynamic>) validate}) =>
       _request('POST', path,
           bytes: bytes,
           query: query,
           actingParty: actingParty,
+          onSendProgress: onSendProgress,
           validate: validate);
   Future<Uint8List> readBytes(String path,
       {String? actingParty, Map<String, dynamic>? query}) async {

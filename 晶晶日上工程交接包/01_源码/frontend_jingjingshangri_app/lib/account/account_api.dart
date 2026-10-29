@@ -154,6 +154,7 @@ class AccountApi {
     Map<String, dynamic>? query,
     int? version,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
     final writing = method != 'GET';
@@ -203,7 +204,12 @@ class AccountApi {
             query: query,
             version: version,
             key: key,
-            bytes: bytes)
+            bytes: bytes,
+            onSendProgress: onSendProgress == null
+                ? null
+                : (sent, total) {
+                    if (current()) onSendProgress(sent, total);
+                  })
         .then((data) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (data['id'] is String) resultId = data['id'];
@@ -254,6 +260,7 @@ class AccountApi {
     int? version,
     String? key,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
   }) async {
     final uri = Uri.tryParse(_dio.options.baseUrl);
     if (uri == null ||
@@ -266,6 +273,7 @@ class AccountApi {
         path,
         data: bytes ?? body,
         queryParameters: query,
+        onSendProgress: onSendProgress,
         options: Options(method: method, headers: {
           'Content-Type':
               bytes == null ? 'application/json' : 'application/octet-stream',

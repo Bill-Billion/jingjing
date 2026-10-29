@@ -14,6 +14,7 @@ import '../customization/customization_models.dart';
 import '../customization/private_draft_guard.dart';
 import '../engagement/community_support.dart';
 import 'cocreation_cast.dart';
+import 'creation_options.dart';
 
 class CocreationPage extends StatelessWidget {
   const CocreationPage({super.key, this.view = 'rooms', this.recordId});
@@ -47,6 +48,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   String get domain => 'cocreation';
   @override
   bool get enabled => super.enabled && !checking;
+  bool get personalCreator => session.party?['kind'] == 'PERSON';
   late final title = field(),
       request = field(),
       producer = field(),
@@ -61,7 +63,10 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   List<String> materials = [];
   List<ArtistPerson> people = [];
   List<StorySummary> stories = [];
-  String? selectedRule, cursor, nextCursor;
+  String? selectedRule, cursor, nextCursor, creationStory, creationIssue;
+  int creationTicket = 0;
+  bool readingCreation = false;
+  List<Map<String, dynamic>> producers = [];
   String caseKind = 'CANCEL';
   bool agreed = false, sharing = false, withdrawAgreed = false;
   Map<String, dynamic>? room, member;
@@ -75,6 +80,12 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
 
   @override
   void clearPrivate() {
+    creationTicket++;
+    readingCreation = false;
+    creationStory = null;
+    creationIssue = null;
+    selectedRule = null;
+    producers = [];
     room = null;
     member = null;
     rules = [];
@@ -91,6 +102,15 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
 
   @override
   void fail(Object e) {
+    if (widget.view == 'new' &&
+        e is AccountError &&
+        cocreationCreationMessages.containsKey(e.code)) {
+      creationIssue = e.code == 'COCREATION_DEADLINE_PASSED' ? null : e.code;
+      error = cocreationCreationMessages[e.code];
+      agreed = false;
+      if (e.code != 'COCREATION_DEADLINE_PASSED') clearCreation();
+      return;
+    }
     super.fail(e);
     if (e is AccountError && e.status == 412) {
       agreed = false;
@@ -107,11 +127,11 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       error = null;
     });
     try {
+      if (widget.view == 'new' && !personalCreator) return;
       Map<String, dynamic>? d, m;
       List<Map<String, dynamic>> r = [], rs = [], cs = [], ms = [];
       String? next;
       if (widget.view == 'new') {
-        rs = communityItems(await api.read('rules', account: true));
         final list = <StorySummary>[], seen = <String>{};
         String? c;
         do {
@@ -124,7 +144,9 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           stories = list;
           if (!initializedDraft &&
               widget.id != null &&
-              list.any((s) => s.id == widget.id && s.status != 'DRAFT')) {
+              list.any((s) =>
+                  s.id == widget.id &&
+                  ['SUBMITTED', 'INTAKE'].contains(s.status))) {
             request.text = widget.id!;
           }
         }
@@ -199,7 +221,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         setState(() {
           room = d;
           member = m;
-          rules = rs;
+          if (widget.view != 'new') rules = rs;
           rows = r;
           cases = cs;
           ownMembers = ms;
@@ -219,6 +241,13 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     } finally {
       if (mounted && t == ticket) setState(() => checking = false);
     }
+    if (mounted &&
+        t == ticket &&
+        widget.view == 'new' &&
+        recovery == null &&
+        communityId(request.text)) {
+      await readCreation();
+    }
   }
 
   @override
@@ -235,8 +264,12 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
 
   @override
   Future<void> recovered(Map<String, dynamic> value) async {
-    await super.recovered(value);
-    if (mounted) draftGuard.currentState?.markSaved();
+    if (widget.view == 'new') {
+      enterCreatedRoom(value);
+    } else {
+      await super.recovered(value);
+      if (mounted) draftGuard.currentState?.markSaved();
+    }
   }
 
   Future<void> submit(Future<void> Function() work) async {
@@ -376,60 +409,224 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     ];
   }
 
-  List<Widget> createView() => [
-        communityHeading('发起多人共创', '先有自己的故事和明确活动规则，再邀请每位参与者。'),
-        communitySection('建房前准备', [
-          communityFact(
-              '1 · 故事',
-              stories.any((s) => s.status != 'DRAFT')
-                  ? '已有本人正式提交的故事，可在下方选择'
-                  : '请先正式提交一份自己的故事'),
-          communityFact(
-              '2 · 共创规则', rules.isEmpty ? '当前暂无可用的已发布规则' : '阅读本次条款后选择'),
-          const Text('3 · 承制方：当前尚未开放获准承制方选择，建房暂不可提交。'),
+  void clearCreation() {
+    creationTicket++;
+    readingCreation = false;
+    creationStory = null;
+    producers = [];
+    rules = [];
+    producer.clear();
+    selectedRule = null;
+    agreed = false;
+  }
+
+  Future<void> readCreation() async {
+    if (!communityId(request.text) || !enabled) return;
+    final storyId = request.text;
+    setState(() {
+      clearCreation();
+      creationIssue = null;
+      error = null;
+      readingCreation = true;
+    });
+    final serial = creationTicket;
+    try {
+      final options = await CocreationCreationOptions.load(api, storyId);
+      if (!mounted || serial != creationTicket || request.text != storyId) {
+        return;
+      }
+      setState(() {
+        producers = options.producers;
+        rules = options.rules;
+        creationStory = storyId;
+        creationIssue = options.reason;
+      });
+    } catch (e) {
+      if (mounted && serial == creationTicket && request.text == storyId) {
+        setState(() => fail(e));
+      }
+    } finally {
+      if (mounted && serial == creationTicket) {
+        setState(() => readingCreation = false);
+      }
+    }
+  }
+
+  bool get creationReady =>
+      enabled &&
+      !readingCreation &&
+      creationIssue == null &&
+      creationStory == request.text &&
+      producers.any((p) => p['id'] == producer.text) &&
+      rules.any((r) => r['id'] == selectedRule);
+
+  @override
+  FutureOr<void> validateResult(Map<String, dynamic> value) {
+    super.validateResult(value);
+    if (widget.view == 'new') {
+      final body = recovery == null
+          ? {
+              'producer_party_id': producer.text,
+              'title': title.text.trim(),
+              'purpose': purpose.text.trim(),
+              'territory': territory.text.trim(),
+              'deadline': communityInstant(deadline.text, '招募截止时间'),
+            }
+          : communityMap(recovery!['body']);
+      communityRequire(value['current_status'] == 'OPEN' &&
+          value['rule_snapshot'] is Map &&
+          value['counts'] is Map &&
+          value['participation_sha256'] is String &&
+          RegExp(r'^[a-f0-9]{64}$').hasMatch(value['participation_sha256']) &&
+          value['allowed_actions'] is List &&
+          (value['allowed_actions'] as List).contains('INVITE') &&
+          ['producer_party_id', 'title', 'purpose', 'territory']
+              .every((k) => value[k] == body[k]) &&
+          DateTime.tryParse('${value['deadline']}') ==
+              DateTime.tryParse('${body['deadline']}'));
+    }
+  }
+
+  void enterCreatedRoom(Map<String, dynamic> value) {
+    if (!mounted) return;
+    draftGuard.currentState?.markSaved();
+    Navigator.pushReplacementNamed(
+        context, '/cocreation?view=room&recordId=${value['id']}');
+  }
+
+  Future<void> createRoom() => submit(() async {
+        if (!creationReady || !agreed) return;
+        final until = communityInstant(deadline.text, '招募截止时间');
+        if (!DateTime.parse(until).isAfter(DateTime.now())) {
+          throw const AccountError(400, 'COCREATION_DEADLINE_PASSED');
+        }
+        final r = await act(
+            'rooms',
+            {
+              'request_id': communityRequiredId(request.text, '本人已提交故事'),
+              'rule_id': communityRequiredId(selectedRule ?? '', '共创规则'),
+              'producer_party_id': communityRequiredId(producer.text, '本次承制方'),
+              'title': communityRequired(title.text, '共创名称', max: 200),
+              'deadline': until,
+              'purpose': communityRequired(purpose.text, '拍摄用途', max: 100),
+              'territory': communityRequired(territory.text, '使用地域', max: 100),
+            },
+            reload: false);
+        if (r != null) enterCreatedRoom(r);
+      });
+
+  List<Widget> createView() => !personalCreator
+      ? [
+          communityHeading('发起多人共创', '共创由本人个人身份发起。'),
+          appNotice('当前是机构身份，请先切换到本人个人身份，再选择自己已提交的故事。'),
+          tradeButton('核对账号与身份', () => Navigator.pushNamed(context, '/account'))
+        ]
+      : [
+          communityHeading('发起多人共创', '选择自己的已提交故事，确认本次承制方与规则。建房后再逐人邀请。'),
+          communitySelect(
+              '本人已提交故事',
+              request.text,
+              [
+                for (final r in stories
+                    .where((r) => ['SUBMITTED', 'INTAKE'].contains(r.status)))
+                  (r.id, '${r.title} · 版本${r.version}')
+              ],
+              enabled
+                  ? (v) {
+                      setState(() {
+                        request.text = v ?? '';
+                        clearCreation();
+                        creationIssue = null;
+                      });
+                      readCreation();
+                    }
+                  : null),
+          if (!checking &&
+              stories.every((r) => !['SUBMITTED', 'INTAKE'].contains(r.status)))
+            appNotice('请先正式提交一份自己的故事，再回来建立共创房间。'),
           tradeButton('查看或继续填写我的故事',
               () => Navigator.pushNamed(context, '/customization'),
               outline: true),
-        ]),
-        communityField(title, '共创名称', enabled: enabled),
-        communitySelect(
-            '本人已提交故事',
-            request.text,
-            [
-              for (final r in stories.where((r) => r.status != 'DRAFT'))
-                (r.id, '${r.title} · 版本${r.version}')
-            ],
-            enabled ? (v) => setState(() => request.text = v ?? '') : null),
-        DropdownButtonFormField<String>(
-            isExpanded: true,
-            decoration: const InputDecoration(labelText: '本次获准承制方'),
-            hint: const Text('承制方选择待开放'),
-            items: const [],
-            onChanged: null),
-        communitySelect(
-            '已发布共创规则',
-            selectedRule,
-            [
-              for (final r in rules)
-                (
-                  r['id'] as String,
-                  communityText(communityMap(r['rule'])['version'])
-                )
-            ],
-            enabled ? (v) => setState(() => selectedRule = v) : null),
-        if (selectedRule != null)
-          communitySection('本次参与条款', [
-            SelectableText(communityText(communityMap(
-                    rules.firstWhere((r) => r['id'] == selectedRule)['rule'])[
-                'participation_terms'])),
-            appNotice('房间必须先于正式报价建立，后加房间不能沿用旧报价。')
-          ]),
-        communityDateField(context, deadline, '招募截止', enabled: enabled),
-        communityField(purpose, '拍摄用途', enabled: enabled),
-        communityField(territory, '使用地域', enabled: enabled),
-        appNotice('本页尚未建立房间，也不会发出邀请或产生费用。已收到的邀请和已有房间仍可办理；离开本页前会提醒未提交内容。'),
-        tradeButton('保存共创房间', null)
-      ];
+          if (readingCreation) const LinearProgressIndicator(),
+          if (creationIssue != null) ...[
+            appNotice(cocreationCreationMessages[creationIssue] ??
+                '当前暂不能建立共创房间，请重新核对原故事。'),
+            if (creationIssue == 'COCREATION_ROOM_EXISTS')
+              tradeButton('前往我的共创', () => open('rooms'), outline: true),
+            if ([
+              'COCREATION_BEFORE_QUOTE_REQUIRED',
+              'CUSTOMIZATION_ORDER_EXISTS'
+            ].contains(creationIssue))
+              tradeButton(
+                  '查看我的报价与订单', () => Navigator.pushNamed(context, '/trade'),
+                  outline: true),
+          ],
+          tradeButton(
+              '重新读取本故事的承制方与规则',
+              enabled && !readingCreation && communityId(request.text)
+                  ? readCreation
+                  : null,
+              outline: true),
+          communityField(title, '共创名称', enabled: enabled),
+          communitySelect(
+              '本次获准承制方',
+              producer.text,
+              [
+                for (final p in producers)
+                  (p['id'] as String, p['display_name'] as String)
+              ],
+              enabled && !readingCreation
+                  ? (v) => setState(() {
+                        producer.text = v ?? '';
+                        agreed = false;
+                      })
+                  : null),
+          if (creationStory != null &&
+              producers.isEmpty &&
+              creationIssue == null)
+            appNotice('当前没有可供本故事选择的承制方，请稍后重新读取。'),
+          communitySelect(
+              '已发布共创规则',
+              selectedRule,
+              [
+                for (final r in rules)
+                  (
+                    r['id'] as String,
+                    communityText(communityMap(r['rule'])['version'])
+                  )
+              ],
+              enabled && !readingCreation
+                  ? (v) => setState(() {
+                        selectedRule = v;
+                        agreed = false;
+                      })
+                  : null),
+          if (creationStory != null && rules.isEmpty)
+            appNotice('当前暂无生效共创规则，请稍后重新读取。'),
+          if (selectedRule != null && rules.any((r) => r['id'] == selectedRule))
+            communitySection('本次参与条款', [
+              SelectableText(communityText(communityMap(
+                      rules.firstWhere((r) => r['id'] == selectedRule)['rule'])[
+                  'participation_terms'])),
+              communityFact(
+                  '人数上限',
+                  communityMap(rules.firstWhere(
+                      (r) => r['id'] == selectedRule)['rule'])['max_people']),
+              appNotice('房间须先于正式报价建立。每位参与者仍须独立确认自己的资料和授权。')
+            ]),
+          communityDateField(context, deadline, '招募截止', enabled: enabled),
+          communityField(purpose, '拍摄用途', enabled: enabled),
+          communityField(territory, '使用地域', enabled: enabled),
+          appNotice('保存后进入本房间的邀请与进度页。建房本身不发出邀请，也不产生费用。'),
+          CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              value: agreed,
+              onChanged: creationReady
+                  ? (v) => setState(() => agreed = v == true)
+                  : null,
+              title: const Text('已核对本故事、承制方与参与条款，确认建立共创房间')),
+          tradeButton('保存共创房间', creationReady && agreed ? createRoom : null)
+        ];
   List<Widget> roomView() {
     final r = room;
     if (r == null) return [];

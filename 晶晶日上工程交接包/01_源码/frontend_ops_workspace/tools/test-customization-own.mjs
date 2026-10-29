@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { createSSRApp, h } from 'vue'
+import { createSSRApp, effectScope, h, reactive } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, RouterView } from 'vue-router'
@@ -14,7 +14,7 @@ Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getI
 const originalFetch = globalThis.fetch, originalWindow = globalThis.window, id = n => String(n).padStart(8,'0')+'-0000-4000-8000-000000000001'
 const time = '2026-10-28T08:30:00.123Z', who = {token:'isolated-story-token',accountId:id(1),partyId:id(2)}, base = '/operations/customization/mine'
 const template = () => ({title:'本人家庭故事',description:'模拟问题 <script>unsafe</script>',fields:[{key:'story',label:'请讲述故事',type:'TEXT',required:true,max_length:500},{key:'style',label:'叙事方式',type:'CHOICE',required:false,options:['纪实','诗意']},{key:'note',label:'补充说明',type:'TEXT',required:false}]})
-const category = (t=template()) => ({template_version_id:id(4),category_code:'FAMILY',template_version:1,template_snapshot:t,submission_available:!t.fields.some(f=>f.type==='PRIVATE_ATTACHMENT'&&f.required),unavailable_reason:t.fields.some(f=>f.type==='PRIVATE_ATTACHMENT'&&f.required)?'ATTACHMENT_SUBMISSION_NOT_READY':null})
+const category = (t=template()) => ({template_version_id:id(4),category_code:'FAMILY',template_version:1,template_snapshot:t,submission_available:true,unavailable_reason:null})
 const story = (status='DRAFT',v=1,a={}) => ({id:id(10),party_id:who.partyId,created_by:who.accountId,template_version_id:id(4),template_snapshot:template(),answers:a,current_status:status,object_version:v,submission:status==='DRAFT'?null:{id:id(11),template_snapshot:template(),answers:a,content_sha256:'a'.repeat(64),submitted_by:who.accountId,submitted_at:time},submitted_at:status==='DRAFT'?null:time,intake_at:status==='INTAKE'?time:null,intake_by:status==='INTAKE'?id(8):null,allowed_actions:status==='DRAFT'?['READ','SAVE','SUBMIT']:['READ']})
 const summary = (s=story()) => ({id:s.id,party_id:s.party_id,template_version_id:s.template_version_id,category_title:s.template_snapshot.title,current_status:s.current_status,object_version:s.object_version,submitted_at:s.submitted_at,intake_at:s.intake_at,allowed_actions:s.allowed_actions})
 const supplement = (v=3,state='OPEN',a={story:'合成故事'},replies={}) => ({request_id:id(10),object_version:v,supplement:state?{id:id(20),base_submission_id:id(11),items:[{field_key:'story',reason:'缺少时间',instruction:'补充年份和地点'}],current_status:state,requested_by:id(8),requested_at:time,response:state==='RESPONDED'?{submission_id:id(21),responses:replies,submitted_at:time}:null}:null,draft:state==='OPEN'?{answers:a,responses:replies}:null,allowed_actions:state==='OPEN'?['READ','SAVE_SUPPLEMENT','SUBMIT_SUPPLEMENT']:['READ']})
@@ -45,11 +45,11 @@ try {
     app.mixin({created(){if(this.$options.__name==='CustomizationOwnView'){vm=this.$.setupState;vm.initializing=false}},serverPrefetch(){if(this.$options.__name==='CustomizationOwnView')return exercise?.(s,vm,router)}})
     try {return {html:await renderToString(app),vm}} finally {s.stop()}
   }
-  test('真实分类仅用账号读取，分类可空且必填附件与可提交标志一致',async()=>{
+  test('真实分类仅用账号读取，分类可空，含附件的自由创作模板按服务端显示',async()=>{
     let headers;globalThis.fetch=async(url,o)=>{assert.ok(url.endsWith('/customization-categories'));headers=o.headers;return response({items:[category()]},{...who,partyId:undefined})}
     const r=await api.listStoryCategories(who);assert.equal(r.items[0].template_snapshot.title,'本人家庭故事');assert.equal(headers['X-Acting-Party'],undefined)
     globalThis.fetch=async()=>response({items:[]},{...who,partyId:undefined});assert.deepEqual(await api.listStoryCategories(who),{items:[]})
-    const t=template();t.fields.push({key:'attachment',label:'私密附件',type:'PRIVATE_ATTACHMENT',required:true});assert.ok(api.isStoryCategory(category(t)));assert.equal(api.isStoryCategory({...category(t),submission_available:true,unavailable_reason:null}),false)
+    const t=template();t.fields.push({key:'attachment',label:'私密附件',type:'PRIVATE_ATTACHMENT',required:true});assert.ok(api.isStoryCategory(category(t)));assert.equal(api.isStoryCategory({...category(t),submission_available:true,unavailable_reason:null}),true);assert.equal(api.isStoryCategory({...category(t),submission_available:true,unavailable_reason:'ATTACHMENT_SUBMISSION_NOT_READY'}),false)
   })
   test('本人读取带当前主体且拒绝跨账号、跨主体、运营动作、正文摘要和缺失ETag',async()=>{
     const calls=[];globalThis.fetch=async(url,o)=>{calls.push({url,o});return response(url.includes('?')?{items:[summary()],next_cursor:'cursor+/='}:story())}
@@ -68,9 +68,9 @@ try {
     s.ui.draftAnswers={story:'故事',style:'非法选项'};await s.ui.save();assert.equal(posts,0);assert.ok(s.ui.fieldErrors['answers.style'])
     const t=template();t.fields.push({key:'file',label:'私密附件',type:'PRIVATE_ATTACHMENT',required:false});assert.equal(shared.answers({story:'故事',file:'https://invalid/private'},t,false),false);assert.equal(shared.answers({story:'😀'.repeat(500)},t),true);s.stop()
   })
-  test('必填附件只允许文字草稿，不能误报可正式提交',async()=>{
+  test('必填附件允许先存文字草稿，缺少附件时正式提交定位错误',async()=>{
     const s=state(),t=template();t.fields.push({key:'file',label:'私密附件',type:'PRIVATE_ATTACHMENT',required:true});const c=category(t);s.ui.categories=[c];s.ui.selectCategory(c.template_version_id);s.ui.draftAnswers={story:'附件未提供的文字'}
-    globalThis.fetch=async()=>response({...story('DRAFT',1,{story:'附件未提供的文字'}),template_snapshot:t});await s.ui.save();assert.equal(s.ui.detail.current_status,'DRAFT');assert.equal(s.ui.canSubmit,false);assert.equal(s.ui.pending,null);s.stop()
+    globalThis.fetch=async()=>response({...story('DRAFT',1,{story:'附件未提供的文字'}),template_snapshot:t});await s.ui.save();assert.equal(s.ui.detail.current_status,'DRAFT');assert.equal(s.ui.canSubmit,true);await s.ui.submit();assert.ok(s.ui.fieldErrors['answers.file']);assert.equal(s.ui.pending,null);s.stop()
   })
   test('未知创建先读列表，近似故事不算成功；恢复原键和原正文且不重复发起',async()=>{
     const s=state(),calls=[];prepare(s,{story:'原故事'});let writes=0
@@ -152,9 +152,9 @@ try {
     globalThis.window={confirm:()=>false}
     await render(`${base}/new`,async(s,vm)=>{prepare(s,{story:'尚未保存'});assert.equal(vm.allowDiscard(),false);assert.equal(vm.leave(),false);assert.equal(s.ui.draftAnswers.story,'尚未保存');const second={...category(),template_version_id:id(5),category_code:'OTHER'};s.ui.categories.push(second);vm.selectCategory({target:{value:id(5)}});assert.equal(s.ui.categoryId,id(4));await vm.changeIdentity({target:{value:id(99)}});assert.equal(s.session.selectedId,who.partyId);s.ui.pending={command:{kind:'create',template_version_id:id(4),answers:{},key:'same'},template:template(),checked:false};globalThis.window.confirm=()=>true;assert.equal(vm.leave(),false);s.ui.pending=null;assert.equal(vm.leave(),true);assert.deepEqual(s.ui.draftAnswers,{})})
   })
-  test('真实页面附件不可用、错误关联与纯文本显示，不把示例或正文当HTML',async()=>{
+  test('真实页面未建故事先存草稿，附件通过受控入口且文字不当HTML',async()=>{
     const {html}=await render(`${base}/new`,async(s,vm)=>{const t=template();t.fields.push({key:'file',label:'私密附件',type:'PRIVATE_ATTACHMENT',required:true});s.ui.categories=[category(t)];s.ui.selectCategory(id(4));s.ui.fieldErrors={'answers.story':'请补充内容'};vm.initializing=false})
-    assert.ok(html.includes('data-testid="story-attachment-unavailable"'));assert.ok(html.includes('aria-describedby="story-count-story story-error-story"'));assert.ok(html.includes('&lt;script&gt;unsafe&lt;/script&gt;'));assert.equal(html.includes('type="file"'),false);assert.equal(html.includes('<script>unsafe</script>'),false)
+    assert.ok(html.includes('data-testid="story-attachment-field"'));assert.ok(html.includes('先点击“创建并保存草稿”'));assert.ok(html.includes('aria-describedby="story-count-story story-error-story"'));assert.ok(html.includes('&lt;script&gt;unsafe&lt;/script&gt;'));assert.equal(html.includes('type="file"'),false);assert.equal(html.includes('<script>unsafe</script>'),false)
   })
   test('登录返回只接受本人列表、新建与合法详情，拒绝手填权限与外链',()=>{
     for(const path of [base,`${base}/new`,`${base}/${id(10)}`])assert.equal(loginRedirect(path),path)

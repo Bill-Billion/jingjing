@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { IntakeRequest } from '@/api/modules/customization'
-defineProps<{ request: Pick<IntakeRequest, 'submission' | 'template_version_id'> }>()
+import type { StoryAttachment } from '@/api/modules/customizationAttachments'
+import StoryAttachmentReference from './StoryAttachmentReference.vue'
+withDefaults(defineProps<{ request: Pick<IntakeRequest, 'submission' | 'template_version_id'>; attachments?:StoryAttachment[]; attachmentBusy?:boolean }>(),{attachments:()=>[]})
+defineEmits<{'download-attachment':[asset:StoryAttachment]}>()
 </script>
 
 <template>
@@ -10,7 +13,7 @@ defineProps<{ request: Pick<IntakeRequest, 'submission' | 'template_version_id'>
     <dl class="submission-answers">
       <div v-for="field in request.submission.template_snapshot.fields" :key="field.key">
         <dt>{{ field.label }}<span v-if="field.required" class="required"> *</span></dt>
-        <dd v-if="field.type === 'PRIVATE_ATTACHMENT'" class="muted">本轮尚未接收附件。</dd>
+        <dd v-if="field.type === 'PRIVATE_ATTACHMENT'"><StoryAttachmentReference :asset-id="request.submission.answers[field.key]" :items="attachments" :busy="attachmentBusy" @download="$emit('download-attachment',$event)"/></dd>
         <dd v-else-if="Object.hasOwn(request.submission.answers, field.key)" class="long-text">{{ request.submission.answers[field.key] === '' ? '（用户留空）' : request.submission.answers[field.key] }}</dd>
         <dd v-else class="muted">未填写</dd>
       </div>

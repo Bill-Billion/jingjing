@@ -36,11 +36,9 @@ const version = (v: unknown): v is number => Number.isInteger(v) && Number(v) >=
 const instant = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(v) && Number.isFinite(Date.parse(v)) && new Date(v).toISOString() === v
 const same = (a: Record<string, string>, b: Record<string, string>) => Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => a[k] === b[k])
 const canonical = (v: unknown): string => Array.isArray(v) ? '[' + v.map(canonical).join(',') + ']' : obj(v) ? '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canonical(v[k])).join(',') + '}' : JSON.stringify(v)
-export const hasRequiredAttachment = (t: CustomizationTemplate) => t.fields.some(f => f.required && f.type === 'PRIVATE_ATTACHMENT')
 export function isStoryCategory(v: unknown): v is StoryCategory {
   if (!obj(v) || !only(v, ['template_version_id','category_code','template_version','template_snapshot','submission_available','unavailable_reason']) || !validSupplyId(v.template_version_id) || typeof v.category_code !== 'string' || !/^[A-Za-z][A-Za-z0-9_-]{0,39}$/.test(v.category_code) || !version(v.template_version) || !isCustomizationTemplate(v.template_snapshot)) return false
-  const unavailable = hasRequiredAttachment(v.template_snapshot)
-  return v.submission_available === !unavailable && v.unavailable_reason === (unavailable ? 'ATTACHMENT_SUBMISSION_NOT_READY' : null)
+  return typeof v.submission_available === 'boolean' && (v.submission_available ? v.unavailable_reason === null : v.unavailable_reason === 'ATTACHMENT_SUBMISSION_NOT_READY')
 }
 function summary(v: Record<string, unknown>): boolean {
   if (!validSupplyId(v.id) || !validSupplyId(v.party_id) || !validSupplyId(v.template_version_id) || !version(v.object_version) || !['DRAFT','SUBMITTED','INTAKE'].includes(String(v.current_status))) return false
@@ -61,7 +59,7 @@ export function validStoryResponses(v: unknown, s: Supplement, submitted = false
 export function isStorySupplement(v: unknown, t: CustomizationTemplate): v is StorySupplement {
   if (!obj(v) || !only(v, ['request_id','object_version','supplement','draft','allowed_actions']) || !validSupplyId(v.request_id) || !version(v.object_version) || !(v.supplement === null || isSupplement(v.supplement))) return false
   const s = v.supplement as Supplement | null, open = s?.current_status === 'OPEN'
-  if (s && !s.items.every(i => t.fields.some(f => f.key === i.field_key && f.type !== 'PRIVATE_ATTACHMENT'))) return false
+  if (s && !s.items.every(i => t.fields.some(f => f.key === i.field_key))) return false
   if (open ? !obj(v.draft) || !only(v.draft,['answers','responses']) || !answers(v.draft.answers,t,false) || !validStoryResponses(v.draft.responses,s!) : v.draft !== null) return false
   return Array.isArray(v.allowed_actions) && v.allowed_actions.includes('READ') && new Set(v.allowed_actions).size === v.allowed_actions.length && v.allowed_actions.every(a => a === 'READ' || open && ['SAVE_SUPPLEMENT','SUBMIT_SUPPLEMENT'].includes(String(a)))
 }

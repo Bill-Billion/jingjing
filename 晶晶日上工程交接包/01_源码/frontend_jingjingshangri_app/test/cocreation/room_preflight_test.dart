@@ -7,6 +7,17 @@ import '../engagement/community_safety_test.dart' show communitySession;
 import '../stock/v5_test_host.dart';
 
 void main() {
+  testWidgets('机构身份先切本人个人身份，不读取建房目录或误报失权', (t) async {
+    final a = FakeAccountAdapter(),
+        s = (await t.runAsync(() => communitySession(a)))!;
+    s.select(identity(orgId));
+    await host(t, s, const CocreationPage(view: 'new'));
+    expect(find.text('当前是机构身份，请先切换到本人个人身份，再选择自己已提交的故事。'), findsOneWidget);
+    expect(find.text('核对账号与身份'), findsOneWidget);
+    expect(a.requests.where((r) => r.path.contains('/cocreation/')), isEmpty);
+    expect(s.isDomainDenied('/api/v1/cocreation/'), false);
+  });
+
   testWidgets('从本人正式故事进入共创会预选；缺承制目录不猜主体或建房', (t) async {
     final a = FakeAccountAdapter(handler: (r) {
       if (r.path == '/api/v1/customization-requests') {
@@ -15,14 +26,13 @@ void main() {
           'next_cursor': null
         });
       }
-      if (r.path == '/api/v1/cocreation/rules') {
+      if (r.path == '/api/v1/cocreation/creation-options') {
         return envelope({
-          'items': [
-            {
-              'id': secondTemplateId,
-              'rule': {'version': '合成规则', 'participation_terms': '逐人确认'}
-            }
-          ]
+          'items': [],
+          'next_cursor': null,
+          'unavailable_reason': r.queryParameters['kind'] == 'PRODUCER'
+              ? 'CUSTOMIZATION_MERCHANT_NOT_CONFIGURED'
+              : null
         });
       }
       return FakeAccountAdapter().defaultReply(r);

@@ -9,6 +9,8 @@ import type { IntakeStatus } from '@/api/modules/customization'
 import WorkspaceNav from '@/components/WorkspaceNav.vue'
 import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import CustomizationSubmission from '@/components/CustomizationSubmission.vue'
+import StoryAttachmentList from '@/components/StoryAttachmentList.vue'
+import { useStoryAttachments } from '@/composables/useStoryAttachments'
 import '@/styles/supply.css'
 import '@/styles/operations.css'
 
@@ -17,10 +19,11 @@ const { rows,nextCursor,detail,status,error,notice,loading,busy,pending,locked,c
 const requestId = computed(() => String(route.params.requestId || ''))
 const statusText = {SUBMITTED:'平台待查看',INTAKE:'受理中'}
 const initializing = ref(true), menuOpen = ref(false)
+const files = useStoryAttachments(()=>({token:session.token,accountId:session.account?.id || '',requestId:detail.value?.id || requestId.value,revision:session.revision,identityTag:session.selectedId}),{canUpload:()=>false,onUploaded:()=>{},onRevoked:()=>{},onForbidden:()=>ui.clear()})
 let disposed = false
 async function loadPage() {
   if (!session.token || !session.account?.id) return
-  if (requestId.value) { const r = await ui.read(requestId.value); if (r) await ui.readSupplement(r.id) }
+  if (requestId.value) { const r = await ui.read(requestId.value); if (r) { await ui.readSupplement(r.id); if(detail.value?.template_snapshot.fields.some(f=>f.type==='PRIVATE_ATTACHMENT'))await files.load() } }
   else await ui.load()
 }
 async function intake() { await ui.intake(); if (detail.value && !pending.value) await ui.readSupplement(detail.value.id) }
@@ -28,7 +31,7 @@ const quoteLabels = {IN_REVIEW:'待独立复核',APPROVED:'已复核，待买方
 function fieldLabel(key: string) { return detail.value?.template_snapshot.fields.find(f => f.key === key)?.label || key }
 function leave() {
   if (busy.value || pending.value) { notice.value = '本次受理结果尚未确认，请先在当前页核对并恢复原请求。'; return false }
-  ui.clear(); return true
+  files.clear(); ui.clear(); return true
 }
 function beforeUnload(e: BeforeUnloadEvent) { if (pending.value || busy.value) { e.preventDefault(); e.returnValue = '' } }
 onBeforeRouteLeave(leave)
@@ -44,7 +47,7 @@ onMounted(async () => {
   } catch(e) { if (!disposed && session.current(c)) error.value = asApiError(e) }
   finally { if (!disposed) initializing.value = false }
 })
-onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',beforeUnload); ui.clear() })
+onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',beforeUnload); files.clear(); ui.clear() })
 </script>
 
 <template>
@@ -86,9 +89,12 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
           </section>
         </template>
 
-        <template v-else-if="detail">
+        <ApiErrorAlert :error="files.error.value" testid="customization-attachment-error"/>
+        <p v-if="files.notice.value" class="supply-notice" role="status">{{ files.notice.value }}</p>
+        <StoryAttachmentList v-if="detail?.template_snapshot.fields.some(f=>f.type==='PRIVATE_ATTACHMENT')" :items="files.rows.value" :loaded="files.loaded.value" :next-cursor="files.nextCursor.value" :locked="locked || files.locked.value" :downloading="files.downloading.value" operator @load="files.load($event)" @download="files.download"/>
+        <template v-if="requestId && detail">
           <div class="ops-columns">
-            <CustomizationSubmission :request="detail"/>
+            <CustomizationSubmission :attachments="files.rows.value" :attachment-busy="files.locked.value || !!files.downloading.value" @download-attachment="files.download" :request="detail"/>
             <section class="supply-card ops-action" data-testid="customization-intake-actions">
               <h2>受理记录</h2>
               <dl class="supply-facts intake-facts">
@@ -117,16 +123,16 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
               <p v-if="supplement.supplement.current_status === 'OPEN'" class="muted">等待用户正式重提。重提后回到待查看，不会自动视为合格或批准报价。</p>
             </template>
             <form v-if="supplement.allowed_actions.includes('REQUEST_SUPPLEMENT') && detail.current_status === 'INTAKE'" data-testid="customization-supplement-form" @submit.prevent="ui.supplementRequest">
-              <h3>逐项提出补充要求</h3><p class="muted">请选择原故事中的问题，分别写清原因和应补内容。不得要求通过本轮接口上传附件。</p>
+              <h3>逐项提出补充要求</h3><p class="muted">请选择原故事中的问题，分别写清原因和应补内容。附件问题可要求换文件；用户保存补件草稿后，还须正式提交，运营才能读取新文件。</p>
               <fieldset :disabled="locked">
                 <div v-for="(item,n) in supplementItems" :key="n" class="customization-item">
-                  <label>需要补充的问题<select v-model="item.field_key" :data-testid="`customization-supplement-field-${n}`" required><option value="">请选择原故事字段</option><option v-for="field in detail.template_snapshot.fields.filter(f => f.type !== 'PRIVATE_ATTACHMENT')" :key="field.key" :value="field.key">{{ field.label }}</option></select></label>
+                  <label>需要补充的问题<select v-model="item.field_key" :data-testid="`customization-supplement-field-${n}`" required><option value="">请选择原故事字段</option><option v-for="field in detail.template_snapshot.fields" :key="field.key" :value="field.key">{{ field.label }}</option></select></label>
                   <label>为什么需要补充<textarea v-model="item.reason" :data-testid="`customization-supplement-reason-${n}`" maxlength="500" required></textarea></label>
                   <label>请用户怎样补充<textarea v-model="item.instruction" :data-testid="`customization-supplement-instruction-${n}`" maxlength="1000" required></textarea></label>
                   <button v-if="supplementItems.length > 1" type="button" class="outline" @click="supplementItems.splice(n,1)">移除此项</button>
                 </div>
                 <label v-if="conflicted" class="customization-confirm"><input v-model="reconfirmed" data-testid="customization-supplement-reconfirm" type="checkbox">我已核对最新故事、补件上下文及保留的输入，确认再次提出要求。</label>
-                <div class="supply-actions"><button type="button" class="outline" data-testid="customization-supplement-add" :disabled="supplementItems.length >= detail.template_snapshot.fields.filter(f => f.type !== 'PRIVATE_ATTACHMENT').length" @click="supplementItems.push({field_key:'',reason:'',instruction:''})">添加补充项</button><button class="primary" data-testid="customization-supplement-submit" :disabled="!canSupplement">发送逐项补充要求</button></div>
+                <div class="supply-actions"><button type="button" class="outline" data-testid="customization-supplement-add" :disabled="supplementItems.length >= detail.template_snapshot.fields.length" @click="supplementItems.push({field_key:'',reason:'',instruction:''})">添加补充项</button><button class="primary" data-testid="customization-supplement-submit" :disabled="!canSupplement">发送逐项补充要求</button></div>
               </fieldset>
             </form>
           </section>
@@ -142,7 +148,7 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
           <section class="supply-card" data-testid="customization-history">
             <div class="section-heading"><h2>正式提交历史</h2><button class="outline" data-testid="customization-load-history" :disabled="locked" @click="ui.loadHistory()">读取正式历史</button></div>
             <div class="supply-actions"><button v-for="version in history" :key="version.id" class="outline" :disabled="locked" :data-testid="`customization-history-${version.submission_number}`" @click="ui.readHistory(version.id)">第 {{ version.submission_number }} 版 · {{ version.submitted_at }}</button></div><button v-if="historyCursor" class="outline" :disabled="locked" @click="ui.loadHistory(true)">继续读取历史</button>
-            <template v-if="historyVersion"><h3 data-testid="customization-history-version">正式第 {{ historyVersion.submission_number }} 版</h3><CustomizationSubmission :request="{...detail,submission:historyVersion.submission}"/><article v-for="item in historyVersion.supplement_response?.items || []" :key="item.field_key" class="customization-item"><h3>{{ fieldLabel(item.field_key) }}</h3><p class="long-text">当时要求：{{ item.instruction }}</p><p class="long-text">当时原因：{{ item.reason }}</p><p class="long-text">正式回复：{{ historyVersion.supplement_response?.responses[item.field_key] }}</p></article></template>
+            <template v-if="historyVersion"><h3 data-testid="customization-history-version">正式第 {{ historyVersion.submission_number }} 版</h3><CustomizationSubmission :attachments="files.rows.value" :attachment-busy="files.locked.value || !!files.downloading.value" @download-attachment="files.download" :request="{...detail,submission:historyVersion.submission}"/><article v-for="item in historyVersion.supplement_response?.items || []" :key="item.field_key" class="customization-item"><h3>{{ fieldLabel(item.field_key) }}</h3><p class="long-text">当时要求：{{ item.instruction }}</p><p class="long-text">当时原因：{{ item.reason }}</p><p class="long-text">正式回复：{{ historyVersion.supplement_response?.responses[item.field_key] }}</p></article></template>
           </section>
         </template>
       </main>
