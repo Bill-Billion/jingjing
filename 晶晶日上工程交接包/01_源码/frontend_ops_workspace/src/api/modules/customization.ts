@@ -46,9 +46,9 @@ export function answers(v: unknown, t: CustomizationTemplate, submitted = true):
   if (!obj(v) || Object.keys(v).length > 40 || new TextEncoder().encode(JSON.stringify(v)).length > 48 * 1024) return false
   for (const [key,value] of Object.entries(v)) {
     const f = t.fields.find(f => f.key === key)
-    if (!fieldKey(key) || !f || !text(value,f.max_length ?? 12000,true) || f.type === 'PRIVATE_ATTACHMENT' && value !== '' || f.type === 'CHOICE' && value !== '' && !f.options?.includes(value)) return false
+    if (!fieldKey(key) || !f || !text(value,f.max_length ?? 12000,true) || f.type === 'PRIVATE_ATTACHMENT' && value !== '' && !validSupplyId(value) || f.type === 'CHOICE' && value !== '' && !f.options?.includes(value)) return false
   }
-  return !submitted || t.fields.every(f => !f.required || f.type !== 'PRIVATE_ATTACHMENT' && typeof v[f.key] === 'string' && String(v[f.key]).trim().length > 0)
+  return !submitted || t.fields.every(f => !f.required || typeof v[f.key] === 'string' && String(v[f.key]).trim().length > 0)
 }
 const sameAnswers = (a: Record<string,string>, b: Record<string,string>) => Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => a[k] === b[k])
 const canonical = (v: unknown): string => Array.isArray(v) ? '[' + v.map(canonical).join(',') + ']' : obj(v) ? '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canonical(v[k])).join(',') + '}' : JSON.stringify(v)

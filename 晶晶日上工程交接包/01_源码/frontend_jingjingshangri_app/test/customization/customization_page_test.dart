@@ -175,27 +175,31 @@ void main() {
     });
     expect(tester.takeException(), null);
   });
-  testWidgets('必填附件模板可保存文字，但没有附件伪上传或正式提交', (tester) async {
+  testWidgets('必填附件未选择可保存文字，提交会定位缺失而不发起正式提交', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
       handler: (r) => r.path == '$storyCollection/$requestId'
           ? envelope(story(attachment: true))
-          : adapter.defaultReply(r),
+          : r.path == '$storyCollection/$requestId/attachments'
+              ? envelope({'items': [], 'next_cursor': null})
+              : adapter.defaultReply(r),
     );
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final submit = tester.widget<FilledButton>(
       find.byKey(const ValueKey('story-submit')),
     );
-    expect(submit.onPressed, null);
+    expect(submit.onPressed, isNotNull);
     expect(
       tester
           .widget<OutlinedButton>(find.byKey(const ValueKey('story-save')))
           .onPressed,
       isNotNull,
     );
-    expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
-    expect(find.textContaining('附件提交尚未开放'), findsWidgets);
+    await tapKey(tester, 'story-submit');
+    await tester.scrollUntilVisible(find.text('这一项尚未填写。'), 180,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('这一项尚未填写。'), findsOneWidget);
     expect(
       adapter.requests.any(
         (r) => r.method == 'POST' && r.path.endsWith('/submissions'),

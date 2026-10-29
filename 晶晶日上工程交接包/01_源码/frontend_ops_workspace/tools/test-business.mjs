@@ -212,9 +212,9 @@ try{
   assert(actionAvailability('auditions',operation('auditions','decision'),{id:id(5),object_version:2,current_status:'AWAITING_ACCEPTANCE',kind:'BOOKING',owner_party_id:id(2)},ctx).blocked)
   assert(actionAvailability('notices',operation('notices','decision'),{id:id(5),object_version:2,current_status:'SENT',counterparty_id:id(9)},ctx).blocked)
  })
- test('首次供给读取新目录，不能从旧记录推断规则；缺目录的共创仍暂缓',async()=>{
+ test('首次供给读取新目录，不能从旧记录推断规则；共创改用当前建房目录',async()=>{
   const {businessPrerequisite}=await server.ssrLoadModule('/src/business/prerequisites.ts')
-  assert.equal(businessPrerequisite('stock','listing'),null);assert.equal(businessPrerequisite('auditions','offer'),null);assert(businessPrerequisite('cocreation','room'))
+  assert.equal(businessPrerequisite('stock','listing'),null);assert.equal(businessPrerequisite('auditions','offer'),null);assert.equal(businessPrerequisite('cocreation','room'),null)
   await render('/stock/listings/'+id(5),{id:id(5),object_version:2,current_status:'LISTED',data:{rule_id:id(6)}},async vm=>{
    vm.operationKey='listing';vm.prefill();assert.equal(vm.draft.rule_id,'');assert.equal(vm.prerequisite,null)
    let writes=0;globalThis.fetch=async()=>{writes++;return response({})};vm.agreed=true;await vm.submit();assert.equal(writes,0)
@@ -321,6 +321,106 @@ try{
    vm.draft.rule_id=id(12);assert.equal(vm.refOptions['invitation-submission-person_id'],undefined);assert.equal(vm.refOptions['invitation-submission-avatar_id'],undefined);assert.equal(vm.refOptions['invitation-submission-source_listing_id'].length,2);assert.equal(vm.refOptions['invitation-rule_id'].length,2)
    globalThis.fetch=async()=>failure(409,'NOTICE_ARTIST_NOT_PUBLIC');await vm.readInvitationContext();assert.equal(vm.invitationContext,null);assert.equal(vm.refOptions['invitation-submission-consent_id'],undefined);assert.equal(vm.refOptions['invitation-submission-source_listing_id'][0].label,'公开艺人甲')
   })
+ })
+
+
+ const creation=await server.ssrLoadModule('/src/business/cocreationCreation.ts')
+ const creationRule={version:'SYNTHETIC-1',source_ref:'LOCAL-TEST',max_people:30,extension_days:7,participation_terms:'本人独立确认本次参加与授权。',benefit:{service_code:'SYNTHETIC',description:'合成测试服务额度',credit_minor:5000,valid_days:30}}
+ const ruleOption={id:id(4),content_sha256:require(`${root}/../backend_server/src/modules/governance/content.js`).digest({rule:creationRule,review:{decision:'APPROVE',reason:'synthetic'}}),rule:creationRule}
+ const producerOption={id:id(3),display_name:'本次平台承制方',role:'PLATFORM_CONTRACTING_PARTY'}
+ const storyOption=(n,status='SUBMITTED')=>({id:id(n),party_id:id(2),template_version_id:id(90),category_title:'本人的合成故事'+n,current_status:status,object_version:status==='DRAFT'?1:2,submitted_at:status==='DRAFT'?null:at,intake_at:status==='INTAKE'?at:null,allowed_actions:status==='DRAFT'?['READ','SAVE','SUBMIT']:['READ']})
+ const roomBody=()=>({request_id:id(5),producer_party_id:id(3),rule_id:id(4),title:'本次共同故事',deadline:until,purpose:'共同制作与约定分享',territory:'中国'})
+ const roomReply=(body=roomBody())=>({id:id(20),object_version:1,current_status:'OPEN',title:body.title,deadline:body.deadline,producer_party_id:body.producer_party_id,purpose:body.purpose,territory:body.territory,rule_snapshot:creationRule,participation_sha256:sha,counts:{joined_count:0,eligible_count:0,minimum_people:10,benefit_people:20,people_remaining:10,benefit_remaining:20},cutoff:null,order_id:null,project_id:null,members:[],allowed_actions:['READ','INVITE','CLOSE','REQUEST_EXTENSION','REQUEST_CANCEL']})
+ const creationResponse=url=>{const u=new URL(url,'http://local');return response({items:u.searchParams.get('kind')==='PRODUCER'?[producerOption]:[ruleOption],next_cursor:null,unavailable_reason:null})}
+ async function readyCreation(vm){vm.operationKey='room';vm.draft={...roomBody(),producer_party_id:'',rule_id:''};await vm.readCreationContext();vm.draft.producer_party_id=id(3);vm.draft.rule_id=id(4);vm.agreed=true;assert(vm.creationReady)}
+ test('首次共创按故事读取当前目录，不拿本人机构或全局规则作获准选项',async()=>{
+  assert.equal(references.sourceFor('rule_id',{},'cocreation',id(2)),null)
+  assert.equal(references.sourceFor('producer_party_id',{},'cocreation',id(2)),null)
+  for(const [field,kind]of [['rule_id','RULE'],['producer_party_id','PRODUCER']]){const source=references.sourceFor(field,{request_id:id(5)},'cocreation',id(2)),url=new URL(source.path,'http://local');assert.equal(source.party,'required');assert.equal(url.pathname,'/cocreation/creation-options');assert.equal(url.searchParams.get('request_id'),id(5));assert.equal(url.searchParams.get('kind'),kind)}
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   vm.operationKey='room';vm.chosenReferences=[{id:id(80),rule_id:id(81),producer_party_id:id(2)}];let reads=0;globalThis.fetch=async url=>{reads++;return creationResponse(url)}
+   await vm.loadChoices({field:model.id('producer_party_id','承制方'),context:vm.draft,key:'room-producer_party_id'});assert.equal(reads,0);assert.equal(vm.refOptions['room-producer_party_id'],undefined)
+   vm.draft.request_id=id(5);await vm.loadChoices({field:model.id('rule_id','规则'),context:vm.draft,key:'room-rule_id'});assert.equal(reads,2);assert.equal(vm.refOptions['room-producer_party_id'][0].value,id(3));assert.equal(vm.refOptions['room-rule_id'][0].value,id(4));assert(!vm.creationReady)
+  })
+  assert.equal(operation('cocreation','room').fields.find(f=>f.key==='purpose').max,100)
+ })
+ test('建房故事目录过滤草稿且空页继续，规则分页保留全部真实选项',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   vm.operationKey='room';const calls=[];globalThis.fetch=async url=>{const u=new URL(url,'http://local');calls.push(u);if(u.pathname==='/api/v1/customization-requests')return response(u.searchParams.has('cursor')?{items:[storyOption(5),storyOption(6,'INTAKE')],next_cursor:null}:{items:[storyOption(7,'DRAFT')],next_cursor:'signed-story-cursor'});if(u.searchParams.get('kind')==='RULE')return response(u.searchParams.has('cursor')?{items:[ruleOption],next_cursor:null,unavailable_reason:null}:{items:[],next_cursor:id(9),unavailable_reason:null});return creationResponse(url)}
+   await vm.readCreationStories();assert.deepEqual(vm.refOptions['room-request_id'].map(o=>o.value),[id(5),id(6)]);assert(vm.refOptions['room-request_id'][0].label.includes('本人的合成故事'));vm.draft.request_id=id(5);await vm.readCreationContext();assert.equal(vm.refOptions['room-rule_id'][0].value,id(4));assert(calls.some(u=>u.searchParams.get('cursor')==='signed-story-cursor'));assert(calls.some(u=>u.searchParams.get('cursor')===id(9)))
+  })
+ })
+ test('生效规则摘要包含审核数据，校验格式与结构而不误算为仅rule的摘要',()=>{
+  assert.notEqual(ruleOption.content_sha256,require(`${root}/../backend_server/src/modules/governance/content.js`).digest({rule:creationRule}))
+  assert.equal(creation.creationPage({items:[ruleOption],next_cursor:null,unavailable_reason:null},'RULE').items[0].id,id(4))
+  for(const invalid of [{...ruleOption,content_sha256:'fake'},{...ruleOption,rule:{...creationRule,max_people:10}}])assert.throws(()=>creation.creationPage({items:[invalid],next_cursor:null,unavailable_reason:null},'RULE'))
+  assert.throws(()=>creation.creationPage({items:[{...producerOption,role:'PUBLIC_PROFILE'}],next_cursor:null,unavailable_reason:null},'PRODUCER'))
+  assert.throws(()=>creation.creationPage({items:[],next_cursor:'external',unavailable_reason:null},'RULE'))
+  assert.throws(()=>creation.creationPage({items:[],next_cursor:id(9),unavailable_reason:null},'RULE',id(9)))
+ })
+ test('换故事清依赖但保留文本，迟到旧目录与拒绝响应不能覆盖新故事',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   vm.operationKey='room';vm.draft=roomBody();const old=[];globalThis.fetch=()=>new Promise(resolve=>old.push(resolve));const reading=vm.readCreationContext();assert.equal(old.length,2)
+   vm.draft.title='等待期间的新名称';vm.draft.purpose='等待期间的新用途';vm.draft.request_id=id(6);assert.equal(vm.draft.rule_id,'');assert.equal(vm.draft.producer_party_id,'');assert.equal(vm.creationVerifiedRequest,'')
+   globalThis.fetch=async url=>creationResponse(url);await vm.readCreationContext();assert.equal(vm.creationVerifiedRequest,id(6));old[0](failure(403,'CUSTOMIZATION_MERCHANT_FORBIDDEN'));old[1](response({items:[ruleOption],next_cursor:null,unavailable_reason:null}));await reading
+   assert.equal(vm.creationVerifiedRequest,id(6));assert.equal(vm.draft.title,'等待期间的新名称');assert.equal(vm.draft.purpose,'等待期间的新用途');assert.equal(vm.creationProblem,null);assert.equal(vm.refBusy,false)
+  })
+ })
+ test('身份改变清掉建房私有选择，旧身份目录回包不恢复资格',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async(vm,session)=>{
+   vm.operationKey='room';vm.draft=roomBody();const old=[];globalThis.fetch=async url=>String(url).includes('creation-options')?new Promise(resolve=>old.push(resolve)):response({items:[],next_cursor:null},session.selectedId)
+   const reading=vm.readCreationContext();session.selectedId=id(99);old[0](response({items:[producerOption],next_cursor:null,unavailable_reason:null}));old[1](response({items:[ruleOption],next_cursor:null,unavailable_reason:null}));await reading
+   assert.equal(vm.operationKey,'');assert.deepEqual(vm.draft,{});assert.equal(vm.creationVerifiedRequest,'');assert.equal(vm.refOptions['room-rule_id'],undefined)
+  })
+ })
+ test('服务端前置拒绝清获准选择，给原故事报价房间去向且保留本页文本',async()=>{
+  for(const code of ['COCREATION_STORY_SUPPLEMENT_PENDING','COCREATION_BEFORE_QUOTE_REQUIRED','CUSTOMIZATION_ORDER_EXISTS','COCREATION_ROOM_EXISTS','MANUAL_SAMPLE_COCREATION_NOT_ALLOWED']){
+   storage.clear();await render('/cocreation/rooms',null,async vm=>{
+    globalThis.fetch=async url=>creationResponse(url);await readyCreation(vm);globalThis.fetch=async()=>failure(409,code);await vm.readCreationContext()
+    assert.equal(vm.draft.title,'本次共同故事');assert.equal(vm.draft.rule_id,'');assert.equal(vm.draft.producer_party_id,'');assert(!vm.creationReady);assert(vm.creationProblem.links.some(link=>link.to==='/operations/customization/mine/'+id(5)))
+    if(code==='COCREATION_ROOM_EXISTS')assert(vm.creationProblem.links.some(link=>link.to==='/cocreation/rooms'))
+    if(code==='COCREATION_BEFORE_QUOTE_REQUIRED'||code==='CUSTOMIZATION_ORDER_EXISTS')assert(vm.creationProblem.links.some(link=>link.to==='/trade/quotes'))
+   })
+  }
+ })
+ test('未配置平台或无生效规则明确不可创建，不自动代选或补规则',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   vm.operationKey='room';vm.draft=roomBody();globalThis.fetch=async url=>new URL(url,'http://local').searchParams.get('kind')==='PRODUCER'?response({items:[],next_cursor:null,unavailable_reason:'CUSTOMIZATION_MERCHANT_NOT_CONFIGURED'}):creationResponse(url);await vm.readCreationContext();assert(!vm.creationReady);assert(vm.creationProblem.message.includes('尚未配置'));vm.agreed=true;let writes=0;globalThis.fetch=async()=>{writes++;return response({})};await vm.submit();assert.equal(writes,0)
+  })
+ })
+ test('当前目录选择后创建使用真实7字段，回执无request_id也可进入新房间',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   const calls=[];let body;globalThis.fetch=async(url,o)=>{calls.push({url,o});if(o.method==='POST'){body=JSON.parse(o.body);return response(roomReply(body))}return String(url).includes('creation-options')?creationResponse(url):response(roomReply(body||roomBody()))}
+   await readyCreation(vm);await vm.submit();const write=calls.find(c=>c.o.method==='POST');assert.deepEqual(body,roomBody());assert.equal(write.url,'/api/v1/cocreation/rooms');assert.equal(write.o.headers['X-Acting-Party'],id(2));assert.equal(write.o.headers['If-Match'],undefined);assert.equal(vm.route.fullPath,'/cocreation/rooms/'+id(20));assert.equal(vm.ui.pending.value,null)
+  })
+ })
+ test('建房POST遭已有房间拒绝保留文字，不自动重建第二个房间',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   let writes=0;globalThis.fetch=async(url,o)=>o.method==='POST'?(writes++,failure(409,'COCREATION_ROOM_EXISTS')):creationResponse(url);await readyCreation(vm);await vm.submit();assert.equal(writes,1);assert.equal(vm.ui.pending.value,null);assert.equal(vm.draft.title,'本次共同故事');assert.equal(vm.draft.rule_id,'');assert(vm.creationProblem.links.some(link=>link.to==='/cocreation/rooms'));vm.agreed=true;await vm.submit();assert.equal(writes,1)
+  })
+ })
+ test('承制方配置403清掉失效资格，同时保留原始日期控件值与文字',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   globalThis.fetch=async(url,o)=>o.method==='POST'?failure(403,'CUSTOMIZATION_MERCHANT_FORBIDDEN'):creationResponse(url);await readyCreation(vm);vm.draft.deadline='2026-11-22T16:00';vm.agreed=true;await vm.submit();assert.equal(vm.operationKey,'room');assert.equal(vm.draft.title,'本次共同故事');assert.equal(vm.draft.deadline,'2026-11-22T16:00');assert.equal(vm.draft.rule_id,'');assert.equal(vm.draft.producer_party_id,'');assert.equal(vm.creationVerifiedRequest,'');assert.equal(vm.ui.pending.value,null)
+  })
+ })
+ test('建房未知结果重开后先核对房间索引再原key恢复，不依赖旧目录资格',async()=>{
+  storage.clear();const writes=[];globalThis.fetch=async(url,o)=>{if(o.method==='POST'){writes.push({url,o});return writes.length===1?failure(503,'COMMIT_OUTCOME_UNKNOWN'):response(roomReply(JSON.parse(o.body)))}if(String(url).includes('creation-options'))return creationResponse(url);return response({items:[],next_cursor:null})}
+  await render('/cocreation/rooms',null,async vm=>{await readyCreation(vm);await vm.submit();assert(vm.ui.pending.value);assert.equal(vm.ui.pending.value.readPath,'/cocreation/rooms');vm.draft.title='不能替换原请求';vm.agreed=true;await vm.submit();assert.equal(writes.length,1)})
+  await render('/cocreation/rooms',null,async vm=>{assert(vm.ui.pending.value);assert.equal(vm.operationKey,'');await vm.checkPending();assert(vm.ui.pending.value.checked);await vm.recover();assert.equal(writes.length,2);assert.equal(writes[0].o.body,writes[1].o.body);assert.equal(writes[0].o.headers['Idempotency-Key'],writes[1].o.headers['Idempotency-Key']);assert.equal(vm.route.fullPath,'/cocreation/rooms/'+id(20));assert.equal(vm.ui.pending.value,null)})
+ })
+ test('错房间成功回包保持未知原key，重新核对后才能接受匹配回执',async()=>{
+  storage.clear();await render('/cocreation/rooms',null,async vm=>{
+   const writes=[];globalThis.fetch=async(url,o)=>{if(o.method==='POST'){writes.push(o);return response({...roomReply(JSON.parse(o.body)),...(writes.length===1?{producer_party_id:id(99)}:{})})}return String(url).includes('creation-options')?creationResponse(url):response({items:[],next_cursor:null})}
+   await readyCreation(vm);await vm.submit();assert.equal(vm.ui.error.value.code,'UNEXPECTED_RESPONSE_SHAPE');assert(vm.ui.pending.value);assert.equal(vm.route.fullPath,'/cocreation/rooms');await vm.checkPending();await vm.recover();assert.equal(writes[0].headers['Idempotency-Key'],writes[1].headers['Idempotency-Key']);assert.equal(vm.route.fullPath,'/cocreation/rooms/'+id(20))
+  })
+ })
+ test('故事入口只接受严格UUID并核对预选故事，现货退回提示已支持关联修订',async()=>{
+  const entry='/cocreation/rooms?action=room&requestId='+id(5);assert.equal(loginRedirect(entry),entry);assert.equal(loginRedirect('/cocreation/rooms?action=room&requestId=evil'),'/workspace');assert.equal(loginRedirect(entry+'&admin=true'),'/workspace')
+  storage.clear();await render(entry,null,async vm=>{
+   globalThis.fetch=async url=>String(url).includes('creation-options')?creationResponse(url):String(url).includes('/customization-requests')?response({items:[storyOption(5)],next_cursor:null}):response({items:[],next_cursor:null});vm.routeAction();await vm.load();assert.equal(vm.draft.request_id,id(5));assert.equal(vm.creationVerifiedRequest,id(5));assert(vm.refOptions['room-request_id'][0].label.includes('本人的合成故事'));assert(!vm.creationReady)
+  })
+  const {html}=await render('/stock/listings/'+id(5),{id:id(5),object_version:1,current_status:'REJECTED',data:{}});assert(!html.includes('关联新版本尚未开放'));assert(html.includes('修改材料并重新提交'))
  })
 
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} business checks passed.`)

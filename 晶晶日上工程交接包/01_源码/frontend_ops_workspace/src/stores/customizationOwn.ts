@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 import { useSessionStore } from './session'
 import { ApiError, asApiError, newIdempotencyKey, outcomeUnknown } from '@/api/client'
 import { answers, listSubmissions, getSubmission, type CustomizationTemplate, type SubmissionSummary, type SubmissionVersion, type Supplement } from '@/api/modules/customization'
-import { getOwnStory, getOwnSupplement, listOwnStories, listStoryCategories, sendStoryCommand, hasRequiredAttachment, validStoryResponses, type OwnStory, type StoryCategory, type StoryCommand, type StoryIdentity, type StoryStatus, type StorySummary, type StorySupplement } from '@/api/modules/customizationOwn'
+import { getOwnStory, getOwnSupplement, listOwnStories, listStoryCategories, sendStoryCommand, validStoryResponses, type OwnStory, type StoryCategory, type StoryCommand, type StoryIdentity, type StoryStatus, type StorySummary, type StorySupplement } from '@/api/modules/customizationOwn'
+import { validSupplyId } from '@/api/modules/supply'
 
 export const useOwnStoryStore = defineStore('customization-own', () => {
   const session = useSessionStore()
@@ -27,7 +28,7 @@ export const useOwnStoryStore = defineStore('customization-own', () => {
   const editingSupplement = computed(() => isSupplement.value ? supplement.value!.supplement : preservedDraft.value ? editorSupplement.value : null)
   const canEdit = computed(() => activeIdentity.value && !locked.value && (!detail.value && !editorRequestId.value || detail.value?.current_status === 'DRAFT' && detail.value.allowed_actions.includes('SAVE') || isSupplement.value && supplement.value!.allowed_actions.includes('SAVE_SUPPLEMENT')))
   const canSave = computed(() => canEdit.value && !!template.value && (!conflicted.value || reconfirmed.value))
-  const canSubmit = computed(() => activeIdentity.value && !locked.value && !dirty.value && !!detail.value && !!template.value && !hasRequiredAttachment(template.value) && (!conflicted.value || reconfirmed.value) && (isSupplement.value ? supplement.value!.allowed_actions.includes('SUBMIT_SUPPLEMENT') : detail.value.current_status === 'DRAFT' && detail.value.allowed_actions.includes('SUBMIT')))
+  const canSubmit = computed(() => activeIdentity.value && !locked.value && !dirty.value && !!detail.value && !!template.value && (!conflicted.value || reconfirmed.value) && (isSupplement.value ? supplement.value!.allowed_actions.includes('SUBMIT_SUPPLEMENT') : detail.value.current_status === 'DRAFT' && detail.value.allowed_actions.includes('SUBMIT')))
   let generation = 0, readTicket = 0, controller: AbortController | null = null
   const seenCursors = new Set<string>(), historyCursors = new Set<string>()
   function resetEditor() {
@@ -110,7 +111,7 @@ export const useOwnStoryStore = defineStore('customization-own', () => {
     if (!t) return false
     for (const f of t.fields) {
       const value = draftAnswers.value[f.key] || ''
-      if (f.type === 'PRIVATE_ATTACHMENT') { if (value || submitted && f.required) errors[`answers.${f.key}`] = '附件上传尚未开放，当前不能正式提交此必填附件。' }
+      if (f.type === 'PRIVATE_ATTACHMENT') { if (value && !validSupplyId(value) || submitted && f.required && !value) errors[`answers.${f.key}`] = '请先上传并关联本故事的附件，再保存草稿。' }
       else if (submitted && f.required && !value.trim()) errors[`answers.${f.key}`] = `请填写${f.label}。`
       else if (Array.from(value).length > (f.max_length ?? 12000)) errors[`answers.${f.key}`] = `最多填写 ${f.max_length ?? 12000} 个字。`
       else if (f.type === 'CHOICE' && value && !f.options?.includes(value)) errors[`answers.${f.key}`] = '请选择该模板提供的选项。'
