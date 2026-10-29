@@ -40,3 +40,7 @@
 后端目录配置已有隔离 `JX_MYSQL_TEST_ENV_FILE` 与 `JX_TEST_FFMPEG/JX_TEST_FFPROBE` 后运行 `node scripts/test-mysql.js stock`；综合为 `node scripts/run-tests.cjs`。媒体标识旧测试另需 `JX_TEST_FONT`。
 
 仓库根目录配置同一隔离数据库及 `CHROME_PATH`，运行 `node scripts/story-upload-reopen-browser.cjs`。脚本仅启动回环地址，随机临时数据库与合成文件，退出清理；不使用甲方数据、不发送短信，不要求外部OSS。网页和浏览器工具必须已安装仓库现有依赖。
+
+## 集中上传完成
+
+本批a97112d5已上传原[PR39](https://github.com/Bill-Billion/jingjing/pull/39)，包含前端3f25ecac。新一轮远端检查已启动，尚未全部返回；[当前观察](../../testing/evidence/stock-media-20261029/PUBLICATION.json)。新现货接口和交接文件可供前端获取，不等于前端已知或已接线。未合入、未部署。本上传补记本地保存，下个交付点一并同步。
