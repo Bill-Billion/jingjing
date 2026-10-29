@@ -22,6 +22,8 @@ const base = '/operations/customization/mine', route = useRoute(), router = useR
 const {categories,categoryId,rows,nextCursor,status,detail,supplement,draftAnswers,draftResponses,fieldErrors,error,notice,loading,busy,conflicted,reconfirmed,recoveryRequired,preservedDraft,editingSupplement,pending,history,historyCursor,historyVersion,template,dirty,locked,activeIdentity,isSupplement,canEdit,canSave,canSubmit} = storeToRefs(ui)
 const requestId = computed(() => String(route.params.requestId || '')), creating = computed(() => route.name === 'customization-own-new')
 const initializing = ref(true), menuOpen = ref(false), submitAcknowledged = ref(false), form = ref<HTMLElement | null>(null)
+const leavePrompt = ref(false), leaveDialog = ref<HTMLDialogElement | null>(null)
+let leaveAnswer: ((confirmed: boolean) => void) | null = null
 const statusText = {DRAFT:'私人草稿',SUBMITTED:'平台待查看',INTAKE:'受理中'}
 const title = computed(() => creating.value ? '写下本人的故事' : requestId.value ? detail.value?.template_snapshot.title || '我的故事详情' : '我的私人故事')
 const editable = computed(() => creating.value || detail.value?.current_status === 'DRAFT' || isSupplement.value || preservedDraft.value)
@@ -45,10 +47,30 @@ async function revokeAttachment(asset:StoryAttachment) { if (!pageLocked.value &
 let disposed = false
 function allowDiscard() {
   if (busy.value || pending.value || files.busy.value) { notice.value = '本次操作尚未确认，请先核对并恢复原请求后再离开。'; return false }
-  if (files.pending.value) return window.confirm('附件请求仍需核对。原文件与请求编号会留在当前登录会话，返回同一故事可继续恢复；未保存的文字将丢弃。请勿刷新或关闭窗口，存储异常请将下方故事及请求编号交平台处理。确认先离开？')
+  if (files.pending.value) { notice.value = '附件操作仍需核对，可先返回我的故事，稍后恢复。'; return false }
   return !dirty.value && !files.hasSelection.value || window.confirm('本页有尚未保存的故事内容或未上传的文件选择。离开会丢弃这些更改，确认离开？')
 }
-function leave() { if (!allowDiscard()) return false; files.clear(); ui.resetEditor(); submitAcknowledged.value = false; return true }
+function answerLeave(confirmed: boolean) {
+  const resolve = leaveAnswer
+  leaveAnswer = null
+  leaveDialog.value?.close()
+  leavePrompt.value = false
+  resolve?.(confirmed)
+}
+async function leave() {
+  if (busy.value || pending.value || files.busy.value) return allowDiscard()
+  if (files.pending.value) {
+    if (leaveAnswer) return false
+    const current = session.capture(), command = files.pending.value.command, story = requestId.value
+    leavePrompt.value = true
+    const confirmed = await new Promise<boolean>(resolve => {
+      leaveAnswer = resolve
+      void nextTick(() => { if (leavePrompt.value) leaveDialog.value?.showModal() })
+    })
+    if (!confirmed || disposed || !session.current(current) || requestId.value !== story || files.pending.value?.command !== command) return false
+  } else if (!allowDiscard()) return false
+  files.clear(); ui.resetEditor(); submitAcknowledged.value = false; return true
+}
 onBeforeRouteLeave(leave)
 onBeforeRouteUpdate(leave)
 function beforeUnload(e: BeforeUnloadEvent) { if (dirty.value || busy.value || pending.value || files.hasSelection.value || files.busy.value || files.pending.value) { e.preventDefault(); e.returnValue = '' } }
@@ -89,7 +111,7 @@ async function retry() { if(files.locked.value)return; await ui.retryPending(); 
 function fieldLabel(key: string) { return template.value?.fields.find(f => f.key === key)?.label || key }
 watch(() => [draftAnswers.value,draftResponses.value], () => { submitAcknowledged.value = false }, {deep:true})
 watch(() => route.fullPath, () => { menuOpen.value = false; if (!initializing.value) void loadPage() })
-watch(() => [session.token,session.account?.id,session.selectedId,session.revision], () => { submitAcknowledged.value = false; if (!initializing.value) void loadPage(true) })
+watch(() => [session.token,session.account?.id,session.selectedId,session.revision], () => { answerLeave(false); submitAcknowledged.value = false; if (!initializing.value) void loadPage(true) })
 onMounted(async () => {
   window.addEventListener('beforeunload',beforeUnload)
   const c = session.capture()
@@ -97,11 +119,16 @@ onMounted(async () => {
   catch(e) { if (!disposed && session.current(c)) error.value = asApiError(e) }
   finally { if (!disposed) initializing.value = false }
 })
-onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',beforeUnload); files.clear(); ui.clear() })
+onUnmounted(() => { disposed = true; answerLeave(false); window.removeEventListener('beforeunload',beforeUnload); files.clear(); ui.clear() })
 </script>
 
 <template>
   <div class="supply-workspace operations-workspace own-story-workspace editorial-workspace" data-testid="own-story-page">
+    <dialog v-if="leavePrompt" ref="leaveDialog" class="story-leave-dialog" aria-labelledby="story-leave-title" aria-describedby="story-leave-description" @cancel.prevent="answerLeave(false)">
+      <h2 id="story-leave-title">暂时离开这份故事？</h2>
+      <div id="story-leave-description"><p>本次附件操作会保留在当前登录会话中。返回同一故事后，可以继续核对并恢复。</p><p>未保存的文字会丢弃。刷新、关闭窗口、退出或切换身份会清除待恢复的文件。</p></div>
+      <div class="supply-actions"><button type="button" class="outline" autofocus @click="answerLeave(false)">继续核对</button><button type="button" class="primary" @click="answerLeave(true)">暂时离开</button></div>
+    </dialog>
     <header class="supply-header"><RouterLink to="/workspace" class="supply-brand">晶晶日上</RouterLink><span>运营与合作方工作台</span><div class="account-actions"><span class="account-name">{{ session.account?.display_name || '当前账号' }}</span><button :disabled="busy || !!pending || files.busy.value || !!files.pending.value" @click="logout">退出</button></div></header>
     <div class="supply-layout">
       <aside class="supply-sidebar">
@@ -157,5 +184,6 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
 .story-module-nav{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:24px;border-bottom:1px solid var(--ops-border)}.story-module-nav a{min-height:44px;display:inline-flex;align-items:center;color:var(--ops-text-2);text-decoration:none}.story-module-nav [aria-current=page]{color:var(--ops-ink);border-bottom:2px solid var(--ops-ink);font-weight:600}.story-back{display:inline-block;min-height:44px;margin-bottom:12px;line-height:44px;color:var(--ops-text-2)}.own-story-workspace .story-create{padding:12px 18px;background:var(--ops-ink);color:var(--ops-bg);text-decoration:none;border-radius:var(--ops-radius-sm)}.story-menu-toggle{display:none}.story-description,.story-response p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}.story-editor{max-width:920px}.story-save,.story-submit,.story-supplement{border-top:1px solid var(--ops-border);margin-top:28px;padding-top:24px}.story-check{display:flex;align-items:flex-start;gap:10px;line-height:1.7;margin:20px 0}.supply-workspace .story-check input[type=checkbox]{width:18px;height:18px;min-height:18px;flex:none;margin-top:4px;padding:0}.story-response{padding:16px 0;border-bottom:1px solid var(--ops-border)}.story-response h4{font-size:16px;margin:0 0 12px}.story-response label{display:block;line-height:1.7}.story-response textarea{width:100%;min-height:100px;box-sizing:border-box}.story-field-error{color:#a0292e;line-height:1.6;font-size:13px}.story-history{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--ops-border)}.story-attachment{padding:16px;background:var(--ops-accent-soft);line-height:1.8}.story-editor .section-heading{gap:16px;flex-wrap:wrap}#story-category{display:block;max-width:100%;width:440px;margin-top:10px}.supply-identity select{width:100%;margin:10px 0}
 .own-story-workspace .story-create:hover,.own-story-workspace .story-create:focus-visible{background:var(--ops-ink);color:var(--ops-bg);text-decoration:underline;text-underline-offset:4px}
 .own-story-workspace .story-create:focus-visible{outline:2px solid var(--ops-ink);outline-offset:3px}
+.story-leave-dialog{box-sizing:border-box;width:min(540px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:28px;border:1px solid var(--ops-ink);border-radius:0;background:var(--ops-bg);color:var(--ops-ink);overflow:auto}.story-leave-dialog::backdrop{background:rgb(0 0 0 / .45)}.story-leave-dialog h2{margin:0 0 20px;font-size:24px}.story-leave-dialog p{line-height:1.8}.story-leave-dialog .supply-actions{display:flex;gap:12px;margin-top:24px}
 @media(max-width:760px){.story-menu-toggle{display:flex;width:100%;justify-content:space-between;margin-bottom:12px}.story-menu{display:none}.story-menu.expanded{display:block}.story-module-nav{gap:16px}.story-module-nav a{font-size:14px}.story-editor .section-heading{align-items:flex-start}.story-editor .section-heading h2{font-size:20px}}
 </style>
