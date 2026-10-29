@@ -1,3 +1,5 @@
+2026-10-29当前后端交接：[机构公开资料、精选艺人和完整机构通告](collaboration/client-complete-20261028/FRONTEND_DIRECTORY_HANDOFF.md)。[本机实现与测试事实](tasks/records/CORE-public-directory-20261029.md)；接口0.31.6-rc.1/迁移0170。新页面尚未接入，完整18组继续施工；上传结果以当前进度为准。
+
 当前可交接前端：[私人故事附件与首次共创接线任务](collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md)。用户负责通知伙伴，尚未假称对方已读；完整范围继续施工。
 
 当前产品进度与分工先读[剩余工作和责任表](collaboration/client-complete-20261028/PRODUCT_STATUS.md)。完整18组仍在开发与联调；不要将下方历史记录的局部交付当全部完成。

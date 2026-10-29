@@ -1604,6 +1604,71 @@
           "source": "REVIEWED_PREVIEW"
         }
       }
+    },
+    {
+      "name": "directory rejects private fields",
+      "schema": "DirectoryProfileRequest",
+      "value": {
+        "profile": {
+          "display_name": "合成机构",
+          "introduction": "合成影片制作机构",
+          "city": "北京市",
+          "capabilities": [
+            "PRODUCER"
+          ],
+          "cover_asset_id": "f15c75a0-4719-4bd1-96dd-6e2eed541405",
+          "evidence_asset_ids": [
+            "81bed42d-cff0-4195-9999-961585681b83"
+          ],
+          "valid_from": "2020-01-01T00:00:00.000Z",
+          "valid_until": "2099-01-01T00:00:00.000Z",
+          "phone": "private"
+        }
+      }
+    },
+    {
+      "name": "directory rejects duplicate capability",
+      "schema": "DirectoryProfileRequest",
+      "value": {
+        "profile": {
+          "display_name": "合成机构",
+          "introduction": "合成影片制作机构",
+          "city": "北京市",
+          "capabilities": [
+            "MCN",
+            "MCN"
+          ],
+          "cover_asset_id": "f15c75a0-4719-4bd1-96dd-6e2eed541405",
+          "evidence_asset_ids": [
+            "81bed42d-cff0-4195-9999-961585681b83"
+          ],
+          "valid_from": "2020-01-01T00:00:00.000Z",
+          "valid_until": "2099-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "directory requires all independent approval checks",
+      "schema": "DirectoryReviewRequest",
+      "value": {
+        "decision": "APPROVE",
+        "reason": "test",
+        "checks": {}
+      }
+    },
+    {
+      "name": "directory does not accept self-declared star badge",
+      "schema": "DirectoryFeatureRequest",
+      "value": {
+        "feature": {
+          "listing_id": "eaafc866-4c54-418c-b8cf-192eb99e87aa",
+          "recommendation": "test",
+          "sort_order": 0,
+          "valid_from": "2020-01-01T00:00:00.000Z",
+          "valid_until": "2099-01-01T00:00:00.000Z",
+          "star": true
+        }
+      }
     }
   ]
 }
