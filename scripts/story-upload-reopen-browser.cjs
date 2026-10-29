@@ -9,7 +9,7 @@ async function main() {
   const env=JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));
   for(const [k,v] of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
   if(!process.env.CHROME_PATH)throw Error('CHROME_PATH_REQUIRED');
-  const name='jx_test_browser_story_'+randomBytes(6).toString('hex'), out=path.join(root,'.local/story-reopen-dialog-browser');await fs.mkdir(out,{recursive:true});
+  const name='jx_test_browser_story_'+randomBytes(6).toString('hex'), out=path.join(root,'.local/story-drawer-review-browser');await fs.mkdir(out,{recursive:true});
   const control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});
   let db,api,vite,browser,page,phase='setup';const checks=[],errors=[];
   try {
@@ -52,6 +52,16 @@ async function main() {
     phase='reopen';const row=page.getByTestId('story-list').locator('tr').filter({hasText:story.id});await row.getByRole('link',{name:'继续填写',exact:true}).click();await page.waitForURL(origin+base+'/'+story.id);
     await page.getByRole('button',{name:'核对附件记录',exact:true}).waitFor();checks.push({name:'确认离开后从列表重开',status:'PASS',story_id:story.id,native_dialogs:dialogs,page_confirmation_cancel_and_accept:true});
     await page.screenshot({path:path.join(out,'02-reopened.png'),fullPage:true});
+    phase='cross-business';
+    const trigger=page.getByRole('button',{name:'展开工作区入口',exact:true});
+    await trigger.click();await page.getByRole('searchbox',{name:'查找工作区入口'}).fill('真人与数字人');
+    await page.getByRole('link',{name:'真人与数字人',exact:true}).click();
+    await page.getByRole('button',{name:'暂时离开',exact:true}).click();await page.waitForURL(origin+'/artists/people');
+    await page.getByTestId('artists-party').waitFor();await page.waitForFunction(()=>!document.querySelector('[data-testid=artists-party]')?.disabled);
+    await page.goBack();await page.waitForURL(origin+base+'/'+story.id);
+    await page.getByRole('button',{name:'核对附件记录',exact:true}).waitFor();
+    assert.equal((await list())[0].id,before[0].id);
+    checks.push({name:'从抽屉切到艺人页再返回，原附件请求仍可恢复',status:'PASS',story_id:story.id,asset_id:before[0].id});
     phase='recover';await page.getByRole('button',{name:'核对附件记录',exact:true}).click();
     const restored=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes('/attachments?'));
     restored.catch(()=>{});
@@ -61,7 +71,7 @@ async function main() {
     phase='save';const saved=page.waitForResponse(r=>r.request().method()==='PATCH'&&r.url().endsWith('/customization-requests/'+story.id));saved.catch(()=>{});await page.getByTestId('story-save').click();const reply=await saved;assert.equal(reply.status(),200);const current=(await reply.json()).data;assert.equal(current.answers.material,after[0].id);assert.equal(current.current_status,'DRAFT');
     checks.push({name:'保存后仍是私人草稿',status:'PASS',story_id:story.id,asset_id:current.answers.material});
     await page.screenshot({path:path.join(out,'03-restored-saved.png'),fullPage:true});assert.deepEqual(errors,[]);
-    await fs.writeFile(path.join(out,'RESULTS.json'),JSON.stringify({synthetic_only:true,frontend_commit:'3f25ecac637f44a408e3e1f35ae788a99dd7bd71',checks,page_errors:errors},null,2));
+    await fs.writeFile(path.join(out,'RESULTS.json'),JSON.stringify({synthetic_only:true,frontend_commit:'2761ca903ce580171f87d626a921e79543762b19',checks,page_errors:errors},null,2));
     console.log(JSON.stringify({result:'PASS',checks:checks.length,story_id:story.id,asset_id:after[0].id}));
   } catch(error) {
     if(page){await page.screenshot({path:path.join(out,'failure.png'),fullPage:true}).catch(()=>{});await fs.writeFile(path.join(out,'failure.txt'),await page.locator('body').innerText().catch(()=>''));}

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Normal Vue login and actual isolated HTTP/MySQL; synthetic external transport only. */
 import assert from 'node:assert/strict'
-import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
+import { ensureWorkspaceNavigation, checkWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {randomUUID} from 'node:crypto'
@@ -23,7 +23,7 @@ async function check(label,task){const start=Date.now();try{await task();results
 async function control(route,method='POST'){const r=await fetch(state.controlUrl+route,{method,headers:{Authorization:'Bearer '+state.controlToken}});assert(r.ok);return r.json()}
 async function login(name,destination){const person=state.accounts[name],context=await browser.newContext({viewport:{width:1440,height:1000},locale:'zh-CN',timezoneId:'Asia/Shanghai'}),page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>pageErrors.push(redact(e.message)));await page.goto(base+(destination||'/login'));await page.getByTestId('phone-input').fill(person.phone);const sms=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/auth/sms-challenges');await page.getByTestId('send-code').click();assert.equal((await sms).status(),200);await page.getByTestId('code-input').fill((await control('/code?phone='+person.phone,'GET')).code);await page.getByTestId('submit-login').click();await page.waitForURL(u=>u.pathname===(destination||'/workspace'));if(!destination)await page.locator(`[data-party="${person.actingPartyId||person.personalPartyId}"]`).click();const token=await page.evaluate(()=>sessionStorage.getItem('ops.session.token'));assert(token);return actors[name]={...person,token,page,context}}
 async function api(person,method,path,body,{party=person.actingPartyId||person.personalPartyId,version,key=randomUUID()}={}){const r=await fetch(state.apiUrl+'/api/v1'+path,{method,headers:{Authorization:'Bearer '+person.token,'Content-Type':'application/json','Idempotency-Key':key,...(party?{'X-Acting-Party':party}:{}),...(version?{'If-Match':`"${version}"`}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});const j=await r.json();assert(r.ok,`${method} ${path}: ${r.status} ${j.error?.code||''}`);return j.data}
-async function go(p,route){await p.goto(base+route);await ensureWorkspaceNavigation(p);await p.getByRole('heading',{level:1}).waitFor();await ready(p)}
+async function go(p,route){await p.goto(base+route);await checkWorkspaceNavigation(p);await p.getByRole('heading',{level:1}).waitFor();await ready(p)}
 async function ready(p){for(const label of ['正在读取当前身份与商业合作记录…','正在读取身份与交易记录…'])await p.getByText(label,{exact:true}).waitFor({state:'hidden'})}
 async function shot(p,name){await ready(p);const file='screenshots/pr17-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,viewport:p.viewportSize()})}
 const id=key=>state.records[key].id
