@@ -51,3 +51,7 @@ App复核命令：`flutter test --no-pub test/customization test/cocreation/crea
 ## 已上传：7882a986
 
 本批已集中推送原[PR39](https://github.com/Bill-Billion/jingjing/pull/39)，标题与说明已更新，公开开发分支含双方最新代码。新提交自动检查已启动但尚未全部返回；[观察记录](../../testing/evidence/story-recovery-media-20261029/PUBLICATION.json)。未合入integration或部署。此上传补记在本地保留，随下一阶段集中同步，不为状态补记再触发一次全套上传。
+
+## 远端检查及同记录复验补记
+
+7882a986的7项远端检查现已全部通过。接续新增同一个故事9步HTTP检查及故事模块74项通过，具体编号、边界与页面剩余工作见[同记录结果](CORE-story-room-journey-20261029.md)。前文“尚未返回”是上传当时状态。未合入或部署。

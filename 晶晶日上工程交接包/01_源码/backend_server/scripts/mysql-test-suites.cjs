@@ -14,7 +14,7 @@ module.exports=Object.freeze({
  stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs'],
  'customization-delivery':['test/customization-delivery-policy.test.cjs','test/customization-delivery.integration.test.cjs'],
  artists:['test/artists-policy.test.cjs','test/artists.integration.test.cjs'],
- customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs'],
+ customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs','test/story-room-journey.integration.test.cjs'],
  release:['test/release-policy.test.cjs','test/release.integration.test.cjs'],
  operations:['test/operations-policy.test.cjs','test/operations.integration.test.cjs'],
  finance:['test/settlement-policy.test.cjs','test/marketplace-policy.test.cjs','test/marketplace.integration.test.cjs','test/settlement.integration.test.cjs'],
