@@ -18,7 +18,7 @@ const session = useSessionStore(), ui = useCustomizationStore(), route = useRout
 const { rows,nextCursor,detail,status,error,notice,loading,busy,pending,locked,conflicted,reconfirmed,canIntake,supplement,supplementItems,canSupplement,history,historyCursor,historyVersion,quotes,quotesCursor } = storeToRefs(ui)
 const requestId = computed(() => String(route.params.requestId || ''))
 const statusText = {SUBMITTED:'平台待查看',INTAKE:'受理中'}
-const initializing = ref(true), menuOpen = ref(false)
+const initializing = ref(true)
 const files = useStoryAttachments(()=>({token:session.token,accountId:session.account?.id || '',requestId:detail.value?.id || requestId.value,revision:session.revision,identityTag:session.selectedId}),{canUpload:()=>false,onUploaded:()=>{},onRevoked:()=>{},onForbidden:()=>ui.clear()})
 let disposed = false
 async function loadPage() {
@@ -36,7 +36,7 @@ function leave() {
 function beforeUnload(e: BeforeUnloadEvent) { if (pending.value || busy.value) { e.preventDefault(); e.returnValue = '' } }
 onBeforeRouteLeave(leave)
 onBeforeRouteUpdate(leave)
-watch(() => route.fullPath, () => { menuOpen.value = false; if (!initializing.value) void loadPage() })
+watch(() => route.fullPath, () => { if (!initializing.value) void loadPage() })
 watch(() => [session.token,session.account?.id,session.selectedId,session.revision], () => { if (!initializing.value) void loadPage() })
 onMounted(async () => {
   window.addEventListener('beforeunload',beforeUnload)
@@ -58,8 +58,7 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
     </header>
     <div class="supply-layout">
       <aside class="supply-sidebar">
-        <button class="outline customization-menu-toggle" data-testid="customization-menu-toggle" type="button" aria-controls="customization-workspace-menu" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen">工作区导航 <span>{{ menuOpen ? '收起' : '展开' }}</span></button>
-        <div id="customization-workspace-menu" class="customization-menu" :class="{ expanded: menuOpen }"><WorkspaceNav/><div class="supply-identity"><p>故事受理人员</p><p class="muted">以当前账号的受理岗位办理。</p></div></div>
+        <WorkspaceNav/><div class="supply-identity"><p>故事受理人员</p><p class="muted">以当前账号的受理岗位办理。</p></div>
       </aside>
       <main class="supply-main">
         <nav aria-label="故事模块" class="supply-actions"><RouterLink to="/operations/customization/mine" class="table-link">我的故事 · 创建与续写</RouterLink><RouterLink to="/operations/customization" aria-current="page" class="table-link">运营收件与受理</RouterLink></nav>
@@ -158,8 +157,8 @@ onUnmounted(() => { disposed = true; window.removeEventListener('beforeunload',b
 
 <style scoped>
 .customization-item{padding:20px 0;border-top:1px solid var(--ops-border)}.customization-item label{display:block;margin-bottom:16px}.customization-item textarea{min-height:90px}.customization-workspace fieldset{border:0;padding:0;margin:0;min-width:0}.customization-back{display:inline-flex;min-height:44px;align-items:center;margin-bottom:16px;color:var(--ops-ink);font-size:14px;text-decoration:none}
-.customization-workspace .customization-menu-toggle{display:none}
+
 .customization-filter{display:flex;align-items:center;gap:12px}.customization-filter select{width:180px;margin:0}.intake-facts{grid-template-columns:1fr;margin-bottom:24px}
 .customization-confirm{display:flex;align-items:flex-start;gap:10px;margin:20px 0}.customization-confirm input{margin-top:5px;flex:none}.customization-workspace table th:last-child{width:100px}
-@media(max-width:760px){.customization-filter{width:100%;justify-content:space-between}.customization-filter select{width:180px}.customization-workspace .customization-menu-toggle{display:flex;width:100%;justify-content:space-between}.customization-menu:not(.expanded){display:none}.customization-menu.expanded{margin-top:12px}}
+@media(max-width:760px){.customization-filter{width:100%;justify-content:space-between}.customization-filter select{width:180px}}
 </style>

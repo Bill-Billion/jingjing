@@ -93,9 +93,13 @@ try {
     const cache=useStoryAttachmentRecoveryStore(pinia),source=file(),a=await asset(source);let n=0;xhrCalls=[]
     xhrHandler=x=>++n===1?xhrReply(x,null,who,{status:409,code:'ASSET_UPLOAD_RECONCILIATION_REQUIRED'}):xhrReply(x,a)
     let c=controller(false,cache);c.files.choose('file',source);await c.files.upload('file');const key=c.files.pending.value.command.key;c.stop()
+    // Every business view reloads the account on mount, even when the identity is unchanged.
+    globalThis.fetch=async()=>response({...session.account,display_name:'同一账号的新资料'});await session.loadAccount();assert.equal(cache.read(id(10))?.command.key,key)
     c=controller(false,cache);assert.equal(c.files.pending.value.command.key,key);assert.equal(c.files.pending.value.command.source.file,source);assert.equal(c.files.pending.value.checked,false)
     globalThis.fetch=async()=>response({items:[],next_cursor:null});await c.files.checkPending();await c.files.retryPending();assert.equal(xhrCalls[0].body,xhrCalls[1].body);assert.equal(c.uploads[0].a.id,a.id);assert.equal(cache.read(id(10)),undefined);c.stop()
-    cache.write(id(10),{command:{kind:'upload',key,fieldKey:'file',source:api.selectStoryFile(source),sha256:a.content_sha256},code:'ASSET_UPLOAD_RECONCILIATION_REQUIRED'});session.revision++;assert.equal(cache.read(id(10)),undefined)
+    for(const changeIdentity of [()=>session.revision++,()=>session.selectedId=id(98),()=>session.account={id:id(99)},()=>session.token='another-synthetic-session']){
+      cache.write(id(10),{command:{kind:'upload',key,fieldKey:'file',source:api.selectStoryFile(source),sha256:a.content_sha256},code:'ASSET_UPLOAD_RECONCILIATION_REQUIRED'});changeIdentity();assert.equal(cache.read(id(10)),undefined)
+    }
     cache.$dispose();session.$dispose()
   })
   test('上传2xx跨故事、错主体、错摘要或未就绪时不能绑定，保留原请求待核对',async()=>{
