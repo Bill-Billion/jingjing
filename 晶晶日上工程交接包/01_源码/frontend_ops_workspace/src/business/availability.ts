@@ -32,6 +32,7 @@ export function actionAvailability(domain: string, operation: Operation, record:
   const states = allowedStates[domain]?.[key]
   if (states && record && recordId(record) && !states.includes(status)) return blocked('当前记录尚未到这一步，或已完成办理；请先核对处理进度。')
   if (domain === 'stock') {
+    if (key === 'checkout' && (!record?.id || !record.offer_sha256)) return blocked('先读取当前公开销售的作品及本版许可。')
     if (key === 'unlist' && data.rights_hold === true) return blocked('本影片处于权利暂停，须先独立核对权利处理。')
     if (key === 'unlist' && record?.seller_party_id && record.seller_party_id !== context.partyId) return blocked('请使用本影片的卖方身份。')
     if (['receipt', 'accept', 'case'].includes(key) && record?.buyer_party_id && record.buyer_party_id !== context.partyId) return blocked('仅本订单买方可办理此项。')

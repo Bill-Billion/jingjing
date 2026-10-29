@@ -466,7 +466,9 @@ class _PlazaPageState extends State<PlazaPage> {
               2,
               8,
               (offer) => StockPublicCard(
+                  session: widget.session,
                   offer: offer,
+                  onRefreshOffer: data.loadWorks,
                   onTap: () async {
                     await widget.onOpen('/stock/video?listingId=${offer.id}');
                     if (mounted && widget.active) await data.loadWorks();

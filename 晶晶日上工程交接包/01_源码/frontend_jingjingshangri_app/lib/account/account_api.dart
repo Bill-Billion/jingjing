@@ -350,10 +350,14 @@ class AccountApi {
       final stockVideoPath = RegExp(
         r'^/api/v1/stock/(?:catalog/[a-fA-F0-9-]{36}/preview|listings/[a-fA-F0-9-]{36}/files/(?:full|preview)|purchases/[a-fA-F0-9-]{36}/content)$',
       ).hasMatch(path);
+      final stockCoverPath = RegExp(
+        r'^/api/v1/stock/catalog/[a-fA-F0-9-]{36}/cover$',
+      ).hasMatch(path);
       if (response.statusCode == 200 &&
           response.data != null &&
           (mediaType == 'application/octet-stream' ||
-              stockVideoPath && mediaType == 'video/mp4')) {
+              stockVideoPath && mediaType == 'video/mp4' ||
+              stockCoverPath && mediaType == 'image/jpeg')) {
         return Uint8List.fromList(response.data!);
       }
       String code = 'INVALID_BINARY_RESPONSE';

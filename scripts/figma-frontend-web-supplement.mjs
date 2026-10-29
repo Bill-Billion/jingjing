@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto'
 import {readFile,writeFile,mkdir} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {join,resolve} from 'node:path'
+import {ensureWorkspaceNavigation,checkWorkspaceNavigation} from './workspace-navigation-check.mjs'
 
 const root=process.cwd(),access=process.env.V5_FRONTEND_ACCESS_FILE
 assert(access,'V5_FRONTEND_ACCESS_FILE required')
@@ -49,10 +50,10 @@ try{
     const alerts=(await page.locator('[role="alert"]').allTextContents()).map(redact)
     if(alerts.length)limits.push({key,width,role,path,kind:'FIXTURE_SCOPE_OR_API_LIMIT',alerts})
     let count=null,current=null
-    if(role){assert.equal(await page.locator('.editorial-workspace').count(),1);count=await page.locator('.workspace-nav a').count();current=await page.locator('.supply-sidebar [aria-current="page"]').count();assert.equal(count,43);assert.equal(current,1)}
+    if(role){assert.equal(await page.locator('.editorial-workspace').count(),1);count=await page.locator('.workspace-nav a').count();current=await page.locator('.supply-sidebar [aria-current="page"]').count();assert.equal(count,54);assert.equal(await page.locator('.workspace-nav-parent').count(),7);assert.equal(current,1)}
     const file=`${key}-${width}.png`;await page.screenshot({path:join(out,file),style:'#__vue-devtools-container__{display:none!important}'})
     const row={key,role,path,width,result:'RENDERED_PENDING_VISUAL_REVIEW',file,paint,base_menu_entries:count,active_menu_entries:current,alerts}
-    if(role&&width===390){const toggle=page.getByRole('button',{name:/^工作区导航/});await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert(await page.locator('.workspace-nav').isVisible());row.menu_file=`${key}-${width}-menu.png`;await page.screenshot({path:join(out,row.menu_file),style:'#__vue-devtools-container__{display:none!important}'});if(key==='workspace'){const end=page.locator('.workspace-business-nav a').last();await end.scrollIntoViewIfNeeded();assert(await end.isVisible(),'last navigation entry remains reachable');row.menu_end_file=`${key}-${width}-menu-end.png`;await page.screenshot({path:join(out,row.menu_end_file),style:'#__vue-devtools-container__{display:none!important}'})}await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert(!(await page.locator('.workspace-nav').isVisible()))}
+    if(role&&width===390){const navigation=await ensureWorkspaceNavigation(page);assert.equal(await navigation.locator('.workspace-nav-parent[aria-expanded="true"]').count(),7);assert(await navigation.isVisible());row.menu_file=`${key}-${width}-menu.png`;await page.screenshot({path:join(out,row.menu_file),style:'#__vue-devtools-container__{display:none!important}'});if(key==='workspace'){const end=navigation.locator('a').last();await end.scrollIntoViewIfNeeded();assert(await end.isVisible(),'last navigation entry remains reachable');row.menu_end_file=`${key}-${width}-menu-end.png`;await page.screenshot({path:join(out,row.menu_end_file),style:'#__vue-devtools-container__{display:none!important}'})}await checkWorkspaceNavigation(page);assert.equal(await navigation.locator('.workspace-nav-parent[aria-expanded="false"]').count(),7);assert(await navigation.isVisible());assert.equal(await navigation.locator('.workspace-nav-children:visible').count(),0)}
     rows.push(row);console.log('CAPTURE '+key+' '+width+(alerts.length?' LIMIT_DISPLAYED':''))
    }
   }finally{await context.close()}

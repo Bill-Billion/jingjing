@@ -1,3 +1,4 @@
+import '../account/account_api.dart';
 import 'v5_support.dart';
 
 const stockExcluded = [
@@ -70,6 +71,73 @@ class StockOffer {
   String get hash => data['offer_sha256'];
   String get title => data['title'];
   int get price => data['unit_minor'];
+  int get version => data['object_version'];
+}
+
+class StockCoverMetadata {
+  StockCoverMetadata(dynamic raw) : data = v5Map(raw) {
+    v5Require(data.keys.toSet().difference({
+          'media_type',
+          'byte_size',
+          'content_sha256',
+          'width',
+          'height',
+          'frame_ms',
+          'source'
+        }).isEmpty &&
+        data['media_type'] == 'image/jpeg' &&
+        v5Int(data['byte_size'], min: 1, max: 2097151) &&
+        v5Hash(data['content_sha256']) &&
+        v5Int(data['width'], min: 1, max: 640) &&
+        v5Int(data['height'], min: 1, max: 640) &&
+        data['frame_ms'] == 0 &&
+        data['source'] == 'REVIEWED_PREVIEW');
+  }
+  final Map<String, dynamic> data;
+  int get size => data['byte_size'];
+  String get hash => data['content_sha256'];
+  int get width => data['width'];
+  int get height => data['height'];
+}
+
+class StockPublicMedia {
+  StockPublicMedia(dynamic raw, StockOffer offer) : data = v5Map(raw) {
+    v5Require(data.keys.toSet().difference({
+          'listing_id',
+          'listing_version',
+          'source_sha256',
+          'preview_sha256',
+          'duration_ms',
+          'preview_duration_ms',
+          'preview_width',
+          'preview_height',
+          'cover'
+        }).isEmpty &&
+        data['listing_id'] == offer.id &&
+        v5Int(data['listing_version'], min: 1, max: 2147483647) &&
+        v5Hash(data['source_sha256']) &&
+        v5Hash(data['preview_sha256']) &&
+        v5Int(data['duration_ms'], min: 1, max: 1800000) &&
+        v5Int(data['preview_duration_ms'], min: 1, max: 1800000) &&
+        v5Int(data['preview_width'], min: 1, max: 4096) &&
+        v5Int(data['preview_height'], min: 1, max: 4096));
+    if (data['listing_version'] != offer.version) {
+      throw const AccountError(409, 'STOCK_MEDIA_SOURCE_CHANGED');
+    }
+    cover = StockCoverMetadata(data['cover']);
+  }
+  final Map<String, dynamic> data;
+  late final StockCoverMetadata cover;
+  int get durationMs => data['duration_ms'];
+  int get previewDurationMs => data['preview_duration_ms'];
+}
+
+String stockDuration(int milliseconds) {
+  final seconds = milliseconds ~/ 1000, fraction = milliseconds % 1000;
+  final tail = fraction == 0
+      ? ''
+      : '.${fraction.toString().padLeft(3, '0').replaceFirst(RegExp(r'0+$'), '')}';
+  return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}$tail';
 }
 
 class StockListing {

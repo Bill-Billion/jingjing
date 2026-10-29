@@ -116,11 +116,11 @@ async function captureFollowup() {
    assert.equal(await input.locator('..').locator('.record-picker-value code').textContent(),value)
    const capture=async(name)=>{await p.evaluate(()=>document.fonts.ready);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));const file=`${name}-${width}.png`;await p.screenshot({path:resolve(dir,file),fullPage:true});images.push({file,viewport:p.viewportSize(),route:new URL(p.url()).pathname})}
    await capture('record-choice-full-id');checks.push({width,check:'Selected actual readable record keeps exact UUID in input and visible full value',value})
-   const query=p.locator('#workspace-nav-query');await query.fill('故事');assert.equal(await p.locator('.workspace-nav a').count(),1);assert.equal(await p.locator('.workspace-nav a').getAttribute('href'),'/operations/customization');await capture('navigation-search')
-   await query.fill('不存在的业务名称');assert.equal(await p.locator('.workspace-nav a').count(),0);await p.getByText('没有匹配入口',{exact:false}).waitFor();await capture('navigation-no-match')
-   await p.locator('.workspace-nav-search').getByRole('button',{name:'清除筛选',exact:true}).click();assert.equal(await query.inputValue(),'');assert.equal(await p.locator('.workspace-nav a').count(),43);assert.equal(await p.locator('.workspace-nav [aria-current="page"]').count(),1)
-   const region=await p.locator('.workspace-nav-results').evaluate(e=>({height:e.clientHeight,scrollHeight:e.scrollHeight,overflow:getComputedStyle(e).overflowY}));if(width<760){assert(region.height<=422);assert.equal(region.overflow,'auto');assert(region.scrollHeight>region.height)}
-   await capture('navigation-cleared');checks.push({width,check:'Name search, no match, clear restores 43 entries and one active route',region})
+   const query=p.locator('#workspace-nav-query');await query.fill('故事收件');await p.locator('.workspace-nav').getByRole('link',{name:'故事收件与受理',exact:true}).waitFor({state:'visible'});assert.equal(await p.locator('.workspace-nav a').count(),1);assert.equal(await p.locator('.workspace-nav a').getAttribute('href'),'/operations/customization');await capture('navigation-search')
+   await query.fill('不存在的业务名称');await p.getByText('没有匹配入口',{exact:false}).waitFor();assert.equal(await p.locator('.workspace-nav a').count(),0);await capture('navigation-no-match')
+   await p.locator('.workspace-nav-search').getByRole('button',{name:'清除筛选',exact:true}).click();await ensureWorkspaceNavigation(p);assert.equal(await query.inputValue(),'');assert.equal(await p.locator('.workspace-nav a').count(),54);assert.equal(await p.locator('.workspace-nav-parent').count(),7);assert.equal(await p.locator('.workspace-nav [aria-current="page"]').count(),1)
+   const region=await p.locator('.workspace-nav').evaluate(e=>({height:e.clientHeight,scrollHeight:e.scrollHeight,overflow:getComputedStyle(e).overflowY}));if(width<760){assert(region.height<=320);assert.equal(region.overflow,'auto');assert(region.scrollHeight>region.height)}
+   await capture('navigation-cleared');checks.push({width,check:'Name search, no match, clear restores 54 entries and one active route',region})
   }
   assert.equal(writes.length,0);checks.push({check:'Read-only followup did not send business writes',writes:0})
  } finally {

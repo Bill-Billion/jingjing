@@ -11,6 +11,7 @@ import 'stock_api.dart';
 import 'stock_models.dart';
 import 'stock_listing_form.dart';
 import 'stock_public_card.dart';
+import 'stock_public_media.dart';
 import 'v5_media.dart';
 import 'v5_support.dart';
 
@@ -345,7 +346,9 @@ class _StockScreenState extends State<_StockScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       StockPublicCard(
+                          session: widget.session,
                           offer: item,
+                          onRefreshOffer: () => load(),
                           onTap: () => go('/stock/video?listingId=${item.id}')),
                       const SizedBox(height: 4),
                       Text('${item.data['city']} · ${v5Money(item.price)}',
@@ -401,8 +404,13 @@ class _StockScreenState extends State<_StockScreen> {
         title: title,
         children: [
           if (o != null) ...[
+            StockPublicMediaView(
+                session: widget.session,
+                offer: o,
+                onRefreshOffer: () => load()),
+            const SizedBox(height: 16),
             V5Media(
-                key: ValueKey('stock-preview-${o.id}'),
+                key: ValueKey('stock-preview-${o.id}-${o.version}-${o.hash}'),
                 api: api,
                 account: true,
                 label: '读取已审预览',
@@ -575,8 +583,7 @@ class _StockScreenState extends State<_StockScreen> {
               if (l.data['rights_hold'] == true)
                 appNotice('权利暂停会限制已购下载；恢复须重新双审。'),
               if (l.status == 'REJECTED')
-                appNotice(
-                    '请按权利审核和内容审核的退回原因修改材料，再提交新版本重新审核；原记录和已售许可继续保留。'),
+                appNotice('请按权利审核和内容审核的退回原因修改材料，再提交新版本重新审核；原记录和已售许可继续保留。'),
               if (l.status == 'UNLISTED') appNotice('普通下架停止新销售，已售许可仍按原约定核对。')
             ]),
             V5Media(
