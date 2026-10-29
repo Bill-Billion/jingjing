@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { validSupplyId } from '@/api/modules/supply'
-import { features,purposes,delegatedActions,type ArtistDetail,type ArtistServices,type ArtistRecord } from '@/api/modules/artists'
+import { validSupplyId,type SupplyAsset } from '@/api/modules/supply'
+import { features,purposes,delegatedActions,artistMediaTypes,type ArtistDetail,type ArtistServices,type ArtistRecord } from '@/api/modules/artists'
 import { money } from '@/api/modules/trade'
 export type ArtistFormAction='PERSON'|'AVATAR'|'IDENTITY'|'CONSENT'|'DELEGATION'|'VARIANT'|'HALO'|'LISTING'|'SERVICE'|'SUPPLEMENT'|'APPEAL'|'WITHDRAW'|'REVIEW'|'RESULT'
-const props=defineProps<{action:ArtistFormAction;disabled:boolean;person?:ArtistDetail|null;record?:ArtistRecord|null;services?:ArtistServices|null;avatarId?:string;readEvidence?:string[]}>(),emit=defineEmits<{submit:[body:unknown]}>()
-const form=reactive<Record<string,string>>({avatar_id:props.avatarId||'',level:'',renewal_reminder:'false',audition_public:'false',ownership_promise:'false'})
+const props=defineProps<{action:ArtistFormAction;disabled:boolean;person?:ArtistDetail|null;record?:ArtistRecord|null;services?:ArtistServices|null;avatarId?:string;readEvidence?:string[];assets?:SupplyAsset[];canManageMaterials?:boolean}>(),emit=defineEmits<{submit:[body:unknown];readPortraits:[assetIds:string[]];inspectPortrait:[asset:SupplyAsset]}>()
+const form=reactive<Record<string,string>>({avatar_id:props.avatarId||'',level:'',renewal_reminder:'false',audition_public:'false',ownership_promise:'false',primary_portrait_asset_id:''})
 const selectedFeatures=ref<string[]>([]),selectedPurposes=ref<string[]>([]),selectedActions=ref<string[]>([])
 const titles:Record<ArtistFormAction,string>={PERSON:'建立本人的真人档案',AVATAR:'建立一个数字人档案',IDENTITY:'核对实名服务会话',CONSENT:'本人确认这次用途',DELEGATION:'本人确认机构代办范围',VARIANT:'保存造型或声音新版本',HALO:'提交认证申请',LISTING:'申请公开展示',SERVICE:'选择已审核的服务',SUPPLEMENT:'补充原申请材料',APPEAL:'对原审核提出异议',WITHDRAW:'撤回本次同意、委托或展示',REVIEW:'独立审核这份申请',RESULT:'记录创建服务的实际结果'}
 type Field={key:string;label:string;type?:'text'|'textarea'|'datetime-local'|'select'|'ids';required?:boolean;max?:number;options?:Record<string,string>;id?:boolean}
@@ -21,7 +21,7 @@ const fields=computed<Field[]>(()=>{
   case 'DELEGATION':return [f('organization_party_id','受托机构主体编号',{id:true}),f('relation_id','已由本人接受的MCN合作关系编号',{id:true}),f('valid_from','代办开始时间',{type:'datetime-local'}),f('valid_until','代办结束时间',{type:'datetime-local'}),f('terms','代办约定及限制',{type:'textarea',max:8000}),evidence()]
   case 'VARIANT':return [avatar(),f('kind','版本类型',{type:'select',options:{LOOK:'造型',VOICE:'声音'}}),f('display_name','本版名称',{max:120}),f('previous_version_id','上一版本编号（首版留空）',{id:true,required:false}),f('consent_id','同一数字人已通过的私人档案同意编号',{id:true}),f('material_asset_ids','已上传形象或声音素材编号（每行一个）',{type:'ids'})]
   case 'HALO':return [f('level','申请级别',{type:'select',options:{'1':'L1 本人权属审核（免费）','2':'L2 认证（须原审核服务已核实付款）'}}),...(form.level==='2'?[f('service_id','原L2审核服务请求编号',{id:true})]:[]),evidence()]
-  case 'LISTING':return [avatar(),f('display_name','公开名称',{max:120}),f('city','公开城市',{max:100}),f('introduction','公开简介',{type:'textarea',max:2000}),f('tags','公开标签（每行一个，最多15项）',{type:'textarea',max:600}),f('consent_id','同一数字人的已批准公开展示同意编号',{id:true}),f('look_version_id','已保存的造型版本编号',{id:true}),f('voice_version_id','声音版本编号（不展示声音时留空）',{id:true,required:false}),f('preview_asset_ids','本次指定公开的预览材料编号（每行一个，最多6项）',{type:'ids'})]
+  case 'LISTING':return [avatar(),f('display_name','公开名称',{max:120}),f('city','公开城市',{max:100}),f('introduction','公开简介',{type:'textarea',max:2000}),f('tags','公开标签（每行一个，最多15项）',{type:'textarea',max:600}),f('consent_id','同一数字人的已批准公开展示同意编号',{id:true}),f('look_version_id','已保存的造型版本编号',{id:true}),f('voice_version_id','声音版本编号（可选，未指定时留空）',{id:true,required:false}),f('preview_asset_ids','本次指定公开的预览材料编号（每行一个，最多6项）',{type:'ids'})]
   case 'SERVICE':return [f('spec_id','平台当前已审核服务',{type:'select',options:Object.fromEntries((props.services?.offers.items||[]).filter(o=>o.specification.service.halo_level!==3).map(o=>[o.spec_id,o.title+' · '+money(o.price_minor)]))}),...(offer.value&&offer.value.specification.service.kind!=='HALO_REVIEW'?[avatar()]:[])]
   case 'SUPPLEMENT':return [evidence(),f('note','本次补充说明',{type:'textarea',max:2000})]
   case 'APPEAL':return [f('reason','异议事实与理由',{type:'textarea',max:2000}),evidence()]
@@ -31,6 +31,11 @@ const fields=computed<Field[]>(()=>{
  }
 })
 const split=(value='')=>value.split(/[\n,，]/).map(v=>v.trim()).filter(Boolean)
+const previewIds=computed(()=>split(form.preview_asset_ids))
+const canReadPortraits=computed(()=>previewIds.value.length>0&&previewIds.value.length<=6&&previewIds.value.every(validSupplyId)&&new Set(previewIds.value).size===previewIds.value.length)
+const portraitOptions=computed(()=>(props.canManageMaterials?props.assets||[]:[]).filter((a):a is SupplyAsset&{media_type:'image/jpeg'|'image/png'}=>previewIds.value.includes(a.id)&&a.owner_party_id===props.person?.person.owner_party_id&&a.purpose==='AVATAR_MATERIAL'&&a.current_status==='READY'&&['image/jpeg','image/png'].includes(a.media_type)))
+const selectedPortrait=computed(()=>portraitOptions.value.find(a=>a.id===form.primary_portrait_asset_id))
+watch(portraitOptions,()=>{if(form.primary_portrait_asset_id&&!selectedPortrait.value)form.primary_portrait_asset_id=''},{flush:'sync'})
 const iso=(value='')=>{const date=new Date(value);return Number.isFinite(date.getTime())?date.toISOString():''}
 const payload=computed(()=>{
  for(const field of fields.value){const value=(form[field.key]||'').trim();if(field.required&&!value||field.max&&Array.from(value).length>field.max||field.id&&value&&!validSupplyId(value)||field.type==='select'&&value&&!Object.hasOwn(field.options||{},value)||field.type==='ids'&&(!split(value).length||split(value).some(v=>!validSupplyId(v))||new Set(split(value)).size!==split(value).length||split(value).length>(field.key==='preview_asset_ids'?6:30))||field.type==='datetime-local'&&!iso(value))return null}
@@ -42,7 +47,7 @@ const payload=computed(()=>{
   case 'DELEGATION':if(!selectedActions.value.length||iso(form.valid_from)>=iso(form.valid_until))return null;return {delegation:{organization_party_id:value('organization_party_id'),relation_id:value('relation_id'),actions:[...selectedActions.value],valid_from:iso(form.valid_from),valid_until:iso(form.valid_until),terms:value('terms'),evidence_asset_ids:ids('evidence_asset_ids')}}
   case 'VARIANT':return {avatar_id:value('avatar_id'),kind:value('kind'),variant:{previous_version_id:value('previous_version_id')||null,display_name:value('display_name'),material_asset_ids:ids('material_asset_ids'),consent_id:value('consent_id')}}
   case 'HALO':if(form.ownership_promise!=='true')return null;return {level:Number(form.level),service_id:form.level==='1'?null:value('service_id'),ownership_promise:true,evidence_asset_ids:ids('evidence_asset_ids')}
-  case 'LISTING':if(!ids('tags').length||ids('tags').length>15||ids('tags').some(v=>Array.from(v).length>40))return null;return {avatar_id:value('avatar_id'),listing:{display_name:value('display_name'),city:value('city'),introduction:value('introduction'),tags:ids('tags'),consent_id:value('consent_id'),look_version_id:value('look_version_id'),voice_version_id:value('voice_version_id')||null,audition_public:form.audition_public==='true',preview_asset_ids:ids('preview_asset_ids')}}
+  case 'LISTING':if(!ids('tags').length||ids('tags').length>15||ids('tags').some(v=>Array.from(v).length>40)||value('primary_portrait_asset_id')&&!selectedPortrait.value)return null;return {avatar_id:value('avatar_id'),listing:{display_name:value('display_name'),city:value('city'),introduction:value('introduction'),tags:ids('tags'),consent_id:value('consent_id'),look_version_id:value('look_version_id'),voice_version_id:value('voice_version_id')||null,audition_public:form.audition_public==='true',preview_asset_ids:ids('preview_asset_ids'),primary_portrait_asset_id:value('primary_portrait_asset_id')||null}}
   case 'SERVICE':if(!offer.value)return null;return {avatar_id:offer.value.specification.service.kind==='HALO_REVIEW'?null:value('avatar_id'),spec_id:offer.value.spec_id,renewal_reminder:offer.value.specification.service.kind==='AVATAR_HOSTING'&&form.renewal_reminder==='true'}
   case 'SUPPLEMENT':return {evidence_asset_ids:ids('evidence_asset_ids'),note:value('note')}
   case 'APPEAL':return {reason:value('reason'),evidence_asset_ids:ids('evidence_asset_ids')}
@@ -53,6 +58,7 @@ const payload=computed(()=>{
 })
 const confirmed=reactive({checked:false})
 watch(()=>props.record?.object_version,()=>{confirmed.checked=false})
+watch(()=>[form.preview_asset_ids,form.primary_portrait_asset_id],()=>{confirmed.checked=false},{flush:'sync'})
 const needsConfirmation=computed(()=>['CONSENT','DELEGATION','HALO','LISTING','REVIEW','RESULT','WITHDRAW','SERVICE'].includes(props.action))
 </script>
 <template>
@@ -79,7 +85,15 @@ const needsConfirmation=computed(()=>['CONSENT','DELEGATION','HALO','LISTING','R
    </template>
    <fieldset v-if="action==='DELEGATION'" class="artist-choices"><legend>逐项选择代办权限 *</legend><label v-for="(label,key) in delegatedActions" :key="key"><input v-model="selectedActions" type="checkbox" :value="key">{{label}}</label></fieldset>
    <label v-if="action==='HALO'" class="artist-check"><input :checked="form.ownership_promise==='true'" type="checkbox" @change="form.ownership_promise=($event.target as HTMLInputElement).checked?'true':'false'">我确认所提交材料属于本人，具有本次审核所需的权利。</label>
-   <label v-if="action==='LISTING'" class="artist-check"><input :checked="form.audition_public==='true'" type="checkbox" @change="form.audition_public=($event.target as HTMLInputElement).checked?'true':'false'">另行开启试镜展示；关闭不等于撤回整个公开展示申请。</label>
+   <section v-if="action==='LISTING'" class="artist-portrait-choice" data-testid="artists-portrait-choice">
+    <h3>主肖像（可选）</h3><p class="muted">只可选择本次预览材料中的 JPEG 或 PNG 图片。不选择时显示占位；更换肖像随本次展示申请独立审核，通过后才公开。</p>
+    <button type="button" class="outline" data-testid="artists-read-portraits" :disabled="disabled||!canReadPortraits||!canManageMaterials" @click="emit('readPortraits',[...previewIds])">读取本次可选肖像</button>
+    <p v-if="!canManageMaterials" class="muted">主肖像图片需由本人或具有材料管理权限的受托机构核对。当前仍可不设置主肖像，继续提交展示申请。</p>
+    <label>本次主肖像<select v-model="form.primary_portrait_asset_id" :disabled="!canManageMaterials" data-testid="artists-field-primary_portrait_asset_id"><option value="">不设置主肖像</option><option v-for="asset in portraitOptions" :key="asset.id" :value="asset.id">{{artistMediaTypes[asset.media_type]}} · {{asset.id}}</option></select></label>
+    <p v-if="!portraitOptions.length" class="muted">尚无已核实的可选图片。填写本次预览材料编号后，读取并核对图片。</p>
+    <button v-if="selectedPortrait" type="button" class="outline" data-testid="artists-inspect-portrait" @click="emit('inspectPortrait',selectedPortrait)">查看所选主肖像</button>
+    <label class="artist-check"><input :checked="form.audition_public==='true'" type="checkbox" @change="form.audition_public=($event.target as HTMLInputElement).checked?'true':'false'">另行开启试镜展示；关闭不等于撤回整个公开展示申请。</label>
+   </section>
    <template v-if="offer&&action==='SERVICE'"><section class="artist-offer"><h3>{{offer.title}}</h3><p class="trade-amount">{{money(offer.price_minor)}}</p><dl class="supply-facts"><div><dt>规格版本</dt><dd>{{offer.specification.version}}</dd></div><div><dt>失败后可重试次数</dt><dd>{{offer.specification.service.retry_limit}}</dd></div><div v-if="offer.specification.service.hosting_months"><dt>托管月数</dt><dd>{{offer.specification.service.hosting_months}}</dd></div><div><dt>服务内容</dt><dd>{{offer.specification.deliverables.join('、')}}</dd></div></dl><p class="long-text">{{offer.specification.terms}}</p></section><label v-if="offer.specification.service.kind==='AVATAR_HOSTING'" class="artist-check"><input :checked="form.renewal_reminder==='true'" type="checkbox" @change="form.renewal_reminder=($event.target as HTMLInputElement).checked?'true':'false'">开启续托管提醒；不自动续费，不自动扣款。</label></template>
    <label v-if="needsConfirmation" class="artist-check"><input v-model="confirmed.checked" data-testid="artists-form-confirm" type="checkbox">我已核对当前真人、数字人、用途、材料和本次明确约定。</label>
    <button class="primary" data-testid="artists-form-submit" :disabled="disabled||!payload||needsConfirmation&&!confirmed.checked">{{action==='SERVICE'?'保存服务申请，后续另行报价':action==='REVIEW'?'提交这份版本的审核决定':'提交本次明确内容'}}</button>

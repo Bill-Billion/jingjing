@@ -50,6 +50,30 @@ try {
     assert.equal(api.selectStoryFile(file('x'.repeat(8*1024*1024))).file.size,8*1024*1024)
     assert.equal(api.isStoryAttachment({id:id(30),url:'https://private.invalid'}),false)
   })
+  test('主动请求历史正式保留原因，兼容旧响应且拒绝未知原因',async()=>{
+    const a=await asset(),calls=[]
+    for(const value of [undefined,null,'FORMAL_SUBMISSION']){
+      const item=value===undefined?a:{...a,retention_reason:value};assert.ok(api.isStoryAttachment(item))
+      globalThis.fetch=async(url,o)=>{calls.push({url,o});return response({items:[item],next_cursor:null})}
+      const result=await api.listStoryAttachments(who,id(10));assert.equal(result.items[0].retention_reason,value)
+    }
+    assert.ok(calls.every(c=>new URL(c.url,'http://local').searchParams.get('include_retention')==='true'))
+    for(const value of ['DELETED','',true,1]){
+      assert.equal(api.isStoryAttachment({...a,retention_reason:value}),false)
+      globalThis.fetch=async()=>response({items:[{...a,retention_reason:value}],next_cursor:null})
+      await assert.rejects(api.listStoryAttachments(who,id(10)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+    }
+  })
+  test('旧正式附件无需加载历史就显示保留原因并禁撤回，未引用附件仍可办理',async()=>{
+    const old={...await asset(file('old'),30),retention_reason:'FORMAL_SUBMISSION'},draft={...await asset(file('draft'),31),retention_reason:null}
+    const {default:List}=await server.ssrLoadModule('/src/components/StoryAttachmentList.vue')
+    const html=await renderToString(createSSRApp({render:()=>h(List,{items:[old,draft],loaded:true,nextCursor:null,locked:false,retained:[]})}))
+    assert.equal((html.match(/已由正式版本引用，按资料保留流程处理。/g)||[]).length,1)
+    assert.equal((html.match(/<button[^>]*disabled[^>]*>撤回附件访问<\/button>/g)||[]).length,1)
+    assert.equal((html.match(/>撤回附件访问<\/button>/g)||[]).length,2)
+    const {default:Reference}=await server.ssrLoadModule('/src/components/StoryAttachmentReference.vue')
+    const ref=await renderToString(createSSRApp({render:()=>h(Reference,{assetId:old.id,items:[old]})}));assert.ok(ref.includes('正式版本已引用，需按资料保留流程处理。'))
+  })
   test('原字节上传有真实传输进度，100%传输不冒充服务器确认，回包核准后才绑定',async()=>{
     xhrCalls=[];const s=controller(),source=file(),a=await asset(source),ready=defer();s.files.choose('file',source);xhrHandler=x=>ready.resolve(x)
     const task=s.files.upload('file'),xhr=await ready.promise;assert.equal(xhr.headers['Content-Type'],'application/octet-stream');assert.equal(xhr.headers['X-Acting-Party'],who.partyId);assert.equal(xhr.headers.Authorization,`Bearer ${who.token}`);assert.equal(await xhr.body.text(),await source.text());assert.equal(new URL(xhr.url,'http://local').searchParams.get('display_name'),source.name)

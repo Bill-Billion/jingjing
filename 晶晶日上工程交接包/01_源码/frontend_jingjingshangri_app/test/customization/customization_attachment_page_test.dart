@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/customization/customization_api.dart';
+import 'package:jingjingshangri_app/customization/customization_attachment_panel.dart';
 import 'package:jingjingshangri_app/customization/customization_attachments.dart';
 import 'package:jingjingshangri_app/customization/customization_followup.dart';
 import 'package:jingjingshangri_app/customization/customization_page.dart';
@@ -70,6 +71,43 @@ Picker usePicker({Future<FilePickerResult?> Function()? open}) {
 }
 
 void main() {
+  testWidgets('旧正式附件不在当前引用里仍按服务器保留原因禁撤回', (tester) async {
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(
+        handler: (r) => r.path == attachmentPath
+            ? envelope({
+                'items': [
+                  {
+                    ...attachment(name: '旧正式附件.txt'),
+                    'retention_reason': 'FORMAL_SUBMISSION'
+                  },
+                  {
+                    ...attachment(id: nextAttachmentId, name: '尚未提交.txt'),
+                    'retention_reason': null
+                  }
+                ],
+                'next_cursor': null
+              })
+            : adapter.defaultReply(r));
+    final session = (await tester.runAsync(() => storySession(adapter)))!;
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: SingleChildScrollView(
+                child: StoryAttachmentPanel(
+                    api: CustomizationApi(session),
+                    requestId: requestId,
+                    fields: const [],
+                    answers: const {})))));
+    await tester.pumpAndSettle();
+    expect(find.text('正式版本已引用，需按资料保留流程处理。'), findsOneWidget);
+    expect(find.byKey(const ValueKey('story-attachment-revoke-$attachmentId')),
+        findsNothing);
+    expect(
+        find.byKey(const ValueKey('story-attachment-revoke-$nextAttachmentId')),
+        findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('新建先保存草稿再选文件，上传保留文字并不自动保存，重开能读取原附件', (tester) async {
     final picker = usePicker();
     var saved = <String, String>{'story': '保存前的新文字', 'style': '', 'proof': ''};
@@ -334,7 +372,7 @@ void main() {
         .single;
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(find.text('暂时离开，等待平台核对？'), findsOneWidget);
+    expect(find.text('暂时离开，稍后恢复原上传？'), findsOneWidget);
     await tester.tap(find.widgetWithText(FilledButton, '确认'));
     await tester.pumpAndSettle();
     expect(find.text('打开故事'), findsOneWidget);

@@ -15,6 +15,35 @@ Matcher code(String value) =>
     isA<AccountError>().having((e) => e.code, 'code', value);
 
 void main() {
+  test('附件清单主动读取历史保留原因，兼容未带字段但拒绝未知原因', () async {
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(
+        handler: (r) => r.path == attachmentPath
+            ? envelope({
+                'items': [
+                  {...attachment(), 'retention_reason': 'FORMAL_SUBMISSION'}
+                ],
+                'next_cursor': null
+              })
+            : adapter.defaultReply(r));
+    final api = StoryAttachmentApi(
+        CustomizationApi(await storySession(adapter)), requestId);
+    final items = await api.all();
+    expect(adapter.requests.last.queryParameters['include_retention'], true);
+    expect(items.single.retained, true);
+    expect(StoryAttachment(attachment(), requestId).retained, false);
+    expect(
+        StoryAttachment({...attachment(), 'retention_reason': null}, requestId)
+            .retained,
+        false);
+    for (final bad in ['DELETED', '', true, 1]) {
+      expect(
+          () => StoryAttachment(
+              {...attachment(), 'retention_reason': bad}, requestId),
+          throwsA(isA<AccountError>()));
+    }
+  });
+
   test('附件模板从服务端启用，UUID答案可解析且仅本故事READY可保存', () async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
@@ -166,7 +195,7 @@ void main() {
     expect((await api.all()).single.id, attachmentId);
     expect((await api.all()).single.id, attachmentId);
     expect(adapter.requests.last.queryParameters,
-        {'limit': 20, 'cursor': 'signed-opaque'});
+        {'limit': 20, 'include_retention': true, 'cursor': 'signed-opaque'});
     cycle = true;
     await expectLater(api.all(), throwsA(isA<AccountError>()));
   });

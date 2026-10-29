@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-28",
+  "updated_on": "2026-10-29",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "dependencies列出整项工作最终验收前必须完成的成果，不是开工顺序；可先设计、约定接口、准备隔离资料及检查已可用路线。第17组最终验收须前16组服务器与页面成果齐备，不能以部分路线通过提前完成。",
@@ -3323,7 +3323,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -3333,7 +3333,8 @@
         "CORE-CLIENT-COMPLETE-05"
       ],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md"
       ],
       "acceptance": "有效媒体实际能打开；更换、撤回、损坏和过期不留旧内容",
       "shared_boundaries": [
@@ -3341,13 +3342,14 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
-        "docs/tasks/records/UX-client-complete-20261028.md"
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md"
       ],
       "blockers": [
-        "作品封面、时长、缩略处理仍待后端；主肖像和媒体分类本地已提供，待阶段上传后可接。"
+        "主肖像和媒体分类已接入；作品封面、实际时长及缩略图仍待后端后续接口，整组未完成。"
       ],
       "delivery_batch": "B",
       "v5_refs": [
@@ -3362,7 +3364,7 @@
       ],
       "implementation": "IN_PROGRESS",
       "implementation_scope": "图片/视频/声音正确展示，主肖像选择、预览和缺图反馈",
-      "frontend_can_start": "本批上传后按FRONTEND_MEDIA_HANDOFF.md接主肖像/分类；不等封面时长全部完成。",
+      "frontend_can_start": "本批主肖像/媒体分类已接入；后续按后端作品封面、实际时长、缩略图接口继续，整组未完成。",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -3381,14 +3383,15 @@
         "E2E-11",
         "TASK-05"
       ],
-      "updated_on": "2026-10-28",
-      "current_increment": "Vue当前公开详情与预览失效清理已接入；App沿用获准图片读取。",
+      "updated_on": "2026-10-29",
+      "current_increment": "App/Vue已接主肖像明确选择、媒体分类受控展示及失效清理；选择→待审→独立审核→显示→更换→撤回已用合成资料实测。",
       "frontend_increment_verification": {
-        "scope": "当前已接入接口和页面增量，不等于整组验收",
-        "status": "PASS",
-        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+        "scope": "本批主肖像/媒体分类/历史附件保留及原请求恢复；网页暂离后恢复浏览器步骤未完成，不等于整组验收",
+        "status": "PARTIAL_VALIDATION_PASS",
+        "record": "docs/tasks/records/UX-client-complete-media-20261029.md"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。",
+      "handoff_acknowledgement": "2026-10-29前端Bill-Billion已实际接入0.31.4并记录本机验证；未代后端确认组合审阅。"
     },
     {
       "id": "CORE-CLIENT-COMPLETE-06",
@@ -4582,7 +4585,8 @@
       ],
       "deliverables": [
         "docs/collaboration/client-complete-20261028/README.md",
-        "docs/tasks/records/UX-client-complete-story-20261029.md"
+        "docs/tasks/records/UX-client-complete-story-20261029.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md"
       ],
       "acceptance": "默认私有，未提交不派单，未报价不付款；空房间账号在本次正式报价前自行建房并接上邀请、去重授权和本人片段，不能预置房间代替首次发起",
       "shared_boundaries": [
@@ -4594,7 +4598,8 @@
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
         "docs/tasks/records/UX-client-complete-20261028.md",
-        "docs/tasks/records/UX-client-complete-story-20261029.md"
+        "docs/tasks/records/UX-client-complete-story-20261029.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -4608,7 +4613,7 @@
       ],
       "implementation": "IN_PROGRESS",
       "implementation_scope": "新建、保存、续写、附件和提交后进入原故事报价链；本人从已提交故事选择承制方和规则建房，保存后进入邀请、授权和进度",
-      "frontend_can_start": "原附件/补件/建房已接；本批上传后可接只读保留提示，同时继续同记录业务整链。",
+      "frontend_can_start": "附件/补件/建房及只读保留提示已接；补网页暂离恢复浏览器步骤，继续同记录报价、授权、订单和制作整链。",
       "uploaded": true,
       "merged": false,
       "production_enabled": false,
@@ -4633,15 +4638,15 @@
         "TASK-15"
       ],
       "updated_on": "2026-10-29",
-      "current_increment": "App与Vue私人附件上传/保存/重开/受控下载，补件隔离与正式重提；运营正式附件与历史版本；两端实际目录选择、首次建房后进入详情，App邀请实测。",
+      "current_increment": "App/Vue已接服务端历史保留原因；App缺对象原请求恢复、跨端补件正式重提已实测。网页暂离后恢复受浏览器工具阻断，未计为通过。",
       "frontend_increment_verification": {
-        "scope": "本批附件/补件/首次建房实现及定向联调；不含完整授权、订单、制作和片段整链，不等于整组验收",
-        "status": "PASS",
-        "record": "docs/tasks/records/UX-client-complete-story-20261029.md"
+        "scope": "本批主肖像/媒体分类/历史附件保留及原请求恢复；网页暂离后恢复浏览器步骤未完成，不等于整组验收",
+        "status": "PARTIAL_VALIDATION_PASS",
+        "record": "docs/tasks/records/UX-client-complete-media-20261029.md"
       },
-      "backend_handoff": "原缺文件恢复已修并通过隔离检查；可选历史保留原因待前端主动接入，原严格响应不变。",
+      "backend_handoff": "0.31.4已补缺对象原请求恢复和历史正式引用保留原因；前端已接并留证，不继续列为后端未开发。",
       "uploaded_commit": "0db4d3aa0bee4a9d49e60af97d5e769e41cfb47a",
-      "handoff_acknowledgement": "2026-10-29用户转达前端OK；0db4d3aa为附件/首次建房已接入证据。新0.31.4接线未确认。"
+      "handoff_acknowledgement": "2026-10-29前端Bill-Billion已实际接入0.31.4并记录本机验证；未代后端确认组合审阅。"
     },
     {
       "id": "CORE-CLIENT-COMPLETE-16",
@@ -11336,7 +11341,7 @@
     "delivery_branch": "core/full-business-closure-20261028",
     "task_pairs": 18,
     "provisional_decisions": 23,
-    "status": "前端0db4d3aa已组合并复核；上传恢复、历史保留提示和艺人主肖像接口本地自验通过，综合949通过/1缺样本跳过；准备集中更新PR39，18组未全部验收。",
+    "status": "基于PR39/7882a986接入主肖像、媒体分类和历史附件保留；App684/Vue394项通过，定向浏览器联调有证据，网页暂离后恢复仍待补验；18组/151条未全部验收。",
     "user_authorization": "2026-10-28要求整理前后端任务并上传，需要甲方确定的内容由本侧合理暂定；尽快完整测试",
     "client_test_version_ready": false,
     "planning_uploaded": true,
@@ -11349,12 +11354,12 @@
     "acceptance_guide": "docs/collaboration/client-complete-20261028/ACCEPTANCE.md",
     "frontend_owner": "Bill-Billion",
     "frontend_branch": "ux/pr39-frontend-complete-20261028",
-    "frontend_increment_record": "docs/tasks/records/UX-client-complete-story-20261029.md",
-    "frontend_scope": "本批私人附件、补件隔离、正式历史、首次建房及进入邀请进度已实现；完整业务整链和剩余后端能力继续按原任务推进",
+    "frontend_increment_record": "docs/tasks/records/UX-client-complete-media-20261029.md",
+    "frontend_scope": "本批主肖像选择、分类展示、历史保留提示已接入，App原上传恢复及跨端补件已实测；网页暂离恢复待补验，完整业务整链与原剩余接口继续。",
     "backend_assignment_confirmed": "后端负责人chengcongcong222，前端负责人Bill-Billion；用户2026-10-28明确由用户通知前端跟进。",
     "backend_owner": "chengcongcong222",
     "combined_review": "docs/tasks/records/CORE-client-complete-merge-20261028.md",
     "frontend_story_handoff": "docs/collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md",
-    "latest_record": "docs/tasks/records/CORE-story-recovery-media-20261029.md"
+    "latest_record": "docs/tasks/records/UX-client-complete-media-20261029.md"
   }
 }

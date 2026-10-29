@@ -625,7 +625,7 @@ class _StoryEditorState extends State<_StoryEditor> {
         pending == null &&
         attachmentApi?.needsPlatformReview == true &&
         attachmentApi!.revocationPending.isEmpty) {
-      return confirm('暂时离开，等待平台核对？',
+      return confirm('暂时离开，稍后恢复原上传？',
           '原文件和原上传请求会保留在当前登录会话，重新打开这份故事后可继续核对。${dirty ? '本页尚未保存的文字与附件选择将丢失。' : ''}退出账号、切换身份或关闭应用会清理私有临时数据；不要重新发起同一上传。');
     }
     if (locked) {
