@@ -70,7 +70,7 @@ async function main() {
     phase='save';const saved=page.waitForResponse(r=>r.request().method()==='PATCH'&&r.url().endsWith('/customization-requests/'+story.id));saved.catch(()=>{});await page.getByTestId('story-save').click();const reply=await saved;assert.equal(reply.status(),200);const current=(await reply.json()).data;assert.equal(current.answers.material,after[0].id);assert.equal(current.current_status,'DRAFT');
     checks.push({name:'保存后仍是私人草稿',status:'PASS',story_id:story.id,asset_id:current.answers.material});
     await page.screenshot({path:path.join(out,'03-restored-saved.png'),fullPage:true});assert.deepEqual(errors,[]);
-    await fs.writeFile(path.join(out,'RESULTS.json'),JSON.stringify({synthetic_only:true,frontend_commit:'2761ca903ce580171f87d626a921e79543762b19',checks,page_errors:errors},null,2));
+    await fs.writeFile(path.join(out,'RESULTS.json'),JSON.stringify({synthetic_only:true,source_commit:require('node:child_process').execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true}).trim(),test_script_sha256:require('node:crypto').createHash('sha256').update(await fs.readFile(__filename)).digest('hex'),checks,page_errors:errors},null,2));
     console.log(JSON.stringify({result:'PASS',checks:checks.length,story_id:story.id,asset_id:after[0].id}));
   } catch(error) {
     if(page){await page.screenshot({path:path.join(out,'failure.png'),fullPage:true}).catch(()=>{});await fs.writeFile(path.join(out,'failure.txt'),await page.locator('body').innerText().catch(()=>''));}
