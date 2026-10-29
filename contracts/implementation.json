@@ -1,5 +1,5 @@
 {
-  "version": "0.31.4-rc.1",
+  "version": "0.31.5-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -467,7 +467,9 @@
     "downloadCustomizationAttachment",
     "revokeCustomizationAttachment",
     "cocreationCreationOptions",
-    "readPublicArtistMedia"
+    "readPublicArtistMedia",
+    "getStockPublicMedia",
+    "downloadStockCover"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -839,10 +841,24 @@
     "evidence": "docs/tasks/records/CORE-client-complete-story-20261028.md",
     "production_enabled": false,
     "limits": [
-      "App/Vue附件控件和首次建房新选择接口待前端接入",
+      "App/Vue已由90dc8855接入附件保留和恢复；网页暂离重开恢复尚待补做浏览器检查",
       "撤回仅关闭访问，不宣称物理删除或备份擦除",
       "已提交文件保持历史版本，正式保留依据待甲方",
       "共创目前仅配置的平台签约主体，外部制作机构不能因此读取私人故事"
+    ]
+  },
+  "stock_public_media": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getStockPublicMedia",
+      "downloadStockCover"
+    ],
+    "production_enabled": false,
+    "limits": [
+      "封面只取已审预览首帧，不裁切、不从完整私片截取",
+      "完整作品和预览时长分开；仅实际可解析的受限MP4",
+      "需部署配置MEDIA_FFMPEG与MEDIA_FFPROBE，缺配置明确报错",
+      "前端新封面/时长页面待接，整版未验收"
     ]
   }
 }

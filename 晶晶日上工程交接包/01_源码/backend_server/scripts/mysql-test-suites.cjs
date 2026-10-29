@@ -11,7 +11,7 @@ module.exports=Object.freeze({
  wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs'],
  auditions:['test/auditions-policy.test.cjs','test/auditions.integration.test.cjs','test/auditions-supplements.integration.test.cjs'],
  notices:['test/notices-policy.test.cjs','test/notices.integration.test.cjs'],
- stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs'],
+ stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs','test/stock-media.test.cjs','test/stock-media.integration.test.cjs'],
  'customization-delivery':['test/customization-delivery-policy.test.cjs','test/customization-delivery.integration.test.cjs'],
  artists:['test/artists-policy.test.cjs','test/artists.integration.test.cjs'],
  customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs','test/story-room-journey.integration.test.cjs'],
