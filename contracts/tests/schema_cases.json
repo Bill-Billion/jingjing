@@ -1730,6 +1730,50 @@
         "channel": null,
         "account_id": "spoof"
       }
+    },
+    {
+      "name": "Invoice applicant cannot approve a request",
+      "schema": "InvoiceApplicantAction",
+      "value": {
+        "action": "APPROVE",
+        "text": "synthetic"
+      }
+    },
+    {
+      "name": "Invoice document rejects an injected issuer",
+      "schema": "InvoiceRecordDocument",
+      "value": {
+        "amount_minor": 100,
+        "reference": "synthetic",
+        "issued_at": "2026-01-01T00:00:00.000Z",
+        "asset_id": null,
+        "header": {
+          "kind": "PERSON",
+          "title": "Synthetic",
+          "tax_id": null
+        },
+        "issuer": {
+          "approved": true
+        }
+      }
+    },
+    {
+      "name": "phone change rejects delegated account",
+      "schema": "PhoneChangeCreateRequest",
+      "value": {
+        "old_phone": "13900005001",
+        "new_phone": "13900005002",
+        "account_id": "other"
+      }
+    },
+    {
+      "name": "phone change proof must be six numeric digits",
+      "schema": "PhoneChangeVerifyRequest",
+      "value": {
+        "side": "NEW",
+        "challenge_id": "00000000-0000-4000-8000-000000000001",
+        "code": "123"
+      }
     }
   ]
 }

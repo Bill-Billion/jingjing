@@ -4142,8 +4142,8 @@
       ],
       "implementation": "IMPLEMENTED",
       "implementation_scope": "当前身份合同／作品／收入的只读来源分类列表、真实时间分页、单源重试；收入本人已入账份额及商家留存分开",
-      "frontend_can_start": "本批上传后可接统一摘要、按来源翻页和失败重试；不重写原业务详情",
-      "uploaded": false,
+      "frontend_can_start": "已上传且用户已转发；页面新接入未确认",
+      "uploaded": true,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
@@ -4162,7 +4162,8 @@
         "E2E-12",
         "TASK-11"
       ],
-      "updated_on": "2026-10-30"
+      "updated_on": "2026-10-30",
+      "uploaded_commit": "1e50823b"
     },
     {
       "id": "UX-CLIENT-COMPLETE-11",
@@ -4244,7 +4245,7 @@
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "CLAIMED",
+      "status": "IN_PROGRESS",
       "branch": "core/full-business-closure-20261028",
       "work_refs": [
         "WORK-14"
@@ -4252,7 +4253,8 @@
       "req_refs": [],
       "dependencies": [],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md"
       ],
       "acceptance": "零现金不生成现金发票；重复申请不可超额；测试文件标非真实发票",
       "shared_boundaries": [
@@ -4260,9 +4262,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-invoices-20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -4273,10 +4276,10 @@
       "provisional_rule_refs": [
         "P15"
       ],
-      "implementation": "NOT_STARTED",
-      "implementation_scope": "原付款/退款金额核算申请上限，状态和审核，受控上传核验票据",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
-      "uploaded": false,
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "原订单已核实实付上限、申请补件撤回、不同人员录入和复核、受控文件与退款后更正；正式出票默认关闭",
+      "frontend_can_start": "本批上传后可按FRONTEND_INVOICES_HANDOFF接页面；同版迁移0187",
+      "uploaded": true,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
@@ -4287,7 +4290,9 @@
         "ACC-DEL-24.01",
         "ACC-DEL-26.01",
         "TASK-12"
-      ]
+      ],
+      "updated_on": "2026-10-30",
+      "uploaded_commit": "d18c4622461c1e77bbc06816495e714b58d4be2e"
     },
     {
       "id": "UX-CLIENT-COMPLETE-12",
@@ -4295,7 +4300,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -4305,7 +4310,8 @@
         "CORE-CLIENT-COMPLETE-12"
       ],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md"
       ],
       "acceptance": "零现金不生成现金发票；重复申请不可超额；测试文件标非真实发票",
       "shared_boundaries": [
@@ -4316,11 +4322,10 @@
       "test_status": "NOT_RUN",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
-        "docs/tasks/records/UX-client-complete-20261028.md"
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-invoice-phone-20261030.md"
       ],
-      "blockers": [
-        "开票金额占用、申请/补件/撤回/审核与受控票据接口待Core。"
-      ],
+      "blockers": [],
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-07",
@@ -4329,9 +4334,9 @@
       "provisional_rule_refs": [
         "P15"
       ],
-      "implementation": "NOT_STARTED",
+      "implementation": "IN_PROGRESS",
       "implementation_scope": "申请、补件、撤回、拒绝说明、查看处理进度和文件",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "frontend_can_start": "接口候选0.31.11-rc.1／0187已具备，本批集中上传后可接；具体新增接入未确认",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4345,13 +4350,14 @@
         "TASK-12"
       ],
       "updated_on": "2026-10-28",
-      "current_increment": "开票入口返回原订单；正式申请保持未开放且不收集无接收方的票据资料。",
+      "current_increment": "已接收0.31.12/0192开票与换号交接，App/Vue本增量开发中；不声称本增量已验证或上传。",
       "frontend_increment_verification": {
         "scope": "当前已接入接口和页面增量，不等于整组验收",
         "status": "NOT_RUN",
         "record": "docs/tasks/records/UX-client-complete-20261028.md"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+      "backend_handoff": "后端负责人chengcongcong222已补新接口；本批说明由用户转发，尚未确认前端已接入。",
+      "new_handoff_acknowledged": true
     },
     {
       "id": "CORE-CLIENT-COMPLETE-13",
@@ -4359,7 +4365,7 @@
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "CLAIMED",
+      "status": "IN_PROGRESS",
       "branch": "core/full-business-closure-20261028",
       "work_refs": [
         "WORK-14"
@@ -4367,7 +4373,8 @@
       "req_refs": [],
       "dependencies": [],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md"
       ],
       "acceptance": "测试验证码只在隔离环境；不得无验证改号或继承别人账号",
       "shared_boundaries": [
@@ -4375,9 +4382,11 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-phone-change-20261030.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -4388,9 +4397,9 @@
       "provisional_rule_refs": [
         "P16"
       ],
-      "implementation": "NOT_STARTED",
-      "implementation_scope": "本人近期核验、原号码与新号码验证码、唯一性/限流、换号后会话失效",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "近期登录、旧新号码独立核验、本人最终确认、并发冲突和全会话失效；同账号业务保留，旧号码再注册获得新账号",
+      "frontend_can_start": "0.31.12-rc.1／迁移0192，按FRONTEND_PHONE_CHANGE_HANDOFF接入；上传与最新确认分别记录",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4410,7 +4419,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -4431,11 +4440,11 @@
       "test_status": "NOT_RUN",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
-        "docs/tasks/records/UX-client-complete-20261028.md"
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md",
+        "docs/tasks/records/UX-invoice-phone-20261030.md"
       ],
-      "blockers": [
-        "近期验证、旧新手机号核验事务和全会话失效待Core。"
-      ],
+      "blockers": [],
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-01",
@@ -4444,7 +4453,7 @@
       "provisional_rule_refs": [
         "P16"
       ],
-      "implementation": "NOT_STARTED",
+      "implementation": "IN_PROGRESS",
       "implementation_scope": "核验、改号、重新登录；原号码不可用转人工申诉",
       "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
       "uploaded": false,
@@ -4460,13 +4469,16 @@
         "TASK-13"
       ],
       "updated_on": "2026-10-28",
-      "current_increment": "现有登录退出保持，未复用普通登录验证码伪装换号。",
+      "current_increment": "已接收0.31.12/0192开票与换号交接，App/Vue本增量开发中；不声称本增量已验证或上传。",
       "frontend_increment_verification": {
         "scope": "当前已接入接口和页面增量，不等于整组验收",
         "status": "NOT_RUN",
         "record": "docs/tasks/records/UX-client-complete-20261028.md"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。",
+      "backend_dependency_state": "换号接口已实现并隔离验证；本批集中上传后可接",
+      "latest_increment_acknowledged": false,
+      "new_handoff_acknowledged": true
     },
     {
       "id": "CORE-CLIENT-COMPLETE-14",
@@ -4782,9 +4794,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "B",
@@ -4833,7 +4846,8 @@
         "ACC-DEL-29.03",
         "ACC-DEL-29.04",
         "TASK-16"
-      ]
+      ],
+      "latest_validation_scope": "8组149项接口检查和同记录12个检查点／54次请求；非151条全部验收"
     },
     {
       "id": "UX-CLIENT-COMPLETE-16",
@@ -4978,9 +4992,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "D",
@@ -5134,7 +5149,8 @@
         "E2E-12",
         "ACC-DEL-19.05",
         "TASK-17"
-      ]
+      ],
+      "latest_validation_scope": "8组149项接口检查和同记录12个检查点／54次请求；非151条全部验收"
     },
     {
       "id": "UX-CLIENT-COMPLETE-17",
@@ -11580,12 +11596,16 @@
     "finance_tests": "38_PASS",
     "runtime_response_cases": 26,
     "final_regression": "1035_PASS_1_MISSING_LEGACY_FIXTURE_SKIP_BEFORE_FINAL_GIG_SOURCES",
-    "uploaded": false,
+    "uploaded": true,
     "merged": false,
     "production_enabled": false,
     "frontend_new_handoff_acknowledged": false,
     "gigs_tests": "26_PASS",
-    "evidence": "docs/testing/evidence/personal-center-20261030/summary.json"
+    "evidence": "docs/testing/evidence/personal-center-20261030/summary.json",
+    "uploaded_commit": "1e50823b22c47442195a857179505cc7c92652b9",
+    "remote_checks": "7项中3项成功、4项运行；最终结果待核对",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "user_forwarded_handoff": true
   },
   "frontend_directory_support_20261030": {
     "owner": "Bill-Billion",
@@ -11602,6 +11622,23 @@
     "production_enabled": false,
     "review_status": "PENDING",
     "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08"
+  },
+  "invoices_20261030": {
+    "owner": "chengcongcong222",
+    "contract": "0.31.11-rc.1",
+    "migration": "0187",
+    "operations": 16,
+    "focused_tests": "14_PASS",
+    "http_response_cases": 72,
+    "regression": "1041_PASS_0_FAIL_3_SKIP; VIDEO_FOLLOWUP_9_PASS; LEGACY_SAMPLE_MISSING",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "frontend_new_handoff_acknowledged": false,
+    "evidence": "docs/testing/evidence/invoices-20261030/summary.json",
+    "uploaded_commit": "d18c4622461c1e77bbc06816495e714b58d4be2e",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "remote_checks": "7项中3项成功，4项运行；以最新HEAD最终结果为准"
   },
   "frontend_personal_center_20261030": {
     "owner": "Bill-Billion",

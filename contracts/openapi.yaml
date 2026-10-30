@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.10-rc.1
+  version: 0.31.12-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -27317,6 +27317,1268 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
 
+  /api/v1/invoices/orders/{order_id}/eligibility:
+    get:
+      operationId: getInvoiceEligibility
+      summary: 查看原订单可申请额度
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: order_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceEligibilityResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/requests:
+    post:
+      operationId: createInvoiceRequest
+      summary: 提交开票申请
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前开票申请版本，修改须携带此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceCreateRequest'
+    get:
+      operationId: listInvoiceRequests
+      summary: 查看开票清单
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - REQUESTED
+          - NEEDS_INFO
+          - APPROVED
+          - DOCUMENT_REVIEW
+          - ISSUED
+          - CORRECTION_REQUESTED
+          - REJECTED
+          - WITHDRAWN
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/requests/{invoice_id}:
+    get:
+      operationId: getInvoiceRequest
+      summary: 查看开票进度
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前开票申请版本，修改须携带此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/requests/{invoice_id}/history:
+    get:
+      operationId: listInvoiceHistory
+      summary: 查看处理历史
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/requests/{invoice_id}/documents:
+    get:
+      operationId: listInvoiceDocuments
+      summary: 查看当前和历史票据
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDocumentsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/requests/{invoice_id}/actions:
+    post:
+      operationId: actOnInvoice
+      summary: 办理开票事项
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前开票申请版本，修改须携带此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceApplicantAction'
+  /api/v1/invoices/requests/{invoice_id}/assets/{asset_id}/content:
+    get:
+      operationId: downloadInvoiceEvidence
+      summary: 受控下载申请材料
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/requests/{invoice_id}/documents/{document_id}/content:
+    get:
+      operationId: downloadInvoiceDocument
+      summary: 受控下载票据
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: document_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/operations/requests:
+    get:
+      operationId: listInvoiceRequestsForOperator
+      summary: 查看开票清单（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - REQUESTED
+          - NEEDS_INFO
+          - APPROVED
+          - DOCUMENT_REVIEW
+          - ISSUED
+          - CORRECTION_REQUESTED
+          - REJECTED
+          - WITHDRAWN
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/invoices/operations/requests/{invoice_id}:
+    get:
+      operationId: getInvoiceRequestForOperator
+      summary: 查看开票进度（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前开票申请版本，修改须携带此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/invoices/operations/requests/{invoice_id}/history:
+    get:
+      operationId: listInvoiceHistoryForOperator
+      summary: 查看处理历史（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/invoices/operations/requests/{invoice_id}/documents:
+    get:
+      operationId: listInvoiceDocumentsForOperator
+      summary: 查看当前和历史票据（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDocumentsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/invoices/operations/requests/{invoice_id}/actions:
+    post:
+      operationId: actOnInvoiceForOperator
+      summary: 办理开票事项（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前开票申请版本，修改须携带此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceOperatorAction'
+  /api/v1/invoices/operations/requests/{invoice_id}/assets/{asset_id}/content:
+    get:
+      operationId: downloadInvoiceEvidenceForOperator
+      summary: 受控下载申请材料（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/invoices/operations/requests/{invoice_id}/documents/{document_id}/content:
+    get:
+      operationId: downloadInvoiceDocumentForOperator
+      summary: 受控下载票据（运营）
+      description: 绑定原订单购买身份。已核实收款扣除退款、待退及其他申请占用；零现金不开现金票据。录入与核准须不同授权人员；测试凭证非真实发票，正式人工模式默认关闭。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: document_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/me/phone-changes:
+    post:
+      operationId: createPhoneChange
+      summary: 本人申请更换登录手机号
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeCreateRequest'
+  /api/v1/me/phone-changes/current:
+    get:
+      operationId: getCurrentPhoneChange
+      summary: 读取本人最近或进行中的换号申请
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeCurrentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /api/v1/me/phone-changes/{change_id}:
+    get:
+      operationId: getPhoneChange
+      summary: 读取本人换号进度
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /api/v1/me/phone-changes/{change_id}/challenges:
+    post:
+      operationId: sendPhoneChangeChallenge
+      summary: 向当前步骤的号码发送独立验证码
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeSendRequest'
+  /api/v1/me/phone-changes/{change_id}/verifications:
+    post:
+      operationId: verifyPhoneChangeChallenge
+      summary: 验证旧号码或新号码
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeVerifyRequest'
+  /api/v1/me/phone-changes/{change_id}/confirmation:
+    post:
+      operationId: confirmPhoneChange
+      summary: 确认换号并结束全部旧登录
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeEmptyRequest'
+  /api/v1/me/phone-changes/{change_id}/cancellation:
+    post:
+      operationId: cancelPhoneChange
+      summary: 取消尚未完成的换号申请
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeEmptyRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -57649,6 +58911,778 @@ components:
           - sections
           - partial
           - notice
+      required:
+      - meta
+      - data
+    InvoiceHeader:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: PERSON
+          title:
+            type: string
+            minLength: 1
+            maxLength: 200
+          tax_id:
+            type: 'null'
+        required:
+        - kind
+        - title
+        - tax_id
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: ORGANIZATION
+          title:
+            type: string
+            minLength: 1
+            maxLength: 200
+          tax_id:
+            type: string
+            minLength: 1
+            maxLength: 80
+        required:
+        - kind
+        - title
+        - tax_id
+    InvoiceEligibility:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        currency:
+          const: CNY
+        environment:
+          oneOf:
+          - type: string
+            enum:
+            - SANDBOX
+            - PRODUCTION
+          - type: 'null'
+        received_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        refunded_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        pending_refund_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        occupied_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        available_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required:
+      - order_id
+      - currency
+      - environment
+      - received_minor
+      - refunded_minor
+      - pending_refund_minor
+      - occupied_minor
+      - available_minor
+    Invoice:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        buyer_party_id:
+          type: string
+          format: uuid
+        issuer_party_id:
+          type: string
+          format: uuid
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        currency:
+          const: CNY
+        requested_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        occupied_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        current_status:
+          type: string
+          enum:
+          - REQUESTED
+          - NEEDS_INFO
+          - APPROVED
+          - DOCUMENT_REVIEW
+          - ISSUED
+          - CORRECTION_REQUESTED
+          - REJECTED
+          - WITHDRAWN
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        header:
+          $ref: '#/components/schemas/InvoiceHeader'
+        issued_document_id:
+          oneOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        pending_document_id:
+          oneOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        requires_correction:
+          type: boolean
+        available_for_this_request_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - order_id
+      - buyer_party_id
+      - issuer_party_id
+      - environment
+      - currency
+      - requested_minor
+      - occupied_minor
+      - current_status
+      - object_version
+      - header
+      - issued_document_id
+      - pending_document_id
+      - requires_correction
+      - available_for_this_request_minor
+      - created_at
+      - updated_at
+    InvoiceCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 1
+          maximum: 900000000000
+        header:
+          $ref: '#/components/schemas/InvoiceHeader'
+        text:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+          maxItems: 8
+      required:
+      - order_id
+      - amount_minor
+      - header
+      - text
+      - asset_ids
+    InvoiceRecordDocument:
+      type: object
+      additionalProperties: false
+      properties:
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 200
+        issued_at:
+          type: string
+          format: date-time
+        asset_id:
+          oneOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        header:
+          $ref: '#/components/schemas/InvoiceHeader'
+      required:
+      - amount_minor
+      - reference
+      - issued_at
+      - asset_id
+      - header
+    InvoiceApplicantAction:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            enum:
+            - WITHDRAW
+            - REQUEST_CORRECTION
+          text:
+            type: string
+            minLength: 1
+            maxLength: 2000
+        required:
+        - action
+        - text
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            const: SUPPLEMENT
+          text:
+            type: string
+            minLength: 1
+            maxLength: 2000
+          header:
+            $ref: '#/components/schemas/InvoiceHeader'
+          asset_ids:
+            type: array
+            items:
+              type: string
+              format: uuid
+            uniqueItems: true
+            maxItems: 8
+        required:
+        - action
+        - text
+        - header
+        - asset_ids
+    InvoiceOperatorAction:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            enum:
+            - REQUEST_INFO
+            - APPROVE
+            - REJECT
+            - REQUEST_CORRECTION
+            - VERIFY_DOCUMENT
+            - REJECT_DOCUMENT
+          text:
+            type: string
+            minLength: 1
+            maxLength: 2000
+        required:
+        - action
+        - text
+      - type: object
+        additionalProperties: false
+        properties:
+          action:
+            const: RECORD_DOCUMENT
+          text:
+            type: string
+            minLength: 1
+            maxLength: 2000
+          document:
+            $ref: '#/components/schemas/InvoiceRecordDocument'
+        required:
+        - action
+        - text
+        - document
+    InvoiceIssuer:
+      type: object
+      additionalProperties: false
+      properties:
+        merchant_party_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        tax_id:
+          oneOf:
+          - type: string
+          - type: 'null'
+        config_revision:
+          type: string
+        evidence_ref:
+          type: string
+        valid_until:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        simulated:
+          type: boolean
+        approved:
+          type: boolean
+      required:
+      - merchant_party_id
+      - name
+      - tax_id
+      - config_revision
+      - evidence_ref
+      - valid_until
+      - simulated
+    InvoiceDocumentContent:
+      type: object
+      additionalProperties: false
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        simulated:
+          type: boolean
+        label:
+          type: string
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        currency:
+          const: CNY
+        reference:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        header:
+          $ref: '#/components/schemas/InvoiceHeader'
+        issuer:
+          $ref: '#/components/schemas/InvoiceIssuer'
+        issuer_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        replaces_document_id:
+          oneOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        asset_proof:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              content_sha256:
+                type: string
+                pattern: ^[0-9a-f]{64}$
+              byte_size:
+                type: integer
+                minimum: 1
+            required:
+            - content_sha256
+            - byte_size
+          - type: 'null'
+      required:
+      - invoice_id
+      - order_id
+      - environment
+      - simulated
+      - label
+      - amount_minor
+      - currency
+      - reference
+      - issued_at
+      - header
+      - issuer
+      - issuer_sha256
+      - replaces_document_id
+      - asset_proof
+    InvoiceDocument:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - PENDING
+          - REJECTED
+          - ISSUED
+          - SUPERSEDED
+        content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        content:
+          $ref: '#/components/schemas/InvoiceDocumentContent'
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - current_status
+      - content_sha256
+      - content
+      - created_at
+    InvoiceEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        actor_kind:
+          enum:
+          - APPLICANT
+          - OPERATOR
+        action:
+          enum:
+          - SUBMIT
+          - SUPPLEMENT
+          - WITHDRAW
+          - REQUEST_CORRECTION
+          - REQUEST_INFO
+          - APPROVE
+          - REJECT
+          - RECORD_DOCUMENT
+          - VERIFY_DOCUMENT
+          - REJECT_DOCUMENT
+        text:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        header:
+          $ref: '#/components/schemas/InvoiceHeader'
+        status:
+          type: string
+          enum:
+          - REQUESTED
+          - NEEDS_INFO
+          - APPROVED
+          - DOCUMENT_REVIEW
+          - ISSUED
+          - CORRECTION_REQUESTED
+          - REJECTED
+          - WITHDRAWN
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        document_id:
+          oneOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+          maxItems: 8
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - object_version
+      - actor_kind
+      - action
+      - text
+      - header
+      - status
+      - amount_minor
+      - document_id
+      - asset_ids
+      - created_at
+    InvoiceResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Invoice'
+      required:
+      - meta
+      - data
+    InvoiceEligibilityResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/InvoiceEligibility'
+      required:
+      - meta
+      - data
+    InvoiceListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Invoice'
+            next_cursor:
+              oneOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    InvoiceHistoryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/InvoiceEvent'
+            next_cursor:
+              oneOf:
+              - type: integer
+                minimum: 1
+                maximum: 4294967294
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    InvoiceDocumentsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/InvoiceDocument'
+            next_cursor:
+              oneOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+
+    PhoneChangeCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        old_phone:
+          type: string
+          pattern: ^1[3-9][0-9]{9}$
+        new_phone:
+          type: string
+          pattern: ^1[3-9][0-9]{9}$
+      required:
+      - old_phone
+      - new_phone
+    PhoneChangeSendRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        side:
+          type: string
+          enum:
+          - OLD
+          - NEW
+      required:
+      - side
+    PhoneChangeVerifyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        side:
+          type: string
+          enum:
+          - OLD
+          - NEW
+        challenge_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+      required:
+      - side
+      - challenge_id
+      - code
+    PhoneChangeEmptyRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    PhoneChangeChallenge:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        side:
+          type: string
+          enum:
+          - OLD
+          - NEW
+        current_status:
+          type: string
+          enum:
+          - PENDING
+          - SENT
+          - UNKNOWN
+          - CONSUMED
+          - EXPIRED
+        attempts_remaining:
+          type: integer
+          minimum: 0
+        expires_at:
+          type: string
+          format: date-time
+        resend_after:
+          type: string
+          format: date-time
+      required:
+      - id
+      - side
+      - current_status
+      - attempts_remaining
+      - expires_at
+      - resend_after
+    PhoneChange:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          type: string
+          enum:
+          - AWAITING_OLD
+          - AWAITING_NEW
+          - READY
+          - COMPLETED
+          - CANCELLED
+          - EXPIRED
+        object_version:
+          type: integer
+          minimum: 1
+        old_phone_mask:
+          type: string
+          pattern: ^[0-9]{3}\*{4}[0-9]{4}$
+        new_phone_mask:
+          type: string
+          pattern: ^[0-9]{3}\*{4}[0-9]{4}$
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        can_continue:
+          type: boolean
+        requires_relogin:
+          type: boolean
+        challenges:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneChangeChallenge'
+          maxItems: 2
+        recovery_route:
+          type: string
+          enum:
+          - SUPPORT_TICKET_REVIEW_ONLY
+      required:
+      - id
+      - current_status
+      - object_version
+      - old_phone_mask
+      - new_phone_mask
+      - expires_at
+      - created_at
+      - can_continue
+      - requires_relogin
+      - challenges
+      - recovery_route
+    PhoneChangeResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/PhoneChange'
+      required:
+      - meta
+      - data
+    PhoneChangeCurrentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request:
+              anyOf:
+              - $ref: '#/components/schemas/PhoneChange'
+              - type: 'null'
+          required:
+          - request
       required:
       - meta
       - data
