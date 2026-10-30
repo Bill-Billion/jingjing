@@ -1,5 +1,5 @@
 {
-  "version": "0.31.9-rc.1",
+  "version": "0.31.10-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -505,7 +505,10 @@
     "createSupportTicket",
     "getNotificationUnread",
     "markNotificationSnapshotRead",
-    "listNotificationFeed"
+    "listNotificationFeed",
+    "listPersonalContracts",
+    "listPersonalWorks",
+    "listPersonalIncome"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -968,6 +971,21 @@
       "通知新增域仅新feed返回，旧notifications列表保持原域；历史消息不伪造新增通知",
       "通知已读与原会话已读分别表达；查看原会话并标已读会同步通知回执",
       "真实赔偿、客服时限及隐私保留依据不自行设定"
+    ]
+  },
+  "personal_center": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listPersonalContracts",
+      "listPersonalWorks",
+      "listPersonalIncome"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/personal-center.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "按来源独立分页，不承诺跨来源全局排序",
+      "收入只汇总已登记台账中的本人份额；不汇总其他主体、不把未入账预期当收入",
+      "页面接入、完整办理及真实服务分别验收"
     ]
   }
 }

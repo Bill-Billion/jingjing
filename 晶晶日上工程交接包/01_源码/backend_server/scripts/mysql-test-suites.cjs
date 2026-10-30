@@ -1,6 +1,7 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
+ 'personal-center':['test/personal-center-policy.test.cjs','test/personal-center.integration.test.cjs'],
  collections:['test/collections-policy.test.cjs','test/collections.integration.test.cjs'],
  discovery:['test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
  directory:['test/directory-policy.test.cjs','test/directory.integration.test.cjs'],

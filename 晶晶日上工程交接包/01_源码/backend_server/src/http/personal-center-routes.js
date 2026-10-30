@@ -1,0 +1,5 @@
+"use strict";
+const express=require('express'),{shape,id,error}=require('../modules/party/policy');
+function createPersonalCenterRouter(options){const router=express.Router(),repo=require('../modules/personal-center/repository').createPersonalCenterRepository(options.db,options);
+ router.get('/:category',(req,res,next)=>Promise.resolve().then(async()=>{shape(req.query,['source','cursor','limit']);const party=req.get('X-Acting-Party');if(!party)throw error('ACTING_PARTY_REQUIRED',400);id(party);if(req.query.limit!==undefined&&(typeof req.query.limit!=='string'||!/^(?:[1-9]|[1-4][0-9]|50)$/.test(req.query.limit)))throw error('INVALID_LIMIT',400);const data=await repo.list(req,{party_id:party,category:req.params.category,...req.query,...(req.query.limit!==undefined?{limit:Number(req.query.limit)}:{})});res.set('Cache-Control','no-store').json({meta:{request_id:req.requestId,actor:{account_id:req.account.id},acting_party:party},data});}).catch(next));return router;}
+module.exports={createPersonalCenterRouter};
