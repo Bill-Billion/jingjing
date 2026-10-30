@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.11-rc.1
+  version: 0.31.12-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -28195,6 +28195,390 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/me/phone-changes:
+    post:
+      operationId: createPhoneChange
+      summary: 本人申请更换登录手机号
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeCreateRequest'
+  /api/v1/me/phone-changes/current:
+    get:
+      operationId: getCurrentPhoneChange
+      summary: 读取本人最近或进行中的换号申请
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeCurrentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /api/v1/me/phone-changes/{change_id}:
+    get:
+      operationId: getPhoneChange
+      summary: 读取本人换号进度
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /api/v1/me/phone-changes/{change_id}/challenges:
+    post:
+      operationId: sendPhoneChangeChallenge
+      summary: 向当前步骤的号码发送独立验证码
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeSendRequest'
+  /api/v1/me/phone-changes/{change_id}/verifications:
+    post:
+      operationId: verifyPhoneChangeChallenge
+      summary: 验证旧号码或新号码
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeVerifyRequest'
+  /api/v1/me/phone-changes/{change_id}/confirmation:
+    post:
+      operationId: confirmPhoneChange
+      summary: 确认换号并结束全部旧登录
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeEmptyRequest'
+  /api/v1/me/phone-changes/{change_id}/cancellation:
+    post:
+      operationId: cancelPhoneChange
+      summary: 取消尚未完成的换号申请
+      description: 仅本人账号，不接受机构身份。申请须在短信登录后10分钟内发起；15分钟内依次验证旧、新号码，再确认。换号保留账号与业务关系，撤销全部旧登录及旧登录验证码。原号码不可用时只进入客服核查，不自动换绑。发送结果不明不得自动重发；确认响应丢失后用新号码登录并读取current核对。所有时长为本轮安全暂定值。
+      tags:
+      - phone-change
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: change_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 本人换号状态；验证码和完整号码不回显。完成后使用新号码重新登录。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前偏好版本，历史记录写入和清理使用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneChangeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneChangeEmptyRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -59128,6 +59512,177 @@ components:
           required:
           - items
           - next_cursor
+      required:
+      - meta
+      - data
+
+    PhoneChangeCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        old_phone:
+          type: string
+          pattern: ^1[3-9][0-9]{9}$
+        new_phone:
+          type: string
+          pattern: ^1[3-9][0-9]{9}$
+      required:
+      - old_phone
+      - new_phone
+    PhoneChangeSendRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        side:
+          type: string
+          enum:
+          - OLD
+          - NEW
+      required:
+      - side
+    PhoneChangeVerifyRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        side:
+          type: string
+          enum:
+          - OLD
+          - NEW
+        challenge_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+      required:
+      - side
+      - challenge_id
+      - code
+    PhoneChangeEmptyRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    PhoneChangeChallenge:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        side:
+          type: string
+          enum:
+          - OLD
+          - NEW
+        current_status:
+          type: string
+          enum:
+          - PENDING
+          - SENT
+          - UNKNOWN
+          - CONSUMED
+          - EXPIRED
+        attempts_remaining:
+          type: integer
+          minimum: 0
+        expires_at:
+          type: string
+          format: date-time
+        resend_after:
+          type: string
+          format: date-time
+      required:
+      - id
+      - side
+      - current_status
+      - attempts_remaining
+      - expires_at
+      - resend_after
+    PhoneChange:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          type: string
+          enum:
+          - AWAITING_OLD
+          - AWAITING_NEW
+          - READY
+          - COMPLETED
+          - CANCELLED
+          - EXPIRED
+        object_version:
+          type: integer
+          minimum: 1
+        old_phone_mask:
+          type: string
+          pattern: ^[0-9]{3}\*{4}[0-9]{4}$
+        new_phone_mask:
+          type: string
+          pattern: ^[0-9]{3}\*{4}[0-9]{4}$
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        can_continue:
+          type: boolean
+        requires_relogin:
+          type: boolean
+        challenges:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneChangeChallenge'
+          maxItems: 2
+        recovery_route:
+          type: string
+          enum:
+          - SUPPORT_TICKET_REVIEW_ONLY
+      required:
+      - id
+      - current_status
+      - object_version
+      - old_phone_mask
+      - new_phone_mask
+      - expires_at
+      - created_at
+      - can_continue
+      - requires_relogin
+      - challenges
+      - recovery_route
+    PhoneChangeResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/PhoneChange'
+      required:
+      - meta
+      - data
+    PhoneChangeCurrentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            request:
+              anyOf:
+              - $ref: '#/components/schemas/PhoneChange'
+              - type: 'null'
+          required:
+          - request
       required:
       - meta
       - data

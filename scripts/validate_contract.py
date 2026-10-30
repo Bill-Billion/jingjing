@@ -111,6 +111,10 @@ def validate(runtime_fixtures=None):
         if 'method' in x and 'path' in x:
             matches = [item[x['method'].lower()] for route, item in spec['paths'].items()
                        if x['method'].lower() in item and re.fullmatch(re.sub(r'\{[^}]+\}', '[^/]+', route), x['path'])]
+            # OpenAPI concrete paths take precedence over templated paths (/current vs /{id}).
+            exact = spec['paths'].get(x['path'], {}).get(x['method'].lower())
+            if exact is not None:
+                matches = [exact]
             check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
             if len(matches) == 1 and schema != 'ErrorResponse':
                 schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
@@ -134,6 +138,7 @@ def validate(runtime_fixtures=None):
         'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
     }
     personal_collection_ops = {'recordPersonalVisit', 'getCollectionPreferences', 'listPersonalFavorites', 'listPersonalHistory', 'getPersonalCollectionTarget', 'setCollectionPreferences', 'clearPersonalHistory', 'removePersonalHistory', 'setPersonalFavorite'}
+    personal_collection_ops.update({'cancelPhoneChange', 'getPhoneChange', 'getCurrentPhoneChange', 'createPhoneChange', 'confirmPhoneChange', 'verifyPhoneChangeChallenge', 'sendPhoneChangeChallenge'})
     # Newly reviewed operator-only endpoints use no acting-party header.
     for path, item in spec['paths'].items():
         for method, op in item.items():

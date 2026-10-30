@@ -76,6 +76,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
    req.token=header.slice(7);req.account=await auth.resolve(req.token,{allowRevoked:req.method==='DELETE'&&req.path==='/auth/sessions/current',allowInactiveStatus:req.method==='GET'&&req.path==='/me'});principals.set(req,{subject_ref:req.account.subject_ref,request_id:req.requestId});
   }).then(()=>next(),next);
  });
+ app.use('/api/v1/me/phone-changes',require('./phone-change-routes').createPhoneChangeRouter({phoneChanges:auth.phoneChanges}));
  app.use('/api/v1/me/business',require('./personal-center-routes').createPersonalCenterRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
  app.use('/api/v1/me/collections',require('./collections-routes').createCollectionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret,env:supplyEnv}));
  app.get('/api/v1/me',wrap(async(req,res)=>{res.set('ETag','"'+req.account.object_version+'"');reply(req,res,auth.accountData(req.account));}));

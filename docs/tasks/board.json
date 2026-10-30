@@ -4351,7 +4351,7 @@
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "CLAIMED",
+      "status": "IN_PROGRESS",
       "branch": "core/full-business-closure-20261028",
       "work_refs": [
         "WORK-14"
@@ -4359,7 +4359,8 @@
       "req_refs": [],
       "dependencies": [],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md"
       ],
       "acceptance": "测试验证码只在隔离环境；不得无验证改号或继承别人账号",
       "shared_boundaries": [
@@ -4367,9 +4368,11 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-phone-change-20261030.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -4380,9 +4383,9 @@
       "provisional_rule_refs": [
         "P16"
       ],
-      "implementation": "NOT_STARTED",
-      "implementation_scope": "本人近期核验、原号码与新号码验证码、唯一性/限流、换号后会话失效",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "近期登录、旧新号码独立核验、本人最终确认、并发冲突和全会话失效；同账号业务保留，旧号码再注册获得新账号",
+      "frontend_can_start": "0.31.12-rc.1／迁移0192，按FRONTEND_PHONE_CHANGE_HANDOFF接入；上传与最新确认分别记录",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4402,7 +4405,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -4423,11 +4426,10 @@
       "test_status": "NOT_RUN",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
-        "docs/tasks/records/UX-client-complete-20261028.md"
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md"
       ],
-      "blockers": [
-        "近期验证、旧新手机号核验事务和全会话失效待Core。"
-      ],
+      "blockers": [],
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-01",
@@ -4458,7 +4460,9 @@
         "status": "NOT_RUN",
         "record": "docs/tasks/records/UX-client-complete-20261028.md"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。",
+      "backend_dependency_state": "换号接口已实现并隔离验证；本批集中上传后可接",
+      "latest_increment_acknowledged": false
     },
     {
       "id": "CORE-CLIENT-COMPLETE-14",
@@ -4774,9 +4778,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "B",
@@ -4825,7 +4830,8 @@
         "ACC-DEL-29.03",
         "ACC-DEL-29.04",
         "TASK-16"
-      ]
+      ],
+      "latest_validation_scope": "8组149项接口检查和同记录12个检查点／54次请求；非151条全部验收"
     },
     {
       "id": "UX-CLIENT-COMPLETE-16",
@@ -4970,9 +4976,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "D",
@@ -5126,7 +5133,8 @@
         "E2E-12",
         "ACC-DEL-19.05",
         "TASK-17"
-      ]
+      ],
+      "latest_validation_scope": "8组149项接口检查和同记录12个检查点／54次请求；非151条全部验收"
     },
     {
       "id": "UX-CLIENT-COMPLETE-17",
