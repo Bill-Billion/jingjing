@@ -261,7 +261,7 @@ void main() {
       await tester.pump();
       nav.expectFiveTabs();
     }
-    // The new plaza starts three public GETs on its first mount. Complete their
+    // The new plaza starts four public GETs on its first mount. Complete their
     // fake-async IO before disposing, while keeping the instant-switch checks.
     await nav.frames(tester);
     final plazaReads = a.requests.skip(beforeSwitch).toList();
@@ -269,6 +269,7 @@ void main() {
         plazaReads.map((r) => r.path),
         unorderedEquals([
           '/api/v1/artists/catalog',
+          '/api/v1/directory/featured-artists',
           '/api/v1/stock/catalog',
           '/api/v1/notices/catalog',
         ]));

@@ -39,7 +39,7 @@ try {
  const navigation=page.locator('.workspace-nav'),parent=navigation.getByRole('button',{name:'账号与个人服务',exact:true}),accountLink=navigation.getByRole('link',{name:'账号与机构',exact:true})
  const identity=page.locator('.identity').first();await identity.waitFor({state:'visible'});await identity.click({trial:true})
  check('正确验证码经过实际后端校验，身份直接可见且可选择',await identity.isVisible()&&await identity.isEnabled())
- assert.equal(await navigation.locator('a').count(),54);assert.equal(await navigation.locator('.workspace-nav-parent').count(),7)
+ assert.equal(await navigation.locator('a').count(),63);assert.equal(await navigation.locator('.workspace-nav-parent').count(),7)
  await page.getByRole('button',{name:'全部收起',exact:true}).click();await accountLink.waitFor({state:'hidden'});await parent.click();await accountLink.waitFor({state:'visible'})
  check('手机父级分类可展开子入口',await parent.getAttribute('aria-expanded')==='true'&&await accountLink.isVisible())
  await parent.press('Enter');await accountLink.waitFor({state:'hidden'})

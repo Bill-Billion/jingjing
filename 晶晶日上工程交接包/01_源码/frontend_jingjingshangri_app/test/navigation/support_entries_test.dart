@@ -12,7 +12,7 @@ void main() {
         {'recordId': personId});
   });
 
-  for (final page in <Widget>[const InvoicePage(), const SavedHistoryPage()]) {
+  for (final page in <Widget>[const InvoicePage()]) {
     testWidgets('${page.runtimeType} 未接通的写入动作关闭且不收集资料', (t) async {
       await t.pumpWidget(MaterialApp(home: page));
       expect(find.byType(TextField), findsNothing);
@@ -26,7 +26,7 @@ void main() {
     });
   }
 
-  testWidgets('帮助只过滤本地FAQ并跳转原业务，反馈不能提交', (t) async {
+  testWidgets('帮助保留本地FAQ和原业务入口，并可进入正式反馈', (t) async {
     String? opened;
     await t.pumpWidget(MaterialApp(
         home: const HelpFeedbackPage(),
@@ -36,13 +36,12 @@ void main() {
               builder: (_) => const Scaffold(body: Text('订单目录')));
         }));
     expect(find.byType(TextField), findsOneWidget);
-    await v5.reveal(t, find.text('提交反馈 · 暂未开放'));
+    await v5.reveal(t, find.text('提交反馈或举报'));
     expect(
         t
-            .widget<FilledButton>(
-                find.widgetWithText(FilledButton, '提交反馈 · 暂未开放'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交反馈或举报'))
             .onPressed,
-        isNull);
+        isNotNull);
     t.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
     await t.pump();
     await t.enterText(find.byType(TextField), '付款后还没');

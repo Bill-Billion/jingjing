@@ -6,7 +6,7 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../auditions/auditions_pages.dart';
 import '../notices/notices_pages.dart';
-import '../operations/notification_preview.dart';
+import '../operations/identity_notifications.dart';
 import '../plaza/plaza_pages.dart';
 import '../widgets/editorial_icons.dart';
 import 'package:flutter/services.dart';
@@ -53,7 +53,6 @@ class _AppShellState extends State<AppShell> {
   late int _selected = widget.initialTab.clamp(0, 4);
   final _visited = <int>{};
   String _city = '';
-  int _messageChannel = 0;
   (int, String?, String?)? _sessionContext;
   static const _labels = ['广场', '试镜', '通告', '消息', '我的'];
   static const _routes = [
@@ -404,49 +403,9 @@ class _AppShellState extends State<AppShell> {
               () => _open('/redemption')),
         ],
       3 => [
-          Row(children: [
-            for (var i = 0; i < 4; i++)
-              Expanded(
-                  child: TextButton(
-                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      onPressed: () => setState(() => _messageChannel = i),
-                      child: Container(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: _messageChannel == i
-                                          ? AccountTheme.vermilion
-                                          : AccountTheme.border,
-                                      width: _messageChannel == i ? 2 : 1))),
-                          child: Text(['订单会话', '投稿意向', '活动投票', '系统通知'][i],
-                              style: const TextStyle(fontSize: 12))))),
-          ]),
-          const SizedBox(height: 12),
-          if (_messageChannel == 0) ...[
-            _entry('订单与项目留言', '围绕有权参与的原订单与项目查看留言。', Icons.chat_bubble_outline,
-                () => _open('/chat')),
-            _entry('试镜订单沟通', '接单且核实付款后，进入具体订单沟通。', Icons.event_note_outlined,
-                () => _open('/auditions/bookings')),
-          ],
-          if (_messageChannel == 1)
-            _entry('投稿与合作客服', '查看单向投稿、业务意向及客服处理。', Icons.inbox_outlined,
-                () => _open('/notices/records?kind=CASE')),
-          if (_messageChannel == 2)
-            _entry('活动、投票与异议', '按城市和原规则查看已公示活动；未读总数仍由各原业务分别核对。',
-                Icons.how_to_vote_outlined, () => _open('/engagement')),
-          if (_messageChannel == 3) ...[
-            NotificationPreview(
-                session: session,
-                key: ValueKey(
-                    'notification-preview:${session.epoch}:${session.partyId}')),
-            _entry('系统与业务通知', '查看当前账号和身份获准的通知。', Icons.notifications_outlined,
-                () => _open('/operations/notifications')),
-          ],
-          const SizedBox(height: 28),
-          const Text('订单沟通、投稿意向、活动投票与系统提醒，按原业务分别查看。',
-              style: TextStyle(
-                  fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+          IdentityNotificationsPage(
+              key: ValueKey('messages:${session.epoch}:${session.partyId}'),
+              embedded: true)
         ],
       4 => _mine(session),
       _ => <Widget>[],

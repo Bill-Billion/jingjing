@@ -2,10 +2,12 @@ import { domains } from '@/business'
 /** Only supported private entry routes may be resumed after login. */
 export function loginRedirect(target: unknown): string {
   const uuid = '[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}'
+  if (typeof target === 'string' && new RegExp(`^/(?:discovery|directory/(?:organizations(?:/${uuid})?|featured(?:/new)?|manage(?:/new|/${uuid})?|reviews/(?:ORGANIZATION|FEATURED_ARTIST)(?:/${uuid})?)|me/collections/(?:favorites|history)|support/(?:new|(?:tickets|operations)(?:/${uuid})?))$`).test(target)) return target
+  if (typeof target === 'string' && new RegExp(`^/support/new\\?domain=(?:ARTIST_PUBLIC|STOCK_PUBLIC|NOTICE_PUBLIC)&record=${uuid}$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/cocreation/rooms\\?action=room&requestId=${uuid}$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/notices/submissions\\?action=invitation&sourceListing=${uuid}$`).test(target)) return target
   if(typeof target==='string'&&target===target.trim())for(const d of Object.values(domains)){const match=new RegExp(`^/${d.key}/(${d.sections.map(s=>s.key).join('|')})(?:/${uuid})?(?:\\?action=([a-z-]+))?$`).exec(target);if(match&&(!match[2]||d.operations.some(o=>o.key===match[2]&&(!o.sections||o.sections.includes(match[1]!)))))return target}
-  if (typeof target === 'string' && new RegExp(`^/artists/(?:catalog|services|people(?:/new|/${uuid}(?:/(?:records/${uuid}|(?:avatars|identity|consents|delegations|variants|halos|listings|services)/new))?)?|reviews/(?:CONSENT|HALO|APPEAL|LISTING|SERVICE)(?:/people/${uuid}/records/${uuid})?)$`).test(target)) return target
+  if (typeof target === 'string' && new RegExp(`^/artists/(?:catalog(?:/${uuid})?|services|people(?:/new|/${uuid}(?:/(?:records/${uuid}|(?:avatars|identity|consents|delegations|variants|halos|listings|services)/new))?)?|reviews/(?:CONSENT|HALO|APPEAL|LISTING|SERVICE)(?:/people/${uuid}/records/${uuid})?)$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/trade/quotes/new\\?artistService=${uuid}(?:&personId=${uuid})?$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/production/(?:orders/${uuid}/fulfillment-new|projects/${uuid}/fulfillment|reviews/fulfillment/${uuid})$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/trade/quotes/new\\?customizationProject=${uuid}&caseId=${uuid}$`).test(target)) return target

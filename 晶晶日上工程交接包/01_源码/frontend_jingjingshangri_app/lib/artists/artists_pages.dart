@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../support/collections.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
@@ -1186,6 +1187,11 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
           if (error != null) appNotice(error!),
           if (available) ...[
             presentation(r),
+            CollectionDetailActions(
+                key: ValueKey('artist-save:${r['listing_id']}'),
+                session: widget.session,
+                kind: 'ARTIST',
+                targetId: r['listing_id']),
             const SizedBox(height: 32),
             tradeHeading('关于这位艺人', fontSize: 24),
             Text(r['introduction'],

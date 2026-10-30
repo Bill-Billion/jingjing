@@ -92,6 +92,16 @@ Future<void> settleMedia(WidgetTester t) async {
   }
 }
 
+Future<void> expectRemoved(WidgetTester t, File file) async {
+  // Player controls disappear before its asynchronous native file cleanup.
+  await t.runAsync(() async {
+    for (var attempt = 0; attempt < 100 && await file.exists(); attempt++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    expect(await file.exists(), isFalse);
+  });
+}
+
 void main() {
   for (final type in ['audio/mpeg', 'audio/wav', 'video/mp4']) {
     testWidgets('$type使用正确播放器并在身份切换时清理临时内容', (t) async {
@@ -130,13 +140,13 @@ void main() {
             code: 'decode_failed', message: 'Cannot decode test audio'));
         await settleMedia(t);
         expect(find.byTooltip('播放'), findsNothing);
-        expect(await t.runAsync(file.exists), isFalse);
+        await expectRemoved(t, file);
       }
       s.select(identity(orgId));
       await settleMedia(t);
       expect(find.byTooltip('播放'), findsNothing);
       expect(platform.disposed, [1]);
-      expect(await t.runAsync(file.exists), isFalse);
+      await expectRemoved(t, file);
       expect(t.takeException(), isNull);
     });
   }
@@ -169,7 +179,7 @@ void main() {
     await t.runAsync(s.logout);
     await settleMedia(t);
     expect(platform.disposed, [1]);
-    expect(await t.runAsync(file.exists), isFalse);
+    await expectRemoved(t, file);
     expect(find.byTooltip('播放'), findsNothing);
   });
 

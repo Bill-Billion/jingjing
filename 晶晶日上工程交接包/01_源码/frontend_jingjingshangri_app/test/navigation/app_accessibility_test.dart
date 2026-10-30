@@ -65,10 +65,15 @@ void main() {
       }
       await t.tap(find.byKey(const Key('app-tab-3')));
       await frames(t);
-      for (final label in ['投稿意向', '活动投票', '系统通知']) {
-        await t.tap(find.text(label));
-        await frames(t);
-        expect(t.takeException(), isNull, reason: label);
+      if (signedIn) {
+        for (final label in ['投稿意向', '活动投票', '系统通知']) {
+          await t.ensureVisible(find.textContaining(label));
+          await t.tap(find.textContaining(label));
+          await frames(t);
+          expect(t.takeException(), isNull, reason: label);
+        }
+      } else {
+        expect(find.text('核对账号与身份'), findsOneWidget);
       }
       await t.pumpWidget(const SizedBox.shrink());
     });

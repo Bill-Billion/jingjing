@@ -144,7 +144,7 @@ try {
   test('真实本人页面选择实际模板、创建并跳转，所有子路由保留43项公共导航与单一高亮',async()=>{
     for(const path of [base,`${base}/new`,`${base}/${id(10)}`]){
       const {html}=await render(path,async(s,vm)=>{prepare(s);if(path.endsWith('/new')){globalThis.fetch=async()=>response({items:[category()]},{...who,partyId:undefined});await vm.loadPage();vm.selectCategory({target:{value:id(4)}});assert.equal(s.ui.template.title,'本人家庭故事')}})
-      const nav=html.match(/<nav\b[^>]*aria-label="工作区导航"[^>]*>([\s\S]*?)<\/nav>/)?.[1];assert.ok(nav);const links=[...nav.matchAll(/<a\b([^>]*)>/g)];assert.equal(links.length,54);assert.deepEqual(links.filter(([,a])=>a.includes('aria-current="page"')).map(([,a])=>a.match(/href="([^"]+)"/)[1]),['/operations/customization'])
+      const nav=html.match(/<nav\b[^>]*aria-label="工作区导航"[^>]*>([\s\S]*?)<\/nav>/)?.[1];assert.ok(nav);const links=[...nav.matchAll(/<a\b([^>]*)>/g)];assert.equal(links.length,63);assert.deepEqual(links.filter(([,a])=>a.includes('aria-current="page"')).map(([,a])=>a.match(/href="([^"]+)"/)[1]),['/operations/customization'])
     }
     await render(`${base}/new`,async(s,vm,router)=>{prepare(s,{story:'真正保存的页面故事'});globalThis.fetch=async()=>response(story('DRAFT',1,{story:'真正保存的页面故事'}));await vm.save();assert.equal(router.currentRoute.value.path,`${base}/${id(10)}`);assert.equal(s.ui.pending,null)})
   })

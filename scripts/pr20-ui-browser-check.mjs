@@ -76,7 +76,7 @@ async function login(name,{second=false}={}){
  const token=await p.evaluate(()=>sessionStorage.getItem('ops.session.token'));assert(token)
  const a={...person,page:p,context,token};if(!second)actors[name]=a;return a
 }
-async function ready(p=page){await p.getByText('正在读取实际记录…',{exact:true}).waitFor({state:'hidden'});await p.getByTestId('ops-refresh').waitFor({state:'visible'});await p.waitForTimeout(120)}
+async function ready(p=page){await p.getByText('正在读取实际记录…',{exact:true}).waitFor({state:'hidden'});await p.getByTestId('ops-refresh').waitFor({state:'visible'});if(new URL(p.url()).pathname.startsWith('/operations/notifications')){await p.getByText('正在读取当前身份通知…',{exact:true}).waitFor({state:'hidden'});if(!await p.getByTestId('ops-pending').isVisible())await p.getByTestId('ops-refresh').and(p.locator(':enabled')).waitFor()}await p.waitForTimeout(120)}
 async function go(p,path){page=p;await p.goto(base+path);await checkWorkspaceNavigation(p);if(path==='/operations/customization'||path.startsWith('/operations/customization/'))await p.getByTestId('customization-refresh').waitFor();else if(path.startsWith('/operations/'))await ready(p);else await p.getByRole('heading',{level:1}).waitFor()}
 async function shot(p,name,gallery){if(new URL(p.url()).pathname.startsWith('/operations/'))await ready(p);const actual=await p.locator('[data-gallery]').first().getAttribute('data-gallery');if(gallery)assert.equal(actual,gallery);const file='screenshots/pr20-web-'+name+'.png';await p.screenshot({path:resolve(evidence,file),fullPage:true});screenshots.push({file,gallery:gallery||actual,viewport:p.viewportSize()});await save()}
 const fill=(p,key,v)=>p.getByTestId(key).fill(String(v))
@@ -84,7 +84,7 @@ async function notificationPage(p,cursor,action){
  // Track the request created by this navigation/click, not a late response to an
  // earlier page read. Match pagination explicitly before trusting next_cursor.
  const pending=handled(p.waitForRequest(r=>{
-  const u=new URL(r.url());return r.method()==='GET'&&u.pathname==='/api/v1/operations/notifications'
+  const u=new URL(r.url());return r.method()==='GET'&&u.pathname==='/api/v1/operations/notifications/feed'
    &&u.searchParams.get('cursor')===(cursor===null?null:String(cursor))
    &&u.searchParams.get('limit')==='30'&&u.searchParams.get('unread_only')==='false'
  }))
@@ -139,7 +139,7 @@ async function action(a,c,action,name,{unknown=false}={}){
  rows=await comments(a,c.domain,c.record_id,{operator});assert.equal(rows.find(x=>x.id===c.id).body,null)
  assert.equal(await p.getByText(current.body,{exact:true}).count(),0);await shot(p,name+'-recovered-desktop',operator?'WEB-32-02-v2':'WEB-32-02-v2');return out
 }
-async function blockedNavigation(p){const before=new URL(p.url()).pathname;await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link',{name:'合同与规则',exact:true}).click();assert.equal(new URL(p.url()).pathname,before);await p.getByText('原请求结果尚未核实，请先核对并恢复原操作后再离开。',{exact:true}).waitFor()}
+async function blockedNavigation(p){const before=new URL(p.url()).pathname;await ensureWorkspaceNavigation(p); await p.locator('.workspace-nav').getByRole('link',{name:'合同与规则',exact:true}).click();assert.equal(new URL(p.url()).pathname,before);await p.getByText(before.startsWith('/operations/notifications')?'请先恢复原请求并核对结果，再离开当前页面。':'原请求结果尚未核实，请先核对并恢复原操作后再离开。',{exact:true}).waitFor()}
 const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v
 function reportValid(r){
  assert.equal(r.current_status,'SUCCEEDED');assert(r.result);assert.equal(sha(JSON.stringify(canonical(r.result))),r.content_sha256)
@@ -203,8 +203,8 @@ async function privateProof(a){
 
 async function run(){
  const payer=await login('payer'),recipient=await login('recipient'),reviewer=await login('independentReviewer')
- await check('正常短信OWNER与个人通知按account+party读取，单条原业务重读与旧通知入口',async()=>{
-  const p=payer.page;await go(p,'/workspace');let received=wait(p,'GET','/operations/notifications');await p.getByTestId('workspace-operations-notifications').click();const d=await data(await received);assert.deepEqual(Object.keys(d).sort(),['items','next_cursor']);await ready(p);assert.equal(await p.getByRole('button',{name:'全部已读',exact:true}).count(),0);await shot(p,'notifications-desktop','WEB-32-01')
+ await check('正常短信OWNER与个人通知按account+party读取，新feed与精确全部已读入口保留单条原业务重读',async()=>{
+  const p=payer.page;await go(p,'/workspace');let received=wait(p,'GET','/operations/notifications/feed');await p.getByTestId('workspace-operations-notifications').click();const d=await data(await received);assert.deepEqual(Object.keys(d).sort(),['items','next_cursor']);await ready(p);assert.equal(await p.getByRole('button',{name:'全部已读',exact:true}).count(),1);await shot(p,'notifications-desktop','WEB-32-01')
   const all=await allNotifications(payer),other=await allNotifications(recipient),n=all.find(x=>x.record_id===scenario.tradeOrderId&&!x.read&&other.some(o=>o.id===x.id&&!o.read));assert(n,'Independent Web shared order event is initially unread to both parties');facts.event=n;await save()
   await go(p,'/operations/notifications/'+n.id);await shot(p,'notification-detail-desktop','WEB-32-01');received=wait(p,'GET','/trade/records/'+n.record_id);await p.getByTestId('ops-open-event-'+n.id).click();assert.equal((await data(await received)).id,n.record_id);await p.waitForURL(u=>u.pathname==='/trade/orders/'+n.record_id);await p.getByTestId('trade-operations-comments').waitFor()
  })
@@ -281,11 +281,11 @@ async function run(){
   for(const kind of ['evidence','storage']){await control('/'+kind+'?enabled=false');const response=wait(p,'GET',path);await p.getByTestId('finance-proof-'+asset).click();assert.equal((await response).status(),503);await control('/'+kind+'?enabled=true')}
   const response=wait(p,'GET',path),download=handled(p.waitForEvent('download'));await p.getByTestId('finance-proof-'+asset).click();const raw=await response;assert.equal(raw.status(),200);assert.equal(raw.headers()['cache-control'],'no-store');assert.equal(raw.headers()['x-content-type-options'],'nosniff');const bytes=await readFile(await (await download).path()),known=Object.values(state.assets).find(a=>a.id===asset);assert.equal(bytes.length,known.byteSize);assert.equal(sha(bytes),known.contentSha256);verification.push({check:'actual private source proof rejects corruption/storage fault then exact restored download',record_id:g,asset_id:asset,byte_size:bytes.length,sha256:sha(bytes)});await shot(p,'source-proof-recovered-desktop')
  })
- await check('完整54项分类菜单每入口新版有效无404、高亮稳定及390宽通知留言报告',async()=>{
-  const a=actors.payer,p=a.page;await go(p,'/operations/notifications');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()})));assert.equal(links.length,54)
-  for(const link of links){await go(p,link.href);assert.equal(new URL(p.url()).pathname,link.href);assert.equal(await p.locator('.workspace-nav a').count(),54);assert.deepEqual(await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()}))),links);assert.equal(await p.locator('.workspace-nav a[aria-current=page]').filter({hasText:link.text}).count(),1);assert.equal(await p.getByText('页面未找到',{exact:true}).count(),0);assert.equal(await p.locator('.legacy-shell').count(),0)}
+ await check('完整63项分类菜单每入口新版有效无404、高亮稳定及390宽通知留言报告',async()=>{
+  const a=actors.payer,p=a.page;await go(p,'/operations/notifications');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()})));assert.equal(links.length,63)
+  for(const link of links){await go(p,link.href);assert.equal(new URL(p.url()).pathname,link.href);assert.equal(await p.locator('.workspace-nav a').count(),63);assert.deepEqual(await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()}))),links);assert.equal(await p.locator('.workspace-nav a[aria-current=page]').filter({hasText:link.text}).count(),1);assert.equal(await p.getByText('页面未找到',{exact:true}).count(),0);assert.equal(await p.locator('.legacy-shell').count(),0)}
   await p.setViewportSize({width:390,height:844});for(const [route,name,gallery] of [['/operations/notifications','notifications-390','WEB-32-01'],[commentRoute('PROJECTS',scenario.projectId),'comments-390','WEB-32-02-v2'],[reportRoute(facts.ownerSettlement.id,false),'report-390','WEB-33-02']]){await go(p,route);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot(p,name+'-narrow',gallery)}await p.setViewportSize({width:1440,height:1000})
-  verification.push({check:'all54 current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport',menu_count:links.length,menu:links})
+  verification.push({check:'all63 current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport',menu_count:links.length,menu:links})
  })
 }
 

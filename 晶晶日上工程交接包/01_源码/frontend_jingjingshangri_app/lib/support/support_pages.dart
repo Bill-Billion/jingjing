@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../account/account_theme.dart';
 import '../engagement/community_support.dart' show communityId;
 import '../trade/trade_widgets.dart';
+import 'collections.dart';
 
 String invoiceBusinessRoute(String? orderId) => communityId(orderId)
     ? Uri(path: '/trade/record', queryParameters: {'recordId': orderId!})
@@ -38,61 +39,10 @@ class InvoicePage extends StatelessWidget {
       ]);
 }
 
-class SavedHistoryPage extends StatefulWidget {
+class SavedHistoryPage extends StatelessWidget {
   const SavedHistoryPage({super.key});
   @override
-  State<SavedHistoryPage> createState() => _SavedHistoryPageState();
-}
-
-class _SavedHistoryPageState extends State<SavedHistoryPage> {
-  bool history = false;
-  @override
-  Widget build(BuildContext context) => tradeScaffold(context, '收藏与足迹', [
-        tradeHeading('留住喜欢的', eyebrow: '留给下次相遇'),
-        Row(children: [
-          for (final option in [(false, '我的收藏'), (true, '浏览足迹')])
-            Expanded(
-                child: Semantics(
-                    selected: history == option.$1,
-                    child: TextButton(
-                        onPressed: () => setState(() => history = option.$1),
-                        style: TextButton.styleFrom(
-                            foregroundColor: history == option.$1
-                                ? AccountTheme.text
-                                : AccountTheme.muted,
-                            shape: const RoundedRectangleBorder()),
-                        child:
-                            Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text(option.$2),
-                          const SizedBox(height: 8),
-                          Container(
-                              width: 28,
-                              height: 2,
-                              color: history == option.$1
-                                  ? AccountTheme.vermilion
-                                  : Colors.transparent),
-                        ]))))
-        ]),
-        const SizedBox(height: 24),
-        tradeBanner(history ? '浏览足迹服务尚未开放' : '收藏服务尚未开放',
-            '当前无法读取或管理这些记录；这里不会将示例艺人、视频或通告当作你的记录。'),
-        tradeSection('内容类型', [
-          for (final label in ['全部', '艺人', '视频', '通告']) ...[
-            OutlinedButton(onPressed: null, child: Text(label)),
-            const SizedBox(height: 8),
-          ],
-        ]),
-        tradeSection('足迹只为你保留', [
-          const Text('收藏、足迹查询和清理功能需等待正式服务开放。再次查看作品时，其价格、公开状态和可用权益以当前目录为准。',
-              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-        ]),
-        const OutlinedButton(onPressed: null, child: Text('清理浏览记录 · 暂未开放')),
-        const SizedBox(height: 12),
-        const FilledButton(onPressed: null, child: Text('管理收藏 · 暂未开放')),
-        const SizedBox(height: 12),
-        tradeButton('浏览当前公开内容', () => Navigator.pushNamed(context, '/square'),
-            outline: true),
-      ]);
+  Widget build(BuildContext context) => const PersonalCollectionsPage();
 }
 
 const helpTopics = <({
@@ -209,12 +159,11 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
                 ])),
       const SizedBox(height: 24),
       tradeSection('反馈提交', [
-        for (final category in ['功能问题', '订单问题', '内容举报', '其他建议']) ...[
-          OutlinedButton(onPressed: null, child: Text('$category · 暂未开放')),
-          const SizedBox(height: 8),
-        ],
-        const Text('反馈提交与记录查询服务尚未开放，当前不收集问题描述、截图、联系方式或其他材料。',
-            style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+        const Text('以当前办事身份提交问题，查看客服答复和补件进度。'),
+        tradeButton(
+            '提交反馈或举报', () => Navigator.pushNamed(context, '/support/new')),
+        tradeButton('查看我的反馈记录', () => Navigator.pushNamed(context, '/support'),
+            outline: true),
       ]),
       tradeSection('需要业务协助时', [
         const Text('请先查看对应订单、投稿或制作记录中的处理进度和已开放的服务入口。不同业务的沟通、售后和材料核对保留在原业务中。',
@@ -226,9 +175,6 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             () => Navigator.pushNamed(context, '/privacy?view=complaint'),
             outline: true),
       ]),
-      const OutlinedButton(onPressed: null, child: Text('查看反馈记录 · 暂未开放')),
-      const SizedBox(height: 12),
-      const FilledButton(onPressed: null, child: Text('提交反馈 · 暂未开放')),
     ]);
   }
 }

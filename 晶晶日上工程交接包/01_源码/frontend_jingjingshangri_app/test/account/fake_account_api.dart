@@ -63,6 +63,76 @@ class FakeAccountAdapter implements HttpClientAdapter {
   }
 
   ResponseBody defaultReply(RequestOptions options) {
+    if (options.path == '/api/v1/discovery/cities') {
+      return envelope({
+        'revision': 'quick-cities-v1',
+        'scope': 'QUICK_CHOICES',
+        'allows_custom_city': true,
+        'items': [
+          for (final city in [
+            ('beijing', '北京'),
+            ('shanghai', '上海'),
+            ('hangzhou', '杭州'),
+            ('guangzhou', '广州'),
+            ('shenzhen', '深圳'),
+            ('zhengzhou', '郑州')
+          ])
+            {
+              'code': city.$1,
+              'name': city.$2,
+              'aliases': ['${city.$2}市']
+            }
+        ]
+      });
+    }
+    if (options.path == '/api/v1/discovery/search') {
+      return envelope({
+        'kind': options.queryParameters['kind'],
+        'city': options.queryParameters['city'],
+        'q': options.queryParameters['q'],
+        'items': [],
+        'next_cursor': null
+      });
+    }
+    if (options.path == '/api/v1/directory/featured-artists') {
+      return envelope({'items': [], 'next_cursor': null});
+    }
+    if (options.path == '/api/v1/me/collections/preferences') {
+      return envelope({
+        'history_enabled': false,
+        'object_version': 1,
+        'history_days': 30,
+        'history_max_entries': 200
+      });
+    }
+    if (options.path.startsWith('/api/v1/me/collections/targets/')) {
+      return envelope({'saved': false, 'visited': false});
+    }
+    if ([
+          '/api/v1/me/collections/favorites',
+          '/api/v1/me/collections/history',
+          '/api/v1/support/tickets',
+          '/api/v1/operations/notifications/feed'
+        ].contains(options.path) &&
+        options.method == 'GET') {
+      return envelope({'items': [], 'next_cursor': null});
+    }
+    if (options.path == '/api/v1/operations/notifications/unread') {
+      return envelope({
+        'total': 0,
+        'channels': {
+          'ORDER_CONVERSATIONS': 0,
+          'SUBMISSION_INTENTS': 0,
+          'ACTIVITY_VOTING': 0,
+          'SYSTEM': 0
+        },
+        'snapshot_id': invitationId,
+        'as_of': '2026-10-30T00:00:00Z',
+        'expires_at': '2026-10-30T01:00:00Z',
+        'coverage': 'CURRENT_AUTHORIZED_NOTIFICATIONS'
+      });
+    }
+
     if (options.path.endsWith('sms-challenges')) {
       return envelope({
         'challenge_id': invitationId,

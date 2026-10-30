@@ -9,6 +9,15 @@ const route = useRoute()
 const query = ref('')
 const links = [
   { to: '/workspace', label: '账号与机构', icon: User },
+  { to: '/discovery', label: '查找公开内容', icon: View },
+  { to: '/directory/organizations', label: '公开机构', icon: OfficeBuilding },
+  { to: '/directory/featured', label: '精选艺人', icon: User },
+  { to: '/directory/manage', label: '本机构公开资料', icon: Document },
+  { to: '/me/collections/favorites', label: '我的收藏', icon: Collection },
+  { to: '/me/collections/history', label: '浏览记录', icon: Reading },
+  { to: '/support/tickets', label: '我的反馈与举报', icon: Document },
+  { to: '/support/operations', label: '客服处理', icon: CircleCheck },
+  { to: '/directory/reviews/ORGANIZATION', label: '机构资料与精选审核', icon: CircleCheck },
   { to: '/contracts', label: '合同与规则', icon: Document },
   { to: '/supply/profiles', label: '供给申请', icon: FolderOpened },
   { to: '/supply/works', label: '我的作品', icon: Collection },
@@ -55,6 +64,9 @@ const reviews = [
   { to: '/projects/reviews/plans', label: '项目独立核验' },
 ]
 function active(target: string) {
+  if (target === '/support/tickets') return route.path.startsWith('/support/')&&!route.path.startsWith('/support/operations')
+  if (target === '/directory/featured') return route.path==='/directory/featured'
+  if (target === '/directory/reviews/ORGANIZATION') return route.path.startsWith('/directory/reviews/')||route.path==='/directory/featured/new'
   if (target === '/artists/people') return route.path.startsWith('/artists/') && !route.path.startsWith('/artists/reviews/')
   if (target === '/artists/reviews/CONSENT') return route.path.startsWith('/artists/reviews/')
   if (target === '/operations/notifications') return /^\/operations\/(?:notifications|(?:operator\/)?objects)(\/|$)/.test(route.path)
@@ -95,13 +107,13 @@ const entries:Entry[] = [
   ...Object.values(domains).map(d => ({to:`/${d.key}/${d.sections[0]!.key}`,label:d.title,icon:Collection,domain:d.key})),
 ]
 const categories = [
-  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','wallet','redemption','engagement','privacy']},
-  {id:'people',icon:User,label:'人物与作品',roots:['artists','supply','media','participation']},
+  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','wallet','redemption','engagement','privacy','me/collections','support/tickets','support/new']},
+  {id:'people',icon:User,label:'人物与作品',roots:['artists','supply','media','participation','discovery','directory/organizations','directory/featured','directory/manage']},
   {id:'trade',icon:Film,label:'影片与许可交易',roots:['stock','licensing','trade']},
   {id:'gigs',icon:Briefcase,label:'商单与通告',roots:['gigs','notices']},
   {id:'creation',icon:EditPen,label:'故事与共创',roots:['operations/customization','cocreation','auditions','conversations']},
   {id:'production',icon:VideoCamera,label:'制作与发行',roots:['production','projects']},
-  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['finance','operations']},
+  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['finance','operations','support/operations','directory/reviews']},
 ]
 const categoryFor = (entry:Entry) => categories.find(group => group.roots.some(root => entry.to === `/${root}` || entry.to.startsWith(`/${root}/`)))!
 const groups = categories.map(group => ({...group,entries:entries.filter(entry => categoryFor(entry).id === group.id)}))
