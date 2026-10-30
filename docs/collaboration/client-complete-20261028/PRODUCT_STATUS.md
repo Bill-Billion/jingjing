@@ -8,7 +8,7 @@
 
 后端负责人 **chengcongcong222** 本批补第13组换手机号，旧新号码分别验证，保留原账号业务并注销全部旧登录。接口0.31.12-rc.1、迁移0192。已补机构／精选、工单、发票和换号模拟资料，8组接口检查149项、同记录连续办理12个检查点／54次请求通过；完整后端1058通过、无失败、1项缺旧库样本跳过，最终小修复另行专项及整链补测。详见[换号记录](../../tasks/records/CORE-phone-change-20261030.md)和[模拟资料与检查](../../testing/COMPLETE_FLOWS_20261030.md)。
 
-本轮复核远端未发现新前端，仍为9b9e2b54／组合3d1461bf，上一批d18c4622的7项检查全部成功。本批待集中上传原PR39，上传后回执另补；integration仍468df28a，未部署甲方网站。不能把旧提交全绿作为本批远端结果。
+本轮复核远端未发现新前端，仍为9b9e2b54／组合3d1461bf，上一批d18c4622的7项检查全部成功。本批已集中上传原PR39／28bb7321，新远端检查进行中；integration仍468df28a，未部署甲方网站。不能把旧提交全绿作为本批远端结果。
 
 [换号接法](FRONTEND_PHONE_CHANGE_HANDOFF.md) · [开票接法](FRONTEND_INVOICES_HANDOFF.md) · [个人中心接法](FRONTEND_PERSONAL_CENTER_HANDOFF.md) · [后续安排](NEXT_DELIVERY_PLAN_20261030.md)
 
