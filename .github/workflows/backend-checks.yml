@@ -138,6 +138,7 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-actions-http-fixtures.json --report .local/ci-evidence/privacy-actions-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-privacy-http.json --report .local/ci-evidence/privacy-execution-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-media-http.json --report .local/ci-evidence/media-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/discovery-http-fixtures.json --report .local/ci-evidence/discovery-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop

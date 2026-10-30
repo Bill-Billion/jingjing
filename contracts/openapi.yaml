@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.6-rc.1
+  version: 0.31.7-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -25,6 +25,7 @@ tags:
 - name: artists
 - name: privacy
 - name: directory
+- name: discovery
 x-baseline-id: JX-R06-EXECUTION-BASELINE-20260921
 x-review-status: PENDING_EXPERIENCE_REVIEW
 paths:
@@ -25828,6 +25829,111 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/discovery/cities:
+    get:
+      operationId: listDiscoveryCities
+      summary: 读取统一快捷城市
+      description: 仅登录账号，不带机构身份。城市为现有六城快捷目录，支持code/简称/全称，自定义城市精确匹配，不是全国行政区划。搜索关键词为公开文字字面子串，兼容大小写和全半角；省略q为浏览。各类别按记录id升序。游标绑定账号、类别、城市和关键词，换条件须清游标。每请求最多扫描10个底层页，空items且next_cursor非空时仍可继续；不返回总数或虚构匹配率，不保证跨请求快照。权限、到期和上下架实时复核，详情与购买继续使用原业务接口。
+      tags:
+      - discovery
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 当前账号可见的公开结果。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryCitiesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/discovery/search:
+    get:
+      operationId: searchPublicCatalogues
+      summary: 按类别搜索公开艺人、现货、试镜和通告
+      description: 仅登录账号，不带机构身份。城市为现有六城快捷目录，支持code/简称/全称，自定义城市精确匹配，不是全国行政区划。搜索关键词为公开文字字面子串，兼容大小写和全半角；省略q为浏览。各类别按记录id升序。游标绑定账号、类别、城市和关键词，换条件须清游标。每请求最多扫描10个底层页，空items且next_cursor非空时仍可继续；不返回总数或虚构匹配率，不保证跨请求快照。权限、到期和上下架实时复核，详情与购买继续使用原业务接口。
+      tags:
+      - discovery
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ARTIST
+          - STOCK
+          - AUDITION
+          - NOTICE
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 512
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 当前账号可见的公开结果。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoverySearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -26058,6 +26164,156 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    DiscoveryCities:
+      type: object
+      additionalProperties: false
+      properties:
+        revision:
+          const: quick-cities-v1
+        scope:
+          const: QUICK_CHOICES
+        allows_custom_city:
+          const: true
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              code: &discovery001
+                type: string
+              name: *discovery001
+              aliases:
+                type: array
+                items: *discovery001
+            required:
+            - code
+            - name
+            - aliases
+      required:
+      - revision
+      - scope
+      - allows_custom_city
+      - items
+    DiscoverySearch:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: ARTIST
+          city: &discovery002
+            type:
+            - string
+            - 'null'
+          q: *discovery002
+          items:
+            type: array
+            maxItems: 100
+            items:
+              $ref: '#/components/schemas/ArtistCatalogueItem'
+          next_cursor:
+            type:
+            - string
+            - 'null'
+            maxLength: 512
+        required:
+        - kind
+        - city
+        - q
+        - items
+        - next_cursor
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: STOCK
+          city: *discovery002
+          q: *discovery002
+          items:
+            type: array
+            maxItems: 100
+            items:
+              $ref: '#/components/schemas/StockOffer'
+          next_cursor:
+            type:
+            - string
+            - 'null'
+            maxLength: 512
+        required:
+        - kind
+        - city
+        - q
+        - items
+        - next_cursor
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: AUDITION
+          city: *discovery002
+          q: *discovery002
+          items:
+            type: array
+            maxItems: 100
+            items:
+              $ref: '#/components/schemas/AuditionPublicOffer'
+          next_cursor:
+            type:
+            - string
+            - 'null'
+            maxLength: 512
+        required:
+        - kind
+        - city
+        - q
+        - items
+        - next_cursor
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: NOTICE
+          city: *discovery002
+          q: *discovery002
+          items:
+            type: array
+            maxItems: 100
+            items:
+              $ref: '#/components/schemas/NoticePublic'
+          next_cursor:
+            type:
+            - string
+            - 'null'
+            maxLength: 512
+        required:
+        - kind
+        - city
+        - q
+        - items
+        - next_cursor
+    DiscoveryCitiesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/DiscoveryCities'
+      required:
+      - meta
+      - data
+    DiscoverySearchResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/DiscoverySearch'
+      required:
+      - meta
+      - data
     StockCoverMetadata:
       type: object
       additionalProperties: false
