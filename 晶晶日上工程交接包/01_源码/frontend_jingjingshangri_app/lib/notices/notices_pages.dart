@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../support/collections.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
@@ -435,6 +436,11 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                 outline: true),
           ],
           if (n != null) ...[
+            CollectionDetailActions(
+                key: ValueKey('notice-save:${n.id}'),
+                session: widget.session,
+                kind: 'NOTICE',
+                targetId: n.id),
             Text('${noticeTypes[n.notice['type']]} / ${n.notice['city']}',
                 style:
                     const TextStyle(fontSize: 12, color: AccountTheme.accent)),

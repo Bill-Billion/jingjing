@@ -188,10 +188,9 @@ void main() {
     await tester.tap(find.byKey(const Key('app-tab-3')));
     await frames(tester);
     expect(adapter.requests.length, before);
-    await tester.tap(find.text('系统通知'));
-    await frames(tester);
+    expect(find.text('核对账号与身份'), findsOneWidget);
     expect(adapter.requests.length, before);
-    expect(find.text('系统与业务通知'), findsOneWidget);
+    expect(find.textContaining('请先登录并核对当前有效'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -357,9 +356,11 @@ void main() {
           '/api/v1/auth/sessions',
           '/api/v1/privacy/preferences',
           '/api/v1/artists/catalog',
+          '/api/v1/directory/featured-artists',
           '/api/v1/stock/catalog',
           '/api/v1/notices/catalog',
           '/api/v1/artists/catalog',
+          '/api/v1/directory/featured-artists',
           '/api/v1/stock/catalog',
           '/api/v1/notices/catalog',
           '/api/v1/auditions/catalog',

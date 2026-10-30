@@ -322,6 +322,13 @@ class AccountSession extends ChangeNotifier {
     if (started != _epoch) throw const AccountError(0, 'CONTEXT_CHANGED');
   }
 
+  bool _publicDirectoryMissing(String path, AccountError error) =>
+      error.status == 404 &&
+      ['DIRECTORY_NOT_FOUND', 'DIRECTORY_COVER_NOT_FOUND']
+          .contains(error.code) &&
+      RegExp(r'^/api/v1/directory/organizations/[0-9a-fA-F-]{36}(/cover)?$')
+          .hasMatch(path);
+
   Future<Map<String, dynamic>> _request(
     String method,
     String path, {
@@ -372,7 +379,8 @@ class AccountSession extends ChangeNotifier {
           error.code == 'WALLET_NOT_FOUND';
       if ([403, 404].contains(error.status) &&
           started == _epoch &&
-          !unopenedWallet) {
+          !unopenedWallet &&
+          !_publicDirectoryMissing(path, error)) {
         for (final prefix in additionalBusinessPrefixes) {
           if (path.startsWith(prefix)) {
             denyDomain(prefix);
@@ -445,6 +453,9 @@ class AccountSession extends ChangeNotifier {
           {String? actingParty}) =>
       api.pending(method, path, token: _token, party: actingParty);
 
+  void discardPending(String method, String path, {String? actingParty}) =>
+      api.discardPending(method, path, token: _token, party: actingParty);
+
   Future<Map<String, dynamic>> read(String path,
           {String? actingParty, Map<String, dynamic>? query}) =>
       _request('GET', path, actingParty: actingParty, query: query);
@@ -487,7 +498,9 @@ class AccountSession extends ChangeNotifier {
     } on AccountError catch (e) {
       if (started == _epoch) {
         final domain = additionalBusinessPrefixes.where(path.startsWith);
-        if ([403, 404].contains(e.status) && domain.isNotEmpty) {
+        if ([403, 404].contains(e.status) &&
+            domain.isNotEmpty &&
+            !_publicDirectoryMissing(path, e)) {
           denyDomain(domain.first);
         } else if (path.startsWith('/api/v1/artists/') &&
             [403, 404].contains(e.status)) {

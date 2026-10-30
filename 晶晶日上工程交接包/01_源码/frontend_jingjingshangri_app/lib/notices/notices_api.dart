@@ -40,7 +40,11 @@ class NoticesApi extends V5Api {
   }
 
   Future<V5Page<NoticePublic>> catalog(
-          {String? cursor, String? type, String? city, String? at}) =>
+          {String? cursor,
+          String? type,
+          String? city,
+          String? at,
+          String? publisherPartyId}) =>
       get('/catalog',
           (d) => V5Page.parse(d, NoticePublic.new, previous: cursor),
           account: true,
@@ -48,6 +52,8 @@ class NoticesApi extends V5Api {
             'limit': 20,
             if (cursor != null) 'cursor': cursor,
             if (type != null) 'type': type,
+            if (publisherPartyId != null)
+              'publisher_party_id': key(publisherPartyId),
             if (city?.isNotEmpty == true) 'city': city,
             if (at?.isNotEmpty == true) 'at': v5InputDate(at)
           });

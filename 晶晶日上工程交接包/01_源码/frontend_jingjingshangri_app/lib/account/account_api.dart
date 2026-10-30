@@ -15,6 +15,10 @@ const additionalBusinessPrefixes = [
   '/api/v1/redemption/',
   '/api/v1/privacy/',
   '/api/v1/media/',
+  '/api/v1/directory/',
+  '/api/v1/discovery/',
+  '/api/v1/me/collections/',
+  '/api/v1/support/',
 ];
 
 bool _privateRequestPath(String path) => [
@@ -89,6 +93,13 @@ class AccountApi {
                   .startsWith('/api/v1/gigs/'))
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
+  void discardPending(String method, String path,
+      {String? token, String? party}) {
+    final scope = _scope(method, path, token, party);
+    final pending = _pending.remove(scope);
+    if (pending != null) _keys.remove(pending['fingerprint']);
+  }
+
   final _running = <String, Future<Map<String, dynamic>>>{};
   List<Map<String, dynamic>> productionPending(
           {String? token, String? party}) =>
@@ -353,11 +364,16 @@ class AccountApi {
       final stockCoverPath = RegExp(
         r'^/api/v1/stock/catalog/[a-fA-F0-9-]{36}/cover$',
       ).hasMatch(path);
+      final directoryCoverPath =
+          RegExp(r'^/api/v1/directory/organizations/[a-fA-F0-9-]{36}/cover$')
+              .hasMatch(path);
       if (response.statusCode == 200 &&
           response.data != null &&
           (mediaType == 'application/octet-stream' ||
               stockVideoPath && mediaType == 'video/mp4' ||
-              stockCoverPath && mediaType == 'image/jpeg')) {
+              stockCoverPath && mediaType == 'image/jpeg' ||
+              directoryCoverPath &&
+                  ['image/jpeg', 'image/png'].contains(mediaType))) {
         return Uint8List.fromList(response.data!);
       }
       String code = 'INVALID_BINARY_RESPONSE';

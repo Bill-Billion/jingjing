@@ -37,13 +37,15 @@ void main() {
     nav.expectFiveTabs();
     await t.tap(find.byTooltip('通知'));
     await nav.frames(t);
-    expect(find.text('业务通知'), findsOneWidget);
+    expect(find.text('消息'), findsWidgets);
     expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('全部已读'), findsNothing);
     expect(find.text('有新的对象留言'), findsOneWidget);
-    await press(t, '标记已读', outline: true);
+    await t.tap(find.byType(SwitchListTile));
+    await nav.frames(t);
+    await press(t, '标记这条已读', outline: true);
     expect(find.text('有新的对象留言'), findsNothing);
-    await t.tap(find.text('全部'));
+    await t.tap(find.byType(SwitchListTile));
     await nav.frames(t);
     expect(find.text('已读'), findsOneWidget);
     await t.tap(find.byType(BackButton));
@@ -55,16 +57,15 @@ void main() {
     var count = 0;
     final a = operationsAdapter(
             override: (r) =>
-                r.path == '/api/v1/operations/notifications' && ++count == 1
+                r.path == '/api/v1/operations/notifications/feed' &&
+                        ++count == 1
                     ? envelope({'items': [], 'next_cursor': 8})
                     : null),
         s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s, route: '/operations/notifications');
-    expect(find.text('本页经过权限或已读筛选后为空，可继续读取更早记录。'), findsOneWidget);
-    await press(t, '加载更多', outline: true);
-    await press(t, '查看通知详情', outline: true);
-    expect(find.text('通知详情'), findsOneWidget);
-    expect(find.text('风从海边来'), findsOneWidget);
+    expect(find.text('本页暂没有可显示的通知，可继续读取。'), findsOneWidget);
+    await press(t, '继续读取通知', outline: true);
+    expect(find.text('有新的对象留言'), findsOneWidget);
     final before = a.requests
         .where((r) => r.path == '/api/v1/projects/records/$projectKey')
         .length;

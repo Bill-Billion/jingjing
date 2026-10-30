@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import '../support/collections.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
@@ -493,6 +494,11 @@ class _StockScreenState extends State<_StockScreen> {
             tradeButton('我上架的作品', () => go('/stock/listings'), outline: true),
           ],
           if (o != null) ...[
+            CollectionDetailActions(
+                key: ValueKey('stock-save:${o.id}'),
+                session: widget.session,
+                kind: 'STOCK',
+                targetId: o.id),
             tradeSection('价格与本版许可', [
               tradeFact('价格', v5Money(o.price)),
               ...stockLicenseFacts(o.license)

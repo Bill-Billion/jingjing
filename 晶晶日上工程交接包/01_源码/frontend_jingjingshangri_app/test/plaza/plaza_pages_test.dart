@@ -99,31 +99,22 @@ Future<void> selectChannel(WidgetTester t, int index) async {
 }
 
 void main() {
-  testWidgets('搜索按四类真实目录衔接，保留城市并可继续筛选', (t) async {
-    final opened = <String>[];
-    await t.pumpWidget(MaterialApp(
-        theme: AccountTheme.plazaData,
-        home: const PlazaSearchPage(initialCity: '郑州'),
-        onGenerateRoute: (settings) {
-          opened.add(settings.name!);
-          return MaterialPageRoute<void>(
-              builder: (_) => const Scaffold(body: Text('真实目录入口')));
-        }));
-    expect(find.text('入口'), findsNWidgets(4));
-    expect(find.text('公开'), findsNothing);
-    for (final entry in [
-      ('找艺人', '/artists/catalog?city=%E9%83%91%E5%B7%9E'),
-      ('找作品', '/stock/catalog?city=%E9%83%91%E5%B7%9E'),
-      ('找通告', '/notices/catalog?city=%E9%83%91%E5%B7%9E'),
-      ('找试镜', '/auditions/catalog?city=%E9%83%91%E5%B7%9E'),
-    ]) {
-      expect(t.getTopLeft(find.text(entry.$1)).dx, closeTo(82, .1));
-      await t.tap(find.text(entry.$1));
-      await frames(t);
-      expect(opened.last, entry.$2);
-      t.state<NavigatorState>(find.byType(Navigator)).pop();
-      await frames(t);
-    }
+  testWidgets('搜索入口读取统一城市，并保留传入城市进行服务端查询', (t) async {
+    final adapter = FakeAccountAdapter();
+    final active = (await t.runAsync(() => buyerSession(adapter)))!;
+    await t.pumpWidget(ChangeNotifierProvider.value(
+        value: active,
+        child: MaterialApp(
+            theme: AccountTheme.plazaData,
+            home: const PlazaSearchPage(initialCity: '郑州'))));
+    await frames(t);
+    expect(adapter.requests.where((r) => r.path == '/api/v1/discovery/cities'),
+        hasLength(1));
+    final r =
+        adapter.requests.lastWhere((r) => r.path == '/api/v1/discovery/search');
+    expect(r.queryParameters['city'], '郑州');
+    expect(r.queryParameters['kind'], 'ARTIST');
+    expect(find.text('匹配 96%'), findsNothing);
     expect(t.takeException(), isNull);
     await t.pumpWidget(const SizedBox.shrink());
   });
@@ -156,8 +147,8 @@ void main() {
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     final opened = <String>[];
     await host(t, session, onOpen: (route) async => opened.add(route));
-    expect(find.text('明星推荐'), findsOneWidget);
-    expect(find.text('暂无本城明星推荐'), findsOneWidget);
+    expect(find.text('精选艺人'), findsOneWidget);
+    expect(find.text('当前暂无获准展示的精选'), findsOneWidget);
     expect(find.text('查看全部艺人 ↗'), findsNothing);
     expect(find.text('本地艺人'), findsOneWidget);
     expect(find.byType(ArtistPublicPortrait), findsNWidgets(8));

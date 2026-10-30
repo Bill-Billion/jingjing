@@ -98,18 +98,17 @@ void main() {
     });
   }
 
-  testWidgets('帮助的个人信息投诉进入限定原服务，一般反馈仍关闭', (t) async {
+  testWidgets('帮助的个人信息投诉进入限定原服务，一般反馈进入独立工单', (t) async {
     final session =
         (await t.runAsync(() => buyerSession(FakeAccountAdapter())))!;
     String? opened;
     await host(t, session, const HelpFeedbackPage(), (route) => opened = route);
-    await v5.reveal(t, find.text('提交反馈 · 暂未开放'));
+    await v5.reveal(t, find.text('提交反馈或举报'));
     expect(
         t
-            .widget<FilledButton>(
-                find.widgetWithText(FilledButton, '提交反馈 · 暂未开放'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交反馈或举报'))
             .onPressed,
-        isNull);
+        isNotNull);
     await v5.reveal(t, find.text('个人信息投诉与保护'));
     await t.tap(find.text('个人信息投诉与保护'));
     await v5.frames(t);
