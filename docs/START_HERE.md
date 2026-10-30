@@ -1,3 +1,5 @@
+当前0.31.9-rc.1候选新增正式反馈和四频道未读。先读[当前产品状态](collaboration/client-complete-20261028/PRODUCT_STATUS.md)、[新接入说明](collaboration/client-complete-20261028/FRONTEND_SUPPORT_MESSAGES_HANDOFF.md)与[本批记录](tasks/records/CORE-support-messages-20261030.md)；最新上传和最终检查见CURRENT。以下旧入口保留历史。
+
 2026-10-30当前先读[产品现状](collaboration/client-complete-20261028/PRODUCT_STATUS.md)和[剩余任务安排](collaboration/client-complete-20261028/NEXT_DELIVERY_PLAN_20261030.md)。本轮新增[收藏/浏览记录接法](collaboration/client-complete-20261028/FRONTEND_COLLECTIONS_HANDOFF.md)，原机构目录与搜索仍可接入；接口候选0.31.8-rc.1/迁移0173。上传与正式启用分别看CURRENT，以下保留历史。
 
 2026-10-29当前后端交接：[机构公开资料、精选艺人和完整机构通告](collaboration/client-complete-20261028/FRONTEND_DIRECTORY_HANDOFF.md)。[本机实现与测试事实](tasks/records/CORE-public-directory-20261029.md)；接口0.31.6-rc.1/迁移0170。新页面尚未接入，完整18组继续施工；上传结果以当前进度为准。

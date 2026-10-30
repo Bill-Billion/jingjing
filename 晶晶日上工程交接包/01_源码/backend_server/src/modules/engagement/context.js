@@ -22,7 +22,7 @@ async function owner(tx,a,party,adult=false){
  if(p.kind!=='PERSON'||p.personal_account_id!==a.id)throw error('ENGAGEMENT_PERSONAL_ACCOUNT_REQUIRED',403);
  if(adult)await A.verifiedAdultParty(tx,party);return p;
 }
-async function audit(tx,a,r,event){await tx.execute('INSERT INTO engagement_audit(id,record_id,actor_account_id,event_code,object_version,data_sha256,request_ref) VALUES (?,?,?,?,?,?,?)',[randomUUID(),r.id,a?.id||null,event,r.object_version,r.content_sha256,a?.request_id||randomUUID()]);}
+async function audit(tx,a,r,event){await tx.execute('INSERT INTO engagement_audit(id,record_id,actor_account_id,event_code,object_version,data_sha256,request_ref) VALUES (?,?,?,?,?,?,?)',[randomUUID(),r.id,a?.id||null,event,r.object_version,r.content_sha256,a?.request_id||randomUUID()]);if(r.owner_party_id)await require('../operations/events').publishEvent(tx,{domain:'ENGAGEMENT',record_id:r.id,event_id:r.id+':'+r.object_version,event_code:event,object_version:r.object_version,actor_account_id:a?.id||null});}
 async function insert(tx,a,kind,owner,parent,status,data,source=null){
  const r={id:randomUUID(),kind,owner_party_id:owner,parent_id:parent,created_by:a.id,current_status:status,object_version:1,content_sha256:digest(data),data};
  try{await tx.execute('INSERT INTO engagement_records(id,kind,owner_party_id,parent_id,source_key,created_by,current_status,data_json,data_sha256) VALUES (?,?,?,?,?,?,?,?,?)',[r.id,kind,owner,parent,source?digest([kind,source]):null,a.id,status,JSON.stringify(data),r.content_sha256]);}

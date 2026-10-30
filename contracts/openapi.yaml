@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.8-rc.1
+  version: 0.31.9-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -26376,6 +26376,738 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CollectionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/support/tickets:
+    get:
+      operationId: listSupportTickets
+      summary: 分页查看当前身份本人反馈和举报
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - SUBMITTED
+          - PROCESSING
+          - NEEDS_INFO
+          - ANSWERED
+          - CLOSED
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+    post:
+      operationId: createSupportTicket
+      summary: 提交正式反馈或举报
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前工单版本；修改须提交此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportCreateRequest'
+  /api/v1/support/tickets/{ticket_id}:
+    get:
+      operationId: getSupportTicket
+      summary: 查看反馈详情
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前工单版本；修改须提交此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/support/tickets/{ticket_id}/history:
+    get:
+      operationId: listSupportHistory
+      summary: 查看提交、补件与答复历史
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 4294967294
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/support/tickets/{ticket_id}/actions:
+    post:
+      operationId: actOnSupportTicket
+      summary: 处理反馈或提交补件
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前工单版本；修改须提交此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportActionRequest'
+  /api/v1/support/tickets/{ticket_id}/assets/{asset_id}/content:
+    get:
+      operationId: downloadSupportEvidence
+      summary: 受控下载本工单已提交材料
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/support/operations/tickets:
+    get:
+      operationId: listSupportTicketsForSupport
+      summary: 分页查看待处理反馈和举报
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - SUBMITTED
+          - PROCESSING
+          - NEEDS_INFO
+          - ANSWERED
+          - CLOSED
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/support/operations/tickets/{ticket_id}:
+    get:
+      operationId: getSupportTicketForSupport
+      summary: 查看反馈详情
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前工单版本；修改须提交此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/support/operations/tickets/{ticket_id}/history:
+    get:
+      operationId: listSupportHistoryForSupport
+      summary: 查看提交、补件与答复历史
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 4294967294
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/support/operations/tickets/{ticket_id}/actions:
+    post:
+      operationId: actOnSupportTicketForSupport
+      summary: 处理反馈或提交补件
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前工单版本；修改须提交此版本。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportActionRequest'
+  /api/v1/support/operations/tickets/{ticket_id}/assets/{asset_id}/content:
+    get:
+      operationId: downloadSupportEvidenceForSupport
+      summary: 受控下载本工单已提交材料
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - support
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: ticket_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/operations/notifications/unread:
+    get:
+      operationId: getNotificationUnread
+      summary: 查看当前身份四频道未读及本次快照
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUnreadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/operations/notifications/read-all:
+    post:
+      operationId: markNotificationSnapshotRead
+      summary: 将本次已见通知按频道或全部标为已读
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationReadAllResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationReadAllRequest'
+  /api/v1/operations/notifications/feed:
+    get:
+      operationId: listNotificationFeed
+      summary: 分页查看四频道通知与原业务定位
+      description: 反馈只供提交人当前身份及获准客服查看；举报不自动成立，退款仍回原订单。通知全部已读仅处理快照中的获准记录，新到通知保留。
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: unread_only
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: channel
+        required: false
+        schema:
+          type: string
+          enum:
+          - ORDER_CONVERSATIONS
+          - SUBMISSION_INTENTS
+          - ACTIVITY_VOTING
+          - SYSTEM
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationFeedResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -56016,6 +56748,469 @@ components:
           - $ref: '#/components/schemas/CollectionApplied'
           - $ref: '#/components/schemas/CollectionTargetState'
           - $ref: '#/components/schemas/CollectionPage'
+      required:
+      - meta
+      - data
+
+    SupportTarget:
+      type: object
+      additionalProperties: false
+      properties:
+        domain:
+          type: string
+          enum:
+          - NOTICES
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+          - PRIVACY
+          - CUSTOMIZATION
+          - STOCK
+          - AUDITIONS
+          - ENGAGEMENT
+          - COCREATION
+          - REDEMPTION
+          - ARTIST_PUBLIC
+          - STOCK_PUBLIC
+          - NOTICE_PUBLIC
+        record_id:
+          type: string
+          format: uuid
+      required:
+      - domain
+      - record_id
+    SupportTicket:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+          - FEEDBACK
+          - REPORT
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        party_id:
+          type: string
+          format: uuid
+        target:
+          oneOf:
+          - $ref: '#/components/schemas/SupportTarget'
+          - type: 'null'
+        current_status:
+          type: string
+          enum:
+          - SUBMITTED
+          - PROCESSING
+          - NEEDS_INFO
+          - ANSWERED
+          - CLOSED
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - kind
+      - title
+      - party_id
+      - target
+      - current_status
+      - object_version
+      - created_at
+      - updated_at
+    SupportEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        object_version:
+          type: integer
+          minimum: 1
+          maximum: 4294967294
+        actor_kind:
+          type: string
+          enum:
+          - APPLICANT
+          - SUPPORT
+        action:
+          type: string
+          enum:
+          - SUBMIT
+          - START
+          - REQUEST_INFO
+          - ANSWER
+          - CLOSE
+          - REOPEN
+          - SUPPLEMENT
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 10
+          uniqueItems: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - object_version
+      - actor_kind
+      - action
+      - text
+      - asset_ids
+      - created_at
+    SupportCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+          - FEEDBACK
+          - REPORT
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        target:
+          oneOf:
+          - $ref: '#/components/schemas/SupportTarget'
+          - type: 'null'
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 10
+          uniqueItems: true
+      required:
+      - kind
+      - title
+      - target
+      - text
+      - asset_ids
+    SupportActionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum:
+          - START
+          - REQUEST_INFO
+          - ANSWER
+          - CLOSE
+          - REOPEN
+          - SUPPLEMENT
+        text:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 10
+          uniqueItems: true
+      required:
+      - action
+      - text
+      - asset_ids
+    SupportTicketResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/SupportTicket'
+      required:
+      - meta
+      - data
+    SupportListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/SupportTicket'
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    SupportHistoryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/SupportEvent'
+            next_cursor:
+              type:
+              - integer
+              - 'null'
+              minimum: 1
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    NotificationUnreadResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            channels:
+              type: object
+              additionalProperties: false
+              properties:
+                ORDER_CONVERSATIONS:
+                  type: integer
+                  minimum: 0
+                SUBMISSION_INTENTS:
+                  type: integer
+                  minimum: 0
+                ACTIVITY_VOTING:
+                  type: integer
+                  minimum: 0
+                SYSTEM:
+                  type: integer
+                  minimum: 0
+              required:
+              - ORDER_CONVERSATIONS
+              - SUBMISSION_INTENTS
+              - ACTIVITY_VOTING
+              - SYSTEM
+            snapshot_id:
+              type: string
+              format: uuid
+            as_of:
+              type: string
+              format: date-time
+            expires_at:
+              type: string
+              format: date-time
+            coverage:
+              const: CURRENT_AUTHORIZED_NOTIFICATIONS
+          required:
+          - total
+          - channels
+          - snapshot_id
+          - as_of
+          - expires_at
+          - coverage
+      required:
+      - meta
+      - data
+    NotificationReadAllRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        snapshot_id:
+          type: string
+          format: uuid
+        channel:
+          type:
+          - string
+          - 'null'
+          enum:
+          - ORDER_CONVERSATIONS
+          - SUBMISSION_INTENTS
+          - ACTIVITY_VOTING
+          - SYSTEM
+          - null
+      required:
+      - snapshot_id
+      - channel
+    NotificationReadAllResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            snapshot_id:
+              type: string
+              format: uuid
+            as_of:
+              type: string
+              format: date-time
+            marked_count:
+              type: integer
+              minimum: 0
+            skipped_count:
+              type: integer
+              minimum: 0
+          required:
+          - snapshot_id
+          - as_of
+          - marked_count
+          - skipped_count
+      required:
+      - meta
+      - data
+    NotificationFeedItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        domain:
+          type: string
+          enum:
+          - NOTICES
+          - TRADE
+          - PRODUCTION
+          - PROJECTS
+          - FINANCE
+          - SUPPLY
+          - LICENSE
+          - GIGS
+          - PRIVACY
+          - SUPPORT
+          - ENGAGEMENT
+          - AUDITION_MESSAGE
+          - GIG_MESSAGE
+        record_id:
+          type: string
+          format: uuid
+        event_code:
+          type: string
+          minLength: 1
+          maxLength: 80
+        object_version:
+          type: integer
+          minimum: 1
+        read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        channel:
+          type: string
+          enum:
+          - ORDER_CONVERSATIONS
+          - SUBMISSION_INTENTS
+          - ACTIVITY_VOTING
+          - SYSTEM
+        target:
+          type: object
+          additionalProperties: false
+          properties:
+            domain:
+              type: string
+              enum:
+              - NOTICES
+              - TRADE
+              - PRODUCTION
+              - PROJECTS
+              - FINANCE
+              - SUPPLY
+              - LICENSE
+              - GIGS
+              - PRIVACY
+              - SUPPORT
+              - ENGAGEMENT
+              - AUDITION_MESSAGE
+              - GIG_MESSAGE
+              - AUDITIONS
+              - GIG_ORDER
+            record_id:
+              type: string
+              format: uuid
+          required:
+          - domain
+          - record_id
+      required:
+      - id
+      - domain
+      - record_id
+      - event_code
+      - object_version
+      - read
+      - created_at
+      - channel
+      - target
+    NotificationFeedResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/NotificationFeedItem'
+            next_cursor:
+              type:
+              - integer
+              - 'null'
+              minimum: 1
+          required:
+          - items
+          - next_cursor
       required:
       - meta
       - data

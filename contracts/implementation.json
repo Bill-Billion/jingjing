@@ -1,5 +1,5 @@
 {
-  "version": "0.31.8-rc.1",
+  "version": "0.31.9-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -491,7 +491,21 @@
     "recordPersonalVisit",
     "clearPersonalHistory",
     "removePersonalHistory",
-    "getPersonalCollectionTarget"
+    "getPersonalCollectionTarget",
+    "listSupportTickets",
+    "getSupportTicket",
+    "listSupportHistory",
+    "actOnSupportTicket",
+    "downloadSupportEvidence",
+    "listSupportTicketsForSupport",
+    "getSupportTicketForSupport",
+    "listSupportHistoryForSupport",
+    "actOnSupportTicketForSupport",
+    "downloadSupportEvidenceForSupport",
+    "createSupportTicket",
+    "getNotificationUnread",
+    "markNotificationSnapshotRead",
+    "listNotificationFeed"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -926,6 +940,34 @@
       "仅本人账号，机构代办不可访问",
       "过期后台需COLLECTION_WORKER_ENABLED=true，正式运行另验收",
       "不增加榜单互动分数，不缓存私有正文"
+    ]
+  },
+  "support_and_notifications": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listSupportTickets",
+      "getSupportTicket",
+      "listSupportHistory",
+      "actOnSupportTicket",
+      "downloadSupportEvidence",
+      "listSupportTicketsForSupport",
+      "getSupportTicketForSupport",
+      "listSupportHistoryForSupport",
+      "actOnSupportTicketForSupport",
+      "downloadSupportEvidenceForSupport",
+      "createSupportTicket",
+      "getNotificationUnread",
+      "markNotificationSnapshotRead",
+      "listNotificationFeed"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/support.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端待接、整链待验",
+      "客服须单独授予SUPPORT_HANDLE，不自动发权；原业务售后仍走原订单",
+      "通知新增域仅新feed返回，旧notifications列表保持原域；历史消息不伪造新增通知",
+      "通知已读与原会话已读分别表达；查看原会话并标已读会同步通知回执",
+      "真实赔偿、客服时限及隐私保留依据不自行设定"
     ]
   }
 }
