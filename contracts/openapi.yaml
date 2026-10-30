@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.9-rc.1
+  version: 0.31.10-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -27124,6 +27124,199 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/me/business/contracts:
+    get:
+      operationId: listPersonalContracts
+      summary: 按当前身份汇总合同与约定
+      description: 每个来源独立按真实创建时间倒序翻页。无source返回各来源首批；翻页、失败重试须带source。不同来源的游标不可混用。仅返回当前身份有权读取的摘要，无文件直链，不改变原约定。收入仅已入账台账，币种和环境分列，不等于银行到账。
+      tags:
+      - personal-center
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: source
+        required: false
+        schema:
+          type: string
+          enum:
+          - CONTRACT_SNAPSHOTS
+          - TRADE_ORDERS
+          - PARTICIPATION_CONTRACTS
+          - INCOME_AGREEMENTS
+          - LICENSE_RESERVATIONS
+          - LICENSE_GRANTS
+          - COMMERCIAL_OFFERS
+          - MCN_RELATIONS
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          maxLength: 700
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalCenterResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/me/business/works:
+    get:
+      operationId: listPersonalWorks
+      summary: 按当前身份汇总作品与交付
+      description: 每个来源独立按真实创建时间倒序翻页。无source返回各来源首批；翻页、失败重试须带source。不同来源的游标不可混用。仅返回当前身份有权读取的摘要，无文件直链，不改变原约定。收入仅已入账台账，币种和环境分列，不等于银行到账。
+      tags:
+      - personal-center
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: source
+        required: false
+        schema:
+          type: string
+          enum:
+          - SUPPLY_WORKS
+          - PRODUCTION_PROJECTS
+          - PROJECT_EDITIONS
+          - STOCK_LISTINGS
+          - STOCK_PURCHASES
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          maxLength: 700
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalCenterResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/me/business/income:
+    get:
+      operationId: listPersonalIncome
+      summary: 按当前身份汇总本人收入核算
+      description: 每个来源独立按真实创建时间倒序翻页。无source返回各来源首批；翻页、失败重试须带source。不同来源的游标不可混用。仅返回当前身份有权读取的摘要，无文件直链，不改变原约定。收入仅已入账台账，币种和环境分列，不等于银行到账。
+      tags:
+      - personal-center
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: source
+        required: false
+        schema:
+          type: string
+          enum:
+          - FINANCE
+          - COMMISSIONS
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          maxLength: 700
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalCenterResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -57211,6 +57404,251 @@ components:
           required:
           - items
           - next_cursor
+      required:
+      - meta
+      - data
+
+    PersonalIncome:
+      type: object
+      additionalProperties: false
+      properties:
+        accrued_minor:
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        adjustment_minor:
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        verified_paid_minor:
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        pending_minor:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        retained_minor:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        recovery_due_minor:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        currency:
+          type: string
+          enum:
+          - CNY
+        environment:
+          type: string
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        meaning:
+          type: string
+          enum:
+          - MERCHANT_RETAINED_NOT_TRANSFER
+          - PAYABLE_NOT_BANK_BALANCE
+        basis:
+          type: string
+          enum:
+          - POSTED_LEDGER_ONLY
+        bank_arrival_verified:
+          type: boolean
+          const: false
+      required:
+      - accrued_minor
+      - adjustment_minor
+      - verified_paid_minor
+      - pending_minor
+      - retained_minor
+      - recovery_due_minor
+      - currency
+      - environment
+      - meaning
+      - basis
+      - bank_arrival_verified
+    PersonalBusinessItem:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 128
+        source_domain:
+          type: string
+          enum:
+          - CONTRACT_SNAPSHOTS
+          - TRADE
+          - PROJECTS
+          - LICENSE
+          - SUPPLY
+          - PRODUCTION
+          - STOCK
+          - STOCK_PURCHASE
+          - FINANCE
+          - GIGS
+        record_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 240
+        current_status:
+          type: string
+          minLength: 1
+          maxLength: 64
+        object_version:
+          type: integer
+          minimum: 1
+        created_at:
+          type: string
+          format: date-time
+        target:
+          type: object
+          additionalProperties: false
+          properties:
+            domain:
+              type: string
+              enum:
+              - CONTRACT_SNAPSHOTS
+              - TRADE
+              - PROJECTS
+              - LICENSE
+              - SUPPLY
+              - PRODUCTION
+              - STOCK
+              - STOCK_PURCHASE
+              - FINANCE
+              - GIGS
+            record_id:
+              type: string
+              format: uuid
+          required:
+          - domain
+          - record_id
+        income:
+          oneOf:
+          - $ref: '#/components/schemas/PersonalIncome'
+          - type: 'null'
+        notice:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - key
+      - source_domain
+      - record_id
+      - title
+      - current_status
+      - object_version
+      - created_at
+      - target
+      - income
+      - notice
+    PersonalBusinessSection:
+      type: object
+      additionalProperties: false
+      properties:
+        source:
+          type: string
+          enum:
+          - CONTRACT_SNAPSHOTS
+          - TRADE_ORDERS
+          - PARTICIPATION_CONTRACTS
+          - INCOME_AGREEMENTS
+          - LICENSE_RESERVATIONS
+          - LICENSE_GRANTS
+          - COMMERCIAL_OFFERS
+          - MCN_RELATIONS
+          - SUPPLY_WORKS
+          - PRODUCTION_PROJECTS
+          - PROJECT_EDITIONS
+          - STOCK_LISTINGS
+          - STOCK_PURCHASES
+          - FINANCE
+          - COMMISSIONS
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        status:
+          type: string
+          enum:
+          - AVAILABLE
+          - UNAVAILABLE
+        items:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PersonalBusinessItem'
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          maxLength: 700
+        error_code:
+          type:
+          - string
+          - 'null'
+          enum:
+          - PERSONAL_CENTER_SOURCE_UNAVAILABLE
+          - null
+        retryable:
+          type: boolean
+      required:
+      - source
+      - label
+      - status
+      - items
+      - next_cursor
+      - error_code
+      - retryable
+    PersonalCenterResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            party_id:
+              type: string
+              format: uuid
+            category:
+              type: string
+              enum:
+              - contracts
+              - works
+              - income
+            pagination:
+              type: string
+              enum:
+              - PER_SOURCE_CREATED_AT_DESC
+            sections:
+              type: array
+              minItems: 1
+              maxItems: 8
+              items:
+                $ref: '#/components/schemas/PersonalBusinessSection'
+            partial:
+              type: boolean
+            notice:
+              type: string
+              minLength: 1
+              maxLength: 300
+          required:
+          - party_id
+          - category
+          - pagination
+          - sections
+          - partial
+          - notice
       required:
       - meta
       - data
