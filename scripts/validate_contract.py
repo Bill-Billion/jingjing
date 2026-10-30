@@ -133,6 +133,7 @@ def validate(runtime_fixtures=None):
         'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
         'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
     }
+    personal_collection_ops = {'recordPersonalVisit', 'getCollectionPreferences', 'listPersonalFavorites', 'listPersonalHistory', 'getPersonalCollectionTarget', 'setCollectionPreferences', 'clearPersonalHistory', 'removePersonalHistory', 'setPersonalFavorite'}
     # Newly reviewed operator-only endpoints use no acting-party header.
     for path, item in spec['paths'].items():
         for method, op in item.items():
@@ -175,7 +176,9 @@ def validate(runtime_fixtures=None):
                     check('X-Acting-Party' not in headers, 'Customization account-scoped action: '+path)
             if op['operationId'] in account_scoped_supply:
                 check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
-            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) and path not in {
+            if op['operationId'] in personal_collection_ops:
+                check(op.get('x-actor-scope') == 'ACCOUNT' and 'X-Acting-Party' not in headers, 'Personal collection scope: '+path)
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) | personal_collection_ops and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
                     '/api/v1/me/parties','/api/v1/identity-verifications/current',
                     '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:

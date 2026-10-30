@@ -3686,7 +3686,7 @@
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "CLAIMED",
+      "status": "IN_PROGRESS",
       "branch": "core/full-business-closure-20261028",
       "work_refs": [
         "WORK-14"
@@ -3702,9 +3702,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-personal-collections-20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -3715,9 +3716,9 @@
       "provisional_rule_refs": [
         "P08"
       ],
-      "implementation": "NOT_STARTED",
+      "implementation": "IMPLEMENTED",
       "implementation_scope": "本人收藏增删；主动开启后记录足迹，失效处理和清理",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "frontend_can_start": "按FRONTEND_COLLECTIONS_HANDOFF接本人收藏/浏览记录；候选0.31.8-rc.1/0173，实际上传另记。",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -3729,7 +3730,15 @@
         "ACC-DEL-24.01",
         "ACC-DEL-28.01",
         "TASK-08"
-      ]
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "收藏/足迹/清理/后台过期已实现并隔离验证，页面与整组验收未完成。",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-personal-collections-20261030.md",
+        "uploaded": false,
+        "merged": false,
+        "production_enabled": false
+      }
     },
     {
       "id": "UX-CLIENT-COMPLETE-08",
@@ -3737,7 +3746,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "BLOCKED",
+      "status": "CLAIMED",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -3758,11 +3767,10 @@
       "test_status": "NOT_RUN",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
-        "docs/tasks/records/UX-client-complete-20261028.md"
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-personal-collections-20261030.md"
       ],
-      "blockers": [
-        "账户收藏增删查、足迹主动开启/清理/保留/失效接口待Core。"
-      ],
+      "blockers": [],
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-23",
@@ -3773,7 +3781,7 @@
       ],
       "implementation": "NOT_STARTED",
       "implementation_scope": "收藏/取消、查看、单删/清空、足迹开关",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "frontend_can_start": "获取本批PR39版本后按FRONTEND_COLLECTIONS_HANDOFF接线；新接入开工尚未确认。",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -3786,14 +3794,15 @@
         "ACC-DEL-28.01",
         "TASK-08"
       ],
-      "updated_on": "2026-10-28",
-      "current_increment": "当前收藏足迹入口维持真实未开放状态，未新增本机假成功。",
+      "updated_on": "2026-10-30",
+      "current_increment": "原18组前端已认领；本批所缺后端已提供，新收藏/足迹页面尚未接入或验收。",
       "frontend_increment_verification": {
         "scope": "当前已接入接口和页面增量，不等于整组验收",
         "status": "NOT_RUN",
         "record": "docs/tasks/records/UX-client-complete-20261028.md"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。",
+      "new_handoff_acknowledged": false
     },
     {
       "id": "CORE-CLIENT-COMPLETE-09",
@@ -11382,7 +11391,7 @@
     "delivery_branch": "core/full-business-closure-20261028",
     "task_pairs": 18,
     "provisional_decisions": 23,
-    "status": "已集中上传ca0fff7c到PR39，包含前端4ae46263与目录后端；本机专项/综合/组合检查通过，新远端检查待返回；前端机构新页面待接，18组未整体验收，未合入或部署。",
+    "status": "前批886493b3远端7项全通过；本轮收藏后端已写好并自验，准备集中交付，新页面待接，18组未整体验收。",
     "user_authorization": "2026-10-28要求整理前后端任务并上传，需要甲方确定的内容由本侧合理暂定；尽快完整测试",
     "client_test_version_ready": false,
     "planning_uploaded": true,
@@ -11401,7 +11410,8 @@
     "backend_owner": "chengcongcong222",
     "combined_review": "docs/tasks/records/CORE-client-complete-merge-20261028.md",
     "frontend_story_handoff": "docs/collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md",
-    "latest_record": "docs/tasks/records/CORE-public-directory-20261029.md"
+    "latest_record": "docs/tasks/records/CORE-personal-collections-20261030.md",
+    "next_delivery_plan": "docs/collaboration/client-complete-20261028/NEXT_DELIVERY_PLAN_20261030.md"
   },
   "frontend_workspace_drawer_20261029": {
     "owner": "Bill-Billion",
@@ -11453,5 +11463,24 @@
     },
     "uploaded_commit": "ca0fff7c1ae8ed8bd188a02f842af48300e0e1b8",
     "remote_checks": "STARTED_AWAITING_FINAL_RESULTS"
+  },
+  "collections_20261030": {
+    "owner": "chengcongcong222",
+    "status": "LOCAL_VALIDATION_PASSED",
+    "scope": "本人收藏、主动开启浏览记录、单删/清空、过期清理与失效提示",
+    "dependencies": "PR39已有艺人/现货/通告公开权限；不依赖待接目录/搜索页面",
+    "acceptance": "默认不记录；本人隔离；重复不增；删除后旧请求不复活；下架撤权不泄露正文；有界分页和定时清理；同版接口和合成资料",
+    "frontend_owner": "Bill-Billion",
+    "new_handoff_confirmed": false,
+    "record": "docs/tasks/records/CORE-personal-collections-20261030.md",
+    "contract": "0.31.8-rc.1",
+    "migration": "0173",
+    "focused_passed": 15,
+    "regression_passed": 1006,
+    "regression_skipped": 1,
+    "http_responses": 67,
+    "uploaded": false,
+    "merged": false,
+    "production_enabled": false
   }
 }

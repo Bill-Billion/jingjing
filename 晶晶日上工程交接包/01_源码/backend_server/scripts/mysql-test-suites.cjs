@@ -1,6 +1,7 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
+ collections:['test/collections-policy.test.cjs','test/collections.integration.test.cjs'],
  discovery:['test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
  directory:['test/directory-policy.test.cjs','test/directory.integration.test.cjs'],
  media:['test/media-marking.test.cjs','test/media.integration.test.cjs'],

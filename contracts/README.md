@@ -1,3 +1,5 @@
+当前候选0.31.8-rc.1：新增本人收藏、主动开启浏览记录、清理和失效提示9项接口；迁移0171—0173。旧接口兼容，前端接法见[收藏交接](../docs/collaboration/client-complete-20261028/FRONTEND_COLLECTIONS_HANDOFF.md)。页面与完整业务验收尚未完成，实际上传状态见CURRENT。以下版本按历史保留。
+
 当前候选0.31.7-rc.1：新增统一六城快捷目录及四类公开关键词搜索，两个只读入口；原接口兼容，迁移仍0170。前端接法见[城市与搜索交接](../docs/collaboration/client-complete-20261028/FRONTEND_SEARCH_HANDOFF.md)。前一批机构资料、精选与机构通告分页见[公开目录交接](../docs/collaboration/client-complete-20261028/FRONTEND_DIRECTORY_HANDOFF.md)。本批接口已隔离验证，页面接入和整体业务验收仍待完成。
 
 当前候选0.31.5-rc.1：现货真实封面与完整/预览时长，新增2个读取接口，无新迁移（仍0167）。原接口格式不变；处理工具未配置则明确不可用。详见CHANGELOG；本批页面接线与交付状态以当前进度为准。

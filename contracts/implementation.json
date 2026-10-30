@@ -1,5 +1,5 @@
 {
-  "version": "0.31.7-rc.1",
+  "version": "0.31.8-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -482,7 +482,16 @@
     "downloadOrganizationCover",
     "downloadDirectoryMaterial",
     "listDiscoveryCities",
-    "searchPublicCatalogues"
+    "searchPublicCatalogues",
+    "getCollectionPreferences",
+    "setCollectionPreferences",
+    "listPersonalFavorites",
+    "setPersonalFavorite",
+    "listPersonalHistory",
+    "recordPersonalVisit",
+    "clearPersonalHistory",
+    "removePersonalHistory",
+    "getPersonalCollectionTarget"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -895,6 +904,28 @@
       "前端页面待接，整体业务验收未完成",
       "精选为经独立审核的运营推荐，不是明星认证",
       "机构公开资料不授予接单、承制或艺人代办权限"
+    ]
+  },
+  "personal_collections": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getCollectionPreferences",
+      "setCollectionPreferences",
+      "listPersonalFavorites",
+      "setPersonalFavorite",
+      "listPersonalHistory",
+      "recordPersonalVisit",
+      "clearPersonalHistory",
+      "removePersonalHistory",
+      "getPersonalCollectionTarget"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/collections.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面尚未接入，不是整组验收",
+      "仅本人账号，机构代办不可访问",
+      "过期后台需COLLECTION_WORKER_ENABLED=true，正式运行另验收",
+      "不增加榜单互动分数，不缓存私有正文"
     ]
   }
 }

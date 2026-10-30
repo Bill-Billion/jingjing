@@ -1669,6 +1669,34 @@
           "star": true
         }
       }
+    },
+    {
+      "name": "private stories cannot be personal collection targets",
+      "schema": "CollectionVisitRequest",
+      "value": {
+        "kind": "STORY",
+        "target_id": "00000000-0000-0000-0000-000000000001"
+      }
+    },
+    {
+      "name": "collection cannot choose another account",
+      "schema": "CollectionPreferencesRequest",
+      "value": {
+        "history_enabled": true,
+        "account_id": "00000000-0000-0000-0000-000000000001"
+      }
+    },
+    {
+      "name": "unavailable collection cannot leak old title",
+      "schema": "CollectionEntry",
+      "value": {
+        "kind": "ARTIST",
+        "target_id": "00000000-0000-0000-0000-000000000001",
+        "recorded_at": "2026-10-30T00:00:00.000Z",
+        "availability": "UNAVAILABLE",
+        "title": "old private title",
+        "city": null
+      }
     }
   ]
 }
