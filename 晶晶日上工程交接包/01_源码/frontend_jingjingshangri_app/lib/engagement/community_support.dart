@@ -230,7 +230,8 @@ class CommunityApi {
       'directory',
       'discovery',
       'support',
-      'me/collections'
+      'me/collections',
+      'me/business'
     ].contains(domain)) {
       throw ArgumentError.value(domain);
     }

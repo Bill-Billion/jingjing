@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
+import 'personal_business_fixtures.dart';
 
 const accountId = '11111111-1111-4111-8111-111111111111';
 const personId = '22222222-2222-4222-8222-222222222222';
@@ -63,6 +64,11 @@ class FakeAccountAdapter implements HttpClientAdapter {
   }
 
   ResponseBody defaultReply(RequestOptions options) {
+    if (options.path.startsWith('/api/v1/me/business/')) {
+      return envelope(businessResponse(
+          options.path.split('/').last, options.headers['X-Acting-Party'],
+          source: options.queryParameters['source']));
+    }
     if (options.path == '/api/v1/discovery/cities') {
       return envelope({
         'revision': 'quick-cities-v1',

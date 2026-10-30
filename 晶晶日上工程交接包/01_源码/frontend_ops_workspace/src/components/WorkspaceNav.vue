@@ -9,6 +9,9 @@ const route = useRoute()
 const query = ref('')
 const links = [
   { to: '/workspace', label: '账号与机构', icon: User },
+  { to: '/me/business/contracts', label: '我的合同和约定', icon: Document },
+  { to: '/me/business/works', label: '我的作品与已购视频', icon: Film },
+  { to: '/me/business/income', label: '我的收入核算', icon: DataAnalysis },
   { to: '/discovery', label: '查找公开内容', icon: View },
   { to: '/directory/organizations', label: '公开机构', icon: OfficeBuilding },
   { to: '/directory/featured', label: '精选艺人', icon: User },
@@ -107,7 +110,7 @@ const entries:Entry[] = [
   ...Object.values(domains).map(d => ({to:`/${d.key}/${d.sections[0]!.key}`,label:d.title,icon:Collection,domain:d.key})),
 ]
 const categories = [
-  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','wallet','redemption','engagement','privacy','me/collections','support/tickets','support/new']},
+  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','wallet','redemption','engagement','privacy','me/collections','me/business','support/tickets','support/new']},
   {id:'people',icon:User,label:'人物与作品',roots:['artists','supply','media','participation','discovery','directory/organizations','directory/featured','directory/manage']},
   {id:'trade',icon:Film,label:'影片与许可交易',roots:['stock','licensing','trade']},
   {id:'gigs',icon:Briefcase,label:'商单与通告',roots:['gigs','notices']},

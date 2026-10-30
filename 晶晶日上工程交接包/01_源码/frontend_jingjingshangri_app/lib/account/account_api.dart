@@ -18,6 +18,7 @@ const additionalBusinessPrefixes = [
   '/api/v1/directory/',
   '/api/v1/discovery/',
   '/api/v1/me/collections/',
+  '/api/v1/me/business/',
   '/api/v1/support/',
 ];
 

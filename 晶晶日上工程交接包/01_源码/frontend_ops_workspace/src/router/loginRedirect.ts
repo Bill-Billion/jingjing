@@ -2,7 +2,7 @@ import { domains } from '@/business'
 /** Only supported private entry routes may be resumed after login. */
 export function loginRedirect(target: unknown): string {
   const uuid = '[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}'
-  if (typeof target === 'string' && new RegExp(`^/(?:discovery|directory/(?:organizations(?:/${uuid})?|featured(?:/new)?|manage(?:/new|/${uuid})?|reviews/(?:ORGANIZATION|FEATURED_ARTIST)(?:/${uuid})?)|me/collections/(?:favorites|history)|support/(?:new|(?:tickets|operations)(?:/${uuid})?))$`).test(target)) return target
+  if (typeof target === 'string' && new RegExp(`^/(?:discovery|directory/(?:organizations(?:/${uuid})?|featured(?:/new)?|manage(?:/new|/${uuid})?|reviews/(?:ORGANIZATION|FEATURED_ARTIST)(?:/${uuid})?)|me/collections/(?:favorites|history)|me/business/(?:contracts|works|income)|support/(?:new|(?:tickets|operations)(?:/${uuid})?))$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/support/new\\?domain=(?:ARTIST_PUBLIC|STOCK_PUBLIC|NOTICE_PUBLIC)&record=${uuid}$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/cocreation/rooms\\?action=room&requestId=${uuid}$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/notices/submissions\\?action=invitation&sourceListing=${uuid}$`).test(target)) return target

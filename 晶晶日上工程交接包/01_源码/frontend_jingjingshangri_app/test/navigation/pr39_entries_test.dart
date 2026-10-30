@@ -9,6 +9,7 @@ import 'package:jingjingshangri_app/pages/login/login_page.dart';
 import 'package:jingjingshangri_app/services/user_provider.dart';
 import '../account/fake_account_api.dart';
 import '../stock/v5_test_host.dart';
+import '../trade/trade_api_test.dart' show buyerSession;
 
 void main() {
   test('登录仅返回已注册的本地页面，保留业务参数', () {
@@ -74,24 +75,34 @@ void main() {
 
   testWidgets('业务目录保留分区，作品回到原购买记录且没有合并金额', (t) async {
     String? opened;
-    await t.pumpWidget(MaterialApp(
-        home: const BusinessLibraryPage(section: 'works'),
-        onGenerateRoute: (settings) {
-          opened = settings.name;
-          return MaterialPageRoute<void>(
-              builder: (_) => const Scaffold(body: Text('购买记录')));
-        }));
-    await t.tap(find.text('我购买的现成视频'));
+    final s = (await t.runAsync(() => buyerSession(FakeAccountAdapter())))!;
+    await t.pumpWidget(ChangeNotifierProvider<AccountSession>.value(
+        value: s,
+        child: MaterialApp(
+            home: const BusinessLibraryPage(section: 'works'),
+            onGenerateRoute: (settings) {
+              opened = settings.name;
+              return MaterialPageRoute<void>(
+                  builder: (_) => const Scaffold(body: Text('购买记录')));
+            })));
+    await frames(t);
+    final original = find.descendant(
+        of: find.byKey(const ValueKey('business-source:STOCK_PURCHASES')),
+        matching: find.text('打开原业务入口'));
+    await reveal(t, original);
+    await t.tap(original);
     await frames(t);
     expect(opened, '/stock/purchases');
     t.state<NavigatorState>(find.byType(Navigator)).pop();
     await frames(t);
+    await reveal(t, find.widgetWithText(ChoiceChip, '我的作品'));
     expect(
         t.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, '我的作品')).selected,
         isTrue);
+    await reveal(t, find.widgetWithText(ChoiceChip, '我的收入'));
     await t.tap(find.widgetWithText(ChoiceChip, '我的收入'));
-    await t.pump();
-    expect(find.text('经营结算'), findsOneWidget);
+    await frames(t);
+    expect(find.text('已登记的收入核算'), findsOneWidget);
     expect(find.textContaining('总到账'), findsNothing);
     expect(t.takeException(), isNull);
   });

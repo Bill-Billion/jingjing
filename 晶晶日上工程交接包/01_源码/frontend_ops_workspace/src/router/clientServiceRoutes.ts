@@ -1,5 +1,6 @@
 import type {RouteRecordRaw} from 'vue-router'
 export const clientServiceRoutes:RouteRecordRaw[]=[
+ {path:'/me/business/:category(contracts|works|income)',name:'personal-center',component:()=>import('@/views/PersonalCenterView.vue'),meta:{title:'我的业务汇总'}},
  {path:'/discovery',name:'discovery',component:()=>import('@/views/DiscoveryView.vue'),meta:{title:'查找公开内容'}},
  {path:'/directory/organizations/:partyId?',name:'directory-organizations',component:()=>import('@/views/DirectoryView.vue'),meta:{title:'公开机构',directoryView:'organizations'}},
  {path:'/directory/featured',name:'directory-featured',component:()=>import('@/views/DirectoryView.vue'),meta:{title:'精选艺人',directoryView:'featured'}},

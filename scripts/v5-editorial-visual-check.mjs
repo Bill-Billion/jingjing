@@ -145,7 +145,7 @@ try {
    await shot(page,'web-finance-result-'+width,ref)
   }
   const menu=page.locator('.workspace-nav a')
-  assert.equal(await menu.count(),63,'All 63 workspace entrances remain')
+  assert.equal(await menu.count(),66,'All 66 workspace entrances remain')
   assert.equal(await page.locator('.workspace-nav-parent').count(),7,'All 7 functional groups remain')
   if(width===390) {
    await ensureWorkspaceNavigation(page)
