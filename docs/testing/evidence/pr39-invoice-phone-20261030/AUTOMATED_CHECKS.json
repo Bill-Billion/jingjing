@@ -1,0 +1,141 @@
+{
+  "recorded_at": "2026-10-30T11:20:35.332574+00:00",
+  "scope": "PR39 invoice and phone-change frontend automation; existing test/build logs archived, with independent syntax/diff/hash verification.",
+  "result": "SCOPED_CHECKS_PASSED",
+  "app": {
+    "full_suite": {
+      "status": "PASSED_BEFORE_FINAL_PATCH",
+      "passed": 753,
+      "evidence": "automated/app-full-before-session-key.log"
+    },
+    "later_patch": "PhoneChange page key now includes the AccountSession instance, account ID and loginEpoch; a session-instance replacement clears old progress.",
+    "final_targeted": {
+      "status": "PASSED",
+      "passed": 24,
+      "evidence": "automated/app-final-targeted.log"
+    },
+    "final_full_suite": {
+      "status": "NOT_RERUN_AFTER_SESSION_KEY_PATCH",
+      "passed": null
+    },
+    "final_analyze": {
+      "status": "PASSED",
+      "result": "No issues found",
+      "evidence": "automated/app-final-analyze.log"
+    },
+    "final_builds": [
+      {
+        "kind": "standard",
+        "status": "PASSED",
+        "evidence": "automated/app-final-build-standard.log"
+      },
+      {
+        "kind": "synthetic browser entry",
+        "status": "PASSED",
+        "evidence": "automated/app-final-build-synthetic.log"
+      }
+    ],
+    "source_mirror": {
+      "status": "MATCH",
+      "files": 428,
+      "aggregate_sha256": "ec66c6d23e64f2d4ba3bd5e133c121d1d28e313ff4201fb07e2dcee182cc4674",
+      "evidence": "automated/source-mirror-recheck.json"
+    },
+    "build_copies": {
+      "status": "MATCH",
+      "standard_files": 72,
+      "synthetic_files": 72,
+      "evidence": "automated/build-copy-recheck.json"
+    }
+  },
+  "vue": {
+    "full_suite": {
+      "status": "PASSED_BEFORE_FINAL_PATCH",
+      "passed": 473,
+      "groups": 19,
+      "evidence": "automated/vue-full-before-zero-correction.log"
+    },
+    "later_patch": "The global 401 handler preserves the uncertain phone-change recovery hint and safe return path; regressions mount the real App watcher and account store. Ordinary current-401 and late old-token 401 retain their separate behavior.",
+    "final_targeted": {
+      "status": "PASSED",
+      "passed": 34,
+      "evidence": "automated/vue-final-targeted.log"
+    },
+    "final_full_suite": {
+      "status": "NOT_RERUN_AFTER_PHONE_RECOVERY_PATCH",
+      "passed": null
+    },
+    "final_build": {
+      "status": "PASSED",
+      "includes_type_check": true,
+      "evidence": "automated/vue-final-build.log",
+      "entrypoint_asset": "index-CX7ovnam.js",
+      "entrypoint_sha256": "51b4a44c44586bb4688ef52701427b6929b616cab55e2da7d0b43bc9af27ac5a",
+      "asset_evidence": "automated/vue-build-entrypoint.json"
+    },
+    "warnings": [
+      "Vite reports chunks larger than 500 kB after minification; build succeeded."
+    ],
+    "stages": [
+      {
+        "stage": "zero-amount correction message",
+        "patch": "Issued zero-amount corrections explicitly say the amount was corrected to zero and do not imply a refund; pending or ordinary zero values do not claim correction completion.",
+        "targeted": {
+          "status": "PASSED",
+          "passed": 31,
+          "evidence": "automated/vue-zero-correction-targeted.log"
+        },
+        "build": {
+          "status": "PASSED",
+          "includes_type_check": true,
+          "evidence": "automated/vue-zero-correction-build.log"
+        }
+      },
+      {
+        "stage": "global 401 phone-change recovery",
+        "before_fix": {
+          "status": "FAILURE_REPRODUCED_BEFORE_FIX",
+          "evidence": "automated/vue-phone-recovery-before.log",
+          "failure": "After an uncertain confirmation, the real App global 401 watcher cleared the phone-change recovery query and safe redirect."
+        }
+      }
+    ]
+  },
+  "independent_checks": {
+    "node_syntax": {
+      "status": "PASSED",
+      "files": 12,
+      "sandbox_files": 1,
+      "root_browser_mjs_files": 11,
+      "evidence": "automated/node-syntax-checks.json"
+    },
+    "git_diff_check": {
+      "status": "PASSED",
+      "evidence": "automated/git-diff-check.json"
+    },
+    "contract_validation": {
+      "status": "PASSED",
+      "contract_version": "0.31.12-rc.1",
+      "checks": 16429,
+      "operations": 536,
+      "schemas": 683,
+      "valid_fixtures": 169,
+      "negative_cases": 145,
+      "failures": 0,
+      "runtime_tests": "NOT_RUN",
+      "network_during_validation": "DISABLED",
+      "initial_attempt": "ENVIRONMENT_FAILURE_MISSING_OPENAPI_SPEC_VALIDATOR",
+      "resolution": "Existing virtual environment matched all 20 pinned requirements; no dependency installation or lock change.",
+      "evidence": "automated/contract-validation.json",
+      "environment_evidence": "automated/contract-validation-environment.json"
+    }
+  },
+  "archive_manifest": "automated/archive-manifest.json",
+  "limits": [
+    "753/473 are successful earlier full runs, not claims that the final patched trees received another full run.",
+    "24/34 are final targeted runs and overlap the earlier suites; Vue 31 is an intermediate stage. Do not add these to full-suite totals.",
+    "Root browser scripts received syntax checks only in this audit; browser-flow execution belongs in the separate root-owned browser evidence.",
+    "No access.json or phone-codes.json was read or copied; the live fixture and browser evidence were not modified.",
+    "Contract validation is offline schema/protocol validation only; runtime_response_cases=0 and runtime_tests=NOT_RUN. The initial default-Python dependency failure was resolved by reusing an existing matching virtual environment."
+  ]
+}

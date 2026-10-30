@@ -37,7 +37,7 @@ const cases=[
 const recaptureKeys=(process.env.ARTISTS_VISUAL_RECAPTURE||'').split(',').filter(Boolean)
 for(const key of recaptureKeys)assert(cases.some(c=>c.key===key),'Unknown recapture page: '+key)
 const baseline=recaptureKeys.length?JSON.parse(await readFile(join(out,'WEB_VISUAL_MATRIX.json'),'utf8')):null
-if(baseline){assert.equal(baseline.result,'PASS');assert.equal(baseline.business_write_count,0);assert.equal(baseline.matrix_count,27);assert(baseline.matrix.every(m=>m.navigation_count===66&&m.navigation_groups===7),'Shared navigation changed: rerun without ARTISTS_VISUAL_RECAPTURE before reusing visual evidence')}
+if(baseline){assert.equal(baseline.result,'PASS');assert.equal(baseline.business_write_count,0);assert.equal(baseline.matrix_count,27);assert(baseline.matrix.every(m=>m.navigation_count===70&&m.navigation_groups===7),'Shared navigation changed: rerun without ARTISTS_VISUAL_RECAPTURE before reusing visual evidence')}
 const {chromium}=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core')
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true})
 const contexts=[],pages=new Map(),screenshots=[],matrix=[],writes=[],requests=[],pageErrors=[],consoleErrors=[],failedRequests=[],fontResponses=[]
@@ -61,9 +61,9 @@ async function actorPage(role){
 async function inspect(page,c,width){
  assert.equal(new URL(page.url()).pathname,c.path)
  assert.equal(await page.getByTestId('artists-workspace').count(),1)
- assert.equal(await page.locator('.workspace-nav a').count(),66);assert.equal(await page.locator('.workspace-nav-parent').count(),7)
+ assert.equal(await page.locator('.workspace-nav a').count(),70);assert.equal(await page.locator('.workspace-nav-parent').count(),7)
  const links=await page.locator('.workspace-nav a').evaluateAll(as=>as.map(a=>({href:a.getAttribute('href'),label:a.textContent.trim(),current:a.getAttribute('aria-current')==='page'})))
- assert.equal(new Set(links.map(l=>l.href)).size,66);for(const href of original41)assert(links.some(l=>l.href===href),'Original entrance missing: '+href)
+ assert.equal(new Set(links.map(l=>l.href)).size,70);for(const href of original41)assert(links.some(l=>l.href===href),'Original entrance missing: '+href)
  assert.deepEqual(links.filter(l=>l.current).map(l=>l.href),[c.role==='reviewer'?'/artists/reviews/CONSENT':'/artists/people'])
  const text=await page.locator('body').ariaSnapshot(),values=await page.locator('input,textarea').evaluateAll(ns=>ns.map(n=>n.value).join('\n'))
  for(const secret of secrets){assert(!text.includes(secret),'Credential must not appear in accessible UI');assert(!values.includes(secret),'Credential must not appear in form controls')}
@@ -72,7 +72,7 @@ async function inspect(page,c,width){
  if(style.primary){assert.equal(style.primary.background,'rgb(23, 23, 23)');assert.equal(style.primary.color,'rgb(243, 240, 231)');assert.equal(style.primary.radius,'0px')}
  assert(style.requiredLabelsInline,'Required marker stays with the field label')
  assert.equal(writes.length,0,'Visual acceptance cannot send business writes')
- return {style,original_41_preserved:true,navigation_count:66,navigation_groups:7,navigation_active:links.filter(l=>l.current)[0].href,credentials_visible:false,...matrix.length===0?{navigation:links}:{}}
+ return {style,original_41_preserved:true,navigation_count:70,navigation_groups:7,navigation_active:links.filter(l=>l.current)[0].href,credentials_visible:false,...matrix.length===0?{navigation:links}:{}}
 }
 async function shot(page,c,width,suffix='overview'){
  const name=`${c.key}-${width}-${suffix}.png`;await page.mouse.move(0,0);await page.screenshot({path:join(out,name),fullPage:false})

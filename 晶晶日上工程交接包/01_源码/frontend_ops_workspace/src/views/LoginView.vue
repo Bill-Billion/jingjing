@@ -225,6 +225,7 @@ const year = new Date().getFullYear()
       <div class="panel">
         <h2 class="panel-title">登录工作台</h2><p class="panel-intro">使用本人手机号，继续你的合作。</p>
 
+        <p v-if="route.query.redirect==='/me/phone-change'&&route.query.phoneChange==='uncertain'" class="hint" role="status">换号确认结果待核对。请用新号码登录，随后将返回换号进度查看结果。不要用旧号码重新注册。</p><p v-else-if="route.query.redirect==='/me/phone-change'&&route.query.phoneChange==='complete'" class="hint" role="status">请使用更换后的新号码登录，然后核对换号结果与原账号资料。不要用旧号码重新注册。</p><p v-else-if="route.query.redirect==='/me/phone-change'&&route.query.phoneChange==='recent'" class="hint" role="status">请使用当前登录号码完成短信验证，再继续更换号码。</p>
         <p v-if="session.notice" class="hint" role="status">{{ session.notice }}</p>
         <form @submit.prevent="submitLogin">
           <div class="field">

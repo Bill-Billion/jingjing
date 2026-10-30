@@ -4171,7 +4171,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -4210,7 +4210,7 @@
       "implementation": "IMPLEMENTED",
       "implementation_scope": "统一列表、筛选、回原业务、单域失败重试",
       "frontend_can_start": "0.31.10/0181已接入；后续开票/换号已出现新后端交接，按原阶段继续。",
-      "uploaded": false,
+      "uploaded": true,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
@@ -4237,7 +4237,9 @@
         "record": "docs/tasks/records/UX-client-complete-20261028.md"
       },
       "backend_handoff": "docs/collaboration/client-complete-20261028/FRONTEND_PERSONAL_CENTER_HANDOFF.md",
-      "new_handoff_acknowledged": true
+      "new_handoff_acknowledged": true,
+      "implementation_commit": "8e5e7b59",
+      "upload_commit": "325ee734"
     },
     {
       "id": "CORE-CLIENT-COMPLETE-12",
@@ -4319,13 +4321,16 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
         "docs/tasks/records/UX-client-complete-20261028.md",
-        "docs/tasks/records/UX-invoice-phone-20261030.md"
+        "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "docs/testing/evidence/pr39-invoice-phone-20261030/RESULTS.json"
       ],
-      "blockers": [],
+      "blockers": [
+        "运营DTO缺当前人员allowed_actions，缺字段只读，完整办理未验收"
+      ],
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-07",
@@ -4334,9 +4339,9 @@
       "provisional_rule_refs": [
         "P15"
       ],
-      "implementation": "IN_PROGRESS",
+      "implementation": "PARTIAL_PENDING_BACKEND_ALLOWED_ACTIONS",
       "implementation_scope": "申请、补件、撤回、拒绝说明、查看处理进度和文件",
-      "frontend_can_start": "接口候选0.31.11-rc.1／0187已具备，本批集中上传后可接；具体新增接入未确认",
+      "frontend_can_start": "已按0.31.12-rc.1／0192接入，详见本批记录；后续为同版完整验收。",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4349,15 +4354,17 @@
         "ACC-DEL-26.01",
         "TASK-12"
       ],
-      "updated_on": "2026-10-28",
-      "current_increment": "已接收0.31.12/0192开票与换号交接，App/Vue本增量开发中；不声称本增量已验证或上传。",
+      "updated_on": "2026-10-30",
+      "current_increment": "两端本人开票与换号页面已实现并完成本批真实联调；18项记录17通过、1项安全只读登记后端缺口；开票运营完整UI待allowed_actions。",
       "frontend_increment_verification": {
-        "scope": "当前已接入接口和页面增量，不等于整组验收",
-        "status": "NOT_RUN",
-        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+        "scope": "本增量，不等于整组或151条验收",
+        "status": "PARTIAL_PASS_BACKEND_GAP",
+        "record": "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "browser_record": "docs/testing/evidence/pr39-invoice-phone-20261030/browser-checks.json"
       },
-      "backend_handoff": "后端负责人chengcongcong222已补新接口；本批说明由用户转发，尚未确认前端已接入。",
-      "new_handoff_acknowledged": true
+      "backend_handoff": "后端补运营allowed_actions，独立岗位／状态／自审过滤后复验；其他接口保持原0.31.12。",
+      "new_handoff_acknowledged": true,
+      "latest_increment_acknowledged": true
     },
     {
       "id": "CORE-CLIENT-COMPLETE-13",
@@ -4419,7 +4426,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -4437,12 +4444,13 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
         "docs/collaboration/client-complete-20261028/README.md",
         "docs/tasks/records/UX-client-complete-20261028.md",
         "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md",
-        "docs/tasks/records/UX-invoice-phone-20261030.md"
+        "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "docs/testing/evidence/pr39-invoice-phone-20261030/RESULTS.json"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -4453,9 +4461,9 @@
       "provisional_rule_refs": [
         "P16"
       ],
-      "implementation": "IN_PROGRESS",
+      "implementation": "IMPLEMENTED",
       "implementation_scope": "核验、改号、重新登录；原号码不可用转人工申诉",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "frontend_can_start": "已按0.31.12-rc.1／0192接入，详见本批记录；后续为同版完整验收。",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4468,16 +4476,17 @@
         "ACC-DEL-23.01",
         "TASK-13"
       ],
-      "updated_on": "2026-10-28",
-      "current_increment": "已接收0.31.12/0192开票与换号交接，App/Vue本增量开发中；不声称本增量已验证或上传。",
+      "updated_on": "2026-10-30",
+      "current_increment": "两端本人开票与换号页面已实现并完成本批真实联调；18项记录17通过、1项安全只读登记后端缺口；开票运营完整UI待allowed_actions。",
       "frontend_increment_verification": {
-        "scope": "当前已接入接口和页面增量，不等于整组验收",
-        "status": "NOT_RUN",
-        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+        "scope": "本增量，不等于整组或151条验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "browser_record": "docs/testing/evidence/pr39-invoice-phone-20261030/browser-checks.json"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。",
+      "backend_handoff": "后端0.31.12／0192已接入；继续与同事同版复核旧号新注册隔离及完整业务。",
       "backend_dependency_state": "换号接口已实现并隔离验证；本批集中上传后可接",
-      "latest_increment_acknowledged": false,
+      "latest_increment_acknowledged": true,
       "new_handoff_acknowledged": true
     },
     {
@@ -11599,13 +11608,14 @@
     "uploaded": true,
     "merged": false,
     "production_enabled": false,
-    "frontend_new_handoff_acknowledged": false,
+    "frontend_new_handoff_acknowledged": true,
     "gigs_tests": "26_PASS",
     "evidence": "docs/testing/evidence/personal-center-20261030/summary.json",
     "uploaded_commit": "1e50823b22c47442195a857179505cc7c92652b9",
     "remote_checks": "7项中3项成功、4项运行；最终结果待核对",
     "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
-    "user_forwarded_handoff": true
+    "user_forwarded_handoff": true,
+    "frontend_record": "docs/tasks/records/UX-personal-center-20261030.md"
   },
   "frontend_directory_support_20261030": {
     "owner": "Bill-Billion",
@@ -11634,11 +11644,12 @@
     "uploaded": true,
     "merged": false,
     "production_enabled": false,
-    "frontend_new_handoff_acknowledged": false,
+    "frontend_new_handoff_acknowledged": true,
     "evidence": "docs/testing/evidence/invoices-20261030/summary.json",
     "uploaded_commit": "d18c4622461c1e77bbc06816495e714b58d4be2e",
     "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
-    "remote_checks": "7项中3项成功，4项运行；以最新HEAD最终结果为准"
+    "remote_checks": "7项中3项成功，4项运行；以最新HEAD最终结果为准",
+    "frontend_record": "docs/tasks/records/UX-invoice-phone-20261030.md"
   },
   "frontend_personal_center_20261030": {
     "owner": "Bill-Billion",
@@ -11650,6 +11661,29 @@
     "web_last_focused_tests": 43,
     "browser_scenarios": 17,
     "record": "docs/tasks/records/UX-personal-center-20261030.md",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "review_status": "PENDING",
+    "implementation_commit": "8e5e7b59",
+    "upload_commit": "325ee734"
+  },
+  "frontend_invoice_phone_20261030": {
+    "owner": "Bill-Billion",
+    "contract": "0.31.12-rc.1",
+    "migration": "0192",
+    "own_invoice_implementation": "IMPLEMENTED",
+    "phone_change_implementation": "IMPLEMENTED",
+    "operator_invoice_implementation": "READ_ONLY_PENDING_BACKEND_ALLOWED_ACTIONS",
+    "app_earlier_full_tests": 753,
+    "app_final_targeted_tests": 24,
+    "web_earlier_full_tests": 473,
+    "web_final_targeted_tests": 34,
+    "final_full_suite_rerun": false,
+    "browser_recorded": 18,
+    "browser_passed": 17,
+    "browser_safe_readonly_with_backend_gap": 1,
+    "record": "docs/tasks/records/UX-invoice-phone-20261030.md",
     "uploaded": false,
     "merged": false,
     "production_enabled": false,

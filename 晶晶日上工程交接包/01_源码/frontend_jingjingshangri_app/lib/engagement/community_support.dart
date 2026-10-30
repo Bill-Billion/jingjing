@@ -230,6 +230,7 @@ class CommunityApi {
       'directory',
       'discovery',
       'support',
+      'invoices',
       'me/collections',
       'me/business'
     ].contains(domain)) {

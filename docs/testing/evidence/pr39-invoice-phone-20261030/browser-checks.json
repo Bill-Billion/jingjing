@@ -1,0 +1,92 @@
+[
+  {
+    "case": "未付款不能申请开票",
+    "result": "PASS",
+    "detail": "原未付款订单dc562739显示收款/退款/占用/可申请均0，本单无已核验现金收款，未提供申请提交"
+  },
+  {
+    "case": "Vue开票未知创建恢复与离页保护",
+    "result": "PASS",
+    "detail": "申请077f9939原单1元，上传e85a9008材料；成功响应被fixture丢弃后HTTP502，表单禁改/禁重复/阻止返回；原请求恢复只创建016811d4一份，v1占用1元，未提前领取"
+  },
+  {
+    "case": "运营缺少动作提示时只读保护",
+    "result": "PASS_WITH_BACKEND_GAP",
+    "detail": "handler真实读取申请成功但DTO无allowed_actions，页面仅看记录/材料，不因handle路由展示处理按钮；运营UI办理全链未验，待后端补按角色/状态/自审过滤的动作集合"
+  },
+  {
+    "case": "同一申请跨端补件保留原材料",
+    "result": "PASS",
+    "detail": "016811d4 Vue创建v1→独立staff fixture要求补件v2→App上传edd40c10并提交v3；Vue读回原e85a9008及新材料、说明均在正式历史中，仍未提前领取票据"
+  },
+  {
+    "case": "待核文件隔离与获准票据下载",
+    "result": "PASS",
+    "detail": "独立staff fixture批准/录入v4/v5时本人无票据；独立核准员VERIFY至v6后才显示当前1元模拟凭证。Vue受控下载含非真实发票标识和016811d4原申请ID；未执行真实税务服务"
+  },
+  {
+    "case": "开票补件后初始材料仍可受控读取",
+    "result": "PASS",
+    "detail": "Vue由正式历史下载e85a9008，字节与原invoice-initial.txt一致；新edd40c10补件未替换旧材料"
+  },
+  {
+    "case": "退款后的归零更正与历史保留",
+    "result": "PASS",
+    "detail": "fresh订单由fixture全额退款后本人页提示需更正，Vue提交REQUEST_CORRECTION v7；fixture独立录入0/核准至v9，current33609989为0并替换旧8b53af5f，历史1元仍可领。两端明确归零更正不等于退款，App受控下载JSON验证amount_minor0及原申请ID"
+  },
+  {
+    "case": "待受理撤回释放开票额度",
+    "result": "PASS",
+    "detail": "同一 seeded 订单的 REQUESTED20分申请通过 Vue 原版本撤回，状态 WITHDRAWN v2，占额0；原订单入口重新读额度显示已有占额40分、可申请60分。"
+  },
+  {
+    "case": "换号近期登录限制",
+    "result": "PASS",
+    "detail": "App 使用非近期原登录开始换号，服务端返回近期登录要求，页面保留表单并提供重新验证登录，不误清全部账号权限。"
+  },
+  {
+    "case": "App近期登录后创建与取消换号",
+    "result": "PASS",
+    "detail": "通过正常模拟短信登录回到换号页，创建后进入旧号验证；取消前有明确确认，确认后服务器状态申请已取消，原绑定号码不变。"
+  },
+  {
+    "case": "旧新号独立验证和未知短信恢复",
+    "result": "PASS",
+    "detail": "网页旧号错误码400只减剩余尝试5→4，不退出；正确旧号仅进入新号验证。新号短信真实200响应被丢弃，502后按钮锁定，先GET current再原key/body/version恢复，才继续新号验证至READY。"
+  },
+  {
+    "case": "换号撤销另一端旧登录",
+    "result": "PASS",
+    "detail": "网页确认已在后台提交后，App仍持此前独立短信登录会话；手动刷新current获得401，旧申请/旧号码资料清除，显示新号重新登录后核对结果入口。"
+  },
+  {
+    "case": "App新号登录核对完成且不循环登录",
+    "result": "PASS",
+    "detail": "新号经正常模拟短信登录回到原换号页，读取同一COMPLETED结果，requires_relogin=false；显示当前登录可继续使用，未再次清登录或自动创建申请。"
+  },
+  {
+    "case": "新号保留原购买身份和同一票据",
+    "result": "PASS",
+    "detail": "新号正常登录后原个人与机构身份仍在；机构访问个人票据被403并清空旧资料，切回原个人购买身份后可读同一016811d4申请v9及两份原获准/历史票据，未新建或合并账号。"
+  },
+  {
+    "case": "新号保留原反馈工单与材料入口",
+    "result": "PASS",
+    "detail": "App使用新号原个人身份读取366c16cf原工单，原提交、客服受理与补资料历史、480d84e7原材料受控下载入口仍在。"
+  },
+  {
+    "case": "网页确认响应丢失后的401登录恢复最终复验",
+    "result": "PASS",
+    "detail": "修复前曾丢失指引/返回地址，已修全局会话401上下文交接。最终index-CX7ovnam.js重新实际跑9802→9801合成换号，confirmation真实200响应被丢弃502；明确点击GET current401后自动到仅静态query的/login?redirect=/me/phone-change&phoneChange=uncertain；提示用新号码登录，正常登录返回COMPLETED false，未重复POST确认且无循环。"
+  },
+  {
+    "case": "换号后账号编号和原订单保持不变",
+    "result": "PASS",
+    "detail": "两次合成换号后网页账号编号仍11128a56，个人f183c3d2和机构3418cbff均保留；选原个人身份可读fb193419已付款原订单、原付款424517c5及开票入口。"
+  },
+  {
+    "case": "分类导航70入口与唯一当前位置",
+    "result": "PASS",
+    "detail": "实际点击全部收起后七父级收起；逐类展开得到70子链接、7父按钮、唯一aria-current，含本次开票本人/受理/独立核准和换号入口；保持父子点击展开收缩。"
+  }
+]

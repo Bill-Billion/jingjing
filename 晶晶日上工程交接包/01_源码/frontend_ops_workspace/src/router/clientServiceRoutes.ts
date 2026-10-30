@@ -1,5 +1,10 @@
 import type {RouteRecordRaw} from 'vue-router'
 export const clientServiceRoutes:RouteRecordRaw[]=[
+ {path:'/me/phone-change',name:'phone-change',component:()=>import('@/views/PhoneChangeView.vue'),meta:{title:'更换登录手机号'}},
+ {path:'/invoices/orders/:orderId/new',name:'invoice-new',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'申请开票'}},
+ {path:'/invoices/requests/:invoiceId?',name:'invoices',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'我的开票'}},
+ {path:'/invoices/operations/handle/:invoiceId?',name:'invoice-handle',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'开票受理与录入',invoiceRole:'handle'}},
+ {path:'/invoices/operations/verify/:invoiceId?',name:'invoice-verify',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'票据独立核准',invoiceRole:'verify'}},
  {path:'/me/business/:category(contracts|works|income)',name:'personal-center',component:()=>import('@/views/PersonalCenterView.vue'),meta:{title:'我的业务汇总'}},
  {path:'/discovery',name:'discovery',component:()=>import('@/views/DiscoveryView.vue'),meta:{title:'查找公开内容'}},
  {path:'/directory/organizations/:partyId?',name:'directory-organizations',component:()=>import('@/views/DirectoryView.vue'),meta:{title:'公开机构',directoryView:'organizations'}},

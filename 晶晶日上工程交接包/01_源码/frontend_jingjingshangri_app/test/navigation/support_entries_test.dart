@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/support/support_pages.dart';
 import '../account/fake_account_api.dart';
+import 'package:jingjingshangri_app/account/account_session.dart';
 import '../stock/v5_test_host.dart' as v5;
 
 void main() {
@@ -12,19 +13,13 @@ void main() {
         {'recordId': personId});
   });
 
-  for (final page in <Widget>[const InvoicePage()]) {
-    testWidgets('${page.runtimeType} 未接通的写入动作关闭且不收集资料', (t) async {
-      await t.pumpWidget(MaterialApp(home: page));
-      expect(find.byType(TextField), findsNothing);
-      await v5.reveal(t, find.byType(FilledButton));
-      final filled = t.widgetList<FilledButton>(find.byType(FilledButton));
-      expect(filled, isNotEmpty);
-      expect(filled.every((b) => b.onPressed == null), isTrue);
-      expect(find.textContaining('雨巷来信'), findsNothing);
-      expect(find.text('周见川'), findsNothing);
-      expect(t.takeException(), isNull);
-    });
-  }
+  testWidgets('开票入口在未登录时要求核对本人身份，不收集抬头', (t) async {
+    await v5.host(t, AccountSession(api: FakeAccountAdapter().createApi()),
+        const InvoicePage());
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text('核对账号与身份'), findsOneWidget);
+    expect(t.takeException(), isNull);
+  });
 
   testWidgets('帮助保留本地FAQ和原业务入口，并可进入正式反馈', (t) async {
     String? opened;

@@ -20,6 +20,7 @@ const additionalBusinessPrefixes = [
   '/api/v1/me/collections/',
   '/api/v1/me/business/',
   '/api/v1/support/',
+  '/api/v1/invoices/',
 ];
 
 bool _privateRequestPath(String path) => [
@@ -51,6 +52,17 @@ class AccountApi {
 
   final Dio _dio;
   int _supplyEpoch = 0;
+  int _accountEpoch = 0;
+  void clearAccountOperations() {
+    _accountEpoch++;
+    bool phone(String key) => (jsonDecode(key) as List)[3]
+        .toString()
+        .startsWith('/api/v1/me/phone-changes');
+    _keys.removeWhere((key, _) => phone(key));
+    _pending.removeWhere((key, _) => phone(key));
+    _running.removeWhere((key, _) => phone(key));
+  }
+
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
@@ -172,7 +184,11 @@ class AccountApi {
     final writing = method != 'GET';
     final supply = _privateRequestPath(path);
     final started = _supplyEpoch;
-    bool current() => !supply || started == _supplyEpoch;
+    final accountStarted = _accountEpoch;
+    final phone = path.startsWith('/api/v1/me/phone-changes');
+    bool current() =>
+        (!supply || started == _supplyEpoch) &&
+        (!phone || accountStarted == _accountEpoch);
     body = body == null
         ? null
         : Map<String, dynamic>.from(jsonDecode(jsonEncode(body)) as Map);

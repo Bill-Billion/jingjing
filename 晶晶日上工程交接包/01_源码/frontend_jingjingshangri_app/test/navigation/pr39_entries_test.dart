@@ -16,6 +16,7 @@ void main() {
     const route =
         '/auditions/book?offerId=$personId&invitationId=$invitationId';
     expect(loginDestination(route), route);
+    expect(loginDestination('/account/phone-change'), '/account/phone-change');
     expect(loginDestination('/privacy/requests?view=requests'),
         '/privacy/requests?view=requests');
     expect(loginDestination('/stock/purchase?orderId=$personId'),

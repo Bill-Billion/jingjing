@@ -58,8 +58,9 @@ export class ApiError extends Error {
   }
 }
 
-let unauthorized: ((token: string) => void) | null = null
-export function onUnauthorized(handler: (token: string) => void) { unauthorized = handler }
+export type UnauthorizedRecovery = 'PHONE_CHANGE_CONFIRMATION'
+let unauthorized: ((token: string, recovery?: UnauthorizedRecovery) => void) | null = null
+export function onUnauthorized(handler: (token: string, recovery?: UnauthorizedRecovery) => void) { unauthorized = handler }
 
 export function outcomeUnknown(error: unknown): boolean {
   return error instanceof ApiError && (error.status === 0 || error.status >= 500 || error.code === 'UNEXPECTED_RESPONSE_SHAPE' || error.code === 'COMMIT_OUTCOME_UNKNOWN' || error.code === 'IDEMPOTENCY_IN_PROGRESS' || error.code === 'ASSET_UPLOAD_RECONCILIATION_REQUIRED' || error.code === 'IDENTITY_RECONCILIATION_REQUIRED' || error.code === 'IDENTITY_OUTCOME_UNKNOWN')
@@ -83,6 +84,8 @@ export interface RequestOptions {
   ifMatch?: string | number
   signal?: AbortSignal
   cache?: RequestCache
+  /** A static login-return hint; 401 still clears the invalid session normally. */
+  unauthorizedRecovery?: UnauthorizedRecovery
 }
 
 /** 生成一个请求编号（X-Request-Id），服务端会回显同一个值 */
@@ -162,7 +165,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   if (!response.ok) {
-    if (response.status === 401 && token) unauthorized?.(token)
+    if (response.status === 401 && token) unauthorized?.(token, options.unauthorizedRecovery)
     const errBody = (parsed as ErrBody | null)?.error
     throw toApiError(response.status, errBody, echoRequestId, raw, retryAfterAt(response.headers.get('Retry-After')), method)
   }

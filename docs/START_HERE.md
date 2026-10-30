@@ -1,3 +1,5 @@
+2026-10-30前端开票／换号：Bill-Billion已按0.31.12-rc.1／0192接好App与Vue本人开票、票据、补件／撤回／更正及本人换号。18项浏览器记录17通过、1项安全只读登记后端缺口；确认丢响应→旧登录401→新号登录回current的末尾恢复已修复并实际复测，原账号／订单／身份／工单／票据保留。App早期全量753、最终针对24；网页早期全量473、最终针对34，末尾补丁后未冒称全量重跑。运营DTO缺allowed_actions，当前只读，须后端按岗位／状态／关联／自审过滤补齐后复验运营UI。个人中心已组合上传325ee734；本批准备更新同一PR39，上传及新HEAD检查另核。未合入或部署，原18组／151条仍未整体验收。[本轮证据与联调步骤](tasks/records/UX-invoice-phone-20261030.md)。以下保留各原时点。
+
 当前开票候选0.31.11-rc.1／迁移0187，接法见[开票交接](collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md)。已同步前端目录／收藏／反馈／消息9b9e2b54，真实开票仍未启用。上传及验证以CURRENT和[本批记录](tasks/records/CORE-invoices-20261030.md)为准。下方按日期保留历史。
 
 当前候选0.31.10-rc.1新增[个人中心三类汇总](collaboration/client-complete-20261028/FRONTEND_PERSONAL_CENTER_HANDOFF.md)，数据库仍0181。[产品状态](collaboration/client-complete-20261028/PRODUCT_STATUS.md)、[本轮记录](tasks/records/CORE-personal-center-20261030.md)及CURRENT说明上传和验证事实；原18组仍继续，下面为历史入口。

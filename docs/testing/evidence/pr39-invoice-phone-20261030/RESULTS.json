@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-30",
+  "owner": "Bill-Billion",
+  "base_commit": "325ee734f111a2065f6ed855f16acc2060edbc42",
+  "contract": "0.31.12-rc.1",
+  "migration": "0192",
+  "scope": "PR39 invoice and account phone-change frontend increment; original18/151 remain unaccepted",
+  "implementation": {
+    "own_invoices": "IMPLEMENTED",
+    "phone_change": "IMPLEMENTED",
+    "invoice_operations": "READ_ONLY_UNTIL_BACKEND_ALLOWED_ACTIONS"
+  },
+  "automation": "AUTOMATED_CHECKS.json",
+  "app": {
+    "earlier_full_pass": 753,
+    "final_targeted_pass": 24,
+    "final_full_after_last_patch": "NOT_RERUN",
+    "source_mirror_files": 428,
+    "analyze": "PASS",
+    "standard_and_synthetic_builds": "PASS"
+  },
+  "web": {
+    "earlier_full_pass": 473,
+    "zero_correction_targeted_pass": 31,
+    "final_phone_recovery_targeted_pass": 34,
+    "final_full_after_last_patch": "NOT_RERUN",
+    "typecheck_build": "PASS",
+    "entry": "index-CX7ovnam.js",
+    "entry_sha256": "51b4a44c44586bb4688ef52701427b6929b616cab55e2da7d0b43bc9af27ac5a"
+  },
+  "browser": {
+    "recorded": 18,
+    "passed": 17,
+    "safe_readonly_with_backend_gap": 1,
+    "evidence": "browser-checks.json",
+    "operator_full_ui_flow": "NOT_VERIFIED_BACKEND_ALLOWED_ACTIONS_MISSING"
+  },
+  "http": {
+    "initial_groups": 8,
+    "transport_checks": 3,
+    "initial_sms_login_continuity_checks": 3,
+    "initial_checks_are_not_final_browser_flows": true,
+    "dropped_committed_responses": 5
+  },
+  "verified_sequences": [
+    "Vue create success response lost, original request recovery, App supplement, independent fixture recording/approval, own document download",
+    "Fresh order full refund via fixture, Vue correction, fixture zero correction approval, old and current document downloads",
+    "Vue old/new SMS proof, lost challenge response original request replay, confirmation response lost and prior App session invalidation",
+    "Final Vue fresh reverse phone change, lost confirmation response, current401, contextual new-number login, returnCOMPLETED without loop, original account/order retained"
+  ],
+  "backend_gap": {
+    "owner": "chengcongcong222",
+    "field": "allowed_actions:string[]",
+    "rule": "compute per operator, state, association and self-review; missing means read-only; POST reauthorizes",
+    "record": "../../../tasks/records/UX-invoice-phone-20261030.md"
+  },
+  "limits": [
+    "Invoice operations progressed using explicit independent synthetic fixture staff actions, not operator browser forms.",
+    "Zero invoice correction does not prove refund; refund checked on original order separately.",
+    "All accounts, documents, SMS and funds are disposable local simulations. No real vendor was enabled.",
+    "No 151-standard registration was bulk marked accepted.",
+    "App753/Vue473 earlier full runs are not final patched full-suite reruns; targeted counts overlap."
+  ],
+  "cleanup": "CLEANUP.json",
+  "uploaded": false,
+  "merged": false,
+  "production_enabled": false,
+  "remote_checks": "PENDING_FOR_NEW_HEAD",
+  "shared_checks": {
+    "collaboration": "PASS",
+    "contract_offline": "PASS_16429_CHECKS",
+    "contract_runtime": "NOT_RUN_BY_OFFLINE_CHECK",
+    "acceptance_registration": "PASS_151_NOT_RUN",
+    "git_diff": "PASS"
+  }
+}

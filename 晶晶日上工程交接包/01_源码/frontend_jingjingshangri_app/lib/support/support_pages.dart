@@ -1,43 +1,8 @@
 import 'package:flutter/material.dart';
 import '../account/account_theme.dart';
-import '../engagement/community_support.dart' show communityId;
+export 'invoices.dart' show InvoicePage, invoiceBusinessRoute;
 import '../trade/trade_widgets.dart';
 import 'collections.dart';
-
-String invoiceBusinessRoute(String? orderId) => communityId(orderId)
-    ? Uri(path: '/trade/record', queryParameters: {'recordId': orderId!})
-        .toString()
-    : '/orders';
-
-/// No invoice API is available. The order remains the authoritative place to
-/// check payments; no invoice title, email or tax number is collected here.
-class InvoicePage extends StatelessWidget {
-  const InvoicePage({super.key, this.orderId});
-  final String? orderId;
-  @override
-  Widget build(BuildContext context) => tradeScaffold(context, '发票与票据', [
-        tradeHeading('发票与票据', eyebrow: '按订单查看费用凭据'),
-        tradeBanner('开票服务尚未开放', '当前无法提交开票申请或查询历史发票。请在原订单核对实际付款和已有业务凭据。'),
-        tradeSection('开票申请', [
-          const Text('发票抬头、接收邮箱、开票方与可开金额，需在开票服务接通后按订单核对。',
-              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-          const SizedBox(height: 16),
-          const OutlinedButton(onPressed: null, child: Text('个人抬头 · 暂未开放')),
-          const SizedBox(height: 8),
-          const OutlinedButton(onPressed: null, child: Text('企业抬头 · 暂未开放')),
-        ]),
-        tradeSection('历史票据', [
-          const Text('历史票据暂时无法读取；这不代表你没有票据。',
-              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-          const SizedBox(height: 16),
-          const OutlinedButton(onPressed: null, child: Text('查看已有票据 · 暂未开放')),
-        ]),
-        tradeButton('核对原订单与付款',
-            () => Navigator.pushNamed(context, invoiceBusinessRoute(orderId)),
-            outline: true),
-        const FilledButton(onPressed: null, child: Text('提交开票申请 · 暂未开放')),
-      ]);
-}
 
 class SavedHistoryPage extends StatelessWidget {
   const SavedHistoryPage({super.key});
