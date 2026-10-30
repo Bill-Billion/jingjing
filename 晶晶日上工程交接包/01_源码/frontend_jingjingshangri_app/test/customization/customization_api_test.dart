@@ -21,15 +21,15 @@ void main() {
     final result = await CustomizationApi(session).record(requestId);
     expect(result.id, requestId);
   });
-  test('表单按模板动态解析，保留历史与清空值，附件模板不可提交', () {
+  test('表单按模板动态解析，保留历史与清空值，附件模板遵从服务端提交能力', () {
     expect(StoryCategory(category()).template.fields.first.key, 'story');
     expect(
       StoryCategory(category(second: true)).template.fields.first.key,
       'moment',
     );
     expect(
-      StoryCategory(category(attachment: true)).template.submissionAvailable,
-      false,
+      StoryCategory(category(attachment: true)).submissionAvailable,
+      true,
     );
     final draft = StoryRequest(
       story(answers: const {'story': '', 'style': ''}),

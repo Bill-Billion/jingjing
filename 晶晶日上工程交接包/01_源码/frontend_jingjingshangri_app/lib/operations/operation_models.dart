@@ -136,6 +136,23 @@ class OperationSource {
 
 String operationEvent(String code) =>
     const {
+      'SUPPORT_SUBMIT': '反馈已提交',
+      'SUPPORT_START': '反馈已开始处理',
+      'SUPPORT_REQUEST_INFO': '反馈需要补充材料',
+      'SUPPORT_ANSWER': '反馈已有答复',
+      'SUPPORT_CLOSE': '反馈已关闭',
+      'SUPPORT_REOPEN': '反馈已重新提出',
+      'SUPPORT_SUPPLEMENT': '反馈已补交材料',
+      'AUDITION_MESSAGE_CREATED': '试镜会话有新消息',
+      'GIG_MESSAGE_CREATED': '商单会话有新消息',
+      'STOCK_DELIVERY_AVAILABLE': '现成影片有可查看的交付',
+      'STOCK_LICENSE_GRANTED': '现成影片许可已建立',
+      'STOCK_AFTERCARE_OPENED': '现成影片有新的售后申请',
+      'FINANCIAL_FACT_UPDATED': '资金核对记录已更新',
+      'PAYMENT_VERIFIED': '付款核对已有新的结论',
+      'PAYMENT_CREATED': '新增付款记录',
+      'INDEPENDENT_REVIEW': '有新的独立审核结论',
+      'SPEC_CREATED': '新增商品规格',
       'COMMENT_CREATED': '有新的对象留言',
       'PROJECT_STARTED': '项目已开工',
       'PROJECT_CANCELLED': '项目已取消',

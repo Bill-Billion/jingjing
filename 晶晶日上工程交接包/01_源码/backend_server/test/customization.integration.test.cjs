@@ -31,12 +31,13 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
   const org=await parties.createOrganization(buyer.ctx,{display_name:'合成故事测试机构',operation_key:key()});
   const invite=await parties.inviteMember(buyer.ctx,{party_id:org.party_id,invitee_account_id:member.account_id,expires_at:new Date(Date.now()+3600000).toISOString(),operation_key:key()});
   await parties.respondInvitation(member.ctx,{party_id:org.party_id,invitation_id:invite.invitation_id,decision:'ACCEPT',expected_version:1,operation_key:key()});
-  server=createAccountApi({db,secret}).listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  const files=new Map();let failAfterPut=false,failBeforePut=false,onRead=null;const storageFactory=()=>({async put(i){if(failBeforePut){failBeforePut=false;throw Object.assign(Error('synthetic write refused'),{code:'PROVIDER_CALL_FAILED',status:503});}files.set(i.key,Buffer.from(i.body));if(failAfterPut){failAfterPut=false;throw Object.assign(new Error('synthetic lost result'),{code:'PROVIDER_UNAVAILABLE',status:503});}},async getBuffer(k){const hook=onRead;onRead=null;if(hook)await hook();return files.get(k);}});
+  server=createAccountApi({db,secret,supplyStorageFactory:storageFactory}).listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
   async function request(method,url,person=buyer,body,partyId=person?.personal_party_id,headers={}){
    const h={...(person?{Authorization:'Bearer '+person.token}:{}),...(partyId?{'X-Acting-Party':partyId}:{}),...headers};
-   if(body!==undefined)h['Content-Type']='application/json';
-   const response=await fetch(base+url,{method,headers:h,...(body===undefined?{}:{body:JSON.stringify(body)})});
+   if(body!==undefined)h['Content-Type']=Buffer.isBuffer(body)?'application/octet-stream':'application/json';
+   const response=await fetch(base+url,{method,headers:h,...(body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)})});
    return {status:response.status,headers:response.headers,body:await response.json()};
   }
   function capture(response,schema){assert.equal(response.status,200,JSON.stringify(response.body));fixtures.push({schema,value:response.body});return response.body.data;}
@@ -63,7 +64,7 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    pet=await publish('pet',{title:'合成宠物故事',description:'仅用于隔离测试',fields:[{key:'pet_story',label:'相处故事',type:'TEXT',required:true,max_length:2000}]});
    attachment=await publish('with_material',{...snapshot,title:'合成必填材料故事',fields:[...snapshot.fields,{key:'portrait',label:'私有材料',type:'PRIVATE_ATTACHMENT',required:true}]});
    const cats=capture(await request('GET','/customization-categories',buyer,undefined,null),'CustomizationCategoryPageResponse');
-   assert.equal(cats.items.length,3);assert.equal(cats.items.find(x=>x.template_version_id===attachment.template_version_id).submission_available,false);
+   assert.equal(cats.items.length,3);assert.equal(cats.items.find(x=>x.template_version_id===attachment.template_version_id).submission_available,true);
    assert.notDeepEqual(cats.items.find(x=>x.category_code==='wedding').template_snapshot.fields,cats.items.find(x=>x.category_code==='pet').template_snapshot.fields);
    await assert.rejects(publish('wedding',{...snapshot,title:'企图覆盖旧版本'}),e=>e.status===409);
   });
@@ -158,10 +159,10 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    failed(await request('POST','/customization-requests',other,{template_version_id:wedding.template_version_id,answers:{}},other.personal_party_id,headers(null,operation_key)),403);
    await db.execute("UPDATE identity_accounts SET current_status='ACTIVE' WHERE id=?",[other.account_id]);
   });
-  await t.test('required attachments remain unavailable and cannot be smuggled in as a URL or forged evidence identifier',async()=>{
+  await t.test('required attachments reject missing files, public URLs and identifiers without an owned ready upload',async()=>{
    const row=await make(fullAnswers,buyer,buyer.personal_party_id,attachment);const missing=failed(await submit(row),422);
-   assert.ok(missing.body.error.details.some(x=>x.reason==='ATTACHMENT_SUBMISSION_NOT_READY'));
-   for(const portrait of ['https://example.invalid/public.jpg',key()])failed(await save(row,{...fullAnswers,portrait}),400);
+   assert.ok(missing.body.error.details.some(x=>x.reason==='REQUIRED'));
+   failed(await save(row,{...fullAnswers,portrait:'https://example.invalid/public.jpg'}),400);failed(await save(row,{...fullAnswers,portrait:key()}),409);
    assert.equal((await request('GET','/customization-requests/'+row.id)).body.data.current_status,'DRAFT');
   });
   await t.test('a valid long story can submit and replay even when the response contains more than 64 KiB of immutable content',async()=>{
@@ -332,12 +333,87 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    await assert.rejects(bad.submitSupplement(buyer.ctx,finish),/supplement audit failure/);assert.equal(await count('customization_submissions'),versions);assert.equal((await repo.getSupplement(buyer.ctx,{request_id:story.id,party_id:buyer.personal_party_id})).supplement.current_status,'OPEN');
    const complete=await repo.submitSupplement(buyer.ctx,finish);assert.equal(complete.current_status,'SUBMITTED');
   });
-  await t.test('supplements cannot request unavailable attachments, change template fields or accept a forged status',async()=>{
+  await t.test('supplements permit attachment corrections but reject forged states and missing version',async()=>{
    const template=await publish('optional_material',{...snapshot,fields:[...snapshot.fields,{key:'portrait',label:'未开放附件',type:'PRIVATE_ATTACHMENT',required:false}]});
    const story=capture(await intake(capture(await submit(await make(fullAnswers,buyer,buyer.personal_party_id,template)),'CustomizationRequestResponse')),'CustomizationRequestResponse');
-   failed(await openSupplement(story,[{...issues[0],field_key:'portrait'}]),422);
    failed(await request('POST','/operations/customization-requests/'+story.id+'/supplements',operator,{items:issues,approved:true},null,headers(story)),400);
    failed(await request('POST','/operations/customization-requests/'+story.id+'/supplements',operator,{items:issues},null,{'Idempotency-Key':key()}),428);
+  });
+  await t.test('private attachments upload, reopen, submit, supplement and retain immutable versions through HTTP',async()=>{
+   let r=await make(fullAnswers,buyer,buyer.personal_party_id,attachment);
+   const bytes=Buffer.from('synthetic private material'),base='/customization-requests/'+r.id+'/attachments';
+   const upload=(op=key(),who=buyer,body=bytes)=>request('POST',base+'?display_name='+encodeURIComponent('合成参考.txt')+'&media_type=text%2Fplain',who,body,who.personal_party_id,headers(null,op));
+   const download=async(asset,who=buyer,party=who.personal_party_id)=>fetch(baseUrl(asset),{headers:{Authorization:'Bearer '+who.token,...party?{'X-Acting-Party':party}:{}}});
+   function baseUrl(asset){return 'http://127.0.0.1:'+server.address().port+'/api/v1'+base+'/'+asset+'/content';}
+   const op=key(),f=capture(await upload(op),'CustomizationAttachmentResponse');
+   assert.equal(f.display_name,'合成参考.txt');assert.equal(f.current_status,'READY');assert.equal(f.object_key,undefined);
+   assert.equal(capture(await upload(op),'CustomizationAttachmentResponse').id,f.id);
+   failed(await upload(op,buyer,Buffer.from('different')),409);failed(await upload(key(),other),404);
+   let response=await download(f.id);assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');assert.deepEqual(Buffer.from(await response.arrayBuffer()),bytes);
+   assert.equal((await download(f.id,other)).status,404);assert.equal((await download(f.id,operator,null)).status,404);
+   const foreign=await make(fullAnswers,buyer,buyer.personal_party_id,attachment);failed(await save(foreign,{...fullAnswers,portrait:f.id}),409);
+   r=capture(await save(r,{...fullAnswers,portrait:f.id}),'CustomizationRequestResponse');
+   r=capture(await submit(r),'CustomizationRequestResponse');assert.equal((await download(f.id,operator,null)).status,200);
+   onRead=async()=>{const row=(await db.execute('SELECT object_version FROM governance_operator_grants WHERE account_id=? AND action_code=?',[operator.account_id,'CUSTOMIZATION_INTAKE']))[0][0];await grant(operator,'CUSTOMIZATION_INTAKE',false,row.object_version);};
+   assert.equal((await download(f.id,operator,null)).status,403);
+   const disabled=(await db.execute('SELECT object_version FROM governance_operator_grants WHERE account_id=? AND action_code=?',[operator.account_id,'CUSTOMIZATION_INTAKE']))[0][0];await grant(operator,'CUSTOMIZATION_INTAKE',true,disabled.object_version);
+   assert.equal(capture(await request('GET',base,operator,undefined,null),'CustomizationAttachmentPageResponse').items.length,1);
+   failed(await request('POST',base+'/'+f.id+'/revocations',buyer,{},buyer.personal_party_id,headers(f)),409);
+   r=capture(await intake(r),'CustomizationRequestResponse');
+   const correction=capture(await openSupplement(r,[{field_key:'portrait',reason:'换参考材料',instruction:'上传新的合成附件'}]),'CustomizationSupplementContextResponse');
+   const pending=capture(await upload(),'CustomizationAttachmentResponse');
+   assert.equal((await download(pending.id,operator,null)).status,404);
+   let cursor=null,seen=[];do{const page=capture(await request('GET',base+'?limit=1'+(cursor?'&cursor='+encodeURIComponent(cursor):''),operator,undefined,null),'CustomizationAttachmentPageResponse');seen.push(...page.items.map(x=>x.id));cursor=page.next_cursor;}while(cursor);assert.deepEqual(seen,[f.id]);
+   assert.equal(capture(await request('GET',base,operator,undefined,null),'CustomizationAttachmentPageResponse').items.length,1);
+   let patched=await repo.saveSupplement(buyer.ctx,{request_id:r.id,party_id:buyer.personal_party_id,answers:{...fullAnswers,portrait:pending.id},responses:{portrait:'已换合成附件'},expected_version:correction.object_version,operation_key:key()});
+   await repo.submitSupplement(buyer.ctx,{request_id:r.id,party_id:buyer.personal_party_id,expected_version:patched.object_version,operation_key:key()});
+   assert.equal((await download(pending.id,operator,null)).status,200);assert.equal((await download(f.id,operator,null)).status,200);
+   const retained=capture(await request('GET',base+'?include_retention=true'),'CustomizationAttachmentPageResponse');
+   assert.equal(retained.items.find(x=>x.id===f.id).retention_reason,'FORMAL_SUBMISSION');
+   assert.equal(retained.items.find(x=>x.id===pending.id).retention_reason,'FORMAL_SUBMISSION');
+   assert.equal(capture(await request('GET',base),'CustomizationAttachmentPageResponse').items[0].retention_reason,undefined);
+   failed(await request('GET',base+'?include_retention=unknown'),400);
+   const storedKey=[...files.keys()].find(k=>k.endsWith('/'+pending.id));files.set(storedKey,Buffer.from('corrupt'));
+   assert.equal((await download(pending.id)).status,503);
+  });
+  await t.test('free creation uses the existing publishing authority; unsubmitted files revoke and uncertain uploads recover',async()=>{
+   const free=require('../src/modules/customization/free-creation');
+   await assert.rejects(free.publish(repo,buyer.ctx,{template_version:1,source_ref:'synthetic:no-authority',operation_key:key()}));
+   const template=await free.publish(repo,publisher.ctx,{template_version:1,source_ref:'synthetic:free-creation',operation_key:key()});
+   let r=await make({story:'合成自由创作'},buyer,buyer.personal_party_id,template);
+   const url='/customization-requests/'+r.id+'/attachments?display_name=synthetic.txt&media_type=text%2Fplain',bytes=Buffer.from('uncertain synthetic');
+   failAfterPut=true;const op=key();failed(await request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,op)),503);
+   const f=capture(await request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,op)),'CustomizationAttachmentResponse');assert.equal(f.current_status,'READY');
+   const revoke='/customization-requests/'+r.id+'/attachments/'+f.id+'/revocations';
+   const gone=capture(await request('POST',revoke,buyer,{},buyer.personal_party_id,headers(f)),'CustomizationAttachmentResponse');assert.equal(gone.current_status,'REVOKED');
+   failed(await save(r,{story:'synthetic',material:f.id}),409);
+   failed(await request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,op)),409);
+   // Revocation closes access; it is deliberately not a claim of storage/backups erasure.
+   const content=await fetch('http://127.0.0.1:'+server.address().port+'/api/v1/customization-requests/'+r.id+'/attachments/'+f.id+'/content',{headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.personal_party_id}});assert.equal(content.status,409);
+   const another=await make({story:'另一个自由创作'},buyer,buyer.personal_party_id,template);
+   failed(await save(another,{story:'another',material:f.id}),409);
+  });
+  await t.test('missing upload retries repair the same row; unreadable, corrupt and no-longer-editable files do not overwrite',async()=>{
+   let r=await make(fullAnswers,buyer,buyer.personal_party_id,attachment);
+   const base='/customization-requests/'+r.id+'/attachments',url=base+'?display_name=repair.txt&media_type=text%2Fplain',bytes=Buffer.from('repair original only'),op=key();
+   const send=()=>request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,op));
+   failBeforePut=true;failed(await send(),503);
+   let rows=capture(await request('GET',base+'?include_retention=true'),'CustomizationAttachmentPageResponse').items;
+   assert.equal(rows.length,1);assert.equal(rows[0].current_status,'UPLOADING');assert.equal(rows[0].retention_reason,null);
+   const reserved=rows[0].id;
+   onRead=async()=>{throw Error('synthetic temporary read failure');};
+   assert.equal(failed(await send(),409).body.error.code,'ASSET_UPLOAD_RECONCILIATION_REQUIRED');
+   assert.equal([...files.keys()].some(k=>k.endsWith('/'+reserved)),false);
+   const recovered=capture(await send(),'CustomizationAttachmentResponse');assert.equal(recovered.id,reserved);assert.equal(recovered.current_status,'READY');
+   const concurrent=await Promise.all([send(),send()]);for(const result of concurrent)assert.equal(capture(result,'CustomizationAttachmentResponse').id,reserved);
+   assert.equal(capture(await request('GET',base),'CustomizationAttachmentPageResponse').items.length,1);
+   const corruptOp=key(),corruptSend=()=>request('POST',url,buyer,bytes,buyer.personal_party_id,headers(null,corruptOp));
+   failAfterPut=true;failed(await corruptSend(),503);
+   rows=capture(await request('GET',base),'CustomizationAttachmentPageResponse').items;
+   const unfinished=rows.find(x=>x.current_status==='UPLOADING'),objectKey=[...files.keys()].find(k=>k.endsWith('/'+unfinished.id));
+   files.set(objectKey,Buffer.from('corrupt'));assert.equal(failed(await corruptSend(),503).body.error.code,'SERVICE_UNAVAILABLE');assert.equal(files.get(objectKey).toString(),'corrupt');
+   r=capture(await save(r,{...fullAnswers,portrait:recovered.id}),'CustomizationRequestResponse');r=capture(await submit(r),'CustomizationRequestResponse');
+   files.delete(objectKey);assert.equal(failed(await corruptSend(),409).body.error.code,'CUSTOMIZATION_ATTACHMENT_NOT_EDITABLE');assert.equal(files.has(objectKey),false);
   });
   await t.test('story intake has no order, payment, refund or production side effects',async()=>{
    for(const table of ['trade_records','trade_journal','production_records'])assert.equal(await count(table),0,table+' must remain empty');

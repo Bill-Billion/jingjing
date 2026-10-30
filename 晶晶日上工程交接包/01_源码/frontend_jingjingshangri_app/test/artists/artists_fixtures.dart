@@ -138,6 +138,18 @@ Map<String, dynamic> artistRecord(
         'valid_from': null,
         'valid_until': null
       },
+    'LISTING' => {
+        'display_name': '待审核公开艺人',
+        'city': '杭州',
+        'introduction': '申请公开介绍',
+        'tags': ['测试'],
+        'audition_public': false,
+        'consent_id': recordKey,
+        'look_version_id': recordKey,
+        'voice_version_id': null,
+        'preview_asset_ids': [assetKey],
+        'primary_portrait_asset_id': null,
+      },
     'SERVICE' => {
         'kind': 'AVATAR_HOSTING',
         'spec_id': specKey,
@@ -177,6 +189,30 @@ Map<String, dynamic> assetData(
       'byte_size': (bytes ?? artistBytes).length,
       'content_sha256': sha256.convert(bytes ?? artistBytes).toString(),
       'current_status': 'READY'
+    };
+
+Map<String, dynamic> publicMediaItemData(
+        {String id = assetKey, String type = 'image/png', Uint8List? bytes}) =>
+    {
+      'asset_id': id,
+      'media_type': type,
+      'media_kind': type.startsWith('image/')
+          ? 'IMAGE'
+          : type.startsWith('audio/')
+              ? 'AUDIO'
+              : type.startsWith('video/')
+                  ? 'VIDEO'
+                  : 'DOCUMENT',
+      'byte_size': (bytes ?? artistBytes).length,
+      'content_sha256': sha256.convert(bytes ?? artistBytes).toString(),
+    };
+
+Map<String, dynamic> publicMediaData(
+        {String? primary = assetKey, List<Map<String, dynamic>>? items}) =>
+    {
+      'listing_id': listingKey,
+      'primary_portrait_asset_id': primary,
+      'items': items ?? [publicMediaItemData()],
     };
 FakeAccountAdapter artistAdapter(
     {FutureOr<ResponseBody?> Function(RequestOptions)? override}) {

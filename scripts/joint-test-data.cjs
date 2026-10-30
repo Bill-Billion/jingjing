@@ -11,7 +11,7 @@ async function check(s){
  let timer;
  try{
   ready=await new Promise((resolve,reject)=>{
-   timer=setTimeout(()=>reject(Error('START_TIMEOUT')),90000);
+   timer=setTimeout(()=>reject(Error('START_TIMEOUT')),s.start_timeout_ms||90000);
    child.stdout.on('data',b=>{buffer+=b.toString();let end;while((end=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);try{const v=JSON.parse(line);if(v.status==='READY'){clearTimeout(timer);resolve(v);}}catch{}}});
    ended.then(code=>reject(Error('START_EXIT_'+code)));
   });
@@ -29,7 +29,7 @@ async function check(s){
   clearTimeout(timer);
   if(ready?.stop_file){const stop=path.resolve(root,ready.stop_file);if(stop.startsWith(path.join(root,'.local')+path.sep))await fs.writeFile(stop,'stop\n');}
   else if(!closed)child.stdin.write('quit\n');
-  let timeout;const code=await Promise.race([ended,new Promise(resolve=>{timeout=setTimeout(()=>resolve('CLEANUP_TIMEOUT'),15000);})]);clearTimeout(timeout);
+  let timeout;const code=await Promise.race([ended,new Promise(resolve=>{timeout=setTimeout(()=>resolve('CLEANUP_TIMEOUT'),s.cleanup_timeout_ms||15000);})]);clearTimeout(timeout);
   if(code!==0){report.status='FAIL';report.cleanup=code;}else report.cleanup='STOPPED';
  }
  return report;

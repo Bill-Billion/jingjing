@@ -68,7 +68,6 @@ async function moreParties() {
   try { await session.loadMoreParties() }
   catch (cause) { if (session.current(captured) && !disposed) { reader.clear(); error.value = asApiError(cause) } }
 }
-const menuOpen = ref(false)
 </script>
 
 <template>
@@ -79,7 +78,7 @@ const menuOpen = ref(false)
       <div class="header-account account-actions"><span>{{ session.account?.display_name || '我的账号' }}</span><button @click="logout">退出登录</button></div>
     </header>
     <div class="workspace-layout supply-layout">
-      <aside class="sidebar supply-sidebar"><button class="outline editorial-menu-toggle" type="button" aria-controls="contract-workspace-menu" :aria-expanded="menuOpen" @click="menuOpen=!menuOpen">工作区导航 <span>{{menuOpen?'收起':'展开'}}</span></button><div id="contract-workspace-menu" class="editorial-menu" :class="{expanded:menuOpen}">
+      <aside class="sidebar supply-sidebar">
         <WorkspaceNav />
         <div class="identity-control supply-identity"><label for="contract-party">当前工作身份</label>
           <select id="contract-party" :value="session.selectedId" :disabled="initializing" data-testid="contract-party" @change="chooseIdentity"><option value="" disabled>请选择身份</option><option v-for="item in session.parties" :key="item.party.id" :value="item.party.id">{{ item.party.display_name }}</option></select>
@@ -87,7 +86,7 @@ const menuOpen = ref(false)
           <button v-if="session.nextCursor" :disabled="session.loadingParties" @click="moreParties">加载更多身份</button>
           <RouterLink v-if="!initializing && !session.parties.length" to="/workspace">前往账号与机构选择身份</RouterLink>
         </div>
-      </div></aside>
+      </aside>
       <main class="contract-main supply-main" :aria-busy="!!busy || initializing">
         <div class="page-heading supply-heading"><div><p class="breadcrumb">合同与规则 / 内容阅读</p><h1>指定合同与引用规则</h1><p class="subtitle">核对这份合同封存时的承诺、规则和签署事实。</p></div><RouterLink class="back-link" to="/workspace">返回工作台</RouterLink></div>
         <section class="content-card supply-card query-card" aria-labelledby="query-heading">

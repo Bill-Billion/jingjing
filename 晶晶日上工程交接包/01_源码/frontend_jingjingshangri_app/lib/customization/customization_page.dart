@@ -8,6 +8,8 @@ import '../account/app_visual.dart';
 import '../pages/login/login_page.dart';
 import '../trade/trade_widgets.dart';
 import 'customization_api.dart';
+import 'customization_attachment_panel.dart';
+import 'customization_attachments.dart';
 import 'customization_followup.dart';
 import 'customization_models.dart';
 
@@ -252,6 +254,7 @@ class _StoryEditorState extends State<_StoryEditor> {
   Map<String, String> fieldErrors = {};
   String? error, notice;
   bool busy = false, dirty = false, conflict = false, denied = false;
+  bool attachmentWorking = false;
   StoryTemplate? get template => record?.template ?? selected?.template;
   StoryPending? get pending =>
       denied ? null : api.pending(id: record?.id ?? widget.id);
@@ -261,7 +264,15 @@ class _StoryEditorState extends State<_StoryEditor> {
       (record == null ||
           record!.allows('SAVE') ||
           supplementOpen && supplement!.allows('SAVE_SUPPLEMENT'));
-  bool get locked => busy || pending != null;
+  StoryAttachmentApi? get attachmentApi =>
+      record == null || denied ? null : StoryAttachmentApi(api, record!.id);
+  bool get locked =>
+      busy ||
+      pending != null ||
+      attachmentWorking ||
+      (attachmentApi?.unresolved ?? false);
+  bool get submissionAvailable =>
+      record != null || selected?.submissionAvailable == true;
   @override
   void initState() {
     super.initState();
@@ -329,7 +340,7 @@ class _StoryEditorState extends State<_StoryEditor> {
   }
 
   void onError(AccountError value) {
-    error = storyError(value);
+    error = storyAttachmentError(value);
     fieldErrors = {
       for (final detail in value.details)
         detail['field']!: storyReason(detail['reason']),
@@ -350,6 +361,7 @@ class _StoryEditorState extends State<_StoryEditor> {
       applySupplement(null);
       fieldErrors = {};
       notice = null;
+      attachmentWorking = false;
     }
   }
 
@@ -444,7 +456,7 @@ class _StoryEditorState extends State<_StoryEditor> {
 
   Future<void> save({bool submit = false}) async {
     if (locked || conflict || template == null || !editable) return;
-    if (submit && (!template!.submissionAvailable || !validateSubmission())) {
+    if (submit && (!submissionAvailable || !validateSubmission())) {
       return;
     }
     if (submit &&
@@ -464,6 +476,10 @@ class _StoryEditorState extends State<_StoryEditor> {
       fieldErrors = {};
     });
     try {
+      if (record != null) {
+        await attachmentApi!.ensureReady(template!, completeAnswers());
+        if (!mounted) return;
+      }
       if (supplementOpen) {
         var current = supplement!;
         if (dirty) {
@@ -604,6 +620,14 @@ class _StoryEditorState extends State<_StoryEditor> {
   }
 
   Future<bool> leave() async {
+    if (!busy &&
+        !attachmentWorking &&
+        pending == null &&
+        attachmentApi?.needsPlatformReview == true &&
+        attachmentApi!.revocationPending.isEmpty) {
+      return confirm('暂时离开，稍后恢复原上传？',
+          '原文件和原上传请求会保留在当前登录会话，重新打开这份故事后可继续核对。${dirty ? '本页尚未保存的文字与附件选择将丢失。' : ''}退出账号、切换身份或关闭应用会清理私有临时数据；不要重新发起同一上传。');
+    }
     if (locked) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('操作仍在处理或结果尚未确认，请先核对原操作结果。')));
@@ -680,19 +704,6 @@ class _StoryEditorState extends State<_StoryEditor> {
                       })
                   : null,
             ),
-          if (field.type == 'PRIVATE_ATTACHMENT') ...[
-            const DashedUpload(
-              child: Row(
-                children: [
-                  Icon(Icons.lock_outline),
-                  SizedBox(width: 10),
-                  Expanded(child: Text('私有附件提交尚未开放。本轮可先保存文字，请勿粘贴公开文件链接。')),
-                ],
-              ),
-            ),
-            if (warning != null)
-              Text(warning, style: const TextStyle(color: AccountTheme.danger)),
-          ],
         ],
       ),
     );
@@ -820,7 +831,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                         fontSize: 15,
                         fontWeight: FontWeight.w600)),
                 subtitle: Text(
-                  '${category.template.description}${category.template.submissionAvailable ? '' : '\n可保存文字，暂不可正式提交'}',
+                  '${category.template.description}${category.submissionAvailable ? '' : '\n可保存草稿，当前暂不可正式提交'}',
                   style: TextStyle(
                       color: selected?.id == category.id
                           ? const Color(0xFFD9D5CB)
@@ -888,17 +899,61 @@ class _StoryEditorState extends State<_StoryEditor> {
             ],
           ]),
         const SizedBox(height: 8),
-        _section(template!.title, [
-          if (template!.description.isNotEmpty) _note(template!.description),
-          if (fieldErrors['answers'] != null)
-            appNotice(fieldErrors['answers']!, icon: Icons.error_outline),
-          for (final item in template!.fields) field(item),
-          _note(
-            record != null ? '这里保留这份需求保存时的问题与故事内容。' : '没写完也可以保存。正式提交时再检查必填项。',
-          ),
-        ]),
-        if (!template!.submissionAvailable)
-          appNotice('此品类含必填私有附件，附件提交尚未开放。你可以保存文字草稿，当前无法正式提交。'),
+        KeyedSubtree(
+            key: const ValueKey('story-form-section'),
+            child: _section(template!.title, [
+              if (template!.description.isNotEmpty)
+                _note(template!.description),
+              if (fieldErrors['answers'] != null)
+                appNotice(fieldErrors['answers']!, icon: Icons.error_outline),
+              for (final item in template!.fields
+                  .where((f) => f.type != 'PRIVATE_ATTACHMENT'))
+                field(item),
+              if (template!.fields.any((f) => f.type == 'PRIVATE_ATTACHMENT'))
+                if (record == null)
+                  appNotice('先保存故事草稿，再选择文件并上传。附件不会随文字自动提交；上传后仍须保存绑定并确认正式提交。')
+                else
+                  StoryAttachmentPanel(
+                    key: ValueKey('story-attachments-${record!.id}'),
+                    api: api,
+                    requestId: record!.id,
+                    fields: template!.fields
+                        .where((f) => f.type == 'PRIVATE_ATTACHMENT')
+                        .toList(),
+                    answers: Map.of(answers),
+                    fieldErrors: fieldErrors,
+                    formalIds: {
+                      for (final field in template!.fields
+                          .where((f) => f.type == 'PRIVATE_ATTACHMENT'))
+                        if ((record!.data['submission']?['answers']?[field.key]
+                                    as String?)
+                                ?.isNotEmpty ==
+                            true)
+                          record!.data['submission']['answers'][field.key]
+                              as String,
+                    },
+                    editable: editable,
+                    enabled: !busy && pending == null && !conflict,
+                    onWorking: (value) {
+                      if (mounted) setState(() => attachmentWorking = value);
+                    },
+                    onDenied: (e) {
+                      if (mounted) setState(() => onError(e));
+                    },
+                    onBind: (key, id) => setState(() {
+                      answers[key] = id;
+                      dirty = true;
+                      fieldErrors.remove('answers.$key');
+                      notice = null;
+                    }),
+                  ),
+              _note(
+                record != null
+                    ? '这里保留这份需求保存时的问题与故事内容。'
+                    : '没写完也可以保存。正式提交时再检查必填项。',
+              ),
+            ])),
+        if (!submissionAvailable) appNotice('当前服务端模板暂不可正式提交，可以先保存草稿，稍后重新读取品类。'),
       ],
       if (conflict) ...[
         appNotice('记录已有更新。本页输入已保留，先读取当前版本核对，再决定如何保存。'),
@@ -917,6 +972,14 @@ class _StoryEditorState extends State<_StoryEditor> {
         ),
       if (record != null && record!.status != 'DRAFT')
         _section('正式记录与报价', [
+          OutlinedButton(
+              key: const ValueKey('story-cocreation'),
+              onPressed: locked || dirty
+                  ? null
+                  : () => Navigator.pushNamed(
+                      context, '/cocreation?view=new&recordId=${record!.id}'),
+              child: const Text('以这份故事发起多人共创')),
+          _note('共创须在正式报价前建立。进入后继续选择当前承制方和已审规则；已有订单不能补建房间沿用旧报价。'),
           OutlinedButton(
               key: const ValueKey('story-history'),
               onPressed: locked || dirty
@@ -1006,7 +1069,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                                   key: const ValueKey('story-submit'),
                                   onPressed: locked ||
                                           conflict ||
-                                          !template!.submissionAvailable ||
+                                          !submissionAvailable ||
                                           (supplementOpen
                                               ? !supplement!
                                                   .allows('SUBMIT_SUPPLEMENT')

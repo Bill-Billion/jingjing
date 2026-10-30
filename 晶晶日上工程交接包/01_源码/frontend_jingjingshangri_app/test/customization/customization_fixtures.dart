@@ -48,9 +48,8 @@ Map<String, dynamic> category({
       'category_code': second ? 'LIFE' : 'FAMILY',
       'template_version': 1,
       'template_snapshot': template(second: second, attachment: attachment),
-      'submission_available': !attachment,
-      'unavailable_reason':
-          attachment ? 'ATTACHMENT_SUBMISSION_NOT_READY' : null,
+      'submission_available': true,
+      'unavailable_reason': null,
     };
 Map<String, dynamic> story({
   String id = requestId,

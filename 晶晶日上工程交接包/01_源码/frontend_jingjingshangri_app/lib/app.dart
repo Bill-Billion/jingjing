@@ -4,14 +4,19 @@ import 'account/rest_reminder.dart';
 import 'artists/artists_pages.dart';
 import 'artists/artists_forms.dart';
 import 'account/account_page.dart';
+import 'account/phone_change.dart';
 import 'contracts/contract_page.dart';
 import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
 import 'supply/supply_record.dart';
 import 'navigation/app_shell.dart';
-import 'plaza/plaza_pages.dart';
 import 'discovery/discovery_pages.dart';
 import 'support/support_pages.dart';
+import 'support/collections.dart';
+import 'support/tickets.dart';
+import 'discovery/public_discovery.dart';
+import 'operations/identity_notifications.dart';
+import 'account/business_library.dart';
 import 'customization/customization_page.dart';
 import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
@@ -91,6 +96,7 @@ class JingjingShangriApp extends StatelessWidget {
               '/login' =>
                 LoginPage(returnRoute: uri.queryParameters['returnRoute']),
               '/account' => const AccountPage(),
+              '/account/phone-change' => const PhoneChangePage(),
               '/contract' => ContractPage(
                   snapshotId: uri.queryParameters['snapshotId'] ??
                       (args is Map && args['snapshotId'] is String
@@ -109,11 +115,31 @@ class JingjingShangriApp extends StatelessWidget {
                   recordId: uri.queryParameters['recordId'] ?? ''),
               '/settings' => const AppHelpPage(),
               '/help' => const HelpFeedbackPage(),
-              '/search' => PlazaSearchPage(
+              '/search' => PublicSearchPage(
                   initialCity: uri.queryParameters['city'] ?? ''),
-              '/saved' => const SavedHistoryPage(),
-              '/invoices' =>
-                InvoicePage(orderId: uri.queryParameters['orderId']),
+              '/search/filters' => DiscoverySearchPage(
+                  initialCity: uri.queryParameters['city'] ?? ''),
+              '/library' => BusinessLibraryPage(
+                  section: uri.queryParameters['section'] ?? 'contracts'),
+              '/saved' => const PersonalCollectionsPage(),
+              '/support' => const SupportPage(),
+              '/support/new' => SupportPage(
+                  create: true,
+                  targetDomain: uri.queryParameters['domain'],
+                  targetId: uri.queryParameters['recordId']),
+              '/support/ticket' =>
+                SupportPage(ticketId: uri.queryParameters['ticketId'] ?? ''),
+              '/directory' =>
+                PublicDirectoryPage(city: uri.queryParameters['city'] ?? ''),
+              '/directory/featured' => PublicDirectoryPage(
+                  featured: true, city: uri.queryParameters['city'] ?? ''),
+              '/directory/organization' => PublicDirectoryPage(
+                  partyId: uri.queryParameters['partyId'] ?? ''),
+              '/artists/public' => PublicArtistPage(
+                  listingId: uri.queryParameters['listingId'] ?? ''),
+              '/invoices' => InvoicePage(
+                  orderId: uri.queryParameters['orderId'],
+                  invoiceId: uri.queryParameters['invoiceId']),
               '/producers/public' => PublicProducerPage(
                   partyId: uri.queryParameters['partyId'] ?? '',
                   city: uri.queryParameters['city'] ?? ''),
@@ -195,7 +221,8 @@ class JingjingShangriApp extends StatelessWidget {
                   agreementSha256:
                       uri.queryParameters['agreementSha256'] ?? ''),
               '/auditions' || '/auditions/catalog' => AuditionsPage(
-                  initialCity: uri.queryParameters['city'] ?? ''),
+                  initialCity: uri.queryParameters['city'] ?? '',
+                  invitationId: uri.queryParameters['invitationId']),
               '/auditions/bookings' => const AuditionsPage(mode: 'bookings'),
               '/auditions/booking' => AuditionsPage(
                   mode: 'booking', id: uri.queryParameters['bookingId']),
@@ -277,8 +304,7 @@ class JingjingShangriApp extends StatelessWidget {
                   grantId: uri.queryParameters['grantId'] ?? ''),
               '/licensing/reading' => LicenseReaderPage(
                   recordId: uri.queryParameters['recordId'] ?? ''),
-              '/operations/notifications' =>
-                const OperationsNotificationsPage(),
+              '/operations/notifications' => const IdentityNotificationsPage(),
               '/operations/notification' => OperationsNotificationsPage(
                   eventId:
                       int.tryParse(uri.queryParameters['eventId'] ?? '') ?? 0),
@@ -308,6 +334,8 @@ class JingjingShangriApp extends StatelessWidget {
                 const EngagementPage(),
               '/gigs/ranking' =>
                 GigRankingPage(recordId: uri.queryParameters['recordId']),
+              '/engagement/record' => NotificationActivityPage(
+                  recordId: uri.queryParameters['recordId'] ?? ''),
               '/engagement' => EngagementPage(
                   view: uri.queryParameters['view'] ?? 'rankings',
                   recordId: uri.queryParameters['recordId'] ??
@@ -335,7 +363,9 @@ class JingjingShangriApp extends StatelessWidget {
               '/stock/listings' => const StockPage(mode: 'listings'),
               '/stock/new' => const StockPage(mode: 'new'),
               '/stock/listing' => StockPage(
-                  mode: 'listing', id: uri.queryParameters['listingId']),
+                  mode: 'listing',
+                  id: uri.queryParameters['listingId'],
+                  action: uri.queryParameters['action']),
               '/stock/purchases' ||
               '/video-order' =>
                 const StockPage(mode: 'purchases'),
@@ -356,6 +386,7 @@ class JingjingShangriApp extends StatelessWidget {
                 const NoticesPage(mode: 'qualification'),
               '/notices/submit' => NoticesPage(
                   mode: 'submit',
+                  listingId: uri.queryParameters['listingId'],
                   id: uri.queryParameters['noticeId'] ??
                       uri.queryParameters['sourceId'],
                   kind: uri.queryParameters['kind']),

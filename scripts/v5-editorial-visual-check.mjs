@@ -5,6 +5,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { createHash } from 'node:crypto'
 import { resolve, join } from 'node:path'
+import {ensureWorkspaceNavigation,checkWorkspaceNavigation} from './workspace-navigation-check.mjs'
 const root = process.cwd()
 const fixture = JSON.parse(await readFile(process.env.CUSTOMIZATION_ACCESS_FILE, 'utf8'))
 assert(fixture.synthetic_only && new URL(fixture.base_url).hostname === '127.0.0.1')
@@ -144,11 +145,14 @@ try {
    await shot(page,'web-finance-result-'+width,ref)
   }
   const menu=page.locator('.workspace-nav a')
-  assert.equal(await menu.count(),43,'All 43 workspace entrances remain')
+  assert.equal(await menu.count(),70,'All 70 workspace entrances remain')
+  assert.equal(await page.locator('.workspace-nav-parent').count(),7,'All 7 functional groups remain')
   if(width===390) {
-   await page.getByRole('button',{name:'工作区导航 展开'}).click()
-   assert(await menu.first().isVisible(),'Collapsed menu opens')
-   await page.getByRole('button',{name:'工作区导航 收起'}).click()
+   await ensureWorkspaceNavigation(page)
+   assert(await menu.first().isVisible(),'Category expansion reveals child links')
+   await checkWorkspaceNavigation(page)
+   assert(await page.locator('.workspace-nav').isVisible(),'Collapsed categories keep the navigation visible')
+   assert.equal(await page.locator('.workspace-nav-children:visible').count(),0)
   }
   await context.close()
  }

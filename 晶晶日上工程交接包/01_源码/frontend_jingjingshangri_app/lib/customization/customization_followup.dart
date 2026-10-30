@@ -9,6 +9,7 @@ import '../trade/trade_models.dart';
 import '../trade/trade_pages.dart';
 import '../trade/trade_widgets.dart';
 import 'customization_api.dart';
+import 'customization_attachment_panel.dart';
 import 'customization_models.dart';
 
 // History and quote states extend the original film-editorial story pages.
@@ -186,12 +187,29 @@ class _FollowupListState extends State<_FollowupList> {
           Text('第 ${selected!.data['submission_number']} 次正式提交 · 原内容',
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-          for (final f in selected!.template.fields)
+          for (final f in selected!.template.fields
+              .where((f) => f.type != 'PRIVATE_ATTACHMENT'))
             tradeFact(
                 f.label,
                 selected!.answers[f.key]?.isNotEmpty == true
                     ? selected!.answers[f.key]
                     : '（未填写）'),
+          if (selected!.template.fields
+              .any((f) => f.type == 'PRIVATE_ATTACHMENT'))
+            StoryAttachmentPanel(
+              key: ValueKey(
+                  'story-version-attachments-${selected!.data['submission_number']}'),
+              api: api,
+              requestId: widget.id,
+              fields: selected!.template.fields
+                  .where((f) => f.type == 'PRIVATE_ATTACHMENT')
+                  .toList(),
+              answers: selected!.answers,
+              readOnly: true,
+              onDenied: (e) {
+                if (mounted) setState(() => fail(e));
+              },
+            ),
           for (final item in selected!.items)
             tradeSection(
                 '当时要求 · ${selected!.template.fields.firstWhere((f) => f.key == item.key).label}',

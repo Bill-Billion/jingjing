@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { createSession, getCurrentAccount, listMyParties, getParty, revokeCurrentSession, sendCommand } from '@/api/modules/account'
-import { ApiError, newIdempotencyKey, onUnauthorized, outcomeUnknown } from '@/api/client'
+import { ApiError, newIdempotencyKey, onUnauthorized, outcomeUnknown, type UnauthorizedRecovery } from '@/api/client'
 import type { Account, AccountCommand, PartyAccess, Invitation } from '@/api/types'
 
 const keys = { token: 'ops.session.token', expires: 'ops.session.expires_at', selected: 'ops.session.selected', receipts: 'ops.session.receipts', pending: 'ops.session.pending' }
@@ -21,6 +21,7 @@ export const useSessionStore = defineStore('session', () => {
   const loadingParties = ref(false)
   const revision = ref(0)
   const notice = ref('')
+  const loginRecovery = ref<UnauthorizedRecovery | null>(null)
   let generation = 0
   let partyRequest = 0
   let logoutPromise: Promise<void> | null = null
@@ -40,8 +41,9 @@ export const useSessionStore = defineStore('session', () => {
     loadingAccount.value = loadingParties.value = false
     Object.values(keys).forEach(key => sessionStorage.removeItem(key))
     notice.value = message
+    loginRecovery.value = null
   }
-  onUnauthorized(t => { if (t === token.value) clearLocal('登录已失效，请重新登录。') })
+  onUnauthorized((t,recovery) => { if (t === token.value) { clearLocal('登录已失效，请重新登录。'); loginRecovery.value = recovery ?? null } })
   function selectParty(id: string) {
     if (!parties.value.some(p => p.party.id === id)) return
     if (selectedId.value !== id) revision.value++
@@ -133,5 +135,5 @@ export const useSessionStore = defineStore('session', () => {
     })().finally(() => { logoutPromise = null })
     return logoutPromise
   }
-  return { token, expiresAt, account, parties, nextCursor, selectedId, selected, receipts, pending, commandBusy, loadingAccount, loadingParties, revision, notice, isLoggedIn, capture, current, selectParty, loginByCode, loadAccount, loadParties, loadMoreParties, refreshSelected, execute, logout, clearLocal }
+  return { token, expiresAt, account, parties, nextCursor, selectedId, selected, receipts, pending, commandBusy, loadingAccount, loadingParties, revision, notice, loginRecovery, isLoggedIn, capture, current, selectParty, loginByCode, loadAccount, loadParties, loadMoreParties, refreshSelected, execute, logout, clearLocal }
 })

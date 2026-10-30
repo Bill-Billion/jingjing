@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import {readFile,writeFile,mkdir,readdir,unlink} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {resolve,join} from 'node:path'
-import {ensureWorkspaceNavigation} from './workspace-navigation-check.mjs'
+import {ensureWorkspaceNavigation,checkWorkspaceNavigation} from './workspace-navigation-check.mjs'
 
 const root=process.cwd(),accessPath=process.env.ARTISTS_ACCESS_FILE
 assert(accessPath,'ARTISTS_ACCESS_FILE must identify the existing synthetic fixture')
@@ -37,7 +37,7 @@ const cases=[
 const recaptureKeys=(process.env.ARTISTS_VISUAL_RECAPTURE||'').split(',').filter(Boolean)
 for(const key of recaptureKeys)assert(cases.some(c=>c.key===key),'Unknown recapture page: '+key)
 const baseline=recaptureKeys.length?JSON.parse(await readFile(join(out,'WEB_VISUAL_MATRIX.json'),'utf8')):null
-if(baseline){assert.equal(baseline.result,'PASS');assert.equal(baseline.business_write_count,0);assert.equal(baseline.matrix_count,27)}
+if(baseline){assert.equal(baseline.result,'PASS');assert.equal(baseline.business_write_count,0);assert.equal(baseline.matrix_count,27);assert(baseline.matrix.every(m=>m.navigation_count===70&&m.navigation_groups===7),'Shared navigation changed: rerun without ARTISTS_VISUAL_RECAPTURE before reusing visual evidence')}
 const {chromium}=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core')
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true})
 const contexts=[],pages=new Map(),screenshots=[],matrix=[],writes=[],requests=[],pageErrors=[],consoleErrors=[],failedRequests=[],fontResponses=[]
@@ -61,9 +61,9 @@ async function actorPage(role){
 async function inspect(page,c,width){
  assert.equal(new URL(page.url()).pathname,c.path)
  assert.equal(await page.getByTestId('artists-workspace').count(),1)
- assert.equal(await page.locator('.workspace-nav a').count(),43)
+ assert.equal(await page.locator('.workspace-nav a').count(),70);assert.equal(await page.locator('.workspace-nav-parent').count(),7)
  const links=await page.locator('.workspace-nav a').evaluateAll(as=>as.map(a=>({href:a.getAttribute('href'),label:a.textContent.trim(),current:a.getAttribute('aria-current')==='page'})))
- assert.equal(new Set(links.map(l=>l.href)).size,43);for(const href of original41)assert(links.some(l=>l.href===href),'Original entrance missing: '+href)
+ assert.equal(new Set(links.map(l=>l.href)).size,70);for(const href of original41)assert(links.some(l=>l.href===href),'Original entrance missing: '+href)
  assert.deepEqual(links.filter(l=>l.current).map(l=>l.href),[c.role==='reviewer'?'/artists/reviews/CONSENT':'/artists/people'])
  const text=await page.locator('body').ariaSnapshot(),values=await page.locator('input,textarea').evaluateAll(ns=>ns.map(n=>n.value).join('\n'))
  for(const secret of secrets){assert(!text.includes(secret),'Credential must not appear in accessible UI');assert(!values.includes(secret),'Credential must not appear in form controls')}
@@ -72,7 +72,7 @@ async function inspect(page,c,width){
  if(style.primary){assert.equal(style.primary.background,'rgb(23, 23, 23)');assert.equal(style.primary.color,'rgb(243, 240, 231)');assert.equal(style.primary.radius,'0px')}
  assert(style.requiredLabelsInline,'Required marker stays with the field label')
  assert.equal(writes.length,0,'Visual acceptance cannot send business writes')
- return {style,original_41_preserved:true,navigation_count:43,navigation_active:links.filter(l=>l.current)[0].href,credentials_visible:false,...matrix.length===0?{navigation:links}:{}}
+ return {style,original_41_preserved:true,navigation_count:70,navigation_groups:7,navigation_active:links.filter(l=>l.current)[0].href,credentials_visible:false,...matrix.length===0?{navigation:links}:{}}
 }
 async function shot(page,c,width,suffix='overview'){
  const name=`${c.key}-${width}-${suffix}.png`;await page.mouse.move(0,0);await page.screenshot({path:join(out,name),fullPage:false})
@@ -84,7 +84,7 @@ try{
   for(const width of [1440,390,...c.small?[375]:[]]){
    await page.setViewportSize({width,height:width<600?844:1000});await page.goto(web+c.path);await page.getByTestId(c.ready).waitFor();await page.waitForLoadState('networkidle');await page.evaluate(async()=>{await document.fonts.load('700 30px EditorialSerif');await document.fonts.ready})
    if(c.prepare)await c.prepare(page);if(c.verify)await c.verify(page)
-   let menuOpened=false;if(width<600){await ensureWorkspaceNavigation(page);assert(await page.locator('.workspace-nav').isVisible());menuOpened=true;await page.getByRole('button',{name:/^工作区导航\s+收起$/}).click();assert(!await page.locator('.workspace-nav').isVisible())}
+   let categoriesChecked=false;if(width<600){await ensureWorkspaceNavigation(page);assert(await page.locator('.workspace-nav a').first().isVisible());await checkWorkspaceNavigation(page);assert(await page.locator('.workspace-nav').isVisible());assert.equal(await page.locator('.workspace-nav-children:visible').count(),0);categoriesChecked=true}
    await page.evaluate(()=>window.scrollTo(0,0));const details=await inspect(page,c,width),files=[]
    const focus=async()=>{const target=c.focus.testid?page.getByTestId(c.focus.testid):page.locator(c.focus.selector).first();await target.evaluate(el=>el.scrollIntoView({block:'start'}))}
    // Record pages use one useful content viewport. Only the three long forms
@@ -92,7 +92,7 @@ try{
    const extraForm=c.key.endsWith('form')&&width!==375
    if(c.focus&&!extraForm){await focus();files.push(await shot(page,c,width,'content'))}
    else{files.push(await shot(page,c,width));if(c.focus){await focus();files.push(await shot(page,c,width,'content'))}}
-   matrix.push({key:c.key,label:c.label,role:c.role,path:c.path,viewport:width,result:'PASS',reference_file:c.ref,app_frames:c.frames,web_adaptation:true,reference_note:c.note||'采用App刊物风格与业务映射；没有PC原稿逐像素对应声明。',mobile_menu_opened_and_closed:menuOpened,files,captured_at:new Date().toISOString(),...details})
+   matrix.push({key:c.key,label:c.label,role:c.role,path:c.path,viewport:width,result:'PASS',reference_file:c.ref,app_frames:c.frames,web_adaptation:true,reference_note:c.note||'采用App刊物风格与业务映射；没有PC原稿逐像素对应声明。',mobile_categories_expanded_and_collapsed:categoriesChecked,files,captured_at:new Date().toISOString(),...details})
    console.log(`PASS ${c.key} ${width}`)
   }
  }

@@ -10,7 +10,9 @@ import 'package:jingjingshangri_app/notices/notices_api.dart';
 import 'package:jingjingshangri_app/stock/v5_support.dart';
 import 'package:jingjingshangri_app/stock/stock_pages.dart';
 import 'package:jingjingshangri_app/stock/stock_public_card.dart';
+import 'package:jingjingshangri_app/stock/stock_public_media.dart';
 import 'account/fake_account_api.dart';
+import 'artists/artists_fixtures.dart' show publicMediaData;
 import 'catalog_editorial_restore_test.dart' show publicListing;
 import 'notices/notices_test.dart' show noticeId, noticeData;
 import 'stock/stock_test.dart' show stockOffer;
@@ -36,9 +38,14 @@ Future<void> layoutHost(WidgetTester t, AccountSession session, Widget page,
 void main() {
   testWidgets('公开详情为32px紧凑肖像并按真实城市进入有效试镜目录', (t) async {
     final adapter = FakeAccountAdapter(
-        handler: (request) => request.path.endsWith('/content')
-            ? ResponseBody.fromBytes([1, 2, 3], 200)
-            : FakeAccountAdapter().defaultReply(request));
+        handler: (request) => request.path ==
+                '/api/v1/artists/catalog/${publicListing()['listing_id']}'
+            ? envelope(publicListing())
+            : request.path.endsWith('/media')
+                ? envelope(publicMediaData(primary: null))
+                : request.path.endsWith('/content')
+                    ? ResponseBody.fromBytes([1, 2, 3], 200)
+                    : FakeAccountAdapter().defaultReply(request));
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     String? destination;
     t.view.physicalSize = const Size(390, 844);
@@ -209,7 +216,8 @@ void main() {
         } else {
           expect(second.dy, greaterThan(first.dy));
         }
-        expect(find.text('封面待提供'), findsNWidgets(6));
+        expect(find.byType(StockPublicMediaView), findsNWidgets(6));
+        expect(find.text('封面待提供'), findsNothing);
         expect(t.takeException(), isNull);
       });
     }

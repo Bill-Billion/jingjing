@@ -43,8 +43,22 @@ async function inviter(tx,party,ruleId){
  if(!q.active)throw error('NOTICE_RECEIVER_NOT_ELIGIBLE',409);
  return q;
 }
+async function invitationSource(tx,s){
+ const p=await A.person(tx,s.person_id);
+ if(p.owner_party_id!==s.target_party_id)throw error('NOTICE_TARGET_MISMATCH',409);
+ const [rows]=await tx.execute("SELECT id FROM artist_records WHERE person_id=? AND avatar_id=? AND kind='LISTING' AND current_status='APPROVED' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.consent_id'))=? ORDER BY id FOR SHARE",[p.id,s.avatar_id,s.consent_id]);
+ let source=null;
+ for(const row of rows){
+  try{await require('../artists/public-access').loadPublicListing(tx,row.id);}
+  catch(e){if([403,404,409].includes(e.status))continue;throw e;}
+  if(source)throw error('NOTICE_PUBLIC_SOURCE_AMBIGUOUS',409);
+  source=row.id;
+ }
+ if(!source)throw error('NOTICE_ARTIST_NOT_PUBLIC',409);
+ return source;
+}
 async function currentSubmission(tx,r){const s=r.data.submission,at=await A.now(tx);if(r.data.expires_at<=at)throw error('NOTICE_SUBMISSION_EXPIRED',409);if(s.notice_id){const n=await liveNotice(tx,s.notice_id);if(!n.data.notice.accept_submissions||n.owner_party_id!==s.target_party_id)throw error('NOTICE_NOT_OPEN',409);}else if(s.kind!=='INVITATION'){const q=await qualification(tx,s.target_party_id,await liveRule(tx,r.data.rule_id));if(!q.active)throw error('NOTICE_RECEIVER_NOT_ELIGIBLE',409);}
- if(s.kind!=='INVITATION'){await artist(tx,{id:r.created_by},s,r.owner_party_id);await rights(tx,s,r.counterparty_id);}else {await inviter(tx,r.owner_party_id,r.data.rule_id);const p=await A.person(tx,s.person_id);if(p.owner_party_id!==r.counterparty_id)throw error('NOTICE_TARGET_MISMATCH',409);require('../artists/policy').adult(p,at);await A.avatar(tx,s.avatar_id,p);const c=await A.load(tx,s.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==s.avatar_id||c.current_status!=='APPROVED'||!c.data.purposes.includes('PUBLIC_DISPLAY')||!require('../artists/policy').active(c.data,at))throw error('NOTICE_ARTIST_NOT_PUBLIC',409);}
+ if(s.kind!=='INVITATION'){await artist(tx,{id:r.created_by},s,r.owner_party_id);await rights(tx,s,r.counterparty_id);}else {await inviter(tx,r.owner_party_id,r.data.rule_id);if(s.source_listing_id){const {p:publicPerson,r:publicListing}=await require('../artists/public-access').loadPublicListing(tx,s.source_listing_id);if(publicPerson.id!==s.person_id||publicPerson.owner_party_id!==s.target_party_id||publicListing.avatar_id!==s.avatar_id||publicListing.data.consent_id!==s.consent_id)throw error('NOTICE_TARGET_MISMATCH',409);}const p=await A.person(tx,s.person_id);if(p.owner_party_id!==r.counterparty_id)throw error('NOTICE_TARGET_MISMATCH',409);require('../artists/policy').adult(p,at);await A.avatar(tx,s.avatar_id,p);const c=await A.load(tx,s.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==s.avatar_id||c.current_status!=='APPROVED'||!c.data.purposes.includes('PUBLIC_DISPLAY')||!require('../artists/policy').active(c.data,at))throw error('NOTICE_ARTIST_NOT_PUBLIC',409);}
  if(s.material_asset_ids.length)await A.assets(tx,s.material_asset_ids,r.owner_party_id,['AVATAR_MATERIAL','WORK_CONTENT']);
 }
 // Used by the existing quote-confirmation transaction. No new order/payment path.
@@ -55,4 +69,4 @@ async function checkQuoteAcceptance(tx,q){
  if(s.current_status!=='INTERESTED'||c.current_status!=='LINKED'||c.data.quote.content_sha256!==q.content_sha256)throw error('NOTICE_COOPERATION_WITHDRAWN',409);
  await currentSubmission(tx,s);
 }
-module.exports={inviter,checkQuoteAcceptance,checked,load,operator,audit,insert,save,command,liveRule,verifiedPerson,qualification,publisher,liveNotice,artist,rights,access,currentSubmission};
+module.exports={inviter,invitationSource,checkQuoteAcceptance,checked,load,operator,audit,insert,save,command,liveRule,verifiedPerson,qualification,publisher,liveNotice,artist,rights,access,currentSubmission};

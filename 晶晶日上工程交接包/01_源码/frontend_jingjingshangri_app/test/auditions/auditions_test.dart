@@ -10,8 +10,65 @@ import '../account/fake_account_api.dart';
 import '../stock/v5_test_host.dart';
 import '../trade/trade_api_test.dart' show buyerSession;
 import 'auditions_fixtures.dart';
+import 'package:jingjingshangri_app/auditions/auditions_offer_form.dart';
+import '../artists/artists_fixtures.dart' as artist;
 
 void main() {
+  testWidgets('首次试镜从当前经营规则和授权选择，不借旧方案', (t) async {
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/artists/people') {
+        return envelope({
+          'items': [artist.personData()],
+          'next_cursor': null
+        });
+      }
+      if (r.path == '/api/v1/artists/people/${artist.personKey}') {
+        return envelope(artist.detailData()..['halo_level'] = 2);
+      }
+      if (r.path == '/api/v1/auditions/offer-options') {
+        return envelope({
+          'items': r.queryParameters['kind'] == 'RULE'
+              ? [
+                  {
+                    'id': artist.specKey,
+                    'person_id': artist.personKey,
+                    'version': '测试1',
+                    'terms': {'version': '测试1', 'terms': '交通已包含，具体取样约定'}
+                  }
+                ]
+              : [
+                  {
+                    'id': artist.recordKey,
+                    'person_id': artist.personKey,
+                    'avatar_id': artist.avatarKey,
+                    'avatar_name': '本人形象',
+                    'public_consent_id': artist.recordKey,
+                    'valid_until': '2099-01-01T00:00:00.000Z'
+                  }
+                ],
+          'next_cursor': null
+        });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, AuditionOfferForm(session: s));
+    await t.tap(find.byType(DropdownButtonFormField<String>).first);
+    await frames(t);
+    await t.tap(find.text('本人测试艺人').last);
+    await frames(t);
+    final form = t.widget<V5Form>(find.byType(V5Form));
+    expect(form.canSubmit, isTrue);
+    expect(
+        form.fields.firstWhere((f) => f.keyName == 'rule_id').choices!.length,
+        1);
+    expect(a.requests.where((r) => r.path == '/api/v1/auditions/records'),
+        isEmpty);
+    expect(a.requests.where((r) => r.queryParameters['kind'] == 'CONSENT'),
+        isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
   test('隐藏价格仍为未公开，试镜绝不冒授出演权或接受错误材料数量', () {
     expect(AuditionOffer(auditionPublic(publicPrice: false)).raw['unit_minor'],
         isNull);

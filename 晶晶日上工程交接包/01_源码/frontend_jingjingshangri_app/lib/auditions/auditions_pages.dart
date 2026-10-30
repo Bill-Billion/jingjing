@@ -26,11 +26,44 @@ class AuditionsPage extends StatelessWidget {
   final String? id, action, invitationId;
   final bool embedded;
   final String initialCity;
+
+  String get returnRoute {
+    final query = {
+      if (['book', 'offer'].contains(mode) && v5Id(id)) 'offerId': id!,
+      if (['booking', 'messages', 'action'].contains(mode) && v5Id(id))
+        'bookingId': id!,
+      if (['catalog', 'book'].contains(mode) && v5Id(invitationId))
+        'invitationId': invitationId!,
+      if (mode == 'catalog' && initialCity.trim().isNotEmpty)
+        'city': initialCity.trim(),
+      if (mode == 'action' &&
+          const [
+            'decision',
+            'travel',
+            'delivery',
+            'cancel',
+            'reschedule',
+            'reschedule-response',
+            'contact',
+            'support',
+            'supplements',
+            'baseplate'
+          ].contains(action))
+        'action': action!,
+    };
+    return Uri(
+            path: '/auditions/$mode',
+            queryParameters: query.isEmpty ? null : query)
+        .toString();
+  }
+
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'auditions',
       embedded: embedded,
-      route: '/auditions/$mode',
+      route: returnRoute,
+      stateKey:
+          mode == 'catalog' ? '/auditions/catalog:${invitationId ?? ''}' : null,
       account: mode == 'catalog',
       builder: (s) => mode == 'action'
           ? AuditionActionPage(session: s, id: id ?? '', action: action ?? '')
@@ -85,6 +118,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   Map<String, dynamic>? contacts, itinerary;
   String? cursor, messageCursor, error, notice;
   bool busy = false;
+  bool independentCity = false;
+  String queryCity = '';
   int ticket = 0, messageForm = 0;
   @override
   void initState() {
@@ -92,6 +127,32 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
     city.text = widget.initialCity;
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _AuditionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        widget.invitationId == null &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = widget.initialCity.trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = widget.initialCity.trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -131,6 +192,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       busy = true;
       error = null;
       if (!more) {
+        queryCity = city.text.trim();
         offers.clear();
         records.clear();
         cursor = null;
@@ -143,8 +205,10 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         case 'catalog':
           final r = await api.catalog(
               cursor: more ? cursor : null,
-              city: city.text.trim(),
+              city: queryCity,
               invitationId: widget.invitationId);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'book':
@@ -298,10 +362,12 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 ? '只展示当前可公开预约的已审方案；价格可由艺人选择不公开。'
                 : '这里只读取本次已接受定向邀约匹配的真实方案。'),
             if (widget.invitationId == null) ...[
+              cityScope(),
               TextField(
                   controller: city,
+                  onChanged: (_) => setState(() => independentCity = true),
                   decoration: const InputDecoration(labelText: '城市筛选')),
-              tradeButton('按城市查找', busy ? null : () => load(), outline: true)
+              tradeButton('按城市查找', busy ? null : () => load(), outline: true),
             ],
             for (final x in offers)
               Container(

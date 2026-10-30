@@ -11,6 +11,20 @@ import '../trade/trade_fixtures.dart' show orderId;
 import 'wallet_fixtures.dart';
 
 void main() {
+  test('累计获得与当前余额分开，旧服务器不伪造累计，错误净额拒绝展示', () {
+    final d = walletSummary()
+      ..['cumulative_points'] = {
+        'version': 'NET_ISSUED_V1',
+        'issued': 120,
+        'withdrawn': 20,
+        'net_issued': 100
+      };
+    expect(WalletSummary(d).raw['cumulative_points']['net_issued'], 100);
+    expect(WalletSummary(walletSummary()).raw['cumulative_points'], isNull);
+    d['cumulative_points']['net_issued'] = 120;
+    expect(() => WalletSummary(d), throwsA(isA<AccountError>()));
+  });
+
   test('账本保留原资金边界和旧用途标志，余额与预留必须整数对平', () {
     final summary = WalletSummary(walletSummary());
     expect(summary.raw['point_uses']['redemption_enabled'], isFalse);

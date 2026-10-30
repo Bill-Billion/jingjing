@@ -5,9 +5,10 @@ import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {resolve,join} from 'node:path';
+import {appActionOptions,completeAppActionReport} from './v5-r05-r12-app-actions-result.mjs';
+const {phase,actions:chosen}=appActionOptions(process.env);
 const f=JSON.parse(await readFile(process.env.V5_ACCESS_FILE,'utf8'));
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
-const phase=process.env.V5_APP_PHASE||'business';assert(['business','cross','conversation-readback','coupon-cancel'].includes(phase));
 const out=resolve('output/playwright/v5-r05-r12/app');await mkdir(out,{recursive:true});
 const {chromium}=createRequire(join(process.cwd(),'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
@@ -31,7 +32,6 @@ async function confirm(name='确认办理'){await page.getByRole('alertdialog').
 async function signer(id,role,income=false){await open(`/projects/${income?'income':'participation'}?view=agreement&recordId=${id}`,role);const before=await api('/projects/records/'+id,role),confirmed=(await api('/projects/records/'+id+'/confirmations',role)).items.some(c=>c.party_id===f.accounts[role].party_id&&c.decision==='APPROVED'&&c.content_sha256===before.content_sha256);if(confirmed){check(`${income?'发行':'参演'} ${role} 原会签仍可独立读取`);await shot('action-'+(income?'income':'participation')+'-'+role,'38-custom-extra.png');return;}await fill('本人会签意见','本人已核对隔离原约定、金额、权利及本次版本');await press(page.getByRole('checkbox',{name:'我已阅读全部原条款、金额、分成及变更影响，确认这一份版本',exact:true}));await press(button('本人同意本次约定'));await page.waitForLoadState('networkidle');const r=await api('/projects/records/'+id,role),cs=await api('/projects/records/'+id+'/confirmations',role);check(`${income?'发行':'参演'} ${role} 独立会签后读取原文证据`,cs.items.some(c=>c.party_id===f.accounts[role].party_id&&c.decision==='APPROVED'&&c.content_sha256===r.content_sha256));await shot('action-'+(income?'income':'participation')+'-'+role,'38-custom-extra.png');}
 try{
  const s=f.scenarios;
- const chosen=(process.env.V5_APP_ACTIONS||'stock,coupon,lottery,participation,conversation').split(',');
  if(phase==='business'){
   if(chosen.includes('stock')) {
   const stockKey=process.env.V5_APP_STOCK_SCENARIO||'stock_paid',stock=s[stockKey];assert(stock?.order_id);
@@ -102,4 +102,4 @@ try{
  }
 }catch(e){failure=redact(e.stack||e.message);process.exitCode=1;if(page)await shot('failure-'+phase,'40-states-a-top.png',failure).catch(()=>{});}
 if(context)await context.close();await browser.close();
-const report={result:failure||errors.length?'FAIL':'PASS',phase,synthetic_only:true,base_url:f.base_url,checks,screenshots,network,writes,created,errors,failure};const json=JSON.stringify(report,null,2);for(const t of secrets)assert(!json.includes(t));await writeFile(join(out,'APP_ACTIONS_'+phase.toUpperCase()+(process.env.V5_APP_ACTIONS?'_'+process.env.V5_APP_ACTIONS.replaceAll(',','_'):'')+'.json'),json+'\n');console.log(JSON.stringify({result:report.result,checks:checks.length,shots:screenshots.length,created,failure}));
+const report=completeAppActionReport({phase,selected_actions:chosen,synthetic_only:true,base_url:f.base_url,checks,screenshots,network,writes,created,errors,failure});const json=JSON.stringify(report,null,2);for(const t of secrets)assert(!json.includes(t));await writeFile(join(out,'APP_ACTIONS_'+phase.toUpperCase()+(process.env.V5_APP_ACTIONS!==undefined?'_'+chosen.join('_'):'')+'.json'),json+'\n');console.log(JSON.stringify({result:report.result,checks:checks.length,shots:screenshots.length,created,failure:report.failure}));

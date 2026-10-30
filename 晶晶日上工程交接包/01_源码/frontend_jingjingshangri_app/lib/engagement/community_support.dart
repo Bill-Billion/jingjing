@@ -221,15 +221,27 @@ String communityError(Object error) {
 
 class CommunityApi {
   CommunityApi(this.session, this.domain) {
-    if (!['engagement', 'cocreation', 'redemption', 'privacy', 'projects']
-        .contains(domain)) {
+    if (![
+      'engagement',
+      'cocreation',
+      'redemption',
+      'privacy',
+      'projects',
+      'directory',
+      'discovery',
+      'support',
+      'invoices',
+      'me/collections',
+      'me/business'
+    ].contains(domain)) {
       throw ArgumentError.value(domain);
     }
   }
   final AccountSession session;
   final String domain;
   String get prefix => '/api/v1/$domain/';
-  bool get personal => domain == 'privacy';
+  bool get personal =>
+      ['privacy', 'me/collections', 'directory', 'discovery'].contains(domain);
   String? party(bool account) {
     if (!session.isLoggedIn) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');

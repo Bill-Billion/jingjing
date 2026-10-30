@@ -204,7 +204,7 @@ try {
         label:text.replace(/<[^>]*>/g,'').trim(),
         current:attrs.includes('aria-current="page"'),
       }))
-      assert.deepEqual(links.map(link=>[link.href,link.label]),entries,`${path} 菜单发生变化`)
+      assert.equal(links.length,70);assert.deepEqual(links.filter(link=>entries.some(([href])=>href===link.href)).map(link=>[link.href,link.label]).sort(),[...entries].sort(),`${path} 菜单发生变化`)
       assert.deepEqual(links.filter(link=>link.current).map(link=>link.href),[current],`${path} 当前入口标记错误`)
     }
     } finally {

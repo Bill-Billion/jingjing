@@ -1,6 +1,12 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
+ 'phone-change':['test/phone-change.integration.test.cjs','test/auth-security.test.cjs','test/account-api.integration.test.cjs'],
+ invoices:['test/invoices-policy.test.cjs','test/invoices.integration.test.cjs'],
+ 'personal-center':['test/personal-center-policy.test.cjs','test/personal-center.integration.test.cjs'],
+ collections:['test/collections-policy.test.cjs','test/collections.integration.test.cjs'],
+ discovery:['test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
+ directory:['test/directory-policy.test.cjs','test/directory.integration.test.cjs'],
  media:['test/media-marking.test.cjs','test/media.integration.test.cjs'],
  privacy:['test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
  'manual-sample':['test/manual-sample.integration.test.cjs'],
@@ -11,11 +17,12 @@ module.exports=Object.freeze({
  wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs'],
  auditions:['test/auditions-policy.test.cjs','test/auditions.integration.test.cjs','test/auditions-supplements.integration.test.cjs'],
  notices:['test/notices-policy.test.cjs','test/notices.integration.test.cjs'],
- stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs'],
+ stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs','test/stock-media.test.cjs','test/stock-media.integration.test.cjs'],
  'customization-delivery':['test/customization-delivery-policy.test.cjs','test/customization-delivery.integration.test.cjs'],
  artists:['test/artists-policy.test.cjs','test/artists.integration.test.cjs'],
- customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs'],
+ customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs','test/story-room-journey.integration.test.cjs'],
  release:['test/release-policy.test.cjs','test/release.integration.test.cjs'],
+ support:['test/support-policy.test.cjs','test/support.integration.test.cjs','test/notifications.integration.test.cjs'],
  operations:['test/operations-policy.test.cjs','test/operations.integration.test.cjs'],
  finance:['test/settlement-policy.test.cjs','test/marketplace-policy.test.cjs','test/marketplace.integration.test.cjs','test/settlement.integration.test.cjs'],
  projects:['test/projects-policy.test.cjs','test/projects.integration.test.cjs'],

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../engagement/community_support.dart';
+import '../discovery/public_discovery.dart' show validatePublicPage;
 import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
 import '../notices/notices_api.dart';
@@ -37,6 +39,7 @@ class PlazaData extends ChangeNotifier {
 
   final AccountSession session;
   final artists = PlazaFeed<Map<String, dynamic>>();
+  final featured = PlazaFeed<Map<String, dynamic>>();
   final works = PlazaFeed<StockOffer>();
   final notices = PlazaFeed<NoticePublic>();
   late (int, String?, String?) _context;
@@ -52,19 +55,20 @@ class PlazaData extends ChangeNotifier {
     if (next == _context) return;
     _context = next;
     artists.clear();
+    featured.clear();
     works.clear();
     notices.clear();
     notifyListeners();
   }
 
   Future<void> load() =>
-      Future.wait([loadArtists(), loadWorks(), loadNotices()]);
+      Future.wait([loadArtists(), loadFeatured(), loadWorks(), loadNotices()]);
 
   Future<void> changeCity(String value) async {
     final next = value.trim();
     if (next == city) return;
     city = next;
-    await Future.wait([loadArtists(), loadNotices()]);
+    await Future.wait([loadArtists(), loadFeatured(), loadNotices()]);
   }
 
   Future<void> filterArtists({required String tag, required bool audition}) {
@@ -77,6 +81,24 @@ class PlazaData extends ChangeNotifier {
     noticeType = type;
     return loadNotices();
   }
+
+  Future<void> loadFeatured({bool more = false}) =>
+      _read(featured, (cursor) async {
+        final d = await CommunityApi(session, 'directory')
+            .read('featured-artists', account: true, query: {
+          'limit': 6,
+          if (city.isNotEmpty) 'city': city,
+          if (cursor != null) 'cursor': cursor
+        });
+        final rows = validatePublicPage(d, previous: cursor);
+        communityRequire(rows.every((r) =>
+            r['selection_kind'] == 'EDITORIAL_SELECTION' &&
+            r['recommendation'] is String &&
+            communityId(r['record_id']) &&
+            communityId(communityMap(r['artist'])['listing_id'])));
+        return (rows, d['next_cursor'] as String?);
+      }, (row) => row['record_id'] as String, (e) => communityError(e),
+          more: more);
 
   Future<void> loadArtists({bool more = false}) =>
       _read(artists, (cursor) async {
@@ -152,6 +174,8 @@ class PlazaData extends ChangeNotifier {
 
   void removeUnavailableArtist(String listingId) {
     artists.items.removeWhere((row) => row['listing_id'] == listingId);
+    featured.items.removeWhere(
+        (row) => communityMap(row['artist'])['listing_id'] == listingId);
     artists.error = '部分公开资料当前不可用，请重新读取。';
     if (!_disposed) notifyListeners();
   }

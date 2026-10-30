@@ -1,0 +1,15 @@
+import {object,serviceRequest} from './clientServices'
+import {validSupplyId as id,type SupplyIdentity} from './supply'
+import type {RequestOptions} from '../client'
+export const phoneChangeStatuses={AWAITING_OLD:'验证旧号码',AWAITING_NEW:'验证新号码',READY:'等待本人确认',COMPLETED:'已更换登录号码',CANCELLED:'已取消',EXPIRED:'申请已过期'} as const
+export type PhoneSide='OLD'|'NEW'
+export interface PhoneChallenge {id:string;side:PhoneSide;current_status:'PENDING'|'SENT'|'UNKNOWN'|'CONSUMED'|'EXPIRED';attempts_remaining:number;expires_at:string;resend_after:string}
+export interface PhoneChange {id:string;current_status:keyof typeof phoneChangeStatuses;object_version:number;old_phone_mask:string;new_phone_mask:string;expires_at:string;created_at:string;can_continue:boolean;requires_relogin:boolean;challenges:PhoneChallenge[];recovery_route:'SUPPORT_TICKET_REVIEW_ONLY'}
+export type PhoneCommand='create'|'send'|'verify'|'confirm'|'cancel'
+const date=(v:unknown)=>typeof v==='string'&&Number.isFinite(Date.parse(v))
+const integer=(v:unknown,min=0)=>Number.isSafeInteger(v)&&Number(v)>=min
+export function isPhoneChange(v:unknown):v is PhoneChange {return object(v)&&id(v.id)&&Object.hasOwn(phoneChangeStatuses,v.current_status)&&integer(v.object_version,1)&&typeof v.old_phone_mask==='string'&&/^\d{3}\*{4}\d{4}$/.test(v.old_phone_mask)&&typeof v.new_phone_mask==='string'&&/^\d{3}\*{4}\d{4}$/.test(v.new_phone_mask)&&date(v.expires_at)&&date(v.created_at)&&typeof v.can_continue==='boolean'&&typeof v.requires_relogin==='boolean'&&(!v.requires_relogin||v.current_status==='COMPLETED')&&(!v.can_continue||['AWAITING_OLD','AWAITING_NEW','READY'].includes(v.current_status))&&v.recovery_route==='SUPPORT_TICKET_REVIEW_ONLY'&&Array.isArray(v.challenges)&&v.challenges.length<=2&&new Set(v.challenges.map(c=>c.side)).size===v.challenges.length&&v.challenges.every(c=>object(c)&&id(c.id)&&['OLD','NEW'].includes(c.side)&&['PENDING','SENT','UNKNOWN','CONSUMED','EXPIRED'].includes(c.current_status)&&integer(c.attempts_remaining)&&date(c.expires_at)&&date(c.resend_after))}
+export const phoneNumberValid=(v:string)=>/^1[3-9]\d{9}$/.test(v)
+export function phonePath(command:PhoneCommand,key?:string){return '/me/phone-changes'+(command==='create'?'':'/'+key+'/'+({send:'challenges',verify:'verifications',confirm:'confirmation',cancel:'cancellation'} as const)[command])}
+export function readPhoneCurrent(i:SupplyIdentity,options:RequestOptions={}){return serviceRequest({...i,partyId:null},'/me/phone-changes/current',(v):v is {request:PhoneChange|null}=>object(v)&&(v.request===null||isPhoneChange(v.request)),options)}
+export function writePhone(i:SupplyIdentity,command:PhoneCommand,key:string|undefined,body:unknown,operation:string,version?:number,signal?:AbortSignal){return serviceRequest({...i,partyId:null},phonePath(command,key),(v):v is PhoneChange=>isPhoneChange(v)&&(!key||v.id===key),{body,method:'POST',idempotencyKey:operation,ifMatch:version,signal,unauthorizedRecovery:command==='confirm'?'PHONE_CHANGE_CONFIRMATION':undefined})}

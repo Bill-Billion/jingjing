@@ -195,6 +195,14 @@ class _WalletScreenState extends State<_WalletScreen> {
           if (widget.mode == 'points' && s != null) ...[
             tradeSection('我的晶钻与消费成长', [
               _metric('当前可用晶钻', s.raw['available_points']),
+              if (s.raw['cumulative_points'] != null) ...[
+                tradeFact(
+                    '累计获得（已扣除撤回）', s.raw['cumulative_points']['net_issued']),
+                tradeFact('历史已发放 / 已撤回',
+                    '${s.raw['cumulative_points']['issued']} / ${s.raw['cumulative_points']['withdrawn']}'),
+                appNotice('累计获得不因使用或到期减少；退款撤回只扣一次。可用晶钻、消费成长与待冲回分别计算。'),
+              ] else
+                appNotice('当前服务器尚未提供累计获得金额，暂不以可用余额代替。'),
               tradeFact('退款待冲回', s.raw['points_pending_reversal']),
               tradeFact('消费成长', s.raw['qualifying_growth']),
               appNotice('使用、过期和免费奖励不会冒算消费成长；退款才按原消费承诺冲回成长。不足晶钻由未来奖励抵扣，不追收现金。'),

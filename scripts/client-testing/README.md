@@ -2,6 +2,8 @@
 
 这是仅供隔离验收使用的工具，不是正式客服系统，不挂载到生产服务器。产品入口仍使用现有Flutter/Vue页面和原业务API。当前甲方自由体验模式只需打开链接，不使用邀请码或业务路线下拉框；下面邀请模式作为兼容方式保留，不用于当前客户入口。最新准备与限制见 docs/testing/CLIENT_FREE_EXPLORATION_20261026.md。
 
+2026-10-28构建冻结更新：新会话配置固定App、网页与测试门户资源摘要；启动及响应时核验，原目录重建不能在同一版本中静默生效。旧配置缺清单会拒绝启动。重新准备时使用新的会话目录、原 `campaign` 与原 `expires_at` 上限；不能覆盖原反馈或自动延期。只处理反馈的 `review_only` 无需业务构建。完整验收与定版命令见 [执行办法](../../docs/collaboration/client-complete-20261028/ACCEPTANCE.md)。
+
 ## 旧邀请模式准备顺序（当前自由体验按上述专用说明）
 
 1. 从本轮受测代码构建。Flutter使用本仓库test/support/client_testing_main.dart，CLIENT_TEST_ONLY=true，base-href /app/，输出到App工程.local/client-web，并指定--no-web-resources-cdn。本专用入口只在运行时读取当前邀请身份，不包含任何账号令牌。普通lib/main.dart构建不加载测试入口。

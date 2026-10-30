@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import '../account/account_api.dart';
@@ -14,6 +15,9 @@ class StockApi extends V5Api {
     final suffix = path.startsWith(base) ? path.substring(base.length) : '';
     if (suffix == '/checkout') return '购买';
     if (suffix == '/listings') return '上架';
+    if (RegExp(r'^/listings/[0-9a-fA-F-]{36}/revisions$').hasMatch(suffix)) {
+      return '修改后重新提交审核';
+    }
     if (RegExp(r'^/listings/[0-9a-fA-F-]{36}/status$').hasMatch(suffix)) {
       return '下架';
     }
@@ -39,7 +43,10 @@ class StockApi extends V5Api {
     }
     if (suffix == '/listings' || suffix.startsWith('/listings/')) {
       final id = suffix == '/listings' ? null : suffix.split('/')[2];
-      return (await retry(suffix, (d) => StockListing(d, p, id: id),
+      return (await retry(
+              suffix,
+              (d) => StockListing(d, p,
+                  id: suffix.endsWith('/revisions') ? null : id),
               reread: () async {
         if (id == null) {
           await listings();
@@ -57,6 +64,28 @@ class StockApi extends V5Api {
         .raw;
   }
 
+  Future<List<Map<String, dynamic>>> salesPublications() =>
+      _options('/sales-publications');
+  Future<List<Map<String, dynamic>>> participantOptions(String personId) =>
+      _options('/participant-options', query: {'person_id': key(personId)});
+  Future<List<Map<String, dynamic>>> _options(String path,
+      {Map<String, dynamic> query = const {}}) async {
+    final rows = <Map<String, dynamic>>[], seen = <String>{};
+    String? cursor;
+    do {
+      final page = await get(
+          path, (d) => V5Page.parse(d, v5Map, previous: cursor), query: {
+        ...query,
+        'limit': 100,
+        if (cursor != null) 'cursor': cursor
+      });
+      rows.addAll(page.items);
+      cursor = page.cursor;
+      if (cursor != null) v5Require(seen.add(cursor));
+    } while (cursor != null);
+    return rows;
+  }
+
   Future<V5Page<StockOffer>> catalog(
           {String? cursor, String? city, String? personId}) =>
       get('/catalog', (d) => V5Page.parse(d, StockOffer.new, previous: cursor),
@@ -70,6 +99,42 @@ class StockApi extends V5Api {
           });
   Future<StockOffer> offer(String id) =>
       get('/catalog/${key(id)}', (d) => StockOffer(d, id: id), account: true);
+  Future<StockPublicMedia> publicMedia(StockOffer offer) =>
+      get('/catalog/${key(offer.id)}/media', (d) => StockPublicMedia(d, offer),
+          account: true);
+  Future<Uint8List> publicCover(
+      StockOffer offer, StockPublicMedia media) async {
+    v5Require(media.data['listing_id'] == offer.id &&
+        media.data['listing_version'] == offer.version);
+    final value = await bytes('/catalog/${key(offer.id)}/cover',
+        account: true, max: 2097151);
+    if (value.length != media.cover.size ||
+        sha256.convert(value).toString() != media.cover.hash) {
+      throw const AccountError(502, 'STOCK_COVER_MISMATCH');
+    }
+    return value;
+  }
+
+  // Derivation is bounded on the server; visible cards share one read at a time.
+  static Future<void>? _mediaRead;
+  Future<(StockPublicMedia, Uint8List)> publicPresentation(
+      StockOffer offer, bool Function() isCurrent) async {
+    final previous = _mediaRead, done = Completer<void>();
+    _mediaRead = done.future;
+    if (previous != null) await previous;
+    try {
+      if (!isCurrent()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      final metadata = await publicMedia(offer);
+      if (!isCurrent()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      final cover = await publicCover(offer, metadata);
+      if (!isCurrent()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      return (metadata, cover);
+    } finally {
+      if (identical(_mediaRead, done.future)) _mediaRead = null;
+      done.complete();
+    }
+  }
+
   Future<V5Page<StockListing>> listings({String? cursor}) {
     final p = owner();
     return get('/listings',

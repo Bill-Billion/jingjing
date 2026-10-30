@@ -21,7 +21,7 @@ function validateManifest(m, name) {
   if(name.startsWith('jx_test_explore_'))assert(m.file_store===true && m.access.payment_simulation===true);
   if(name.startsWith('jx_test_artists_')){assert(m.file_store===true);assert(Object.keys(m.supplyEnv||{}).join(',')==='ARTIST_PLATFORM_MERCHANT_PARTY_ID');assert(/^[a-f0-9-]{36}$/.test(m.supplyEnv.ARTIST_PLATFORM_MERCHANT_PARTY_ID));}
   assert(Array.isArray(m.rules) && m.rules.length > 0);
-  assert(m.rules.every(r => ['GET', 'POST', 'PATCH'].includes(r.method) && r.pattern.startsWith('^') && r.pattern.endsWith('$')));
+  assert(m.rules.every(r => (['GET', 'POST', 'PATCH'].includes(r.method) || name.startsWith('jx_test_explore_') && r.method==='DELETE' && r.pattern==='^\\/api\\/v1\\/me\\/collections\\/history(?:\\/[^/]+\\/[^/]+)?$') && r.pattern.startsWith('^') && r.pattern.endsWith('$')));
 }
 async function retain({ env, database, secret, access, tradeEnv, rules, db, supplyEnv, files }) {
   const selected = { NODE_ENV: 'test', DB_CLIENT: 'mysql', MYSQL_HOST: env.MYSQL_HOST, MYSQL_PORT: env.MYSQL_PORT, MYSQL_USER: env.MYSQL_USER, MYSQL_PASSWORD: env.MYSQL_PASSWORD, MYSQL_DATABASE: database };
@@ -48,10 +48,11 @@ async function start(name, { hours = 72, port = 0 } = {}) {
   assert(!fs.existsSync(path.join(dir, 'stop')), 'Remove the completed stop request explicitly before restarting.');
   const lock = path.join(dir, 'runtime.lock'), fd = fs.openSync(lock, 'wx', 0o600); fs.writeFileSync(fd, String(process.pid));
   const expires = Date.now() + hours * 3600000;
-  let db, server, timer, watcher, stopping;
+  let db, server, timer, watcher, stopping, phoneSimulation;
   const stop = () => stopping || (stopping = (async () => {
     clearTimeout(timer); clearInterval(watcher);
     if (server) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+    phoneSimulation?.cleanup();
     if (db) await db.close();
     fs.rmSync(path.join(dir, 'access.json'), { force: true });
     fs.writeFileSync(path.join(dir, 'status.json'), JSON.stringify({ status: 'STOPPED', persistent: true, synthetic_only: true, database: name, database_retained: true, database_removed: false, credentials_removed: true }, null, 2));
@@ -78,12 +79,15 @@ async function start(name, { hours = 72, port = 0 } = {}) {
     });
     const supplyStorageFactory=m.file_store?()=>require('./synthetic-files.cjs').openFiles(path.join(dir,'assets')):undefined;
     const simulation=name.startsWith('jx_test_explore_')?await require('./explore-providers.cjs').create({db,env:m.database_env,secret:m.secret,merchant:m.tradeEnv.CUSTOMIZATION_MERCHANT_PARTY_ID}):null;
-    const app = createAccountApi({ db, secret: m.secret, tradeEnv: m.tradeEnv, supplyEnv:m.supplyEnv, supplyStorageFactory, ...(simulation?simulation.factories:{}), allowedOrigins: ['http://127.0.0.1:3490'] });
+    if(name.startsWith('jx_test_explore_')&&m.access.scenarios.complete?.phone)phoneSimulation=await require('./phone-simulation.cjs').create(db,m,dir);
+    const app = createAccountApi({ db, secret: m.secret, tradeEnv: m.tradeEnv, supplyEnv:m.supplyEnv, supplyStorageFactory, ...(simulation?simulation.factories:{}), ...(phoneSimulation?{sms:phoneSimulation.sms,authSettings:phoneSimulation.authSettings}:{}), allowedOrigins: ['http://127.0.0.1:3490'] });
     const application=simulation?simulation.wrap(app):app;
     const rules = m.rules.map(r => ({ method: r.method, re: new RegExp(r.pattern) }));
     server = http.createServer((req, res) => {
       const pathname = req.url.split('?')[0];
       if(simulation && pathname.startsWith('/api/v1/testing/'))return simulation.handle(req,res);
+      // New marked fixtures only; the adapter accepts just two synthetic numbers. No real SMS.
+      if(phoneSimulation && (req.method==='POST'&&['/api/v1/auth/sms-challenges','/api/v1/auth/sessions'].includes(pathname)||req.method==='DELETE'&&pathname==='/api/v1/auth/sessions/current'))return application(req,res);
       if(simulation && (/^\/api\/v1\/(?:auth|trade\/notifications|operations\/providers)(?:\/|$)/.test(pathname))){res.writeHead(403);return res.end();}
       if(name.startsWith('jx_test_artists_')&&((pathname==='/api/v1/gigs/records'&&new URL(req.url,'http://local').searchParams.get('kind')!=='RELATION')||/\/artists\/people\/[^/]+\/identity$/.test(pathname))){res.writeHead(403,{'Content-Type':'application/json'});return res.end(JSON.stringify({error:{code:'LOCAL_FIXTURE_ROUTE_DISABLED'}}));}
       if (rules.some(r => (req.method === r.method || req.method === 'OPTIONS') && r.re.test(pathname))) return application(req, res);

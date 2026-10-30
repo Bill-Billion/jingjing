@@ -1,19 +1,30 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
 import { computed, ref, watch } from 'vue'
-import { CircleCheck, Collection, Document, FolderOpened, OfficeBuilding, Reading, Tickets, User, View } from '@element-plus/icons-vue'
+import type { Component } from 'vue'
+import { CircleCheck, Collection, Document, FolderOpened, OfficeBuilding, Reading, Tickets, User, View, Setting, Film, Briefcase, EditPen, VideoCamera, DataAnalysis } from '@element-plus/icons-vue'
 import { domains } from '@/business'
 
 const route = useRoute()
 const query = ref('')
-const matches = (label: string, path: string) => `${label} ${path}`.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase())
-const visibleLinks = computed(() => links.filter(item => matches(item.label, item.to)))
-const visibleReviews = computed(() => reviews.filter(item => matches(item.label, item.to)))
-const visibleDomains = computed(() => Object.values(domains).filter(d => matches(d.title, `/${d.key}/`)))
-const resultCount = computed(() => visibleLinks.value.length + visibleReviews.value.length + visibleDomains.value.length)
-watch(() => route.path, () => { query.value = '' })
 const links = [
   { to: '/workspace', label: '账号与机构', icon: User },
+  { to: '/me/phone-change', label: '更换登录手机号', icon: Setting },
+  { to: '/invoices/requests', label: '我的开票', icon: Tickets },
+  { to: '/invoices/operations/handle', label: '开票受理与录入', icon: Document },
+  { to: '/invoices/operations/verify', label: '票据独立核准', icon: CircleCheck },
+  { to: '/me/business/contracts', label: '我的合同和约定', icon: Document },
+  { to: '/me/business/works', label: '我的作品与已购视频', icon: Film },
+  { to: '/me/business/income', label: '我的收入核算', icon: DataAnalysis },
+  { to: '/discovery', label: '查找公开内容', icon: View },
+  { to: '/directory/organizations', label: '公开机构', icon: OfficeBuilding },
+  { to: '/directory/featured', label: '精选艺人', icon: User },
+  { to: '/directory/manage', label: '本机构公开资料', icon: Document },
+  { to: '/me/collections/favorites', label: '我的收藏', icon: Collection },
+  { to: '/me/collections/history', label: '浏览记录', icon: Reading },
+  { to: '/support/tickets', label: '我的反馈与举报', icon: Document },
+  { to: '/support/operations', label: '客服处理', icon: CircleCheck },
+  { to: '/directory/reviews/ORGANIZATION', label: '机构资料与精选审核', icon: CircleCheck },
   { to: '/contracts', label: '合同与规则', icon: Document },
   { to: '/supply/profiles', label: '供给申请', icon: FolderOpened },
   { to: '/supply/works', label: '我的作品', icon: Collection },
@@ -60,6 +71,10 @@ const reviews = [
   { to: '/projects/reviews/plans', label: '项目独立核验' },
 ]
 function active(target: string) {
+  if (target === '/invoices/requests') return route.path.startsWith('/invoices/requests')||route.path.startsWith('/invoices/orders')
+  if (target === '/support/tickets') return route.path.startsWith('/support/')&&!route.path.startsWith('/support/operations')
+  if (target === '/directory/featured') return route.path==='/directory/featured'
+  if (target === '/directory/reviews/ORGANIZATION') return route.path.startsWith('/directory/reviews/')||route.path==='/directory/featured/new'
   if (target === '/artists/people') return route.path.startsWith('/artists/') && !route.path.startsWith('/artists/reviews/')
   if (target === '/artists/reviews/CONSENT') return route.path.startsWith('/artists/reviews/')
   if (target === '/operations/notifications') return /^\/operations\/(?:notifications|(?:operator\/)?objects)(\/|$)/.test(route.path)
@@ -93,36 +108,69 @@ function active(target: string) {
   }
   return route.path === target || route.path.startsWith(target + '/')
 }
+interface Entry { to:string; label:string; icon:Component; domain?:string }
+const entries:Entry[] = [
+  ...links,
+  ...reviews.map(item => ({...item,icon:CircleCheck})),
+  ...Object.values(domains).map(d => ({to:`/${d.key}/${d.sections[0]!.key}`,label:d.title,icon:Collection,domain:d.key})),
+]
+const categories = [
+  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','wallet','redemption','engagement','privacy','me/collections','me/business','me/phone-change','invoices/requests','support/tickets','support/new']},
+  {id:'people',icon:User,label:'人物与作品',roots:['artists','supply','media','participation','discovery','directory/organizations','directory/featured','directory/manage']},
+  {id:'trade',icon:Film,label:'影片与许可交易',roots:['stock','licensing','trade']},
+  {id:'gigs',icon:Briefcase,label:'商单与通告',roots:['gigs','notices']},
+  {id:'creation',icon:EditPen,label:'故事与共创',roots:['operations/customization','cocreation','auditions','conversations']},
+  {id:'production',icon:VideoCamera,label:'制作与发行',roots:['production','projects']},
+  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['finance','operations','invoices/operations','support/operations','directory/reviews']},
+]
+const categoryFor = (entry:Entry) => categories.find(group => group.roots.some(root => entry.to === `/${root}` || entry.to.startsWith(`/${root}/`)))!
+const groups = categories.map(group => ({...group,entries:entries.filter(entry => categoryFor(entry).id === group.id)}))
+const isActive = (entry:Entry) => entry.domain ? route.path.startsWith(`/${entry.domain}/`) : active(entry.to)
+const currentLabel = computed(() => typeof route.meta.title === 'string' ? route.meta.title : entries.find(isActive)?.label || '当前业务')
+const expanded = ref<string[]>([]), searchCollapsed = ref<string[]>([])
+watch(query, () => { searchCollapsed.value = [] }, {flush:'sync'})
+const matches = (value:string) => value.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase())
+const visibleGroups = computed(() => groups.map(group => ({...group,entries:group.entries.filter(entry => matches(group.label) || matches(`${entry.label} ${entry.to}`))})).filter(group => group.entries.length))
+const resultCount = computed(() => visibleGroups.value.reduce((count,group) => count + group.entries.length,0))
+const isExpanded = (id:string) => query.value.trim() ? !searchCollapsed.value.includes(id) : expanded.value.includes(id)
+function toggleGroup(id:string) {
+  if (query.value.trim()) searchCollapsed.value = searchCollapsed.value.includes(id) ? searchCollapsed.value.filter(value => value !== id) : [...searchCollapsed.value,id]
+  else expanded.value = expanded.value.includes(id) ? expanded.value.filter(value => value !== id) : [...expanded.value,id]
+}
+function collapseAll() { query.value = ''; expanded.value = [] }
+watch(() => route.fullPath, () => {
+  query.value = ''
+  const current = groups.find(group => group.entries.some(isActive))
+  if (current && !expanded.value.includes(current.id)) expanded.value = [...expanded.value,current.id]
+}, {immediate:true})
+
 </script>
 
 <template>
-  <div class="workspace-nav-search"><label for="workspace-nav-query">查找工作区入口</label><input id="workspace-nav-query" v-model="query" type="search" autocomplete="off" placeholder="按业务名称查找" aria-controls="workspace-nav-results"><p v-if="query.trim()" role="status">找到 {{resultCount}} 个入口<button type="button" class="outline" @click="query=''">清除筛选</button></p></div>
-  <div id="workspace-nav-results" class="workspace-nav-results" role="region" tabindex="0" aria-label="工作区入口列表">
-  <nav v-if="route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
-  <nav class="workspace-nav" aria-label="工作区导航">
-    <RouterLink v-for="item in visibleLinks" :key="item.to" :to="item.to"
-      :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
-      <component :is="item.icon" aria-hidden="true" />{{ item.label }}
-    </RouterLink>
-    <p v-if="visibleReviews.length" class="nav-caption">独立审核</p>
-    <RouterLink v-for="item in visibleReviews" :key="item.to" :to="item.to"
-      :class="{ active: active(item.to) }" :aria-current="active(item.to) ? 'page' : undefined">
-      <CircleCheck aria-hidden="true" />{{ item.label }}
-    </RouterLink>
-  </nav>
-
-  <nav v-if="!route.meta.domain&&visibleDomains.length" class="workspace-business-nav" aria-label="V5业务办理"><p class="nav-caption">影片与合作</p><RouterLink v-for="d in visibleDomains" :key="d.key" :to="`/${d.key}/${d.sections[0]!.key}`" :class="{active:route.path.startsWith(`/${d.key}/`)}" :aria-current="route.path.startsWith(`/${d.key}/`)?'page':undefined"><Collection aria-hidden="true"/>{{d.title}}</RouterLink></nav>
-  <p v-if="!resultCount" class="nav-empty" role="status">没有匹配入口，请更换名称或清除筛选。菜单显示不授予业务权限。</p>
-  </div>
+  <section class="workspace-navigation" aria-label="工作区入口">
+    <div class="workspace-nav-heading"><h2>工作区入口</h2><button type="button" class="outline" @click="collapseAll">全部收起</button></div>
+    <p class="workspace-nav-current"><span>当前位置</span><strong>{{ currentLabel }}</strong></p>
+    <div class="workspace-nav-search"><label for="workspace-nav-query">查找工作区入口</label><input id="workspace-nav-query" v-model="query" type="search" autocomplete="off" placeholder="名称或分类" aria-controls="workspace-nav-results"><p v-if="query.trim()" role="status">找到 {{resultCount}} 个入口<button type="button" class="outline" @click="query=''">清除筛选</button></p></div>
+    <nav id="workspace-nav-results" class="workspace-nav" aria-label="工作区导航">
+      <div v-for="group in visibleGroups" :key="group.id" class="workspace-nav-group">
+        <button type="button" class="workspace-nav-parent" :class="{'has-current':group.entries.some(isActive)}" :aria-expanded="isExpanded(group.id)" :aria-controls="`workspace-group-${group.id}`" @click="toggleGroup(group.id)">
+          <svg class="workspace-nav-chevron" :class="{expanded:isExpanded(group.id)}" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg><component :is="group.icon" aria-hidden="true"/><span>{{group.label}}</span><span class="workspace-nav-count" aria-hidden="true">{{group.entries.length}}</span>
+        </button>
+        <ul :id="`workspace-group-${group.id}`" v-show="isExpanded(group.id)" class="workspace-nav-children">
+          <li v-for="item in group.entries" :key="item.to"><RouterLink :to="item.to" :class="{active:isActive(item)}" :aria-current="isActive(item)?'page':undefined"><component :is="item.icon" aria-hidden="true"/><span>{{item.label}}</span></RouterLink></li>
+        </ul>
+      </div>
+      <p v-if="!resultCount" class="nav-empty" role="status">没有匹配入口，请更换名称或清除筛选。</p>
+    </nav>
+  </section>
 </template>
 
 <style scoped>
-.workspace-nav{display:grid;gap:6px}
-.workspace-nav-search{display:grid;gap:8px;margin:0 0 12px;font-size:13px}.workspace-nav-search input{width:100%;min-width:0;min-height:44px}.workspace-nav-search p{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0}.workspace-nav-search button{min-height:36px;font-size:12px}.workspace-nav-results:focus-visible{outline:2px solid var(--ops-ink);outline-offset:2px}.nav-empty{font-size:13px;line-height:1.7}
-.workspace-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;border-radius:var(--ops-radius-sm);font-size:14px}
-.workspace-nav a.active{color:var(--ops-ink);background:var(--ops-accent-soft);font-weight:600}
-.workspace-nav svg{width:20px;height:20px;flex:none}
-.nav-caption{margin:24px 12px 8px;font-size:12px;color:var(--ops-text-2)}
-.workspace-business-nav{display:grid;gap:2px}.workspace-business-nav a{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ops-text-2);text-decoration:none;font-size:14px}.workspace-business-nav a.active{background:var(--ops-ink);color:var(--ops-bg);font-weight:600}.workspace-business-nav svg{width:20px;height:20px;flex:none}
-@media(max-width:760px){.workspace-nav-results{max-height:50dvh;overflow-y:auto;overscroll-behavior-y:contain;padding-bottom:8px;border-bottom:1px solid var(--ops-border-strong)}.workspace-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-nav a{gap:8px;padding:10px 8px}.nav-caption{grid-column:1/-1;margin:12px 8px 4px}}
+.workspace-nav-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}.workspace-nav-heading h2{margin:0;font-size:16px;line-height:1.5}.workspace-nav-heading button{min-height:36px;padding:4px 7px;font-size:11px;white-space:nowrap}
+.workspace-nav-current{display:grid;gap:4px;margin:12px 0 16px;line-height:1.5;overflow-wrap:anywhere}.workspace-nav-current>span{font-size:11px;color:var(--ops-text-2)}.workspace-nav-current strong{font-size:13px;font-weight:600}
+.workspace-nav-search{display:grid;gap:7px;margin-bottom:12px;font-size:12px}.workspace-nav-search input{box-sizing:border-box;width:100%;min-width:0;min-height:40px}.workspace-nav-search p{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0}.workspace-nav-search button{min-height:32px;padding:4px 7px;font-size:11px}
+.workspace-nav{max-height:55dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.workspace-nav-group{border-top:1px solid var(--ops-border)}
+.workspace-nav-parent{display:flex;align-items:center;gap:5px;width:100%;min-height:44px;padding:8px 2px;border:0;background:transparent;color:var(--ops-text);text-align:left;font-size:13px;line-height:1.5}.workspace-nav-parent>span:not(.workspace-nav-count){flex:1}.workspace-nav-parent.has-current{color:var(--ops-ink)}.workspace-nav-parent.has-current .workspace-nav-count{color:var(--editorial-accent,#aa352a)}.workspace-nav-count{font-size:10px;color:var(--ops-text-2);font-weight:400}.workspace-nav-parent svg{width:16px;height:16px;flex:none}.workspace-nav-parent .workspace-nav-chevron{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5}.workspace-nav-chevron.expanded{transform:rotate(90deg)}
+.workspace-nav-children{margin:0 0 8px 9px;padding:0 0 0 9px;border-left:1px solid var(--ops-border-strong);list-style:none}.workspace-nav a{display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 7px;color:var(--ops-text-2);text-decoration:none;font-size:12px;line-height:1.5}.workspace-nav a svg{width:16px;height:16px;flex:none}.workspace-nav a span{min-width:0;overflow-wrap:anywhere}.workspace-nav a.active{color:var(--ops-bg);background:var(--ops-ink);font-weight:600}.workspace-nav a.active svg{color:var(--editorial-accent,#aa352a)}.workspace-nav-parent:hover,.workspace-nav a:not(.active):hover{background:var(--ops-accent-soft)}.nav-empty{font-size:13px;line-height:1.7}
+@media(max-width:760px){.workspace-nav{max-height:320px}.workspace-nav-current{display:flex;align-items:baseline;gap:10px;margin:8px 0 12px}.workspace-nav-parent{font-size:14px;padding:8px 6px}.workspace-nav a{font-size:13px;min-height:44px}.workspace-nav-heading h2{font-size:16px}}
 </style>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'public_discovery.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/editorial_widgets.dart';
@@ -8,7 +9,7 @@ import '../notices/notices_api.dart';
 import '../notices/notices_models.dart';
 import '../trade/trade_widgets.dart';
 
-enum DiscoveryKind { artists, videos, notices }
+enum DiscoveryKind { artists, videos, notices, auditions }
 
 String discoveryDirectoryRoute(DiscoveryKind kind,
     {String city = '', String tag = ''}) {
@@ -22,101 +23,18 @@ String discoveryDirectoryRoute(DiscoveryKind kind,
             DiscoveryKind.artists => '/artists/catalog',
             DiscoveryKind.videos => '/stock/catalog',
             DiscoveryKind.notices => '/notices/catalog',
+            DiscoveryKind.auditions => '/auditions/catalog',
           },
           queryParameters: query.isEmpty ? null : query)
       .toString();
 }
 
-/// Only the supported directory filters are collected. The design's free-text
-/// matching percentages require a search service and must not be fabricated.
-class DiscoverySearchPage extends StatefulWidget {
+class DiscoverySearchPage extends StatelessWidget {
   const DiscoverySearchPage({super.key, this.initialCity = ''});
   final String initialCity;
   @override
-  State<DiscoverySearchPage> createState() => _DiscoverySearchPageState();
-}
-
-class _DiscoverySearchPageState extends State<DiscoverySearchPage> {
-  late final city = TextEditingController(text: widget.initialCity);
-  final tag = TextEditingController();
-  DiscoveryKind kind = DiscoveryKind.artists;
-  @override
-  void dispose() {
-    city.dispose();
-    tag.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => tradeScaffold(context, '搜索与匹配', [
-        tradeHeading('找一张合适的脸', eyebrow: '从公开目录开始寻找'),
-        TextField(
-            key: const ValueKey('discovery-city'),
-            controller: city,
-            maxLength: 100,
-            decoration: const InputDecoration(
-                labelText: '城市', hintText: '填写城市，留空查看目录全部城市')),
-        const SizedBox(height: 16),
-        Row(children: [
-          for (final option in [
-            (DiscoveryKind.artists, '艺人'),
-            (DiscoveryKind.videos, '视频'),
-            (DiscoveryKind.notices, '通告')
-          ])
-            Expanded(
-                child: Semantics(
-                    selected: kind == option.$1,
-                    child: TextButton(
-                        onPressed: () => setState(() => kind = option.$1),
-                        style: TextButton.styleFrom(
-                            foregroundColor: kind == option.$1
-                                ? AccountTheme.text
-                                : AccountTheme.muted,
-                            shape: const RoundedRectangleBorder()),
-                        child:
-                            Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text(option.$2),
-                          const SizedBox(height: 8),
-                          Container(
-                              width: 28,
-                              height: 2,
-                              color: kind == option.$1
-                                  ? AccountTheme.vermilion
-                                  : Colors.transparent),
-                        ]))))
-        ]),
-        const SizedBox(height: 24),
-        if (kind == DiscoveryKind.artists)
-          TextField(
-              key: const ValueKey('discovery-tag'),
-              controller: tag,
-              maxLength: 40,
-              decoration: const InputDecoration(
-                  labelText: '艺人标签', hintText: '例如：都市；留空不限制标签')),
-        tradeSection('目录查找说明', [
-          const Text('按城市及已公开标签进入对应目录，具体可用内容以重新读取的目录为准。',
-              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-          const SizedBox(height: 12),
-          const Text('角色描述智能匹配尚未开放，当前不计算匹配率。'),
-          const SizedBox(height: 12),
-          const FilledButton(onPressed: null, child: Text('智能匹配尚未开放')),
-        ]),
-        const SizedBox(height: 12),
-        tradeButton('清空条件', () {
-          setState(() {
-            city.clear();
-            tag.clear();
-            kind = DiscoveryKind.artists;
-          });
-        }, outline: true),
-        tradeButton('查看所选目录', () {
-          Navigator.pushNamed(context,
-              discoveryDirectoryRoute(kind, city: city.text, tag: tag.text));
-        }),
-        tradeButton('查看已发布艺人榜单',
-            () => Navigator.pushNamed(context, '/engagement?view=rankings'),
-            outline: true),
-      ]);
+  Widget build(BuildContext context) =>
+      PublicSearchPage(initialCity: initialCity);
 }
 
 Map<String, dynamic>? currentPublicBuyer(

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Real Vue + PR15 isolated HTTP/MySQL browser acceptance. Never use production. */
 import assert from 'node:assert/strict'
-import { ensureWorkspaceNavigation } from './workspace-navigation-check.mjs'
+import { ensureWorkspaceNavigation, checkWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
@@ -63,7 +63,7 @@ async function api(person, method, route, body, { party = person.personalPartyId
   return parsed.data
 }
 async function ready(page) { await page.getByText('正在读取身份与交易记录…', { exact: true }).waitFor({ state: 'hidden' }) }
-async function go(page, route) { await page.goto(base + route); await ensureWorkspaceNavigation(page); if (route.startsWith('/trade/')) await ready(page) }
+async function go(page, route) { await page.goto(base + route); await checkWorkspaceNavigation(page); if (route.startsWith('/trade/')) await ready(page) }
 const post = (page, route) => page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/v1/trade' + route)
 async function data(response) { const parsed = await response.json(); assert(response.ok(), `UI HTTP ${response.status()} ${parsed.error?.code || ''}`); return parsed.data }
 async function shot(page, name) {

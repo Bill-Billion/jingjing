@@ -7,6 +7,7 @@ import '../../account/account_api.dart';
 import '../../account/account_session.dart';
 import '../../services/user_provider.dart';
 import '../../widgets/primary_button.dart';
+import 'login_destination.dart';
 
 /// 手机号 + 验证码登录。
 /// - 登录成功清除旧业务路由，进入新版“我的”；
@@ -204,88 +205,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _enterAfterLogin() async {
     // Resume only an explicit current read/form route with fresh session reads.
     // No old private route or pending action survives login.
-    final route = Uri.tryParse(widget.returnRoute ?? '');
-    final destination = route != null &&
-            !route.hasAuthority &&
-            !route.hasScheme &&
-            (RegExp(r'^/customization/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$')
-                    .hasMatch(route.path) ||
-                [
-                  '/supply',
-                  '/supply/profile',
-                  '/supply/work/new',
-                  '/supply/record',
-                  '/enter',
-                  '/square',
-                  '/audition',
-                  '/notices',
-                  '/notices/catalog',
-                  '/notices/records',
-                  '/stock/catalog',
-                  '/artists/catalog',
-                  '/customization',
-                  '/customization/new',
-                  '/customization/request',
-                  '/licensing',
-                  '/licensing/catalog',
-                  '/licensing/record',
-                  '/licensing/reading',
-                  '/licensing/evidence',
-                  '/licensing/project/new',
-                  '/licensing/bind',
-                  '/orders',
-                  '/trade',
-                  '/trade/record',
-                  '/trade/refund',
-                  '/my-projects',
-                  '/cultivate',
-                  '/mcn',
-                  '/messages',
-                  '/chat',
-                  '/operations/notifications',
-                  '/operations/notification',
-                  '/operations/comments',
-                  '/gigs',
-                  '/gigs/request',
-                  '/gigs/requests/new',
-                  '/gigs/offers/new',
-                  '/gigs/relations/new',
-                  '/gigs/records',
-                  '/gigs/record',
-                  '/gigs/notifications',
-                  '/gigs/ranking',
-                  '/rankings',
-                  '/ranking',
-                  '/leaderboard',
-                  '/projects',
-                  '/roles',
-                  '/projects/list',
-                  '/projects/role',
-                  '/projects/project',
-                  '/projects/record',
-                  '/projects/apply',
-                  '/projects/invitation',
-                  '/projects/release/new',
-                  '/projects/external/new',
-                  '/my-works',
-                  '/production',
-                  '/production/project',
-                  '/production/version',
-                  '/production/feedback',
-                  '/production/works',
-                  '/finance',
-                  '/wallet',
-                  '/finance/agreement',
-                  '/finance/records',
-                  '/finance/record',
-                  '/finance/entries',
-                  '/finance/payout/new',
-                  '/finance/dispute/new',
-                  '/finance/notifications',
-                  '/production/work'
-                ].contains(route.path))
-        ? route.toString()
-        : '/my';
+    final destination = loginDestination(widget.returnRoute);
     if (destination != '/my') {
       try {
         await context.read<AccountSession>().loadParties();

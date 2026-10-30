@@ -11,6 +11,7 @@ export const engagement:Domain={key:'engagement',title:'经营、成长与榜单
 {key:'rankings',label:'六类人物榜',path:'/engagement/rankings',detail:'/engagement/rankings/:record_id',party:'none',query:[text('city','城市',100),text('district','区县',100),text('category','本人已确定的业务类别',100)]},
 {key:'buyers',label:'同城买家榜',path:'/engagement/buyers',party:'none',query:[text('city','城市',100)]},
 {key:'competitions',label:'月冠军与投票',path:'/engagement/competitions',detail:'/engagement/competitions/:record_id',party:'none',query:[text('city','城市',100)]},
+{key:'records',label:'通知关联活动记录',path:'/engagement/records/:record_id',party:'required'},
 {key:'votes',label:'本人已投票',path:'/engagement/votes',party:'required',query:[id('event_id','当前已审核活动')]},
 {key:'rewards',label:'本人实际奖励',path:'/engagement/rewards',party:'required',files:[{label:'读取本人已发证书',path:'/engagement/rewards/:record_id/file',party:'required'}]},
 {key:'exposures',label:'有效曝光',path:'/engagement/exposures',party:'none',query:[text('city','城市',100)]},

@@ -1,7 +1,7 @@
 import {type Domain,text,long,id,hash,integer,date,select,values,bool,group,rows,lines,fixed,reason,review,operation as op,ids} from './model'
 const scopes=[['PROFILE','账号资料'],['ARTIST_MATERIALS','本人原始素材'],['PRIVATE_STORY','私人故事'],['CONTRACTS','合同'],['TRANSACTIONS','交易记录'],['DIGITAL_MODELS','登记模型'],['CONTENT','作品内容'],['ALL','全部类别']] as const
 const types=[['QUERY','查询'],['COPY','取得副本'],['CORRECT','更正'],['DELETE','删除申请'],['CLOSE_ACCOUNT','注销申请'],['COMPLAINT','投诉']] as const
-const executionFields=()=>[select('action','具体处理事项',[['PROFILE_CORRECTION','实际更正本人展示名'],['FILE_ERASURE','清理本人原始素材当前对象'],['ACCOUNT_CLOSURE','实际关闭本人账号']]),id('target_id','本人账号或原始素材'),id('policy_rule_id','已审分类处理规则'),group('details','具体处理说明',[{...text('display_name','更正后的本人展示名',80),nullable:true},{...text('target_kind','对象类别',100),nullable:true},long('reason','本次明确请求',1000)])]
+const executionFields=()=>[select('action','具体处理事项',[['PROFILE_CORRECTION','实际更正本人展示名'],['FILE_ERASURE','清理本人原始素材当前对象'],['ACCOUNT_CLOSURE','实际关闭本人账号']]),id('target_id','本人账号或原始素材'),id('policy_rule_id','已审分类处理规则'),group('details','具体处理说明',[{...text('display_name','更正后的本人展示名',80),visible:r=>r.action==='PROFILE_CORRECTION',inactive:null},{...text('target_kind','对象类别',100),nullable:true},long('reason','本次明确请求',1000)])]
 export const privacy:Domain={key:'privacy',title:'本人资料与权益',journal:'PERSONAL RIGHTS / 12',intro:'查询本人资料，明确提出更正、复制、删除注销或投诉，并逐项核对实际处理。',note:'关闭账号与资料清除分别记录。当前自动副本限本人当前资料、素材元数据、当前故事及买家订单索引；当前对象删除只覆盖本人AVATAR_MATERIAL。多方合同钱账、历史版本、备份及其他资料类别须按实际留存与后续处理说明，不显示全库已清除。',sections:[
 {key:'requests',label:'本人申请与答复',path:'/privacy/requests',detail:'/privacy/requests/:request_id',party:'none',files:[{label:'读取本次获准答复附件',path:'/privacy/requests/:request_id/evidence/:asset_id/content',party:'none'}]},
 {key:'preferences',label:'本人的使用偏好',path:'/privacy/preferences',party:'none'},
@@ -9,6 +9,7 @@ export const privacy:Domain={key:'privacy',title:'本人资料与权益',journal
 {key:'actions',label:'本次撤回与模型处理',path:'/privacy/requests/:request_id/actions',party:'none'},
 {key:'models',label:'本次登记模型',path:'/privacy/requests/:request_id/model-assets',party:'none'},
 {key:'model-creations',label:'本次登记的模型创建',path:'/privacy/requests/:request_id/model-creations',party:'none'},
+{key:'files',label:'核对待删除的本人原始素材',path:'/privacy/requests/:request_id/file-options',party:'none',query:[fixed('kind','本人原始素材','FILE')],files:[{label:'保存本份原始素材核对',path:'/privacy/requests/:request_id/files/:asset_id/content',party:'none'}]},
 {key:'executions',label:'具体执行与范围',path:'/privacy/requests/:request_id/executions',party:'none'},
 {key:'history',label:'本次办理历史',path:'/privacy/requests/:request_id/history',party:'none'},
 {key:'operations',label:'运营处理本人申请',path:'/privacy/operations/requests',detail:'/privacy/operations/requests/:request_id',party:'none'},

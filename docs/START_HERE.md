@@ -1,3 +1,31 @@
+2026-10-30前端开票／换号：Bill-Billion已按0.31.12-rc.1／0192接好App与Vue本人开票、票据、补件／撤回／更正及本人换号。18项浏览器记录17通过、1项安全只读登记后端缺口；确认丢响应→旧登录401→新号登录回current的末尾恢复已修复并实际复测，原账号／订单／身份／工单／票据保留。App早期全量753、最终针对24；网页早期全量473、最终针对34，末尾补丁后未冒称全量重跑。运营DTO缺allowed_actions，当前只读，须后端按岗位／状态／关联／自审过滤补齐后复验运营UI。个人中心已组合上传325ee734；本批实现009db443已核实上传同一PR39，新HEAD检查另核。未合入或部署，原18组／151条仍未整体验收。[本轮证据与联调步骤](tasks/records/UX-invoice-phone-20261030.md)。以下保留各原时点。
+
+当前开票候选0.31.11-rc.1／迁移0187，接法见[开票交接](collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md)。已同步前端目录／收藏／反馈／消息9b9e2b54，真实开票仍未启用。上传及验证以CURRENT和[本批记录](tasks/records/CORE-invoices-20261030.md)为准。下方按日期保留历史。
+
+当前候选0.31.10-rc.1新增[个人中心三类汇总](collaboration/client-complete-20261028/FRONTEND_PERSONAL_CENTER_HANDOFF.md)，数据库仍0181。[产品状态](collaboration/client-complete-20261028/PRODUCT_STATUS.md)、[本轮记录](tasks/records/CORE-personal-center-20261030.md)及CURRENT说明上传和验证事实；原18组仍继续，下面为历史入口。
+
+当前0.31.9-rc.1候选新增正式反馈和四频道未读。先读[当前产品状态](collaboration/client-complete-20261028/PRODUCT_STATUS.md)、[新接入说明](collaboration/client-complete-20261028/FRONTEND_SUPPORT_MESSAGES_HANDOFF.md)与[本批记录](tasks/records/CORE-support-messages-20261030.md)；最新上传和最终检查见CURRENT。以下旧入口保留历史。
+
+2026-10-30当前先读[产品现状](collaboration/client-complete-20261028/PRODUCT_STATUS.md)和[剩余任务安排](collaboration/client-complete-20261028/NEXT_DELIVERY_PLAN_20261030.md)。本轮新增[收藏/浏览记录接法](collaboration/client-complete-20261028/FRONTEND_COLLECTIONS_HANDOFF.md)，原机构目录与搜索仍可接入；接口候选0.31.8-rc.1/迁移0173。上传与正式启用分别看CURRENT，以下保留历史。
+
+2026-10-29当前后端交接：[机构公开资料、精选艺人和完整机构通告](collaboration/client-complete-20261028/FRONTEND_DIRECTORY_HANDOFF.md)。[本机实现与测试事实](tasks/records/CORE-public-directory-20261029.md)；接口0.31.6-rc.1/迁移0170。新页面尚未接入，完整18组继续施工；上传结果以当前进度为准。
+
+当前可交接前端：[私人故事附件与首次共创接线任务](collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md)。用户负责通知伙伴，尚未假称对方已读；完整范围继续施工。
+
+当前产品进度与分工先读[剩余工作和责任表](collaboration/client-complete-20261028/PRODUCT_STATUS.md)。完整18组仍在开发与联调；不要将下方历史记录的局部交付当全部完成。
+
+2026-10-28最新：队友133363f7页面已与本侧新接口组合复验，当前目录worktrees/client-testing，交付仍为PR39。双方实际贡献、可调用接口、验证和待办见[组合交接](tasks/records/CORE-client-complete-merge-20261028.md)。以下“前端未接手/接口未提供”按日期保留历史，不覆盖本次事实；18组整体验收仍未完成。
+
+2026-10-28本次集中同步已推送 [PR39](https://github.com/Bill-Billion/jingjing/pull/39)，完整任务见 [执行入口](collaboration/client-complete-20261028/README.md)。计划可供双方开发，未称18组已实现；前端尚未实际认领，自动检查/审阅/合入分别记录。以下按日期保留。
+
+2026-10-28当前执行入口：[前后端完整测试版任务](collaboration/client-complete-20261028/README.md)。用户已授权本侧合理暂定待决方案并推送Git；18组前后端任务、23项暂定规则按批连续推进。旧“等待甲方确认”仅保留历史，普通开发按新方案继续；真实服务条件和既定儿童关闭边界不变。本次集中同步含既有5项修复，未称全部实现、合入或部署。
+
+2026-10-28当前：本侧在worktrees/client-testing、core/full-business-closure-20261028核查全业务并补断点，起点integration/468df28a。本次5项修复已自测，仍有10项明确缺口及12条整链待补；仅本地，未代队友审阅，未更新甲方网站。先读 [完整计划与当前事实](testing/FULL_BUSINESS_CLOSURE_20261028.md) 和本流CURRENT；以下按日期保留。
+
+2026-10-27合并完成：PR37与PR38均已合入，共同版本integration/468df28a；受测提交a2ee317a的8项远端检查全部通过。本侧按用户授权完成实际复审，未冒称队友审批。甲方网站已更新提示语和反馈定位修复，原记录保留、真实服务关闭。机构首次投稿、新公开邀约、明星/定位、头像封面等仍未全部完成，先补前两条受阻流程。详见docs/reviews/combined-acceptance-20261027/REPORT.md。
+
+最终检查、部署与合并补记已同步PR37说明；本地结果记录提交留待下一阶段集中同步，避免为状态补记另开申请。当前远端共同版本的合并事实以GitHub及提交468df28a为准。
+
 2026-10-27交付：新广场已接入甲方自由体验并更新原测试网址，保留原订单和反馈；公网新版页面4组、城市查询5组、付款核验样片6项通过。16个岗位、9名公开模拟艺人及六类通告可体验。仍集中交付PR37，另一方审阅和共同版本合入未完成，最终远端检查按PR当前HEAD核对。当前worktrees/client-testing、core/plaza-client-integration-20261027；范围、限制和下一步见docs/testing/PLAZA_CLIENT_INTEGRATION_20261027.md。以下双方记录按日期保留。
 
 # 2026-10-27：紧凑广场与子页面已完成本侧检查

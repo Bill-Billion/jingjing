@@ -1,5 +1,5 @@
 {
-  "version": "0.30.0-rc.1",
+  "version": "0.31.12-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -449,7 +449,89 @@
     "createMediaTask",
     "getMediaTask",
     "getMediaTaskForReview",
-    "reviewMediaTask"
+    "reviewMediaTask",
+    "listNoticeSubmissionOptions",
+    "readNoticeInvitationContext",
+    "readPublicArtistListing",
+    "reviseStockListing",
+    "createStockSalesPublication",
+    "listStockSalesPublications",
+    "reviewStockSalesPublication",
+    "listStockParticipantOptions",
+    "listStockSalesPublicationSources",
+    "listAuditionOfferOptions",
+    "listPrivacyFileOptions",
+    "downloadPrivacyOriginalFile",
+    "customizationAttachments",
+    "uploadCustomizationAttachment",
+    "downloadCustomizationAttachment",
+    "revokeCustomizationAttachment",
+    "cocreationCreationOptions",
+    "readPublicArtistMedia",
+    "getStockPublicMedia",
+    "downloadStockCover",
+    "submitDirectoryOrganization",
+    "proposeDirectoryFeature",
+    "reviewDirectoryRecord",
+    "withdrawDirectoryRecord",
+    "listDirectoryRecords",
+    "getDirectoryRecord",
+    "listPublicOrganizations",
+    "listFeaturedArtists",
+    "getPublicOrganization",
+    "downloadOrganizationCover",
+    "downloadDirectoryMaterial",
+    "listDiscoveryCities",
+    "searchPublicCatalogues",
+    "getCollectionPreferences",
+    "setCollectionPreferences",
+    "listPersonalFavorites",
+    "setPersonalFavorite",
+    "listPersonalHistory",
+    "recordPersonalVisit",
+    "clearPersonalHistory",
+    "removePersonalHistory",
+    "getPersonalCollectionTarget",
+    "listSupportTickets",
+    "getSupportTicket",
+    "listSupportHistory",
+    "actOnSupportTicket",
+    "downloadSupportEvidence",
+    "listSupportTicketsForSupport",
+    "getSupportTicketForSupport",
+    "listSupportHistoryForSupport",
+    "actOnSupportTicketForSupport",
+    "downloadSupportEvidenceForSupport",
+    "createSupportTicket",
+    "getNotificationUnread",
+    "markNotificationSnapshotRead",
+    "listNotificationFeed",
+    "listPersonalContracts",
+    "listPersonalWorks",
+    "listPersonalIncome",
+    "getInvoiceEligibility",
+    "createInvoiceRequest",
+    "listInvoiceRequests",
+    "getInvoiceRequest",
+    "listInvoiceHistory",
+    "listInvoiceDocuments",
+    "actOnInvoice",
+    "downloadInvoiceEvidence",
+    "downloadInvoiceDocument",
+    "listInvoiceRequestsForOperator",
+    "getInvoiceRequestForOperator",
+    "listInvoiceHistoryForOperator",
+    "listInvoiceDocumentsForOperator",
+    "actOnInvoiceForOperator",
+    "downloadInvoiceEvidenceForOperator",
+    "downloadInvoiceDocumentForOperator",
+    "createPhoneChange",
+    "getCurrentPhoneChange",
+    "getPhoneChange",
+    "sendPhoneChangeChallenge",
+    "verifyPhoneChangeChallenge",
+    "confirmPhoneChange",
+    "cancelPhoneChange"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -807,6 +889,173 @@
       "有待结清钱账或机构负责人交接时拒绝注销",
       "正式媒体规则、云审核及存储需单独启用验证",
       "实际视频标识不代表法律合规审查完成"
+    ]
+  },
+  "story_attachments_and_creation": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "customizationAttachments",
+      "uploadCustomizationAttachment",
+      "downloadCustomizationAttachment",
+      "revokeCustomizationAttachment",
+      "cocreationCreationOptions"
+    ],
+    "evidence": "docs/tasks/records/CORE-client-complete-story-20261028.md",
+    "production_enabled": false,
+    "limits": [
+      "App/Vue已由90dc8855接入附件保留和恢复；网页暂离重开恢复尚待补做浏览器检查",
+      "撤回仅关闭访问，不宣称物理删除或备份擦除",
+      "已提交文件保持历史版本，正式保留依据待甲方",
+      "共创目前仅配置的平台签约主体，外部制作机构不能因此读取私人故事"
+    ]
+  },
+  "stock_public_media": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getStockPublicMedia",
+      "downloadStockCover"
+    ],
+    "production_enabled": false,
+    "limits": [
+      "封面只取已审预览首帧，不裁切、不从完整私片截取",
+      "完整作品和预览时长分开；仅实际可解析的受限MP4",
+      "需部署配置MEDIA_FFMPEG与MEDIA_FFPROBE，缺配置明确报错",
+      "前端新封面/时长页面待接，整版未验收"
+    ]
+  },
+  "public_directory": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "submitDirectoryOrganization",
+      "proposeDirectoryFeature",
+      "reviewDirectoryRecord",
+      "withdrawDirectoryRecord",
+      "listDirectoryRecords",
+      "getDirectoryRecord",
+      "listPublicOrganizations",
+      "listFeaturedArtists",
+      "getPublicOrganization",
+      "downloadOrganizationCover",
+      "downloadDirectoryMaterial"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/directory.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面待接，整体业务验收未完成",
+      "精选为经独立审核的运营推荐，不是明星认证",
+      "机构公开资料不授予接单、承制或艺人代办权限"
+    ]
+  },
+  "personal_collections": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getCollectionPreferences",
+      "setCollectionPreferences",
+      "listPersonalFavorites",
+      "setPersonalFavorite",
+      "listPersonalHistory",
+      "recordPersonalVisit",
+      "clearPersonalHistory",
+      "removePersonalHistory",
+      "getPersonalCollectionTarget"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/collections.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面尚未接入，不是整组验收",
+      "仅本人账号，机构代办不可访问",
+      "过期后台需COLLECTION_WORKER_ENABLED=true，正式运行另验收",
+      "不增加榜单互动分数，不缓存私有正文"
+    ]
+  },
+  "support_and_notifications": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listSupportTickets",
+      "getSupportTicket",
+      "listSupportHistory",
+      "actOnSupportTicket",
+      "downloadSupportEvidence",
+      "listSupportTicketsForSupport",
+      "getSupportTicketForSupport",
+      "listSupportHistoryForSupport",
+      "actOnSupportTicketForSupport",
+      "downloadSupportEvidenceForSupport",
+      "createSupportTicket",
+      "getNotificationUnread",
+      "markNotificationSnapshotRead",
+      "listNotificationFeed"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/support.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端待接、整链待验",
+      "客服须单独授予SUPPORT_HANDLE，不自动发权；原业务售后仍走原订单",
+      "通知新增域仅新feed返回，旧notifications列表保持原域；历史消息不伪造新增通知",
+      "通知已读与原会话已读分别表达；查看原会话并标已读会同步通知回执",
+      "真实赔偿、客服时限及隐私保留依据不自行设定"
+    ]
+  },
+  "personal_center": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listPersonalContracts",
+      "listPersonalWorks",
+      "listPersonalIncome"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/personal-center.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "按来源独立分页，不承诺跨来源全局排序",
+      "收入只汇总已登记台账中的本人份额；不汇总其他主体、不把未入账预期当收入",
+      "页面接入、完整办理及真实服务分别验收"
+    ]
+  },
+  "invoices": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getInvoiceEligibility",
+      "createInvoiceRequest",
+      "listInvoiceRequests",
+      "getInvoiceRequest",
+      "listInvoiceHistory",
+      "listInvoiceDocuments",
+      "actOnInvoice",
+      "downloadInvoiceEvidence",
+      "downloadInvoiceDocument",
+      "listInvoiceRequestsForOperator",
+      "getInvoiceRequestForOperator",
+      "listInvoiceHistoryForOperator",
+      "listInvoiceDocumentsForOperator",
+      "actOnInvoiceForOperator",
+      "downloadInvoiceEvidenceForOperator",
+      "downloadInvoiceDocumentForOperator"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/invoices.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "正式出票方配置与核验依据未提供，真实税务服务未接入",
+      "测试凭证非发票；页面接入、整链与阶段验收分别记录",
+      "材料历史保留，具体合法保留期限待甲方依据，不编造期限"
+    ]
+  },
+  "phone_change": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createPhoneChange",
+      "getCurrentPhoneChange",
+      "getPhoneChange",
+      "sendPhoneChangeChallenge",
+      "verifyPhoneChangeChallenge",
+      "confirmPhoneChange",
+      "cancelPhoneChange"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/phone-change.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面待接；本轮只用内存短信验证，无真实发送",
+      "旧号码不可用仅客服登记核查，不提供人工自动换绑",
+      "确认会注销本人全部旧登录，使用新号码重新登录，账号和历史业务不变"
     ]
   }
 }

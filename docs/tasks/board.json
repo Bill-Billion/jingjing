@@ -1,9 +1,9 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-10-27",
+  "updated_on": "2026-10-30",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
-  "dependency_semantics": "列出的后端完整依赖用于整项验收；Experience可在相应契约合入integration后提前开发隔离stub，不必等待后端整项完成。",
+  "dependency_semantics": "dependencies列出整项工作最终验收前必须完成的成果，不是开工顺序；可先设计、约定接口、准备隔离资料及检查已可用路线。第17组最终验收须前16组服务器与页面成果齐备，不能以部分路线通过提前完成。",
   "tasks": [
     {
       "id": "CORE-S0-000",
@@ -2584,7 +2584,12 @@
       ],
       "req_refs": [],
       "updated_on": "2026-10-27",
-      "current_increment": "原Figma主页及26页、密集广场和子页已实现；597实际测试、三宽联调与实现提交远端检查通过。已创建草稿PR38，目标integration，报告及截图随申请交付；同事实审待进行，未合入或部署。"
+      "current_increment": "原Figma主页及26页、密集广场和子页已实现；597实际测试、三宽联调与实现提交远端检查通过。已创建草稿PR38，目标integration，报告及截图随申请交付；同事实审待进行，未合入或部署。",
+      "merged": true,
+      "merge_commit": "468df28a4159dfb09895827d86bfc817de259cc4",
+      "merged_on": "2026-10-27",
+      "code_review_by_core": "PASS_WITH_DOCUMENTED_GAPS",
+      "merge_authorization": "用户本轮明确要求复审并合并；没有伪造另一方审批"
     },
     {
       "id": "CORE-PLAZA-CLIENT-20261027",
@@ -2614,11 +2619,12 @@
         "docs/testing/evidence/plaza-client-20261027/CHECKS.json",
         "docs/testing/evidence/plaza-client-20261027/public/final/RESULTS.json",
         "docs/testing/evidence/plaza-client-20261027/public/functional/RESULTS.json",
-        "docs/testing/evidence/combined-acceptance-20261027/CHECKS.json"
+        "docs/testing/evidence/combined-acceptance-20261027/CHECKS.json",
+        "docs/testing/evidence/combined-acceptance-20261027/REMOTE_FINAL.json"
       ],
       "blockers": [],
       "uploaded": true,
-      "merged": false,
+      "merged": true,
       "production_enabled": false,
       "work_refs": [
         "WORK-06",
@@ -2629,18 +2635,2920 @@
       "pull_request": "https://github.com/Bill-Billion/jingjing/pull/37",
       "public_test_only": true,
       "public_test_expires_at": "2026-10-29T02:29:34.873Z",
-      "remote_checks": "首批任务登记校验失败已修正，本机校验通过；最终远端结果以PR37当前HEAD为准",
+      "remote_checks": "a2ee317a的8项检查全部通过，PR37/38已合入468df28a",
       "review_followup": {
         "requested_on": "2026-10-27",
         "scope": "对照紧凑广场最后需求、甲方自由测试要求及V5未决边界，复审前后端组合并按用户授权合入integration",
         "owner": "chengcongcong222",
-        "status": "LOCAL_REVIEW_PASSED_WITH_DOCUMENTED_GAPS",
+        "status": "MERGED_WITH_REMAINING_REQUIREMENTS",
         "frontend_head": "97b1ffa7",
         "combined_review_start": "28056fc0",
         "actual_peer_review": false,
         "merge_authorization": "用户本轮明确要求分析、合并最新成果；由本侧实际复审，不冒称队友审批",
-        "report": "docs/reviews/combined-acceptance-20261027/REPORT.md"
+        "report": "docs/reviews/combined-acceptance-20261027/REPORT.md",
+        "integration_commit": "468df28a4159dfb09895827d86bfc817de259cc4",
+        "remote_checks": "8/8 PASS",
+        "public_version": "a2ee317ad9dea6b8a4ce6c73f2360a50122946b0"
+      },
+      "merge_commit": "468df28a4159dfb09895827d86bfc817de259cc4",
+      "merged_on": "2026-10-27",
+      "code_review_by_core": "PASS_WITH_DOCUMENTED_GAPS",
+      "merge_authorization": "用户本轮明确要求复审并合并；没有伪造另一方审批"
+    },
+    {
+      "id": "CORE-FULL-BUSINESS-20261028",
+      "title": "核对全部业务并连续补齐前后端断点",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-06",
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/testing/FULL_BUSINESS_CLOSURE_20261028.md",
+        "docs/tasks/records/CORE-full-business-20261028.md"
+      ],
+      "acceptance": "全30交付包有现状对应；逐业务记录正常及异常测试；修复后复测；真实服务和规则缺项单列",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-full-business-20261028.md",
+        "docs/testing/evidence/full-business-20261028/README.md"
+      ],
+      "blockers": [],
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "test_scope": "本次5处修复及已列回归；完整业务仍有10项缺口和12条整链验收待补",
+      "remaining_scope": "docs/testing/FULL_BUSINESS_CLOSURE_20261028.md",
+      "acceptance_map": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+      "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-01",
+      "title": "首次现货上架与试镜方案：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "空商品账号完成第一次双审；空试镜方案账号完成首次审核并公开可约；停用或撤权阻止提交，不从历史记录推断权限",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-A-20261028.md",
+        "docs/testing/evidence/client-complete-A-20261028/browser-results.json",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "A",
+      "v5_refs": [
+        "DEL-05",
+        "DEL-09",
+        "DEL-26"
+      ],
+      "provisional_rule_refs": [
+        "P01"
+      ],
+      "implementation": "LOCAL_IMPLEMENTATION_PARTIAL_ACCEPTANCE",
+      "implementation_scope": "分别提供卖家可用的现货销售规则和规格、本人可用的试镜经营规则及人物/形象/公开同意上下文；支持首次提交，重查版本、权限和生效状态；本侧本地接线/测试，队友新增前端待合并后重新核对。",
+      "frontend_can_start": "六个新接口在本分支可调用；页面需与本分支服务器及迁移0166一起使用。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "E2E-01",
+        "E2E-03",
+        "TASK-01"
+      ],
+      "implementation_status": "IN_PROGRESS",
+      "actual_implementer": "chengcongcong222",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-01",
+      "title": "首次现货上架与试镜方案：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-01"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "空商品账号完成第一次双审；空试镜方案账号完成首次审核并公开可约；停用或撤权阻止提交，不从历史记录推断权限",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-A-20261028.md",
+        "docs/testing/evidence/client-complete-A-20261028/browser-results.json",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [
+        "整项验收和双方实际审阅尚未完成"
+      ],
+      "delivery_batch": "A",
+      "v5_refs": [
+        "DEL-05",
+        "DEL-09",
+        "DEL-26"
+      ],
+      "provisional_rule_refs": [
+        "P01"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "无历史记录也能选择现货或试镜对应规则、人物和素材，首次提交并查看独立审核结果；无可用规则时说明原因和后续办理方式；当前实际范围以CORE-client-complete-merge-20261028记录为准，双方已组合，不再标前端未接手。",
+      "frontend_can_start": "直接获取PR39组合分支联调已提供接口；其余缺口依任务记录继续，不能以integration旧接口代替。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "E2E-01",
+        "E2E-03",
+        "TASK-01"
+      ],
+      "actual_implementer": "Bill-Billion（页面增量）；chengcongcong222（接口接线、合并修复、组合验证）",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_status": "IN_PROGRESS",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。",
+      "updated_on": "2026-10-28",
+      "current_increment": "队友133363f7负责页面与草稿保护；本侧补齐接口并合并接线。原缺接口阻断已部分解除，具体范围见组合复验记录，整项未验收。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-02",
+      "title": "机构逐人选择出镜授权：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "无旧作品也可提交；错人、错用途、撤回或机构失权阻止办理",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-A-20261028.md",
+        "docs/testing/evidence/client-complete-A-20261028/browser-results.json",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "A",
+      "v5_refs": [
+        "DEL-01",
+        "DEL-05",
+        "DEL-25"
+      ],
+      "provisional_rule_refs": [
+        "P02"
+      ],
+      "implementation": "IMPLEMENTED_LOCAL_VALIDATION",
+      "implementation_scope": "按机构经营委托和本人销售/展示同意查询可用真人、数字人及授权",
+      "frontend_can_start": "六个新接口在本分支可调用；页面需与本分支服务器及迁移0166一起使用。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.04",
+        "ACC-DEL-05.02",
+        "ACC-DEL-11.02",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "E2E-01",
+        "E2E-04",
+        "E2E-10",
+        "TASK-02"
+      ],
+      "implementation_status": "IMPLEMENTED_LOCAL_VALIDATION"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-02",
+      "title": "机构逐人选择出镜授权：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-02"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "无旧作品也可提交；错人、错用途、撤回或机构失权阻止办理",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-A-20261028.md",
+        "docs/testing/evidence/client-complete-A-20261028/browser-results.json",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [
+        "整项验收和双方实际审阅尚未完成"
+      ],
+      "delivery_batch": "A",
+      "v5_refs": [
+        "DEL-01",
+        "DEL-05",
+        "DEL-25"
+      ],
+      "provisional_rule_refs": [
+        "P02"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "本侧实际施工：App现货、入口和附件类型；Vue现货表单、可选资料及共享办理页面。队友未被代认领。；当前实际范围以CORE-client-complete-merge-20261028记录为准，双方已组合，不再标前端未接手。",
+      "frontend_can_start": "直接获取PR39组合分支联调已提供接口；其余缺口依任务记录继续，不能以integration旧接口代替。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.04",
+        "ACC-DEL-05.02",
+        "ACC-DEL-11.02",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "E2E-01",
+        "E2E-04",
+        "E2E-10",
+        "TASK-02"
+      ],
+      "actual_implementer": "Bill-Billion（页面增量）；chengcongcong222（接口接线、合并修复、组合验证）",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_status": "IMPLEMENTED_LOCAL_VALIDATION",
+      "implementation_authority": "用户要求本侧继续本阶段全部开发；统一计划允许伙伴未认领时由本侧接必要页面，来源docs/collaboration/client-complete-20261028/README.md。",
+      "updated_on": "2026-10-28",
+      "current_increment": "队友133363f7负责页面与草稿保护；本侧补齐接口并合并接线。原缺接口阻断已部分解除，具体范围见组合复验记录，整项未验收。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-03",
+      "title": "退回商品修改重提：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-01",
+        "CORE-CLIENT-COMPLETE-02"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "新版本批准前不出售；旧订单许可和已购文件不被替换",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-A-20261028.md",
+        "docs/testing/evidence/client-complete-A-20261028/browser-results.json",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "A",
+      "v5_refs": [
+        "DEL-05",
+        "DEL-06"
+      ],
+      "provisional_rule_refs": [
+        "P03"
+      ],
+      "implementation": "IMPLEMENTED_LOCAL_VALIDATION",
+      "implementation_scope": "原商品关联新修订版本，重复保护、双审、旧购买快照保护",
+      "frontend_can_start": "六个新接口在本分支可调用；页面需与本分支服务器及迁移0166一起使用。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "E2E-01",
+        "TASK-03"
+      ],
+      "implementation_status": "IMPLEMENTED_LOCAL_VALIDATION"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-03",
+      "title": "退回商品修改重提：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-03"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "新版本批准前不出售；旧订单许可和已购文件不被替换",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-A-20261028.md",
+        "docs/testing/evidence/client-complete-A-20261028/browser-results.json",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [
+        "整项验收和双方实际审阅尚未完成"
+      ],
+      "delivery_batch": "A",
+      "v5_refs": [
+        "DEL-05",
+        "DEL-06"
+      ],
+      "provisional_rule_refs": [
+        "P03"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "本侧实际施工：App现货、入口和附件类型；Vue现货表单、可选资料及共享办理页面。队友未被代认领。；当前实际范围以CORE-client-complete-merge-20261028记录为准，双方已组合，不再标前端未接手。",
+      "frontend_can_start": "直接获取PR39组合分支联调已提供接口；其余缺口依任务记录继续，不能以integration旧接口代替。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "E2E-01",
+        "TASK-03"
+      ],
+      "actual_implementer": "Bill-Billion（页面增量）；chengcongcong222（接口接线、合并修复、组合验证）",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_status": "IMPLEMENTED_LOCAL_VALIDATION",
+      "implementation_authority": "用户要求本侧继续本阶段全部开发；统一计划允许伙伴未认领时由本侧接必要页面，来源docs/collaboration/client-complete-20261028/README.md。",
+      "updated_on": "2026-10-28",
+      "current_increment": "队友133363f7负责页面与草稿保护；本侧补齐接口并合并接线。原缺接口阻断已部分解除，具体范围见组合复验记录，整项未验收。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-04",
+      "title": "本人删除材料和处理进度：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "本人明确知道删什么；关联订单不被直接破坏；模拟回执不当真实删除",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-23"
+      ],
+      "provisional_rule_refs": [
+        "P04",
+        "P21"
+      ],
+      "implementation": "LOCAL_IMPLEMENTATION_PARTIAL_ACCEPTANCE",
+      "implementation_scope": "提供可读目标、依赖和保留原因；删除任务、回执、失败重试；本侧本地接线/测试，队友新增前端待合并后重新核对。",
+      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.03",
+        "E2E-11",
+        "TASK-04"
+      ],
+      "implementation_status": "IN_PROGRESS",
+      "actual_implementer": "chengcongcong222",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-04",
+      "title": "本人删除材料和处理进度：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-04"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "本人明确知道删什么；关联订单不被直接破坏；模拟回执不当真实删除",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [
+        "整项验收和双方实际审阅尚未完成"
+      ],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-23"
+      ],
+      "provisional_rule_refs": [
+        "P04",
+        "P21"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "本人核对范围并确认，运营答复和进度，不显示内部存储路径；当前实际范围以CORE-client-complete-merge-20261028记录为准，双方已组合，不再标前端未接手。",
+      "frontend_can_start": "直接获取PR39组合分支联调已提供接口；其余缺口依任务记录继续，不能以integration旧接口代替。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.03",
+        "E2E-11",
+        "TASK-04"
+      ],
+      "implementation_status": "IN_PROGRESS",
+      "actual_implementer": "Bill-Billion（页面增量）；chengcongcong222（接口接线、合并修复、组合验证）",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。",
+      "updated_on": "2026-10-28",
+      "current_increment": "队友133363f7负责页面与草稿保护；本侧补齐接口并合并接线。原缺接口阻断已部分解除，具体范围见组合复验记录，整项未验收。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-05",
+      "title": "艺人肖像和作品封面时长：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "有效媒体实际能打开；更换、撤回、损坏和过期不留旧内容",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-story-recovery-media-20261029.md",
+        "docs/tasks/records/CORE-stock-media-20261029.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-03",
+        "DEL-04",
+        "DEL-05",
+        "DEL-24"
+      ],
+      "provisional_rule_refs": [
+        "P05",
+        "P06"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "审核后提供媒体类型、主图/封面、时长和可撤回缩略图",
+      "frontend_can_start": "4ae46263已接现货封面/时长和功能树；继续同版组合检查，不重复从零接入。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "E2E-01",
+        "E2E-11",
+        "TASK-05"
+      ],
+      "updated_on": "2026-10-29",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-stock-media-20261029.md",
+        "uploaded": true,
+        "merged": false,
+        "production_enabled": false,
+        "commit": "a97112d5032ed586e09f7f435e4ebe0da1c2ad4f"
+      },
+      "current_increment": "现货后端已提供，4ae46263页面已接入；组合检查进行中，完整购买交付链仍待验收。",
+      "uploaded_commit": "a97112d5032ed586e09f7f435e4ebe0da1c2ad4f",
+      "latest_handoff_notification": "用户确认已转发；4ae46263已实际交付现货新页面，后端正在复核组合版本。",
+      "combined_review": {
+        "frontend_commit": "4ae46263",
+        "vue_tests_passed": 411,
+        "app_related_tests_passed": 30,
+        "record": "docs/tasks/records/CORE-public-directory-20261029.md",
+        "scope": "代码组合与针对性检查，未代称完整购买交付链或重新跑完前端全部浏览器演练"
       }
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-05",
+      "title": "艺人肖像和作品封面时长：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-05"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md",
+        "docs/tasks/records/UX-stock-media-tree-20261029.md"
+      ],
+      "acceptance": "有效媒体实际能打开；更换、撤回、损坏和过期不留旧内容",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md",
+        "docs/tasks/records/CORE-stock-media-20261029.md",
+        "docs/tasks/records/UX-stock-media-tree-20261029.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-03",
+        "DEL-04",
+        "DEL-05",
+        "DEL-24"
+      ],
+      "provisional_rule_refs": [
+        "P05",
+        "P06"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "图片/视频/声音正确展示，主肖像选择、预览和缺图反馈",
+      "frontend_can_start": "4ae46263已接现货封面/时长和功能树；继续同版组合检查，不重复从零接入。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "E2E-01",
+        "E2E-11",
+        "TASK-05"
+      ],
+      "updated_on": "2026-10-29",
+      "current_increment": "App／Vue 已接主肖像与媒体分类，本批再接现货真实预览封面和完整／预览时长；真实隔离资料跨端验证损坏恢复、新版双审、旧图清理及下架，整组未验收。",
+      "frontend_increment_verification": {
+        "scope": "现货封面和两种时长、失效与版本切换，以及功能树导航；不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-stock-media-tree-20261029.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。",
+      "handoff_acknowledgement": "2026-10-29前端 Bill-Billion 已实际接入0.31.5-rc.1并留证；未代后端确认组合审阅。",
+      "latest_handoff_notification": "用户确认已转发；4ae46263已实际交付现货新页面，后端正在复核组合版本。",
+      "combined_review": {
+        "frontend_commit": "4ae46263",
+        "vue_tests_passed": 411,
+        "app_related_tests_passed": 30,
+        "record": "docs/tasks/records/CORE-public-directory-20261029.md",
+        "scope": "代码组合与针对性检查，未代称完整购买交付链或重新跑完前端全部浏览器演练"
+      },
+      "uploaded_commit": "4ae46263c39b273071be45645975e5e3c6b82383"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-06",
+      "title": "出品机构档案和精选艺人：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_DIRECTORY_HANDOFF.md"
+      ],
+      "acceptance": "不暴露私人联系方式；未核实明星身份不展示明星认证或虚构业绩",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-public-directory-20261029.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-04",
+        "DEL-10",
+        "DEL-19"
+      ],
+      "provisional_rule_refs": [
+        "P07",
+        "P11"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "仅公开审核同意字段；主体通告分页；运营精选及有效期",
+      "frontend_can_start": "已上传PR39/ca0fff7c，接口0.31.6-rc.1/迁移0170；按FRONTEND_DIRECTORY_HANDOFF接机构资料、精选与通告。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-10.04",
+        "ACC-DEL-19.02",
+        "TASK-06"
+      ],
+      "updated_on": "2026-10-29",
+      "current_increment": "公开机构申请/独立审核/主图、精选期限及发布方通告分页已写好；15项及整体979通过/1缺旧库跳过，新页面与整组未验收。",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-public-directory-20261029.md",
+        "uploaded": true,
+        "merged": false,
+        "production_enabled": false,
+        "commit": "ca0fff7c1ae8ed8bd188a02f842af48300e0e1b8"
+      },
+      "uploaded_commit": "ca0fff7c1ae8ed8bd188a02f842af48300e0e1b8"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-06",
+      "title": "出品机构档案和精选艺人：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-06"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "不暴露私人联系方式；未核实明星身份不展示明星认证或虚构业绩",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-public-directory-20261029.md",
+        "docs/tasks/records/UX-directory-support-20261030.md",
+        "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      ],
+      "blockers": [
+        "原18组与151条整体验收、另一方实际审阅仍待完成；本轮所需五项后端入口已提供。"
+      ],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-04",
+        "DEL-10",
+        "DEL-19"
+      ],
+      "provisional_rule_refs": [
+        "P07",
+        "P11"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "公开档案、完整通告、精选说明和同城入口",
+      "frontend_can_start": "本批已于2026-10-30完成接入；继续配合同记录整链及后续三组新接口。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-10.04",
+        "ACC-DEL-19.02",
+        "TASK-06"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "App/Vue本批目录、搜索、收藏、正式反馈与身份消息已实现；App721项、网页427项和真实隔离页面验证通过。原18组及151条整体验收、另一方审阅仍待完成。",
+      "frontend_increment_verification": {
+        "scope": "本轮目录、搜索、收藏、正式反馈与身份消息页面；不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-directory-support-20261030.md",
+        "evidence": "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      },
+      "backend_handoff": "本批0.31.9-rc.1/0181接口已接入；后端继续汇总、开票、换手机号。",
+      "new_handoff_acknowledged": true,
+      "user_forwarded_handoff": true,
+      "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08",
+      "implementation_commit": "9b9e2b54"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-07",
+      "title": "城市选择和搜索：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "手选可完成业务，定位拒绝不阻断；先打开试镜再回广场换城，返回后筛选与列表一致；独立筛选明确提示，重复翻页无遗漏且权限一致",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md",
+        "docs/tasks/records/CORE-city-search-20261030.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_SEARCH_HANDOFF.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-04",
+        "DEL-28"
+      ],
+      "provisional_rule_refs": [
+        "P12",
+        "P13"
+      ],
+      "implementation": "LOCAL_IMPLEMENTATION_PARTIAL_ACCEPTANCE",
+      "implementation_scope": "统一六城快捷代码/别名及自定义城市精确查询；新增四类公开文字搜索、账号与条件绑定分页，实时复用公开权限；14项专项与33份HTTP格式已验证。待两端接入及原第7组完整验收。本批已上传886493b3，远端最终结果待核。",
+      "frontend_can_start": "已可从PR39/886493b3获取接口0.31.7-rc.1，按FRONTEND_SEARCH_HANDOFF接入；新远端仍运行，未确认前端已收到本批任务。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.04",
+        "TASK-07"
+      ],
+      "implementation_status": "IN_PROGRESS",
+      "actual_implementer": "chengcongcong222",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-07",
+      "title": "城市选择和搜索：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-07"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "手选可完成业务，定位拒绝不阻断；先打开试镜再回广场换城，返回后筛选与列表一致；独立筛选明确提示，重复翻页无遗漏且权限一致",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md",
+        "docs/tasks/records/UX-directory-support-20261030.md",
+        "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      ],
+      "blockers": [
+        "原18组与151条整体验收、另一方实际审阅仍待完成；本轮所需五项后端入口已提供。"
+      ],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-04",
+        "DEL-28"
+      ],
+      "provisional_rule_refs": [
+        "P12",
+        "P13"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "手选城市、可选定位、搜索、空结果和权限拒绝恢复；已打开的试镜/通告列表跟随全局城市刷新，本页主动独立筛选明确提示并可恢复跟随；当前实际范围以CORE-client-complete-merge-20261028记录为准，双方已组合，不再标前端未接手。",
+      "frontend_can_start": "本批已于2026-10-30完成接入；继续配合同记录整链及后续三组新接口。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.04",
+        "TASK-07"
+      ],
+      "implementation_status": "IMPLEMENTED",
+      "actual_implementer": "Bill-Billion（页面增量）；chengcongcong222（接口接线、合并修复、组合验证）",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。",
+      "updated_on": "2026-10-30",
+      "current_increment": "App/Vue本批目录、搜索、收藏、正式反馈与身份消息已实现；App721项、网页427项和真实隔离页面验证通过。原18组及151条整体验收、另一方审阅仍待完成。",
+      "frontend_increment_verification": {
+        "scope": "本轮目录、搜索、收藏、正式反馈与身份消息页面；不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-directory-support-20261030.md",
+        "evidence": "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      },
+      "backend_handoff": "本批0.31.9-rc.1/0181接口已接入；后端继续汇总、开票、换手机号。",
+      "user_forwarded_handoff": true,
+      "new_handoff_acknowledged": true,
+      "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08",
+      "implementation_commit": "9b9e2b54"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-08",
+      "title": "收藏和浏览记录：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "跨账号隔离，撤权不可继续访问；足迹默认关闭且可删除",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-personal-collections-20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-23",
+        "DEL-28"
+      ],
+      "provisional_rule_refs": [
+        "P08"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "本人收藏增删；主动开启后记录足迹，失效处理和清理",
+      "frontend_can_start": "已上传PR39/db5db44d，接口0.31.8-rc.1/迁移0173，按FRONTEND_COLLECTIONS_HANDOFF接线。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-28.01",
+        "TASK-08"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "收藏/足迹/清理/后台过期已实现并隔离验证，页面与整组验收未完成。",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-personal-collections-20261030.md",
+        "uploaded": true,
+        "merged": false,
+        "production_enabled": false,
+        "commit": "db5db44d5444e66bdba4d5b7fb2c242e60d085f3"
+      },
+      "uploaded_commit": "db5db44d5444e66bdba4d5b7fb2c242e60d085f3"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-08",
+      "title": "收藏和浏览记录：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-08"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "跨账号隔离，撤权不可继续访问；足迹默认关闭且可删除",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-personal-collections-20261030.md",
+        "docs/tasks/records/UX-directory-support-20261030.md",
+        "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      ],
+      "blockers": [
+        "原18组与151条整体验收、另一方实际审阅仍待完成；本轮所需五项后端入口已提供。"
+      ],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-23",
+        "DEL-28"
+      ],
+      "provisional_rule_refs": [
+        "P08"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "收藏/取消、查看、单删/清空、足迹开关",
+      "frontend_can_start": "本批已于2026-10-30完成接入；继续配合同记录整链及后续三组新接口。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-28.01",
+        "TASK-08"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "App/Vue本批目录、搜索、收藏、正式反馈与身份消息已实现；App721项、网页427项和真实隔离页面验证通过。原18组及151条整体验收、另一方审阅仍待完成。",
+      "frontend_increment_verification": {
+        "scope": "本轮目录、搜索、收藏、正式反馈与身份消息页面；不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-directory-support-20261030.md",
+        "evidence": "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      },
+      "backend_handoff": "本批0.31.9-rc.1/0181接口已接入；后端继续汇总、开票、换手机号。",
+      "new_handoff_acknowledged": true,
+      "user_forwarded_handoff": true,
+      "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08",
+      "implementation_commit": "9b9e2b54"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-09",
+      "title": "正式产品反馈举报：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "测试站反馈与正式工单分开；订单售后沿原单，不生成自由聊天",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-support-messages-20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-12",
+        "DEL-23",
+        "DEL-26"
+      ],
+      "provisional_rule_refs": [
+        "P09"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "业务关联工单、限定受理人、私有附件、处理记录",
+      "frontend_can_start": "已上传PR39/5da60dc0，接口0.31.9-rc.1/迁移0181，按FRONTEND_SUPPORT_MESSAGES_HANDOFF接线。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "E2E-11",
+        "TASK-09"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "本批服务器入口已写好并专项验证；页面和整组验收未完成。",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-support-messages-20261030.md",
+        "uploaded": true,
+        "merged": false,
+        "production_enabled": false,
+        "commit": "5da60dc09b9a937d4560701337975cb9f34a4287"
+      },
+      "uploaded_commit": "5da60dc09b9a937d4560701337975cb9f34a4287"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-09",
+      "title": "正式产品反馈举报：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-09"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "测试站反馈与正式工单分开；订单售后沿原单，不生成自由聊天",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-directory-support-20261030.md",
+        "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      ],
+      "blockers": [
+        "原18组与151条整体验收、另一方实际审阅仍待完成；本轮所需五项后端入口已提供。"
+      ],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-12",
+        "DEL-23",
+        "DEL-26"
+      ],
+      "provisional_rule_refs": [
+        "P09"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "从当前页面提问题/举报、补材料、查进度；运营受理",
+      "frontend_can_start": "本批已于2026-10-30完成接入；继续配合同记录整链及后续三组新接口。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "E2E-11",
+        "TASK-09"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "App/Vue本批目录、搜索、收藏、正式反馈与身份消息已实现；App721项、网页427项和真实隔离页面验证通过。原18组及151条整体验收、另一方审阅仍待完成。",
+      "frontend_increment_verification": {
+        "scope": "本轮目录、搜索、收藏、正式反馈与身份消息页面；不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-directory-support-20261030.md",
+        "evidence": "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      },
+      "backend_handoff": "本批0.31.9-rc.1/0181接口已接入；后端继续汇总、开票、换手机号。",
+      "new_handoff_acknowledged": true,
+      "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08",
+      "implementation_commit": "9b9e2b54"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-10",
+      "title": "消息未读和全部已读：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "其他身份不被误清，操作期间新消息仍未读，业务内会话继续独立",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-support-messages-20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-12"
+      ],
+      "provisional_rule_refs": [
+        "P10"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "账号及办事身份分开汇总，批量只读截止时间之前的获准消息",
+      "frontend_can_start": "已上传PR39/5da60dc0，接口0.31.9-rc.1/迁移0181，按FRONTEND_SUPPORT_MESSAGES_HANDOFF接线。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.04",
+        "E2E-03",
+        "E2E-04",
+        "TASK-10"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "本批服务器入口已写好并专项验证；页面和整组验收未完成。",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-support-messages-20261030.md",
+        "uploaded": true,
+        "merged": false,
+        "production_enabled": false,
+        "commit": "5da60dc09b9a937d4560701337975cb9f34a4287"
+      },
+      "uploaded_commit": "5da60dc09b9a937d4560701337975cb9f34a4287"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-10",
+      "title": "消息未读和全部已读：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-10"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "其他身份不被误清，操作期间新消息仍未读，业务内会话继续独立",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-directory-support-20261030.md",
+        "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      ],
+      "blockers": [
+        "原18组与151条整体验收、另一方实际审阅仍待完成；本轮所需五项后端入口已提供。"
+      ],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-12"
+      ],
+      "provisional_rule_refs": [
+        "P10"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "四频道未读、单条/全部已读、切身份刷新",
+      "frontend_can_start": "本批已于2026-10-30完成接入；继续配合同记录整链及后续三组新接口。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.04",
+        "E2E-03",
+        "E2E-04",
+        "TASK-10"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "App/Vue本批目录、搜索、收藏、正式反馈与身份消息已实现；App721项、网页427项和真实隔离页面验证通过。原18组及151条整体验收、另一方审阅仍待完成。",
+      "frontend_increment_verification": {
+        "scope": "本轮目录、搜索、收藏、正式反馈与身份消息页面；不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-directory-support-20261030.md",
+        "evidence": "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json"
+      },
+      "backend_handoff": "本批0.31.9-rc.1/0181接口已接入；后端继续汇总、开票、换手机号。",
+      "new_handoff_acknowledged": true,
+      "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08",
+      "implementation_commit": "9b9e2b54"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-11",
+      "title": "统一合同作品和收入入口：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PERSONAL_CENTER_HANDOFF.md"
+      ],
+      "acceptance": "不同域相同编号不串单；应计/待付/已付不混成到账，撤权清缓存",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-personal-center-20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-06",
+        "DEL-08",
+        "DEL-15",
+        "DEL-27"
+      ],
+      "provisional_rule_refs": [
+        "P14"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "当前身份合同／作品／收入的只读来源分类列表、真实时间分页、单源重试；收入本人已入账份额及商家留存分开",
+      "frontend_can_start": "已上传且用户已转发；页面新接入未确认",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-15.04",
+        "ACC-DEL-25.04",
+        "ACC-DEL-27.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-10",
+        "E2E-12",
+        "TASK-11"
+      ],
+      "updated_on": "2026-10-30",
+      "uploaded_commit": "1e50823b"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-11",
+      "title": "统一合同作品和收入入口：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-11"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "不同域相同编号不串单；应计/待付/已付不混成到账，撤权清缓存",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-personal-center-20261030.md",
+        "docs/testing/evidence/pr39-personal-center-20261030/RESULTS.json"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-06",
+        "DEL-08",
+        "DEL-15",
+        "DEL-27"
+      ],
+      "provisional_rule_refs": [
+        "P14"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "统一列表、筛选、回原业务、单域失败重试",
+      "frontend_can_start": "0.31.10/0181已接入；后续开票/换号已出现新后端交接，按原阶段继续。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.03",
+        "ACC-DEL-06.03",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-15.04",
+        "ACC-DEL-25.04",
+        "ACC-DEL-27.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-10",
+        "E2E-12",
+        "TASK-11"
+      ],
+      "updated_on": "2026-10-28",
+      "current_increment": "App/Vue三类汇总已实现并验证；App733项、网页全量441项及末尾43项、17浏览器场景、9HTTP自检通过。原整组验收与另一方审阅待完成。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "docs/collaboration/client-complete-20261028/FRONTEND_PERSONAL_CENTER_HANDOFF.md",
+      "new_handoff_acknowledged": true,
+      "implementation_commit": "8e5e7b59",
+      "upload_commit": "325ee734"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-12",
+      "title": "开票申请和人工处理：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md"
+      ],
+      "acceptance": "零现金不生成现金发票；重复申请不可超额；测试文件标非真实发票",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-invoices-20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-07",
+        "DEL-26"
+      ],
+      "provisional_rule_refs": [
+        "P15"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "原订单已核实实付上限、申请补件撤回、不同人员录入和复核、受控文件与退款后更正；正式出票默认关闭",
+      "frontend_can_start": "本批上传后可按FRONTEND_INVOICES_HANDOFF接页面；同版迁移0187",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.04",
+        "ACC-DEL-07.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "TASK-12"
+      ],
+      "updated_on": "2026-10-30",
+      "uploaded_commit": "d18c4622461c1e77bbc06816495e714b58d4be2e"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-12",
+      "title": "开票申请和人工处理：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-12"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md"
+      ],
+      "acceptance": "零现金不生成现金发票；重复申请不可超额；测试文件标非真实发票",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "docs/testing/evidence/pr39-invoice-phone-20261030/RESULTS.json"
+      ],
+      "blockers": [
+        "运营DTO缺当前人员allowed_actions，缺字段只读，完整办理未验收"
+      ],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-07",
+        "DEL-26"
+      ],
+      "provisional_rule_refs": [
+        "P15"
+      ],
+      "implementation": "PARTIAL_PENDING_BACKEND_ALLOWED_ACTIONS",
+      "implementation_scope": "申请、补件、撤回、拒绝说明、查看处理进度和文件",
+      "frontend_can_start": "已按0.31.12-rc.1／0192接入，详见本批记录；后续为同版完整验收。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.04",
+        "ACC-DEL-07.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-26.01",
+        "TASK-12"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "两端本人开票与换号页面已实现并完成本批真实联调；18项记录17通过、1项安全只读登记后端缺口；开票运营完整UI待allowed_actions。",
+      "frontend_increment_verification": {
+        "scope": "本增量，不等于整组或151条验收",
+        "status": "PARTIAL_PASS_BACKEND_GAP",
+        "record": "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "browser_record": "docs/testing/evidence/pr39-invoice-phone-20261030/browser-checks.json"
+      },
+      "backend_handoff": "后端补运营allowed_actions，独立岗位／状态／自审过滤后复验；其他接口保持原0.31.12。",
+      "new_handoff_acknowledged": true,
+      "latest_increment_acknowledged": true,
+      "implementation_commit": "009db443",
+      "upload_commit": "009db443"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-13",
+      "title": "更换登录手机号：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md"
+      ],
+      "acceptance": "测试验证码只在隔离环境；不得无验证改号或继承别人账号",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-phone-change-20261030.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-01",
+        "DEL-23"
+      ],
+      "provisional_rule_refs": [
+        "P16"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "近期登录、旧新号码独立核验、本人最终确认、并发冲突和全会话失效；同账号业务保留，旧号码再注册获得新账号",
+      "frontend_can_start": "0.31.12-rc.1／迁移0192，按FRONTEND_PHONE_CHANGE_HANDOFF接入；上传与最新确认分别记录",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-23.01",
+        "TASK-13"
+      ]
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-13",
+      "title": "更换登录手机号：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-13"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "测试验证码只在隔离环境；不得无验证改号或继承别人账号",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_PHONE_CHANGE_HANDOFF.md",
+        "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "docs/testing/evidence/pr39-invoice-phone-20261030/RESULTS.json"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-01",
+        "DEL-23"
+      ],
+      "provisional_rule_refs": [
+        "P16"
+      ],
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "核验、改号、重新登录；原号码不可用转人工申诉",
+      "frontend_can_start": "已按0.31.12-rc.1／0192接入，详见本批记录；后续为同版完整验收。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-23.01",
+        "TASK-13"
+      ],
+      "updated_on": "2026-10-30",
+      "current_increment": "两端本人开票与换号页面已实现并完成本批真实联调；18项记录17通过、1项安全只读登记后端缺口；开票运营完整UI待allowed_actions。",
+      "frontend_increment_verification": {
+        "scope": "本增量，不等于整组或151条验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-invoice-phone-20261030.md",
+        "browser_record": "docs/testing/evidence/pr39-invoice-phone-20261030/browser-checks.json"
+      },
+      "backend_handoff": "后端0.31.12／0192已接入；继续与同事同版复核旧号新注册隔离及完整业务。",
+      "backend_dependency_state": "换号接口已实现并隔离验证；本批集中上传后可接",
+      "latest_increment_acknowledged": true,
+      "new_handoff_acknowledged": true,
+      "implementation_commit": "009db443",
+      "upload_commit": "009db443"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-14",
+      "title": "累计晶钻与记录说明：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "历史消费和过期不伪装新收入；同事件不重复累计；不改可用余额规则",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-18"
+      ],
+      "provisional_rule_refs": [
+        "P17"
+      ],
+      "implementation": "LOCAL_IMPLEMENTATION_PARTIAL_ACCEPTANCE",
+      "implementation_scope": "按实际发放和撤回账目算累计，分清可用/消费成长/待冲回，固定口径版本；本侧本地接线/测试，队友新增前端待合并后重新核对。",
+      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-17.01",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.03",
+        "E2E-06",
+        "E2E-08",
+        "TASK-14"
+      ],
+      "implementation_status": "IN_PROGRESS",
+      "actual_implementer": "chengcongcong222",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-14",
+      "title": "累计晶钻与记录说明：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-14"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "历史消费和过期不伪装新收入；同事件不重复累计；不改可用余额规则",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-contexts-20261028.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/CORE-client-complete-merge-20261028.md"
+      ],
+      "blockers": [
+        "整项验收和双方实际审阅尚未完成"
+      ],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-18"
+      ],
+      "provisional_rule_refs": [
+        "P17"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "累计与可用分别显示，可展开来源及退款撤回解释；当前实际范围以CORE-client-complete-merge-20261028记录为准，双方已组合，不再标前端未接手。",
+      "frontend_can_start": "直接获取PR39组合分支联调已提供接口；其余缺口依任务记录继续，不能以integration旧接口代替。",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-17.01",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.03",
+        "E2E-06",
+        "E2E-08",
+        "TASK-14"
+      ],
+      "implementation_status": "IN_PROGRESS",
+      "actual_implementer": "Bill-Billion（页面增量）；chengcongcong222（接口接线、合并修复、组合验证）",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户要求本侧推进整阶段；队友新提交133363f7待合并，当前保留本侧已完成接线与测试。",
+      "updated_on": "2026-10-28",
+      "current_increment": "队友133363f7负责页面与草稿保护；本侧补齐接口并合并接线。原缺接口阻断已部分解除，具体范围见组合复验记录，整项未验收。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-15",
+      "title": "故事草稿与共创发起：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "默认私有，未提交不派单，未报价不付款；空房间账号在本次正式报价前自行建房并接上邀请、去重授权和本人片段，不能预置房间代替首次发起",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-client-complete-story-20261028.md",
+        "docs/tasks/records/CORE-story-recovery-media-20261029.md",
+        "docs/tasks/records/CORE-story-room-journey-20261029.md",
+        "docs/tasks/records/CORE-stock-media-20261029.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-14",
+        "DEL-15",
+        "DEL-16"
+      ],
+      "provisional_rule_refs": [
+        "P18"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "复用私人故事的自由创作模板和私有附件、版本、保存及补件；提供获准承制方和已审共创规则选择、本人建房与重复保护，沿用现有报价流程和共创权限",
+      "frontend_can_start": "前端3f25ecac已接保留提示、恢复与离开确认；本侧同故事9步和最新网页4步通过，继续报价/授权/制作到片段整链。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-24.01",
+        "E2E-02",
+        "E2E-05",
+        "TASK-15"
+      ],
+      "uploaded_commit": "7882a98648bf339d999f61c40c8d47084d725433",
+      "updated_on": "2026-10-29",
+      "current_increment_delivery": {
+        "record": "docs/tasks/records/CORE-story-recovery-media-20261029.md",
+        "uploaded": true,
+        "merged": false,
+        "production_enabled": false,
+        "commit": "7882a98648bf339d999f61c40c8d47084d725433"
+      },
+      "current_increment": "7882a986两项修复已上传且7项远端检查通过；新增同故事9步HTTP检查、故事模块74项通过，新增测试本地待集中同步；整组未验收。"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-15",
+      "title": "故事草稿与共创发起：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-15"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-story-20261029.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md"
+      ],
+      "acceptance": "默认私有，未提交不派单，未报价不付款；空房间账号在本次正式报价前自行建房并接上邀请、去重授权和本人片段，不能预置房间代替首次发起",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-client-complete-story-20261029.md",
+        "docs/tasks/records/UX-client-complete-media-20261029.md",
+        "docs/tasks/records/CORE-stock-media-20261029.md",
+        "docs/tasks/records/UX-workspace-drawer-20261029.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "C",
+      "v5_refs": [
+        "DEL-14",
+        "DEL-15",
+        "DEL-16"
+      ],
+      "provisional_rule_refs": [
+        "P18"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "新建、保存、续写、附件和提交后进入原故事报价链；本人从已提交故事选择承制方和规则建房，保存后进入邀请、授权和进度",
+      "frontend_can_start": "当前附件/补件/保留/离开恢复已接并检查，后续继续同记录报价、授权、主订单到本人片段整链。",
+      "uploaded": true,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-24.01",
+        "E2E-02",
+        "E2E-05",
+        "TASK-15"
+      ],
+      "updated_on": "2026-10-29",
+      "current_increment": "前端3f25ecac已修页面内离开确认；双方实际网页暂离→重开→原请求恢复→保存通过，整组后续业务链仍未验收。 本次抽屉跨业务复测修正同一账号刷新误清恢复缓存；原文件、原请求及单条附件恢复已实际验证。",
+      "frontend_increment_verification": {
+        "scope": "本批主肖像/媒体分类/历史附件保留及App和网页原请求恢复；网页明确暂离、重开恢复已补验，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-media-20261029.md"
+      },
+      "backend_handoff": "0.31.4已补缺对象原请求恢复和历史正式引用保留原因；前端已接并留证，不继续列为后端未开发。",
+      "uploaded_commit": "0db4d3aa0bee4a9d49e60af97d5e769e41cfb47a",
+      "handoff_acknowledgement": "2026-10-29前端Bill-Billion已实际接入0.31.4并记录本机验证；未代后端确认组合审阅。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-16",
+      "title": "全流程模拟服务及测试资料：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "CLAIMED",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "普通正式服务不能调用模拟成功；数据从新用户走到售后，三份获准样片可用",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-02",
+        "DEL-03",
+        "DEL-07",
+        "DEL-17",
+        "DEL-21",
+        "DEL-24"
+      ],
+      "provisional_rule_refs": [
+        "P19",
+        "P20",
+        "P21",
+        "P22"
+      ],
+      "implementation": "NOT_STARTED",
+      "implementation_scope": "隔离支付/退款、实名、签署、建模结果和失败场景；真实适配保持明确状态",
+      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.02",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-23.03",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-16"
+      ],
+      "latest_validation_scope": "8组149项接口检查和同记录12个检查点／54次请求；非151条全部验收"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-16",
+      "title": "全流程模拟服务及测试资料：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "BLOCKED",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-16"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "普通正式服务不能调用模拟成功；数据从新用户走到售后，三份获准样片可用",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md"
+      ],
+      "blockers": [
+        "完整模拟签署/建模、结果未知及同记录跨端资料待Core。"
+      ],
+      "delivery_batch": "B",
+      "v5_refs": [
+        "DEL-02",
+        "DEL-03",
+        "DEL-07",
+        "DEL-17",
+        "DEL-21",
+        "DEL-24"
+      ],
+      "provisional_rule_refs": [
+        "P19",
+        "P20",
+        "P21",
+        "P22"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "模拟操作有持续标识及成功/失败/待核对反馈，无测试业务下拉框",
+      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.02",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-23.03",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-16"
+      ],
+      "updated_on": "2026-10-28",
+      "current_increment": "本轮使用新建本机隔离数据检查前端，未修改生产或伪造模拟成功。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-17",
+      "title": "12条完整业务跨端测试：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "CLAIMED",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-01",
+        "UX-CLIENT-COMPLETE-01",
+        "CORE-CLIENT-COMPLETE-02",
+        "UX-CLIENT-COMPLETE-02",
+        "CORE-CLIENT-COMPLETE-03",
+        "UX-CLIENT-COMPLETE-03",
+        "CORE-CLIENT-COMPLETE-04",
+        "UX-CLIENT-COMPLETE-04",
+        "CORE-CLIENT-COMPLETE-05",
+        "UX-CLIENT-COMPLETE-05",
+        "CORE-CLIENT-COMPLETE-06",
+        "UX-CLIENT-COMPLETE-06",
+        "CORE-CLIENT-COMPLETE-07",
+        "UX-CLIENT-COMPLETE-07",
+        "CORE-CLIENT-COMPLETE-08",
+        "UX-CLIENT-COMPLETE-08",
+        "CORE-CLIENT-COMPLETE-09",
+        "UX-CLIENT-COMPLETE-09",
+        "CORE-CLIENT-COMPLETE-10",
+        "UX-CLIENT-COMPLETE-10",
+        "CORE-CLIENT-COMPLETE-11",
+        "UX-CLIENT-COMPLETE-11",
+        "CORE-CLIENT-COMPLETE-12",
+        "UX-CLIENT-COMPLETE-12",
+        "CORE-CLIENT-COMPLETE-13",
+        "UX-CLIENT-COMPLETE-13",
+        "CORE-CLIENT-COMPLETE-14",
+        "UX-CLIENT-COMPLETE-14",
+        "CORE-CLIENT-COMPLETE-15",
+        "UX-CLIENT-COMPLETE-15",
+        "CORE-CLIENT-COMPLETE-16",
+        "UX-CLIENT-COMPLETE-16"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "前16组双端成果通过验收；12条同记录从首次发起到结果和关键逆向走通，133条及暂定规则专项有当前预期与证据；登录回跳、未提交输入、字段错误、重试和分页返回适用检查通过",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PARTIAL_VALIDATION_PASS",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/testing/COMPLETE_FLOWS_20261030.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "D",
+      "v5_refs": [
+        "DEL-28",
+        "DEL-29"
+      ],
+      "provisional_rule_refs": [
+        "P23"
+      ],
+      "implementation": "NOT_STARTED",
+      "implementation_scope": "准备隔离数据、岗位、接口和数据库证据；按当前决定核对133条来源与暂定规则专项，复现修复权限、账务、状态与失败恢复问题",
+      "frontend_can_start": "可立即设计用例、准备隔离资料和检查已可用路线；所列依赖只约束整项最终验收，不要求等待前16组全部完成才开工",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.01",
+        "ACC-DEL-03.02",
+        "ACC-DEL-03.03",
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.01",
+        "ACC-DEL-06.02",
+        "ACC-DEL-06.03",
+        "ACC-DEL-06.04",
+        "ACC-DEL-07.01",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-08.01",
+        "ACC-DEL-08.02",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-09.02",
+        "ACC-DEL-09.03",
+        "ACC-DEL-09.04",
+        "ACC-DEL-10.01",
+        "ACC-DEL-10.02",
+        "ACC-DEL-10.03",
+        "ACC-DEL-10.04",
+        "ACC-DEL-11.01",
+        "ACC-DEL-11.02",
+        "ACC-DEL-11.03",
+        "ACC-DEL-11.04",
+        "ACC-DEL-12.01",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-13.01",
+        "ACC-DEL-13.02",
+        "ACC-DEL-13.03",
+        "ACC-DEL-13.04",
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-17.01",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.01",
+        "ACC-DEL-19.02",
+        "ACC-DEL-19.03",
+        "ACC-DEL-19.04",
+        "ACC-DEL-20.01",
+        "ACC-DEL-20.02",
+        "ACC-DEL-20.03",
+        "ACC-DEL-20.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-22.01",
+        "ACC-DEL-22.02",
+        "ACC-DEL-22.03",
+        "ACC-DEL-22.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-23.03",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "ACC-DEL-25.04",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "ACC-DEL-26.03",
+        "ACC-DEL-26.04",
+        "ACC-DEL-27.01",
+        "ACC-DEL-27.02",
+        "ACC-DEL-27.03",
+        "ACC-DEL-27.04",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.02",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04",
+        "ACC-DEL-29.01",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-03",
+        "E2E-04",
+        "E2E-05",
+        "E2E-06",
+        "E2E-07",
+        "E2E-08",
+        "E2E-09",
+        "E2E-10",
+        "E2E-11",
+        "E2E-12",
+        "ACC-DEL-19.05",
+        "TASK-17"
+      ],
+      "latest_validation_scope": "8组149项接口检查和同记录12个检查点／54次请求；非151条全部验收"
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-17",
+      "title": "12条完整业务跨端测试：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "BLOCKED",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-01",
+        "UX-CLIENT-COMPLETE-01",
+        "CORE-CLIENT-COMPLETE-02",
+        "UX-CLIENT-COMPLETE-02",
+        "CORE-CLIENT-COMPLETE-03",
+        "UX-CLIENT-COMPLETE-03",
+        "CORE-CLIENT-COMPLETE-04",
+        "UX-CLIENT-COMPLETE-04",
+        "CORE-CLIENT-COMPLETE-05",
+        "UX-CLIENT-COMPLETE-05",
+        "CORE-CLIENT-COMPLETE-06",
+        "UX-CLIENT-COMPLETE-06",
+        "CORE-CLIENT-COMPLETE-07",
+        "UX-CLIENT-COMPLETE-07",
+        "CORE-CLIENT-COMPLETE-08",
+        "UX-CLIENT-COMPLETE-08",
+        "CORE-CLIENT-COMPLETE-09",
+        "UX-CLIENT-COMPLETE-09",
+        "CORE-CLIENT-COMPLETE-10",
+        "UX-CLIENT-COMPLETE-10",
+        "CORE-CLIENT-COMPLETE-11",
+        "UX-CLIENT-COMPLETE-11",
+        "CORE-CLIENT-COMPLETE-12",
+        "UX-CLIENT-COMPLETE-12",
+        "CORE-CLIENT-COMPLETE-13",
+        "UX-CLIENT-COMPLETE-13",
+        "CORE-CLIENT-COMPLETE-14",
+        "UX-CLIENT-COMPLETE-14",
+        "CORE-CLIENT-COMPLETE-15",
+        "UX-CLIENT-COMPLETE-15",
+        "CORE-CLIENT-COMPLETE-16",
+        "UX-CLIENT-COMPLETE-16",
+        "CORE-CLIENT-COMPLETE-17"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "前16组双端成果通过验收；12条同记录从首次发起到结果和关键逆向走通，133条及暂定规则专项有当前预期与证据；登录回跳、未提交输入、字段错误、重试和分页返回适用检查通过",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md",
+        "docs/tasks/records/UX-stock-media-tree-20261029.md"
+      ],
+      "blockers": [
+        "前16组双端成果和12条完整同记录业务链仍待完成；151项未标整项PASS。"
+      ],
+      "delivery_batch": "D",
+      "v5_refs": [
+        "DEL-28",
+        "DEL-29"
+      ],
+      "provisional_rule_refs": [
+        "P23"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "逐页实际办理，首次试镜和本人建房不靠预置记录绕过；登录后回原记录，离开或切操作保护未提交输入，定位字段错误，检查重试、分页返回、窄屏和回原业务；结果未知保留原请求，换身份清私密缓存",
+      "frontend_can_start": "可立即设计用例、准备隔离资料和检查已可用路线；所列依赖只约束整项最终验收，不要求等待前16组全部完成才开工",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-01.01",
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-01.04",
+        "ACC-DEL-02.01",
+        "ACC-DEL-02.02",
+        "ACC-DEL-02.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-03.01",
+        "ACC-DEL-03.02",
+        "ACC-DEL-03.03",
+        "ACC-DEL-03.04",
+        "ACC-DEL-04.01",
+        "ACC-DEL-04.02",
+        "ACC-DEL-04.03",
+        "ACC-DEL-04.04",
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "ACC-DEL-05.03",
+        "ACC-DEL-05.04",
+        "ACC-DEL-06.01",
+        "ACC-DEL-06.02",
+        "ACC-DEL-06.03",
+        "ACC-DEL-06.04",
+        "ACC-DEL-07.01",
+        "ACC-DEL-07.02",
+        "ACC-DEL-07.03",
+        "ACC-DEL-07.04",
+        "ACC-DEL-08.01",
+        "ACC-DEL-08.02",
+        "ACC-DEL-08.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-09.01",
+        "ACC-DEL-09.02",
+        "ACC-DEL-09.03",
+        "ACC-DEL-09.04",
+        "ACC-DEL-10.01",
+        "ACC-DEL-10.02",
+        "ACC-DEL-10.03",
+        "ACC-DEL-10.04",
+        "ACC-DEL-11.01",
+        "ACC-DEL-11.02",
+        "ACC-DEL-11.03",
+        "ACC-DEL-11.04",
+        "ACC-DEL-12.01",
+        "ACC-DEL-12.02",
+        "ACC-DEL-12.03",
+        "ACC-DEL-12.04",
+        "ACC-DEL-13.01",
+        "ACC-DEL-13.02",
+        "ACC-DEL-13.03",
+        "ACC-DEL-13.04",
+        "ACC-DEL-14.01",
+        "ACC-DEL-14.02",
+        "ACC-DEL-14.03",
+        "ACC-DEL-14.04",
+        "ACC-DEL-15.01",
+        "ACC-DEL-15.02",
+        "ACC-DEL-15.03",
+        "ACC-DEL-15.04",
+        "ACC-DEL-16.01",
+        "ACC-DEL-16.02",
+        "ACC-DEL-16.03",
+        "ACC-DEL-16.04",
+        "ACC-DEL-17.01",
+        "ACC-DEL-17.02",
+        "ACC-DEL-17.03",
+        "ACC-DEL-17.04",
+        "ACC-DEL-18.01",
+        "ACC-DEL-18.02",
+        "ACC-DEL-18.03",
+        "ACC-DEL-18.04",
+        "ACC-DEL-19.01",
+        "ACC-DEL-19.02",
+        "ACC-DEL-19.03",
+        "ACC-DEL-19.04",
+        "ACC-DEL-20.01",
+        "ACC-DEL-20.02",
+        "ACC-DEL-20.03",
+        "ACC-DEL-20.04",
+        "ACC-DEL-21.01",
+        "ACC-DEL-21.02",
+        "ACC-DEL-21.03",
+        "ACC-DEL-21.04",
+        "ACC-DEL-22.01",
+        "ACC-DEL-22.02",
+        "ACC-DEL-22.03",
+        "ACC-DEL-22.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.02",
+        "ACC-DEL-23.03",
+        "ACC-DEL-23.04",
+        "ACC-DEL-24.01",
+        "ACC-DEL-24.02",
+        "ACC-DEL-24.03",
+        "ACC-DEL-24.04",
+        "ACC-DEL-25.01",
+        "ACC-DEL-25.02",
+        "ACC-DEL-25.03",
+        "ACC-DEL-25.04",
+        "ACC-DEL-26.01",
+        "ACC-DEL-26.02",
+        "ACC-DEL-26.03",
+        "ACC-DEL-26.04",
+        "ACC-DEL-27.01",
+        "ACC-DEL-27.02",
+        "ACC-DEL-27.03",
+        "ACC-DEL-27.04",
+        "ACC-DEL-28.01",
+        "ACC-DEL-28.02",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04",
+        "ACC-DEL-29.01",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "E2E-01",
+        "E2E-02",
+        "E2E-03",
+        "E2E-04",
+        "E2E-05",
+        "E2E-06",
+        "E2E-07",
+        "E2E-08",
+        "E2E-09",
+        "E2E-10",
+        "E2E-11",
+        "E2E-12",
+        "ACC-DEL-19.05",
+        "TASK-17"
+      ],
+      "updated_on": "2026-10-29",
+      "current_increment": "公共交互已实现；本批功能树导航含语义图标、54入口和7分类，现货跨端定向联调通过。继续12条完整链及151条正式核验，不将局部检查改为整项完成。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "CORE-CLIENT-COMPLETE-18",
+      "title": "甲方完整测试版定版交付：服务器与接口",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "CLAIMED",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-17",
+        "UX-CLIENT-COMPLETE-17",
+        "UX-CLIENT-COMPLETE-18"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "约定完整路线可自由操作，无阻断；可回退且不清甲方订单反馈；测试与生产标识明确",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "blockers": [],
+      "delivery_batch": "D",
+      "v5_refs": [
+        "DEL-28",
+        "DEL-29"
+      ],
+      "provisional_rule_refs": [
+        "P23"
+      ],
+      "implementation": "NOT_STARTED",
+      "implementation_scope": "固定代码/规则/资料版本，备份恢复、访问边界、反馈归档和部署检查",
+      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-28.02",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-18"
+      ]
+    },
+    {
+      "id": "UX-CLIENT-COMPLETE-18",
+      "title": "甲方完整测试版定版交付：App与网页",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "BLOCKED",
+      "branch": "ux/pr39-frontend-complete-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [
+        "CORE-CLIENT-COMPLETE-17",
+        "UX-CLIENT-COMPLETE-17"
+      ],
+      "deliverables": [
+        "docs/collaboration/client-complete-20261028/README.md"
+      ],
+      "acceptance": "约定完整路线可自由操作，无阻断；可回退且不清甲方订单反馈；测试与生产标识明确",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/UX-client-complete-20261028.md"
+      ],
+      "blockers": [
+        "完整放行、同事实审、合入与部署未完成。"
+      ],
+      "delivery_batch": "D",
+      "v5_refs": [
+        "DEL-28",
+        "DEL-29"
+      ],
+      "provisional_rule_refs": [
+        "P23"
+      ],
+      "implementation": "IN_PROGRESS",
+      "implementation_scope": "固定网页产物、正常业务入口、版本可见、问题反馈和使用说明",
+      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "uploaded": false,
+      "merged": false,
+      "production_enabled": false,
+      "planning_uploaded": true,
+      "planning_pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "acceptance_ids": [
+        "ACC-DEL-00.01",
+        "ACC-DEL-00.02",
+        "ACC-DEL-00.03",
+        "ACC-DEL-00.04",
+        "ACC-DEL-28.02",
+        "ACC-DEL-29.02",
+        "ACC-DEL-29.03",
+        "ACC-DEL-29.04",
+        "TASK-18"
+      ],
+      "updated_on": "2026-10-28",
+      "current_increment": "App与Vue可构建，前端增量和逐项接口交接可审阅；集中更新原PR39。",
+      "frontend_increment_verification": {
+        "scope": "当前已接入接口和页面增量，不等于整组验收",
+        "status": "PASS",
+        "record": "docs/tasks/records/UX-client-complete-20261028.md"
+      },
+      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+    },
+    {
+      "id": "UX-pr39-delivery-review-20261028",
+      "title": "PR39需求、验收与交付流程复核",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "ux/pr39-delivery-review-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/UX-pr39-delivery-review-20261028.md",
+        "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "测试版验收登记检查与反例测试"
+      ],
+      "acceptance": "核对18组任务、133条来源与12条完整流程；防止漏项、跳过、旧证据被误记为完整通过；修复已证实漏洞并验证，更新PR39，保留未完成和未审状态。",
+      "shared_boundaries": [
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-pr39-delivery-review-20261028.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-10-28",
+      "current_increment": "本轮复核、三处实际修复及针对性验证完成；18组原业务任务仍按各自状态继续，公共权限待另一方审阅，上传和远端检查以PR39当前提交为准。"
     }
   ],
   "delivery_policy": {
@@ -8567,5 +11475,225 @@
     "report": "docs/testing/FRONTEND_FOLLOWUP_20261022.md",
     "remaining_backend_items": 8,
     "peer_review_of_core_fixes": "NOT_CLAIMED"
+  },
+  "client_complete_20261028": {
+    "entry": "docs/collaboration/client-complete-20261028/README.md",
+    "decisions": "docs/collaboration/client-complete-20261028/PROVISIONAL_RULES.md",
+    "base_commit": "468df28a",
+    "delivery_branch": "core/full-business-closure-20261028",
+    "task_pairs": 18,
+    "provisional_decisions": 23,
+    "status": "已集中上传db5db44d至PR39并更新申请说明；本机专项15项、整体1006通过/1缺旧库样本跳过、67份HTTP格式通过；新7项远端检查待返回。前端目录/搜索/收藏待接，18组未整体验收，未合入或部署。",
+    "user_authorization": "2026-10-28要求整理前后端任务并上传，需要甲方确定的内容由本侧合理暂定；尽快完整测试",
+    "client_test_version_ready": false,
+    "planning_uploaded": true,
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "initial_uploaded_commit": "21c8d76ba203460757a80ecca9edf073f8c70b2f",
+    "provisional_rule_version": "TEST-20261028-2",
+    "rule_priority": "历史订单和合同使用固化承诺；新业务先用最近已确认决定，再用未被替代的V5/D1要求；暂定规则只补测试版未决细节，不解除真实服务条件。来源原文与当前有效预期分别保留。",
+    "delivery_order": "每批先交付一条接口、页面、隔离资料、实际办理和逆向恢复齐备的路线，再接下一条；独立准备可并行，整链从首条可用就开始检查。",
+    "final_acceptance_scope": "第17组最终验收依赖前16组双端成果、12条整链和133条来源及暂定规则专项；提前施工或部分路线通过不等于整项完成。",
+    "acceptance_guide": "docs/collaboration/client-complete-20261028/ACCEPTANCE.md",
+    "frontend_owner": "Bill-Billion",
+    "frontend_branch": "ux/pr39-frontend-complete-20261028",
+    "frontend_increment_record": "docs/tasks/records/UX-stock-media-tree-20261029.md",
+    "frontend_scope": "本批主肖像选择、分类展示、历史保留提示已接入，App原上传恢复及跨端补件已实测；网页明确暂离确认和同记录恢复补验通过，完整业务整链与原剩余接口继续。",
+    "backend_assignment_confirmed": "后端负责人chengcongcong222，前端负责人Bill-Billion；用户2026-10-28明确由用户通知前端跟进。",
+    "backend_owner": "chengcongcong222",
+    "combined_review": "docs/tasks/records/CORE-client-complete-merge-20261028.md",
+    "frontend_story_handoff": "docs/collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md",
+    "latest_record": "docs/tasks/records/CORE-support-messages-20261030.md",
+    "next_delivery_plan": "docs/collaboration/client-complete-20261028/NEXT_DELIVERY_PLAN_20261030.md"
+  },
+  "frontend_workspace_drawer_20261029": {
+    "owner": "Bill-Billion",
+    "status": "IMPLEMENTED_LOCAL_VALIDATION",
+    "record": "docs/tasks/records/UX-workspace-drawer-20261029.md",
+    "views": 15,
+    "entries": 54,
+    "vue_checks_passed": 396,
+    "browser_result": "PASS_DESKTOP_MOBILE_AND_CROSS_BUSINESS_UPLOAD_RECOVERY",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "upstream_base": "a97112d5",
+    "merged": false,
+    "production_enabled": false,
+    "core_review": {
+      "frontend_commit": "2761ca90",
+      "status": "LOCAL_REVIEW_AND_BROWSER_CHECKS_PASSED",
+      "record": "docs/tasks/records/CORE-workspace-drawer-review-20261029.md",
+      "uploaded": true,
+      "merged_integration": false,
+      "uploaded_commit": "5ad8cae436b9b9388234ee15dac84d7cb26b86d0",
+      "remote_checks": "SUCCESS_9_CHECKS_AT_5ad8cae4"
+    }
+  },
+  "public_directory_20261029": {
+    "owner": "chengcongcong222",
+    "status": "LOCAL_VALIDATION_PASSED",
+    "scope": "公开机构资料申请与独立审核、受控主图、精选艺人有效期、按发布方查询通告",
+    "dependencies": "现有机构身份/供给附件/艺人公开同意/通告资格；沿PR39组合版本继续，不依赖待接的现货页面",
+    "acceptance": "申请人和审核人分离；未审不公开；过期、撤权、隐私限制隐藏；分页不越界；公开响应不含证件或联系方式；接口和同版合成资料交接",
+    "frontend_owner": "Bill-Billion",
+    "frontend_new_handoff_confirmed": false,
+    "record": "docs/tasks/records/CORE-public-directory-20261029.md",
+    "contract": "0.31.6-rc.1",
+    "migration": "0170",
+    "focused_passed": 15,
+    "backend_passed": 979,
+    "backend_skipped": 1,
+    "runtime_responses": 62,
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "combined_frontend": {
+      "commit": "4ae46263c39b273071be45645975e5e3c6b82383",
+      "local_merge": "4d948125",
+      "vue_tests_passed": 411,
+      "vue_build": "PASS",
+      "app_related_tests_passed": 30,
+      "full_frontend_suites_rerun": false
+    },
+    "uploaded_commit": "ca0fff7c1ae8ed8bd188a02f842af48300e0e1b8",
+    "remote_checks": "STARTED_AWAITING_FINAL_RESULTS"
+  },
+  "collections_20261030": {
+    "owner": "chengcongcong222",
+    "status": "LOCAL_VALIDATION_PASSED",
+    "scope": "本人收藏、主动开启浏览记录、单删/清空、过期清理与失效提示",
+    "dependencies": "PR39已有艺人/现货/通告公开权限；不依赖待接目录/搜索页面",
+    "acceptance": "默认不记录；本人隔离；重复不增；删除后旧请求不复活；下架撤权不泄露正文；有界分页和定时清理；同版接口和合成资料",
+    "frontend_owner": "Bill-Billion",
+    "new_handoff_confirmed": false,
+    "record": "docs/tasks/records/CORE-personal-collections-20261030.md",
+    "contract": "0.31.8-rc.1",
+    "migration": "0173",
+    "focused_passed": 15,
+    "regression_passed": 1006,
+    "regression_skipped": 1,
+    "http_responses": 67,
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "uploaded_commit": "db5db44d5444e66bdba4d5b7fb2c242e60d085f3",
+    "remote_checks": "ALL_7_SUCCESS_ON_db5db44d",
+    "user_forwarded_handoff": true
+  },
+  "support_messages_20261030": {
+    "owner": "chengcongcong222",
+    "frontend_owner": "Bill-Billion",
+    "contract": "0.31.9-rc.1",
+    "migration": "0181",
+    "record": "docs/tasks/records/CORE-support-messages-20261030.md",
+    "implementation": "IMPLEMENTED",
+    "focused_tests": "20_PASS",
+    "runtime_response_cases": 83,
+    "final_regression": "1024_PASS_1_MISSING_LEGACY_FIXTURE_SKIP",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "frontend_new_handoff_acknowledged": true,
+    "evidence": "docs/testing/evidence/support-messages-20261030/summary.json",
+    "uploaded_commit": "5da60dc09b9a937d4560701337975cb9f34a4287",
+    "remote_checks": "5da60dc0的7项检查全部成功",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "user_forwarded_handoff": true
+  },
+  "personal_center_20261030": {
+    "owner": "chengcongcong222",
+    "frontend_owner": "Bill-Billion",
+    "contract": "0.31.10-rc.1",
+    "migration": "0181",
+    "record": "docs/tasks/records/CORE-personal-center-20261030.md",
+    "implementation": "IMPLEMENTED",
+    "focused_tests": "8_PASS",
+    "finance_tests": "38_PASS",
+    "runtime_response_cases": 26,
+    "final_regression": "1035_PASS_1_MISSING_LEGACY_FIXTURE_SKIP_BEFORE_FINAL_GIG_SOURCES",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "frontend_new_handoff_acknowledged": true,
+    "gigs_tests": "26_PASS",
+    "evidence": "docs/testing/evidence/personal-center-20261030/summary.json",
+    "uploaded_commit": "1e50823b22c47442195a857179505cc7c92652b9",
+    "remote_checks": "7项中3项成功、4项运行；最终结果待核对",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "user_forwarded_handoff": true,
+    "frontend_record": "docs/tasks/records/UX-personal-center-20261030.md"
+  },
+  "frontend_directory_support_20261030": {
+    "owner": "Bill-Billion",
+    "contract": "0.31.9-rc.1",
+    "migration": "0181",
+    "implementation": "IMPLEMENTED",
+    "app_tests": 721,
+    "web_tests": 427,
+    "test_scope": "本批前端回归和隔离联调；不等于原18组151条完整验收",
+    "record": "docs/tasks/records/UX-directory-support-20261030.md",
+    "evidence": "docs/testing/evidence/pr39-directory-support-20261030/RESULTS.json",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "review_status": "PENDING",
+    "upload_commit": "3d1461bf9e4b24b61c8df230751440f7c5d5cd08"
+  },
+  "invoices_20261030": {
+    "owner": "chengcongcong222",
+    "contract": "0.31.11-rc.1",
+    "migration": "0187",
+    "operations": 16,
+    "focused_tests": "14_PASS",
+    "http_response_cases": 72,
+    "regression": "1041_PASS_0_FAIL_3_SKIP; VIDEO_FOLLOWUP_9_PASS; LEGACY_SAMPLE_MISSING",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "frontend_new_handoff_acknowledged": true,
+    "evidence": "docs/testing/evidence/invoices-20261030/summary.json",
+    "uploaded_commit": "d18c4622461c1e77bbc06816495e714b58d4be2e",
+    "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
+    "remote_checks": "7项中3项成功，4项运行；以最新HEAD最终结果为准",
+    "frontend_record": "docs/tasks/records/UX-invoice-phone-20261030.md"
+  },
+  "frontend_personal_center_20261030": {
+    "owner": "Bill-Billion",
+    "implementation": "IMPLEMENTED",
+    "contract": "0.31.10-rc.1",
+    "migration": "0181",
+    "app_tests": 733,
+    "web_full_tests": 441,
+    "web_last_focused_tests": 43,
+    "browser_scenarios": 17,
+    "record": "docs/tasks/records/UX-personal-center-20261030.md",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "review_status": "PENDING",
+    "implementation_commit": "8e5e7b59",
+    "upload_commit": "325ee734"
+  },
+  "frontend_invoice_phone_20261030": {
+    "owner": "Bill-Billion",
+    "contract": "0.31.12-rc.1",
+    "migration": "0192",
+    "own_invoice_implementation": "IMPLEMENTED",
+    "phone_change_implementation": "IMPLEMENTED",
+    "operator_invoice_implementation": "READ_ONLY_PENDING_BACKEND_ALLOWED_ACTIONS",
+    "app_earlier_full_tests": 753,
+    "app_final_targeted_tests": 24,
+    "web_earlier_full_tests": 473,
+    "web_final_targeted_tests": 34,
+    "final_full_suite_rerun": false,
+    "browser_recorded": 18,
+    "browser_passed": 17,
+    "browser_safe_readonly_with_backend_gap": 1,
+    "record": "docs/tasks/records/UX-invoice-phone-20261030.md",
+    "uploaded": true,
+    "merged": false,
+    "production_enabled": false,
+    "review_status": "PENDING",
+    "implementation_commit": "009db443f9ad7670b136c4e365ed81da11a67595",
+    "upload_commit": "009db443f9ad7670b136c4e365ed81da11a67595",
+    "remote_checks": "CHECK_CURRENT_PR_HEAD"
   }
 }

@@ -21,6 +21,8 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  int _loginEpoch = 0;
+  int get loginEpoch => _loginEpoch;
   int? _restReminderMinutes;
   int? get restReminderMinutes => _restReminderMinutes;
   final _domainDenials = <String>{};
@@ -294,6 +296,8 @@ class AccountSession extends ChangeNotifier {
   }
 
   void _clear() {
+    _loginEpoch++;
+    api.clearAccountOperations();
     api.clearSupplyOperations();
     _domainDenials.clear();
     artistsAccessDenied = false;
@@ -322,6 +326,20 @@ class AccountSession extends ChangeNotifier {
     if (started != _epoch) throw const AccountError(0, 'CONTEXT_CHANGED');
   }
 
+  /// The server has already revoked every session after a phone change.
+  void requirePhoneRelogin() {
+    _clear();
+    authNotice = '换号结果请用新手机号重新登录后核对。原账号及其业务保留。';
+    notifyListeners();
+  }
+
+  bool _publicDirectoryMissing(String path, AccountError error) =>
+      error.status == 404 &&
+      ['DIRECTORY_NOT_FOUND', 'DIRECTORY_COVER_NOT_FOUND']
+          .contains(error.code) &&
+      RegExp(r'^/api/v1/directory/organizations/[0-9a-fA-F-]{36}(/cover)?$')
+          .hasMatch(path);
+
   Future<Map<String, dynamic>> _request(
     String method,
     String path, {
@@ -330,9 +348,17 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     int? version,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
+    final loginStarted = _loginEpoch;
+    final phoneChange = path.startsWith('/api/v1/me/phone-changes');
+    bool current() =>
+        phoneChange ? loginStarted == _loginEpoch : started == _epoch;
+    if (phoneChange && actingParty != null) {
+      throw const AccountError(400, 'ACTING_PARTY_NOT_ALLOWED');
+    }
     if (_token == null) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
@@ -344,8 +370,13 @@ class AccountSession extends ChangeNotifier {
           query: query,
           version: version,
           bytes: bytes,
+          onSendProgress: onSendProgress == null
+              ? null
+              : (sent, total) {
+                  if (started == _epoch) onSendProgress(sent, total);
+                },
           validate: validate);
-      _check(started);
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (path == '/api/v1/privacy/preferences' &&
           ['GET', 'PATCH'].contains(method)) {
         final minutes = result['rest_reminder_minutes'];
@@ -366,7 +397,8 @@ class AccountSession extends ChangeNotifier {
           error.code == 'WALLET_NOT_FOUND';
       if ([403, 404].contains(error.status) &&
           started == _epoch &&
-          !unopenedWallet) {
+          !unopenedWallet &&
+          !_publicDirectoryMissing(path, error)) {
         for (final prefix in additionalBusinessPrefixes) {
           if (path.startsWith(prefix)) {
             denyDomain(prefix);
@@ -426,7 +458,9 @@ class AccountSession extends ChangeNotifier {
           started == _epoch) {
         denyLicensing();
       }
-      if (error.status == 401 && started == _epoch) {
+      if (error.status == 401 &&
+          current() &&
+          !(phoneChange && error.code == 'INVALID_PHONE_CHANGE_CODE')) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
         notifyListeners();
@@ -438,6 +472,9 @@ class AccountSession extends ChangeNotifier {
   Map<String, dynamic>? pending(String method, String path,
           {String? actingParty}) =>
       api.pending(method, path, token: _token, party: actingParty);
+
+  void discardPending(String method, String path, {String? actingParty}) =>
+      api.discardPending(method, path, token: _token, party: actingParty);
 
   Future<Map<String, dynamic>> read(String path,
           {String? actingParty, Map<String, dynamic>? query}) =>
@@ -459,11 +496,13 @@ class AccountSession extends ChangeNotifier {
   Future<Map<String, dynamic>> upload(String path, Uint8List bytes,
           {required String actingParty,
           required Map<String, dynamic> query,
+          void Function(int sent, int total)? onSendProgress,
           required void Function(Map<String, dynamic>) validate}) =>
       _request('POST', path,
           bytes: bytes,
           query: query,
           actingParty: actingParty,
+          onSendProgress: onSendProgress,
           validate: validate);
   Future<Uint8List> readBytes(String path,
       {String? actingParty, Map<String, dynamic>? query}) async {
@@ -479,7 +518,9 @@ class AccountSession extends ChangeNotifier {
     } on AccountError catch (e) {
       if (started == _epoch) {
         final domain = additionalBusinessPrefixes.where(path.startsWith);
-        if ([403, 404].contains(e.status) && domain.isNotEmpty) {
+        if ([403, 404].contains(e.status) &&
+            domain.isNotEmpty &&
+            !_publicDirectoryMissing(path, e)) {
           denyDomain(domain.first);
         } else if (path.startsWith('/api/v1/artists/') &&
             [403, 404].contains(e.status)) {

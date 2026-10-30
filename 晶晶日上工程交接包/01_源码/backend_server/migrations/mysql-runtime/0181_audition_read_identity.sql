@@ -1,0 +1,1 @@
+ALTER TABLE audition_reads ADD party_scope CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000', DROP PRIMARY KEY, ADD PRIMARY KEY(booking_id,account_id,party_scope,message_id)

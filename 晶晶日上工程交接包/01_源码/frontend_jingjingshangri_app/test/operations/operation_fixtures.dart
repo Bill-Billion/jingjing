@@ -57,6 +57,35 @@ FakeAccountAdapter operationsAdapter(
   a = FakeAccountAdapter(handler: (r) async {
     final special = await override?.call(r);
     if (special != null) return special;
+    if (r.path == '/api/v1/operations/notifications/unread') {
+      return envelope({
+        'total': read ? 0 : 1,
+        'channels': {
+          'ORDER_CONVERSATIONS': read ? 0 : 1,
+          'SUBMISSION_INTENTS': 0,
+          'ACTIVITY_VOTING': 0,
+          'SYSTEM': 0
+        },
+        'snapshot_id': invitationId,
+        'as_of': '2026-10-30T00:00:00Z',
+        'expires_at': '2026-10-30T01:00:00Z',
+        'coverage': 'CURRENT_AUTHORIZED_NOTIFICATIONS'
+      });
+    }
+    if (r.path == '/api/v1/operations/notifications/feed') {
+      return envelope({
+        'items': r.queryParameters['unread_only'] == 'true' && read
+            ? []
+            : [
+                {
+                  ...noticeData(read: read),
+                  'channel': 'ORDER_CONVERSATIONS',
+                  'target': {'domain': 'PROJECTS', 'record_id': projectKey}
+                }
+              ],
+        'next_cursor': null
+      });
+    }
     if (r.path == '/api/v1/operations/notifications') {
       return envelope({
         'items': r.queryParameters['unread_only'] == 'true' && read

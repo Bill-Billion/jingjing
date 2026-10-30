@@ -12,12 +12,12 @@ async function command(tx,a,op,input,fn){const key=digest([a.id,op,ref(input.ope
 async function reviewer(tx,a,r,action){if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action}))throw error('STOCK_REVIEW_FORBIDDEN',403);if(r&&(r.created_by===a.id||await A.one(tx,"SELECT id FROM party_memberships WHERE account_id=? AND party_id=? AND current_status='ACTIVE'",[a.id,r.seller_party_id])))throw error('SELF_REVIEW_FORBIDDEN',403);}
 async function video(tx,key,seller){await require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',key);const a=await A.one(tx,'SELECT * FROM supply_assets WHERE id=? FOR SHARE',[id(key)]);if(!a||a.owner_party_id!==seller||a.current_status!=='READY'||a.purpose!=='WORK_CONTENT'||a.media_type!=='video/mp4')throw error('STOCK_VIDEO_NOT_READY',409);return a;}
 async function validateRights(tx,r,a){if(r.id)await require('../privacy/restrictions').assertUnrestricted(tx,'STOCK_LISTING',r.id);
- await A.activeParty(tx,r.seller_party_id);const at=await A.now(tx),snap=[];
+ const sellerParty=await A.activeParty(tx,r.seller_party_id);const at=await A.now(tx),snap=[];
  const seller=await A.person(tx,r.data.seller_person_id);require('../artists/policy').adult(seller,at);
  await A.authorize(tx,a||{id:r.created_by},seller,r.seller_party_id,'SUBMIT_LISTING');
  const [halos]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='HALO' AND current_status='APPROVED' FOR SHARE",[seller.id]);
  if(!halos.map(A.checked).some(h=>h.data.level===1&&h.data.valid_until>at))throw error('STOCK_L1_REQUIRED',409);
- for(const x of r.data.participants){const p=await A.person(tx,x.person_id);require('../artists/policy').adult(p,at);await A.avatar(tx,x.avatar_id,p);
+ for(const x of r.data.participants){const p=await A.person(tx,x.person_id);require('../artists/policy').adult(p,at);await A.avatar(tx,x.avatar_id,p);if(sellerParty.kind==='ORGANIZATION')await A.authorize(tx,a||{id:r.created_by},p,r.seller_party_id,'SUBMIT_LISTING');
   const c=await A.load(tx,x.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==x.avatar_id||c.current_status!=='APPROVED'||c.data.grantee_party_id!==r.seller_party_id||!['STOCK_LICENSE','PUBLIC_DISPLAY'].every(v=>c.data.purposes.includes(v))||!c.data.territories.includes('WORLDWIDE')||!require('../artists/policy').active(c.data,at))throw error('STOCK_SALE_CONSENT_REQUIRED',409);
   snap.push({person_id:p.id,avatar_id:x.avatar_id,consent_id:c.id,content_sha256:c.content_sha256});
  }
@@ -29,7 +29,7 @@ async function validateRights(tx,r,a){if(r.id)await require('../privacy/restrict
  if(r.data.files&&(full.content_sha256!==r.data.files.full_sha256||preview.content_sha256!==r.data.files.preview_sha256))throw error('STORED_CONTENT_MISMATCH',503);
  return {rights_snapshot:snap,files:{full_sha256:full.content_sha256,preview_sha256:preview.content_sha256}};
 }
-async function listed(tx,key){const r=await listing(tx,key);if(r.current_status!=='LISTED')throw error('STOCK_NOT_LISTED',409);await validateRights(tx,r);return r;}
+async function listed(tx,key){const r=await listing(tx,key);if(r.current_status!=='LISTED')throw error('STOCK_NOT_LISTED',409);if(r.data.sales_publication_id)await require('./sales-publications').binding(tx,r.seller_party_id,r.data.spec_id,r.data.rule_id,r.data.sales_publication_id);await validateRights(tx,r);return r;}
 function publicDTO(r){return {id:r.id,seller_party_id:r.seller_party_id,title:r.data.title,description:r.data.description,city:r.data.city,person_ids:r.data.participants.map(x=>x.person_id),unit_minor:r.data.spec.unit_minor,currency:'CNY',license:P.license(r.data.spec.specification),object_version:r.object_version,offer_sha256:r.data_sha256};}
 async function bind(tx,order,r){const data={status:'AWAITING_PAYMENT',listing_snapshot:r.data,offer_sha256:r.data_sha256,license:P.license(r.data.spec.specification),granted_at:null,notification_event_id:null,viewed_at:null,observed_rights_epoch:null,receipt_at:null,deadline_at:null,job_id:null,accepted_at:null,acceptance_method:null,cases:[],current_case_id:null};await tx.execute('INSERT INTO stock_purchases(order_id,listing_id,buyer_party_id,data_json,data_sha256) VALUES (?,?,?,?,?)',[order.id,r.id,order.buyer_party_id,JSON.stringify(data),digest(data)]);}
 async function paymentAllowed(tx,order){if(!order.data.quote.stock_video)return;if(Date.parse(order.data.quote.expires_at)<=Date.parse(await A.now(tx)))throw error('STOCK_CHECKOUT_EXPIRED',409);await listed(tx,order.data.quote.stock_video.listing_id);const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR SHARE',[order.id]));if(p.data.current_case_id)throw error('STOCK_AFTERCARE_PENDING',409);}

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import '../support/collections.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
@@ -11,6 +12,7 @@ import 'stock_api.dart';
 import 'stock_models.dart';
 import 'stock_listing_form.dart';
 import 'stock_public_card.dart';
+import 'stock_public_media.dart';
 import 'v5_media.dart';
 import 'v5_support.dart';
 
@@ -22,6 +24,7 @@ class StockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'stock',
+      stateKey: mode == 'catalog' ? '/stock/catalog' : null,
       route: Uri(path: '/stock/$mode', queryParameters: {
         if (mode == 'catalog' && city?.trim().isNotEmpty == true)
           'city': city!.trim(),
@@ -33,8 +36,9 @@ class StockPage extends StatelessWidget {
       personal: ['purchases', 'purchase'].contains(mode),
       showExpired: mode == 'catalog',
       expiredLabel: '现成视频',
-      builder: (s) => mode == 'new'
-          ? StockListingForm(session: s)
+      builder: (s) => mode == 'new' || mode == 'listing' && action == 'revise'
+          ? StockListingForm(
+              session: s, revisionId: mode == 'listing' ? id : null)
           : _StockScreen(
               session: s,
               mode: mode,
@@ -83,12 +87,39 @@ class _StockScreenState extends State<_StockScreen> {
       quoteChanged = false,
       loadFailed = false,
       hasRead = false;
+  bool independentCity = false;
+  String queryCity = '';
   int ticket = 0;
   @override
   void initState() {
     super.initState();
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _StockScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = (widget.initialCity ?? '').trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = (widget.initialCity ?? '').trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -107,6 +138,7 @@ class _StockScreenState extends State<_StockScreen> {
       error = null;
       loadFailed = false;
       if (!more) {
+        queryCity = city.text.trim();
         offers.clear();
         listings.clear();
         purchases.clear();
@@ -123,8 +155,10 @@ class _StockScreenState extends State<_StockScreen> {
     try {
       switch (widget.mode) {
         case 'catalog':
-          final r = await api.catalog(
-              cursor: more ? cursor : null, city: city.text.trim());
+          final r =
+              await api.catalog(cursor: more ? cursor : null, city: queryCity);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'video':
@@ -313,7 +347,9 @@ class _StockScreenState extends State<_StockScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       StockPublicCard(
+                          session: widget.session,
                           offer: item,
+                          onRefreshOffer: () => load(),
                           onTap: () => go('/stock/video?listingId=${item.id}')),
                       const SizedBox(height: 4),
                       Text('${item.data['city']} · ${v5Money(item.price)}',
@@ -369,8 +405,13 @@ class _StockScreenState extends State<_StockScreen> {
         title: title,
         children: [
           if (o != null) ...[
+            StockPublicMediaView(
+                session: widget.session,
+                offer: o,
+                onRefreshOffer: () => load()),
+            const SizedBox(height: 16),
             V5Media(
-                key: ValueKey('stock-preview-${o.id}'),
+                key: ValueKey('stock-preview-${o.id}-${o.version}-${o.hash}'),
                 api: api,
                 account: true,
                 label: '读取已审预览',
@@ -437,8 +478,10 @@ class _StockScreenState extends State<_StockScreen> {
           ],
           if (widget.mode == 'catalog') ...[
             appNotice('选择已完成的作品，按已审个人使用许可购买，无需先创建自己的数字人或填写故事。'),
+            cityScope(),
             TextField(
                 controller: city,
+                onChanged: (_) => setState(() => independentCity = true),
                 decoration: const InputDecoration(labelText: '城市筛选（可留空）')),
             tradeButton('按城市读取', busy ? null : () => load(), outline: true),
             catalogueCards(),
@@ -451,6 +494,11 @@ class _StockScreenState extends State<_StockScreen> {
             tradeButton('我上架的作品', () => go('/stock/listings'), outline: true),
           ],
           if (o != null) ...[
+            CollectionDetailActions(
+                key: ValueKey('stock-save:${o.id}'),
+                session: widget.session,
+                kind: 'STOCK',
+                targetId: o.id),
             tradeSection('价格与本版许可', [
               tradeFact('价格', v5Money(o.price)),
               ...stockLicenseFacts(o.license)
@@ -494,6 +542,26 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice('本人当前没有上架材料。'),
           ],
           if (l != null) ...[
+            if (['REJECTED', 'UNLISTED', 'LISTED'].contains(l.status) &&
+                l.data['rights_hold'] != true &&
+                l.data['revision_id'] == null &&
+                l.data['replaced_by_listing_id'] == null)
+              tradeButton(
+                  '修改材料并重新提交审核',
+                  busy
+                      ? null
+                      : () =>
+                          go('/stock/listing?listingId=${l.id}&action=revise')),
+            if (l.data['revision_id'] != null)
+              tradeButton('查看已提交的新版本',
+                  () => go('/stock/listing?listingId=${l.data['revision_id']}'),
+                  outline: true),
+            if (l.data['previous_listing_id'] != null)
+              tradeButton(
+                  '查看修改前版本',
+                  () => go(
+                      '/stock/listing?listingId=${l.data['previous_listing_id']}'),
+                  outline: true),
             tradeSection('上架状态与审核', [
               tradeFact('状态', stockStatuses[l.status]),
               tradeFact('卖方具体真人', '本次已授权真人'),
@@ -520,6 +588,8 @@ class _StockScreenState extends State<_StockScreen> {
                   ]),
               if (l.data['rights_hold'] == true)
                 appNotice('权利暂停会限制已购下载；恢复须重新双审。'),
+              if (l.status == 'REJECTED')
+                appNotice('请按权利审核和内容审核的退回原因修改材料，再提交新版本重新审核；原记录和已售许可继续保留。'),
               if (l.status == 'UNLISTED') appNotice('普通下架停止新销售，已售许可仍按原约定核对。')
             ]),
             V5Media(

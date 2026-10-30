@@ -5,10 +5,19 @@ const { createCustomizationRepository } = require('../modules/customization/repo
 const { shape, id, ref, version, error } = require('../modules/party/policy');
 
 // Authenticated HTTP boundary only. Business facts and permissions live in the repository.
-function createCustomizationRouter({ db, resolvePrincipal, secret }) {
+function createCustomizationRouter({ db, resolvePrincipal, secret, env={}, storageFactory }) {
   const router = express.Router();
   const repo = createCustomizationRepository(db, { resolvePrincipal });
   const wrap = fn => (req, res, next) => Promise.resolve().then(() => fn(req, res)).catch(next);
+  const caps=new WeakMap();
+  const storage=storageFactory?storageFactory():require('../modules/providers/private-storage').createPrivateStorage({env,repository:require('../modules/providers/readiness').createReadinessRepository(db),authorize:async({operation,key,context})=>caps.get(context)===operation+':'+key});
+  async function withStorage(operation,key,fn){const context={};caps.set(context,operation+':'+key);try{return await fn(context);}finally{caps.delete(context);}}
+  const attachments=require('../modules/customization/attachments');
+  const files=attachments.service(repo,{
+    put:i=>withStorage('put',i.key,context=>storage.put(i,context)),
+    getBuffer:key=>withStorage('get',key,context=>storage.getBuffer(key,context)),
+    getBufferIfExists:key=>withStorage('get',key,context=>storage.getBufferIfExists ? storage.getBufferIfExists(key,context) : storage.getBuffer(key,context)),
+  });
   const key = req => ref(req.get('Idempotency-Key'));
   function acting(req, required = true) {
     const value = req.get('X-Acting-Party');
@@ -27,6 +36,7 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
     return version(Number(value.slice(1, -1)));
   }
   function reply(req, res, data) {
+    res.set('Cache-Control','no-store');
     if (data.object_version) res.set('ETag', '"' + data.object_version + '"');
     res.status(200).json({ meta: { request_id: req.requestId, actor: { account_id: req.account.id }, acting_party: req.actingParty || null }, data });
   }
@@ -34,7 +44,7 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
     return createHmac('sha256', secret).update(JSON.stringify(['customization-cursor-v1', req.account.id, req.actingParty || null, scope, encoded])).digest('hex');
   }
   function page(req, isOperator = false, historyId = null) {
-    shape(req.query, historyId ? ['cursor','limit'] : ['cursor', 'limit', 'current_status']);
+    shape(req.query, historyId ? (historyId.startsWith('attachments:')?['cursor','limit','include_retention']:['cursor','limit']) : ['cursor', 'limit', 'current_status']);
     const limitText = req.query.limit;
     if (limitText !== undefined && (typeof limitText !== 'string' || !/^[1-9][0-9]{0,2}$/.test(limitText))) throw error('INVALID_LIMIT', 400);
     const limit = limitText === undefined ? 20 : Number(limitText);
@@ -64,6 +74,21 @@ function createCustomizationRouter({ db, resolvePrincipal, secret }) {
     }
     reply(req, res, { items: data.items, next_cursor });
   }
+  router.post('/customization-requests/:request_id/attachments',express.raw({type:'application/octet-stream',limit:'8mb'}),wrap(async(req,res)=>{
+    shape(req.query,['display_name','media_type']);reply(req,res,await files.upload(req,{request_id:id(req.params.request_id),party_id:acting(req),display_name:req.query.display_name,media_type:req.query.media_type,body:req.body,operation_key:key(req)}));
+  }));
+  router.get('/customization-requests/:request_id/attachments',wrap(async(req,res)=>{
+    const request_id=id(req.params.request_id),party_id=acting(req,false),p=page(req,false,'attachments:'+request_id);
+    if(req.query.include_retention!==undefined&&!['true','false'].includes(req.query.include_retention))throw error('INVALID_INPUT',400);
+    paged(req,res,await repo.attachments(req,{request_id,party_id,after:p.after,limit:p.limit,include_retention:req.query.include_retention==='true'}),p.scope);
+  }));
+  router.get('/customization-requests/:request_id/attachments/:asset_id/content',wrap(async(req,res)=>{
+    shape(req.query,[]);const f=await files.download(req,{request_id:id(req.params.request_id),party_id:acting(req,false),asset_id:id(req.params.asset_id)});
+    res.set({'Cache-Control':'no-store','Content-Type':'application/octet-stream','Content-Disposition':'attachment; filename="'+f.metadata.id+'"','X-Content-Type-Options':'nosniff'}).end(f.body);
+  }));
+  router.post('/customization-requests/:request_id/attachments/:asset_id/revocations',wrap(async(req,res)=>{
+    shape(req.query,[]);shape(req.body,[]);reply(req,res,await repo.revokeAttachment(req,{request_id:id(req.params.request_id),party_id:acting(req),asset_id:id(req.params.asset_id),expected_version:expected(req),operation_key:key(req)}));
+  }));
   router.post('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['cast','merchant_party_id','territory','terms']);reply(req,res,await repo.bindManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
   router.post('/customization-requests/:request_id/manual-sample/confirmation',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['content_sha256']);reply(req,res,await repo.confirmManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
   router.get('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.manualSample(req,{request_id:id(req.params.request_id),party_id:acting(req)}));}));

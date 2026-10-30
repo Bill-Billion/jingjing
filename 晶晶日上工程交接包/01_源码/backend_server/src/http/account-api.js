@@ -32,6 +32,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade/notifications',trade.callbacks);
  app.use('/api/v1/trade',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/directory',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/notices',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/stock',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/redemption',express.json({limit:'128kb',strict:true}));
@@ -75,6 +76,9 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
    req.token=header.slice(7);req.account=await auth.resolve(req.token,{allowRevoked:req.method==='DELETE'&&req.path==='/auth/sessions/current',allowInactiveStatus:req.method==='GET'&&req.path==='/me'});principals.set(req,{subject_ref:req.account.subject_ref,request_id:req.requestId});
   }).then(()=>next(),next);
  });
+ app.use('/api/v1/me/phone-changes',require('./phone-change-routes').createPhoneChangeRouter({phoneChanges:auth.phoneChanges}));
+ app.use('/api/v1/me/business',require('./personal-center-routes').createPersonalCenterRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
+ app.use('/api/v1/me/collections',require('./collections-routes').createCollectionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret,env:supplyEnv}));
  app.get('/api/v1/me',wrap(async(req,res)=>{res.set('ETag','"'+req.account.object_version+'"');reply(req,res,auth.accountData(req.account));}));
  app.delete('/api/v1/auth/sessions/current',wrap(async(req,res)=>{shape(req.body||{},[]);key(req);reply(req,res,await auth.revoke(req.token));}));
  app.get('/api/v1/me/parties',wrap(async(req,res)=>{
@@ -137,20 +141,24 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
- app.use('/api/v1',require('./customization-routes').createCustomizationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
+ app.use('/api/v1',require('./customization-routes').createCustomizationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/media',require('./media-routes').createMediaRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/privacy',require('./privacy-routes').createPrivacyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/invoices',require('./invoice-routes').createInvoiceRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/support',require('./support-routes').createSupportRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/operations',require('./business-operations-routes').createBusinessOperationsRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/finance',require('./settlement-routes').createSettlementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/projects',require('./projects-routes').createProjectsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/production',require('./production-routes').createProductionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,providerFactory:productionProviderFactory,artistIdentityProviderFactory}));
  app.use('/api/v1/gigs',require('./gigs-routes').createGigsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/trade',trade.router);
+ app.use('/api/v1/discovery',require('./discovery-routes').createDiscoveryRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
+ app.use('/api/v1/directory',require('./directory-routes').createDirectoryRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/notices',require('./notices-routes').createNoticesRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/stock',require('./stock-routes').createStockRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/engagement',require('./engagement-routes').createEngagementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/redemption',require('./redemption-routes').createRedemptionRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
- app.use('/api/v1/cocreation',require('./cocreation-routes').createCocreationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/cocreation',require('./cocreation-routes').createCocreationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory,customizationMerchantPartyId:tradeEnv.CUSTOMIZATION_MERCHANT_PARTY_ID||null}));
  app.use('/api/v1/wallet',require('./wallet-routes').createWalletRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/auditions',require('./auditions-routes').createAuditionsRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/licensing',createLicensingRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));

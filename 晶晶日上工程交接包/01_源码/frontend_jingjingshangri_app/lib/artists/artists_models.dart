@@ -68,6 +68,74 @@ const artistMedia = {
   'txt': 'text/plain',
 };
 const maxArtistBytes = 8 * 1024 * 1024;
+
+class ArtistPublicMediaItem {
+  ArtistPublicMediaItem._(this.id, this.type, this.kind, this.size, this.hash);
+  final String id, type, kind, hash;
+  final int size;
+  String get label => const {
+        'IMAGE': '图片',
+        'AUDIO': '声音',
+        'VIDEO': '视频',
+        'DOCUMENT': '文档'
+      }[kind]!;
+  String get extension =>
+      artistMedia.entries.firstWhere((e) => e.value == type).key;
+
+  static ArtistPublicMediaItem parse(dynamic value) {
+    final d = artistMap(value);
+    artistRequire(d.length == 5 &&
+        artistId(d['asset_id']) &&
+        d['byte_size'] is int &&
+        d['byte_size'] > 0 &&
+        d['byte_size'] <= maxArtistBytes &&
+        artistHash(d['content_sha256']) &&
+        const {
+              'image/jpeg': 'IMAGE',
+              'image/png': 'IMAGE',
+              'audio/mpeg': 'AUDIO',
+              'audio/wav': 'AUDIO',
+              'video/mp4': 'VIDEO',
+              'application/pdf': 'DOCUMENT',
+              'text/plain': 'DOCUMENT'
+            }[d['media_type']] ==
+            d['media_kind'] &&
+        d['media_kind'] != null);
+    return ArtistPublicMediaItem._(d['asset_id'], d['media_type'],
+        d['media_kind'], d['byte_size'], d['content_sha256']);
+  }
+}
+
+class ArtistPublicMedia {
+  ArtistPublicMedia._(this.listingId, this.primaryId, this.items);
+  final String listingId;
+  final String? primaryId;
+  final List<ArtistPublicMediaItem> items;
+  ArtistPublicMediaItem? get portrait =>
+      items.where((item) => item.id == primaryId).firstOrNull;
+
+  static ArtistPublicMedia parse(dynamic value, String listingId,
+      {List<String>? previewIds}) {
+    final d = artistMap(value);
+    artistRequire(d.length == 3 &&
+        d['listing_id'] == listingId &&
+        d.containsKey('primary_portrait_asset_id'));
+    final items =
+        artistList(d['items']).map(ArtistPublicMediaItem.parse).toList();
+    final ids = items.map((item) => item.id).toSet();
+    final primary = d['primary_portrait_asset_id'];
+    artistRequire(items.length <= 6 &&
+        ids.length == items.length &&
+        (primary == null ||
+            artistId(primary) &&
+                items.any(
+                    (item) => item.id == primary && item.kind == 'IMAGE')) &&
+        (previewIds == null ||
+            ids.length == previewIds.length && ids.containsAll(previewIds)));
+    return ArtistPublicMedia._(listingId, primary, List.unmodifiable(items));
+  }
+}
+
 void artistRequire(bool value) {
   if (!value) {
     throw const AccountError(502, 'INVALID_ARTIST_RESPONSE', uncertain: true);
@@ -325,7 +393,11 @@ class ArtistRecord {
           (body['voice_version_id'] == null ||
               artistId(body['voice_version_id'])));
       artistStrings(body['tags'], max: 15);
-      artistStrings(body['preview_asset_ids'], ids: true, max: 6);
+      final previews =
+          artistStrings(body['preview_asset_ids'], ids: true, max: 6);
+      artistRequire(body['primary_portrait_asset_id'] == null ||
+          artistId(body['primary_portrait_asset_id']) &&
+              previews.contains(body['primary_portrait_asset_id']));
     }
     return ArtistRecord._(d);
   }

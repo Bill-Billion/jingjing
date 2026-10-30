@@ -30,6 +30,11 @@ jobs:
           node-version: '22.19.0'
       - name: 离线检查配置缺项和凭证不外泄
         run: python3 scripts/provider_config_audit_test.py
+      - name: 核对需求验收登记与拒绝假通过的反例（不表示完整业务通过）
+        run: |
+          python3 scripts/full_business_check.py
+          python3 scripts/full_business_check_test.py
+          node --test scripts/v5-r05-r12-app-actions-result.test.mjs
       - name: 单独检查账号权限规则
         run: node scripts/backend-check.cjs party-unit
       - name: 安装锁定版本的接口检查工具
@@ -133,6 +138,7 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-actions-http-fixtures.json --report .local/ci-evidence/privacy-actions-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-privacy-http.json --report .local/ci-evidence/privacy-execution-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-media-http.json --report .local/ci-evidence/media-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/discovery-http-fixtures.json --report .local/ci-evidence/discovery-contract.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop

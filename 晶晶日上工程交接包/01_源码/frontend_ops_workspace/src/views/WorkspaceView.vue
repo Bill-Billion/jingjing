@@ -138,20 +138,19 @@ async function copyAccount() {
   catch { message.value = '请选中账号编号复制。' }
 }
 async function moreParties() { try { await session.loadMoreParties() } catch (e) { error.value = asApiError(e) } }
-const menuOpen = ref(false)
 </script>
 
 <template>
   <div class="workspace supply-workspace editorial-workspace">
     <header class="topbar supply-header"><RouterLink to="/workspace" class="brand supply-brand">晶晶日上</RouterLink><span>运营与合作方工作台</span><div class="head-actions"><button :disabled="loading" @click="refresh">{{ loading ? '刷新中…' : '刷新' }}</button><button @click="logout">退出登录</button></div></header>
     <div class="layout supply-layout">
-      <aside class="supply-sidebar" data-testid="card-parties"><button class="outline editorial-menu-toggle" type="button" aria-controls="workspace-workspace-menu" :aria-expanded="menuOpen" @click="menuOpen=!menuOpen">工作区导航 <span>{{menuOpen?'收起':'展开'}}</span></button><div id="workspace-workspace-menu" class="editorial-menu" :class="{expanded:menuOpen}"><WorkspaceNav /><div class="identity-section"><h2>以谁的身份工作</h2><p class="muted">切换后，机构操作使用所选身份。</p>
+      <aside class="supply-sidebar" data-testid="card-parties"><WorkspaceNav /><div class="identity-section"><h2>以谁的身份工作</h2><p class="muted">切换后，机构操作使用所选身份。</p>
         <div class="identities"><button v-for="item in session.parties" :key="item.party.id" class="identity" :class="{ chosen: session.selectedId === item.party.id }" :aria-pressed="session.selectedId === item.party.id" :data-party="item.party.id" @click="session.selectParty(item.party.id); tab = 'identity'"><span>{{ item.party.display_name }}</span><small>{{ item.party.kind === 'PERSON' ? '个人' : '机构' }} · {{ item.membership.roles.includes('OWNER') ? '负责人' : '成员' }} · {{ resolveLabel('party-status', item.party.current_status).text }}</small></button></div>
         <p v-if="!session.loadingParties && !session.parties.length" class="muted">暂无可用身份，请刷新后重试。</p>
         <button v-if="session.nextCursor" :disabled="session.loadingParties" @click="moreParties">加载更多身份</button>
         <button v-if="session.account?.allowed_actions.includes('CREATE_ORGANIZATION')" class="outline wide" :disabled="locked" @click="creating = !creating">{{ creating ? '收起创建' : '＋ 创建机构' }}</button>
         <form v-if="creating" class="create-form" @submit.prevent="createOrganization"><label for="org-name">机构名称</label><input id="org-name" v-model="orgName" maxlength="120" required :disabled="locked" placeholder="填写机构完整名称"><p class="muted">创建后为待审核，可继续申请业务能力。</p><button class="primary wide" :disabled="locked || !orgName.trim()">提交创建</button></form>
-      </div></div></aside>
+      </div></aside>
       <main class="supply-main"><div class="supply-heading"><div><h1>{{ tab === 'invitations' ? '收到的机构邀请' : '账号与机构' }}</h1><p>{{ tab === 'invitations' ? '核对机构与邀请人后，决定是否加入。' : '管理当前身份的资料、业务能力与机构成员。' }}</p></div></div>    <RouterLink class="button-link outline" data-testid="workspace-operations-notifications" to="/operations/notifications">读取当前身份业务通知</RouterLink><section class="account-strip" data-testid="card-account"><div><strong>{{ session.account?.display_name || '正在读取账号…' }}</strong><span v-if="session.account">{{ resolveLabel('account-status', session.account.current_status).text }}</span></div><div class="account-number"><span>我的账号编号</span><code>{{ session.account?.id || '—' }}</code><button v-if="session.account" @click="copyAccount">复制</button></div></section>
     <div v-if="session.pending" class="pending" role="status"><strong>“{{ session.pending.label }}”的结果尚未确认</strong><p>请重试原操作以核对结果，暂不能提交其他修改。</p><button class="primary" :disabled="session.commandBusy" data-testid="retry-original" @click="act()">{{ session.commandBusy ? '正在核对…' : '重试原操作' }}</button></div>
     <ApiErrorAlert :error="error" testid="workspace-error" />

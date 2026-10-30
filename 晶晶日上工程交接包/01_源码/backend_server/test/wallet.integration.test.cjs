@@ -61,7 +61,7 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    const first=use(7),second=use(7),result=await Promise.allSettled([points.reserve({}, {reference:first}),points.reserve({}, {reference:second})]);assert.equal(result.filter(r=>r.status==='fulfilled').length,1);assert.equal(result.find(r=>r.status==='rejected').reason.code,'WALLET_POINTS_INSUFFICIENT');
    const hold=result.find(r=>r.status==='fulfilled').value;assert.equal((await points.reserve({},{reference:hold.data.reference})).id,hold.id);assert.equal((await summary()).available_points,3);
    await points.finish({},{hold_id:hold.id,decision:'RELEASE'});assert.equal((await summary()).available_points,10);
-   const h=await points.reserve({},{reference:use(4)});await points.finish({},{hold_id:h.id,decision:'COMMIT'});await points.finish({},{hold_id:h.id,decision:'COMMIT'});assert.equal((await summary()).available_points,6);assert.equal((await summary()).qualifying_growth,10);
+   const h=await points.reserve({},{reference:use(4)});await points.finish({},{hold_id:h.id,decision:'COMMIT'});await points.finish({},{hold_id:h.id,decision:'COMMIT'});assert.equal((await summary()).available_points,6);assert.equal((await summary()).qualifying_growth,10);assert.deepEqual((await summary()).cumulative_points,{version:'NET_ISSUED_V1',issued:10,withdrawn:0,net_issued:10});
   });
   await t.test('verified refund continues even when points spent; growth reversed and shortage explicit',async()=>{
    let p=await stock.purchased(buyer.ctx,{party_id:buyer.personal_party_id,order_id:order.id});
@@ -69,13 +69,13 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    p=await stock.resolveCase(reviewer.ctx,{order_id:order.id,expected_version:p.object_version,case_id:p.data.current_case_id,decision:'REFUND',reason:'synthetic independent decision',operation_key:key()});
    let refund=await trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:pay.payment.id,allocations:[{line_id:'stock',amount_minor:100}],reason:'approved synthetic case',operation_key:key()});
    refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'independent synthetic refund',operation_key:key()});await trade.claim(reviewer.ctx,refund.id,null,'REFUND');await trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'});
-   const q=ok(await call('GET','/wallet/summary'));assert.equal(q.available_points,0);assert.equal(q.qualifying_growth,0);assert.equal(q.points_block_reason,'POINTS_REVERSAL_PENDING');
+   const q=ok(await call('GET','/wallet/summary'));assert.equal(q.available_points,0);assert.equal(q.qualifying_growth,0);assert.equal(q.points_block_reason,'POINTS_REVERSAL_PENDING');assert.deepEqual(q.cumulative_points,{version:'NET_ISSUED_V1',issued:10,withdrawn:10,net_issued:0});
    const row=await db.withTransaction(tx=>C.load(tx,earning.id));assert.equal(row.data.pending_shortfall,4);await assert.rejects(points.reserve({},{reference:use(1)}),{code:'POINTS_REVERSAL_PENDING'});
    assert.equal((await trade.read(buyer.ctx,{record_id:order.id,party_id:buyer.personal_party_id})).current_status,'REFUNDED');
   });
   await t.test('future points first recover refund shortfall; recovered debt does not erase new consumption growth',async()=>{
    const next=await S.checkout(await S.listing());await S.payment(next);const raw=(await db.execute('SELECT * FROM stock_purchases WHERE order_id=?',[next.id]))[0][0],data=A.parse(raw.data_json);data.accepted_at=new Date(Date.now()-8*86400000).toISOString();await db.execute('UPDATE stock_purchases SET data_json=?,data_sha256=? WHERE order_id=?',[JSON.stringify(data),digest(data),next.id]);
-   const issued=await W.syncOrder(buyer.ctx,{party_id:buyer.personal_party_id,order_id:next.id,operation_key:key()});assert.equal(issued.data.debt_offset,4);assert.equal((await summary()).available_points,6);assert.equal((await summary()).qualifying_growth,10);assert.equal((await summary()).points_pending_reversal,0);
+   const issued=await W.syncOrder(buyer.ctx,{party_id:buyer.personal_party_id,order_id:next.id,operation_key:key()});assert.equal(issued.data.debt_offset,4);assert.equal((await summary()).available_points,6);assert.equal((await summary()).qualifying_growth,10);assert.equal((await summary()).points_pending_reversal,0);assert.deepEqual((await summary()).cumulative_points,{version:'NET_ISSUED_V1',issued:20,withdrawn:10,net_issued:10});
    const previous=await db.withTransaction(tx=>C.load(tx,earning.id));assert.equal(previous.data.debt_settled,4);assert.equal(previous.data.pending_shortfall,0);
    const hold=await points.reserve({},{reference:use(1)});assert.equal(hold.current_status,'HELD');await points.finish({},{hold_id:hold.id,decision:'RELEASE'});
   });
@@ -84,7 +84,7 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    const party=buyer2.personal_party_id;await W.open(buyer2.ctx,{party_id:party,rule_id:rule.id,rule_sha256:rule.content_sha256,operation_key:key()});
    const data={source_kind:'CONSUMPTION',points:100,reversed:0,growth_reversed:0,spent:30,expired:0,pending_shortfall:0,paid_minor:1000,expires_at:'2020-01-01T00:00:00.000Z'};
    const r=await db.withTransaction(tx=>C.insert(tx,{id:buyer2.account_id},'EARNING',party,null,'ISSUED',data,'synthetic-expiry:'+key()));
-   assert.equal((await W.summary(buyer2.ctx,{party_id:party})).available_points,0);assert.equal((await points.expireParty(party)).changed,1);assert.equal((await points.expireParty(party)).changed,0);assert.equal((await W.summary(buyer2.ctx,{party_id:party})).qualifying_growth,100);
+   assert.equal((await W.summary(buyer2.ctx,{party_id:party})).available_points,0);assert.equal((await points.expireParty(party)).changed,1);assert.equal((await points.expireParty(party)).changed,0);assert.equal((await W.summary(buyer2.ctx,{party_id:party})).qualifying_growth,100);assert.equal((await W.summary(buyer2.ctx,{party_id:party})).cumulative_points.net_issued,100);
    assert.equal((await db.withTransaction(tx=>C.load(tx,r.id))).data.expired,70);
   });
   await t.test('expired adult verification preserves balance history but disables displayed membership',async()=>{
@@ -106,6 +106,7 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    const cfg={...S.config,provider:'CUSTODY',merchant_id:binding.merchant_id,config_revision:binding.revision,custody_binding:binding};
    let spec=await trade.createSpec(S.seller.ctx,{party_id:S.seller.personal_party_id,previous_spec_id:null,title:'synthetic cash video',provider_party_id:S.seller.personal_party_id,line_kind:'OTHER',unit_minor:20000,currency:'CNY',specification:S.spec.data.specification,product_profile:{version:'V5',type:'STOCK_VIDEO'},operation_key:key()});
    spec=await trade.review(reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'synthetic cash test',operation_key:key()});
+   await S.publishSales(S.seller.personal_party_id,spec.id);
    async function make(){let l=await stock.create(S.seller.ctx,{...S.listingInput,spec_id:spec.id,operation_key:key()});l=await S.reviewListing(l,'RIGHTS');l=await S.reviewListing(l,'CONTENT');return trade.stockCheckout(buyer.ctx,{party_id:buyer.personal_party_id,listing_id:l.id,offer_sha256:l.content_sha256,channel:'CUSTODY',operation_key:key()});}
    const orders=await Promise.all([make(),make()]);const result=await Promise.allSettled(orders.map(o=>trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:o.id,installment_key:'stock',operation_key:key()},cfg)));
    assert.equal(result.filter(r=>r.status==='fulfilled').length,1);assert.equal(result.find(r=>r.status==='rejected').reason.code,'WALLET_BALANCE_INSUFFICIENT');
