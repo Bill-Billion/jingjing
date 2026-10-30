@@ -6,6 +6,7 @@ const instant=v=>v instanceof Date?v.toISOString():new Date(String(v).replace(' 
 // contents are never returned to the applicant through this summary.
 async function dependencies(tx,assetId){
  const result=[];
+ if(await one(tx,'SELECT asset_id FROM invoice_asset_refs WHERE asset_id=? LIMIT 1 FOR SHARE',[assetId]))result.push({code:'INVOICE_EVIDENCE',message:'已作为开票材料或历史票据提交，须人工核对保留依据与更正范围'});
  if(await one(tx,'SELECT asset_id FROM support_asset_refs WHERE asset_id=? LIMIT 1 FOR SHARE',[assetId]))result.push({code:'SUPPORT_EVIDENCE',message:'已作为反馈或举报材料提交，须人工核对保留与删除范围'});
  for(const [table,code,message] of [
   ['artist_records','ARTIST_ARCHIVE','已被艺人档案、授权或公开资料引用，先核对影响范围'],

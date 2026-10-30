@@ -1,5 +1,5 @@
 {
-  "version": "0.31.10-rc.1",
+  "version": "0.31.11-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -508,7 +508,23 @@
     "listNotificationFeed",
     "listPersonalContracts",
     "listPersonalWorks",
-    "listPersonalIncome"
+    "listPersonalIncome",
+    "getInvoiceEligibility",
+    "createInvoiceRequest",
+    "listInvoiceRequests",
+    "getInvoiceRequest",
+    "listInvoiceHistory",
+    "listInvoiceDocuments",
+    "actOnInvoice",
+    "downloadInvoiceEvidence",
+    "downloadInvoiceDocument",
+    "listInvoiceRequestsForOperator",
+    "getInvoiceRequestForOperator",
+    "listInvoiceHistoryForOperator",
+    "listInvoiceDocumentsForOperator",
+    "actOnInvoiceForOperator",
+    "downloadInvoiceEvidenceForOperator",
+    "downloadInvoiceDocumentForOperator"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -986,6 +1002,34 @@
       "按来源独立分页，不承诺跨来源全局排序",
       "收入只汇总已登记台账中的本人份额；不汇总其他主体、不把未入账预期当收入",
       "页面接入、完整办理及真实服务分别验收"
+    ]
+  },
+  "invoices": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getInvoiceEligibility",
+      "createInvoiceRequest",
+      "listInvoiceRequests",
+      "getInvoiceRequest",
+      "listInvoiceHistory",
+      "listInvoiceDocuments",
+      "actOnInvoice",
+      "downloadInvoiceEvidence",
+      "downloadInvoiceDocument",
+      "listInvoiceRequestsForOperator",
+      "getInvoiceRequestForOperator",
+      "listInvoiceHistoryForOperator",
+      "listInvoiceDocumentsForOperator",
+      "actOnInvoiceForOperator",
+      "downloadInvoiceEvidenceForOperator",
+      "downloadInvoiceDocumentForOperator"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/invoices.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "正式出票方配置与核验依据未提供，真实税务服务未接入",
+      "测试凭证非发票；页面接入、整链与阶段验收分别记录",
+      "材料历史保留，具体合法保留期限待甲方依据，不编造期限"
     ]
   }
 }

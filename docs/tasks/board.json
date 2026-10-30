@@ -4132,8 +4132,8 @@
       ],
       "implementation": "IMPLEMENTED",
       "implementation_scope": "当前身份合同／作品／收入的只读来源分类列表、真实时间分页、单源重试；收入本人已入账份额及商家留存分开",
-      "frontend_can_start": "本批上传后可接统一摘要、按来源翻页和失败重试；不重写原业务详情",
-      "uploaded": false,
+      "frontend_can_start": "已上传且用户已转发；页面新接入未确认",
+      "uploaded": true,
       "merged": false,
       "production_enabled": false,
       "planning_uploaded": true,
@@ -4152,7 +4152,8 @@
         "E2E-12",
         "TASK-11"
       ],
-      "updated_on": "2026-10-30"
+      "updated_on": "2026-10-30",
+      "uploaded_commit": "1e50823b"
     },
     {
       "id": "UX-CLIENT-COMPLETE-11",
@@ -4232,7 +4233,7 @@
       "stage": 6,
       "stream": "Core",
       "owner": "chengcongcong222",
-      "status": "CLAIMED",
+      "status": "IN_PROGRESS",
       "branch": "core/full-business-closure-20261028",
       "work_refs": [
         "WORK-14"
@@ -4240,7 +4241,8 @@
       "req_refs": [],
       "dependencies": [],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md"
       ],
       "acceptance": "零现金不生成现金发票；重复申请不可超额；测试文件标非真实发票",
       "shared_boundaries": [
@@ -4248,9 +4250,10 @@
         "auth/permission"
       ],
       "review_status": "PENDING",
-      "test_status": "NOT_RUN",
+      "test_status": "PARTIAL_VALIDATION_PASS",
       "evidence": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/tasks/records/CORE-invoices-20261030.md"
       ],
       "blockers": [],
       "delivery_batch": "C",
@@ -4261,9 +4264,9 @@
       "provisional_rule_refs": [
         "P15"
       ],
-      "implementation": "NOT_STARTED",
-      "implementation_scope": "原付款/退款金额核算申请上限，状态和审核，受控上传核验票据",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "implementation": "IMPLEMENTED",
+      "implementation_scope": "原订单已核实实付上限、申请补件撤回、不同人员录入和复核、受控文件与退款后更正；正式出票默认关闭",
+      "frontend_can_start": "本批上传后可按FRONTEND_INVOICES_HANDOFF接页面；同版迁移0187",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4275,7 +4278,8 @@
         "ACC-DEL-24.01",
         "ACC-DEL-26.01",
         "TASK-12"
-      ]
+      ],
+      "updated_on": "2026-10-30"
     },
     {
       "id": "UX-CLIENT-COMPLETE-12",
@@ -4283,7 +4287,7 @@
       "stage": 6,
       "stream": "Experience",
       "owner": "Bill-Billion",
-      "status": "BLOCKED",
+      "status": "CLAIMED",
       "branch": "ux/pr39-frontend-complete-20261028",
       "work_refs": [
         "WORK-14"
@@ -4293,7 +4297,8 @@
         "CORE-CLIENT-COMPLETE-12"
       ],
       "deliverables": [
-        "docs/collaboration/client-complete-20261028/README.md"
+        "docs/collaboration/client-complete-20261028/README.md",
+        "docs/collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md"
       ],
       "acceptance": "零现金不生成现金发票；重复申请不可超额；测试文件标非真实发票",
       "shared_boundaries": [
@@ -4306,9 +4311,7 @@
         "docs/collaboration/client-complete-20261028/README.md",
         "docs/tasks/records/UX-client-complete-20261028.md"
       ],
-      "blockers": [
-        "开票金额占用、申请/补件/撤回/审核与受控票据接口待Core。"
-      ],
+      "blockers": [],
       "delivery_batch": "C",
       "v5_refs": [
         "DEL-07",
@@ -4319,7 +4322,7 @@
       ],
       "implementation": "NOT_STARTED",
       "implementation_scope": "申请、补件、撤回、拒绝说明、查看处理进度和文件",
-      "frontend_can_start": "可先按暂定规则设计和写隔离示例，完整联调依赖对应服务器任务",
+      "frontend_can_start": "接口候选0.31.11-rc.1／0187已具备，本批集中上传后可接；具体新增接入未确认",
       "uploaded": false,
       "merged": false,
       "production_enabled": false,
@@ -4339,7 +4342,7 @@
         "status": "NOT_RUN",
         "record": "docs/tasks/records/UX-client-complete-20261028.md"
       },
-      "backend_handoff": "用户确认由同事补后端，本轮不改变Core原负责人。"
+      "backend_handoff": "后端负责人chengcongcong222已补新接口；本批说明由用户转发，尚未确认前端已接入。"
     },
     {
       "id": "CORE-CLIENT-COMPLETE-13",
@@ -11595,5 +11598,19 @@
     "review_status": "PENDING_COMBINED_REVIEW",
     "uploaded_commit": "9b9e2b54",
     "combined_commit": "3d1461bf"
+  },
+  "invoices_20261030": {
+    "owner": "chengcongcong222",
+    "contract": "0.31.11-rc.1",
+    "migration": "0187",
+    "operations": 16,
+    "focused_tests": "14_PASS",
+    "http_response_cases": 72,
+    "regression": "1041_PASS_0_FAIL_3_SKIP; VIDEO_FOLLOWUP_9_PASS; LEGACY_SAMPLE_MISSING",
+    "uploaded": false,
+    "merged": false,
+    "production_enabled": false,
+    "frontend_new_handoff_acknowledged": false,
+    "evidence": "docs/testing/evidence/invoices-20261030/summary.json"
   }
 }

@@ -1,3 +1,5 @@
+当前开票候选0.31.11-rc.1／迁移0187，接法见[开票交接](collaboration/client-complete-20261028/FRONTEND_INVOICES_HANDOFF.md)。已同步前端目录／收藏／反馈／消息9b9e2b54，真实开票仍未启用。上传及验证以CURRENT和[本批记录](tasks/records/CORE-invoices-20261030.md)为准。下方按日期保留历史。
+
 当前候选0.31.10-rc.1新增[个人中心三类汇总](collaboration/client-complete-20261028/FRONTEND_PERSONAL_CENTER_HANDOFF.md)，数据库仍0181。[产品状态](collaboration/client-complete-20261028/PRODUCT_STATUS.md)、[本轮记录](tasks/records/CORE-personal-center-20261030.md)及CURRENT说明上传和验证事实；原18组仍继续，下面为历史入口。
 
 当前0.31.9-rc.1候选新增正式反馈和四频道未读。先读[当前产品状态](collaboration/client-complete-20261028/PRODUCT_STATUS.md)、[新接入说明](collaboration/client-complete-20261028/FRONTEND_SUPPORT_MESSAGES_HANDOFF.md)与[本批记录](tasks/records/CORE-support-messages-20261030.md)；最新上传和最终检查见CURRENT。以下旧入口保留历史。
