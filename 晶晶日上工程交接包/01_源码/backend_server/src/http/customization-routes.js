@@ -7,7 +7,7 @@ const { shape, id, ref, version, error } = require('../modules/party/policy');
 // Authenticated HTTP boundary only. Business facts and permissions live in the repository.
 function createCustomizationRouter({ db, resolvePrincipal, secret, env={}, storageFactory }) {
   const router = express.Router();
-  const repo = createCustomizationRepository(db, { resolvePrincipal });
+  const repo = createCustomizationRepository(db, { resolvePrincipal, copyrightContractPolicy: env.COPYRIGHT_CONTRACT_POLICY });
   const wrap = fn => (req, res, next) => Promise.resolve().then(() => fn(req, res)).catch(next);
   const caps=new WeakMap();
   const storage=storageFactory?storageFactory():require('../modules/providers/private-storage').createPrivateStorage({env,repository:require('../modules/providers/readiness').createReadinessRepository(db),authorize:async({operation,key,context})=>caps.get(context)===operation+':'+key});
@@ -89,7 +89,7 @@ function createCustomizationRouter({ db, resolvePrincipal, secret, env={}, stora
   router.post('/customization-requests/:request_id/attachments/:asset_id/revocations',wrap(async(req,res)=>{
     shape(req.query,[]);shape(req.body,[]);reply(req,res,await repo.revokeAttachment(req,{request_id:id(req.params.request_id),party_id:acting(req),asset_id:id(req.params.asset_id),expected_version:expected(req),operation_key:key(req)}));
   }));
-  router.post('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['cast','merchant_party_id','territory','terms']);reply(req,res,await repo.bindManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
+  router.post('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['cast','merchant_party_id','territory','terms','copyright_terms']);reply(req,res,await repo.bindManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
   router.post('/customization-requests/:request_id/manual-sample/confirmation',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['content_sha256']);reply(req,res,await repo.confirmManualSample(req,{...req.body,request_id:id(req.params.request_id),party_id:acting(req),expected_version:expected(req),operation_key:key(req)}));}));
   router.get('/customization-requests/:request_id/manual-sample',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.manualSample(req,{request_id:id(req.params.request_id),party_id:acting(req)}));}));
   router.get('/customization-categories', wrap(async (req, res) => {

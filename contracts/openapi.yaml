@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.19-rc.1
+  version: 0.31.20-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -2861,6 +2861,8 @@ paths:
           - PROJECT
           - BINDING
           - READING
+          - PROCUREMENT_EVENT
+          - ROYALTY_STATEMENT
       - name: cursor
         in: query
         required: false
@@ -2906,8 +2908,8 @@ paths:
           $ref: '#/components/responses/Conflict'
         '503':
           $ref: '#/components/responses/Unavailable'
-      description: External evidence is reviewed manually, never reported as provider payment. Scope and expiry
-        must be checked; no implicit distribution or generation. Shared review pending.
+      description: External evidence is reviewed manually, never reported as provider payment. Scope and expiry must
+        be checked; no implicit distribution or generation. Shared review pending.
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
   /api/v1/licensing/records/{record_id}:
     get:
@@ -28853,6 +28855,181 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PhoneChangeEmptyRequest'
+  /api/v1/licensing/grants/{record_id}/procurement-events:
+    post:
+      operationId: recordIPProcurementEvent
+      summary: 提交IP开发或上线证据，独立审核后生效
+      tags:
+      - licensing
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Success after authorization and committed work; not automatic provider verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+              description: Do not cache private results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      description: External evidence is reviewed manually, never reported as provider payment. Scope and expiry must
+        be checked; no implicit distribution or generation. Shared review pending.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IPProcurementEventRequest'
+  /api/v1/licensing/grants/{record_id}/royalty-statements:
+    post:
+      operationId: createIPRoyaltyStatement
+      summary: 登记IP项目净收益与8%分红，审核记账不代表转账
+      tags:
+      - licensing
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: Success after authorization and committed work; not automatic provider verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+              description: Do not cache private results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      description: External evidence is reviewed manually, never reported as provider payment. Scope and expiry must
+        be checked; no implicit distribution or generation. Shared review pending.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IPRoyaltyStatementRequest'
+  /api/v1/licensing/procurement/{record_id}/assets/{asset_id}/content:
+    get:
+      operationId: downloadIPProcurementEvidence
+      summary: 合同双方或独立审核人受控读取采购依据
+      tags:
+      - licensing
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: 合同双方使用当前身份；独立审核人不携带该头。
+      responses:
+        '200':
+          description: Success after authorization and committed work; not automatic
+            provider verification.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+              description: Do not cache private results
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      description: External evidence is reviewed manually, never reported as provider
+        payment. Scope and expiry must be checked; no implicit distribution or generation.
+        Shared review pending.
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -37824,6 +38001,8 @@ components:
           $ref: '#/components/schemas/ParticipationTradeSnapshot'
         manual_sample:
           $ref: '#/components/schemas/ManualSampleSnapshot'
+        customization_copyright:
+          $ref: '#/components/schemas/CustomizationCopyrightSnapshot'
       required:
       - lines
       - installments
@@ -38861,6 +39040,10 @@ components:
             - SEQUEL
             - AI_PROCESS
             - AI_TRAIN
+            - COPY
+            - NETWORK_DISTRIBUTE
+            - COMPILE
+            - DERIVATIVES
         purposes:
           type: array
           minItems: 1
@@ -38894,25 +39077,38 @@ components:
           format: date-time
           pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
         valid_until:
-          type: string
-          format: date-time
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+          anyOf:
+          - type: string
+            format: date-time
+            pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+          - type: 'null'
         development_until:
-          type: string
-          format: date-time
-          pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+          anyOf:
+          - type: string
+            format: date-time
+            pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+          - type: 'null'
         project_limit:
-          type: integer
-          minimum: 1
-          maximum: 100000
+          anyOf:
+          - type: integer
+            minimum: 1
+            maximum: 100000
+          - type: 'null'
         episode_limit:
-          type: integer
-          minimum: 1
-          maximum: 100000
+          anyOf:
+          - type: integer
+            minimum: 1
+            maximum: 100000
+          - type: 'null'
         terms_text:
           type: string
           minLength: 1
           maxLength: 8000
+        contract_kind:
+          type: string
+          enum:
+          - IP_BUYOUT_20261029
+          - IP_REVENUE_SHARE_20261029
       required:
       - exclusive
       - rights
@@ -38925,6 +39121,34 @@ components:
       - project_limit
       - episode_limit
       - terms_text
+      allOf:
+      - if:
+          required:
+          - contract_kind
+        then:
+          properties:
+            project_limit:
+              type: 'null'
+            episode_limit:
+              type: 'null'
+        else:
+          properties:
+            valid_until:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            development_until:
+              type: string
+              format: date-time
+              pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$
+            project_limit:
+              type: integer
+              minimum: 1
+              maximum: 100000
+            episode_limit:
+              type: integer
+              minimum: 1
+              maximum: 100000
     LicenseVerification:
       type: object
       additionalProperties: false
@@ -38954,6 +39178,9 @@ components:
             minLength: 1
             maxLength: 128
           - type: 'null'
+        rights_chain_verified: &copyright_LicenseVerification_id001
+          type: boolean
+        settlement_annex_verified: *copyright_LicenseVerification_id001
       required:
       - signed_contract_sha256
       - identity_verified
@@ -39012,7 +39239,7 @@ components:
         episodes:
           type: integer
           minimum: 1
-          maximum: 100000
+          maximum: 9007199254740991
       required:
       - title
       - purpose
@@ -39376,6 +39603,108 @@ components:
         - current_status
         - object_version
         - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: PROCUREMENT_EVENT
+          owner_party_id:
+            type: string
+            format: uuid
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          work_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            type: string
+            enum:
+            - IN_REVIEW
+            - APPROVED
+            - REJECTED
+          object_version:
+            type: integer
+            minimum: 1
+          data:
+            $ref: '#/components/schemas/IPProcurementEventData'
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - work_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: ROYALTY_STATEMENT
+          owner_party_id:
+            type: string
+            format: uuid
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          work_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            type: string
+            enum:
+            - IN_REVIEW
+            - APPROVED
+            - REJECTED
+          object_version:
+            type: integer
+            minimum: 1
+          data:
+            $ref: '#/components/schemas/IPRoyaltyStatementData'
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - work_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - data
     LicenseProductData:
       type: object
       additionalProperties: false
@@ -39414,6 +39743,8 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
+        procurement:
+          $ref: '#/components/schemas/IPProcurement'
       required:
       - work_version_id
       - title
@@ -39475,6 +39806,8 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
+        procurement:
+          $ref: '#/components/schemas/IPProcurement'
       required:
       - work_version_id
       - title
@@ -39558,6 +39891,11 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
+        procurement:
+          $ref: '#/components/schemas/IPProcurement'
+        withdrawal_request_id:
+          type: string
+          format: uuid
       required:
       - work_version_id
       - terms
@@ -39723,6 +40061,8 @@ components:
           - type: string
             format: uuid
           - type: 'null'
+        procurement:
+          $ref: '#/components/schemas/IPProcurement'
       required:
       - work_version_id
       - title
@@ -45472,6 +45812,8 @@ components:
           type: string
           minLength: 1
           maxLength: 8000
+        copyright_terms:
+          $ref: '#/components/schemas/CustomizationCopyrightTerms'
       required:
       - version
       - service_tier
@@ -56661,6 +57003,8 @@ components:
           type: string
           minLength: 1
           maxLength: 8000
+        copyright_terms:
+          $ref: '#/components/schemas/CustomizationCopyrightTerms'
       required:
       - cast
       - merchant_party_id
@@ -56706,7 +57050,10 @@ components:
           minLength: 1
           maxLength: 8000
         ownership:
-          const: ARTIST_RETAINS_OWNERSHIP
+          type: string
+          enum:
+          - ARTIST_RETAINS_OWNERSHIP
+          - PRODUCER_COPYRIGHT_PERSONALITY_RETAINED
         cast:
           $ref: '#/components/schemas/CustomizationCastInput'
         confirmation:
@@ -56728,6 +57075,12 @@ components:
             - confirmed_sha256
             - confirmed_at
           - type: 'null'
+        copyright_terms:
+          $ref: '#/components/schemas/CustomizationCopyrightTerms'
+        copyright_owner_party_id: &copyright_ManualSampleData_id001
+          type: string
+          format: uuid
+        personality_rights_owner_party_id: *copyright_ManualSampleData_id001
       required:
       - request_id
       - submission_id
@@ -56771,7 +57124,10 @@ components:
           minLength: 1
           maxLength: 8000
         ownership:
-          const: ARTIST_RETAINS_OWNERSHIP
+          type: string
+          enum:
+          - ARTIST_RETAINS_OWNERSHIP
+          - PRODUCER_COPYRIGHT_PERSONALITY_RETAINED
         cast:
           $ref: '#/components/schemas/CustomizationCastInput'
         confirmation:
@@ -56796,6 +57152,12 @@ components:
         content_sha256:
           type: string
           pattern: ^[a-f0-9]{64}$
+        copyright_terms:
+          $ref: '#/components/schemas/CustomizationCopyrightTerms'
+        copyright_owner_party_id: &copyright_ManualSampleSnapshot_id001
+          type: string
+          format: uuid
+        personality_rights_owner_party_id: *copyright_ManualSampleSnapshot_id001
       required:
       - request_id
       - submission_id
@@ -60336,3 +60698,460 @@ components:
             maximum: 3000
           description: 无机构为0；有已由艺人同意的机构协议时为1000—3000。
       required: [version, platform_bps, mcn_supply_bps]
+
+    CustomizationCopyrightTerms:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          const: CONTRACT_20261029
+        mode:
+          type: string
+          enum:
+          - BUYER_OWNERSHIP
+          - PRODUCER_OWNERSHIP_LICENSE
+        buyout_price_included:
+          type: boolean
+        license:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              scope:
+                type: string
+                enum:
+                - PERSONAL_NONCOMMERCIAL
+                - AGREED_SCOPE
+              territories:
+                type: array
+                minItems: 1
+                maxItems: 100
+                uniqueItems: true
+                items:
+                  type: string
+                  pattern: ^([A-Z]{2}|WORLD)$
+              perpetual:
+                const: true
+              exclusive:
+                const: false
+              transferable:
+                const: false
+              sublicensable:
+                const: false
+              terms_text:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              purposes:
+                type: array
+                minItems: 1
+                maxItems: 4
+                uniqueItems: true
+                items:
+                  type: string
+                  enum:
+                  - PRIVATE
+                  - PUBLIC_SHARE
+                  - COMMERCIAL
+                  - RELEASE
+            required:
+            - scope
+            - territories
+            - perpetual
+            - exclusive
+            - transferable
+            - sublicensable
+            - terms_text
+            - purposes
+          - type: 'null'
+        personality_rights_retained:
+          const: true
+        underlying_assets_excluded:
+          const: true
+        third_party_licenses_retained:
+          const: true
+      required:
+      - version
+      - mode
+      - buyout_price_included
+      - license
+      - personality_rights_retained
+      - underlying_assets_excluded
+      - third_party_licenses_retained
+    CustomizationCopyrightSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          const: CONTRACT_20261029
+        line_id:
+          type: string
+        source_ref:
+          type: string
+          enum:
+          - CONTRACT_20261029_09
+          - CONTRACT_20261029_13_ARTICLE_5
+        buyer_party_id: &copyright_CustomizationCopyrightSnapshot_id001
+          type: string
+          format: uuid
+        producer_party_id: *copyright_CustomizationCopyrightSnapshot_id001
+        copyright_owner_party_id: *copyright_CustomizationCopyrightSnapshot_id001
+        licensee_party_id:
+          anyOf:
+          - *copyright_CustomizationCopyrightSnapshot_id001
+          - type: 'null'
+        personality_rights_owner_party_id:
+          anyOf:
+          - *copyright_CustomizationCopyrightSnapshot_id001
+          - type: 'null'
+        personality_rights_basis:
+          const: INDIVIDUAL_CONSENTS_NOT_TRANSFERRED
+        terms:
+          $ref: '#/components/schemas/CustomizationCopyrightTerms'
+      required:
+      - version
+      - line_id
+      - source_ref
+      - buyer_party_id
+      - producer_party_id
+      - copyright_owner_party_id
+      - licensee_party_id
+      - personality_rights_owner_party_id
+      - personality_rights_basis
+      - terms
+
+    IPProcurement:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          const: CONTRACT_20261029
+        mode:
+          type: string
+          enum:
+          - BUYOUT
+          - REVENUE_SHARE
+        buyer_party_id: &copyright_IPProcurement_id001
+          type: string
+          format: uuid
+        upfront_minor:
+          type: integer
+          enum:
+          - 0
+          - 5000000
+        royalty_bps:
+          type: integer
+          enum:
+          - 0
+          - 800
+        sublicensing_allowed:
+          const: true
+        attribution_terms:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        rights_evidence:
+          type: object
+          additionalProperties: false
+          properties:
+            rights_chain_ids:
+              type: array
+              items: *copyright_IPProcurement_id001
+              maxItems: 30
+              uniqueItems: true
+              minItems: 1
+            ownership_proof_ids:
+              type: array
+              items: *copyright_IPProcurement_id001
+              maxItems: 30
+              uniqueItems: true
+              minItems: 1
+            original_creation_ids:
+              type: array
+              items: *copyright_IPProcurement_id001
+              maxItems: 30
+              uniqueItems: true
+              minItems: 1
+            has_coauthors:
+              type: boolean
+            coauthor_consent_ids:
+              type: array
+              items: *copyright_IPProcurement_id001
+              maxItems: 30
+              uniqueItems: true
+          required:
+          - rights_chain_ids
+          - ownership_proof_ids
+          - original_creation_ids
+          - has_coauthors
+          - coauthor_consent_ids
+        settlement_annex:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              asset_id: *copyright_IPProcurement_id001
+              cycle:
+                type: string
+                enum:
+                - MONTHLY
+                - QUARTERLY
+                - ANNUAL
+                - AGREED
+              terms_text:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              net_basis:
+                const: ALL_RELEASE_AND_DERIVATIVE_INCOME_LESS_PLATFORM_TAX_DISTRIBUTION_PRODUCTION
+            required:
+            - asset_id
+            - cycle
+            - terms_text
+            - net_basis
+          - type: 'null'
+      required:
+      - version
+      - mode
+      - buyer_party_id
+      - upfront_minor
+      - royalty_bps
+      - sublicensing_allowed
+      - attribution_terms
+      - rights_evidence
+      - settlement_annex
+
+    IPProcurementEventRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        event:
+          type: string
+          enum:
+          - DEVELOPMENT
+          - PUBLICATION
+          - WITHDRAWAL_REQUEST
+        occurred_at:
+          type: string
+          format: date-time
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          uniqueItems: true
+          minItems: 1
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - project_id
+      - event
+      - occurred_at
+      - evidence_asset_ids
+      - external_reference
+      - note
+    IPRoyaltyStatementInput:
+      type: object
+      additionalProperties: false
+      properties:
+        period_from: &copyright_IPRoyaltyStatementInput_id001
+          type: string
+          format: date-time
+        period_until: *copyright_IPRoyaltyStatementInput_id001
+        income_minor: &copyright_IPRoyaltyStatementInput_id002
+          type: integer
+          minimum: -1000000000000
+          maximum: 1000000000000
+        platform_minor: *copyright_IPRoyaltyStatementInput_id002
+        tax_minor: *copyright_IPRoyaltyStatementInput_id002
+        distribution_minor: *copyright_IPRoyaltyStatementInput_id002
+        production_minor: *copyright_IPRoyaltyStatementInput_id002
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          uniqueItems: true
+          minItems: 1
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - period_from
+      - period_until
+      - income_minor
+      - platform_minor
+      - tax_minor
+      - distribution_minor
+      - production_minor
+      - evidence_asset_ids
+      - external_reference
+      - note
+
+    IPRoyaltyStatementRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        project_id:
+          type: string
+          format: uuid
+        statement:
+          $ref: '#/components/schemas/IPRoyaltyStatementInput'
+      required:
+      - project_id
+      - statement
+
+    IPProcurementEventData:
+      type: object
+      additionalProperties: false
+      properties:
+        project_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        event:
+          type: string
+          enum:
+          - DEVELOPMENT
+          - PUBLICATION
+          - WITHDRAWAL_REQUEST
+        occurred_at:
+          type: string
+          format: date-time
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 30
+          uniqueItems: true
+          minItems: 1
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        verification_method:
+          const: EXTERNAL_MANUAL_REVIEW
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              reviewer_account_id:
+                type: string
+                format: uuid
+            required:
+            - decision
+            - reason
+            - reviewer_account_id
+          - type: 'null'
+      required:
+      - project_id
+      - event
+      - occurred_at
+      - evidence_asset_ids
+      - external_reference
+      - note
+      - verification_method
+      - review
+    IPRoyaltyStatementData:
+      type: object
+      additionalProperties: false
+      properties:
+        project_id: &copyright_IPRoyaltyStatementData_id001
+          type: string
+          format: uuid
+        statement:
+          $ref: '#/components/schemas/IPRoyaltyStatementInput'
+        evidence_asset_ids:
+          type: array
+          items: *copyright_IPRoyaltyStatementData_id001
+          maxItems: 30
+          uniqueItems: true
+          minItems: 1
+        calculation:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              currency:
+                const: CNY
+              royalty_bps:
+                const: 800
+              project_net_minor: &copyright_IPRoyaltyStatementData_id002
+                type: integer
+                minimum: -1000000000000
+                maximum: 1000000000000
+              cumulative_accrued_minor: *copyright_IPRoyaltyStatementData_id002
+              adjustment_minor: *copyright_IPRoyaltyStatementData_id002
+              payment_state:
+                const: NOT_TRANSFERRED
+              rounding:
+                const: CUMULATIVE_FLOOR_TO_FEN
+            required:
+            - currency
+            - royalty_bps
+            - project_net_minor
+            - cumulative_accrued_minor
+            - adjustment_minor
+            - payment_state
+            - rounding
+          - type: 'null'
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              decision:
+                type: string
+                enum:
+                - APPROVED
+                - REJECTED
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              reviewer_account_id: *copyright_IPRoyaltyStatementData_id001
+            required:
+            - decision
+            - reason
+            - reviewer_account_id
+          - type: 'null'
+      required:
+      - project_id
+      - statement
+      - evidence_asset_ids
+      - calculation
+      - review

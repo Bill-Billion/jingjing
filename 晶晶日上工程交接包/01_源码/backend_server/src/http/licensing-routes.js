@@ -6,14 +6,14 @@ const {createPrivateStorage}=require('../modules/providers/private-storage');
 const {createReadinessRepository}=require('../modules/providers/readiness');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createLicensingRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=createLicensingRepository(db,{resolvePrincipal,requireV5Products:require('../modules/trade/product-policy').requirement(env.TRADE_REQUIRE_V5_PRODUCTS)}),caps=new WeakMap();
+ const router=express.Router(),repo=createLicensingRepository(db,{resolvePrincipal,procurementBuyerPartyId:env.IP_PROCUREMENT_BUYER_PARTY_ID||null,requireV5Products:require('../modules/trade/product-policy').requirement(env.TRADE_REQUIRE_V5_PRODUCTS)}),caps=new WeakMap();
  const storage=storageFactory?storageFactory():createPrivateStorage({env,repository:createReadinessRepository(db),authorize:async({operation,key,context})=>operation==='get'&&caps.get(context)===key});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}return req.actingParty=id(v);};
  const expected=req=>{const v=req.get('If-Match');if(!v)throw error('EXPECTED_VERSION_REQUIRED',428);if(!/^"[1-9][0-9]*"$/.test(v))throw error('INVALID_VERSION',400);return version(Number(v.slice(1,-1)));};
  const reply=(req,res,data)=>res.status(200).set('Cache-Control','no-store').type('application/json').end(JSON.stringify({meta:{request_id:req.requestId,actor:{account_id:req.account.id},acting_party:req.actingParty||null},data}));
  function post(path,method,fields,{party=false,existing=false}={}){router.post(path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);const input={...req.body,operation_key:ref(req.get('Idempotency-Key')),...(party?{party_id:acting(req)}:{}),...(existing?{record_id:req.params.record_id,expected_version:expected(req)}:{})};reply(req,res,await repo[method](req,input));}));}
- post('/products','createProduct',['work_version_id','previous_product_id','title','preview_text','terms','price','payment_due_minor','reservation_minutes','rule_id'],{party:true});
+ post('/products','createProduct',['work_version_id','previous_product_id','title','preview_text','terms','price','payment_due_minor','reservation_minutes','rule_id','procurement'],{party:true});
  post('/records/:record_id/reviews','review',['decision','reason','verification'],{existing:true});
  post('/records/:record_id/closures','close',['reason'],{party:true,existing:true});
  post('/reservations','reserve',['product_id'],{party:true});
@@ -22,6 +22,9 @@ function createLicensingRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/grants/:record_id/suspensions','suspend',['reason'],{existing:true});
  post('/projects','createProject',['project'],{party:true});
  post('/grants/:record_id/bindings','bind',['project_id'],{party:true,existing:true});
+ post('/grants/:record_id/procurement-events','recordProcurementEvent',['project_id','event','occurred_at','evidence_asset_ids','external_reference','note'],{party:true,existing:true});
+ post('/grants/:record_id/royalty-statements','createRoyaltyStatement',['project_id','statement'],{party:true,existing:true});
+ router.get('/procurement/:record_id/assets/:asset_id/content',wrap(async(req,res)=>{shape(req.query,[]);const input={record_id:req.params.record_id,asset_id:id(req.params.asset_id),party_id:acting(req,false)},asset=await repo.procurementEvidenceAsset(req,input),b=await bytes(asset);await repo.procurementEvidenceAsset(req,input);res.status(200).set({'Cache-Control':'no-store','Content-Type':'application/octet-stream','Content-Disposition':'attachment; filename="'+asset.id+'"','X-Content-Type-Options':'nosniff'}).end(b);}));
  post('/readings','createReading',['work_version_id','reader_account_id','reader_party_id','valid_until','basis_type','basis_asset_id'],{party:true});
  router.get('/records',wrap(async(req,res)=>{shape(req.query,['kind','cursor','limit','catalog']);if(req.query.catalog!==undefined&&!['true','false'].includes(req.query.catalog)||Array.isArray(req.query.limit))throw error('INVALID_LIST',400);reply(req,res,await repo.list(req,{kind:req.query.kind,party_id:acting(req,false),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit),catalog:req.query.catalog==='true'}));}));
  router.get('/records/:record_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.read(req,{record_id:req.params.record_id,party_id:acting(req,false)}));}));

@@ -1,0 +1,2 @@
+"use strict";
+module.exports=(mode='BUYER_OWNERSHIP')=>({version:'CONTRACT_20261029',mode,buyout_price_included:mode==='BUYER_OWNERSHIP',license:mode==='BUYER_OWNERSHIP'?null:{scope:'PERSONAL_NONCOMMERCIAL',purposes:['PRIVATE','PUBLIC_SHARE'],territories:['WORLD'],perpetual:true,exclusive:false,transferable:false,sublicensable:false,terms_text:'Synthetic personal and family noncommercial perpetual use; no third party rights transfer.'},personality_rights_retained:true,underlying_assets_excluded:true,third_party_licenses_retained:true});

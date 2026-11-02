@@ -11,7 +11,7 @@ const sha=text=>createHash('sha256').update(text,'utf8').digest('hex');
 const instant=value=>value===null?null:new Date(value.replace(' ','T')+'Z').toISOString();
 const stored=(value,expected)=>{const body=parse(value);if(digest(body)!==expected)throw error('STORED_CONTENT_MISMATCH',503);return body;};
 
-function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
+function createCustomizationRepository(db,{resolvePrincipal=async()=>null,copyrightContractPolicy='LEGACY_COMPATIBLE'}={}){
  async function actor(tx,ctx){
   const principal=await resolvePrincipal(ctx);if(!principal)throw error('AUTHENTICATION_REQUIRED',401);
   const a=await one(tx,'SELECT id,current_status FROM identity_accounts WHERE subject_ref=? FOR SHARE',[ref(principal.subject_ref)]);
@@ -202,7 +202,7 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null}={}){
    });
   },
 
-  ...require('./manual-sample').methods({db,actor,member,load,creator,match,command,detail,audit}),
+  ...require('./manual-sample').methods({db,actor,member,load,creator,match,command,detail,audit,copyrightContractPolicy}),
   async create(ctx,input){
    const i=inputCopy(input,['party_id','template_version_id','answers','operation_key']);id(i.party_id);id(i.template_version_id);P.operationKey(i.operation_key);
    return db.withTransaction(async tx=>{
