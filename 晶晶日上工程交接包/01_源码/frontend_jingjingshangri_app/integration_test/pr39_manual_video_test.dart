@@ -97,7 +97,8 @@ void main() {
 
   }
 
-  testWidgets('原生Android同一人工视频订单：报价、30/40/30、脚本改版、5工作日、付清后私有下载', (t) async {
+  const resumeProject = String.fromEnvironment('PR39_RESUME_PROJECT');
+  testWidgets(resumeProject.isEmpty ? '原生Android同一人工视频订单：报价、30/40/30、脚本改版、5工作日、付清后私有下载' : '原生Android同一订单重启后再次核权、下载与保存', (t) async {
     expect(Platform.isAndroid, true);
     await bootSyntheticAndroid();
     await wait(t, find.byType(NavigationBar));
@@ -109,6 +110,33 @@ void main() {
       await frames(t);
       navigator.pushNamed(route);
       await frames(t, 15);
+    }
+
+    Future<void> savedOriginal() async {
+      debugPrint('PR39_NATIVE_SAVE_DIALOG');
+      final saved = find.text('当前原片已保存。');
+      // The native document picker pauses rendering. Keep the asynchronous
+      // result's top-of-page slot in view after returning to Flutter.
+      for (var i = 0; i < 300 && saved.evaluate().isEmpty; i++) {
+        final scrolls = find.byType(Scrollable);
+        if (scrolls.evaluate().isNotEmpty) {
+          t.state<ScrollableState>(scrolls.first).position.jumpTo(0);
+        }
+        await frames(t, 1);
+      }
+      expect(saved, findsOneWidget);
+      await shot(t, 'final-saved');
+      final result = await control('complete');
+      expect(result['state'], 'DELIVERED');
+      binding.reportData ??= {};
+      binding.reportData!['pr39_same_order'] = result;
+      expect(t.takeException(), isNull);
+    }
+    if (resumeProject.isNotEmpty) {
+      await open('/production/work?projectId=$resumeProject');
+      await press(t, find.text('下载当前原片'));
+      await savedOriginal();
+      return;
     }
 
     await open(
@@ -193,13 +221,6 @@ void main() {
     await control('tail');
     await press(t, find.text('重新核对交付条件'));
     await press(t, find.text('下载当前原片'));
-    debugPrint('PR39_NATIVE_SAVE_DIALOG');
-    await reveal(t, find.text('当前原片已保存。'));
-    await shot(t, 'final-saved');
-    final result = await control('complete');
-    expect(result['state'], 'DELIVERED');
-    binding.reportData ??= {};
-    binding.reportData!['pr39_same_order'] = result;
-    expect(t.takeException(), isNull);
+    await savedOriginal();
   }, timeout: const Timeout(Duration(minutes: 12)));
 }
