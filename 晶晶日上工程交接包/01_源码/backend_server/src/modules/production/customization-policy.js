@@ -3,8 +3,12 @@ const {shape,ref,label,id,error}=require('../party/policy');
 const {copy,amount}=require('../trade/policy');
 const TYPES=Object.freeze(['PLATFORM_CORRECTION','CREATIVE_CHANGE','FILE_UNAVAILABLE','EXTENSION','RIGHTS_DISPUTE','CANCEL','PRODUCTION_FAILED','RIGHTS_UNAVAILABLE','INFRINGEMENT']);
 function terms(v){
- shape(v,['version','source_ref','preview_payment_order','acceptance_hours','cancellation_terms']);ref(v.version);ref(v.source_ref);label(v.cancellation_terms,8000);
- if(!['PREVIEW_BEFORE_INTERIM','INTERIM_BEFORE_PREVIEW','SCRIPT_BEFORE_INTERIM'].includes(v.preview_payment_order)||!Number.isInteger(v.acceptance_hours)||v.acceptance_hours<1||v.acceptance_hours>720)throw error('INVALID_CUSTOMIZATION_DELIVERY_TERMS',400);
+ shape(v,['version','source_ref','preview_payment_order','acceptance_hours','cancellation_terms','acceptance_working_days','acceptance_calendar']);ref(v.version);ref(v.source_ref);label(v.cancellation_terms,8000);
+ if(!['PREVIEW_BEFORE_INTERIM','INTERIM_BEFORE_PREVIEW','SCRIPT_BEFORE_INTERIM'].includes(v.preview_payment_order))throw error('INVALID_CUSTOMIZATION_DELIVERY_TERMS',400);
+ if(v.acceptance_working_days!==undefined){
+  if(v.acceptance_working_days!==5||v.acceptance_hours!==null||v.preview_payment_order!=='SCRIPT_BEFORE_INTERIM')throw error('INVALID_CUSTOMIZATION_DELIVERY_TERMS',400);
+  require('./working-calendar').calendar(v.acceptance_calendar);
+ }else if(v.acceptance_calendar!==undefined||!Number.isInteger(v.acceptance_hours)||v.acceptance_hours<1||v.acceptance_hours>720)throw error('INVALID_CUSTOMIZATION_DELIVERY_TERMS',400);
  return copy(v);
 }
 function cast(v,consents){

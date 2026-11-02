@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.15-rc.1
+  version: 0.31.16-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -36270,6 +36270,8 @@ components:
               - audio_reviewed
               - branding_reviewed
           - type: 'null'
+        acceptance_receipt:
+          $ref: '#/components/schemas/CustomizationDeliveryReceipt'
       required:
       - version_id
       - stage
@@ -47875,19 +47877,46 @@ components:
           - INTERIM_BEFORE_PREVIEW
           - SCRIPT_BEFORE_INTERIM
         acceptance_hours:
-          type: integer
-          minimum: 1
-          maximum: 720
+          anyOf:
+          - type: integer
+            minimum: 1
+            maximum: 720
+          - type: 'null'
         cancellation_terms:
           type: string
           minLength: 1
           maxLength: 8000
+        acceptance_working_days:
+          const: 5
+        acceptance_calendar:
+          $ref: '#/components/schemas/WorkingCalendar'
       required:
       - version
       - source_ref
       - preview_payment_order
       - acceptance_hours
       - cancellation_terms
+      allOf:
+      - if:
+          required:
+          - acceptance_working_days
+        then:
+          required:
+          - acceptance_calendar
+          properties:
+            acceptance_hours:
+              type: 'null'
+            preview_payment_order:
+              const: SCRIPT_BEFORE_INTERIM
+        else:
+          not:
+            required:
+            - acceptance_calendar
+          properties:
+            acceptance_hours:
+              type: integer
+              minimum: 1
+              maximum: 720
     CustomizationCastMember:
       type: object
       additionalProperties: false
@@ -48054,6 +48083,8 @@ components:
           - type: string
             format: uuid
           - type: 'null'
+        deadline_basis:
+          $ref: '#/components/schemas/CustomizationDeadlineBasis'
       required:
       - delivery_id
       - version_id
@@ -48242,6 +48273,8 @@ components:
                 - retained_minor
                 - change_order_id
               - type: 'null'
+            interrupted_receipt:
+              $ref: '#/components/schemas/CustomizationDeliveryReceipt'
           required:
           - kind
           - reason
@@ -59913,3 +59946,84 @@ components:
       required:
       - meta
       - data
+    WorkingCalendar:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 128
+        source_ref:
+          type: string
+          minLength: 1
+          maxLength: 128
+        timezone:
+          const: Asia/Shanghai
+        valid_from:
+          type: string
+          format: date
+        valid_until:
+          type: string
+          format: date
+        non_working_dates:
+          type: array
+          uniqueItems: true
+          maxItems: 1100
+          items:
+            type: string
+            format: date
+        working_dates:
+          type: array
+          uniqueItems: true
+          maxItems: 1100
+          items:
+            type: string
+            format: date
+      required:
+      - version
+      - source_ref
+      - timezone
+      - valid_from
+      - valid_until
+      - non_working_dates
+      - working_dates
+    CustomizationDeadlineBasis:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          mode:
+            const: EXPLICIT_CONFIRMATION
+        required:
+        - mode
+      - type: object
+        additionalProperties: false
+        properties:
+          mode:
+            const: WORKING_DAYS
+          days:
+            const: 5
+          timezone:
+            const: Asia/Shanghai
+          calendar_version:
+            type: string
+            minLength: 1
+            maxLength: 128
+          calendar_sha256:
+            type: string
+            pattern: ^[0-9a-f]{64}$
+          received_date:
+            type: string
+            format: date
+          deadline_date:
+            type: string
+            format: date
+        required:
+        - mode
+        - days
+        - timezone
+        - calendar_version
+        - calendar_sha256
+        - received_date
+        - deadline_date
