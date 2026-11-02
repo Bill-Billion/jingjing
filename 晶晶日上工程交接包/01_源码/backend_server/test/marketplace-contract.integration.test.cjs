@@ -9,7 +9,7 @@ test('new stock commission cutover and frozen historical orders through real HTT
  const name=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`,control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD});let db;const servers=[],fixtures=[];
  try{
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
-  for(const [label,cfg,code] of [['missing',null,'MARKETPLACE_CONTRACT_RULE_REQUIRED'],['wrong-rate',{platform_bps:2200},'MARKETPLACE_CONTRACT_RATE_MISMATCH'],['wrong-type',{product_type:'AUDITION'},'MARKETPLACE_CONTRACT_RATE_MISMATCH'],['valid',{},null]])await t.test(label,async()=>{
+  for(const [label,cfg,code] of [['missing',null,'MARKETPLACE_CONTRACT_RULE_REQUIRED'],['wrong-rate',{platform_bps:2200},'MARKETPLACE_CONTRACT_RATE_MISMATCH'],['wrong-type',{product_type:'AUDITION'},'MARKETPLACE_CONTRACT_RATE_MISMATCH'],['valid',{},null],['valid-modern-rounding',{rounding:'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'},null]])await t.test(label,async()=>{
    const S=await require('./helpers/stock-seed.cjs').seedStock(db,{ruleKey:'stock.'+label,marketplaceFinance:cfg}),listing=await S.listing();
    const server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory,supplyEnv:{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');servers.push(server);await new Promise(r=>server.once('listening',r));
    const body={listing_id:listing.id,offer_sha256:listing.content_sha256,channel:'ALIPAY'},operation=key();
@@ -19,6 +19,7 @@ test('new stock commission cutover and frozen historical orders through real HTT
    assert.equal(r.status,200,JSON.stringify(r));const order=r.data;assert.equal(order.data.quote.marketplace_finance.allocation.platform_bps,1800);assert.equal((await checkout()).data.id,order.id);
    assert.deepEqual(M.split(100,order.data.quote.marketplace_finance.allocation).entries.map(x=>x.amount_minor),[18,82]);
    await S.payment(order);const paid=await S.trade.read(S.buyer.ctx,{record_id:order.id,party_id:S.buyer.personal_party_id});assert.equal(paid.current_status,'PAID');assert.deepEqual(paid.data.quote.marketplace_finance,order.data.quote.marketplace_finance);
+   if(label==='valid-modern-rounding'){assert.equal(paid.data.quote.marketplace_finance.allocation.rounding,'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN');assert.deepEqual(paid.data.contract,order.data.contract);}
   });
   await t.test('old nonstandard commission remains payable and immutable after new-order switch',async()=>{
    const S=await require('./helpers/stock-seed.cjs').seedStock(db,{ruleKey:'stock.historical',marketplaceFinance:{platform_bps:1500}}),listing=await S.listing(),order=await S.checkout(listing);
