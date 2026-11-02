@@ -1,3 +1,5 @@
+0.31.15-rc.1新增SCRIPT_BEFORE_INTERIM规格及CUSTOMIZATION_SCRIPT_CONFIRMED付款节点，旧节点含义不变；数据库0192。[接法与发布限制](../docs/collaboration/client-complete-20261028/PAYMENT_CONTRACT_HANDOFF_20261102.md)。
+
 0.31.14-rc.1新增本人身份及开票原操作只读查询，旧接口兼容；迁移0192不变。见[接法](../docs/collaboration/client-complete-20261028/RECOVERY_AND_CONTRACT_PLAN_20261102.md)。
 
 2026-11-02候选0.31.13-rc.1：Invoice新增allowed_actions，按实时岗位/状态/录入者返回，服务端写入仍独立核权，数据库仍0192。新合同对付款/准入/期限的改变尚未反映为已交付接口；见[需求变更与依赖](../docs/requirements/CONTRACT_CHANGES_20261102.md)。

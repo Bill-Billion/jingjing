@@ -36,6 +36,37 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
  await t.test('before-start cancellation refunds all, approval is not actual refund, retries do not duplicate facts',async()=>{b=await create();const payment=await f.pay(b.order,'first');ok(await command(b.project,'cases',buyer,{kind:'CANCEL',reason:'before start',evidence_asset_ids:[]}));const cid=(await flow(b.project)).cases.at(-1).id;bad(await command(b.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:1,change_order_id:null,reason:'wrong fee'}),'CUSTOMIZATION_RETAINED_AMOUNT_INVALID');ok(await command(b.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'full refund'}));assert.equal((await flow(b.project)).state,'REFUND_REQUIRED');ok(await command(b.project,'refund-sync',buyer));assert.equal((await flow(b.project)).state,'REFUND_REQUIRED');let refund=await f.trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:payment.id,allocations:[{line_id:'film',amount_minor:3000}],reason:'approved cancellation',operation_key:key()});refund=await f.reviewTrade(refund);await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');await f.trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'});ok(await command(b.project,'refund-sync',buyer));ok(await command(b.project,'refund-sync',buyer));assert.equal((await flow(b.project)).state,'REFUNDED');assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE record_id=? AND event_code='CUSTOMIZATION_REFUND_RESOLVED'",[b.project.id]))[0][0].n),1);});
  await t.test('refund cannot bypass customer-service review; paid legacy order remains unmodified',async()=>{await assert.rejects(()=>f.trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:first.id,allocations:[{line_id:'film',amount_minor:1}],reason:'no review',operation_key:key()}),e=>e.code==='CUSTOMIZATION_CANCELLATION_REVIEW_REQUIRED');});
  await t.test('alternate explicit prepayment policy does not deadlock preview and interim collection',async()=>{const x=await create({preview:'INTERIM_BEFORE_PREVIEW'});await f.pay(x.order,'first');ok(await command(x.project,'start',producer));const s=await deliver(x.project,'SCRIPT');await viewed(s);ok(await accept(s));const v=await deliver(x.project,'SAMPLE');bad(await content(v),'CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED');await f.pay(x.order,'interim');await viewed(v);ok(await accept(v));});
+ await t.test('new contract: current accepted script unlocks 40%, production and final 30% remain gated',async()=>{
+  const x=await create({preview:'SCRIPT_BEFORE_INTERIM'}),frozen=structuredClone(x.order.data.contract);
+  assert.deepEqual(x.order.data.quote.installments.map(i=>i.allocations[0].amount_minor),[3000,4000,3000]);
+  await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  await assert.rejects(()=>f.pay(x.order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  let v=await deliver(x.project,'SCRIPT');await viewed(v);ok(await accept(v));
+  // A revised script invalidates the previous acceptance before collecting middle payment.
+  v=await deliver(x.project,'SCRIPT');
+  await assert.rejects(()=>f.pay(x.order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  await viewed(v);ok(await accept(v));
+  await assert.rejects(()=>deliver(x.project,'SAMPLE'),/CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED/);
+  assert.equal((await f.pay(x.order,'interim')).data.amount_minor,4000);
+  const preview=await deliver(x.project,'SAMPLE');await viewed(preview);ok(await accept(preview));
+  const rough=await deliver(x.project,'ROUGH_CUT');await viewed(rough);ok(await accept(rough));
+  const final=await deliver(x.project,'FINAL');await viewed(final);
+  await assert.rejects(()=>f.pay(x.order,'last'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  ok(await accept(final));assert.equal((await content(final,'final')).status,409);
+  assert.equal((await f.pay(x.order,'last')).data.amount_minor,3000);
+  assert.equal((await content(final,'final')).status,200);
+  assert.deepEqual((await f.trade.read(buyer.ctx,{record_id:x.order.id,party_id:buyer.personal_party_id})).data.contract,frozen);
+  assert.equal((await flow(x.project)).state,'DELIVERED');
+ });
+ await t.test('new contract cancellation has reviewed cap, not automatic forfeiture of all received money',async()=>{
+  const x=await create({preview:'SCRIPT_BEFORE_INTERIM'});await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  const v=await deliver(x.project,'SCRIPT');await viewed(v);ok(await accept(v));await f.pay(x.order,'interim');
+  ok(await command(x.project,'cases',buyer,{kind:'CANCEL',reason:'synthetic cancellation after script',evidence_asset_ids:[]}));
+  const case_id=(await flow(x.project)).cases.at(-1).id;
+  bad(await command(x.project,'case-resolution',reviewer,{case_id,decision:'CANCEL',retained_minor:7001,change_order_id:null,reason:'exceeds confirmed and cash'}),'CUSTOMIZATION_RETAINED_AMOUNT_INVALID');
+  ok(await command(x.project,'case-resolution',reviewer,{case_id,decision:'CANCEL',retained_minor:3000,change_order_id:null,reason:'independent decision: partial completed work'}));
+  const d=await flow(x.project);assert.equal(d.cancellation.refund_minor,4000);assert.equal(d.cancellation.retained_minor,3000);
+ });
  const jobs=require('../src/infrastructure/jobs/repository').createJobRepository(db),handlers=require('../src/modules/production/acceptance-handler').createCustomizationAcceptanceHandlers(db,{storageFactory:f.storageFactory}),worker=require('../src/worker/runner').createWorker({repository:jobs,handlers});
  async function due(p){let d=(await db.execute('SELECT data_json FROM production_fulfillments WHERE project_id=?',[p.id]))[0][0].data_json;if(typeof d==='string')d=JSON.parse(d);d.receipt.deadline_at='2020-01-01T00:00:00.000Z';await db.execute('UPDATE production_fulfillments SET data_json=?,data_sha256=? WHERE project_id=?',[JSON.stringify(d),digest(d),p.id]);await db.execute('UPDATE platform_jobs SET next_run_at=CURRENT_TIMESTAMP(6) WHERE id=?',[d.receipt.job_id]);return d.receipt;}
  async function readyClock(){const x=await create();await f.pay(x.order,'first');ok(await command(x.project,'start',producer));const v=await deliver(x.project,'SCRIPT');await viewed(v);const d=await flow(x.project);ok(await call('POST','/operations/notifications/'+d.receipt.notification_event_id+'/read',buyer,{}));ok(await command(x.project,'delivery-receipt',buyer));return {...x,v};}
