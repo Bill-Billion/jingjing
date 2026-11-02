@@ -412,7 +412,16 @@ class GigCatalogue {
   const GigCatalogue(this.items, this.rules);
   final List<Map<String, dynamic>> items, rules;
   static GigCatalogue parse(dynamic value) {
-    final d = gigMap(value, keys: ['items', 'rules']);
+    final d = gigMap(value);
+    final hasPolicy = d.containsKey('marketplace_contract_policy');
+    gigRequire(d.length == (hasPolicy ? 3 : 2) &&
+        d.containsKey('items') &&
+        d.containsKey('rules'));
+    if (hasPolicy) {
+      gigRequire(['LEGACY_COMPATIBLE', 'CONTRACT_20261029']
+          .contains(d['marketplace_contract_policy']));
+    }
+
     final items = gigList(d['items']).map((v) {
       final r = gigMap(v, keys: [
         'id',

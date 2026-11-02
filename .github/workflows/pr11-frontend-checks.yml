@@ -10,6 +10,8 @@ on:
       - 'scripts/run-ui-browser-check.cjs'
       - 'scripts/pr39-recovery-browser-check.mjs'
       - 'scripts/pr39-manual-video-browser-check.mjs'
+      - 'scripts/pr39-stock-eligibility-browser-check.mjs'
+      - 'scripts/pr39-artist-contract-browser-check.mjs'
       - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
@@ -53,6 +55,8 @@ on:
       - 'scripts/run-ui-browser-check.cjs'
       - 'scripts/pr39-recovery-browser-check.mjs'
       - 'scripts/pr39-manual-video-browser-check.mjs'
+      - 'scripts/pr39-stock-eligibility-browser-check.mjs'
+      - 'scripts/pr39-artist-contract-browser-check.mjs'
       - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
@@ -244,6 +248,19 @@ jobs:
         env:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
         run: node scripts/pr39-manual-video-browser-check.mjs
+      - name: 现货准入、原单与免费认证页面回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: |
+          node scripts/pr39-stock-eligibility-browser-check.mjs
+          node scripts/pr39-artist-contract-browser-check.mjs
+      - name: 人工视频券后分期及独立取消退款回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+          JX_PR39_COUPON_TEST: '1'
+        run: node scripts/pr39-manual-video-browser-check.mjs
       - name: 保存开票恢复和人工视频模拟证据
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -254,6 +271,12 @@ jobs:
             .local/mac-mini-recovery-browser/*.png
             .local/pr39-manual-video-browser/results.json
             .local/pr39-manual-video-browser/*.png
+            .local/pr39-stock-eligibility-browser/results.json
+            .local/pr39-stock-eligibility-browser/*.png
+            .local/pr39-artist-contract-browser/results.json
+            .local/pr39-artist-contract-browser/*.png
+            .local/pr39-coupon-browser/results.json
+            .local/pr39-coupon-browser/*.png
           if-no-files-found: ignore
       - name: 清理本次测试数据库
         if: always()

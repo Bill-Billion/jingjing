@@ -284,7 +284,11 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
       tradeFact('认证审核', 'L${service['halo_level']}；付费不等于审核通过'),
     if (service['kind'] == 'AVATAR_CREATION')
       tradeFact('约定重试', '${service['retry_limit']} 次；档案交付不代表长期模型训练成功'),
-    tradeFact('未交付处理', '按原订单办理未交付退款，待退款与到账分别核对'),
+    tradeFact(
+        '费用处理',
+        service['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE'
+            ? '本次人工审核费不支持常规退款；付款不代表通过，补件不重复收费。'
+            : '按原订单办理未交付退款，待退款与到账分别核对'),
     tradeFact(
         '服务规则 / 来源', '${service['rule_version']} / ${service['source_ref']}'),
   ];

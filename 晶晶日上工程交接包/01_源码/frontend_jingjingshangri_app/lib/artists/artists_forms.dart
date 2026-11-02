@@ -80,6 +80,27 @@ class _ArtistFormState extends State<_ArtistForm> {
       relations = <GigRecord>[];
   final features = <String>{}, purposes = <String>{}, delegated = <String>{};
   List<String> files = [];
+  final classifiedFiles = <String, List<String>>{
+    'model_card_asset_id': [],
+    'lifestyle_asset_ids': [],
+    'full_body_asset_ids': []
+  };
+  bool replaceMaterials = false;
+  String? uploadingCategory;
+  Map<String, dynamic>? get freeOffer => services?.freeOffers
+      .where((r) => offer == 'free:${r['kind']}')
+      .firstOrNull;
+  bool get classified =>
+      mode == 'HALO' &&
+          halo == 2 &&
+          serviceRecords
+                  .where((r) => r.id == serviceId)
+                  .firstOrNull
+                  ?.data['specification']['service']['rule_version'] ==
+              'CONTRACT_20261029' ||
+      mode == 'SUPPLEMENT' &&
+          replaceMaterials &&
+          record?.data['rule_version'] == 'CONTRACT_20261029';
   final portraitOptions = <String, String>{};
   String? primaryPortrait, portraitError;
   int portraitRead = 0;
@@ -133,6 +154,7 @@ class _ArtistFormState extends State<_ArtistForm> {
       }[mode];
       return '$p/$type/${widget.recordId}/$suffix';
     }
+    if (mode == 'SERVICE' && freeOffer != null) return '$p/free-services';
     return '$p/${{
       'AVATAR': 'avatars',
       'IDENTITY': 'identity',
@@ -199,11 +221,14 @@ class _ArtistFormState extends State<_ArtistForm> {
     if (mode == 'SUPPLEMENT' && record?.canSupplement != true) return false;
     if (mode == 'APPEAL' && record?.canAppeal != true) return false;
     if (mode == 'WITHDRAW' && record?.canWithdraw != true) return false;
-    if (mode == 'REMINDER' && record?.data['kind'] != 'AVATAR_HOSTING') {
+    if (mode == 'REMINDER' &&
+        (record?.data['kind'] != 'AVATAR_HOSTING' ||
+            record?.freeService == true)) {
       return false;
     }
     if (mode == 'CANCEL' &&
         (record == null ||
+            record!.freeService ||
             ['DELIVERED', 'REFUNDED', 'CANCELLED'].contains(record!.status))) {
       return false;
     }
@@ -331,9 +356,11 @@ class _ArtistFormState extends State<_ArtistForm> {
     }
   }
 
-  String input(String key, String label, {bool required = true}) {
+  String input(String key, String label,
+      {bool required = true, int max = 8000}) {
     final v = controller(key).text.trim();
     if (required && v.isEmpty) throw FormatException('请填写$label。');
+    if (v.runes.length > max) throw FormatException('$label超出长度限制。');
     return v;
   }
 
@@ -454,6 +481,7 @@ class _ArtistFormState extends State<_ArtistForm> {
           'level': halo,
           'ownership_promise': true,
           'evidence_asset_ids': files,
+          if (classified) 'certification_materials': classifiedBody(),
           if (halo == 2) 'service_id': chosen(serviceId, '同一笔L2审核服务')
         };
         break;
@@ -485,6 +513,14 @@ class _ArtistFormState extends State<_ArtistForm> {
         };
         break;
       case 'SERVICE':
+        if (freeOffer != null) {
+          value = {
+            'avatar_id': chosen(a, '具体数字人'),
+            'kind': freeOffer!['kind'],
+            'rule_version': 'CONTRACT_20261029'
+          };
+          break;
+        }
         final o =
             services?.offers.where((r) => r['spec_id'] == offer).firstOrNull;
         if (o == null || o['specification']['service']['halo_level'] == 3) {
@@ -499,7 +535,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         break;
       case 'SUPPLEMENT':
         if (files.isEmpty) throw const FormatException('请上传补充材料。');
-        value = {'evidence_asset_ids': files, 'note': input('reason', '补充说明')};
+        value = {
+          'evidence_asset_ids': files,
+          'note': input('reason', '补充说明'),
+          if (classified) 'certification_materials': classifiedBody()
+        };
         break;
       case 'APPEAL':
         if (files.isEmpty) throw const FormatException('请上传异议证据。');
@@ -524,6 +564,65 @@ class _ArtistFormState extends State<_ArtistForm> {
     return value;
   }
 
+  Map<String, dynamic> classifiedBody() {
+    if (classifiedFiles['model_card_asset_id']!.length != 1 ||
+        ['lifestyle_asset_ids', 'full_body_asset_ids'].any((k) =>
+            classifiedFiles[k]!.isEmpty || classifiedFiles[k]!.length > 10)) {
+      throw const FormatException('请分别上传一份模卡、1至10张生活照及全身照。');
+    }
+    if ({...files, ...classifiedFiles.values.expand((x) => x)}.length > 30) {
+      throw const FormatException('审核文件去重后最多30份。');
+    }
+    return {
+      'model_card_asset_id': classifiedFiles['model_card_asset_id']!.single,
+      'lifestyle_asset_ids': classifiedFiles['lifestyle_asset_ids'],
+      'full_body_asset_ids': classifiedFiles['full_body_asset_ids'],
+      'personal_introduction':
+          input('personal_introduction', '个人简介', max: 2000),
+      'resume': input('resume', '文字简历', max: 8000)
+    };
+  }
+
+  List<Widget> classifiedInputs() => [
+        appNotice('分类资料仅供本人和获准审核岗位查看，上传不代表认证通过。'),
+        for (final entry in const {
+          'model_card_asset_id': '模卡（PNG、JPEG或PDF，一份）',
+          'lifestyle_asset_ids': '生活照（PNG或JPEG，1—10张）',
+          'full_body_asset_ids': '全身照（PNG或JPEG，1—10张）'
+        }.entries)
+          tradeSection(entry.value, [
+            ArtistFiles(
+                key: ValueKey(entry.key),
+                api: api,
+                person: detail!.person,
+                purpose: 'REVIEW_EVIDENCE',
+                ids: classifiedFiles[entry.key]!,
+                allowedMediaTypes: entry.key == 'model_card_asset_id'
+                    ? const ['image/png', 'image/jpeg', 'application/pdf']
+                    : const ['image/png', 'image/jpeg'],
+                maxFiles: entry.key == 'model_card_asset_id' ? 1 : 10,
+                enabled: !busy &&
+                    !fileBusy &&
+                    !conflict &&
+                    allowed &&
+                    (uploadingCategory == null ||
+                        uploadingCategory == entry.key),
+                onBusy: (v) {
+                  if (mounted) {
+                    setState(() {
+                      fileBusy = v;
+                      if (v) {
+                        uploadingCategory = entry.key;
+                      } else if (!unresolvedFile) uploadingCategory = null;
+                    });
+                  }
+                },
+                onChanged: (ids) =>
+                    change(() => classifiedFiles[entry.key] = ids))
+          ]),
+        text('personal_introduction', '个人简介', lines: 3, max: 2000),
+        text('resume', '文字简历', lines: 5, max: 8000)
+      ];
   bool get ready {
     try {
       body();
@@ -545,6 +644,14 @@ class _ArtistFormState extends State<_ArtistForm> {
         await tradeConfirm(context, retry ? '恢复上次艺人操作' : '确认这次办理内容', [
       if (detail != null) tradeFact('真人本人', detail!.person.name),
       tradeFact('办事身份', widget.session.party?['display_name']),
+      if (mode == 'SERVICE' && freeOffer != null)
+        const Text('本次免费申请无需付款；人工创建结果另行核对。'),
+      if (mode == 'SERVICE' &&
+          services?.offers
+                  .where((r) => r['spec_id'] == offer)
+                  .firstOrNull?['specification']['service']['failure_policy'] ==
+              'REVIEW_FEE_NON_REFUNDABLE')
+        const Text('10元为一次人工审核费，不支持常规退款，付款不代表通过。'),
       const Text('本次仅提交所列事项，付款、审核批准、公开展示和长期模型分别核对。'),
       ExpansionTile(
           title: const Text('核对本次完整提交内容'),
@@ -688,9 +795,21 @@ class _ArtistFormState extends State<_ArtistForm> {
           person: detail!.person,
           purpose: purpose,
           ids: files,
-          enabled: !busy && pending == null && !conflict && allowed,
+          enabled: !busy &&
+              !fileBusy &&
+              pending == null &&
+              !conflict &&
+              allowed &&
+              (uploadingCategory == null || uploadingCategory == 'other'),
           onBusy: (b) {
-            if (mounted) setState(() => fileBusy = b);
+            if (mounted) {
+              setState(() {
+                fileBusy = b;
+                if (b) {
+                  uploadingCategory = 'other';
+                } else if (!unresolvedFile) uploadingCategory = null;
+              });
+            }
           },
           onChanged: (ids) {
             change(() {
@@ -858,7 +977,7 @@ class _ArtistFormState extends State<_ArtistForm> {
                 ],
                 (v) => serviceId = v),
           appNotice('L1免费。L2先核对已付款的同一笔审核服务；补件沿用原申请。L3尚不开放。'),
-          haloMaterials(),
+          if (classified) ...classifiedInputs() else haloMaterials(),
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: promise,
@@ -937,6 +1056,8 @@ class _ArtistFormState extends State<_ArtistForm> {
             s = o?['specification'];
         return [
           select('选择当前已审服务商品', offer, [
+            for (final r in services?.freeOffers ?? <Map<String, dynamic>>[])
+              ("free:${r['kind']}", "${artistServiceKinds[r['kind']]} · 永久免费"),
             for (final r in services?.offers ?? <Map<String, dynamic>>[])
               if (r['specification']['service']['halo_level'] != 3)
                 (
@@ -947,9 +1068,16 @@ class _ArtistFormState extends State<_ArtistForm> {
             offer = v;
             reminder = false;
           }),
+          if (freeOffer != null) ...[
+            avatarInput(),
+            appNotice('永久免费，无需付款或续费。创建等待人工交付基础档案；托管只登记权益，不代表云服务已上线或长期模型已生成。'),
+            ContractText(value: freeOffer!['specification']['terms'])
+          ],
           if (o != null) ...[
             tradeFact('服务种类', artistServiceKinds[s['service']['kind']]),
             tradeFact('商品价格', artistMoney(o['price_minor'])),
+            if (s['service']['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE')
+              appNotice('10元为一次人工审核费，不支持常规退款。付款不代表通过；补件不重复收费。请在付款前核对。'),
             tradeFact('交付内容', (s['deliverables'] as List).join('、')),
             tradeFact('原商品重试次数', s['service']['retry_limit']),
             if (s['service']['kind'] == 'AVATAR_HOSTING')
@@ -965,9 +1093,11 @@ class _ArtistFormState extends State<_ArtistForm> {
                       ? (v) => change(() => reminder = v == true)
                       : null)
           ],
-          if (services?.offers.isEmpty == true)
+          if (services?.offers.isEmpty == true &&
+              services?.freeOffers.isEmpty == true)
             appNotice('当前没有可订的已审服务商品，不能填写默认价格创建订单。'),
-          appNotice('此步保存服务请求。平台报价、本人确认订单、实际付款和服务结果分别核对。'),
+          if (freeOffer == null)
+            appNotice('此步保存服务请求。平台报价、本人确认订单、实际付款和服务结果分别核对。'),
         ];
       case 'SUPPLEMENT':
       case 'APPEAL':
@@ -985,7 +1115,16 @@ class _ArtistFormState extends State<_ArtistForm> {
                 tradeFact('本次实际补件意见', record!.data['review']['reason']),
               supplyNote('按实际审核意见补充。当前记录未提供逐分类缺项清单，不能将下方提示当作已核定缺项。'),
             ]),
-            haloMaterials(),
+            if (record?.data['rule_version'] == 'CONTRACT_20261029') ...[
+              CheckboxListTile(
+                  title: const Text('替换分类资料，保留原版本'),
+                  value: replaceMaterials,
+                  onChanged: enabled
+                      ? (v) => change(() => replaceMaterials = v == true)
+                      : null),
+              if (classified) ...classifiedInputs()
+            ] else
+              haloMaterials(),
           ],
           text('reason', mode == 'SUPPLEMENT' ? '补充说明' : '异议原因',
               lines: 3, max: 2000),

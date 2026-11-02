@@ -1,3 +1,4 @@
+import 'stock_eligibility_fixtures.dart' show eligibility;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/auditions/auditions_offer_form.dart';
@@ -39,6 +40,8 @@ Future<void> choosePerson(WidgetTester t, String label) async {
 void main() {
   testWidgets('首次现货读取当前销售说明，不读历史作品推断规则；改变人数保护填写', (t) async {
     final a = artistAdapter(override: (r) {
+      if (r.path == '/api/v1/stock/seller-eligibility')
+        return envelope(eligibility());
       if (r.path == '/api/v1/stock/sales-publications' ||
           r.path == '/api/v1/stock/participant-options') {
         return envelope({'items': [], 'next_cursor': null});

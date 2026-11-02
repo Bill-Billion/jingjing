@@ -140,6 +140,38 @@ String stockDuration(int milliseconds) {
   return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}$tail';
 }
 
+class StockEligibility {
+  StockEligibility(dynamic raw, String person, String party)
+      : data = v5Map(raw) {
+    final fields = [
+      'identity_verified',
+      'l1_verified',
+      'manual_review_approved'
+    ];
+    final reasons = [
+      'ARTIST_IDENTITY_REQUIRED',
+      'STOCK_L1_REQUIRED',
+      'STOCK_HALO_REVIEW_REQUIRED'
+    ];
+    final missing = [
+      for (var i = 0; i < fields.length; i++)
+        if (data[fields[i]] == false) reasons[i]
+    ];
+    v5Require(data['person_id'] == person &&
+        data['seller_party_id'] == party &&
+        data['policy_version'] == 'CONTRACT_20261029' &&
+        fields.every((f) => data[f] is bool) &&
+        data['eligible'] == missing.isEmpty &&
+        data['blocking_reasons'] is List &&
+        (data['blocking_reasons'] as List).length == missing.length &&
+        missing.every((r) => (data['blocking_reasons'] as List).contains(r)));
+  }
+  final Map<String, dynamic> data;
+  bool get eligible => data['eligible'] == true;
+  String get summary =>
+      '实名认证：${data['identity_verified'] ? '已满足' : '未满足'}；L1记录：${data['l1_verified'] ? '已满足' : '未满足'}；主角光环人工审核：${data['manual_review_approved'] ? '已满足' : '未满足'}';
+}
+
 class StockListing {
   StockListing(dynamic raw, String seller, {String? id}) : raw = v5Map(raw) {
     v5Require(v5Id(this.raw['id']) &&

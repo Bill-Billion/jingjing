@@ -587,14 +587,15 @@ String v5Error(AccountError e, {bool writing = false}) {
     'STOCK_RIGHTS_HOLD': '作品权利已暂停，已购文件也需等待独立复核。',
     'STOCK_NOT_LISTED': '作品当前未公开销售，请重新读取商品。',
     'STOCK_LICENSE_NOT_ACTIVE': '本单许可尚未生效、已暂停或已撤回，请查看原付款和售后记录。',
-    'STOCK_L1_REQUIRED': '现货销售需要实际有效的 L1 认证；不要求先购买 L2。',
+    'STOCK_L1_REQUIRED': '这位艺人缺少有效L1记录，请到人物与认证查看。',
+    'STOCK_HALO_REVIEW_REQUIRED': '需有效的主角光环人工审核；缴费、待审或补件不等于通过。',
     'STOCK_SALE_CONSENT_REQUIRED': '全部出镜人须有覆盖现货销售与公开展示的有效同意。',
     'STOCK_SEPARATE_PREVIEW_REQUIRED': '正式文件与预览须分别上传，内容不能相同。',
     'STOCK_RECEIPT_NOT_READY': '请先成功取得本次文件、刷新通知并标记已读，再明确确认收件。',
     'STOCK_AFTERCARE_PENDING': '本单售后正在处理，暂不能继续交付或付款。',
     'NOTICE_PRIVATE_CONTACT_FORBIDDEN': '通告与投稿不填写站外联系方式或付款引导。',
     'NOTICE_SUBMISSION_CONSENT_REQUIRED': '本次投递需要本人对具体接收方的合作投稿授权。',
-    'AUDITION_L2_REQUIRED': '试镜方案需要实际有效的 L2 资格。',
+    'AUDITION_L2_REQUIRED': '试镜方案需要有效的主角光环人工审核，缴费不等于通过。',
     'AUDITION_OFFER_OWNER_CONTEXT_REQUIRED':
         '获授权机构成员可办理实际分派的预约与会话。首次方案和私人材料由负责人按实际授权办理。',
     'ARTIST_PERSONAL_CONFIRMATION_REQUIRED': '这项私人归档授权须由艺人本人单独确认。',
@@ -700,10 +701,12 @@ class V5Form extends StatefulWidget {
       this.reload,
       this.onSuccess,
       this.canSubmit = true,
+      this.beforeSubmit,
       this.facts = const [],
       this.extra});
   final V5Api api;
   final bool canSubmit;
+  final Future<void> Function(Map<String, dynamic>)? beforeSubmit;
   final String title, action, suffix;
   final List<V5Field> fields;
   final Map<String, dynamic> initial;
@@ -965,6 +968,9 @@ class V5FormState extends State<V5Form>
     _frame?.formChanged();
     try {
       if (op != null) await widget.reload?.call();
+      if (op == null) await widget.beforeSubmit?.call(body);
+      widget.api.check(epoch, party);
+      if (!mounted || t != ticket) return;
       final result = await widget.api.post(widget.suffix, body, (d) {
         widget.parse(d);
         return d;

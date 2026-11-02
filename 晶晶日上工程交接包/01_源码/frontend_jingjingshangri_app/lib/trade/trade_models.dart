@@ -397,7 +397,10 @@ void _spec(dynamic value, {bool participation = false}) {
         v['retry_limit'] is int &&
         v['retry_limit'] >= 0 &&
         v['retry_limit'] <= 100 &&
-        v['failure_policy'] == 'REFUND_UNDELIVERED');
+        (v['failure_policy'] == 'REFUND_UNDELIVERED' ||
+            v['rule_version'] == 'CONTRACT_20261029' &&
+                v['kind'] == 'HALO_REVIEW' &&
+                v['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE'));
     switch (v['kind']) {
       case 'AVATAR_CREATION':
         tradeRequire(v['unit'] == 'PERSON_FIRST' &&

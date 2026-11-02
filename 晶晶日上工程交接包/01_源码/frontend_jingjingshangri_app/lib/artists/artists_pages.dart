@@ -513,7 +513,19 @@ class _RecordState extends State<_Record> {
                   : shortSupplyId(d['service_id'])),
           tradeFact('有效期',
               '${artistWhen(d['valid_from'])}\n${artistWhen(d['valid_until'])}'),
-          appNotice('付款不代表认证通过。补件不重复购买，异议不会改写原拒绝结果。')
+          appNotice('付款不代表认证通过。补件不重复购买，异议不会改写原拒绝结果。'),
+          if (d['certification_materials'] != null) ...[
+            tradeFact(
+                '个人简介', d['certification_materials']['personal_introduction']),
+            tradeFact('文字简历', d['certification_materials']['resume']),
+            tradeFact(
+                '模卡', d['certification_materials']['model_card_asset_id']),
+            tradeFact('生活照',
+                d['certification_materials']['lifestyle_asset_ids'].join('、')),
+            tradeFact('全身照',
+                d['certification_materials']['full_body_asset_ids'].join('、')),
+            appNotice('新版10元人工审核费不支持常规退款；撤回保留费用与原材料事实。')
+          ]
         ],
       'APPEAL' => [
           tradeFact('原申请', shortSupplyId(d['target_id'])),
@@ -542,8 +554,9 @@ class _RecordState extends State<_Record> {
       tradeFact('服务', artistServiceKinds[d['kind']]),
       tradeFact('服务请求编号', r.id),
       tradeFact('本人买方主体', detail?.person.owner),
-      tradeFact('已审商品规格编号', d['spec_id']),
-      tradeFact('原商品价格', artistMoney(d['price_minor'])),
+      if (!r.freeService) tradeFact('已审商品规格编号', d['spec_id']),
+      tradeFact(r.freeService ? '免费权益' : '原商品价格',
+          r.freeService ? '永久免费，无需付款' : artistMoney(d['price_minor'])),
       tradeFact('服务档位 / 版本', '${s['service_tier']} / ${s['version']}'),
       tradeFact('对应真人', detail?.person.name),
       tradeFact(
@@ -557,7 +570,15 @@ class _RecordState extends State<_Record> {
                   shortSupplyId(r.avatarId!)),
       tradeFact('原商品重试次数', s['service']['retry_limit']),
       tradeFact('已记录尝试次数', d['attempts']),
-      if (d['kind'] == 'AVATAR_HOSTING') ...[
+      if (r.freeService)
+        appNotice(r.status == 'READY'
+            ? '等待人工交付基础形象与声音档案。'
+            : r.status == 'FAILED'
+                ? '免费服务未交付，无付款退款。'
+                : '免费权益按已保存记录核对。'),
+      if (r.freeService && d['kind'] == 'AVATAR_HOSTING')
+        appNotice('永久免费，无需续费。仅登记托管权益，云服务尚未启用。'),
+      if (d['kind'] == 'AVATAR_HOSTING' && !r.freeService) ...[
         tradeFact('原商品托管月数', s['service']['hosting_months']),
         tradeFact(
             '本期实际有效期',
@@ -584,7 +605,7 @@ class _RecordState extends State<_Record> {
                 ? null
                 : () => Navigator.pushNamed(
                     context, '/trade/record?recordId=${order['id']}'))
-      ] else ...[
+      ] else if (!r.freeService) ...[
         appNotice('服务请求已保存，尚未关联正式订单。报价由平台建立和独立复核，不能在这里假报付款。'),
         tradeButton(
             '查看本人收到的报价',
@@ -662,6 +683,29 @@ class _RecordState extends State<_Record> {
           tradeSection('补件历史', [
             ContractText(value: supplement['note']),
             tradeFact('提交时间', artistWhen(supplement['at'])),
+            if (supplement['previous_certification_materials'] != null)
+              ExpansionTile(title: const Text('替换前的分类资料'), children: [
+                tradeFact(
+                    '模卡',
+                    supplement['previous_certification_materials']
+                        ['model_card_asset_id']),
+                tradeFact(
+                    '生活照',
+                    supplement['previous_certification_materials']
+                            ['lifestyle_asset_ids']
+                        .join('、')),
+                tradeFact(
+                    '全身照',
+                    supplement['previous_certification_materials']
+                            ['full_body_asset_ids']
+                        .join('、')),
+                tradeFact(
+                    '个人简介',
+                    supplement['previous_certification_materials']
+                        ['personal_introduction']),
+                tradeFact('文字简历',
+                    supplement['previous_certification_materials']['resume'])
+              ]),
             ArtistFiles(
                 api: api,
                 person: p,
@@ -675,16 +719,22 @@ class _RecordState extends State<_Record> {
             tradeButton('对本次拒绝提交异议', locked ? null : () => form('APPEAL'),
                 outline: true),
           if (r.canWithdraw)
-            tradeButton(r.kind == 'LISTING' ? '撤回这份公开展示' : '撤回这份同意或委托',
+            tradeButton(
+                r.kind == 'LISTING'
+                    ? '撤回这份公开展示'
+                    : r.kind == 'HALO'
+                        ? '撤回这份认证申请'
+                        : '撤回这份同意或委托',
                 locked ? null : () => form('WITHDRAW'),
                 outline: true),
           if (r.kind == 'SERVICE') ...[
             tradeButton('核对服务与原订单状态', locked ? null : () => form('SYNC'),
                 outline: true),
-            if (r.data['kind'] == 'AVATAR_HOSTING')
+            if (r.data['kind'] == 'AVATAR_HOSTING' && !r.freeService)
               tradeButton('设置续托管提醒', locked ? null : () => form('REMINDER'),
                   outline: true),
-            if (!['DELIVERED', 'REFUNDED', 'CANCELLED'].contains(r.status))
+            if (!r.freeService &&
+                !['DELIVERED', 'REFUNDED', 'CANCELLED'].contains(r.status))
               tradeButton('申请取消本服务', locked ? null : () => form('CANCEL'),
                   outline: true),
           ],
