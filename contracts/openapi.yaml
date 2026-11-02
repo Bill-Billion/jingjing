@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.21-rc.1
+  version: 0.31.22-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -29030,6 +29030,1620 @@ paths:
         payment. Scope and expiry must be checked; no implicit distribution or generation.
         Shared review pending.
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/gigs/relations/{record_id}/handover:
+    get:
+      operationId: getGigHandover
+      summary: 查看7日交接和旧单清单
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigHandoverResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+    post:
+      operationId: acknowledgeGigHandover
+      summary: 本人或机构确认旧单交接
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcknowledgeGigHandoverInput'
+  /api/v1/privacy/requests/{request_id}/closure-clock:
+    get:
+      operationId: getPrivacyClosureClock
+      summary: 查看核验后的注销期限
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyClosureClockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/privacy/operations/requests/{request_id}/closure-clock:
+    get:
+      operationId: getPrivacyClosureClockForOperator
+      summary: 查看核验后的注销期限
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyClosureClockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/privacy/operations/closure-clocks:
+    get:
+      operationId: listPrivacyClosureClocks
+      summary: 查看注销待复核和逾期处理
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: filter
+        schema:
+          enum:
+          - ALL
+          - OVERDUE
+          - PENDING
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyClosureClockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/privacy/operations/requests/{request_id}/closure-clock/proposals:
+    post:
+      operationId: proposePrivacyClosureClock
+      summary: 提出注销核验、延期或完成核对
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyClosureClockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposePrivacyClosureClockInput'
+  /api/v1/privacy/operations/requests/{request_id}/closure-clock/reviews:
+    post:
+      operationId: reviewPrivacyClosureClock
+      summary: 独立复核注销核验和执行期限
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyClosureClockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewPrivacyClosureClockInput'
+  /api/v1/infringement/cases:
+    post:
+      operationId: createInfringementCase
+      summary: 提交侵权通知及私人证据
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInfringementCaseInput'
+    get:
+      operationId: listInfringementCases
+      summary: 查看获准的侵权通知记录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/infringement/cases/{case_id}:
+    get:
+      operationId: getInfringementCase
+      summary: 查看本人或已送达的必要内容
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: case_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/infringement/cases/{case_id}/actions:
+    post:
+      operationId: actOnInfringementCase
+      summary: 办理送达、反通知或独立复核
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: case_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActOnInfringementCaseInput'
+  /api/v1/infringement/cases/{case_id}/files/{asset_id}:
+    get:
+      operationId: downloadInfringementEvidence
+      summary: 下载经过授权的侵权证据
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: case_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/infringement/operations/cases:
+    get:
+      operationId: listInfringementCasesForOperator
+      summary: 查看获准的侵权通知记录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/infringement/operations/cases/{case_id}:
+    get:
+      operationId: getInfringementCaseForOperator
+      summary: 查看本人或已送达的必要内容
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: case_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/infringement/operations/cases/{case_id}/actions:
+    post:
+      operationId: actOnInfringementCaseForOperator
+      summary: 办理送达、反通知或独立复核
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: case_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfringementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActOnInfringementCaseForOperatorInput'
+  /api/v1/infringement/operations/cases/{case_id}/files/{asset_id}:
+    get:
+      operationId: downloadInfringementEvidenceForOperator
+      summary: 下载经过授权的侵权证据
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: case_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/links:
+    post:
+      operationId: inviteGuardianLink
+      summary: 提出监护关系供孩子确认和独立审核
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteGuardianLinkInput'
+  /api/v1/guardians/records:
+    get:
+      operationId: listGuardianRecords
+      summary: 查看监护关系及处理记录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/records/{record_id}:
+    get:
+      operationId: getGuardianRecord
+      summary: 查看获准的监护记录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/records/{record_id}/decisions:
+    post:
+      operationId: decideGuardianRecord
+      summary: 确认、撤回监护关系或独立审核
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecideGuardianRecordInput'
+  /api/v1/guardians/operations/records:
+    get:
+      operationId: listGuardianRecordsForOperator
+      summary: 查看监护关系及处理记录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/operations/records/{record_id}:
+    get:
+      operationId: getGuardianRecordForOperator
+      summary: 查看获准的监护记录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/operations/records/{record_id}/decisions:
+    post:
+      operationId: decideGuardianRecordForOperator
+      summary: 确认、撤回监护关系或独立审核
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecideGuardianRecordForOperatorInput'
+  /api/v1/guardians/links/{link_id}/controls:
+    put:
+      operationId: updateGuardianControls
+      summary: 监护人设置时长、消费限制和关闭
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGuardianControlsInput'
+  /api/v1/guardians/links/{link_id}/usage:
+    get:
+      operationId: getGuardianUsage
+      summary: 查看已预留使用时长和消费同意
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/links/{link_id}/sessions:
+    post:
+      operationId: createGuardianUsageSession
+      summary: 按原请求恢复一分钟使用时段
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuardianUsageSessionInput'
+  /api/v1/guardians/links/{link_id}/information:
+    get:
+      operationId: getGuardianInformation
+      summary: 监护人查询孩子必要资料目录
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      - in: query
+        name: category
+        required: true
+        schema:
+          enum:
+          - PROFILE
+          - ARTIST_MATERIALS
+          - CONTENT
+          - TRANSACTIONS
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/links/{link_id}/privacy-requests:
+    post:
+      operationId: createGuardianPrivacyRequest
+      summary: 代孩子申请信息查询、删除或注销
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuardianPrivacyRequestInput'
+  /api/v1/guardians/links/{link_id}/spending-consents:
+    post:
+      operationId: createGuardianSpendingConsent
+      summary: 记录单笔消费同意，真实付款仍关闭
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuardianSpendingConsentInput'
+  /api/v1/guardians/links/{link_id}/refund-requests:
+    post:
+      operationId: createGuardianRefundRequest
+      summary: 申请核查未经同意的未成年消费
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGuardianRefundRequestInput'
+  /api/v1/guardians/records/{record_id}/refund:
+    post:
+      operationId: requestReviewedGuardianRefund
+      summary: 将已审核申请转入原订单退款流程
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestReviewedGuardianRefundInput'
+  /api/v1/guardians/links/{link_id}/content:
+    get:
+      operationId: listGuardianSuitableContent
+      summary: 只查看独立审核名单中的适龄预览
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardianResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/guardians/links/{link_id}/content/{listing_id}/preview:
+    get:
+      operationId: downloadGuardianSuitablePreview
+      summary: 仅下载获准适龄预览，重新核验关系、时段及权利
+      tags:
+      - contract-protection
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: link_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: listing_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离后端能力；页面与整链验收单列，未启用真实儿童处理或收费服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            video/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -30927,6 +32541,8 @@ components:
             - organization_weights
             - scout_priority
           description: Optional reviewed weights. No configuration means factual directory only, ranking disabled.
+        referral_contract_policy:
+          const: CONTRACT_20261029
       required:
       - version
       - terms
@@ -30939,6 +32555,37 @@ components:
       - aftercare_days
       - referral_bps
       - risk_first_penalty
+      allOf:
+      - if:
+          required:
+          - referral_contract_policy
+        then:
+          properties:
+            referral_bps:
+              type: object
+              additionalProperties: false
+              properties:
+                STOCK:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1500
+                AUDITION:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1500
+                CUSTOMIZATION:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1500
+                COMMERCIAL:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1500
+              required:
+              - STOCK
+              - AUDITION
+              - CUSTOMIZATION
+              - COMMERCIAL
     ChampionshipRule:
       type: object
       additionalProperties: false
@@ -38305,6 +39952,9 @@ components:
       type: object
       additionalProperties: false
       properties:
+        guardian_case_id:
+          type: string
+          format: uuid
         provider:
           type: string
           enum:
@@ -42545,6 +44195,8 @@ components:
                 maxLength: 8000
             v5_terms:
               $ref: '#/components/schemas/McnV5Terms'
+            handover:
+              $ref: '#/components/schemas/ContractHandoverSummary'
           required:
           - scope
           - valid_from
@@ -48716,6 +50368,9 @@ components:
           - type: 'null'
         deadline_basis:
           $ref: '#/components/schemas/CustomizationDeadlineBasis'
+        acceptance_started_at:
+          type: string
+          format: date-time
       required:
       - delivery_id
       - version_id
@@ -49246,6 +50901,8 @@ components:
             - NEW_AVATAR_CONTENT
             - EXCLUSIVE_BUYOUT
           uniqueItems: true
+        acceptance_policy:
+          const: CONTRACT_20261029
       required:
       - scope
       - exclusive
@@ -49259,6 +50916,14 @@ components:
       - valid_until
       - limited_to_buyer
       - excluded
+      allOf:
+      - if:
+          required:
+          - acceptance_policy
+        then:
+          properties:
+            acceptance_hours:
+              const: 48
     StockSpecification:
       type: object
       additionalProperties: false
@@ -49342,6 +51007,8 @@ components:
             - SOURCE_OR_MODEL_FILES
             - NEW_AVATAR_CONTENT
             - EXCLUSIVE_BUYOUT
+          acceptance_policy:
+            const: CONTRACT_20261029
         required:
         - scope
         - exclusive
@@ -49352,6 +51019,14 @@ components:
         - aftercare_terms
         - limited_to_buyer
         - excluded
+        allOf:
+        - if:
+            required:
+            - acceptance_policy
+          then:
+            properties:
+              acceptance_hours:
+                const: 48
       - $ref: '#/components/schemas/StockCommercialLicense'
     StockTradeSnapshot:
       type: object
@@ -50022,6 +51697,12 @@ components:
             seller_admission_policy:
               const: CONTRACT_20261029
               description: 新购买冻结准入版本；历史购买未提供本字段，不追改历史约定。
+            acceptance_started_at:
+              type: string
+              format: date-time
+            acceptance_order_created_at:
+              type: string
+              format: date-time
           required:
           - status
           - listing_snapshot
@@ -51879,6 +53560,8 @@ components:
           type: string
           minLength: 1
           maxLength: 8000
+        acceptance_policy:
+          const: CONTRACT_20261029
       required:
       - version
       - accept_hours
@@ -51887,6 +53570,14 @@ components:
       - video_count
       - payment_window_minutes
       - terms
+      allOf:
+      - if:
+          required:
+          - acceptance_policy
+        then:
+          properties:
+            acceptance_hours:
+              const: 48
     AuditionAppointment:
       type: object
       additionalProperties: false
@@ -52547,6 +54238,9 @@ components:
             - reason
             - account_id
           - type: 'null'
+        acceptance_started_at:
+          type: string
+          format: date-time
       required:
       - offer
       - rules
@@ -61352,3 +63046,1193 @@ components:
       - evidence_asset_ids
       - calculation
       - review
+    ContractHandoverSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        policy:
+          const: CONTRACT_20261029
+        started_at:
+          type: string
+          format: date-time
+        deadline_at:
+          type: string
+          format: date-time
+        order_count:
+          type: integer
+          minimum: 0
+        new_business_allowed:
+          const: false
+        last_acknowledged_order_id:
+          type: string
+          format: uuid
+      required:
+      - policy
+      - started_at
+      - deadline_at
+      - order_count
+      - new_business_allowed
+    GigHandoverResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            policy:
+              const: CONTRACT_20261029
+            started_at:
+              type: string
+              format: date-time
+            deadline_at:
+              type: string
+              format: date-time
+            order_count:
+              type: integer
+              minimum: 0
+            new_business_allowed:
+              const: false
+            last_acknowledged_order_id:
+              type: string
+              format: uuid
+            relation_id:
+              type: string
+              format: uuid
+            object_version:
+              type: integer
+              minimum: 1
+            period_status:
+              enum:
+              - OPEN
+              - EXPIRED
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  order_id:
+                    type: string
+                    format: uuid
+                  status:
+                    enum:
+                    - PENDING
+                    - ACKNOWLEDGED
+                  order_status:
+                    type: string
+                    minLength: 1
+                    maxLength: 8000
+                  order_sha256:
+                    type: string
+                    pattern: ^[0-9a-f]{64}$
+                  acknowledgements:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        account_id:
+                          type: string
+                          format: uuid
+                        at:
+                          type: string
+                          format: date-time
+                        note:
+                          type: string
+                          minLength: 1
+                          maxLength: 2000
+                      required:
+                      - account_id
+                      - at
+                      - note
+                  notes:
+                    type: array
+                    items:
+                      type: object
+                required:
+                - order_id
+                - status
+                - order_status
+                - order_sha256
+                - acknowledgements
+                - notes
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - policy
+          - started_at
+          - deadline_at
+          - order_count
+          - new_business_allowed
+          - relation_id
+          - object_version
+          - period_status
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    PrivacyClosureClock:
+      type: object
+      additionalProperties: false
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 1
+        status:
+          enum:
+          - NOT_VERIFIED
+          - VERIFICATION_PENDING
+          - TRACKING
+          - OVERDUE
+          - COMPLETED
+        response_due_on:
+          type: string
+          format: date
+        verified_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        original_due_on:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+        due_on:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+        calendar_version:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 8000
+          - type: 'null'
+        deadline_basis:
+          enum:
+          - REVIEWED_CALENDAR
+          - WEEKDAY_ESTIMATE_NEEDS_CALENDAR
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        pending_action:
+          anyOf:
+          - enum:
+            - VERIFY
+            - EXTEND
+            - COMPLETE
+          - type: 'null'
+        extensions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              from:
+                type: string
+                format: date
+              to:
+                type: string
+                format: date
+              basis:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              review_reason:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              reviewed_by:
+                type: string
+                format: uuid
+              at:
+                type: string
+                format: date-time
+            required:
+            - from
+            - to
+            - basis
+            - review_reason
+            - reviewed_by
+            - at
+        pending:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                enum:
+                - VERIFY
+                - EXTEND
+                - COMPLETE
+              proposed_by:
+                type: string
+                format: uuid
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              evidence_asset_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              due_on:
+                anyOf:
+                - type: string
+                  format: date
+                - type: 'null'
+            required:
+            - kind
+            - proposed_by
+            - reason
+            - evidence_asset_ids
+            - due_on
+          - type: 'null'
+      required:
+      - request_id
+      - object_version
+      - status
+      - response_due_on
+    PrivacyClosureClockResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/PrivacyClosureClock'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivacyClosureClock'
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+            - next_cursor
+      required:
+      - meta
+      - data
+    InfringementCase:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        target_kind:
+          enum:
+          - ASSET
+          - ARTIST_LISTING
+          - STOCK_LISTING
+          - NOTICE
+          - PRODUCTION_VERSION
+        target_id:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - SUBMITTED
+          - NEEDS_INFO
+          - FROZEN
+          - NOTICE_DELIVERED
+          - COUNTER_SUBMITTED
+          - COUNTER_DELIVERED
+          - WITHDRAWN
+          - WITHDRAWAL_REVIEW
+          - REVIEW_PENDING
+          - REJECTED
+          - RESOLVED
+        object_version:
+          type: integer
+          minimum: 1
+        restriction_active:
+          type: boolean
+        initial_response_due_at:
+          type: string
+          format: date-time
+        initial_response_target:
+          const: OPERATIONAL_TARGET_NOT_LEGAL_DEADLINE
+        initial_response_overdue:
+          type: boolean
+        notice:
+          type: object
+          additionalProperties: false
+          properties:
+            statement:
+              type: string
+              minLength: 1
+              maxLength: 8000
+            contact:
+              type: string
+              minLength: 1
+              maxLength: 500
+            evidence_asset_ids:
+              type: array
+              items:
+                type: string
+                format: uuid
+          required:
+          - statement
+          - evidence_asset_ids
+        counter:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              statement:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              contact:
+                type: string
+                minLength: 1
+                maxLength: 500
+              evidence_asset_ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+            required:
+            - statement
+            - evidence_asset_ids
+          - type: 'null'
+        deliveries:
+          type: object
+          additionalProperties: false
+          properties:
+            notice:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  at:
+                    type: string
+                    format: date-time
+                  read_at:
+                    anyOf:
+                    - type: string
+                      format: date-time
+                    - type: 'null'
+                required:
+                - at
+                - read_at
+              - type: 'null'
+            counter:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  at:
+                    type: string
+                    format: date-time
+                  read_at:
+                    anyOf:
+                    - type: string
+                      format: date-time
+                    - type: 'null'
+                required:
+                - at
+                - read_at
+              - type: 'null'
+          required:
+          - notice
+          - counter
+        resolution:
+          anyOf:
+          - type: object
+          - type: 'null'
+        pending_review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              by:
+                type: string
+                format: uuid
+              decision:
+                enum:
+                - RESTORE
+                - MAINTAIN
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 8000
+            required:
+            - by
+            - decision
+            - reason
+          - type: 'null'
+        history:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              action:
+                type: string
+                minLength: 1
+                maxLength: 8000
+              at:
+                type: string
+                format: date-time
+              message:
+                type: string
+                minLength: 1
+                maxLength: 8000
+            required:
+            - action
+            - at
+            - message
+        next_action:
+          enum:
+          - SUBMIT_COUNTER
+          - READ_PROGRESS
+        information_request:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              reason:
+                type: string
+              at:
+                type: string
+                format: date-time
+            required:
+            - reason
+            - at
+          - type: 'null'
+      required:
+      - id
+      - target_kind
+      - target_id
+      - current_status
+      - object_version
+      - restriction_active
+      - initial_response_due_at
+      - initial_response_target
+      - initial_response_overdue
+      - notice
+      - counter
+      - deliveries
+      - resolution
+      - pending_review
+      - history
+      - next_action
+    InfringementResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/InfringementCase'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InfringementCase'
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+            - next_cursor
+      required:
+      - meta
+      - data
+    GuardianControls:
+      type: object
+      additionalProperties: false
+      properties:
+        enabled:
+          type: boolean
+        daily_minutes:
+          type: integer
+          minimum: 1
+          maximum: 240
+        single_minor:
+          type: integer
+          minimum: 0
+        daily_minor:
+          type: integer
+          minimum: 0
+      required:
+      - enabled
+      - daily_minutes
+      - single_minor
+      - daily_minor
+    GuardianRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - LINK
+          - SPEND
+          - REFUND
+          - INFORMATION
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        guardian_account_id:
+          type: string
+          format: uuid
+        child_account_id:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - INVITED
+          - IN_REVIEW
+          - ACTIVE
+          - REJECTED
+          - REVOKED
+          - SUSPENDED
+          - CONSENT_RECORDED_SERVICE_DISABLED
+          - SUBMITTED
+          - APPROVED
+          - REFUND_REQUESTED
+        object_version:
+          type: integer
+          minimum: 1
+        data:
+          type: object
+          description: 按kind返回监护关系/消费同意/信息请求/退款的记录；本人和孩子返回的材料字段不同。详见交接说明，私人故事和对方原始审核材料不在授权范围。
+          properties:
+            privacy_request_id:
+              type: string
+              format: uuid
+            actual_privacy_status:
+              type: string
+              minLength: 1
+              maxLength: 8000
+            response_due_on:
+              anyOf:
+              - type: string
+                format: date
+              - type: 'null'
+            refund_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            actual_refund_status:
+              type: string
+              minLength: 1
+              maxLength: 8000
+            real_payment_allowed:
+              const: false
+            controls:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  enabled:
+                    type: boolean
+                  daily_minutes:
+                    type: integer
+                    minimum: 1
+                    maximum: 240
+                  single_minor:
+                    type: integer
+                    minimum: 0
+                  daily_minor:
+                    type: integer
+                    minimum: 0
+                required:
+                - enabled
+                - daily_minutes
+                - single_minor
+                - daily_minor
+              - type: 'null'
+      required:
+      - id
+      - kind
+      - parent_id
+      - guardian_account_id
+      - child_account_id
+      - current_status
+      - object_version
+      - data
+    GuardianResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/GuardianRecord'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    kind:
+                      enum:
+                      - LINK
+                      - SPEND
+                      - REFUND
+                      - INFORMATION
+                    current_status:
+                      enum:
+                      - INVITED
+                      - IN_REVIEW
+                      - ACTIVE
+                      - REJECTED
+                      - REVOKED
+                      - SUSPENDED
+                      - CONSENT_RECORDED_SERVICE_DISABLED
+                      - SUBMITTED
+                      - APPROVED
+                      - REFUND_REQUESTED
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    parent_id:
+                      anyOf:
+                      - type: string
+                        format: uuid
+                      - type: 'null'
+                  required:
+                  - id
+                  - kind
+                  - current_status
+                  - object_version
+                  - parent_id
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+            - next_cursor
+          - type: object
+            additionalProperties: false
+            properties:
+              link_id:
+                type: string
+                format: uuid
+              local_date:
+                type: string
+                format: date
+              seconds_reserved:
+                type: integer
+                minimum: 0
+              spend_reserved_minor:
+                type: integer
+                minimum: 0
+              controls:
+                type: object
+                additionalProperties: false
+                properties:
+                  enabled:
+                    type: boolean
+                  daily_minutes:
+                    type: integer
+                    minimum: 1
+                    maximum: 240
+                  single_minor:
+                    type: integer
+                    minimum: 0
+                  daily_minor:
+                    type: integer
+                    minimum: 0
+                required:
+                - enabled
+                - daily_minutes
+                - single_minor
+                - daily_minor
+              rest_reminder_minutes:
+                type: integer
+                minimum: 0
+              real_minor_transactions_enabled:
+                const: false
+            required:
+            - link_id
+            - local_date
+            - seconds_reserved
+            - spend_reserved_minor
+            - controls
+            - rest_reminder_minutes
+            - real_minor_transactions_enabled
+          - type: object
+            additionalProperties: false
+            properties:
+              link_id:
+                type: string
+                format: uuid
+              slot_until:
+                type: string
+                format: date-time
+              seconds_reserved:
+                type: integer
+                minimum: 0
+            required:
+            - link_id
+            - slot_until
+            - seconds_reserved
+          - type: object
+            additionalProperties: false
+            properties:
+              category:
+                enum:
+                - PROFILE
+                - ARTIST_MATERIALS
+                - PRIVATE_STORY
+                - TRANSACTIONS
+                - CONTENT
+              items:
+                type: array
+                items:
+                  type: object
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                format: uuid
+              coverage:
+                enum:
+                - ACCOUNT_PROFILE_ONLY
+                - OWN_MATERIAL_METADATA_ONLY
+                - OWN_CONTENT_METADATA_ONLY
+                - OWN_CURRENT_STORY_TEXT_ONLY
+                - OWN_BUYER_ORDER_INDEX_ONLY
+            required:
+            - category
+            - items
+            - next_cursor
+            - coverage
+          - type: object
+            additionalProperties: false
+            properties:
+              rule_id:
+                type: string
+                format: uuid
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    listing_id:
+                      type: string
+                      format: uuid
+                    title:
+                      type: string
+                    preview_only:
+                      const: true
+                  required:
+                  - listing_id
+                  - title
+                  - preview_only
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                format: uuid
+              real_purchases_enabled:
+                const: false
+            required:
+            - rule_id
+            - items
+            - next_cursor
+            - real_purchases_enabled
+      required:
+      - meta
+      - data
+    AcknowledgeGigHandoverInput:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - order_id
+      - note
+    ProposePrivacyClosureClockInput:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - VERIFY
+          - EXTEND
+          - COMPLETE
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+        due_on:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+      required:
+      - kind
+      - reason
+      - evidence_asset_ids
+      - due_on
+    ReviewPrivacyClosureClockInput:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - decision
+      - reason
+    CreateInfringementCaseInput:
+      type: object
+      additionalProperties: false
+      properties:
+        target_kind:
+          enum:
+          - ASSET
+          - ARTIST_LISTING
+          - STOCK_LISTING
+          - NOTICE
+          - PRODUCTION_VERSION
+        target_id:
+          type: string
+          format: uuid
+        statement:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        contact:
+          type: string
+          minLength: 1
+          maxLength: 500
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+      required:
+      - target_kind
+      - target_id
+      - statement
+      - contact
+      - evidence_asset_ids
+    ActOnInfringementCaseInput:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          enum:
+          - SUPPLEMENT
+          - ACK_DELIVERY
+          - COUNTER
+          - WITHDRAW
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        statement:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        contact:
+          type: string
+          minLength: 1
+          maxLength: 500
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+        disclosed_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        decision:
+          enum:
+          - RESTORE
+          - MAINTAIN
+          - APPROVE
+          - REJECT
+      required:
+      - action
+      - reason
+    ActOnInfringementCaseForOperatorInput:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          enum:
+          - REQUEST_INFO
+          - FREEZE
+          - REJECT
+          - DELIVER_NOTICE
+          - DELIVER_COUNTER
+          - PROPOSE
+          - REVIEW
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        statement:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        contact:
+          type: string
+          minLength: 1
+          maxLength: 500
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+        disclosed_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        decision:
+          enum:
+          - RESTORE
+          - MAINTAIN
+          - APPROVE
+          - REJECT
+      required:
+      - action
+      - reason
+    InviteGuardianLinkInput:
+      type: object
+      additionalProperties: false
+      properties:
+        child_account_id:
+          type: string
+          format: uuid
+        relationship:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+        rule_id:
+          type: string
+          format: uuid
+        valid_until:
+          type: string
+          format: date-time
+      required:
+      - child_account_id
+      - relationship
+      - evidence_asset_ids
+      - rule_id
+      - valid_until
+    DecideGuardianRecordInput:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - ACCEPT
+          - REJECT
+          - REVOKE
+          - DISPUTE
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        age_band:
+          enum:
+          - UNDER_14
+          - AGE_14_17
+        identity_checked:
+          type: boolean
+        relationship_checked:
+          type: boolean
+      required:
+      - decision
+      - reason
+    DecideGuardianRecordForOperatorInput:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        age_band:
+          enum:
+          - UNDER_14
+          - AGE_14_17
+        identity_checked:
+          type: boolean
+        relationship_checked:
+          type: boolean
+      required:
+      - decision
+      - reason
+    UpdateGuardianControlsInput:
+      type: object
+      additionalProperties: false
+      properties:
+        controls:
+          $ref: '#/components/schemas/GuardianControls'
+      required:
+      - controls
+    CreateGuardianUsageSessionInput:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    CreateGuardianPrivacyRequestInput:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          enum:
+          - QUERY
+          - DELETE
+          - CLOSE_ACCOUNT
+        details:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - type
+      - details
+    CreateGuardianSpendingConsentInput:
+      type: object
+      additionalProperties: false
+      properties:
+        amount_minor:
+          type: integer
+          minimum: 1
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - amount_minor
+      - purpose
+    CreateGuardianRefundRequestInput:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        allocations:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 1
+            required:
+            - line_id
+            - amount_minor
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+      required:
+      - payment_id
+      - allocations
+      - reason
+      - evidence_asset_ids
+    RequestReviewedGuardianRefundInput:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []

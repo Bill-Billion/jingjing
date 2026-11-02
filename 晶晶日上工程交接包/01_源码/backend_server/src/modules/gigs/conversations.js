@@ -5,8 +5,14 @@ function methods({db,actor,owner,operator,insert,save,command}) {
  async function scope(tx,a,i,{write=false,join=false}={}) {
   const o=G.checked(await A.one(tx,"SELECT * FROM trade_records WHERE id=? AND kind='ORDER' FOR UPDATE",[id(i.order_id)]));
   const c=o.data.quote.commercial;if(!c)throw error('COMMERCIAL_ORDER_REQUIRED',409);
-  if(i.party_id){if(i.party_id===c.relation?.mcn_party_id){const person=await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=?',[c.avatar_id]);if(person)await require('../engagement/mcn').delegated(tx,a,i.party_id,person.person_id,'COMMERCIAL_MESSAGES');else{await owner(tx,a,i.party_id);await require('../engagement/mcn').member(tx,a,i.party_id,null,'READ_INCOME');}}else await owner(tx,a,i.party_id);if(![o.buyer_party_id,o.merchant_party_id,c.relation?.mcn_party_id].includes(i.party_id))throw error('GIG_NOT_FOUND',404);
-   if(i.party_id===c.relation?.mcn_party_id){const r=await G.load(tx,c.relation.id,'RELATION','FOR SHARE'),at=await A.now(tx);if(r.current_status!=='ACTIVE'||r.data.valid_from>at||r.data.valid_until<=at)throw error('RELATION_NOT_APPLICABLE',403);}
+  if(i.party_id){
+   if(![o.buyer_party_id,o.merchant_party_id,c.relation?.mcn_party_id].includes(i.party_id))throw error('GIG_NOT_FOUND',404);
+   if(i.party_id===c.relation?.mcn_party_id){
+    const rel=await G.load(tx,c.relation.id,'RELATION','FOR SHARE');
+    if(rel.current_status==='ENDED')await require('./handover').permit(tx,a,i.party_id,o);
+    else {const person=await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=?',[c.avatar_id]);if(person)await require('../engagement/mcn').delegated(tx,a,i.party_id,person.person_id,'COMMERCIAL_MESSAGES');else {await owner(tx,a,i.party_id);await require('../engagement/mcn').member(tx,a,i.party_id,null,'READ_INCOME');}
+     const at=await A.now(tx);if(rel.current_status!=='ACTIVE'||rel.data.valid_from>at||rel.data.valid_until<=at)throw error('RELATION_NOT_APPLICABLE',403);}
+   }else await owner(tx,a,i.party_id);
   }else await operator(tx,a);
   if(!await A.one(tx,'SELECT order_id FROM gig_orders WHERE order_id=?',[o.id]))throw error('COMMERCIAL_ORDER_REQUIRED',409);
   const accepted=await G.load(tx,c.offer_id,'OFFER','FOR SHARE');if(accepted.current_status!=='ACCEPTED'||!accepted.data.buyer_accepted_by)throw error('COMMERCIAL_ACCEPTANCE_REQUIRED',409);

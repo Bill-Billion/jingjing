@@ -1,4 +1,6 @@
-当前候选0.31.21-rc.1：现货增加独立商用许可、逐人商用授权、机构购买资格；默认不开放新商用购买，旧个人许可不升级。沿用0193；隐私请求读取已审核工作日日历，无新增路径。接法与兼容说明见[商用交接](../docs/collaboration/client-complete-20261028/STOCK_COMMERCIAL_HANDOFF_20261102.md)。以下版本为历史。
+当前候选0.31.22-rc.1：六项合同流程，33项新增操作，迁移0201。既有订单保持原快照；新规则/监护内容有显式开关。接口可在隔离环境办理，新增页面和完整验收尚未完成；共享规则待另一方实际审阅。接法见[六项交接](../docs/collaboration/client-complete-20261028/SIX_CONTRACT_HANDOFF_20261102.md)，验证及上传见[本轮记录](../docs/tasks/records/CORE-six-contract-tasks-20261102.md)。
+
+以下为历史版本记录。
 
 2026-11-02 0.31.20-rc.1：定制版权二选一、样片人格权/版权区分、IP买断/分红采购、期限与收益证据；迁移0193。[前端接法](../docs/collaboration/client-complete-20261028/COPYRIGHT_CONTRACT_HANDOFF_20261102.md)。新版权规则显式切换，原单不改；NOT_TRANSFERRED不代表资金到账。
 

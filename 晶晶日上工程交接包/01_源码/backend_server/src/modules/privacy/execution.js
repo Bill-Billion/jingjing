@@ -103,7 +103,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
      if(i.action==='PROFILE_CORRECTION'||i.action==='ACCOUNT_CLOSURE'){
       if(id(i.target_id)!==request.account_id)throw error('PRIVACY_TARGET_NOT_FOUND',404);
       if(i.action==='PROFILE_CORRECTION')label(i.details.display_name,80);
-      snapshot={account_version:a.object_version};
+      snapshot={account_version:a.object_version};if(i.action==='ACCOUNT_CLOSURE'&&process.env.PRIVACY_CLOSURE_POLICY==='CONTRACT_20261029'){const c=await require('./closure-clock').loadClock(tx,request.id);if(!c?.verified_at)throw error('CLOSURE_VERIFICATION_REQUIRED',409);snapshot.closure_clock_policy='CONTRACT_20261029';snapshot.verified_at=c.verified_at;}
      }else if(i.action==='FILE_ERASURE'){
       const f=await file(tx,request.account_id,i.target_id);
       if(f.current_status!=='READY')throw error('PRIVATE_MATERIAL_NOT_READY',409);
@@ -166,7 +166,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
       result={effect:'ACCOUNT_DISPLAY_NAME_UPDATED',historical_records:'UNCHANGED'};
      }else if(r.action_code==='ACCOUNT_CLOSURE'){
       if(a.object_version!==s.account_version)throw error('VERSION_CONFLICT',412);
-      const blockers=await closureBlockers(tx,a);if(blockers.length)throw error(blockers[0],409);
+      if(s.closure_clock_policy){const c=await require('./closure-clock').loadClock(tx,request.id);if(!c?.verified_at||c.verified_at!==s.verified_at)throw error('CLOSURE_VERIFICATION_REQUIRED',409);}const blockers=await closureBlockers(tx,a);if(blockers.length)throw error(blockers[0],409);
       await tx.execute("UPDATE identity_accounts SET current_status='CLOSED',object_version=object_version+1 WHERE id=?",[a.id]);
       await tx.execute('UPDATE auth_sessions SET revoked=TRUE WHERE account_id=?',[a.id]);
       await tx.execute("UPDATE parties SET current_status='CLOSED',object_version=object_version+1 WHERE kind='PERSON' AND personal_account_id=?",[a.id]);

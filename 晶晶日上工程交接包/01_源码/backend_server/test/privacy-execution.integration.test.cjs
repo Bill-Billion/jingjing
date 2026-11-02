@@ -64,6 +64,26 @@ test('reviewed privacy execution changes actual records and preserves unresolved
  await t.test('complaint restricts actual download and approved release restores only that restriction',async()=>{const f=await S.upload(buyer,'AVATAR_MATERIAL');let r=await req(outsider,'COMPLAINT',['CONTENT']);let e=await propose(producer,r,'RESTRICT_CONTENT',f.id,{target_kind:'ASSET'},true);await bad(approve(producer,e),'SELF_REVIEW_FORBIDDEN');e=await approve(reviewer,e);const done=await apply(producer,e,true);await bad(S.assets.download(buyer.ctx,f.id,buyer.acting_party_id),'CONTENT_RESTRICTED');r=await repo.read(outsider.ctx,{request_id:r.id});let release=await propose(producer,r,'RELEASE_CONTENT',done.result.restriction_id,{},true);release=await approve(reviewer,release);await apply(producer,release,true);assert.ok((await S.assets.download(buyer.ctx,f.id,buyer.acting_party_id)).body.length);});
  await t.test('closing sole organization owner is blocked and leaves login intact',async()=>{const r=await req(producer,'CLOSE_ACCOUNT',['ALL']);let e=await propose(producer,r,'ACCOUNT_CLOSURE',producer.account_id);e=await approve(reviewer,e);await bad(apply(producer,e),'ORGANIZATION_OWNER_TRANSFER_REQUIRED');assert.equal((await db.execute('SELECT current_status FROM identity_accounts WHERE id=?',[producer.account_id]))[0][0].current_status,'ACTIVE');});
  await t.test('account closure revokes old sessions and personal identity while retaining request evidence',async()=>{const u=await S.registerActor('closure');const r=await req(u,'CLOSE_ACCOUNT',['ALL']);let e=await propose(u,r,'ACCOUNT_CLOSURE',u.account_id);e=await approve(reviewer,e);const done=await apply(u,e);assert.equal(done.result.data_erasure,'NOT_CONFIRMED');assert.equal((await db.execute('SELECT current_status FROM identity_accounts WHERE id=?',[u.account_id]))[0][0].current_status,'CLOSED');assert.equal((await db.execute('SELECT revoked FROM auth_sessions WHERE account_id=?',[u.account_id]))[0][0].revoked,1);await bad(repo.read(u.ctx,{request_id:r.id}),'ACCOUNT_NOT_ACTIVE');assert.equal((await repo.read(producer.ctx,{request_id:r.id,operations:true})).account_id,u.account_id);});
+ await t.test('new closure clock requires verified identity and actual execution before completion',async()=>{
+  const previous=process.env.PRIVACY_CLOSURE_POLICY;process.env.PRIVACY_CLOSURE_POLICY='CONTRACT_20261029';
+  try{
+   const u=await S.registerActor('verified-closure'),proof=await S.upload(u,'REVIEW_EVIDENCE'),responseProof=await S.upload(producer,'REVIEW_EVIDENCE');
+   let r=await req(u,'CLOSE_ACCOUNT',['ALL']);
+   await bad(propose(u,r,'ACCOUNT_CLOSURE',u.account_id),'CLOSURE_VERIFICATION_REQUIRED');
+   const clockProposal=(kind,v)=>repo.proposeClosureClock(producer.ctx,{request_id:r.id,expected_version:v,kind,reason:'Synthetic verified closure evidence',evidence_asset_ids:[proof.id],due_on:null,operation_key:key()});
+   const clockReview=c=>repo.reviewClosureClock(reviewer.ctx,{request_id:r.id,expected_version:c.object_version,decision:'APPROVE',reason:'Synthetic independent closure verification',operation_key:key()});
+   let clock=await clockProposal('VERIFY',r.object_version);clock=await clockReview(clock);assert.equal(clock.status,'TRACKING');assert.ok(clock.verified_at);
+   await bad(clockProposal('COMPLETE',clock.object_version),'ACCOUNT_CLOSURE_NOT_EXECUTED');
+   r=await repo.read(u.ctx,{request_id:r.id});let e=await propose(u,r,'ACCOUNT_CLOSURE',u.account_id);e=await approve(reviewer,e);await apply(u,e);
+   r=await repo.read(producer.ctx,{request_id:r.id,operations:true});
+   await bad(clockProposal('COMPLETE',r.object_version),'PRIVACY_FOLLOW_UP_PENDING');
+   r=await repo.propose(producer.ctx,{request_id:r.id,expected_version:r.object_version,result:{response:'Synthetic account access closed; no remaining erasure obligations in this isolated fixture',outcome:'RETENTION_EXPLAINED',evidence_asset_ids:[responseProof.id],retentions:[],remaining_actions:[]},operation_key:key()});
+   r=await repo.review(reviewer.ctx,{request_id:r.id,expected_version:r.object_version,decision:'APPROVED',reason:'Synthetic completed actions verified',proposal_sha256:r.proposal_sha256,evidence_verified:true,third_party_data_redacted:true,remaining_actions_checked:true,operation_key:key()});
+   clock=await clockProposal('COMPLETE',r.object_version);clock=await clockReview(clock);assert.equal(clock.status,'COMPLETED');assert.ok(clock.completed_at);
+   assert.equal((await repo.closureClock(producer.ctx,{request_id:r.id,operations:true})).status,'COMPLETED');
+   await bad(repo.read(u.ctx,{request_id:r.id}),'ACCOUNT_NOT_ACTIVE');
+  }finally{if(previous===undefined)delete process.env.PRIVACY_CLOSURE_POLICY;else process.env.PRIVACY_CLOSURE_POLICY=previous;}
+ });
  await t.test('stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete',async()=>{
   const K=await require('./helpers/stock-seed.cjs').seedStock(db),listing=await K.listing(),order=await K.checkout(listing);
   const unresolved=party=>db.withTransaction(tx=>require('../src/modules/privacy/closure').hasTradeObligations(tx,party));
