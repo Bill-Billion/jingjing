@@ -1,7 +1,7 @@
 "use strict";
 const {randomUUID:key,randomBytes,createHash}=require('node:crypto');
 const {digest,createRuleContent}=require('../../src/modules/governance/content');
-async function seedStock(db){
+async function seedStock(db,{ruleKey='stock.synthetic'}={}){
  const principals=new Map(),resolvePrincipal=async ctx=>principals.get(ctx),secret=randomBytes(32).toString('base64');
  const parties=require('../../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal}),auth=require('../../src/modules/auth/repository').createAuthRepository(db,{secret});
  const artists=require('../../src/modules/artists/repository').createArtistRepository(db,{resolvePrincipal}),stock=require('../../src/modules/stock/repository').createStockRepository(db,{resolvePrincipal}),trade=require('../../src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal});
@@ -15,9 +15,11 @@ async function seedStock(db){
  const evidence=await supply.upload(seller.ctx,{party_id:seller.personal_party_id,purpose:'CONSENT_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic evidence only'),operation_key:key()});
  const reviewArtist=r=>artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:r.id,expected_version:r.object_version,decision:'APPROVE',reason:'independent synthetic review',operation_key:key()});
  const halo=await reviewArtist(await artists.requestHalo(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,level:1,ownership_promise:true,evidence_asset_ids:[evidence.id],service_id:null,operation_key:key()}));
+ const talentId=key(),talentData={level:2,valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',synthetic_only:true,review:{decision:'APPROVE',reviewed_by:reviewer.account_id,reason:'Isolated fixture only; not actual human certification'}};
+ await db.execute("INSERT INTO artist_records(id,person_id,kind,created_by,current_status,data_json,data_sha256) VALUES (?,?,'HALO',?,'APPROVED',?,?)",[talentId,seller.person.id,seller.account_id,JSON.stringify(talentData),digest(talentData)]);
  const avatar=await artists.createAvatar(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,display_name:'synthetic avatar',operation_key:key()});
  const consent=await reviewArtist(await artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:avatar.id,consent:{features:['FACE','VOICE'],purposes:['STOCK_LICENSE','PUBLIC_DISPLAY'],grantee_party_id:seller.personal_party_id,territories:['WORLDWIDE'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'synthetic stock consent only',evidence_asset_ids:[evidence.id]},operation_key:key()}));
- const ruleId=key(),rule=createRuleContent({id:ruleId,rule_key:'stock.synthetic',version:'1',terms:{explicit:'synthetic stock terms'}});await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'stock.synthetic','1',JSON.stringify(rule),'2020-01-01 00:00:00',seller.account_id,'EFFECTIVE']);
+ const ruleId=key(),rule=createRuleContent({id:ruleId,rule_key:ruleKey,version:'1',terms:{explicit:'synthetic stock terms'}});await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,ruleKey,'1',JSON.stringify(rule),'2020-01-01 00:00:00',seller.account_id,'EFFECTIVE']);
  const specification={version:'synthetic-v1',stock_license:{scope:'PERSONAL_NONCOMMERCIAL',exclusive:false,territory:'WORLDWIDE',duration:'PERPETUAL',personal_social_sharing:true,acceptance_hours:72,aftercare_terms:'Synthetic: rights or delivery failure requires independent full-refund review.'},terms:'Synthetic only; no commercial rights, no new generated works.'};
  let spec=await trade.createSpec(seller.ctx,{party_id:seller.personal_party_id,previous_spec_id:null,title:'synthetic finished video',provider_party_id:seller.personal_party_id,line_kind:'OTHER',unit_minor:100,currency:'CNY',specification,product_profile:{version:'V5',type:'STOCK_VIDEO'},operation_key:key()});spec=await trade.review(reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'synthetic independent',operation_key:key()});
 
@@ -32,6 +34,6 @@ async function seedStock(db){
  async function checkout(r,u=buyer){return trade.stockCheckout(u.ctx,{party_id:u.personal_party_id,listing_id:r.id,offer_sha256:r.content_sha256,channel:'ALIPAY',operation_key:key()});}
  const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:seller.personal_party_id,config_revision:'test'};
  async function payment(order,u=buyer,apply=true){const p=await trade.preparePayment(u.ctx,{party_id:u.personal_party_id,order_id:order.id,installment_key:'stock',operation_key:key()},config);const proof={...config,payment_id:p.id,currency:'CNY',amount_minor:100,transaction_id:'synthetic.'+p.id,status:'SUCCEEDED',product_id:null,app_account_token:null};if(apply)await trade.applyPayment(proof);return {payment:p,proof};}
- return {publishSales,publication,principals,resolvePrincipal,secret,users,seller,buyer,reviewer,outsider,buyer2,artists,stock,trade,bytes,storageFactory,supply,halo,avatar,consent,spec,file,preview,evidence,ruleId,listingInput,reviewListing,listing,checkout,payment,config,person};
+ return {talentId,talentData,publishSales,publication,principals,resolvePrincipal,secret,users,seller,buyer,reviewer,outsider,buyer2,artists,stock,trade,bytes,storageFactory,supply,halo,avatar,consent,spec,file,preview,evidence,ruleId,listingInput,reviewListing,listing,checkout,payment,config,person};
 }
 module.exports={seedStock};

@@ -1,3 +1,5 @@
+2026-11-02 0.31.17-rc.1补现货资格缺项查询、有效人工认证门槛、逐人核验和历史购买兼容。新客户端资格参数不能降级服务器要求；页面和正式服务另验收。
+
 0.31.16-rc.1新增工作日日历与验收依据，旧小时条款保持；迁移仍0192。详见[合并接法](../docs/collaboration/client-complete-20261028/CONTRACT_CALENDAR_HANDOFF_20261102.md)。新页面必须支持acceptance_hours=null，不可显示0小时。
 
 0.31.15-rc.1新增SCRIPT_BEFORE_INTERIM规格及CUSTOMIZATION_SCRIPT_CONFIRMED付款节点，旧节点含义不变；数据库0192。[接法与发布限制](../docs/collaboration/client-complete-20261028/PAYMENT_CONTRACT_HANDOFF_20261102.md)。

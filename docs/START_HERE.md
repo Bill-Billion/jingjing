@@ -1,3 +1,5 @@
+2026-11-02 当前新增[现货与试镜准入交接](collaboration/client-complete-20261028/STOCK_ADMISSION_HANDOFF_20261102.md)。前端已认领恢复/付款/制作进度，工作日与本批准入新增任务仍待确认。
+
 2026-11-02当前先读[新合同付款与工作日验收合并接法](collaboration/client-complete-20261028/CONTRACT_CALENDAR_HANDOFF_20261102.md)。后端已自测，正式规格、网站切换及前端整链仍待完成。
 
 2026-11-02新合同付款请先读[本批规则与前端接法](collaboration/client-complete-20261028/PAYMENT_CONTRACT_HANDOFF_20261102.md)。新规格付款能力已隔离验证；全站规格切换/工作日/页面整链仍未完成。上批恢复任务用户已转发，前端认领未确认。

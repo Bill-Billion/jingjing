@@ -7,7 +7,7 @@ function methods({db,actor}){return {
  return db.withTransaction(async tx=>{
   const a=await actor(tx,ctx),p=await A.person(tx,id(i.person_id));await A.authorize(tx,a,p,id(i.party_id),'MANAGE_AUDITIONS');require('../artists/policy').adult(p,await A.now(tx));
   const halos=(await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='HALO' AND current_status='APPROVED' FOR SHARE",[p.id]))[0].map(A.checked);
-  if(require('../artists/policy').haloLevel(halos,await A.now(tx))<2)throw error('AUDITION_L2_REQUIRED',409);
+  if(!require('../artists/commerce-admission').manualReviewApproved(halos,await A.now(tx)))throw error('AUDITION_L2_REQUIRED',409);
   const rows=(await tx.execute(i.kind==='RULE'?"SELECT id FROM governance_rules WHERE current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) AND JSON_EXTRACT(content_json,'$.terms.audition') IS NOT NULL AND id>? ORDER BY id LIMIT ?":"SELECT * FROM artist_records WHERE person_id=? AND kind='CONSENT' AND current_status='APPROVED' AND id>? ORDER BY id LIMIT ?",[...(i.kind==='RULE'?[]:[p.id]),i.after||'',limit+1]))[0],items=[];
   for(const raw of rows.slice(0,limit)){
    try{

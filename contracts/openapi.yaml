@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.16-rc.1
+  version: 0.31.17-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -11824,6 +11824,52 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/StockSalesPublicationReviewRequest'
+  /api/v1/stock/seller-eligibility:
+    get:
+      operationId: getStockSellerEligibility
+      summary: 本人或获授权机构查询指定艺人还缺哪些上架资格
+      description: 返回L1及主角光环人工认证缺项；不是媒体权利审核通过或上架许可。新写入仍重新核验。
+      tags:
+      - stock
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: person_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_WITH_ACTIVE_PARTY_MEMBERSHIP
   /api/v1/stock/participant-options:
     get:
       operationId: listStockParticipantOptions
@@ -48675,7 +48721,11 @@ components:
           additionalProperties: false
           properties:
             minimum_halo_level:
-              const: 1
+              type: integer
+              enum:
+              - 1
+              - 2
+              description: 历史记录可能为1；新提交由服务器固定为2，客户端不能降低准入。
             source_ref:
               type: string
               minLength: 1
@@ -48772,7 +48822,11 @@ components:
               additionalProperties: false
               properties:
                 minimum_halo_level:
-                  const: 1
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  description: 历史记录可能为1；新提交由服务器固定为2，客户端不能降低准入。
                 source_ref:
                   type: string
                   minLength: 1
@@ -49253,6 +49307,9 @@ components:
               - type: string
                 format: uuid
               - type: 'null'
+            seller_admission_policy:
+              const: CONTRACT_20261029
+              description: 新购买冻结准入版本；历史购买未提供本字段，不追改历史约定。
           required:
           - status
           - listing_snapshot
@@ -49331,6 +49388,7 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           anyOf:
+          - $ref: '#/components/schemas/StockSellerEligibility'
           - $ref: '#/components/schemas/StockListing'
           - $ref: '#/components/schemas/StockOffer'
           - $ref: '#/components/schemas/StockPurchase'
@@ -60027,3 +60085,42 @@ components:
         - calendar_sha256
         - received_date
         - deadline_date
+
+    StockSellerEligibility:
+      type: object
+      additionalProperties: false
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        seller_party_id:
+          type: string
+          format: uuid
+        policy_version:
+          const: CONTRACT_20261029
+        identity_verified:
+          type: boolean
+        l1_verified:
+          type: boolean
+        manual_review_approved:
+          type: boolean
+        eligible:
+          type: boolean
+        blocking_reasons:
+          type: array
+          maxItems: 3
+          uniqueItems: true
+          items:
+            enum:
+            - ARTIST_IDENTITY_REQUIRED
+            - STOCK_L1_REQUIRED
+            - STOCK_HALO_REVIEW_REQUIRED
+      required:
+      - person_id
+      - seller_party_id
+      - policy_version
+      - identity_verified
+      - l1_verified
+      - manual_review_approved
+      - eligible
+      - blocking_reasons

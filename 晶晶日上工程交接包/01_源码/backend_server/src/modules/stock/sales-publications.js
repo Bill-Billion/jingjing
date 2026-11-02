@@ -71,7 +71,7 @@ function createPublications(db,actor){
   return {items,next_cursor:rows.length>limit?rows[limit-1].id:null};
  });},
  async participantOptions(ctx,i){shape(i,['party_id','person_id','after','limit']);const limit=i.limit??20;if(i.after)id(i.after);if(!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIMIT',400);return run(ctx,async(tx,a)=>{
-  await A.owner(tx,a,id(i.party_id));const p=await A.person(tx,id(i.person_id));await A.authorize(tx,a,p,i.party_id,'SUBMIT_LISTING');const at=await A.now(tx);require('../artists/policy').adult(p,at);
+  await A.owner(tx,a,id(i.party_id));const p=await A.person(tx,id(i.person_id));await A.authorize(tx,a,p,i.party_id,'SUBMIT_LISTING');const at=await A.now(tx);require('../artists/policy').adult(p,at);await require('./context').requireAdmission(tx,p);
   const rows=(await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='CONSENT' AND current_status='APPROVED' AND id>? ORDER BY id LIMIT ?",[p.id,i.after||'',limit+1]))[0],items=[];
   for(const raw of rows.slice(0,limit)){const c=A.checked(raw);if(c.data.grantee_party_id!==i.party_id||!['STOCK_LICENSE','PUBLIC_DISPLAY'].every(x=>c.data.purposes.includes(x))||!c.data.territories.includes('WORLDWIDE')||!require('../artists/policy').active(c.data,at))continue;
    try{const avatar=await A.avatar(tx,c.avatar_id,p);items.push({person_id:p.id,person_name:p.display_name,avatar_id:avatar.id,avatar_name:avatar.data.display_name||p.display_name,consent_id:c.id,seller_party_id:i.party_id,valid_from:c.data.valid_from,valid_until:c.data.valid_until});}catch(e){if(![403,404,409].includes(e.status))throw e;}

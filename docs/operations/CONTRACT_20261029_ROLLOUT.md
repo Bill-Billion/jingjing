@@ -12,3 +12,5 @@
 本说明不授权生产部署、真实付款或收费服务。甲方网站当前未更新，真实服务仍关闭。开关只决定新报价/审批准入，已有订单始终按冻结规则执行；不是全站数据迁移。
 
 独立检查：使用本机隔离MySQL配置运行 backend_server/test/customization-contract-cutover.integration.test.cjs；纯规则运行 test/working-calendar.test.cjs；完整制作运行 test/customization-delivery.integration.test.cjs。具体命令与本批证据见任务记录。
+
+现货准入补充（0.31.17）：本批现货新交易门槛随该版后端生效，不受CUSTOMIZATION_CONTRACT_POLICY开关控制；该开关只管定制报价。应先核对新资格提示与合成认证资料，再更新测试网站。旧已购不重写；新购即使来源是旧商品，也冻结新准入版本。详情见[现货接法](../collaboration/client-complete-20261028/STOCK_ADMISSION_HANDOFF_20261102.md)。

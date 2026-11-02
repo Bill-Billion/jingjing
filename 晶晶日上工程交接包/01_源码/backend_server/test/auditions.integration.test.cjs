@@ -14,6 +14,15 @@ test('audition booking, delivery, privacy and refunds in isolated MySQL',{skip:!
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;},bad=(r,c)=>assert.equal(r.error?.code,c,JSON.stringify(r)),headers=(r,k=key())=>({'Idempotency-Key':k,...(r?{'If-Match':'"'+r.object_version+'"'}:{})});
  const read=(r,u=buyer)=>call('GET','/auditions/records/'+r.id,u),post=(r,action,u,body={},party=u.personal_party_id,k=key())=>call('POST','/auditions/bookings/'+r.id+'/'+action,u,body,party,headers(r,k));
  let offer,booking,order,paid;
+ await t.test('future or expired manual review cannot supply audition options or a new offer',async()=>{
+  const row=(await db.execute('SELECT data_json FROM artist_records WHERE id=?',[S.haloId]))[0][0];const original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;
+  for(const patch of [{valid_from:'2098-01-01T00:00:00.000Z'},{valid_until:'2020-02-01T00:00:00.000Z'}]){
+   const data={...original,...patch};await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),S.haloId]);
+   bad(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=RULE',seller),'AUDITION_L2_REQUIRED');
+   bad(await call('POST','/auditions/offers',seller,{offer:S.offer},seller.personal_party_id,headers()),'AUDITION_L2_REQUIRED');
+  }
+  await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(original),digest(original),S.haloId]);
+ });
  await t.test('first offer reads qualified rules and minimal authorizations with no prior offer',async()=>{
   assert.equal(ok(await call('GET','/auditions/records?kind=OFFER',seller)).items.length,0);
   const rules=ok(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=RULE',seller));assert.equal(rules.items[0].id,S.ruleId);assert(!JSON.stringify(rules).includes('marketplace_finance'));
