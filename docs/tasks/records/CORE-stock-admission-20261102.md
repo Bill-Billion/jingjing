@@ -27,3 +27,9 @@
 ## 独立复验
 
 仓库根目录设置JX_MYSQL_TEST_ENV_FILE指向既有本机隔离配置；不得使用生产连接。执行backend_server/scripts/run-tests.cjs，媒体检查另需JX_TEST_FFMPEG、JX_TEST_FFPROBE、JX_TEST_FONT。仅本批可运行test/commerce-admission.test.cjs、stock.integration.test.cjs、auditions.integration.test.cjs、auditions-supplements.integration.test.cjs和artists.integration.test.cjs，并预加载scripts/test-network-guard.cjs。两个HTTP响应文件由测试生成，再用scripts/validate_contract.py核对；复验命令和路径均以本仓库为准，不要求队友复用本机J盘。
+
+## 新前端组合复验
+
+2026-11-02组合复验更新：后端f8d4054c现货准入与最新前端2af0df51组合为c863cdec。前端恢复、人工视频新付款及5工作日页面已实际交付；本机网页497项和构建、App相关105项、恢复/人工视频各5项真实浏览器流程通过，合成测试库及凭据已清理。后端本批1103通过/1项缺旧库样本跳过在合并前完成，前端没有修改后端业务；未冒称组合后整套后端重跑。现货资格提示仍为新增前端任务，尚未认领，不重复分配已完成的恢复/付款/工作日。接口0.31.17-rc.1／0192，完整151条、原生App整链仍待验，未合入integration或更新甲方网站。证据见docs/testing/evidence/stock-admission-20261102/README.md，上传回执后补。
+
+恢复、付款及5工作日已收到2af0df51并复测，替代前文当时“待收到”的状态。新增现货提示仍待前端接入。
