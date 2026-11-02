@@ -684,6 +684,14 @@ class _TradeDetailState extends State<_TradeDetail> {
     final fullyCovered = r.quote['discount']?['coverage'] == 'FULL' &&
         r.quote['total_minor'] == 0;
     return [
+      if (r.isBuyer(api.owner()))
+        tradeButton(
+            '按本订单申请开票',
+            locked
+                ? null
+                : () =>
+                    Navigator.pushNamed(context, '/invoices?orderId=${r.id}'),
+            outline: true),
       tradeSection('订单 ${shortSupplyId(r.id)}', [
         tradeStatus(r),
         appNotice(fullyCovered

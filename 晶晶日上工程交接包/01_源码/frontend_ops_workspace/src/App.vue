@@ -10,7 +10,15 @@ import '@/styles/editorial.css'
 import { useSessionStore } from '@/stores/session'
 const session = useSessionStore()
 const router = useRouter()
-watch(() => session.token, token => { if (!token && !router.currentRoute.value.meta.public) void router.replace('/login') })
+watch(() => session.token, token => {
+  if (!token && !router.currentRoute.value.meta.public) {
+    const recovery = session.loginRecovery
+    session.loginRecovery = null
+    void router.replace(recovery === 'PHONE_CHANGE_CONFIRMATION'
+      ? { path: '/login', query: { redirect: '/me/phone-change', phoneChange: 'uncertain' } }
+      : '/login')
+  }
+})
 </script>
 
 <template>

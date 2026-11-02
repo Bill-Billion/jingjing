@@ -20,6 +20,7 @@ String loginDestination(String? value) {
 const _readAndFormRoutes = <String>{
   '/',
   '/account',
+  '/account/phone-change',
   '/after-sales',
   '/agreement',
   '/ai-create',

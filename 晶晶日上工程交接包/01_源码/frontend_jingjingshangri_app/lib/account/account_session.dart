@@ -21,6 +21,8 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  int _loginEpoch = 0;
+  int get loginEpoch => _loginEpoch;
   int? _restReminderMinutes;
   int? get restReminderMinutes => _restReminderMinutes;
   final _domainDenials = <String>{};
@@ -294,6 +296,8 @@ class AccountSession extends ChangeNotifier {
   }
 
   void _clear() {
+    _loginEpoch++;
+    api.clearAccountOperations();
     api.clearSupplyOperations();
     _domainDenials.clear();
     artistsAccessDenied = false;
@@ -322,6 +326,13 @@ class AccountSession extends ChangeNotifier {
     if (started != _epoch) throw const AccountError(0, 'CONTEXT_CHANGED');
   }
 
+  /// The server has already revoked every session after a phone change.
+  void requirePhoneRelogin() {
+    _clear();
+    authNotice = '换号结果请用新手机号重新登录后核对。原账号及其业务保留。';
+    notifyListeners();
+  }
+
   bool _publicDirectoryMissing(String path, AccountError error) =>
       error.status == 404 &&
       ['DIRECTORY_NOT_FOUND', 'DIRECTORY_COVER_NOT_FOUND']
@@ -341,6 +352,13 @@ class AccountSession extends ChangeNotifier {
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
+    final loginStarted = _loginEpoch;
+    final phoneChange = path.startsWith('/api/v1/me/phone-changes');
+    bool current() =>
+        phoneChange ? loginStarted == _loginEpoch : started == _epoch;
+    if (phoneChange && actingParty != null) {
+      throw const AccountError(400, 'ACTING_PARTY_NOT_ALLOWED');
+    }
     if (_token == null) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
@@ -358,7 +376,7 @@ class AccountSession extends ChangeNotifier {
                   if (started == _epoch) onSendProgress(sent, total);
                 },
           validate: validate);
-      _check(started);
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (path == '/api/v1/privacy/preferences' &&
           ['GET', 'PATCH'].contains(method)) {
         final minutes = result['rest_reminder_minutes'];
@@ -440,7 +458,9 @@ class AccountSession extends ChangeNotifier {
           started == _epoch) {
         denyLicensing();
       }
-      if (error.status == 401 && started == _epoch) {
+      if (error.status == 401 &&
+          current() &&
+          !(phoneChange && error.code == 'INVALID_PHONE_CHANGE_CODE')) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
         notifyListeners();

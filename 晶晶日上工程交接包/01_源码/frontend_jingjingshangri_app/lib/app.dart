@@ -4,6 +4,7 @@ import 'account/rest_reminder.dart';
 import 'artists/artists_pages.dart';
 import 'artists/artists_forms.dart';
 import 'account/account_page.dart';
+import 'account/phone_change.dart';
 import 'contracts/contract_page.dart';
 import 'supply/supply_page.dart';
 import 'supply/supply_form.dart';
@@ -95,6 +96,7 @@ class JingjingShangriApp extends StatelessWidget {
               '/login' =>
                 LoginPage(returnRoute: uri.queryParameters['returnRoute']),
               '/account' => const AccountPage(),
+              '/account/phone-change' => const PhoneChangePage(),
               '/contract' => ContractPage(
                   snapshotId: uri.queryParameters['snapshotId'] ??
                       (args is Map && args['snapshotId'] is String
@@ -135,8 +137,9 @@ class JingjingShangriApp extends StatelessWidget {
                   partyId: uri.queryParameters['partyId'] ?? ''),
               '/artists/public' => PublicArtistPage(
                   listingId: uri.queryParameters['listingId'] ?? ''),
-              '/invoices' =>
-                InvoicePage(orderId: uri.queryParameters['orderId']),
+              '/invoices' => InvoicePage(
+                  orderId: uri.queryParameters['orderId'],
+                  invoiceId: uri.queryParameters['invoiceId']),
               '/producers/public' => PublicProducerPage(
                   partyId: uri.queryParameters['partyId'] ?? '',
                   city: uri.queryParameters['city'] ?? ''),
