@@ -43,4 +43,6 @@ function distribution(config){
 }
 // Decimal strings make published calculations stable across MySQL JSON double serialization.
 function publishedDistribution(config){const d=distribution(config);return {...d,forced_tenth_branch_probability:d.forced_tenth_branch_probability.toFixed(15),independent_ten_miss_probability:d.independent_ten_miss_probability.toFixed(15),expected_single_cost_minor:d.expected_single_cost_minor.toFixed(8),expected_ten_cost_minor:d.expected_ten_cost_minor.toFixed(8),prizes:d.prizes.map(p=>({...p,...Object.fromEntries(['single_probability','forced_tenth_probability','tenth_probability','expected_count_per_ten','average_probability_per_ten_slot'].map(k=>[k,p[k].toFixed(15)]))}))};}
-module.exports={pool,draw,distribution,publishedDistribution};
+function publicationNotice(now,endsAt){require('../trade/policy').instant(now);require('../trade/policy').instant(endsAt);const opens_at=new Date(Date.parse(now)+7*86400000).toISOString();if(endsAt<=opens_at)throw error('LOTTERY_NOTICE_EXCEEDS_PERIOD',409);return {version:'CONTRACT_20261029_SEVEN_DAYS',published_at:now,opens_at,days:7};}
+function rulesHash(data){const {digest}=require('../governance/content');return digest({config:data.config,bindings:data.bindings,distribution:data.distribution,starts_at:data.starts_at,ends_at:data.ends_at,terms:data.terms,prize_promises:data.prize_promises,...(data.publication_notice?{publication_notice:data.publication_notice}:{})});}
+module.exports={pool,draw,distribution,publishedDistribution,publicationNotice,rulesHash};

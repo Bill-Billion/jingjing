@@ -1,6 +1,6 @@
 {
   "baseline_id": "JX-R06-EXECUTION-BASELINE-20260921",
-  "updated_on": "2026-11-02",
+  "updated_on": "2026-11-03",
   "source_commit": "eba5daedf71016b5c05661498a89fba57a4b21ed",
   "status_semantics": "DONE须有证据；CLAIMED只是唯一认领，不代表开始或完成；PLANNED只表达建议依赖。后续细化可拆task但不漏REQ。",
   "dependency_semantics": "dependencies列出整项工作最终验收前必须完成的成果，不是开工顺序；可先设计、约定接口、准备隔离资料及检查已可用路线。第17组最终验收须前16组服务器与页面成果齐备，不能以部分路线通过提前完成。",
@@ -6139,6 +6139,40 @@
       "updated_on": "2026-11-02",
       "implementation": "COMPLETE",
       "implementation_scope": "本批后端与所列组合检查；不是原18组整体验收"
+    },
+    {
+      "id": "CORE-CONSUMER-CONTROLS-20261103",
+      "title": "本人限额、付款取消与奖池公示",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/CORE-consumer-controls-20261103.md",
+        "docs/collaboration/client-complete-20261028/CONSUMER_CONTROLS_HANDOFF_20261103.md",
+        "docs/testing/evidence/consumer-controls-20261103/RESULTS.md"
+      ],
+      "acceptance": "本人双额度和冷静期、实际付款/充值并发限制、取消预留释放及奖池公示有隔离证据；页面与正式启用另记。",
+      "shared_boundaries": [
+        "OpenAPI",
+        "payments/refunds",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/testing/evidence/consumer-controls-20261103/RESULTS.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-03",
+      "implementation": "COMPLETE",
+      "implementation_scope": "本批后端与所列组合检查；不是原18组整体验收"
     }
   ],
   "delivery_policy": {
@@ -6157,7 +6191,7 @@
       "guide": "docs/collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md",
       "base_commit": "468df28a",
       "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
-      "current_increment": "每日五类钱账与尾差后端、最新版权商用组合复验、151条证据队列及剩余分工"
+      "current_increment": "本人额度/冷静期、付款取消余额修复、奖池七日公示与完整验收准备"
     },
     "note": "原阶段历史在delivery_policy_before_contract_gaps_20261102保留；阶段集中交付，不逐任务建申请、不强推或自动部署。"
   },
@@ -12647,6 +12681,31 @@
       "failed": 0,
       "frontend_action": "Web trade.ts/finance.ts和App trade_models.dart允许两个已知尾差枚举；正式切换前完成",
       "business_code_changed": false
+    }
+  },
+  "consumer_controls_20261103": {
+    "record": "docs/tasks/records/CORE-consumer-controls-20261103.md",
+    "handoff": "docs/collaboration/client-complete-20261028/CONSUMER_CONTROLS_HANDOFF_20261103.md",
+    "original_groups": [
+      11,
+      14,
+      16,
+      17
+    ],
+    "backend_owner": "chengcongcong222",
+    "frontend_owner": "Bill-Billion",
+    "implementation": "IMPLEMENTED_ISOLATED_VERIFIED",
+    "frontend_status": "NOT_CONFIRMED_CLAIMED",
+    "contract_version": "0.31.24-rc.1",
+    "migration": "0206",
+    "formal_acceptance_pass": 0,
+    "merged": false,
+    "deployed": false,
+    "real_services": false,
+    "backend_full": {
+      "pass": 1234,
+      "fail": 0,
+      "skip": 1
     }
   }
 }

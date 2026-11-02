@@ -21,11 +21,21 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
   const create=(stock,prizes=[{key:'free',kind:'PRODUCTION_FREE',weight:10000,estimated_cost_minor:50000}])=>request('/redemption/pools',producer,{body:{config:config(prizes),bindings:prizes.map(p=>({key:p.key,stock_id:p.key==='free'?stock.id:null,point_back:p.kind==='POINT_BACK'?10:0})),starts_at:'2020-01-01T00:00:00.000Z',ends_at:'2099-01-01T00:00:00.000Z',terms:'synthetic; actual finite prizes; ten draw conditional guarantee',cost_limit_single_minor:50000,cost_limit_ten_minor:500000,evidence_asset_ids:[evidence.id]}});
   const review=(pool,who,channel)=>request('/redemption/pools/'+pool.id+'/review',who,{party:false,version:pool.object_version,body:{channel,decision:'APPROVE',reason:'synthetic independent',evidence_asset_id:evidence.id}});
   const draw=(pool,count=10,operation=key(),who=buyer)=>request('/redemption/draws',who,{operation,body:{pool_id:pool.id,rules_sha256:pool.data.rules_sha256,count}});
+  // Advance only this isolated fixture's publication timestamps. Production has no bypass/clock override.
+  async function ageNotice(p){const data=structuredClone(p.data),published=new Date(Date.now()-8*86400000).toISOString();data.publication_notice=require('../src/modules/redemption/lottery-policy').publicationNotice(published,data.ends_at);data.rules_sha256=require('../src/modules/redemption/lottery-policy').rulesHash(data);const content_sha256=digest(data);await db.execute('UPDATE redemption_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),content_sha256,p.id]);return {...p,data,content_sha256};}
   let pool,stock;
   await t.test('creator cannot approve; rules and finance require separate reviewers; unpublished draw denied',async()=>{
    stock=await freeStock();pool=await create(stock);await assert.rejects(draw(pool),{code:'LOTTERY_NOT_OPEN'});await assert.rejects(review(pool,producer,'RULES'),{code:'SELF_REVIEW_FORBIDDEN'});
    pool=await review(pool,reviewer,'RULES');await assert.rejects(review(pool,reviewer,'FINANCE'),{code:'INDEPENDENT_FINANCE_REVIEW_REQUIRED'});pool=await review(pool,outsider,'FINANCE');assert.equal(pool.current_status,'PUBLISHED');assert.equal(pool.data.prize_promises[0].template.production.face_minor,50000);
    const visible=await request('/redemption/pools/'+pool.id,buyer,{party:false});assert.equal(visible.distribution.prizes[0].single_probability,'1.000000000000000');assert.equal(visible.reviews,undefined);assert.equal(visible.evidence_asset_ids,undefined);
+  });
+  await t.test('newly reviewed pools publish seven-day notice before drawing; no points or stock deducted',async()=>{
+   const before=await request('/wallet/summary',buyer);assert.equal(pool.data.publication_notice.days,7);
+   const visible=await request('/redemption/pools/'+pool.id,buyer,{party:false});assert.deepEqual(visible.publication_notice,pool.data.publication_notice);
+   await assert.rejects(draw(pool),{code:'LOTTERY_NOTICE_PERIOD'});assert.equal((await request('/wallet/summary',buyer)).available_points,before.available_points);
+   assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM redemption_records WHERE kind='DRAW' AND parent_id=?",[pool.id]))[0][0].n),0);
+   const original=pool.data.rules_sha256;pool=await ageNotice(pool);assert.notEqual(pool.data.rules_sha256,original);
+   await assert.rejects(draw({...pool,data:{...pool.data,rules_sha256:original}}),{code:'LOTTERY_NOT_OPEN'});
   });
   await t.test('reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected',async()=>{
    async function evidenceRead(who,asset=evidence.id){return fetch(base+'/redemption/records/'+pool.id+'/evidence/'+asset,{headers:{Authorization:'Bearer '+who.token}});}
@@ -42,7 +52,7 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
    await assert.rejects(request('/redemption/draws/'+a.id,outsider),{code:'REDEMPTION_NOT_FOUND'});const mine=await request('/redemption/draws',buyer);assert.equal(mine.items.length,2);
   });
   await t.test('insufficient points rolls back draw, stock and command; retired version preserves old results',async()=>{
-   stock=await freeStock();let p=await create(stock);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');
+   stock=await freeStock();let p=await create(stock);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);
    const poor=await S.registerActor('synthetic insufficient');await S.actorCast(poor);await W.open(poor.ctx,{party_id:poor.personal_party_id,rule_id:wr.id,rule_sha256:wr.content_sha256,operation_key:key()});
    // Consume seeded test points through the normal points service, leaving 100.
    const use=require('../src/modules/wallet/points').createPointsService(db,{resolveUse:async()=>({party_id:poor.personal_party_id,purpose:'REDEMPTION',reference:'synthetic:spend',points:99900})});const held=await use.reserve(poor.ctx,{reference:'synthetic:spend'});await use.finish(poor.ctx,{hold_id:held.id,decision:'COMMIT'});
@@ -51,7 +61,7 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
    pool=await request('/redemption/pools/'+pool.id+'/retirement',reviewer,{party:false,version:pool.object_version,body:{reason:'synthetic retire'}});await assert.rejects(draw(pool),{code:'LOTTERY_NOT_OPEN'});assert.equal((await request('/redemption/draws',buyer)).items.length,2);
   });
   await t.test('ten guarantee survives mostly no-win pool and records actual conditional draws',async()=>{
-   stock=await freeStock(100);let p=await create(stock,[{key:'free',kind:'PRODUCTION_FREE',weight:1,estimated_cost_minor:50000},{key:'points',kind:'POINT_BACK',weight:4999,estimated_cost_minor:0},{key:'none',kind:'NONE',weight:5000,estimated_cost_minor:0}]);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');const d=await draw(p);assert.ok(d.data.results.some(x=>x.kind==='PRODUCTION_FREE'));assert.equal(d.data.rule_snapshot.rules_sha256,p.data.rules_sha256);assert.equal(d.data.results.length,10);const earnings=(await request('/wallet/records?kind=EARNING',buyer)).items;assert.equal(earnings.filter(x=>x.data.event_kind==='REWARD').length,d.data.results.filter(x=>x.point_earning_id).length);await request('/wallet/summary',buyer);
+   stock=await freeStock(100);let p=await create(stock,[{key:'free',kind:'PRODUCTION_FREE',weight:1,estimated_cost_minor:50000},{key:'points',kind:'POINT_BACK',weight:4999,estimated_cost_minor:0},{key:'none',kind:'NONE',weight:5000,estimated_cost_minor:0}]);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);const d=await draw(p);assert.ok(d.data.results.some(x=>x.kind==='PRODUCTION_FREE'));assert.equal(d.data.rule_snapshot.rules_sha256,p.data.rules_sha256);assert.equal(d.data.results.length,10);const earnings=(await request('/wallet/records?kind=EARNING',buyer)).items;assert.equal(earnings.filter(x=>x.data.event_kind==='REWARD').length,d.data.results.filter(x=>x.point_earning_id).length);await request('/wallet/summary',buyer);
   });
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/redemption-lottery-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}

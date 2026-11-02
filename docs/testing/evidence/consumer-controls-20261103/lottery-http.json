@@ -1,0 +1,4424 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "2db6657e-eea6-4b4f-a522-b525aa8c3c2a",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": "b3580ae0-664d-488f-81ff-0ff518eab3aa"
+        },
+        "data": {
+          "id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+          "kind": "STOCK",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "cf323cb1720fd661ac4dcfe2faceb5b526287a1873d9ab5242f0377fe3c7dd62",
+          "data": {
+            "template": {
+              "version": "synthetic-free",
+              "source_ref": "synthetic-only",
+              "title": "synthetic reviewed film",
+              "kind": "PRODUCTION_FREE",
+              "valid_days": 30,
+              "exchange_points": null,
+              "capacity": 20,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "terms": "exact reviewed film, consume on start",
+              "production": {
+                "face_minor": 50000,
+                "minimum_minor": 50000,
+                "spec_ids": [
+                  "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                ]
+              },
+              "interview": null,
+              "exposure": null
+            },
+            "evidence_asset_ids": [
+              "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+            ],
+            "issued": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/5c48beb8-06cf-45e0-b7cc-1a126362a786/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "c35a7bd7-b303-41b3-a544-d92665495f26",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+          "kind": "STOCK",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "c9e11184cfa48340bd6de5e2fbf0814bfb1aaf056aef6110c252a527e93a446d",
+          "data": {
+            "issued": 0,
+            "template": {
+              "kind": "PRODUCTION_FREE",
+              "terms": "exact reviewed film, consume on start",
+              "title": "synthetic reviewed film",
+              "version": "synthetic-free",
+              "capacity": 20,
+              "exposure": null,
+              "interview": null,
+              "production": {
+                "spec_ids": [
+                  "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                ],
+                "face_minor": 50000,
+                "minimum_minor": 50000
+              },
+              "source_ref": "synthetic-only",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": null
+            },
+            "evidence_asset_ids": [
+              "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+            ],
+            "review": {
+              "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+              "reason": "synthetic stock"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "40d369ef-930a-48bd-a060-d064847cb060",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": "b3580ae0-664d-488f-81ff-0ff518eab3aa"
+        },
+        "data": {
+          "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "fed72cf196af625a244f5984d4db7c6b2c1ecb472ea3be494db2bf4eb9264390",
+          "data": {
+            "config": {
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "single_points": 300,
+              "ten_points": 2700,
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ]
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                "point_back": 0
+              }
+            ],
+            "distribution": {
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000",
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000,
+                  "single_probability": "1.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "tenth_probability": "1.000000000000000",
+                  "expected_count_per_ten": "10.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "expected_single_cost_minor": "50000.00000000",
+              "expected_ten_cost_minor": "500000.00000000"
+            },
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "cost_limit_single_minor": 50000,
+            "cost_limit_ten_minor": 500000,
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "rules_sha256": null,
+            "prize_promises": [],
+            "reviews": {}
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "6c32896d-e4d6-4549-9b57-1eb540ee9a0b",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "LOTTERY_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "f01fab2e-07cb-42aa-b054-29141f05ae9b",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "fa02d924-5953-48f4-89e8-7ebb83ab3b29",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 2,
+          "content_sha256": "a64be3c3be8c704187179921a4f62b259d8a281c2e3589e364c27e4d68808928",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "decision": "APPROVE",
+                "reason": "synthetic independent",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "tenth_probability": "1.000000000000000",
+                  "single_probability": "1.000000000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "10.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "500000.00000000",
+              "expected_single_cost_minor": "50000.00000000",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000"
+            },
+            "rules_sha256": null,
+            "prize_promises": [],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "4bf240d1-b3ad-4e72-b253-8ea190870684",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "INDEPENDENT_FINANCE_REVIEW_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "27f6c8c7-1c0a-4c24-9d4e-030332040213",
+          "actor": {
+            "account_id": "39096958-ff50-4fe1-859f-6b60e694302c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "PUBLISHED",
+          "object_version": 3,
+          "content_sha256": "61e7b7784721a85cb21dbbe63489088ca9a65dd3916f950ece0d6156b430edd0",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "reason": "synthetic independent",
+                "decision": "APPROVE",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              },
+              "FINANCE": {
+                "by": "39096958-ff50-4fe1-859f-6b60e694302c",
+                "decision": "APPROVE",
+                "reason": "synthetic independent",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "tenth_probability": "1.000000000000000",
+                  "single_probability": "1.000000000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "10.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "500000.00000000",
+              "expected_single_cost_minor": "50000.00000000",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000"
+            },
+            "rules_sha256": "5b50fc4bd580e4e8ac8b32dbc9281b9ce8ce4eb4ab3bca012a54beeaf24c08bc",
+            "prize_promises": [
+              {
+                "key": "free",
+                "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                "template": {
+                  "kind": "PRODUCTION_FREE",
+                  "terms": "exact reviewed film, consume on start",
+                  "title": "synthetic reviewed film",
+                  "version": "synthetic-free",
+                  "capacity": 20,
+                  "exposure": null,
+                  "interview": null,
+                  "production": {
+                    "spec_ids": [
+                      "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                    ],
+                    "face_minor": 50000,
+                    "minimum_minor": 50000
+                  },
+                  "source_ref": "synthetic-only",
+                  "valid_days": 30,
+                  "available_until": "2099-01-01T00:00:00.000Z",
+                  "exchange_points": null
+                }
+              }
+            ],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000,
+            "publication_notice": {
+              "version": "CONTRACT_20261029_SEVEN_DAYS",
+              "published_at": "2026-11-02T17:43:09.904Z",
+              "opens_at": "2026-11-09T17:43:09.904Z",
+              "days": 7
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "b80bdc19-37c0-4ee6-8df7-9fcfae37832f",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "object_version": 3,
+          "current_status": "PUBLISHED",
+          "config": {
+            "prizes": [
+              {
+                "key": "free",
+                "kind": "PRODUCTION_FREE",
+                "weight": 10000,
+                "estimated_cost_minor": 50000
+              }
+            ],
+            "version": "synthetic lottery v1",
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+            "ten_points": 2700,
+            "single_points": 300
+          },
+          "distribution": {
+            "prizes": [
+              {
+                "key": "free",
+                "kind": "PRODUCTION_FREE",
+                "weight": 10000,
+                "tenth_probability": "1.000000000000000",
+                "single_probability": "1.000000000000000",
+                "estimated_cost_minor": 50000,
+                "expected_count_per_ten": "10.000000000000000",
+                "forced_tenth_probability": "1.000000000000000",
+                "average_probability_per_ten_slot": "1.000000000000000"
+              }
+            ],
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+            "expected_ten_cost_minor": "500000.00000000",
+            "expected_single_cost_minor": "50000.00000000",
+            "forced_tenth_branch_probability": "0.000000000000000",
+            "independent_ten_miss_probability": "0.000000000000000"
+          },
+          "bindings": [
+            {
+              "key": "free",
+              "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+              "point_back": 0
+            }
+          ],
+          "starts_at": "2020-01-01T00:00:00.000Z",
+          "ends_at": "2099-01-01T00:00:00.000Z",
+          "rules_sha256": "5b50fc4bd580e4e8ac8b32dbc9281b9ce8ce4eb4ab3bca012a54beeaf24c08bc",
+          "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+          "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+          "prize_promises": [
+            {
+              "key": "free",
+              "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+              "template": {
+                "kind": "PRODUCTION_FREE",
+                "terms": "exact reviewed film, consume on start",
+                "title": "synthetic reviewed film",
+                "version": "synthetic-free",
+                "capacity": 20,
+                "exposure": null,
+                "interview": null,
+                "production": {
+                  "spec_ids": [
+                    "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                  ],
+                  "face_minor": 50000,
+                  "minimum_minor": 50000
+                },
+                "source_ref": "synthetic-only",
+                "valid_days": 30,
+                "available_until": "2099-01-01T00:00:00.000Z",
+                "exchange_points": null
+              }
+            }
+          ],
+          "publication_notice": {
+            "days": 7,
+            "version": "CONTRACT_20261029_SEVEN_DAYS",
+            "opens_at": "2026-11-09T17:43:09.904Z",
+            "published_at": "2026-11-02T17:43:09.904Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "22fe8123-c96f-457b-84d4-2e4e5633b073",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "account_id": "bd39e0f8-6ec9-44fd-806c-0b012d57edbc",
+          "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 100000,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 100000,
+            "withdrawn": 0,
+            "net_issued": 100000
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "6bb27533-065a-4ca2-a06e-da4760aa3918",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "object_version": 3,
+          "current_status": "PUBLISHED",
+          "config": {
+            "prizes": [
+              {
+                "key": "free",
+                "kind": "PRODUCTION_FREE",
+                "weight": 10000,
+                "estimated_cost_minor": 50000
+              }
+            ],
+            "version": "synthetic lottery v1",
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+            "ten_points": 2700,
+            "single_points": 300
+          },
+          "distribution": {
+            "prizes": [
+              {
+                "key": "free",
+                "kind": "PRODUCTION_FREE",
+                "weight": 10000,
+                "tenth_probability": "1.000000000000000",
+                "single_probability": "1.000000000000000",
+                "estimated_cost_minor": 50000,
+                "expected_count_per_ten": "10.000000000000000",
+                "forced_tenth_probability": "1.000000000000000",
+                "average_probability_per_ten_slot": "1.000000000000000"
+              }
+            ],
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+            "expected_ten_cost_minor": "500000.00000000",
+            "expected_single_cost_minor": "50000.00000000",
+            "forced_tenth_branch_probability": "0.000000000000000",
+            "independent_ten_miss_probability": "0.000000000000000"
+          },
+          "bindings": [
+            {
+              "key": "free",
+              "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+              "point_back": 0
+            }
+          ],
+          "starts_at": "2020-01-01T00:00:00.000Z",
+          "ends_at": "2099-01-01T00:00:00.000Z",
+          "rules_sha256": "5b50fc4bd580e4e8ac8b32dbc9281b9ce8ce4eb4ab3bca012a54beeaf24c08bc",
+          "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+          "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+          "prize_promises": [
+            {
+              "key": "free",
+              "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+              "template": {
+                "kind": "PRODUCTION_FREE",
+                "terms": "exact reviewed film, consume on start",
+                "title": "synthetic reviewed film",
+                "version": "synthetic-free",
+                "capacity": 20,
+                "exposure": null,
+                "interview": null,
+                "production": {
+                  "spec_ids": [
+                    "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                  ],
+                  "face_minor": 50000,
+                  "minimum_minor": 50000
+                },
+                "source_ref": "synthetic-only",
+                "valid_days": 30,
+                "available_until": "2099-01-01T00:00:00.000Z",
+                "exchange_points": null
+              }
+            }
+          ],
+          "publication_notice": {
+            "days": 7,
+            "version": "CONTRACT_20261029_SEVEN_DAYS",
+            "opens_at": "2026-11-09T17:43:09.904Z",
+            "published_at": "2026-11-02T17:43:09.904Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "3f941822-6740-444e-8368-28ef50225b2c",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "LOTTERY_NOTICE_PERIOD",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "a544aa67-3c66-4c6f-80aa-5f3bec87844f",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "account_id": "bd39e0f8-6ec9-44fd-806c-0b012d57edbc",
+          "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 100000,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 100000,
+            "withdrawn": 0,
+            "net_issued": 100000
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "4c6b089f-8945-4191-8777-236f3f89cb3f",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "LOTTERY_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "1b5ba658-e389-486f-9b6e-cb95887436b5",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "id": "7b733586-4a7b-4a7d-a0aa-ca0e2dc8d9b1",
+          "kind": "DRAW",
+          "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+          "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+          "current_status": "SETTLED",
+          "object_version": 2,
+          "content_sha256": "201e94d3dcf7eb82ea394e11e22bc0eeb6baa1357b9e685f3be2d1fc30ab6985",
+          "data": {
+            "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+            "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+            "rule_snapshot": {
+              "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "object_version": 3,
+              "current_status": "PUBLISHED",
+              "config": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 10000,
+                    "estimated_cost_minor": 50000
+                  }
+                ],
+                "version": "synthetic lottery v1",
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "ten_points": 2700,
+                "single_points": 300
+              },
+              "distribution": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 10000,
+                    "tenth_probability": "1.000000000000000",
+                    "single_probability": "1.000000000000000",
+                    "estimated_cost_minor": 50000,
+                    "expected_count_per_ten": "10.000000000000000",
+                    "forced_tenth_probability": "1.000000000000000",
+                    "average_probability_per_ten_slot": "1.000000000000000"
+                  }
+                ],
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "expected_ten_cost_minor": "500000.00000000",
+                "expected_single_cost_minor": "50000.00000000",
+                "forced_tenth_branch_probability": "0.000000000000000",
+                "independent_ten_miss_probability": "0.000000000000000"
+              },
+              "bindings": [
+                {
+                  "key": "free",
+                  "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                  "point_back": 0
+                }
+              ],
+              "starts_at": "2020-01-01T00:00:00.000Z",
+              "ends_at": "2099-01-01T00:00:00.000Z",
+              "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+              "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+              "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+              "prize_promises": [
+                {
+                  "key": "free",
+                  "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                  "template": {
+                    "kind": "PRODUCTION_FREE",
+                    "terms": "exact reviewed film, consume on start",
+                    "title": "synthetic reviewed film",
+                    "version": "synthetic-free",
+                    "capacity": 20,
+                    "exposure": null,
+                    "interview": null,
+                    "production": {
+                      "spec_ids": [
+                        "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                      ],
+                      "face_minor": 50000,
+                      "minimum_minor": 50000
+                    },
+                    "source_ref": "synthetic-only",
+                    "valid_days": 30,
+                    "available_until": "2099-01-01T00:00:00.000Z",
+                    "exchange_points": null
+                  }
+                }
+              ],
+              "publication_notice": {
+                "days": 7,
+                "version": "CONTRACT_20261029_SEVEN_DAYS",
+                "opens_at": "2026-11-01T17:43:09.979Z",
+                "published_at": "2026-10-25T17:43:09.979Z"
+              }
+            },
+            "at": "2026-11-02T17:43:10.096Z",
+            "count": 10,
+            "points": 2700,
+            "hold_id": "dd0e80cc-cb32-41f6-91dc-bf5b48e30d9e",
+            "results": [
+              {
+                "key": "free",
+                "ticket": 5573,
+                "total": 10000,
+                "index": 0,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "cd5edab8-e853-48d4-b73b-8ae84d98914c",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 8491,
+                "total": 10000,
+                "index": 1,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "c5d93e9f-e557-4196-be83-3305f636a3f1",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 7978,
+                "total": 10000,
+                "index": 2,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "464f3ed6-f322-4535-b845-91cf837eb629",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 3477,
+                "total": 10000,
+                "index": 3,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "3ced7a0c-e766-426c-b331-76aa10b3401a",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6414,
+                "total": 10000,
+                "index": 4,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "be4816d3-97c5-4952-978e-5ddcbcd8db57",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6325,
+                "total": 10000,
+                "index": 5,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "e2454788-e94f-4d6f-ba49-a23bf06df8eb",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 3755,
+                "total": 10000,
+                "index": 6,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "f2f4bec9-44a4-4596-ab62-48d7b8a43e06",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 3308,
+                "total": 10000,
+                "index": 7,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "834f7cce-d49b-444b-9fc7-34f902ecee7c",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 9442,
+                "total": 10000,
+                "index": 8,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "53bf400f-bd71-4f47-939f-4b17ade75e3a",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6148,
+                "total": 10000,
+                "index": 9,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "ce8a045c-cc58-48a9-9501-24391bbaa483",
+                "point_earning_id": null,
+                "point_back": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "3c2bc1d5-9cc2-48f0-9fd0-281ef1aa0d3c",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "id": "7b733586-4a7b-4a7d-a0aa-ca0e2dc8d9b1",
+          "kind": "DRAW",
+          "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+          "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+          "current_status": "SETTLED",
+          "object_version": 2,
+          "content_sha256": "201e94d3dcf7eb82ea394e11e22bc0eeb6baa1357b9e685f3be2d1fc30ab6985",
+          "data": {
+            "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+            "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+            "rule_snapshot": {
+              "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "object_version": 3,
+              "current_status": "PUBLISHED",
+              "config": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 10000,
+                    "estimated_cost_minor": 50000
+                  }
+                ],
+                "version": "synthetic lottery v1",
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "ten_points": 2700,
+                "single_points": 300
+              },
+              "distribution": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 10000,
+                    "tenth_probability": "1.000000000000000",
+                    "single_probability": "1.000000000000000",
+                    "estimated_cost_minor": 50000,
+                    "expected_count_per_ten": "10.000000000000000",
+                    "forced_tenth_probability": "1.000000000000000",
+                    "average_probability_per_ten_slot": "1.000000000000000"
+                  }
+                ],
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "expected_ten_cost_minor": "500000.00000000",
+                "expected_single_cost_minor": "50000.00000000",
+                "forced_tenth_branch_probability": "0.000000000000000",
+                "independent_ten_miss_probability": "0.000000000000000"
+              },
+              "bindings": [
+                {
+                  "key": "free",
+                  "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                  "point_back": 0
+                }
+              ],
+              "starts_at": "2020-01-01T00:00:00.000Z",
+              "ends_at": "2099-01-01T00:00:00.000Z",
+              "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+              "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+              "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+              "prize_promises": [
+                {
+                  "key": "free",
+                  "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                  "template": {
+                    "kind": "PRODUCTION_FREE",
+                    "terms": "exact reviewed film, consume on start",
+                    "title": "synthetic reviewed film",
+                    "version": "synthetic-free",
+                    "capacity": 20,
+                    "exposure": null,
+                    "interview": null,
+                    "production": {
+                      "spec_ids": [
+                        "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                      ],
+                      "face_minor": 50000,
+                      "minimum_minor": 50000
+                    },
+                    "source_ref": "synthetic-only",
+                    "valid_days": 30,
+                    "available_until": "2099-01-01T00:00:00.000Z",
+                    "exchange_points": null
+                  }
+                }
+              ],
+              "publication_notice": {
+                "days": 7,
+                "version": "CONTRACT_20261029_SEVEN_DAYS",
+                "opens_at": "2026-11-01T17:43:09.979Z",
+                "published_at": "2026-10-25T17:43:09.979Z"
+              }
+            },
+            "at": "2026-11-02T17:43:10.096Z",
+            "count": 10,
+            "points": 2700,
+            "hold_id": "dd0e80cc-cb32-41f6-91dc-bf5b48e30d9e",
+            "results": [
+              {
+                "key": "free",
+                "ticket": 5573,
+                "total": 10000,
+                "index": 0,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "cd5edab8-e853-48d4-b73b-8ae84d98914c",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 8491,
+                "total": 10000,
+                "index": 1,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "c5d93e9f-e557-4196-be83-3305f636a3f1",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 7978,
+                "total": 10000,
+                "index": 2,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "464f3ed6-f322-4535-b845-91cf837eb629",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 3477,
+                "total": 10000,
+                "index": 3,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "3ced7a0c-e766-426c-b331-76aa10b3401a",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6414,
+                "total": 10000,
+                "index": 4,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "be4816d3-97c5-4952-978e-5ddcbcd8db57",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6325,
+                "total": 10000,
+                "index": 5,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "e2454788-e94f-4d6f-ba49-a23bf06df8eb",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 3755,
+                "total": 10000,
+                "index": 6,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "f2f4bec9-44a4-4596-ab62-48d7b8a43e06",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 3308,
+                "total": 10000,
+                "index": 7,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "834f7cce-d49b-444b-9fc7-34f902ecee7c",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 9442,
+                "total": 10000,
+                "index": 8,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "53bf400f-bd71-4f47-939f-4b17ade75e3a",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6148,
+                "total": 10000,
+                "index": 9,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "ce8a045c-cc58-48a9-9501-24391bbaa483",
+                "point_earning_id": null,
+                "point_back": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "cb4486d9-8f71-42b6-8daa-11a029d38a0c",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "IDEMPOTENCY_CONFLICT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "f9d5cbc6-2a84-49e9-8939-cbc7cf359b64",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "id": "53aeae39-3743-4373-8d41-ab64732fed15",
+          "kind": "DRAW",
+          "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+          "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+          "current_status": "SETTLED",
+          "object_version": 2,
+          "content_sha256": "5c2598d4b3cf9e50066c5d6ecf5893ad088cdc2e6d9b690193d093960d49295d",
+          "data": {
+            "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+            "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+            "rule_snapshot": {
+              "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "object_version": 3,
+              "current_status": "PUBLISHED",
+              "config": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 10000,
+                    "estimated_cost_minor": 50000
+                  }
+                ],
+                "version": "synthetic lottery v1",
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "ten_points": 2700,
+                "single_points": 300
+              },
+              "distribution": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 10000,
+                    "tenth_probability": "1.000000000000000",
+                    "single_probability": "1.000000000000000",
+                    "estimated_cost_minor": 50000,
+                    "expected_count_per_ten": "10.000000000000000",
+                    "forced_tenth_probability": "1.000000000000000",
+                    "average_probability_per_ten_slot": "1.000000000000000"
+                  }
+                ],
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "expected_ten_cost_minor": "500000.00000000",
+                "expected_single_cost_minor": "50000.00000000",
+                "forced_tenth_branch_probability": "0.000000000000000",
+                "independent_ten_miss_probability": "0.000000000000000"
+              },
+              "bindings": [
+                {
+                  "key": "free",
+                  "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                  "point_back": 0
+                }
+              ],
+              "starts_at": "2020-01-01T00:00:00.000Z",
+              "ends_at": "2099-01-01T00:00:00.000Z",
+              "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+              "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+              "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+              "prize_promises": [
+                {
+                  "key": "free",
+                  "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                  "template": {
+                    "kind": "PRODUCTION_FREE",
+                    "terms": "exact reviewed film, consume on start",
+                    "title": "synthetic reviewed film",
+                    "version": "synthetic-free",
+                    "capacity": 20,
+                    "exposure": null,
+                    "interview": null,
+                    "production": {
+                      "spec_ids": [
+                        "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                      ],
+                      "face_minor": 50000,
+                      "minimum_minor": 50000
+                    },
+                    "source_ref": "synthetic-only",
+                    "valid_days": 30,
+                    "available_until": "2099-01-01T00:00:00.000Z",
+                    "exchange_points": null
+                  }
+                }
+              ],
+              "publication_notice": {
+                "days": 7,
+                "version": "CONTRACT_20261029_SEVEN_DAYS",
+                "opens_at": "2026-11-01T17:43:09.979Z",
+                "published_at": "2026-10-25T17:43:09.979Z"
+              }
+            },
+            "at": "2026-11-02T17:43:10.194Z",
+            "count": 10,
+            "points": 2700,
+            "hold_id": "5eded047-6bca-4b41-99be-beeb322b5a77",
+            "results": [
+              {
+                "key": "free",
+                "ticket": 5051,
+                "total": 10000,
+                "index": 0,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "1fc76267-5a20-4581-be65-d966376992d9",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 5343,
+                "total": 10000,
+                "index": 1,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "a01e7138-501f-4282-8298-0ef8b9d29171",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 6755,
+                "total": 10000,
+                "index": 2,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "11857258-6026-4f5e-a0ce-d0aaa9073ec0",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 9194,
+                "total": 10000,
+                "index": 3,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "47fd3e19-7be1-4ae8-ab4e-969d698ee9da",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 8816,
+                "total": 10000,
+                "index": 4,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "4297d88b-5bfc-451e-9f2b-ad949e7bd8c5",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 9980,
+                "total": 10000,
+                "index": 5,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "cbe25de4-13b7-458e-b5f0-ec824f917af6",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 8247,
+                "total": 10000,
+                "index": 6,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "de2e9477-01e4-4b43-a640-bf631d0da7db",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 8448,
+                "total": 10000,
+                "index": 7,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "cb73101f-89f9-4c20-b59c-ec4fbf5f4df8",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 2094,
+                "total": 10000,
+                "index": 8,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "74af89c3-ee93-4895-ad1e-2279c99dfd42",
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 1737,
+                "total": 10000,
+                "index": 9,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": false,
+                "grant_id": "c7b9b541-e0c6-4566-ba4d-6f790ab9ecbd",
+                "point_earning_id": null,
+                "point_back": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "22b44161-912e-4d97-86ba-fd325df591aa",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "LOTTERY_STOCK_NOT_READY",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "d3529ace-c2d2-494e-bfc2-8a00506cefc3",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "LOTTERY_STOCK_NOT_READY",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/draws/7b733586-4a7b-4a7d-a0aa-ca0e2dc8d9b1",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "eb048bbc-e635-4f4e-98ed-30b2b34c6a86",
+          "actor": {
+            "account_id": "39096958-ff50-4fe1-859f-6b60e694302c"
+          },
+          "acting_party": "26d67945-bb12-49d0-8f28-aae13b9f0b49"
+        },
+        "error": {
+          "code": "REDEMPTION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "d15b1b2f-6818-40a4-bed6-148de198f88d",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "53aeae39-3743-4373-8d41-ab64732fed15",
+              "kind": "DRAW",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "SETTLED",
+              "object_version": 2,
+              "content_sha256": "5c2598d4b3cf9e50066c5d6ecf5893ad088cdc2e6d9b690193d093960d49295d",
+              "data": {
+                "at": "2026-11-02T17:43:10.194Z",
+                "count": 10,
+                "points": 2700,
+                "hold_id": "5eded047-6bca-4b41-99be-beeb322b5a77",
+                "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                "results": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 0,
+                    "total": 10000,
+                    "ticket": 5051,
+                    "grant_id": "1fc76267-5a20-4581-be65-d966376992d9",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 1,
+                    "total": 10000,
+                    "ticket": 5343,
+                    "grant_id": "a01e7138-501f-4282-8298-0ef8b9d29171",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 2,
+                    "total": 10000,
+                    "ticket": 6755,
+                    "grant_id": "11857258-6026-4f5e-a0ce-d0aaa9073ec0",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 3,
+                    "total": 10000,
+                    "ticket": 9194,
+                    "grant_id": "47fd3e19-7be1-4ae8-ab4e-969d698ee9da",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 4,
+                    "total": 10000,
+                    "ticket": 8816,
+                    "grant_id": "4297d88b-5bfc-451e-9f2b-ad949e7bd8c5",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 5,
+                    "total": 10000,
+                    "ticket": 9980,
+                    "grant_id": "cbe25de4-13b7-458e-b5f0-ec824f917af6",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 6,
+                    "total": 10000,
+                    "ticket": 8247,
+                    "grant_id": "de2e9477-01e4-4b43-a640-bf631d0da7db",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 7,
+                    "total": 10000,
+                    "ticket": 8448,
+                    "grant_id": "cb73101f-89f9-4c20-b59c-ec4fbf5f4df8",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 8,
+                    "total": 10000,
+                    "ticket": 2094,
+                    "grant_id": "74af89c3-ee93-4895-ad1e-2279c99dfd42",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 9,
+                    "total": 10000,
+                    "ticket": 1737,
+                    "grant_id": "c7b9b541-e0c6-4566-ba4d-6f790ab9ecbd",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  }
+                ],
+                "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                "rule_snapshot": {
+                  "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                  "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+                  "config": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "estimated_cost_minor": 50000
+                      }
+                    ],
+                    "version": "synthetic lottery v1",
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "ten_points": 2700,
+                    "single_points": 300
+                  },
+                  "ends_at": "2099-01-01T00:00:00.000Z",
+                  "bindings": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "point_back": 0
+                    }
+                  ],
+                  "starts_at": "2020-01-01T00:00:00.000Z",
+                  "distribution": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "tenth_probability": "1.000000000000000",
+                        "single_probability": "1.000000000000000",
+                        "estimated_cost_minor": 50000,
+                        "expected_count_per_ten": "10.000000000000000",
+                        "forced_tenth_probability": "1.000000000000000",
+                        "average_probability_per_ten_slot": "1.000000000000000"
+                      }
+                    ],
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "expected_ten_cost_minor": "500000.00000000",
+                    "expected_single_cost_minor": "50000.00000000",
+                    "forced_tenth_branch_probability": "0.000000000000000",
+                    "independent_ten_miss_probability": "0.000000000000000"
+                  },
+                  "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                  "current_status": "PUBLISHED",
+                  "object_version": 3,
+                  "prize_promises": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "template": {
+                        "kind": "PRODUCTION_FREE",
+                        "terms": "exact reviewed film, consume on start",
+                        "title": "synthetic reviewed film",
+                        "version": "synthetic-free",
+                        "capacity": 20,
+                        "exposure": null,
+                        "interview": null,
+                        "production": {
+                          "spec_ids": [
+                            "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                          ],
+                          "face_minor": 50000,
+                          "minimum_minor": 50000
+                        },
+                        "source_ref": "synthetic-only",
+                        "valid_days": 30,
+                        "available_until": "2099-01-01T00:00:00.000Z",
+                        "exchange_points": null
+                      }
+                    }
+                  ],
+                  "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+                  "publication_notice": {
+                    "days": 7,
+                    "version": "CONTRACT_20261029_SEVEN_DAYS",
+                    "opens_at": "2026-11-01T17:43:09.979Z",
+                    "published_at": "2026-10-25T17:43:09.979Z"
+                  }
+                }
+              }
+            },
+            {
+              "id": "7b733586-4a7b-4a7d-a0aa-ca0e2dc8d9b1",
+              "kind": "DRAW",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "SETTLED",
+              "object_version": 2,
+              "content_sha256": "201e94d3dcf7eb82ea394e11e22bc0eeb6baa1357b9e685f3be2d1fc30ab6985",
+              "data": {
+                "at": "2026-11-02T17:43:10.096Z",
+                "count": 10,
+                "points": 2700,
+                "hold_id": "dd0e80cc-cb32-41f6-91dc-bf5b48e30d9e",
+                "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                "results": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 0,
+                    "total": 10000,
+                    "ticket": 5573,
+                    "grant_id": "cd5edab8-e853-48d4-b73b-8ae84d98914c",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 1,
+                    "total": 10000,
+                    "ticket": 8491,
+                    "grant_id": "c5d93e9f-e557-4196-be83-3305f636a3f1",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 2,
+                    "total": 10000,
+                    "ticket": 7978,
+                    "grant_id": "464f3ed6-f322-4535-b845-91cf837eb629",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 3,
+                    "total": 10000,
+                    "ticket": 3477,
+                    "grant_id": "3ced7a0c-e766-426c-b331-76aa10b3401a",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 4,
+                    "total": 10000,
+                    "ticket": 6414,
+                    "grant_id": "be4816d3-97c5-4952-978e-5ddcbcd8db57",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 5,
+                    "total": 10000,
+                    "ticket": 6325,
+                    "grant_id": "e2454788-e94f-4d6f-ba49-a23bf06df8eb",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 6,
+                    "total": 10000,
+                    "ticket": 3755,
+                    "grant_id": "f2f4bec9-44a4-4596-ab62-48d7b8a43e06",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 7,
+                    "total": 10000,
+                    "ticket": 3308,
+                    "grant_id": "834f7cce-d49b-444b-9fc7-34f902ecee7c",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 8,
+                    "total": 10000,
+                    "ticket": 9442,
+                    "grant_id": "53bf400f-bd71-4f47-939f-4b17ade75e3a",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 9,
+                    "total": 10000,
+                    "ticket": 6148,
+                    "grant_id": "ce8a045c-cc58-48a9-9501-24391bbaa483",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  }
+                ],
+                "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                "rule_snapshot": {
+                  "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                  "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+                  "config": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "estimated_cost_minor": 50000
+                      }
+                    ],
+                    "version": "synthetic lottery v1",
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "ten_points": 2700,
+                    "single_points": 300
+                  },
+                  "ends_at": "2099-01-01T00:00:00.000Z",
+                  "bindings": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "point_back": 0
+                    }
+                  ],
+                  "starts_at": "2020-01-01T00:00:00.000Z",
+                  "distribution": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "tenth_probability": "1.000000000000000",
+                        "single_probability": "1.000000000000000",
+                        "estimated_cost_minor": 50000,
+                        "expected_count_per_ten": "10.000000000000000",
+                        "forced_tenth_probability": "1.000000000000000",
+                        "average_probability_per_ten_slot": "1.000000000000000"
+                      }
+                    ],
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "expected_ten_cost_minor": "500000.00000000",
+                    "expected_single_cost_minor": "50000.00000000",
+                    "forced_tenth_branch_probability": "0.000000000000000",
+                    "independent_ten_miss_probability": "0.000000000000000"
+                  },
+                  "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                  "current_status": "PUBLISHED",
+                  "object_version": 3,
+                  "prize_promises": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "template": {
+                        "kind": "PRODUCTION_FREE",
+                        "terms": "exact reviewed film, consume on start",
+                        "title": "synthetic reviewed film",
+                        "version": "synthetic-free",
+                        "capacity": 20,
+                        "exposure": null,
+                        "interview": null,
+                        "production": {
+                          "spec_ids": [
+                            "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                          ],
+                          "face_minor": 50000,
+                          "minimum_minor": 50000
+                        },
+                        "source_ref": "synthetic-only",
+                        "valid_days": 30,
+                        "available_until": "2099-01-01T00:00:00.000Z",
+                        "exchange_points": null
+                      }
+                    }
+                  ],
+                  "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+                  "publication_notice": {
+                    "days": 7,
+                    "version": "CONTRACT_20261029_SEVEN_DAYS",
+                    "opens_at": "2026-11-01T17:43:09.979Z",
+                    "published_at": "2026-10-25T17:43:09.979Z"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "e3e08b8e-143f-425b-86f2-3c3fb3175c14",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": "b3580ae0-664d-488f-81ff-0ff518eab3aa"
+        },
+        "data": {
+          "id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+          "kind": "STOCK",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "00e9f68cf211b135107b7eefc2032712975102f063efca51203be88d4b142274",
+          "data": {
+            "template": {
+              "version": "synthetic-free",
+              "source_ref": "synthetic-only",
+              "title": "synthetic reviewed film",
+              "kind": "PRODUCTION_FREE",
+              "valid_days": 30,
+              "exchange_points": null,
+              "capacity": 20,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "terms": "exact reviewed film, consume on start",
+              "production": {
+                "face_minor": 50000,
+                "minimum_minor": 50000,
+                "spec_ids": [
+                  "1aee2902-26ae-4b13-b8cf-4374fa55327f"
+                ]
+              },
+              "interview": null,
+              "exposure": null
+            },
+            "evidence_asset_ids": [
+              "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+            ],
+            "issued": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/42c03b06-6243-4beb-b0f8-8817a8b25c34/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "b89a8c41-556c-4e14-90cc-151f429bdfab",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+          "kind": "STOCK",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "81f5ffed320b523fc4ce1255a08ea756289d6886202d942c466df17debee1ba8",
+          "data": {
+            "issued": 0,
+            "template": {
+              "kind": "PRODUCTION_FREE",
+              "terms": "exact reviewed film, consume on start",
+              "title": "synthetic reviewed film",
+              "version": "synthetic-free",
+              "capacity": 20,
+              "exposure": null,
+              "interview": null,
+              "production": {
+                "spec_ids": [
+                  "1aee2902-26ae-4b13-b8cf-4374fa55327f"
+                ],
+                "face_minor": 50000,
+                "minimum_minor": 50000
+              },
+              "source_ref": "synthetic-only",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": null
+            },
+            "evidence_asset_ids": [
+              "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+            ],
+            "review": {
+              "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+              "reason": "synthetic stock"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "68a68a2d-59e6-4160-b2f7-3fd2be480f00",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": "b3580ae0-664d-488f-81ff-0ff518eab3aa"
+        },
+        "data": {
+          "id": "c4afd0d7-c50c-4689-b204-c4778deddf9e",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "048aee0f2757492aa1a72186bf83f08c910b6c23dff962eb331cd62c4516fcc4",
+          "data": {
+            "config": {
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "single_points": 300,
+              "ten_points": 2700,
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ]
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+                "point_back": 0
+              }
+            ],
+            "distribution": {
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000",
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000,
+                  "single_probability": "1.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "tenth_probability": "1.000000000000000",
+                  "expected_count_per_ten": "10.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "expected_single_cost_minor": "50000.00000000",
+              "expected_ten_cost_minor": "500000.00000000"
+            },
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "cost_limit_single_minor": 50000,
+            "cost_limit_ten_minor": 500000,
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "rules_sha256": null,
+            "prize_promises": [],
+            "reviews": {}
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/c4afd0d7-c50c-4689-b204-c4778deddf9e/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "c3060932-1036-4d74-a2ce-8e8e9ac668fe",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c4afd0d7-c50c-4689-b204-c4778deddf9e",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 2,
+          "content_sha256": "9243dffb0d99ff56ecb6e30d5fc1fd4a87f47705e774476969ec9673cfe71c06",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "decision": "APPROVE",
+                "reason": "synthetic independent",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "tenth_probability": "1.000000000000000",
+                  "single_probability": "1.000000000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "10.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "500000.00000000",
+              "expected_single_cost_minor": "50000.00000000",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000"
+            },
+            "rules_sha256": null,
+            "prize_promises": [],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/c4afd0d7-c50c-4689-b204-c4778deddf9e/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "f2dae65d-397a-4642-ba0e-59de973cecbe",
+          "actor": {
+            "account_id": "39096958-ff50-4fe1-859f-6b60e694302c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c4afd0d7-c50c-4689-b204-c4778deddf9e",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "PUBLISHED",
+          "object_version": 3,
+          "content_sha256": "92762b2c2b9d10b2430024c418e5a9ce91c11d328438af9f08914fd531fb4255",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "reason": "synthetic independent",
+                "decision": "APPROVE",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              },
+              "FINANCE": {
+                "by": "39096958-ff50-4fe1-859f-6b60e694302c",
+                "decision": "APPROVE",
+                "reason": "synthetic independent",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "tenth_probability": "1.000000000000000",
+                  "single_probability": "1.000000000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "10.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "500000.00000000",
+              "expected_single_cost_minor": "50000.00000000",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000"
+            },
+            "rules_sha256": "309c85af223a309252296ca5407e1840f03720aff759863c8a4dfc5ecea45122",
+            "prize_promises": [
+              {
+                "key": "free",
+                "stock_id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+                "template": {
+                  "kind": "PRODUCTION_FREE",
+                  "terms": "exact reviewed film, consume on start",
+                  "title": "synthetic reviewed film",
+                  "version": "synthetic-free",
+                  "capacity": 20,
+                  "exposure": null,
+                  "interview": null,
+                  "production": {
+                    "spec_ids": [
+                      "1aee2902-26ae-4b13-b8cf-4374fa55327f"
+                    ],
+                    "face_minor": 50000,
+                    "minimum_minor": 50000
+                  },
+                  "source_ref": "synthetic-only",
+                  "valid_days": 30,
+                  "available_until": "2099-01-01T00:00:00.000Z",
+                  "exchange_points": null
+                }
+              }
+            ],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000,
+            "publication_notice": {
+              "version": "CONTRACT_20261029_SEVEN_DAYS",
+              "published_at": "2026-11-02T17:43:10.658Z",
+              "opens_at": "2026-11-09T17:43:10.658Z",
+              "days": 7
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "fab9e43b-1582-444f-b058-c651969d60d8",
+          "actor": {
+            "account_id": "919f2086-c16f-4d3b-8595-8212816d17f8"
+          },
+          "acting_party": "8e8d2789-270e-4907-bd4c-96c16eb0e2b4"
+        },
+        "error": {
+          "code": "WALLET_POINTS_INSUFFICIENT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/queue",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "dc1e9624-1a7d-4c68-b4c9-7dbdb3ae33fa",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "42c03b06-6243-4beb-b0f8-8817a8b25c34",
+              "kind": "STOCK",
+              "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+              "parent_id": null,
+              "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+              "current_status": "AVAILABLE",
+              "object_version": 2,
+              "content_sha256": "81f5ffed320b523fc4ce1255a08ea756289d6886202d942c466df17debee1ba8",
+              "data": {
+                "issued": 0,
+                "review": {
+                  "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                  "reason": "synthetic stock"
+                },
+                "template": {
+                  "kind": "PRODUCTION_FREE",
+                  "terms": "exact reviewed film, consume on start",
+                  "title": "synthetic reviewed film",
+                  "version": "synthetic-free",
+                  "capacity": 20,
+                  "exposure": null,
+                  "interview": null,
+                  "production": {
+                    "spec_ids": [
+                      "1aee2902-26ae-4b13-b8cf-4374fa55327f"
+                    ],
+                    "face_minor": 50000,
+                    "minimum_minor": 50000
+                  },
+                  "source_ref": "synthetic-only",
+                  "valid_days": 30,
+                  "available_until": "2099-01-01T00:00:00.000Z",
+                  "exchange_points": null
+                },
+                "evidence_asset_ids": [
+                  "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+                ]
+              }
+            },
+            {
+              "id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+              "kind": "STOCK",
+              "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+              "parent_id": null,
+              "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+              "current_status": "AVAILABLE",
+              "object_version": 22,
+              "content_sha256": "a628f9111a14e0b2ad84ccc517ef5cfd9f7e8e6a461094136a44d93f5b8973e6",
+              "data": {
+                "issued": 20,
+                "review": {
+                  "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                  "reason": "synthetic stock"
+                },
+                "template": {
+                  "kind": "PRODUCTION_FREE",
+                  "terms": "exact reviewed film, consume on start",
+                  "title": "synthetic reviewed film",
+                  "version": "synthetic-free",
+                  "capacity": 20,
+                  "exposure": null,
+                  "interview": null,
+                  "production": {
+                    "spec_ids": [
+                      "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                    ],
+                    "face_minor": 50000,
+                    "minimum_minor": 50000
+                  },
+                  "source_ref": "synthetic-only",
+                  "valid_days": 30,
+                  "available_until": "2099-01-01T00:00:00.000Z",
+                  "exchange_points": null
+                },
+                "evidence_asset_ids": [
+                  "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+                ]
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/e8ca8004-a397-4e1a-86c2-0a32b6cf9435/retirement",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "7dc1aa97-70f0-4f4e-982f-3341ab062df7",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "RETIRED",
+          "object_version": 4,
+          "content_sha256": "3166fcc8b9a4418dc8258cb9117f114007246e09b5f59cc485549d76c5d1ea7c",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "estimated_cost_minor": 50000
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "reason": "synthetic independent",
+                "decision": "APPROVE",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              },
+              "FINANCE": {
+                "by": "39096958-ff50-4fe1-859f-6b60e694302c",
+                "reason": "synthetic independent",
+                "decision": "APPROVE",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 10000,
+                  "tenth_probability": "1.000000000000000",
+                  "single_probability": "1.000000000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "10.000000000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "1.000000000000000"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "500000.00000000",
+              "expected_single_cost_minor": "50000.00000000",
+              "forced_tenth_branch_probability": "0.000000000000000",
+              "independent_ten_miss_probability": "0.000000000000000"
+            },
+            "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+            "prize_promises": [
+              {
+                "key": "free",
+                "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                "template": {
+                  "kind": "PRODUCTION_FREE",
+                  "terms": "exact reviewed film, consume on start",
+                  "title": "synthetic reviewed film",
+                  "version": "synthetic-free",
+                  "capacity": 20,
+                  "exposure": null,
+                  "interview": null,
+                  "production": {
+                    "spec_ids": [
+                      "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                    ],
+                    "face_minor": 50000,
+                    "minimum_minor": 50000
+                  },
+                  "source_ref": "synthetic-only",
+                  "valid_days": 30,
+                  "available_until": "2099-01-01T00:00:00.000Z",
+                  "exchange_points": null
+                }
+              }
+            ],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "publication_notice": {
+              "days": 7,
+              "version": "CONTRACT_20261029_SEVEN_DAYS",
+              "opens_at": "2026-11-01T17:43:09.979Z",
+              "published_at": "2026-10-25T17:43:09.979Z"
+            },
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000,
+            "retirement": {
+              "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+              "reason": "synthetic retire"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "af9f44c4-e18c-4b94-b8e6-f78001e9ca7d",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "error": {
+          "code": "LOTTERY_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "41025bb9-d66d-4071-afb5-2002475b8602",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "53aeae39-3743-4373-8d41-ab64732fed15",
+              "kind": "DRAW",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "SETTLED",
+              "object_version": 2,
+              "content_sha256": "5c2598d4b3cf9e50066c5d6ecf5893ad088cdc2e6d9b690193d093960d49295d",
+              "data": {
+                "at": "2026-11-02T17:43:10.194Z",
+                "count": 10,
+                "points": 2700,
+                "hold_id": "5eded047-6bca-4b41-99be-beeb322b5a77",
+                "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                "results": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 0,
+                    "total": 10000,
+                    "ticket": 5051,
+                    "grant_id": "1fc76267-5a20-4581-be65-d966376992d9",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 1,
+                    "total": 10000,
+                    "ticket": 5343,
+                    "grant_id": "a01e7138-501f-4282-8298-0ef8b9d29171",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 2,
+                    "total": 10000,
+                    "ticket": 6755,
+                    "grant_id": "11857258-6026-4f5e-a0ce-d0aaa9073ec0",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 3,
+                    "total": 10000,
+                    "ticket": 9194,
+                    "grant_id": "47fd3e19-7be1-4ae8-ab4e-969d698ee9da",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 4,
+                    "total": 10000,
+                    "ticket": 8816,
+                    "grant_id": "4297d88b-5bfc-451e-9f2b-ad949e7bd8c5",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 5,
+                    "total": 10000,
+                    "ticket": 9980,
+                    "grant_id": "cbe25de4-13b7-458e-b5f0-ec824f917af6",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 6,
+                    "total": 10000,
+                    "ticket": 8247,
+                    "grant_id": "de2e9477-01e4-4b43-a640-bf631d0da7db",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 7,
+                    "total": 10000,
+                    "ticket": 8448,
+                    "grant_id": "cb73101f-89f9-4c20-b59c-ec4fbf5f4df8",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 8,
+                    "total": 10000,
+                    "ticket": 2094,
+                    "grant_id": "74af89c3-ee93-4895-ad1e-2279c99dfd42",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 9,
+                    "total": 10000,
+                    "ticket": 1737,
+                    "grant_id": "c7b9b541-e0c6-4566-ba4d-6f790ab9ecbd",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  }
+                ],
+                "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                "rule_snapshot": {
+                  "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                  "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+                  "config": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "estimated_cost_minor": 50000
+                      }
+                    ],
+                    "version": "synthetic lottery v1",
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "ten_points": 2700,
+                    "single_points": 300
+                  },
+                  "ends_at": "2099-01-01T00:00:00.000Z",
+                  "bindings": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "point_back": 0
+                    }
+                  ],
+                  "starts_at": "2020-01-01T00:00:00.000Z",
+                  "distribution": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "tenth_probability": "1.000000000000000",
+                        "single_probability": "1.000000000000000",
+                        "estimated_cost_minor": 50000,
+                        "expected_count_per_ten": "10.000000000000000",
+                        "forced_tenth_probability": "1.000000000000000",
+                        "average_probability_per_ten_slot": "1.000000000000000"
+                      }
+                    ],
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "expected_ten_cost_minor": "500000.00000000",
+                    "expected_single_cost_minor": "50000.00000000",
+                    "forced_tenth_branch_probability": "0.000000000000000",
+                    "independent_ten_miss_probability": "0.000000000000000"
+                  },
+                  "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                  "current_status": "PUBLISHED",
+                  "object_version": 3,
+                  "prize_promises": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "template": {
+                        "kind": "PRODUCTION_FREE",
+                        "terms": "exact reviewed film, consume on start",
+                        "title": "synthetic reviewed film",
+                        "version": "synthetic-free",
+                        "capacity": 20,
+                        "exposure": null,
+                        "interview": null,
+                        "production": {
+                          "spec_ids": [
+                            "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                          ],
+                          "face_minor": 50000,
+                          "minimum_minor": 50000
+                        },
+                        "source_ref": "synthetic-only",
+                        "valid_days": 30,
+                        "available_until": "2099-01-01T00:00:00.000Z",
+                        "exchange_points": null
+                      }
+                    }
+                  ],
+                  "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+                  "publication_notice": {
+                    "days": 7,
+                    "version": "CONTRACT_20261029_SEVEN_DAYS",
+                    "opens_at": "2026-11-01T17:43:09.979Z",
+                    "published_at": "2026-10-25T17:43:09.979Z"
+                  }
+                }
+              }
+            },
+            {
+              "id": "7b733586-4a7b-4a7d-a0aa-ca0e2dc8d9b1",
+              "kind": "DRAW",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "SETTLED",
+              "object_version": 2,
+              "content_sha256": "201e94d3dcf7eb82ea394e11e22bc0eeb6baa1357b9e685f3be2d1fc30ab6985",
+              "data": {
+                "at": "2026-11-02T17:43:10.096Z",
+                "count": 10,
+                "points": 2700,
+                "hold_id": "dd0e80cc-cb32-41f6-91dc-bf5b48e30d9e",
+                "pool_id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                "results": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 0,
+                    "total": 10000,
+                    "ticket": 5573,
+                    "grant_id": "cd5edab8-e853-48d4-b73b-8ae84d98914c",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 1,
+                    "total": 10000,
+                    "ticket": 8491,
+                    "grant_id": "c5d93e9f-e557-4196-be83-3305f636a3f1",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 2,
+                    "total": 10000,
+                    "ticket": 7978,
+                    "grant_id": "464f3ed6-f322-4535-b845-91cf837eb629",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 3,
+                    "total": 10000,
+                    "ticket": 3477,
+                    "grant_id": "3ced7a0c-e766-426c-b331-76aa10b3401a",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 4,
+                    "total": 10000,
+                    "ticket": 6414,
+                    "grant_id": "be4816d3-97c5-4952-978e-5ddcbcd8db57",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 5,
+                    "total": 10000,
+                    "ticket": 6325,
+                    "grant_id": "e2454788-e94f-4d6f-ba49-a23bf06df8eb",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 6,
+                    "total": 10000,
+                    "ticket": 3755,
+                    "grant_id": "f2f4bec9-44a4-4596-ab62-48d7b8a43e06",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 7,
+                    "total": 10000,
+                    "ticket": 3308,
+                    "grant_id": "834f7cce-d49b-444b-9fc7-34f902ecee7c",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 8,
+                    "total": 10000,
+                    "ticket": 9442,
+                    "grant_id": "53bf400f-bd71-4f47-939f-4b17ade75e3a",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  },
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "index": 9,
+                    "total": 10000,
+                    "ticket": 6148,
+                    "grant_id": "ce8a045c-cc58-48a9-9501-24391bbaa483",
+                    "point_back": 0,
+                    "guaranteed_slot": false,
+                    "point_earning_id": null
+                  }
+                ],
+                "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                "rule_snapshot": {
+                  "id": "e8ca8004-a397-4e1a-86c2-0a32b6cf9435",
+                  "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+                  "config": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "estimated_cost_minor": 50000
+                      }
+                    ],
+                    "version": "synthetic lottery v1",
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "ten_points": 2700,
+                    "single_points": 300
+                  },
+                  "ends_at": "2099-01-01T00:00:00.000Z",
+                  "bindings": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "point_back": 0
+                    }
+                  ],
+                  "starts_at": "2020-01-01T00:00:00.000Z",
+                  "distribution": {
+                    "prizes": [
+                      {
+                        "key": "free",
+                        "kind": "PRODUCTION_FREE",
+                        "weight": 10000,
+                        "tenth_probability": "1.000000000000000",
+                        "single_probability": "1.000000000000000",
+                        "estimated_cost_minor": 50000,
+                        "expected_count_per_ten": "10.000000000000000",
+                        "forced_tenth_probability": "1.000000000000000",
+                        "average_probability_per_ten_slot": "1.000000000000000"
+                      }
+                    ],
+                    "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                    "expected_ten_cost_minor": "500000.00000000",
+                    "expected_single_cost_minor": "50000.00000000",
+                    "forced_tenth_branch_probability": "0.000000000000000",
+                    "independent_ten_miss_probability": "0.000000000000000"
+                  },
+                  "rules_sha256": "6b49a39fa8d83c60f8fa527f8990866ad10e6c09d3a7d5418286b1a281aac7e9",
+                  "current_status": "PUBLISHED",
+                  "object_version": 3,
+                  "prize_promises": [
+                    {
+                      "key": "free",
+                      "stock_id": "5c48beb8-06cf-45e0-b7cc-1a126362a786",
+                      "template": {
+                        "kind": "PRODUCTION_FREE",
+                        "terms": "exact reviewed film, consume on start",
+                        "title": "synthetic reviewed film",
+                        "version": "synthetic-free",
+                        "capacity": 20,
+                        "exposure": null,
+                        "interview": null,
+                        "production": {
+                          "spec_ids": [
+                            "1db04bc7-b279-45ef-a1c6-f4cdba942740"
+                          ],
+                          "face_minor": 50000,
+                          "minimum_minor": 50000
+                        },
+                        "source_ref": "synthetic-only",
+                        "valid_days": 30,
+                        "available_until": "2099-01-01T00:00:00.000Z",
+                        "exchange_points": null
+                      }
+                    }
+                  ],
+                  "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+                  "publication_notice": {
+                    "days": 7,
+                    "version": "CONTRACT_20261029_SEVEN_DAYS",
+                    "opens_at": "2026-11-01T17:43:09.979Z",
+                    "published_at": "2026-10-25T17:43:09.979Z"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "5e8091c8-22f1-4ab2-9152-fd7880423ca7",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": "b3580ae0-664d-488f-81ff-0ff518eab3aa"
+        },
+        "data": {
+          "id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+          "kind": "STOCK",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "389f71cdc739552d75d34bcfcdd23ba336fda55c8b20277e7af1b7456774373f",
+          "data": {
+            "template": {
+              "version": "synthetic-free",
+              "source_ref": "synthetic-only",
+              "title": "synthetic reviewed film",
+              "kind": "PRODUCTION_FREE",
+              "valid_days": 30,
+              "exchange_points": null,
+              "capacity": 100,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "terms": "exact reviewed film, consume on start",
+              "production": {
+                "face_minor": 50000,
+                "minimum_minor": 50000,
+                "spec_ids": [
+                  "99c20cbe-341a-4efd-9d3f-1388376b651b"
+                ]
+              },
+              "interview": null,
+              "exposure": null
+            },
+            "evidence_asset_ids": [
+              "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+            ],
+            "issued": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/67baea1e-b5de-4eed-9d64-a38517449fd6/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "f509028c-7617-4eb2-8d40-69edc0346b01",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+          "kind": "STOCK",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "a1647839cc7fd54c21b6b1f30439d259892e2cd6dba14b1f158909223264335b",
+          "data": {
+            "issued": 0,
+            "template": {
+              "kind": "PRODUCTION_FREE",
+              "terms": "exact reviewed film, consume on start",
+              "title": "synthetic reviewed film",
+              "version": "synthetic-free",
+              "capacity": 100,
+              "exposure": null,
+              "interview": null,
+              "production": {
+                "spec_ids": [
+                  "99c20cbe-341a-4efd-9d3f-1388376b651b"
+                ],
+                "face_minor": 50000,
+                "minimum_minor": 50000
+              },
+              "source_ref": "synthetic-only",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": null
+            },
+            "evidence_asset_ids": [
+              "445a1623-2380-4e3d-99d6-0f6dc14a0b99"
+            ],
+            "review": {
+              "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+              "reason": "synthetic stock"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "62c7b6eb-b2b5-4fa0-860b-fc21da4443ec",
+          "actor": {
+            "account_id": "0463df25-a84e-4dea-84b8-82d31aa2b9e0"
+          },
+          "acting_party": "b3580ae0-664d-488f-81ff-0ff518eab3aa"
+        },
+        "data": {
+          "id": "c6b9fb24-550c-4f44-917c-a4d82f9a3794",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "8c6e998e659988eec7670f3a382d112427bdb47e02dc823385757b221c9746a2",
+          "data": {
+            "config": {
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "single_points": 300,
+              "ten_points": 2700,
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 1,
+                  "estimated_cost_minor": 50000
+                },
+                {
+                  "key": "points",
+                  "kind": "POINT_BACK",
+                  "weight": 4999,
+                  "estimated_cost_minor": 0
+                },
+                {
+                  "key": "none",
+                  "kind": "NONE",
+                  "weight": 5000,
+                  "estimated_cost_minor": 0
+                }
+              ]
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+                "point_back": 0
+              },
+              {
+                "key": "points",
+                "stock_id": null,
+                "point_back": 10
+              },
+              {
+                "key": "none",
+                "stock_id": null,
+                "point_back": 0
+              }
+            ],
+            "distribution": {
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "forced_tenth_branch_probability": "0.999100359916013",
+              "independent_ten_miss_probability": "0.999000449880021",
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 1,
+                  "estimated_cost_minor": 50000,
+                  "single_probability": "0.000100000000000",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "tenth_probability": "0.999100449880021",
+                  "expected_count_per_ten": "1.000000449880021",
+                  "average_probability_per_ten_slot": "0.100000044988002"
+                },
+                {
+                  "key": "points",
+                  "kind": "POINT_BACK",
+                  "weight": 4999,
+                  "estimated_cost_minor": 0,
+                  "single_probability": "0.499900000000000",
+                  "forced_tenth_probability": "0.000000000000000",
+                  "tenth_probability": "0.000449730077985",
+                  "expected_count_per_ten": "4.499549730077986",
+                  "average_probability_per_ten_slot": "0.449954973007799"
+                },
+                {
+                  "key": "none",
+                  "kind": "NONE",
+                  "weight": 5000,
+                  "estimated_cost_minor": 0,
+                  "single_probability": "0.500000000000000",
+                  "forced_tenth_probability": "0.000000000000000",
+                  "tenth_probability": "0.000449820041994",
+                  "expected_count_per_ten": "4.500449820041994",
+                  "average_probability_per_ten_slot": "0.450044982004199"
+                }
+              ],
+              "expected_single_cost_minor": "5.00000000",
+              "expected_ten_cost_minor": "50000.02249400"
+            },
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "cost_limit_single_minor": 50000,
+            "cost_limit_ten_minor": 500000,
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "rules_sha256": null,
+            "prize_promises": [],
+            "reviews": {}
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/c6b9fb24-550c-4f44-917c-a4d82f9a3794/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "4e525569-5367-46b5-bc1a-ec34d4d8edd6",
+          "actor": {
+            "account_id": "8977c112-f34d-46cc-919d-47b3080dfa9a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c6b9fb24-550c-4f44-917c-a4d82f9a3794",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "IN_REVIEW",
+          "object_version": 2,
+          "content_sha256": "18f1034655bb0e97991652e6077451e680a549b4f7e2aed0ed9a2e4e38ddade1",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 1,
+                  "estimated_cost_minor": 50000
+                },
+                {
+                  "key": "points",
+                  "kind": "POINT_BACK",
+                  "weight": 4999,
+                  "estimated_cost_minor": 0
+                },
+                {
+                  "key": "none",
+                  "kind": "NONE",
+                  "weight": 5000,
+                  "estimated_cost_minor": 0
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "decision": "APPROVE",
+                "reason": "synthetic independent",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+                "point_back": 0
+              },
+              {
+                "key": "points",
+                "stock_id": null,
+                "point_back": 10
+              },
+              {
+                "key": "none",
+                "stock_id": null,
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 1,
+                  "tenth_probability": "0.999100449880021",
+                  "single_probability": "0.000100000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "1.000000449880021",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "0.100000044988002"
+                },
+                {
+                  "key": "points",
+                  "kind": "POINT_BACK",
+                  "weight": 4999,
+                  "tenth_probability": "0.000449730077985",
+                  "single_probability": "0.499900000000000",
+                  "estimated_cost_minor": 0,
+                  "expected_count_per_ten": "4.499549730077986",
+                  "forced_tenth_probability": "0.000000000000000",
+                  "average_probability_per_ten_slot": "0.449954973007799"
+                },
+                {
+                  "key": "none",
+                  "kind": "NONE",
+                  "weight": 5000,
+                  "tenth_probability": "0.000449820041994",
+                  "single_probability": "0.500000000000000",
+                  "estimated_cost_minor": 0,
+                  "expected_count_per_ten": "4.500449820041994",
+                  "forced_tenth_probability": "0.000000000000000",
+                  "average_probability_per_ten_slot": "0.450044982004199"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "50000.02249400",
+              "expected_single_cost_minor": "5.00000000",
+              "forced_tenth_branch_probability": "0.999100359916013",
+              "independent_ten_miss_probability": "0.999000449880021"
+            },
+            "rules_sha256": null,
+            "prize_promises": [],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/c6b9fb24-550c-4f44-917c-a4d82f9a3794/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "cc1d65db-55db-4bc4-83f3-534b569f1155",
+          "actor": {
+            "account_id": "39096958-ff50-4fe1-859f-6b60e694302c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c6b9fb24-550c-4f44-917c-a4d82f9a3794",
+          "kind": "POOL",
+          "owner_party_id": "b3580ae0-664d-488f-81ff-0ff518eab3aa",
+          "parent_id": null,
+          "created_by": "0463df25-a84e-4dea-84b8-82d31aa2b9e0",
+          "current_status": "PUBLISHED",
+          "object_version": 3,
+          "content_sha256": "ed5f3a39d7b2c2ac7b79c43a3d1869349eccb7f18e82539aca066be6af26b310",
+          "data": {
+            "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+            "config": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 1,
+                  "estimated_cost_minor": 50000
+                },
+                {
+                  "key": "points",
+                  "kind": "POINT_BACK",
+                  "weight": 4999,
+                  "estimated_cost_minor": 0
+                },
+                {
+                  "key": "none",
+                  "kind": "NONE",
+                  "weight": 5000,
+                  "estimated_cost_minor": 0
+                }
+              ],
+              "version": "synthetic lottery v1",
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "ten_points": 2700,
+              "single_points": 300
+            },
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "reviews": {
+              "RULES": {
+                "by": "8977c112-f34d-46cc-919d-47b3080dfa9a",
+                "reason": "synthetic independent",
+                "decision": "APPROVE",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              },
+              "FINANCE": {
+                "by": "39096958-ff50-4fe1-859f-6b60e694302c",
+                "decision": "APPROVE",
+                "reason": "synthetic independent",
+                "evidence_asset_id": "89902ec1-8259-4b11-8a96-fa6544f55887"
+              }
+            },
+            "bindings": [
+              {
+                "key": "free",
+                "stock_id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+                "point_back": 0
+              },
+              {
+                "key": "points",
+                "stock_id": null,
+                "point_back": 10
+              },
+              {
+                "key": "none",
+                "stock_id": null,
+                "point_back": 0
+              }
+            ],
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "distribution": {
+              "prizes": [
+                {
+                  "key": "free",
+                  "kind": "PRODUCTION_FREE",
+                  "weight": 1,
+                  "tenth_probability": "0.999100449880021",
+                  "single_probability": "0.000100000000000",
+                  "estimated_cost_minor": 50000,
+                  "expected_count_per_ten": "1.000000449880021",
+                  "forced_tenth_probability": "1.000000000000000",
+                  "average_probability_per_ten_slot": "0.100000044988002"
+                },
+                {
+                  "key": "points",
+                  "kind": "POINT_BACK",
+                  "weight": 4999,
+                  "tenth_probability": "0.000449730077985",
+                  "single_probability": "0.499900000000000",
+                  "estimated_cost_minor": 0,
+                  "expected_count_per_ten": "4.499549730077986",
+                  "forced_tenth_probability": "0.000000000000000",
+                  "average_probability_per_ten_slot": "0.449954973007799"
+                },
+                {
+                  "key": "none",
+                  "kind": "NONE",
+                  "weight": 5000,
+                  "tenth_probability": "0.000449820041994",
+                  "single_probability": "0.500000000000000",
+                  "estimated_cost_minor": 0,
+                  "expected_count_per_ten": "4.500449820041994",
+                  "forced_tenth_probability": "0.000000000000000",
+                  "average_probability_per_ten_slot": "0.450044982004199"
+                }
+              ],
+              "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+              "expected_ten_cost_minor": "50000.02249400",
+              "expected_single_cost_minor": "5.00000000",
+              "forced_tenth_branch_probability": "0.999100359916013",
+              "independent_ten_miss_probability": "0.999000449880021"
+            },
+            "rules_sha256": "859abf0b70774fb69e4c292fca7221d90fafa4105fb41586006bcce454129da3",
+            "prize_promises": [
+              {
+                "key": "free",
+                "stock_id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+                "template": {
+                  "kind": "PRODUCTION_FREE",
+                  "terms": "exact reviewed film, consume on start",
+                  "title": "synthetic reviewed film",
+                  "version": "synthetic-free",
+                  "capacity": 100,
+                  "exposure": null,
+                  "interview": null,
+                  "production": {
+                    "spec_ids": [
+                      "99c20cbe-341a-4efd-9d3f-1388376b651b"
+                    ],
+                    "face_minor": 50000,
+                    "minimum_minor": 50000
+                  },
+                  "source_ref": "synthetic-only",
+                  "valid_days": 30,
+                  "available_until": "2099-01-01T00:00:00.000Z",
+                  "exchange_points": null
+                }
+              }
+            ],
+            "evidence_asset_ids": [
+              "89902ec1-8259-4b11-8a96-fa6544f55887"
+            ],
+            "cost_limit_ten_minor": 500000,
+            "cost_limit_single_minor": 50000,
+            "publication_notice": {
+              "version": "CONTRACT_20261029_SEVEN_DAYS",
+              "published_at": "2026-11-02T17:43:11.078Z",
+              "opens_at": "2026-11-09T17:43:11.078Z",
+              "days": 7
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "063101ab-e391-49f4-b046-d0db9fb00ea0",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "id": "b2e5bc38-e0e8-4bc8-8e0a-f5fb5ed9183a",
+          "kind": "DRAW",
+          "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+          "parent_id": "c6b9fb24-550c-4f44-917c-a4d82f9a3794",
+          "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+          "current_status": "SETTLED",
+          "object_version": 2,
+          "content_sha256": "f2543ab42433d778e7b414080088fb02c4d454a3af95291c0f433cf091141a28",
+          "data": {
+            "pool_id": "c6b9fb24-550c-4f44-917c-a4d82f9a3794",
+            "rules_sha256": "2443dbcced0b76293ab13e9ec8d0b1392651a1bec1d7534f4751128e78b35ac2",
+            "rule_snapshot": {
+              "id": "c6b9fb24-550c-4f44-917c-a4d82f9a3794",
+              "object_version": 3,
+              "current_status": "PUBLISHED",
+              "config": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 1,
+                    "estimated_cost_minor": 50000
+                  },
+                  {
+                    "key": "points",
+                    "kind": "POINT_BACK",
+                    "weight": 4999,
+                    "estimated_cost_minor": 0
+                  },
+                  {
+                    "key": "none",
+                    "kind": "NONE",
+                    "weight": 5000,
+                    "estimated_cost_minor": 0
+                  }
+                ],
+                "version": "synthetic lottery v1",
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "ten_points": 2700,
+                "single_points": 300
+              },
+              "distribution": {
+                "prizes": [
+                  {
+                    "key": "free",
+                    "kind": "PRODUCTION_FREE",
+                    "weight": 1,
+                    "tenth_probability": "0.999100449880021",
+                    "single_probability": "0.000100000000000",
+                    "estimated_cost_minor": 50000,
+                    "expected_count_per_ten": "1.000000449880021",
+                    "forced_tenth_probability": "1.000000000000000",
+                    "average_probability_per_ten_slot": "0.100000044988002"
+                  },
+                  {
+                    "key": "points",
+                    "kind": "POINT_BACK",
+                    "weight": 4999,
+                    "tenth_probability": "0.000449730077985",
+                    "single_probability": "0.499900000000000",
+                    "estimated_cost_minor": 0,
+                    "expected_count_per_ten": "4.499549730077986",
+                    "forced_tenth_probability": "0.000000000000000",
+                    "average_probability_per_ten_slot": "0.449954973007799"
+                  },
+                  {
+                    "key": "none",
+                    "kind": "NONE",
+                    "weight": 5000,
+                    "tenth_probability": "0.000449820041994",
+                    "single_probability": "0.500000000000000",
+                    "estimated_cost_minor": 0,
+                    "expected_count_per_ten": "4.500449820041994",
+                    "forced_tenth_probability": "0.000000000000000",
+                    "average_probability_per_ten_slot": "0.450044982004199"
+                  }
+                ],
+                "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1",
+                "expected_ten_cost_minor": "50000.02249400",
+                "expected_single_cost_minor": "5.00000000",
+                "forced_tenth_branch_probability": "0.999100359916013",
+                "independent_ten_miss_probability": "0.999000449880021"
+              },
+              "bindings": [
+                {
+                  "key": "free",
+                  "stock_id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+                  "point_back": 0
+                },
+                {
+                  "key": "points",
+                  "stock_id": null,
+                  "point_back": 10
+                },
+                {
+                  "key": "none",
+                  "stock_id": null,
+                  "point_back": 0
+                }
+              ],
+              "starts_at": "2020-01-01T00:00:00.000Z",
+              "ends_at": "2099-01-01T00:00:00.000Z",
+              "rules_sha256": "2443dbcced0b76293ab13e9ec8d0b1392651a1bec1d7534f4751128e78b35ac2",
+              "terms": "synthetic; actual finite prizes; ten draw conditional guarantee",
+              "inventory_policy": "PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE",
+              "prize_promises": [
+                {
+                  "key": "free",
+                  "stock_id": "67baea1e-b5de-4eed-9d64-a38517449fd6",
+                  "template": {
+                    "kind": "PRODUCTION_FREE",
+                    "terms": "exact reviewed film, consume on start",
+                    "title": "synthetic reviewed film",
+                    "version": "synthetic-free",
+                    "capacity": 100,
+                    "exposure": null,
+                    "interview": null,
+                    "production": {
+                      "spec_ids": [
+                        "99c20cbe-341a-4efd-9d3f-1388376b651b"
+                      ],
+                      "face_minor": 50000,
+                      "minimum_minor": 50000
+                    },
+                    "source_ref": "synthetic-only",
+                    "valid_days": 30,
+                    "available_until": "2099-01-01T00:00:00.000Z",
+                    "exchange_points": null
+                  }
+                }
+              ],
+              "publication_notice": {
+                "days": 7,
+                "version": "CONTRACT_20261029_SEVEN_DAYS",
+                "opens_at": "2026-11-01T17:43:11.098Z",
+                "published_at": "2026-10-25T17:43:11.098Z"
+              }
+            },
+            "at": "2026-11-02T17:43:11.111Z",
+            "count": 10,
+            "points": 2700,
+            "hold_id": "5de2bca9-1087-44e5-a235-09045358e6c5",
+            "results": [
+              {
+                "key": "points",
+                "ticket": 1127,
+                "total": 10000,
+                "index": 0,
+                "kind": "POINT_BACK",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": "80d2872f-ed19-4e43-9131-eafea7a5be49",
+                "point_back": 10
+              },
+              {
+                "key": "points",
+                "ticket": 4518,
+                "total": 10000,
+                "index": 1,
+                "kind": "POINT_BACK",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": "a2fc309b-6855-491c-8b7e-59d70de300c7",
+                "point_back": 10
+              },
+              {
+                "key": "points",
+                "ticket": 624,
+                "total": 10000,
+                "index": 2,
+                "kind": "POINT_BACK",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": "d605f414-7b58-42e1-b532-bec157bccdd2",
+                "point_back": 10
+              },
+              {
+                "key": "none",
+                "ticket": 6330,
+                "total": 10000,
+                "index": 3,
+                "kind": "NONE",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "none",
+                "ticket": 8831,
+                "total": 10000,
+                "index": 4,
+                "kind": "NONE",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "points",
+                "ticket": 3924,
+                "total": 10000,
+                "index": 5,
+                "kind": "POINT_BACK",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": "18159da9-eb21-4c59-a634-fe1b4ddef5c0",
+                "point_back": 10
+              },
+              {
+                "key": "points",
+                "ticket": 3451,
+                "total": 10000,
+                "index": 6,
+                "kind": "POINT_BACK",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": "440f6c76-b899-4dc3-a516-34a42a44badd",
+                "point_back": 10
+              },
+              {
+                "key": "points",
+                "ticket": 2792,
+                "total": 10000,
+                "index": 7,
+                "kind": "POINT_BACK",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": "7a971bda-0df8-460a-b878-2d2118873066",
+                "point_back": 10
+              },
+              {
+                "key": "none",
+                "ticket": 5915,
+                "total": 10000,
+                "index": 8,
+                "kind": "NONE",
+                "guaranteed_slot": false,
+                "grant_id": null,
+                "point_earning_id": null,
+                "point_back": 0
+              },
+              {
+                "key": "free",
+                "ticket": 0,
+                "total": 1,
+                "index": 9,
+                "kind": "PRODUCTION_FREE",
+                "guaranteed_slot": true,
+                "grant_id": "d871a181-49cf-4e7d-b257-cd270f6a18ee",
+                "point_earning_id": null,
+                "point_back": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "70b01924-9e21-4729-9b16-90e56ff39c51",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "18159da9-eb21-4c59-a634-fe1b4ddef5c0",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 1,
+              "content_sha256": "e1c510ed98f8f0aeca7e42d613cbf53f72966f3a7ba4f1ae1653e0ff550b4be5",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:11.126Z",
+                "event_kind": "REWARD",
+                "expires_at": "2027-11-02T17:43:11.126Z",
+                "paid_minor": 0,
+                "source_ref": "11fc47b175b9555c2207cb6686807c5af2770e0994384b04eff176e39012ae05",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:11.126Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "440f6c76-b899-4dc3-a516-34a42a44badd",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 1,
+              "content_sha256": "6493a22289f16968f9433e0e9b840c722a0d5b9a755588de68bbf2dc6652ca0a",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:11.127Z",
+                "event_kind": "REWARD",
+                "expires_at": "2027-11-02T17:43:11.127Z",
+                "paid_minor": 0,
+                "source_ref": "f4b9cb88664eb26f571ee19a83ca93c146973659655160e5be2a6eb8f275ff92",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:11.127Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "661bcce7-cf93-4d9c-b889-80581e1330c5",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 4,
+              "content_sha256": "cb5555bb043139cdf4c3a70a6dfccbf13c12e25f5ccb6d46099a696b9d920108",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 8100,
+                "points": 100000,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:08.808Z",
+                "event_kind": "REGISTER",
+                "expires_at": "2027-11-02T17:43:08.808Z",
+                "paid_minor": 0,
+                "source_ref": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:08.792Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "7a971bda-0df8-460a-b878-2d2118873066",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 1,
+              "content_sha256": "b27d67d8e86239a293730c1d1f5429051f20e53b73d219dbae9c833ec4b7683e",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:11.129Z",
+                "event_kind": "REWARD",
+                "expires_at": "2027-11-02T17:43:11.129Z",
+                "paid_minor": 0,
+                "source_ref": "2acf69470320f125a076bc20240602d25163ae3cc774bfdafddd304e92daf191",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:11.129Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "80d2872f-ed19-4e43-9131-eafea7a5be49",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 1,
+              "content_sha256": "102c3401f04d8104ebe0a7568770b83f7cc9171b71e0bbd7844f103b8b7031ce",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:11.120Z",
+                "event_kind": "REWARD",
+                "expires_at": "2027-11-02T17:43:11.120Z",
+                "paid_minor": 0,
+                "source_ref": "2a74c96f63822b838b37a92ae8101553fe86a4874dd1ce891467fdf5bba8af66",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:11.120Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "a2fc309b-6855-491c-8b7e-59d70de300c7",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 1,
+              "content_sha256": "bde71bb233ba9ebdfdcdd0528f2657ca7942104ecbbfc8d7562422cd3a4a083f",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:11.122Z",
+                "event_kind": "REWARD",
+                "expires_at": "2027-11-02T17:43:11.122Z",
+                "paid_minor": 0,
+                "source_ref": "2c40f55d9bf369d19447bf8d9c488feb808f21763775e87eeef2d67ce5c5be29",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:11.122Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "d605f414-7b58-42e1-b532-bec157bccdd2",
+              "kind": "EARNING",
+              "owner_party_id": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4",
+              "parent_id": null,
+              "created_by": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7",
+              "current_status": "ISSUED",
+              "object_version": 1,
+              "content_sha256": "c7e9dbeecdb16bbb6745f7e74a15086bcf175e768ed2bcb36fbd2ecf9ed63776",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": 100000,
+                    "DAILY_CHECKIN": null
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+                "reversed": 0,
+                "issued_at": "2026-11-02T17:43:11.124Z",
+                "event_kind": "REWARD",
+                "expires_at": "2027-11-02T17:43:11.124Z",
+                "paid_minor": 0,
+                "source_ref": "75fd504ff0088cfff05e5db050333623c6cdf957c844786e3a1b779b3c03b6e3",
+                "debt_offset": 0,
+                "occurred_at": "2026-11-02T17:43:11.124Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d6597a43-3333-47ca-8bf0-b2bc9790b969",
+          "actor": {
+            "account_id": "f3865e0e-5f9a-4c36-b5bf-cda8698caaa7"
+          },
+          "acting_party": "2d8ed1c4-edbe-4849-83ac-c0159d5cdbb4"
+        },
+        "data": {
+          "account_id": "bd39e0f8-6ec9-44fd-806c-0b012d57edbc",
+          "rule_id": "19d2b313-fb38-4343-a1d9-7b9b7e23a8b4",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 91960,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 100060,
+            "withdrawn": 0,
+            "net_issued": 100060
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    }
+  ]
+}

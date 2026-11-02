@@ -6502,8 +6502,166 @@
         }
       },
       "name": "daily reconciliation reviewed synthetic report"
+    },
+    {
+      "name": "ConsumerControlResponse",
+      "schema": "ConsumerControlResponse",
+      "value": {
+        "meta": {
+          "request_id": "cf8f14e0-2b51-4806-b111-1ed49d0bf4e3",
+          "actor": {
+            "account_id": "8aa2c5b4-8190-46c1-b56a-e5217eee348b"
+          },
+          "acting_party": "65cc2663-2b1b-462c-8e15-4bda515c1e91"
+        },
+        "data": {
+          "id": "aea217a4-b60f-444f-bb27-e9eee35aabb9",
+          "object_version": 1,
+          "party_id": "65cc2663-2b1b-462c-8e15-4bda515c1e91",
+          "policy_version": "SELF_MONTHLY_LIMIT_V1",
+          "cooling_hours": 24,
+          "limits": {
+            "PAYMENT": null,
+            "RECHARGE": null
+          },
+          "pending": {
+            "PAYMENT": null,
+            "RECHARGE": null
+          },
+          "period": {
+            "month": "2026-11",
+            "starts_at": "2026-10-31T16:00:00.000Z",
+            "ends_at": "2026-11-30T16:00:00.000Z",
+            "timezone": "Asia/Shanghai"
+          },
+          "usage": {
+            "RECHARGE": {
+              "used_minor": 0,
+              "pending_minor": 0,
+              "remaining_minor": null,
+              "over_limit": false
+            },
+            "PAYMENT": {
+              "used_minor": 0,
+              "pending_minor": 0,
+              "remaining_minor": null,
+              "over_limit": false
+            }
+          },
+          "accounting_basis": "GROSS_MONTH_REQUESTS_RECEIPTS_AND_OPEN_ATTEMPTS",
+          "scope": "PERSONAL_CASH_ONLY",
+          "as_of": "2026-11-02T17:33:57.510Z"
+        }
+      }
+    },
+    {
+      "name": "ConsumerControlHistoryResponse",
+      "schema": "ConsumerControlHistoryResponse",
+      "value": {
+        "meta": {
+          "request_id": "15e40335-6388-41af-a5a5-c4f2179af0b8",
+          "actor": {
+            "account_id": "8aa2c5b4-8190-46c1-b56a-e5217eee348b"
+          },
+          "acting_party": "65cc2663-2b1b-462c-8e15-4bda515c1e91"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "469cce77-44f5-45db-8062-b2c8cd6e2da8",
+              "kind": "CONSUMER_LIMIT_EVENT",
+              "owner_party_id": "65cc2663-2b1b-462c-8e15-4bda515c1e91",
+              "parent_id": "aea217a4-b60f-444f-bb27-e9eee35aabb9",
+              "created_by": "8aa2c5b4-8190-46c1-b56a-e5217eee348b",
+              "current_status": "RECORDED",
+              "object_version": 1,
+              "content_sha256": "845069e9e0d7adf14725421eba18f338ec0daa75a1f41bc6f18f83bf9265ab6a",
+              "data": {
+                "at": "2026-11-02T17:33:57.764Z",
+                "kind": "PAYMENT",
+                "after": {
+                  "limits": {
+                    "PAYMENT": 0,
+                    "RECHARGE": null
+                  },
+                  "pending": {
+                    "PAYMENT": null,
+                    "RECHARGE": null
+                  }
+                },
+                "action": "CHANGE",
+                "before": {
+                  "limits": {
+                    "PAYMENT": 150,
+                    "RECHARGE": null
+                  },
+                  "pending": {
+                    "PAYMENT": null,
+                    "RECHARGE": null
+                  }
+                },
+                "object_version": 3,
+                "policy_version": "SELF_MONTHLY_LIMIT_V1"
+              }
+            },
+            {
+              "id": "4e1a7a6b-92d5-44e1-b899-7067d2a745ba",
+              "kind": "CONSUMER_LIMIT_EVENT",
+              "owner_party_id": "65cc2663-2b1b-462c-8e15-4bda515c1e91",
+              "parent_id": "aea217a4-b60f-444f-bb27-e9eee35aabb9",
+              "created_by": "8aa2c5b4-8190-46c1-b56a-e5217eee348b",
+              "current_status": "RECORDED",
+              "object_version": 1,
+              "content_sha256": "49ac3f1bd89922547da972fa2d8c8f5283e9f071429a8ef623b1d0bf8a7652a0",
+              "data": {
+                "at": "2026-11-02T17:33:57.563Z",
+                "kind": "PAYMENT",
+                "after": {
+                  "limits": {
+                    "PAYMENT": 150,
+                    "RECHARGE": null
+                  },
+                  "pending": {
+                    "PAYMENT": null,
+                    "RECHARGE": null
+                  }
+                },
+                "action": "CHANGE",
+                "before": {
+                  "limits": {
+                    "PAYMENT": null,
+                    "RECHARGE": null
+                  },
+                  "pending": {
+                    "PAYMENT": null,
+                    "RECHARGE": null
+                  }
+                },
+                "object_version": 2,
+                "policy_version": "SELF_MONTHLY_LIMIT_V1"
+              }
+            }
+          ],
+          "next_cursor": "4e1a7a6b-92d5-44e1-b899-7067d2a745ba"
+        }
+      }
+    },
+    {
+      "name": "ConsumerLimitChangeInput",
+      "schema": "ConsumerLimitChangeInput",
+      "value": {
+        "kind": "PAYMENT",
+        "monthly_limit_minor": 10000
+      }
+    },
+    {
+      "name": "ConsumerLimitDecisionInput",
+      "schema": "ConsumerLimitDecisionInput",
+      "value": {
+        "kind": "PAYMENT"
+      }
     }
   ],
   "contract_version": "0.31.22-rc.1",
-  "version": "0.31.23-rc.1"
+  "version": "0.31.24-rc.1"
 }
