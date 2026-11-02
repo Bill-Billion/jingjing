@@ -256,6 +256,7 @@ class AccountApi {
         if (error.uncertain) {
           _pending[scope] = {
             'fingerprint': fingerprint,
+            'key': key,
             'body': body,
             'version': version,
             'bytes': bytes,

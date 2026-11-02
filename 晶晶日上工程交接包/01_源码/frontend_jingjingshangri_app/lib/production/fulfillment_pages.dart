@@ -54,8 +54,9 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
       if (flow.manualSample)
         appNotice('本单为人工样片服务。付款节点按原订单显示，不套用私人定制三期。')
       else
-        appNotice(
-            flow.terms['preview_payment_order'] == 'PREVIEW_BEFORE_INTERIM'
+        appNotice(flow.terms['preview_payment_order'] == 'SCRIPT_BEFORE_INTERIM'
+            ? '脚本或图纸确认后办理40%中款，收款后进入样片及成片制作；成片验收并付清30%尾款后下载正式文件。'
+            : flow.terms['preview_payment_order'] == 'PREVIEW_BEFORE_INTERIM'
                 ? '先提供正式带水印预览，当前样片确认后再办理中间补款；成片确认后办理尾款，付清再下载正式文件。'
                 : '这是保留原顺序的历史约定，按本单实际付款与预览条件办理。'),
       if (order != null) ...[
@@ -78,7 +79,7 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
                 : () => open(
                     '/production/manual-sample?requestId=${flow.source['request_id']}'),
             outline: true),
-      tradeFact('每次正式交付的原约定期限', '${flow.terms['acceptance_hours']} 小时'),
+      tradeFact('每次正式交付的原约定期限', customizationAcceptanceLabel(flow.terms)),
       tradeFact('创意修改次数',
           '已用 ${flow.creativeChanges} / 原约定 ${project.data['specification']['revision_limit']} + 追加 ${flow.additionalChanges}'),
       appNotice('纠正原约定错误不扣创意修改次数；新增创作要求超出原范围时另报价、确认并付款。'),
@@ -98,11 +99,10 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
                 ? '尚无本次成功读取记录'
                 : tradeDate(r['view_observed_at'])),
         tradeFact('明确收讫',
-            r['started_at'] == null ? '尚未开始计时' : tradeDate(r['started_at'])),
-        if (r['deadline_at'] != null)
-          tradeFact('服务器记录的截止时间', tradeDate(r['deadline_at'])),
+            r['notified_at'] == null ? '尚待确认收到' : tradeDate(r['notified_at'])),
+        tradeFact('服务器记录的截止时间', customizationDeadlineLabel(r)),
         appNotice(
-            '须真实打开文件、确认交付通知已读，再明确收讫才开始计时。读取或播放失败请报文件问题。超过期限的处理会注明按原约定进行。'),
+            '收到文件不等于认可成果。最终成片收讫后按本单期限办理，其余阶段须明确确认。争议或文件问题暂停后，须重读重发通知和文件再确认收到。'),
         tradeButton(
             '查看本次正式版本',
             busy

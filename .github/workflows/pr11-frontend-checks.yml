@@ -8,6 +8,9 @@ on:
       - '晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/**'
       - '.github/workflows/pr11-frontend-checks.yml'
       - 'scripts/run-ui-browser-check.cjs'
+      - 'scripts/pr39-recovery-browser-check.mjs'
+      - 'scripts/pr39-manual-video-browser-check.mjs'
+      - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
@@ -48,6 +51,9 @@ on:
       - '晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/**'
       - '.github/workflows/pr11-frontend-checks.yml'
       - 'scripts/run-ui-browser-check.cjs'
+      - 'scripts/pr39-recovery-browser-check.mjs'
+      - 'scripts/pr39-manual-video-browser-check.mjs'
+      - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
@@ -228,6 +234,27 @@ jobs:
           PR20_WEB_URL: http://127.0.0.1:5211
           VITE_BACKEND_ORIGIN: http://127.0.0.1:3362
         run: node scripts/run-ui-browser-check.cjs 20 --built
+      - name: 开票结果丢失、刷新与独立核准回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: node scripts/pr39-recovery-browser-check.mjs
+      - name: 人工视频同单客户与运营办理回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: node scripts/pr39-manual-video-browser-check.mjs
+      - name: 保存开票恢复和人工视频模拟证据
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: invoice-recovery-browser
+          path: |
+            .local/mac-mini-recovery-browser/results.json
+            .local/mac-mini-recovery-browser/*.png
+            .local/pr39-manual-video-browser/results.json
+            .local/pr39-manual-video-browser/*.png
+          if-no-files-found: ignore
       - name: 清理本次测试数据库
         if: always()
         working-directory: ${{ github.workspace }}

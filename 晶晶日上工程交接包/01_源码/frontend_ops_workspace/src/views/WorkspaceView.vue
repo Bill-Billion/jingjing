@@ -71,9 +71,11 @@ async function loadReceived(more = false) {
   } catch (e) { if (!disposed && session.current(s) && ticket === invitationRequest) invitationError.value = asApiError(e) }
   finally { if (!disposed && session.current(s) && ticket === invitationRequest) invitationsLoading.value = false }
 }
-watch(() => session.selectedId, () => {
-  memberRequest++; members.value = []; memberCursor.value = null; memberError.value = null
-  rename.value = selected.value?.party.display_name || ''; invitee.value = ''; expiry.value = ''; message.value = ''; error.value = null
+watch(() => [session.selectedId, session.revision, session.token, session.account?.id], (current, previous) => {
+  // A same-ID authority change cancels the old request as well as its loading UI.
+  memberRequest++; members.value = []; memberCursor.value = null; memberError.value = null; membersLoading.value = false
+  rename.value = selected.value?.party.display_name || ''; invitee.value = ''; expiry.value = ''
+  if (current[0] !== previous[0] || current[2] !== previous[2] || current[3] !== previous[3]) { message.value = ''; error.value = null }
   void loadMembers()
 }, { flush: 'sync' })
 watch(() => selected.value?.party.display_name, name => { rename.value = name || '' })

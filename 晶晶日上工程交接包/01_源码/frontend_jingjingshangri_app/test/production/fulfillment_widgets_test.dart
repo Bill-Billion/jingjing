@@ -29,6 +29,31 @@ class _SavingPicker extends FilePickerPlatform {
 }
 
 void main() {
+  testWidgets('新脚本已收讫仍待明确验收，不显示重复收到按钮或null小时', (t) async {
+    final a = fulfillmentAdapter(override: (r) {
+      if (r.path.endsWith('/fulfillment')) {
+        final data = fulfillmentData(viewed: true, received: true)
+          ..['terms'] = workingFulfillmentTerms();
+        data['receipt'].addAll({
+          'started_at': null,
+          'deadline_at': null,
+          'job_id': null,
+          'deadline_basis': {'mode': 'EXPLICIT_CONFIRMATION'}
+        });
+        return envelope(data);
+      }
+      return null;
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await nav.openApp(t, s,
+        route: '/production/version?versionId=$productionVersionId');
+    await reveal(t, find.text('本阶段须明确确认成果，不自动倒计时'));
+    expect(find.text('明确确认本次交付已收到'), findsNothing);
+    expect(find.textContaining('null 小时'), findsNothing);
+    expect(
+        a.requests.where((r) => r.path.endsWith('/delivery-receipt')), isEmpty);
+    expect(t.takeException(), isNull);
+  });
   for (final state in ['STARTED', 'PAUSED', 'REFUND_REQUIRED']) {
     testWidgets('项目组合待办区分验收、已付清、正式收讫与暂停取消：$state', (t) async {
       final a = productionAdapter(

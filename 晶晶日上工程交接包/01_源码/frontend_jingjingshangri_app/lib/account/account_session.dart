@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'account_api.dart';
 
@@ -245,9 +246,41 @@ class AccountSession extends ChangeNotifier {
   Map<String, dynamic>? get party =>
       selected?['party'] as Map<String, dynamic>?;
   bool allows(String action) =>
+      _activeMembership &&
       (party?['allowed_actions'] as List? ?? []).contains(action);
   bool get isOwner =>
+      _activeMembership &&
       (selected?['membership']?['roles'] as List? ?? []).contains('OWNER');
+  bool get _activeMembership =>
+      selected?['membership']?['current_status'] == 'ACTIVE' &&
+      !['SUSPENDED', 'CLOSED'].contains(party?['current_status']);
+
+  String _authority(Map<String, dynamic>? row) {
+    List<String> sorted(dynamic values) =>
+        (values as List? ?? []).map((v) => v.toString()).toList()..sort();
+    return jsonEncode([
+      row?['party']?['id'],
+      row?['party']?['current_status'],
+      row?['membership']?['current_status'],
+      sorted(row?['membership']?['roles']),
+      sorted(row?['membership']?['allowed_actions']),
+      sorted(row?['party']?['allowed_actions']),
+      sorted((row?['party']?['capabilities'] as List? ?? [])
+          .map((c) => jsonEncode(
+              [c['code'], c['current_status'], sorted(c['allowed_actions'])]))
+          .toList())
+    ]);
+  }
+
+  void _replaceSelected(Map<String, dynamic>? row) {
+    final changed = _authority(selected) != _authority(row);
+    selected = row;
+    if (changed) {
+      api.clearSupplyOperations();
+      _epoch++;
+      operationsTargets.clear();
+    }
+  }
 
   Future<Map<String, dynamic>> sendCode(String phone) =>
       api.request('POST', '/api/v1/auth/sms-challenges',
@@ -558,16 +591,52 @@ class AccountSession extends ChangeNotifier {
     }
     if (more && partiesCursor == null) return;
     final ticket = ++_partyRead;
-    final result = await read('/api/v1/me/parties', query: {
+    final wanted = partyId;
+    Future<Map<String, dynamic>?> currentPage(
+        Map<String, dynamic> query) async {
+      try {
+        if (query['party_id'] != null) {
+          final access = await read('/api/v1/me/parties/${query['party_id']}');
+          return {
+            'items': [access],
+            'next_cursor': null
+          };
+        }
+        return await read('/api/v1/me/parties', query: query);
+      } on AccountError catch (e) {
+        if (ticket != _partyRead && e.code == 'CONTEXT_CHANGED') return null;
+        if ([403, 404].contains(e.status) &&
+            partyId == wanted &&
+            wanted != null) {
+          _unavailableParties.add(wanted);
+          _replaceSelected(null);
+          parties = parties.where((p) => p['party']['id'] != wanted).toList();
+          partyNotice = '原身份已不可用，请核对后选择其他身份。';
+          notifyListeners();
+        }
+        rethrow;
+      }
+    }
+
+    final result = await currentPage({
       'limit': 20,
       if (more && partiesCursor != null) 'cursor': partiesCursor,
     });
-    if (ticket != _partyRead) return;
+    if (result == null || ticket != _partyRead) return;
     // A stale list may keep returning an inaccessible identity. Only an
     // explicit user refresh retries it; automatic refresh must not loop.
     final rows = maps(result['items'])
         .where((row) => !_unavailableParties.contains(row['party']['id']))
         .toList();
+    if (!more && wanted != null) {
+      final current = await currentPage({'party_id': wanted, 'limit': 1});
+      if (current == null || ticket != _partyRead) return;
+      // The explicit identity endpoint supplies current authority, even when
+      // a cached list still contains an older membership for this same ID.
+      rows.removeWhere((row) => row['party']['id'] == wanted);
+      rows.addAll(
+          maps(current['items']).where((row) => row['party']['id'] == wanted));
+    }
     parties = {
       for (final row in [
         ...(more ? parties : <Map<String, dynamic>>[]),
@@ -576,27 +645,22 @@ class AccountSession extends ChangeNotifier {
         row['party']['id']: row
     }.values.toList();
     partiesCursor = result['next_cursor'] as String?;
-    // Keep a selected identity even if it is on another page. Its permissions
-    // are re-read separately; an actual 403/404 clears the selection below.
     final match = parties.where((row) => row['party']['id'] == partyId);
     if (match.isNotEmpty) {
-      final wasOwner = isOwner;
-      final previousStatus = party?['current_status'];
-      selected = match.first;
-      if ((wasOwner && !isOwner) ||
-          (previousStatus != party?['current_status'] &&
-              ['SUSPENDED', 'CLOSED'].contains(party?['current_status']))) {
-        api.clearSupplyOperations();
-        _epoch++;
-        operationsTargets.clear();
-      }
+      _replaceSelected(match.first);
+    } else if (wanted != null && !more) {
+      _unavailableParties.add(wanted);
+      _replaceSelected(null);
+      partyNotice = '原身份已不可用，请核对后选择其他身份。';
     }
-    if (selected == null && parties.isNotEmpty) selected = parties.first;
+    if (wanted == null && selected == null && parties.isNotEmpty) {
+      _replaceSelected(parties.first);
+    }
     notifyListeners();
   }
 
   void select(Map<String, dynamic> value) {
-    if (value['party']['id'] == partyId) return;
+    if (_authority(value) == _authority(selected)) return;
     partyNotice = null;
     api.clearSupplyOperations();
     _domainDenials.clear();
@@ -619,15 +683,11 @@ class AccountSession extends ChangeNotifier {
     final id = partyId;
     if (id == null) return;
     try {
-      final previousStatus = party?['current_status'];
-      final result = await read('/api/v1/parties/$id', actingParty: id);
-      selected = {...selected!, 'party': result};
-      if (['SUSPENDED', 'CLOSED'].contains(result['current_status']) &&
-          result['current_status'] != previousStatus) {
-        api.clearSupplyOperations();
-        _epoch++;
-        operationsTargets.clear();
+      final result = await read('/api/v1/me/parties/$id');
+      if (result['party']?['id'] != id) {
+        throw const AccountError(404, 'PARTY_NOT_FOUND');
       }
+      _replaceSelected(result);
       parties =
           parties.map((p) => p['party']['id'] == id ? selected! : p).toList();
       notifyListeners();
@@ -635,10 +695,7 @@ class AccountSession extends ChangeNotifier {
       if ([403, 404].contains(error.status) && partyId == id) {
         _unavailableParties.add(id);
         partyNotice = '部分身份暂时无法访问，已停止自动重试。可以刷新当前记录，或选择其他身份。';
-        api.clearSupplyOperations();
-        _epoch++;
-        operationsTargets.clear();
-        selected = null;
+        _replaceSelected(null);
         parties = parties.where((p) => p['party']['id'] != id).toList();
         notifyListeners();
       }

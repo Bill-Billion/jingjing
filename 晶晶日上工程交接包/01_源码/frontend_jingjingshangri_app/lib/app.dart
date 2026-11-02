@@ -390,10 +390,8 @@ class JingjingShangriApp extends StatelessWidget {
                   id: uri.queryParameters['noticeId'] ??
                       uri.queryParameters['sourceId'],
                   kind: uri.queryParameters['kind']),
-              '/ai-create' => const AppUnavailablePage(
-                  title: '生成服务',
-                  description:
-                      '生成服务按具体制作项目核对本人同意、用途与原约定。未开通时不会创建演示任务或视频，请从“我的—制作与交付”查看项目。'),
+              '/ai-create' => const CustomizationPage(
+                  createNew: true, initialCategory: 'blessing_manual'),
               '/after-sales' || '/review' => const AppUnavailablePage(
                   title: '反馈与售后',
                   description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),

@@ -12,7 +12,7 @@ if (!process.env.JX_MYSQL_TEST_ENV_FILE) {
   process.exit(1);
 }
 const files=suites[name];
-const result=spawnSync(process.execPath,['--test',...files],{
+const result=spawnSync(process.execPath,['--test','--test-reporter=tap',...files],{
   cwd:path.resolve(__dirname,'..'),env:{...process.env,NODE_OPTIONS:[process.env.NODE_OPTIONS,'--require ./scripts/test-network-guard.cjs'].filter(Boolean).join(' ')},stdio:'inherit',windowsHide:true,
 });
 process.exit(result.status===null?1:result.status);

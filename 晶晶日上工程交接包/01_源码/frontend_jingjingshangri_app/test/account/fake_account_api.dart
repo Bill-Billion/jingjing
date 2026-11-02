@@ -169,9 +169,19 @@ class FakeAccountAdapter implements HttpClientAdapter {
     }
     if (options.path == '/api/v1/me/parties') {
       return envelope({
-        'items': [identity(orgId), identity(personId)],
+        'items': [identity(orgId), identity(personId)]
+            .where((row) =>
+                options.queryParameters['party_id'] == null ||
+                row['party']['id'] == options.queryParameters['party_id'])
+            .toList(),
         'next_cursor': null
       });
+    }
+    if (options.path.startsWith('/api/v1/me/parties/')) {
+      final id = options.path.split('/').last;
+      return [orgId, personId].contains(id)
+          ? envelope(identity(id))
+          : envelope({'code': 'PARTY_NOT_FOUND'}, status: 404, error: true);
     }
     if (options.path == '/api/v1/me/invitations') {
       return envelope({

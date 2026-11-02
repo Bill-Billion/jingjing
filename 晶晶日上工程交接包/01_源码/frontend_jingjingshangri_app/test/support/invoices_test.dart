@@ -229,6 +229,13 @@ void main() {
         }
         return envelope(invoiceFixture(version: 8));
       }
+      if (r.path.contains('/command-results/')) {
+        return envelope({
+          'operation': 'ACTION',
+          'current_status': 'NOT_RECORDED',
+          'invoice': null
+        });
+      }
       if (r.path == '/api/v1/invoices/requests/$invitationId') {
         return envelope(invoiceFixture(version: 7));
       }
@@ -256,10 +263,54 @@ void main() {
     expect(calls[1].headers['If-Match'], '"4"');
     expect(calls[1].data, body);
     final before = a.requests.indexOf(calls.last);
-    expect(
-        a.requests[before - 1].path, '/api/v1/invoices/requests/$invitationId');
+    expect(a.requests[before - 1].path.contains('/command-results/'), isTrue);
     expect(s.pending('POST', path, actingParty: personId), isNull);
   });
+  for (final state in ['RECORDED', 'PROCESSING', 'FORBIDDEN']) {
+    testWidgets('原操作查询$state不重复写入，拒绝时清私有内容', (t) async {
+      final path = '/api/v1/invoices/requests/$invitationId/actions';
+      late FakeAccountAdapter a;
+      a = FakeAccountAdapter(handler: (r) {
+        if (r.path == path) {
+          return envelope({'code': 'COMMIT_OUTCOME_UNKNOWN'},
+              status: 503, error: true);
+        }
+        if (r.path.contains('/command-results/')) {
+          final write = a.requests.firstWhere((q) => q.path == path);
+          expect(r.path.split('/').last, write.headers['Idempotency-Key']);
+          expect(r.queryParameters['operation'], 'ACTION');
+          expect(r.queryParameters['invoice_id'], invitationId);
+          if (state == 'FORBIDDEN') {
+            return envelope({'code': 'FORBIDDEN'}, status: 403, error: true);
+          }
+          return envelope({
+            'operation': 'ACTION',
+            'current_status': state,
+            'invoice': state == 'RECORDED' ? invoiceFixture(version: 8) : null
+          });
+        }
+        if (r.path == '/api/v1/invoices/requests/$invitationId') {
+          return envelope(invoiceFixture(version: 8));
+        }
+        if (r.path.endsWith('/history') || r.path.endsWith('/documents')) {
+          return envelope({'items': [], 'next_cursor': null});
+        }
+        return a.defaultReply(r);
+      });
+      final s = (await t.runAsync(() => buyerSession(a)))!;
+      await t.runAsync(() => expectLater(
+          s.write('POST', path,
+              body: {'action': 'WITHDRAW', 'text': '合成原请求'},
+              version: 4,
+              actingParty: personId),
+          throwsA(isA<AccountError>())));
+      await host(t, s, const InvoicePage(invoiceId: invitationId));
+      await press(t, '核对并恢复原申请');
+      expect(a.requests.where((r) => r.path == path).length, 1);
+      expect(s.pending('POST', path, actingParty: personId) != null,
+          state == 'PROCESSING');
+    });
+  }
   testWidgets('412保留本次补件说明与抬头，重新核对后由本人再次提交', (t) async {
     var version = 2, writes = 0;
     late FakeAccountAdapter a;
