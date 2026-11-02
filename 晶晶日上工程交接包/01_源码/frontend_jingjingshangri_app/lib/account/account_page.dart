@@ -47,6 +47,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   late AccountSession _session;
   int? _seenEpoch;
+  String? _identityScope;
   int _load = 0;
   bool _busy = false;
   String? _error;
@@ -70,7 +71,12 @@ class _AccountPageState extends State<AccountPage> {
       _error = null;
       _notice = null;
       _busy = false;
-      if (_session.isLoggedIn) {
+      final scope = '${_session.loginEpoch}:${_session.partyId}';
+      final identityChanged = scope != _identityScope;
+      _identityScope = scope;
+      // Permission changes clear private content, but must not recursively
+      // reload a stale list followed by a newer detail for the same identity.
+      if (_session.isLoggedIn && identityChanged) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _refresh(retryUnavailable: false);
         });

@@ -54,8 +54,9 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
       if (flow.manualSample)
         appNotice('本单为人工样片服务。付款节点按原订单显示，不套用私人定制三期。')
       else
-        appNotice(
-            flow.terms['preview_payment_order'] == 'PREVIEW_BEFORE_INTERIM'
+        appNotice(flow.terms['preview_payment_order'] == 'SCRIPT_BEFORE_INTERIM'
+            ? '脚本或图纸确认后办理40%中款，收款后进入样片及成片制作；成片验收并付清30%尾款后下载正式文件。'
+            : flow.terms['preview_payment_order'] == 'PREVIEW_BEFORE_INTERIM'
                 ? '先提供正式带水印预览，当前样片确认后再办理中间补款；成片确认后办理尾款，付清再下载正式文件。'
                 : '这是保留原顺序的历史约定，按本单实际付款与预览条件办理。'),
       if (order != null) ...[

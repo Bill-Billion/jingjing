@@ -15,8 +15,13 @@ import 'customization_models.dart';
 
 /// Private story drafts, supplement replies and immutable formal submissions.
 class CustomizationPage extends StatelessWidget {
-  const CustomizationPage({super.key, this.requestId, this.createNew = false});
+  const CustomizationPage(
+      {super.key,
+      this.requestId,
+      this.createNew = false,
+      this.initialCategory});
   final String? requestId;
+  final String? initialCategory;
   final bool createNew;
   @override
   Widget build(BuildContext context) {
@@ -27,9 +32,11 @@ class CustomizationPage extends StatelessWidget {
         !['SUSPENDED', 'CLOSED'].contains(session.party?['current_status']);
     final route = requestId != null
         ? '/customization/$requestId'
-        : createNew
-            ? '/customization/new'
-            : '/customization';
+        : initialCategory == 'blessing_manual'
+            ? '/ai-create'
+            : createNew
+                ? '/customization/new'
+                : '/customization';
     if (!allowed) {
       return tradeScaffold(context, '我的定制故事', [
         _heading('让故事从这里开始'),
@@ -57,7 +64,10 @@ class CustomizationPage extends StatelessWidget {
       ),
       child: requestId == null && !createNew
           ? _StoryList(session: session)
-          : _StoryEditor(session: session, id: requestId),
+          : _StoryEditor(
+              session: session,
+              id: requestId,
+              initialCategory: initialCategory),
     );
   }
 }
@@ -234,9 +244,10 @@ class _StoryListState extends State<_StoryList> {
 }
 
 class _StoryEditor extends StatefulWidget {
-  const _StoryEditor({required this.session, this.id});
+  const _StoryEditor({required this.session, this.id, this.initialCategory});
   final AccountSession session;
   final String? id;
+  final String? initialCategory;
   @override
   State<_StoryEditor> createState() => _StoryEditorState();
 }
@@ -389,6 +400,15 @@ class _StoryEditorState extends State<_StoryEditor> {
             categories = result;
             denied = false;
           });
+          if (widget.initialCategory != null) {
+            final matching = result
+                .where((category) => category.code == widget.initialCategory);
+            if (matching.isNotEmpty) {
+              await choose(matching.first);
+            } else {
+              setState(() => notice = '人工短视频需求表暂未发布，请稍后刷新或联系平台受理。');
+            }
+          }
         }
       }
     } on AccountError catch (e) {

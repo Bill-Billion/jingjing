@@ -54,9 +54,7 @@ void main() {
       late FakeAccountAdapter adapter;
       var unavailable = true;
       adapter = FakeAccountAdapter(handler: (r) {
-        if (unavailable &&
-            (r.path == '/api/v1/parties/$orgId' ||
-                r.path == '/api/v1/parties/$personId')) {
+        if (unavailable && r.path.startsWith('/api/v1/me/parties/')) {
           return envelope({'code': 'TEST_ACCESS_RESTRICTED'},
               status: status, error: true);
         }
@@ -75,7 +73,7 @@ void main() {
           reason: '失败身份不能被列表再次自动选中并重复请求');
       expect(
           adapter.requests
-              .where((r) => r.path == '/api/v1/parties/$orgId')
+              .where((r) => r.path == '/api/v1/me/parties/$orgId')
               .length,
           1);
       expect(session.isLoggedIn, isTrue);
@@ -426,6 +424,35 @@ void main() {
     await close(tester);
   });
 
+  testWidgets('列表旧权限与详情新权限不一致时刷新有界且保留最新降权', (tester) async {
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/me/parties/$orgId') {
+        final row = identity(orgId, owner: false);
+        row['party']['allowed_actions'] = ['READ_PARTY'];
+        return envelope(row);
+      }
+      // The list intentionally remains stale across every refresh.
+      return adapter.defaultReply(r);
+    });
+    final session = AccountSession(api: adapter.createApi());
+    await tester
+        .runAsync(() => session.login('13800000000', invitationId, '123456'));
+    session.select(identity(orgId));
+    await pump(tester, session, const AccountPage());
+    await frames(tester);
+    final before = adapter.requests.length;
+    await frames(tester);
+    expect(adapter.requests.length, before,
+        reason:
+            'same identity permission changes must not recursively refresh');
+    expect(session.isOwner, isFalse);
+    expect(session.allows('MANAGE_MEMBERS'), isFalse);
+    expect(adapter.requests.where((r) => r.path == '/api/v1/me/parties').length,
+        lessThanOrEqualTo(2));
+    await close(tester);
+  });
+
   testWidgets('能力申请未知后刷新出现待审，仍可重试原申请再开放其他能力', (tester) async {
     var writes = 0;
     late FakeAccountAdapter adapter;
@@ -441,13 +468,19 @@ void main() {
                 'allowed_actions': []
               });
       }
-      if (r.path == '/api/v1/parties/$orgId' && writes > 0) {
-        return envelope({
-          ...identity(orgId)['party'] as Map<String, dynamic>,
-          'capabilities': [
-            {'code': 'AUTHOR', 'current_status': 'PENDING_REVIEW'}
-          ]
-        });
+      if ((r.path == '/api/v1/me/parties/$orgId' ||
+              r.path == '/api/v1/me/parties') &&
+          writes > 0) {
+        final row = identity(orgId);
+        row['party']['capabilities'] = [
+          {'code': 'AUTHOR', 'current_status': 'PENDING_REVIEW'}
+        ];
+        return envelope(r.path.endsWith('/$orgId')
+            ? row
+            : {
+                'items': [row, identity(personId)],
+                'next_cursor': null
+              });
       }
       return adapter.defaultReply(r);
     });

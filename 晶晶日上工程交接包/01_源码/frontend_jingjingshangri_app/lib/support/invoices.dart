@@ -461,18 +461,34 @@ class _InvoicesState extends State<_Invoices> {
               body['amount_minor'] > eligibility!['available_minor'])) {
         throw const AccountError(409, 'INVOICE_AMOUNT_UNAVAILABLE');
       }
+      Map<String, dynamic>? d;
       if (recovery != null) {
-        if (path == 'requests') {
-          await api.read('requests', query: {'limit': 20});
-          invoiceEligibility(
-              await api.read('orders/${body['order_id']}/eligibility'),
-              body['order_id']);
+        final operation = path == 'requests' ? 'CREATE' : 'ACTION';
+        final result =
+            await api.read('command-results/${recovery['key']}', query: {
+          'operation': operation,
+          if (path == 'requests')
+            'order_id': body['order_id']
+          else
+            'invoice_id': path.split('/')[1],
+        });
+        communityRequire(result['operation'] == operation &&
+            ['RECORDED', 'NOT_RECORDED', 'PROCESSING']
+                .contains(result['current_status']));
+        if (result['current_status'] == 'RECORDED') {
+          d = invoiceRecord(result['invoice'], s.partyId!,
+              id: path == 'requests' ? null : path.split('/')[1],
+              orderId: path == 'requests' ? body['order_id'] : null);
+          s.discardPending('POST', recovery['path'], actingParty: s.partyId);
         } else {
-          invoiceRecord(
-              await api.read('requests/${path.split('/')[1]}'), s.partyId!);
+          communityRequire(result['invoice'] == null);
+          if (result['current_status'] == 'PROCESSING') {
+            if (mounted) setState(() => notice = '原操作仍在处理中，请稍后再次核对。不会重复提交。');
+            return;
+          }
         }
       }
-      final d = await api.write(path, body,
+      d ??= await api.write(path, body,
           version: recovery != null
               ? recovery['version']
               : create
@@ -705,7 +721,7 @@ class _InvoicesState extends State<_Invoices> {
             if (notice != null) Text(notice!),
             for (final op in pending)
               tradeSection('原申请结果尚未确定', [
-                const Text('将先核对原订单或申请，再以原编号、原版本和原内容恢复；不能另建重复申请。'),
+                const Text('先查询原操作结果。已记录则显示当前申请；尚未记录时以原编号、原版本和原内容恢复，不另建重复申请。'),
                 tradeButton('核对并恢复原申请',
                     busy || uploading ? null : () => submit(recovery: op),
                     outline: true),

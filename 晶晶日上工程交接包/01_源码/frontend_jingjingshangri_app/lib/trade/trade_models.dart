@@ -148,6 +148,7 @@ const tradeStatuses = {
 };
 const tradeTriggers = {
   'ORDER_ACCEPTED': '确认订单后付款',
+  'CUSTOMIZATION_SCRIPT_CONFIRMED': '脚本／图纸确认后付中款40%',
   'CUSTOMIZATION_INTERIM_CONFIRMED': '定制中间补款条件确认后付款',
   'SAMPLE_ACCEPTED': '样片验收后付款',
   'FINAL_ACCEPTED': '成片验收后付款'
@@ -227,8 +228,11 @@ void validateCustomizationDeliveryTerms(dynamic value) {
       _text(d['version'], 128) &&
       _text(d['source_ref'], 128) &&
       _text(d['cancellation_terms']) &&
-      ['PREVIEW_BEFORE_INTERIM', 'INTERIM_BEFORE_PREVIEW']
-          .contains(d['preview_payment_order']) &&
+      [
+        'PREVIEW_BEFORE_INTERIM',
+        'INTERIM_BEFORE_PREVIEW',
+        'SCRIPT_BEFORE_INTERIM'
+      ].contains(d['preview_payment_order']) &&
       d['acceptance_hours'] is int &&
       d['acceptance_hours'] >= 1 &&
       d['acceptance_hours'] <= 720);

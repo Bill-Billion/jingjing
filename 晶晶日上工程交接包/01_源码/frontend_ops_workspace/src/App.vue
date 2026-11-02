@@ -8,15 +8,18 @@ import { RouterView, useRouter } from 'vue-router'
 import { watch } from 'vue'
 import '@/styles/editorial.css'
 import { useSessionStore } from '@/stores/session'
+import { loginRedirect } from '@/router/loginRedirect'
 const session = useSessionStore()
 const router = useRouter()
 watch(() => session.token, token => {
   if (!token && !router.currentRoute.value.meta.public) {
     const recovery = session.loginRecovery
+    const expired = session.loginExpired
     session.loginRecovery = null
+    session.loginExpired = false
     void router.replace(recovery === 'PHONE_CHANGE_CONFIRMATION'
       ? { path: '/login', query: { redirect: '/me/phone-change', phoneChange: 'uncertain' } }
-      : '/login')
+      : expired ? { path: '/login', query: { redirect: loginRedirect(router.currentRoute.value.fullPath) } } : '/login')
   }
 })
 </script>

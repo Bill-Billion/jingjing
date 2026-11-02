@@ -14,7 +14,7 @@ export const tradeContractLabels: Readonly<Record<string,string>> = {
 }
 export type TradeKind = typeof tradeKinds[number]
 export const lineKinds = { LICENSE:'许可', PRODUCTION:'制作', OTHER:'其他明确服务' } as const
-export const triggers = { ORDER_ACCEPTED:'确认订单', SAMPLE_ACCEPTED:'当前样片版本验收', FINAL_ACCEPTED:'当前成片版本验收', CUSTOMIZATION_INTERIM_CONFIRMED:'定制中间条件确认（补至累计90%）' } as const
+export const triggers = { ORDER_ACCEPTED:'确认订单', SAMPLE_ACCEPTED:'当前样片版本验收', FINAL_ACCEPTED:'当前成片版本验收', CUSTOMIZATION_SCRIPT_CONFIRMED:'脚本／图纸确认后付中款40%', CUSTOMIZATION_INTERIM_CONFIRMED:'历史定制中间条件确认（补至累计90%）' } as const
 export const artistServiceKinds = { AVATAR_CREATION:'首次创建数字人档案', AVATAR_HOSTING:'数字人托管', HALO_REVIEW:'认证资料审核' } as const
 export interface ArtistServiceTerms { kind:keyof typeof artistServiceKinds; unit:'PERSON_FIRST'|'AVATAR_MONTH'|'HALO_APPLICATION'; rule_version:string; source_ref:string; retry_limit:number; hosting_months:number|null; halo_level:2|3|null; failure_policy:'REFUND_UNDELIVERED' }
 interface SpecificationBase { version:string; service_tier:string; deliverables:string[]; terms:string }

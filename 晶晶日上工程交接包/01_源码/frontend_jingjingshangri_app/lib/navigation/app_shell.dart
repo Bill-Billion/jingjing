@@ -281,7 +281,7 @@ class _AppShellState extends State<AppShell> {
           ('试镜服务与接单', '/auditions/offers'),
           ('我的商单与接单约定', '/gigs/records?kind=GIG'),
           ('历史作品资料', '/supply'),
-          ('创作工具 · 暂未开放', '/ai-create'),
+          ('人工短视频定制', '/ai-create'),
         ]
       ),
       (

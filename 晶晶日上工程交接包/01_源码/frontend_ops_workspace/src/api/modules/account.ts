@@ -26,3 +26,5 @@ export function sendCommand(token: string, c: AccountCommand) {
     case 'remove': return request<CommandResult>(`${base}/members/${c.account}`, { ...o, method: 'DELETE' })
   }
 }
+
+export const getMyPartyAccess = (token: string, partyId: string) => request<PartyAccess>(`/me/parties/${encodeURIComponent(partyId)}`, { token })

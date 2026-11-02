@@ -1329,7 +1329,8 @@ class _PrivateWorkState extends State<_PrivateWork> {
       version!.current(project!) &&
       version!.accepted(project!) &&
       version!.status == 'APPROVED' &&
-      order?.status == 'PAID' &&
+      (order?.status == 'PAID' ||
+          order?.status == 'REWARD_FUNDED' && order?.amount == 0) &&
       order!.data['financial']['refunded_minor'] == 0 &&
       (fulfillment == null ||
           ['STARTED', 'DELIVERED'].contains(fulfillment!.state));

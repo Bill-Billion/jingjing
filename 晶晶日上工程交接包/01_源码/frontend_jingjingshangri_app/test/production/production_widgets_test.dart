@@ -9,6 +9,7 @@ import '../account/fake_account_api.dart';
 import '../navigation/app_navigation_test.dart' as nav;
 import '../trade/trade_api_test.dart' show buyerSession;
 import '../trade/trade_fixtures.dart';
+import '../trade/business_contract_test.dart' show covered;
 import 'production_api_test.dart' show feedbackPath;
 import 'production_fixtures.dart';
 
@@ -355,6 +356,26 @@ void main() {
       expect(find.text('示例成片预览'), findsNothing);
       expect(tester.takeException(), isNull);
     }
+  });
+  testWidgets('全额权益订单已验收后可取原片，仍不伪称现金收款', (tester) async {
+    final order = tradeData('ORDER', status: 'REWARD_FUNDED');
+    order['data']['quote'] = covered();
+    order['data']['contract']['commitments']['quote'] = order['data']['quote'];
+    final adapter = productionAdapter(
+        stage: 'FINAL',
+        accepted: true,
+        override: (r) => r.path == '/api/v1/trade/records/$orderId'
+            ? envelope(order)
+            : null);
+    final session = (await tester.runAsync(() => buyerSession(adapter)))!;
+    await nav.openApp(tester, session,
+        route: '/production/work?projectId=$productionProjectId');
+    final button = find.widgetWithText(FilledButton, '下载当前原片');
+    await reveal(tester, button);
+    expect(tester.widget<FilledButton>(button).onPressed, isNotNull);
+    expect(order['data']['financial']['received_minor'], 0);
+    expect(adapter.requests.any((r) => r.path.endsWith('/content')), isFalse);
+    expect(tester.takeException(), isNull);
   });
   testWidgets('身份切换与退出立即清理私有剧本和未完成意见', (tester) async {
     final adapter = productionAdapter(),

@@ -923,6 +923,7 @@ class _TradeDetailState extends State<_TradeDetail> {
     final stage = {
       'SAMPLE_ACCEPTED': 'SAMPLE',
       'FINAL_ACCEPTED': 'FINAL',
+      'CUSTOMIZATION_SCRIPT_CONFIRMED': 'SCRIPT',
       'CUSTOMIZATION_INTERIM_CONFIRMED': 'SAMPLE'
     }[trigger];
     final lines = tradeRows(order.quote['lines'])

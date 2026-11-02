@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ Future<void> host(
   AccountSession session, {
   String? id,
   bool create = false,
+  String? initialCategory,
 }) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
@@ -26,7 +29,8 @@ Future<void> host(
     ChangeNotifierProvider.value(
       value: session,
       child: MaterialApp(
-        home: CustomizationPage(requestId: id, createNew: create),
+        home: CustomizationPage(
+            requestId: id, createNew: create, initialCategory: initialCategory),
       ),
     ),
   );
@@ -47,6 +51,36 @@ Future<void> tapKey(WidgetTester tester, String key) async {
 }
 
 void main() {
+  testWidgets('人工视频入口读取已发布采集表且不自动生成或创建订单', (tester) async {
+    final manual = jsonDecode(File(
+            '../backend_server/src/modules/customization/blessing-template.json')
+        .readAsStringSync());
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/customization-categories') {
+        return envelope({
+          'items': [
+            {
+              ...category(),
+              'category_code': 'blessing_manual',
+              'template_snapshot': manual
+            }
+          ]
+        });
+      }
+      return adapter.defaultReply(r);
+    });
+    final session = (await tester.runAsync(() => storySession(adapter)))!;
+    await host(tester, session,
+        create: true, initialCategory: 'blessing_manual');
+    expect(find.text('祝福短视频（人工制作）'), findsWidgets);
+    expect(find.textContaining('人工受理'), findsWidgets);
+    expect(
+        adapter.requests.where(
+            (r) => r.method == 'POST' && !r.path.startsWith('/api/v1/auth/')),
+        isEmpty);
+    expect(adapter.requests.where((r) => r.path.contains('/ai/')), isEmpty);
+  });
   testWidgets('选择品类真的更换问题；新故事保存完整文字答案', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(

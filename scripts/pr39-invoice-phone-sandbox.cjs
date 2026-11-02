@@ -56,13 +56,16 @@ async function main() {
     await db.execute('UPDATE auth_sessions SET expires_ms=ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+14400000');
     const parties=from('src/modules/party/repository').createPartyRepository(db,{resolvePrincipal:S.resolvePrincipal});
     const org=await parties.createOrganization(buyer.ctx,{display_name:'合成开票身份隔离机构',operation_key:key()});
+    const pageParties=[];
+    for(let n=0;n<22;n++)pageParties.push(await parties.createOrganization(buyer.ctx,{display_name:'合成分页身份 '+n,operation_key:key()}));
+    const paginatedPartyId=[org.party_id,buyer.personal_party_id,...pageParties.map(p=>p.party_id)].sort().at(-1);
     const storage=require('./client-testing/synthetic-files.cjs').openFiles(path.join(out,'assets'));
     for(const [key,body] of S.bytes)await storage.put({key,body:Buffer.from(body)});
     const storageFactory=()=>storage;
     const assets=from('src/modules/works/assets').createSupplyAssets({db,repository:from('src/modules/works/repository').createSupplyRepository(db,{resolvePrincipal:S.resolvePrincipal}),storageFactory});
     const upload=(user,body,type='text/plain',purpose='REVIEW_EVIDENCE')=>assets.upload(user.ctx,{party_id:user.personal_party_id,purpose,media_type:type,body:Buffer.from(body),operation_key:key()});
     for(const [file,seconds] of [['full.mp4',3],['preview.mp4',1]]){
-      await from('src/modules/media/marking').run('/opt/homebrew/bin/ffmpeg',['-nostdin','-v','error','-f','lavfi','-i','color=c=0x294F68:s=320x180:r=10','-t',String(seconds),'-c:v','libx264','-pix_fmt','yuv420p','-threads','1','-movflags','+faststart','-y',file],{cwd:out});
+      await from('src/modules/media/marking').run(process.env.FFMPEG_PATH||'ffmpeg',['-nostdin','-v','error','-f','lavfi','-i','color=c=0x294F68:s=320x180:r=10','-t',String(seconds),'-c:v','libx264','-pix_fmt','yuv420p','-threads','1','-movflags','+faststart','-y',file],{cwd:out});
       const asset=await upload(seller,await fs.readFile(path.join(out,file)),'video/mp4','WORK_CONTENT');S.listingInput[file==='full.mp4'?'file_id':'preview_file_id']=asset.id;
     }
     const orders={};
@@ -103,7 +106,7 @@ async function main() {
     const manifest={format:1,synthetic_only:true,database:name,database_env:{...env,MYSQL_DATABASE:name},environment_id:environmentId,secret:S.secret,file_store:true,access:{synthetic_only:true,payment_simulation:true,accounts:{buyer:{account_id:buyer.account_id}},scenarios:{complete:{phone:{old_phone:oldPhone,new_phone:newPhone}}}},rules:[{method:'GET',pattern:'^/api/v1/me$'}]};
     phoneSimulation=await require('./client-testing/phone-simulation.cjs').create(db,manifest,out);
     alive();
-    const app=from('src/http/account-api').createAccountApi({db,secret:S.secret,sms:phoneSimulation.sms,authSettings:phoneSimulation.authSettings,supplyEnv:{...invoiceEnv,MEDIA_FFMPEG:'/opt/homebrew/bin/ffmpeg',MEDIA_FFPROBE:'/opt/homebrew/bin/ffprobe'},supplyStorageFactory:storageFactory,allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5500','http://localhost:5500']});
+    const app=from('src/http/account-api').createAccountApi({db,secret:S.secret,sms:phoneSimulation.sms,authSettings:phoneSimulation.authSettings,supplyEnv:{...invoiceEnv,MEDIA_FFMPEG:process.env.FFMPEG_PATH||'ffmpeg',MEDIA_FFPROBE:process.env.FFPROBE_PATH||'ffprobe'},supplyStorageFactory:storageFactory,allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5500','http://localhost:5500']});
     upstream=http.createServer(app);upstream.listen(0,'127.0.0.1');await new Promise((ok,no)=>{upstream.once('listening',ok);upstream.once('error',no);});
     server=http.createServer((req,res)=>{
       const requestPath=req.url,requestMethod=req.method;
@@ -124,7 +127,7 @@ async function main() {
     const base_url='http://127.0.0.1:'+server.address().port+'/api/v1';
     const account=(u,party=u.personal_party_id)=>({account_id:u.account_id,party_id:party,personal_party_id:u.personal_party_id,bearer_token:u.token});
     const accounts={viewer:account(buyer),buyer:account(buyer),owner:account(buyer,org.party_id),handler:account(handler),verifier:account(verifier),other:account(other),seller:account(seller)};
-    const scenarios={orders:Object.fromEntries(Object.entries(orders).map(([k,v])=>[k,{order_id:v.order.id,listing_id:v.listing.id,paid:!!v.paid}])),invoices:seededInvoices,ticket_id:ticket.id,asset_ids:{initial:material.id,supplement:supplement.id},organization_party_id:org.party_id,phone:{old_phone:oldPhone,new_phone:newPhone,initial_login_recent:false}};
+    const scenarios={paginated_party_id:paginatedPartyId,orders:Object.fromEntries(Object.entries(orders).map(([k,v])=>[k,{order_id:v.order.id,listing_id:v.listing.id,paid:!!v.paid}])),invoices:seededInvoices,ticket_id:ticket.id,asset_ids:{initial:material.id,supplement:supplement.id},organization_party_id:org.party_id,phone:{old_phone:oldPhone,new_phone:newPhone,initial_login_recent:false}};
     const saveAccess=()=>fs.writeFile(path.join(out,'access.json'),JSON.stringify({synthetic_only:true,base_url,accounts,scenarios},null,2)+'\n',{mode:0o600});
     async function call(method,url,{actor=accounts.viewer,acting=true,body,version,op=key(),binary=false}={}){
       const response=await fetch(base_url+url,{method,headers:{...(actor?{Authorization:'Bearer '+actor.bearer_token}:{}),...(actor&&acting?{'X-Acting-Party':actor.party_id}:{}),...(body!==undefined?{'Content-Type':'application/json'}:{}),...(method==='POST'?{'Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{})});
@@ -170,8 +173,9 @@ async function main() {
         const body=input.operation==='RECORD_DOCUMENT'?{document:{amount_minor:input.amount_minor??row.requested_minor,reference:'SYNTHETIC-'+key(),issued_at:new Date(Date.now()-1000).toISOString(),asset_id:null,header:row.header}}:{};
         row=await actInvoice(row,input.operation,body);extra={invoice_id:row.id,status:row.current_status,object_version:row.object_version,issued_document_id:row.issued_document_id,pending_document_id:row.pending_document_id};
       }else if(input.action==='refresh-login')extra=await refreshLogin(input.phone);
+      else if(input.action==='expire-login'){await db.execute('UPDATE auth_sessions SET revoked=1 WHERE account_id=?',[buyer.account_id]);}
       else if(input.action!=='inspect')throw Error('Unknown fixture action');
-      await write('requests.json',{synthetic_only:true,requests});return {...extra,armed_loss:lossPlan,loss_count:losses.length,scenarios};
+      await write('requests.json',{synthetic_only:true,requests});const [[fresh]]=await db.execute('SELECT COUNT(*) n FROM invoice_requests WHERE order_id=?',[orders.fresh.order.id]);return {...extra,fresh_invoice_count:Number(fresh.n),armed_loss:lossPlan,loss_count:losses.length,scenarios};
     }
     async function watch(){
       if(commandBusy||stopping)return;
