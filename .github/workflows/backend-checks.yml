@@ -105,6 +105,7 @@ jobs:
           python3 -m venv .local/contract-venv
           .local/contract-venv/bin/python -m pip install -r contracts/requirements-lock.txt
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/account-api-http-fixtures.json --report .local/ci-evidence/runtime-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/contract-six-http-fixtures.json --report .local/ci-evidence/contract-six-runtime.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/stock-http-fixtures.json --report .local/ci-evidence/stock-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/notices-http-fixtures.json --report .local/ci-evidence/notices-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/auditions-http-fixtures.json --report .local/ci-evidence/auditions-contract.json
