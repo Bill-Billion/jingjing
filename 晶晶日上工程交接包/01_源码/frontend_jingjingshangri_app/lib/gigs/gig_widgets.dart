@@ -76,12 +76,29 @@ Widget gigStatus(GigRecord r) => tradeBanner(
             : r.kind == 'COMMISSION'
                 ? '仅佣金计提与待记账记录；没有出款、提现或税务办理接入。'
                 : '审核与业务状态以本次服务器读取为准。');
-Widget gigCommissionFacts(Map<String, dynamic> d) =>
-    Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      tradeFact('平台费用', gigPercent(d['platform_bps'])),
-      tradeFact('MCN 分成', gigPercent(d['mcn_bps'])),
-      supplyNote('MCN 分成从平台费用中计提，不额外向服务提供方扣取。')
+Widget gigCommissionFacts(Map<String, dynamic> d,
+    {dynamic marketplace, dynamic v5}) {
+  final terms = marketplace == null ? null : gigMarketplaceTerms(marketplace);
+  final supply = v5 == null ? null : gigSupplyTerms(v5);
+  if (terms != null || supply != null) {
+    final share = terms?['mcn_supply_bps'] ?? supply!['supply_share_bps'];
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      tradeFact('商单平台费用', gigPercent(terms?['platform_bps'] ?? 2200)),
+      tradeFact('机构占供给收益', gigPercent(share)),
+      supplyNote('先按成交净额计平台费用，剩余供给收益再由艺人与机构分配。机构比例不是成交额比例，也不从平台费用中划分。'),
+      if (share == 2000)
+        supplyNote(
+            '100元且无退款时：平台22元，供给收益78元；机构15.60元，艺人62.40元。实际金额以原订单和财务记录为准。'),
+      if (supply != null) supplyNote('须艺人本人明确接受本版比例；旧协议和历史订单保持原快照。')
     ]);
+  }
+  return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    tradeFact('平台费用', gigPercent(d['platform_bps'])),
+    tradeFact('MCN 分成', gigPercent(d['mcn_bps'])),
+    supplyNote('此历史约定的 MCN 分成从平台费用中计提，不额外向服务提供方扣取。')
+  ]);
+}
+
 Widget gigScopeFacts(Map<String, dynamic> d) =>
     Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       tradeFact('用途', '商业用途'),

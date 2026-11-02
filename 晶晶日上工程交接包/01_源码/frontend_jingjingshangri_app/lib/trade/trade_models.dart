@@ -1,7 +1,7 @@
 import 'dart:convert';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
-import '../gigs/gig_models.dart' show gigCommercial;
+import '../gigs/gig_models.dart' show gigCommercial, GigRecord;
 import '../finance/finance_models.dart' show financeRules;
 
 const tradeKinds = {
@@ -516,6 +516,41 @@ void _quote(Map<String, dynamic> d) {
       tradeRequire(false);
     }
   }
+  if (d['marketplace_finance'] != null) {
+    final snap = tradeMap(d['marketplace_finance']),
+        a = tradeMap(snap['allocation']);
+    tradeRequire(a['model'] == 'V5_TWO_LAYER' &&
+        a['fee_base'] == 'NET_PAID' &&
+        ['STOCK_VIDEO', 'COMMERCIAL', 'AUDITION'].contains(a['product_type']) &&
+        a['rounding'] == 'HALF_UP_PLATFORM_REMAINDER');
+    for (final key in ['platform_bps', 'mcn_supply_bps', 'referral_bps']) {
+      tradeRequire(a[key] is int && a[key] >= 0 && a[key] <= 10000);
+    }
+    for (final key in ['platform_party_id', 'supplier_party_id']) {
+      tradeRequire(isContractId('${a[key]}'));
+    }
+    for (final key in ['mcn_party_id', 'referrer_party_id']) {
+      tradeRequire(a[key] == null || isContractId('${a[key]}'));
+    }
+    final savedRule = tradeMap(snap['rule_snapshot']),
+        rule = tradeMap(savedRule['content']);
+    ContractApi.validateRule(rule);
+    tradeRequire(rule['id'] == d['rule_id'] &&
+        savedRule['current_status'] == 'EFFECTIVE' &&
+        DateTime.tryParse('${savedRule['effective_at']}') != null &&
+        DateTime.tryParse('${snap['captured_at']}') != null &&
+        d['customization_finance'] == null);
+    if (snap['relation_snapshot'] == null) {
+      tradeRequire(a['mcn_party_id'] == null && a['mcn_supply_bps'] == 0);
+    } else {
+      final r = GigRecord.parse(snap['relation_snapshot']);
+      tradeRequire(r.kind == 'RELATION' &&
+          r.status == 'ACTIVE' &&
+          r.owner == a['mcn_party_id'] &&
+          r.counterparty == a['supplier_party_id'] &&
+          r.data['v5_terms']?['supply_share_bps'] == a['mcn_supply_bps']);
+    }
+  }
   if (d['commercial'] != null) {
     try {
       gigCommercial(d['commercial']);
@@ -884,6 +919,14 @@ Map<String, int> tradeRefundRemaining(
 String tradeError(Object e, {bool writing = false}) {
   if (e is! AccountError) return '返回内容无法识别，请重新读取。';
   const contractErrors = {
+    'MARKETPLACE_CONTRACT_RULE_REQUIRED':
+        '缺少已生效的分配规则，请工作人员维护现货18%或商单22%规则后核对原请求。',
+    'MARKETPLACE_CONTRACT_RATE_MISMATCH': '分配规则类别或费率不符，请工作人员核对，暂不能进入付款。',
+    'COMMERCIAL_CONTRACT_RATE_MISMATCH': '提案仍采用旧费率，请核对新版商单约定。',
+    'MCN_V5_TERMS_REQUIRED': '机构协议尚无双方确认的供给收益比例，请双方重新约定，不自动换算。',
+    'COMMERCIAL_CONTRACT_OFFER_REQUIRED': '此旧提案不适用于新版报价，请核对已确认的新提案。',
+    'COMMERCIAL_CONTRACT_OFFER_CHANGED': '提案、规则或机构关系不一致，请核对原条款。',
+    'COMMERCIAL_SOURCE_REQUIRED': '请先选择已由买家确认的正式商单提案。',
     'CUSTOMIZATION_CONTRACT_VERSION_REQUIRED': '该规格已不用于新报价，请选择新版；旧订单保留原约定。',
     'CUSTOMIZATION_CALENDAR_COVERAGE_REQUIRED':
         '该日期的验收安排尚未确认，请联系平台处理；仍可主动确认成果或提出异议。',

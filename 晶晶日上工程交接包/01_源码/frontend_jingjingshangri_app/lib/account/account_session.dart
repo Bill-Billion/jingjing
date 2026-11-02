@@ -37,6 +37,7 @@ class AccountSession extends ChangeNotifier {
     if (!additionalBusinessPrefixes.contains(prefix)) {
       throw ArgumentError.value(prefix, 'prefix', 'Unknown business domain');
     }
+    if (_domainDenials.contains(prefix)) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -86,6 +87,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get artistsPending =>
       api.artistsPending(token: _token, party: partyId);
   void denyArtists() {
+    if (artistsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -105,6 +107,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get operationsPending =>
       api.operationsPending(token: _token, party: partyId);
   void denyOperations() {
+    if (operationsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -123,6 +126,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get financePending =>
       api.financePending(token: _token, party: partyId);
   void denyFinance() {
+    if (financeAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -145,6 +149,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get projectsPending =>
       api.projectsPending(token: _token, party: partyId);
   void denyProjects() {
+    if (projectsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -162,6 +167,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get productionPending =>
       api.productionPending(token: _token, party: partyId);
   void denyProduction() {
+    if (productionAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -182,6 +188,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get gigsPending =>
       api.gigsPending(token: _token, party: partyId);
   void denyGigs() {
+    if (gigsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -197,6 +204,7 @@ class AccountSession extends ChangeNotifier {
   }
 
   void denyTrade() {
+    if (tradeAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -212,6 +220,7 @@ class AccountSession extends ChangeNotifier {
   }
 
   void denyLicensing() {
+    if (licensingAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -227,6 +236,7 @@ class AccountSession extends ChangeNotifier {
   }
 
   void denySupply() {
+    if (supplyAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();

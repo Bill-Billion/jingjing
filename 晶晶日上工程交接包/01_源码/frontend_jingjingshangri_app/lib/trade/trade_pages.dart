@@ -567,11 +567,14 @@ class _TradeDetailState extends State<_TradeDetail> {
             appNotice('这份报价对应历史故事版本，不可确认新订单。'),
           appNotice('报价固定到这一版正式故事，故事正文不会复制到交易列表。'),
         ]),
+      if (d['marketplace_finance'] != null)
+        marketplaceFacts(d['marketplace_finance']),
       if (d['commercial'] != null)
         tradeSection('原商业接单约定', [
           tradeFact('约定编号', d['commercial']['offer_id']),
           gigScopeFacts(gigMap(d['commercial']['scope'])),
-          gigCommissionFacts(gigMap(d['commercial']['commission'])),
+          gigCommissionFacts(gigMap(d['commercial']['commission']),
+              marketplace: d['commercial']['marketplace_terms']),
           tradeFact(
               '公开入榜', d['commercial']['ranking_opt_in'] ? '明确选择参与' : '不参与'),
           ExpansionTile(
@@ -727,9 +730,13 @@ class _TradeDetailState extends State<_TradeDetail> {
                 ? '原故事、报价与合同已固定。按原单预览、确认和验收；本单现金应付为0，生成订单不代表已开工、已交付或已签署。'
                 : '原故事、报价与合同已固定。先核对首款，再按原单预览、确认和后续付款节点办理；生成订单不代表已付款或签署。'
             : '这笔历史定制订单未保存完整付款和交付条款。请由平台核对原约定，不会自动补用新单规则。'),
+      if (r.quote['marketplace_finance'] != null)
+        marketplaceFacts(r.quote['marketplace_finance']),
       if (r.quote['commercial'] != null)
         tradeSection('关联商业约定', [
           tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
+          gigCommissionFacts(gigMap(r.quote['commercial']['commission']),
+              marketplace: r.quote['commercial']['marketplace_terms']),
           tradeButton(
               '进入本单专属会话',
               locked
@@ -1370,4 +1377,15 @@ class TradeRefundPage extends StatelessWidget {
   Widget build(BuildContext context) => TradeGate(
       returnRoute: '/trade/refund?paymentId=$paymentId',
       builder: (s) => TradeRefundForm(session: s, paymentId: paymentId));
+}
+
+Widget marketplaceFacts(dynamic value) {
+  final d = tradeMap(value), a = tradeMap(d['allocation']);
+  return tradeSection('本单保存的分配约定', [
+    tradeFact('计费基数', '已收减已退后的净额'),
+    tradeFact('平台费用', gigPercent(a['platform_bps'])),
+    tradeFact('机构占供给收益', gigPercent(a['mcn_supply_bps'])),
+    tradeFact('保存时间', tradeDate(d['captured_at'])),
+    appNotice('采用本单保存的规则与关系。解绑不改旧订单；实际收款、退款与计提分别核对，计算记录不表示银行到账。')
+  ]);
 }

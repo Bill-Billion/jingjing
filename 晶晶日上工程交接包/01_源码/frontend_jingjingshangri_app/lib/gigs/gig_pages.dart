@@ -499,7 +499,8 @@ class _RecordState extends State<_Record> {
     final r = data!;
     if (await tradeConfirm(context, '确认这份接单约定', [
           gigParagraph(r.data['terms']),
-          gigCommissionFacts(gigMap(r.data['commission'])),
+          gigCommissionFacts(gigMap(r.data['commission']),
+              marketplace: r.data['marketplace_terms'], v5: r.data['v5_terms']),
           tradeFact('公开入榜', r.data['ranking_opt_in'] ? '明确选择参与' : '不参与'),
           supplyNote('确认将绑定本次读取的完整约定；这一步不会付款，也不会立即生成订单。')
         ]) &&
@@ -589,7 +590,8 @@ class _RecordState extends State<_Record> {
           ]),
           supplyCard('完整接单约定', [gigParagraph(d['terms'])]),
           supplyCard('佣金与公开榜单', [
-            gigCommissionFacts(gigMap(d['commission'])),
+            gigCommissionFacts(gigMap(d['commission']),
+                marketplace: d['marketplace_terms'], v5: d['v5_terms']),
             tradeFact('公开入榜', d['ranking_opt_in'] ? '明确选择参与' : '不参与'),
             if (d['relation'] != null) ...[
               tradeFact('直接合作编号', d['relation']['id']),
@@ -643,7 +645,8 @@ class _RecordState extends State<_Record> {
           ]),
           supplyCard('原合作条款', [
             gigParagraph(d['terms']),
-            gigCommissionFacts(gigMap(d['commission']))
+            gigCommissionFacts(gigMap(d['commission']),
+                marketplace: d['marketplace_terms'], v5: d['v5_terms'])
           ]),
           if (d['ended_reason'] != null) tradeFact('结束原因', d['ended_reason']),
           if (r.status == 'INVITED' && r.counterparty == api.owner()) ...[
@@ -683,9 +686,14 @@ class _RecordState extends State<_Record> {
             tradeFact('核实净额', tradeMoney(d['facts']['net_minor']), accent: true)
           ]),
           supplyCard('按原约定计提', [
-            gigCommissionFacts(gigMap(d['agreement']['commission'])),
+            gigCommissionFacts(gigMap(d['agreement']['commission']),
+                marketplace: d['agreement']['marketplace_terms']),
             tradeFact('服务提供方', tradeMoney(d['amounts']['supplier_minor'])),
-            tradeFact('平台计提', tradeMoney(d['amounts']['platform_minor'])),
+            tradeFact(
+                d['agreement']['marketplace_terms'] == null
+                    ? '平台计提'
+                    : '平台总费用（含平台承担的推荐份额）',
+                tradeMoney(d['amounts']['platform_minor'])),
             tradeFact('MCN 计提', tradeMoney(d['amounts']['mcn_minor'])),
             tradeFact('已出款', tradeMoney(d['paid_out_minor'])),
             supplyNote('没有出款接口。核算与待记账金额不代表已支付、到账、可提现或税务已处理。')
