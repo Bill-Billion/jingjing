@@ -1,3 +1,5 @@
+2026-11-02最新收尾顺序以[新合同当前计划](collaboration/client-complete-20261028/CONTRACT_CLOSURE_PLAN_20261102.md)为准。下方早期任务认领、版本、远端状态为当时记录；不要重复开发已完成的恢复/新分期/工作日页面。
+
 2026-11-02 当前新增[现货与试镜准入交接](collaboration/client-complete-20261028/STOCK_ADMISSION_HANDOFF_20261102.md)。前端已认领恢复/付款/制作进度，工作日与本批准入新增任务仍待确认。
 
 2026-11-02当前先读[新合同付款与工作日验收合并接法](collaboration/client-complete-20261028/CONTRACT_CALENDAR_HANDOFF_20261102.md)。后端已自测，正式规格、网站切换及前端整链仍待完成。

@@ -11998,7 +11998,7 @@
       "docs/sources/contracts-20261029/extracted/38.md"
     ],
     "frontend_acknowledgement": "NOT_CONFIRMED",
-    "frontend_task_delivery": "PREPARED_FOR_USER_FORWARDING",
+    "frontend_task_delivery": "FORWARDED_BY_USER",
     "pushed": true,
     "merged_to_integration": false,
     "deployed": false,
@@ -12013,7 +12013,84 @@
     },
     "delivery_commit": "f3138f9f4f2d0b639af4ea38dfa5caeead33ef20",
     "pull_request": 39,
-    "remote_checks": "NEW_CHECKS_STARTED_NOT_ALL_RETURNED",
+    "remote_checks": "7_SUCCESS_AT_f3138f9f",
     "first_remote_failure": "acceptance registration version mismatch; fixed f3138f9f, local check and 19 negatives pass"
+  },
+  "commission_contract_20261102": {
+    "backend_owner": "chengcongcong222",
+    "frontend_owner": "Bill-Billion",
+    "status": "IMPLEMENTED_ISOLATED_TESTED",
+    "contract_version": "0.31.19-rc.1",
+    "migration": "0192",
+    "parent_groups": [
+      1,
+      11,
+      16,
+      17
+    ],
+    "counting_basis": "本批4个后端子项；原18组和151条不变；版权缺口单列下一批",
+    "subtasks": [
+      {
+        "name": "新现货18%规则保护",
+        "status": "BACKEND_VERIFIED_CLIENT_PENDING"
+      },
+      {
+        "name": "撮合商单22%与供给侧机构分成",
+        "status": "BACKEND_VERIFIED_CLIENT_PENDING"
+      },
+      {
+        "name": "订单收益退款及旧账一致",
+        "status": "BACKEND_VERIFIED_CLIENT_PENDING"
+      },
+      {
+        "name": "隔离资料和同记录接口回归",
+        "status": "BACKEND_VERIFIED_CLIENT_PENDING"
+      }
+    ],
+    "record": "docs/tasks/records/CORE-commission-contract-20261102.md",
+    "plan": "docs/collaboration/client-complete-20261028/CONTRACT_CLOSURE_PLAN_20261102.md",
+    "frontend_task_delivery": "PREPARED_FOR_USER_FORWARDING",
+    "frontend_acknowledgement": "NOT_CONFIRMED",
+    "pushed": false,
+    "merged_to_integration": false,
+    "deployed": false,
+    "real_services_enabled": false,
+    "frontend_plan": "docs/collaboration/client-complete-20261028/COMMISSION_CONTRACT_HANDOFF_20261102.md",
+    "validation": {
+      "candidate_contract": "0.31.19-rc.1",
+      "migration": "0192",
+      "backend_code_before_commit": true,
+      "full_first": {
+        "pass": 1148,
+        "fail": 3,
+        "skip": 1,
+        "failure_causes": [
+          "Old customization quote assertion expected unsupported commercial flow; updated to required commercial source",
+          "Parent test failure for same assertion",
+          "Old product unit assertion expected unsupported commercial flow; updated to required commercial source"
+        ],
+        "skip_reason": "Historical SQLite sample unavailable"
+      },
+      "final_targeted": {
+        "pass": 88,
+        "fail": 0,
+        "skip": 0
+      },
+      "final_trade_policy": {
+        "pass": 11,
+        "fail": 0,
+        "skip": 0
+      },
+      "runtime_response_cases": {
+        "gigs": 73,
+        "stock": 8,
+        "customization": 97
+      },
+      "synthetic_only": true,
+      "frontend_tested_this_batch": false,
+      "real_services": false,
+      "deployment": false,
+      "limits": "Full first run not all green. Both obsolete assertions corrected, final affected-file tests pass; final full remote run pending. New catalogue mode added during full run and covered by final targeted run. Do not combine counts into a full-run success."
+    }
   }
 }

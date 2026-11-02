@@ -3,7 +3,7 @@ const express=require('express'),{createHash}=require('node:crypto');
 const {createGigsRepository}=require('../modules/gigs/repository');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=createGigsRepository(db,{resolvePrincipal}),caps=new WeakMap();
+ const router=express.Router(),repo=createGigsRepository(db,{resolvePrincipal,marketplaceContractPolicy:env.MARKETPLACE_CONTRACT_POLICY}),caps=new WeakMap();
  const storage=storageFactory?storageFactory():require('../modules/providers/private-storage').createPrivateStorage({env,repository:require('../modules/providers/readiness').createReadinessRepository(db),authorize:async({operation,key,context})=>operation==='get'&&caps.get(context)===key});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}return req.actingParty=id(v);};

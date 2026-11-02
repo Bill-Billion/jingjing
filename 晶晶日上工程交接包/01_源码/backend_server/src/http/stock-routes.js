@@ -2,7 +2,7 @@
 const express=require('express');
 const {id,ref,shape,version,error}=require('../modules/party/policy');
 function createStockRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=require('../modules/stock/repository').createStockRepository(db,{resolvePrincipal}),trade=require('../modules/trade/repository').createTradeRepository(db,{resolvePrincipal});
+ const router=express.Router(),repo=require('../modules/stock/repository').createStockRepository(db,{resolvePrincipal}),trade=require('../modules/trade/repository').createTradeRepository(db,{resolvePrincipal,marketplaceContractPolicy:env.MARKETPLACE_CONTRACT_POLICY});
  const assets=require('../modules/works/assets').createSupplyAssets({db,repository:require('../modules/works/repository').createSupplyRepository(db,{resolvePrincipal,maxAssetBytes:50*1024*1024}),env,storageFactory});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v&&required)throw error('ACTING_PARTY_REQUIRED',400);return req.actingParty=v?id(v):null;};

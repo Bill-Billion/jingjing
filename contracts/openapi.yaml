@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.18-rc.1
+  version: 0.31.19-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -42429,6 +42429,8 @@ components:
           type: object
           additionalProperties: false
           properties:
+            marketplace_terms:
+              $ref: '#/components/schemas/CommercialMarketplaceTerms'
             ranking_opt_in:
               type: boolean
             spec_id:
@@ -43055,6 +43057,9 @@ components:
           type: object
           additionalProperties: false
           properties:
+            marketplace_contract_policy:
+              enum: [LEGACY_COMPATIBLE, CONTRACT_20261029]
+              description: 当前新商单版本；历史报价及订单依自己的快照展示。
             items:
               type: array
               items:
@@ -43826,6 +43831,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        marketplace_terms:
+          $ref: '#/components/schemas/CommercialMarketplaceTerms'
         ranking_opt_in:
           type: boolean
         offer_id:
@@ -60312,3 +60319,20 @@ components:
       - manual_review_approved
       - eligible
       - blocking_reasons
+    CommercialMarketplaceTerms:
+      type: object
+      additionalProperties: false
+      description: 新合同商单口径；平台按成交净额22%，机构按供给收益10%—30%。旧commission.mcn_bps在此版本为0占位，不代表机构无收益。以订单marketplace_finance为结算依据。
+      properties:
+        version:
+          const: CONTRACT_20261029
+        platform_bps:
+          const: 2200
+        mcn_supply_bps:
+          oneOf:
+          - const: 0
+          - type: integer
+            minimum: 1000
+            maximum: 3000
+          description: 无机构为0；有已由艺人同意的机构协议时为1000—3000。
+      required: [version, platform_bps, mcn_supply_bps]
