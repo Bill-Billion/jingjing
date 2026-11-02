@@ -11,3 +11,5 @@
 独立复验：本机隔离环境设置JX_MYSQL_TEST_ENV_FILE后运行 `node scripts/backend-check.cjs artists`；整链资料运行 `node scripts/artists-contract-sandbox-smoke.cjs`。全量运行backend_server/scripts/run-tests.cjs；媒体工具按本机既有配置设置。此处不复制任何密钥或访问凭据。
 
 原151条正式验收未整体验收；本批新页面待Bill-Billion接入、双方同版验证。接口文件、认领与真实启用分开记录。
+
+远端补记：61556c9d的独立检查失败于验收清单版本登记遗漏（release contract version differs from OpenAPI），非业务测试失败。已修登记并通过full_business_check及19项反例检查；新远端状态按CURRENT。
