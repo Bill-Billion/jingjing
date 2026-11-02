@@ -57,6 +57,8 @@ class _GigFormState extends State<_GigForm> {
   List<Map<String, dynamic>> rules = [], avatars = [], consents = [];
   List<TradeRecord> specs = [];
   List<GigRecord> relations = [];
+  bool modern = false;
+  final supplyShare = TextEditingController(text: '20');
   Map<String, dynamic>? gig;
   String? ruleId, category, specId, avatarId, consentId, relationChoice, error;
   DateTime? validFrom, validUntil;
@@ -98,7 +100,8 @@ class _GigFormState extends State<_GigForm> {
           validUntil!.isAfter(DateTime.now()) &&
           requiredProofs.every((p) => proofs[p]?.length == 1);
     }
-    final p = gigParsePercent(platform.text), m = gigParsePercent(mcn.text);
+    final p = modern ? 2200 : gigParsePercent(platform.text),
+        m = modern ? 0 : gigParsePercent(mcn.text);
     if (!gigText(terms.text) ||
         p == null ||
         m == null ||
@@ -107,7 +110,11 @@ class _GigFormState extends State<_GigForm> {
       return false;
     }
     if (widget.kind == 'RELATION') {
-      return mcnActive &&
+      return (!modern ||
+              (gigParsePercent(supplyShare.text) != null &&
+                  gigParsePercent(supplyShare.text)! >= 1000 &&
+                  gigParsePercent(supplyShare.text)! <= 3000)) &&
+          mcnActive &&
           gigId(artist.text.trim()) &&
           artist.text.trim() != widget.session.partyId &&
           validFrom != null &&
@@ -126,14 +133,25 @@ class _GigFormState extends State<_GigForm> {
     if (relationChoice == 'NONE') return m == 0;
     final r = relations.where((r) => r.id == relationChoice).firstOrNull;
     return r != null &&
-        r.data['commission']['platform_bps'] == p &&
-        r.data['commission']['mcn_bps'] == m;
+        (modern
+            ? r.data['v5_terms'] != null
+            : r.data['commission']['platform_bps'] == p &&
+                r.data['commission']['mcn_bps'] == m);
   }
 
   @override
   void initState() {
     super.initState();
-    for (final c in [title, brief, territory, artist, terms, platform, mcn]) {
+    for (final c in [
+      title,
+      brief,
+      territory,
+      artist,
+      terms,
+      platform,
+      mcn,
+      supplyShare
+    ]) {
       c.addListener(changed);
     }
     load();
@@ -145,7 +163,16 @@ class _GigFormState extends State<_GigForm> {
 
   @override
   void dispose() {
-    for (final c in [title, brief, territory, artist, terms, platform, mcn]) {
+    for (final c in [
+      title,
+      brief,
+      territory,
+      artist,
+      terms,
+      platform,
+      mcn,
+      supplyShare
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -165,6 +192,9 @@ class _GigFormState extends State<_GigForm> {
     });
     try {
       final cat = await api.catalogue();
+      if (mounted && t == ticket) {
+        modern = cat.contractPolicy == 'CONTRACT_20261029';
+      }
       if (widget.kind == 'OFFER') {
         if (!gigId(widget.gigId)) throw const AccountError(400, 'INVALID_ID');
         final g = cat.items.where((r) => r['id'] == widget.gigId).firstOrNull;
@@ -183,7 +213,9 @@ class _GigFormState extends State<_GigForm> {
                 .where((s) =>
                     s.status == 'PUBLISHED' &&
                     s.data['provider_party_id'] == api.owner() &&
-                    s.data['line_kind'] != 'LICENSE')
+                    s.data['line_kind'] != 'LICENSE' &&
+                    (!modern ||
+                        s.data['product_profile']?['type'] == 'COMMERCIAL'))
                 .toList();
             avatars = av;
             consents = co;
@@ -278,8 +310,8 @@ class _GigFormState extends State<_GigForm> {
       };
     }
     final commission = {
-      'platform_bps': gigParsePercent(platform.text),
-      'mcn_bps': gigParsePercent(mcn.text)
+      'platform_bps': modern ? 2200 : gigParsePercent(platform.text),
+      'mcn_bps': modern ? 0 : gigParsePercent(mcn.text)
     };
     if (widget.kind == 'RELATION') {
       return {
@@ -290,6 +322,11 @@ class _GigFormState extends State<_GigForm> {
         'exclusive': exclusive,
         'terms': terms.text.trim(),
         'commission': commission,
+        if (modern)
+          'v5_terms': {
+            'version': 'V5',
+            'supply_share_bps': gigParsePercent(supplyShare.text)
+          },
         'evidence_asset_ids': evidence
       };
     }
@@ -336,7 +373,19 @@ class _GigFormState extends State<_GigForm> {
             gigScopeFacts(gigMap(b['scope']))
           ] else ...[
             gigParagraph(b['terms']),
-            gigCommissionFacts(gigMap(b['commission']))
+            gigCommissionFacts(gigMap(b['commission']),
+                v5: b['v5_terms'],
+                marketplace: modern && widget.kind == 'OFFER'
+                    ? {
+                        'version': 'CONTRACT_20261029',
+                        'platform_bps': 2200,
+                        'mcn_supply_bps': relations
+                                .where((r) => r.id == relationChoice)
+                                .firstOrNull
+                                ?.data['v5_terms']?['supply_share_bps'] ??
+                            0
+                      }
+                    : null)
           ],
           supplyNote(widget.kind == 'RELATION'
               ? '只发出直接合作邀请，须对方本人负责人明确接受后生效。'
@@ -487,8 +536,11 @@ class _GigFormState extends State<_GigForm> {
           if (relationChoice != null && relationChoice != 'NONE')
             for (final r in relations.where((r) => r.id == relationChoice)) ...[
               gigParagraph(r.data['terms']),
-              gigCommissionFacts(gigMap(r.data['commission'])),
-              supplyNote('以下比例须明确填写并与本合作原约定一致。')
+              gigCommissionFacts(gigMap(r.data['commission']),
+                  v5: r.data['v5_terms']),
+              supplyNote(modern && r.data['v5_terms'] == null
+                  ? '本合作是旧协议，双方须重新约定供给收益比例，不能直接用于新版商单。'
+                  : '按双方已确认的原合作比例办理。')
             ],
           ...commissionFields()
         ]),
@@ -504,12 +556,21 @@ class _GigFormState extends State<_GigForm> {
         ]),
         evidenceFields('5 证明材料')
       ];
-  List<Widget> commissionFields() => [
-        gigTextField(platform, '平台费用（%）', max: 6, enabled: !locked),
-        gigTextField(mcn, 'MCN 分成（%）', max: 6, enabled: !locked),
-        supplyNote(
-            '请按本次实际约定填写，0–100%，最多两位小数。MCN 分成不超过平台费用；不引用合作时须明确填 0%。没有默认费率。')
-      ];
+  List<Widget> commissionFields() => modern
+      ? [
+          if (widget.kind == 'RELATION')
+            gigTextField(supplyShare, '机构占供给收益（%，10—30）',
+                max: 6, enabled: !locked),
+          supplyNote('新版商单平台费用22%；剩余78%为供给收益。机构默认占供给收益20%，须双方明确确认，可约定10%—30%。'),
+          if (widget.kind == 'OFFER')
+            supplyNote('机构比例读取已接受的新版合作协议；无机构则供给收益归艺人。协议缺失不能创建新商单。')
+        ]
+      : [
+          gigTextField(platform, '平台费用（%）', max: 6, enabled: !locked),
+          gigTextField(mcn, 'MCN 分成（%）', max: 6, enabled: !locked),
+          supplyNote(
+              '请按本次实际约定填写，0–100%，最多两位小数。MCN 分成不超过平台费用；不引用合作时须明确填 0%。没有默认费率。')
+        ];
   Widget evidenceFields(String heading) => supplyCard(heading, [
         SupplyFiles(
             api: upload,

@@ -12,6 +12,8 @@ on:
       - 'scripts/pr39-manual-video-browser-check.mjs'
       - 'scripts/pr39-stock-eligibility-browser-check.mjs'
       - 'scripts/pr39-artist-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-sandbox.cjs'
       - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
@@ -57,6 +59,8 @@ on:
       - 'scripts/pr39-manual-video-browser-check.mjs'
       - 'scripts/pr39-stock-eligibility-browser-check.mjs'
       - 'scripts/pr39-artist-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-sandbox.cjs'
       - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
@@ -261,6 +265,11 @@ jobs:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
           JX_PR39_COUPON_TEST: '1'
         run: node scripts/pr39-manual-video-browser-check.mjs
+      - name: 新商单供给分成与原订单规则网页闭环
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: node scripts/pr39-commercial-contract-browser-check.mjs
       - name: 保存开票恢复和人工视频模拟证据
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -277,6 +286,8 @@ jobs:
             .local/pr39-artist-contract-browser/*.png
             .local/pr39-coupon-browser/results.json
             .local/pr39-coupon-browser/*.png
+            .local/pr39-commercial-contract-browser/results.json
+            .local/pr39-commercial-contract-browser/*/*.png
           if-no-files-found: ignore
       - name: 清理本次测试数据库
         if: always()

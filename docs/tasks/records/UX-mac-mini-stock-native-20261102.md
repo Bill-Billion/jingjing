@@ -1,3 +1,5 @@
+2026-11-02后续补记：认证免费服务原生多角色链已补验，商单新增接法已正式认领并接入；此前文中“未认领”为当时状态。[本轮证据与边界](UX-mac-mini-commission-native-20261102.md)。
+
 # 现货、认证免费服务与人工视频同单补验
 
 2026-11-02，前端负责人 Bill-Billion，后端负责人 chengcongcong222。用户授权沿原PR39开发、测试、提交和推送；不合并部署。[实际认领回执](https://github.com/Bill-Billion/jingjing/pull/39#issuecomment-6570937265)。

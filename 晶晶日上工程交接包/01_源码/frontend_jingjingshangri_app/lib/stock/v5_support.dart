@@ -570,6 +570,10 @@ class V5Gate extends StatelessWidget {
 }
 
 String v5Error(AccountError e, {bool writing = false}) {
+  if ([
+    'MARKETPLACE_CONTRACT_RULE_REQUIRED',
+    'MARKETPLACE_CONTRACT_RATE_MISMATCH'
+  ].contains(e.code)) return '现货分配规则尚未就绪或费率不符，请工作人员核对18%规则后恢复原请求。暂不能进入付款。';
   if (e.status == 412) return '记录已有新版本。输入已保留，请读取最新状态并重新确认。';
   if ([403, 404].contains(e.status)) return '当前身份不能读取或办理这份记录，私有内容已清空。';
   const messages = {
