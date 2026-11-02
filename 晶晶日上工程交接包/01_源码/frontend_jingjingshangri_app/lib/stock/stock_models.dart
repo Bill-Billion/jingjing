@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import '../account/account_api.dart';
 import 'v5_support.dart';
 
@@ -18,7 +19,7 @@ const stockStatuses = {
   'UNLISTED': '已停止新销售',
   'RIGHTS_HOLD': '权利暂停',
   'AWAITING_PAYMENT': '等待实际付款',
-  'ACTIVE': '个人许可有效',
+  'ACTIVE': '订单许可有效',
   'PAYMENT_REVIEW_REQUIRED': '付款待核实',
   'REFUND_REQUIRED': '已核定退款，等待实际渠道',
   'REVOKED': '许可已撤回'
@@ -33,18 +34,7 @@ const stockCases = {
 
 class StockLicense {
   StockLicense(dynamic raw) : data = v5Map(raw) {
-    v5Require(data['scope'] == 'PERSONAL_NONCOMMERCIAL' &&
-        data['exclusive'] == false &&
-        data['territory'] == 'WORLDWIDE' &&
-        data['duration'] == 'PERPETUAL' &&
-        data['personal_social_sharing'] == true &&
-        data['limited_to_buyer'] == true &&
-        v5Int(data['acceptance_hours'], min: 1, max: 720) &&
-        data['aftercare_terms'] is String &&
-        (data['aftercare_terms'] as String).isNotEmpty);
-    final excluded = v5Rows(data['excluded']);
-    v5Require(excluded.length == stockExcluded.length &&
-        excluded.toSet().containsAll(stockExcluded));
+    v5Require(isStockTerms(data, snapshot: true));
   }
   final Map<String, dynamic> data;
   int get hours => data['acceptance_hours'];
@@ -270,5 +260,12 @@ class StockPurchase {
   bool get usable =>
       status == 'ACTIVE' &&
       raw['order_status'] == 'PAID' &&
-      data['current_case_id'] == null;
+      data['current_case_id'] == null &&
+      (license.data['scope'] != 'COMMERCIAL_LIMITED' ||
+          !DateTime.now()
+                  .toUtc()
+                  .isBefore(DateTime.parse(license.data['valid_from'])) &&
+              DateTime.now()
+                  .toUtc()
+                  .isBefore(DateTime.parse(license.data['valid_until'])));
 }

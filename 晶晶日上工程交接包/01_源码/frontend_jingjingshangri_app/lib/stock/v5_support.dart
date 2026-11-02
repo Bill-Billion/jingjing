@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -573,7 +574,9 @@ String v5Error(AccountError e, {bool writing = false}) {
   if ([
     'MARKETPLACE_CONTRACT_RULE_REQUIRED',
     'MARKETPLACE_CONTRACT_RATE_MISMATCH'
-  ].contains(e.code)) return '现货分配规则尚未就绪或费率不符，请工作人员核对18%规则后恢复原请求。暂不能进入付款。';
+  ].contains(e.code)) {
+    return '现货分配规则尚未就绪或费率不符，请工作人员核对18%规则后恢复原请求。暂不能进入付款。';
+  }
   if (e.status == 412) return '记录已有新版本。输入已保留，请读取最新状态并重新确认。';
   if ([403, 404].contains(e.status)) return '当前身份不能读取或办理这份记录，私有内容已清空。';
   const messages = {
@@ -585,6 +588,7 @@ String v5Error(AccountError e, {bool writing = false}) {
     'PENDING_OPERATION_CHANGED': '前一次操作尚未核实，请先恢复原内容。',
     'CUSTODY_PROVIDER_NOT_CONNECTED': '消费者资金托管服务尚未接通，本次未充值或扣款。',
     'PAYMENT_PROVIDER_NOT_ENABLED': '付款服务尚未启用，请保留原订单等待核对。',
+    ...rightsErrors,
     'STOCK_SALES_RULE_NOT_PUBLISHED': '本商品尚无可用的已审销售说明，或说明已停用。请重新选择，或联系平台先发布。',
     'STOCK_SALES_RULE_CHANGED': '商品或销售说明已变化，请重新读取并核对本次版本。',
     'STOCK_REVISION_NOT_ALLOWED': '该版本已有后续修订、已被替换或正在处理权利问题。请查看最新版本与审核记录。',

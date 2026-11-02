@@ -1,0 +1,22 @@
+# 版权三项与商用许可三项：实现及本地验证
+
+负责人 Bill-Billion；2026-11-02。基线 a509d64462aeefbd7a13d058a3aeeb270c564c15，API0.31.22-rc.1，迁移0201。本批6项App/Web已实现并完成分层本地验证；代码仍在工作树，未commit/push，新CI未触发。用户14:36 UTC重新明确允许本批提交推送；按原PR39集中交付，未合入或部署。
+
+认领已记录于 https://github.com/Bill-Billion/jingjing/pull/39#issuecomment-6577663243 。本轮没有新评论。暂停期间未执行远端动作；按用户14:36的新确认恢复本批提交推送。
+
+两份接法：[版权](../../collaboration/client-complete-20261028/COPYRIGHT_CONTRACT_HANDOFF_20261102.md)、[独立商用](../../collaboration/client-complete-20261028/STOCK_COMMERCIAL_HANDOFF_20261102.md)。原文、实施补全和全局剩余见[完整报告](../../reviews/mac-mini-pr39-rights-commercial-20261102/REPORT.md)。同事新增SIX_CONTRACT_HANDOFF未认领；真实新售默认关闭。
+
+|本批|结果|原标准局部映射|
+|---|---|---|
+|RC-01 定制版权主动选择与原合同|已接双端；对应局部验证通过，限制见报告|ACC-DEL-15.03, TASK-15, E2E-02|
+|RC-02 样片版权和人格权、本人确认|已接双端；对应局部验证通过，限制见报告|ACC-DEL-05.01, ACC-DEL-05.02, TASK-02|
+|RC-03 IP买断/分红采购与依据收益|已接双端；对应局部验证通过，限制见报告|ACC-DEL-13.03, ACC-DEL-13.04, TASK-11|
+|RC-04 商用逐人授权和上架双审|已接双端；对应局部验证通过，限制见报告|ACC-DEL-05.02, TASK-01, TASK-02|
+|RC-05 商用商品、机构付款前许可|已接双端；对应局部验证通过，限制见报告|ACC-DEL-05.03, TASK-01, E2E-01|
+|RC-06 原单下载、撤权到期退款及恢复|已接双端；对应局部验证通过，限制见报告|ACC-DEL-06.03, E2E-01|
+
+App794、Web548、两端分析/构建通过，后端MySQL21+20通过；实际Vue与Android同记录结果、订单/许可/申请编号及修复前后证据已存[证据目录](../../testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)。本批原生范围包含IP实际文件选择/上传、样片新旧本人确认及商用同单有效/撤销回显，不扩大为全链真机验收。
+
+原151条仍0正式通过；初始宽泛映射的ACC-DEL-07.03、16.02、E2E-10/12经读原文后取消本批直接覆盖，未改写原要求。后端负责人主测12路线与统一登记，前端据实补页/修复。共享规则审阅PENDING，未代他人审阅。
+
+远端授权已恢复：用户14:36:07 UTC明确允许本批提交推送至Bill-Billion/jingjing原PR39。暂停期间无不确定远端写入；先核并发HEAD、保留同事提交，再集中交付并跟踪准确SHA CI，不合并部署。交付准确SHA和终态另存本机回执，不把基线CI算成本批。

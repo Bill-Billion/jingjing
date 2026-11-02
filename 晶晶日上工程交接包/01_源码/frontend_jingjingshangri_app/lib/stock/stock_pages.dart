@@ -1,3 +1,4 @@
+import '../rights/rights_widgets.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../support/collections.dart';
@@ -33,7 +34,7 @@ class StockPage extends StatelessWidget {
         if (mode == 'listing' && action != null) 'action': action!,
       }).toString(),
       account: ['catalog', 'video'].contains(mode),
-      personal: ['purchases', 'purchase'].contains(mode),
+      personal: false,
       showExpired: mode == 'catalog',
       expiredLabel: '现成视频',
       builder: (s) => mode == 'new' || mode == 'listing' && action == 'revise'
@@ -47,13 +48,7 @@ class StockPage extends StatelessWidget {
               initialCity: city));
 }
 
-List<Widget> stockLicenseFacts(StockLicense l) => [
-      tradeFact('许可', '仅购买本人使用 · 非独家 · 全球 · 永久'),
-      tradeFact('允许范围', '个人收藏及个人社交分享，非商业使用'),
-      tradeFact('不包含', '广告、改编、发行、独立声音、重新生成、新数字人内容、源文件或模型、独家买断'),
-      tradeFact('明确收件后的核对期限', '${l.hours} 小时；以本单服务器记录为准'),
-      tradeFact('售后约定', l.data['aftercare_terms']),
-    ];
+List<Widget> stockLicenseFacts(StockLicense l) => stockRightsFacts(l.data);
 
 class _StockScreen extends StatefulWidget {
   const _StockScreen(
@@ -292,7 +287,7 @@ class _StockScreenState extends State<_StockScreen> {
         !await v5Confirm(
             context,
             api,
-            action == 'receipt' ? '明确确认本次文件已收到' : '确认本次个人许可交付',
+            action == 'receipt' ? '明确确认本次文件已收到' : '确认本次原单许可交付',
             [Text(current.title), ...stockLicenseFacts(current.license)])) {
       return;
     }
@@ -370,7 +365,7 @@ class _StockScreenState extends State<_StockScreen> {
       'listings' => '我上架的作品',
       'listing' => '上架与双审核',
       'purchases' => '已购视频',
-      _ => '我的个人许可'
+      _ => '我的购买许可'
     };
     if (busy &&
         !hasRead &&
@@ -471,13 +466,13 @@ class _StockScreenState extends State<_StockScreen> {
             const CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
-                title: Text('我已阅读本版价格、个人许可与售后约定'),
+                title: Text('我已阅读本版价格、许可用途、地域、期间与售后约定'),
                 value: false,
                 onChanged: null),
             tradeButton('重新核对后才能确认购买', null),
           ],
           if (widget.mode == 'catalog') ...[
-            appNotice('选择已完成的作品，按已审个人使用许可购买，无需先创建自己的数字人或填写故事。'),
+            appNotice('选择已完成的作品，按该商品已审的个人或商用许可购买，无需先创建自己的数字人或填写故事。'),
             cityScope(),
             TextField(
                 controller: city,
@@ -506,7 +501,7 @@ class _StockScreenState extends State<_StockScreen> {
             CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
-                title: const Text('我已阅读本版价格、个人许可与售后约定'),
+                title: const Text('我已阅读本版价格、许可用途、地域、期间与售后约定'),
                 value: licenseRead,
                 onChanged: busy || api.pending('/checkout') != null
                     ? null
@@ -628,7 +623,7 @@ class _StockScreenState extends State<_StockScreen> {
               row(r.title, stockStatuses[r.status]!,
                   '/stock/purchase?orderId=${r.orderId}'),
             if (!busy && purchases.isEmpty && error == null)
-              appNotice('本人当前没有现货订单。付款核实后才发放个人许可。'),
+              appNotice('当前身份没有现货订单。付款及资格核实后按原单发放许可。'),
           ],
           if (p != null) ...[
             tradeSection('本次许可与交付', [
@@ -689,7 +684,7 @@ class _StockScreenState extends State<_StockScreen> {
               tradeButton(
                   api.pending('/purchases/${p.orderId}/acceptance') != null
                       ? '恢复原验收请求核对'
-                      : '确认本次个人许可交付',
+                      : '确认本次原单许可交付',
                   busy ||
                           api.pending('/purchases/${p.orderId}/acceptance') ==
                                   null &&

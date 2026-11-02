@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import '../account/account_api.dart';
 
 const artistKinds = {
@@ -16,7 +17,8 @@ const artistPurposes = {
   'PRIVATE_ARCHIVE': '仅私人档案',
   'PUBLIC_DISPLAY': '公开展示',
   'PROJECT_PRODUCTION': '具体项目制作',
-  'STOCK_LICENSE': '现货许可',
+  'STOCK_LICENSE': '个人现货许可',
+  'STOCK_COMMERCIAL': '独立商用现货许可',
   'NEW_GENERATION': '重新生成',
   'COOPERATION_SUBMISSION': '合作投稿',
   'AUDITION_SAMPLES': '试镜取样',
@@ -337,8 +339,13 @@ class ArtistRecord {
           body['terms'] is String);
       artistRequire(artistStrings(body['features'], max: 2).isNotEmpty &&
           (body['features'] as List).every(artistFeatures.containsKey));
-      artistRequire(artistStrings(body['purposes'], max: 4).isNotEmpty &&
+      artistRequire(artistStrings(body['purposes'], max: 9).isNotEmpty &&
           (body['purposes'] as List).every(artistPurposes.containsKey));
+      artistRequire((body['purposes'] as List).contains('STOCK_COMMERCIAL')
+          ? rightsList(
+              body['stock_commercial_uses'], commercialUses.containsKey,
+              max: 3)
+          : !body.containsKey('stock_commercial_uses'));
       artistStrings(body['territories'], max: 30);
     }
     if (d['kind'] == 'DELEGATION') {

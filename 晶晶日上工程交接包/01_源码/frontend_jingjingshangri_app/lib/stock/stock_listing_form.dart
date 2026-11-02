@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -173,7 +174,7 @@ class _StockListingFormState extends State<StockListingForm> {
           final key = _participantKey(value);
           participants[key] = value;
           participantNames[key] =
-              '${c['person_name']} · ${c['avatar_name']} · 授权至 ${c['valid_until']}';
+              '${c['person_name']} · ${c['avatar_name']} · ${(c['stock_commercial_uses'] as List? ?? []).map((v) => commercialUses[v] ?? v).join('、').isEmpty ? '未列明商用许可' : (c['stock_commercial_uses'] as List).map((v) => commercialUses[v] ?? v).join('、')} · ${(c['territories'] as List? ?? []).join('、')} · ${c['valid_from']} 至 ${c['valid_until']}';
         }
       } on AccountError catch (e) {
         if (!current(ticket, captured)) return;
@@ -214,12 +215,14 @@ class _StockListingFormState extends State<StockListingForm> {
       setState(() => eligibility.remove(id));
       final status = await api.sellerEligibility(id);
       api.check(captured, party);
-      if (!current(ticket, captured))
+      if (!current(ticket, captured)) {
         throw const AccountError(0, 'CONTEXT_CHANGED');
+      }
       setState(() => eligibility[id] = status);
-      if (!status.eligible)
+      if (!status.eligible) {
         throw AccountError(
             409, (status.data['blocking_reasons'] as List).first as String);
+      }
     }
   }
 
@@ -289,7 +292,7 @@ class _StockListingFormState extends State<StockListingForm> {
   Widget build(BuildContext context) {
     final d = person;
     return V5Frame(api: api, title: '现成作品上架', children: [
-      tradeHeading('让完成的作品被看见', eyebrow: '具体艺人 / 本版个人许可'),
+      tradeHeading('让完成的作品被看见', eyebrow: '具体艺人 / 本版明确许可'),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,

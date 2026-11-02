@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {commercialReviewField,isCommercialListing} from '@/business/copyright'
+import {isCopyrightTerms} from '@/api/modules/rights'
 import { computed,nextTick,onMounted,onUnmounted,ref,watch } from 'vue'
 import { onBeforeRouteLeave,onBeforeRouteUpdate,useRoute,useRouter } from 'vue-router'
 import { useSessionStore } from '@/stores/session'
@@ -56,7 +58,12 @@ const actions=computed(()=>domain.value.operations.filter(o=>{
  if(domain.value.key==='auditions'&&section.value.key==='reviews'&&kind){if(o.key==='review-offer')return kind==='OFFER';if(o.key==='review-supplement'||o.key==='supplement-refund')return kind==='SUPPLEMENT';return kind==='BOOKING'}
  return true
 }))
-const action=computed(()=>domain.value.operations.find(o=>o.key===operationKey.value&&(!o.sections||o.sections.includes(section.value.key))))
+const action=computed(()=>{
+ const op=domain.value.operations.find(o=>o.key===operationKey.value&&(!o.sections||o.sections.includes(section.value.key)))
+ const r=selected.value||ui.data.value
+ if(domain.value.key==='stock'&&op?.key==='rights'&&isCommercialListing(r))return {...op,fields:op.fields.map(f=>f.key==='verification'?{...f,fields:[...(f.fields||[]),commercialReviewField()]}:f)}
+ return op
+})
 const stockListing=computed(()=>domain.value.key==='stock'&&['listing','revision'].includes(action.value?.key||''))
 const stockPeople=computed(()=>stockListing.value?[...new Set([draft.value.seller_person_id,...(Array.isArray(draft.value.participants)?draft.value.participants.map((p:BusinessData)=>p.person_id):[])].filter(uuid))]:[])
 const stockPeopleLabels=computed(()=>stockPeople.value.map(id=>{const source=chosenReferences.value.find(row=>row.id===id||row.person_id===id);return{id,label:String(source?.person_name||source?.display_name||rowData(source||{}).display_name||`本次艺人 ${id}`)}}))
@@ -272,6 +279,7 @@ async function submit(){
   if(a.match&&(!details.value||currentVersion.value===null||currentId.value!==String(reference.value[targetKey])))throw new ApiError({status:400,code:'CURRENT_RECORD_REQUIRED',message:'请先读取本次办理的原记录，核对最新状态与版本。'})
   if(domain.value.key==='stock'&&a.key==='receipt'&&(!filePlayed.value||!notifyRead.value||fileSource.value!==currentId.value))throw new ApiError({status:400,code:'ACTUAL_VIEW_REQUIRED',message:'先实际打开本片、读取本次通知，再明确确认取得文件。'})
   const originalDraft=JSON.parse(JSON.stringify(draft.value)) as Record<string,unknown>,body=encode(actionFields.value,draft.value)
+  if(body.copyright_terms!==undefined&&!isCopyrightTerms(body.copyright_terms))throw new ApiError({status:400,code:'CLIENT_COPYRIGHT_INVALID',message:'请核对版权许可：个人范围不能包含商业或发行，地域须明确。'})
   if(stockListing.value){const fingerprint=draftFingerprint(draft.value);if(!await stockAdmission.load()||!session.current(snapshot,true)||fingerprint!==draftFingerprint(draft.value)||action.value!==a)return}
   if(creating&&Date.parse(String(body.deadline))<=Date.now())throw new BusinessFormError({key:'deadline',label:'报名截止时间',hint:'请选择未来时间。'},['deadline'])
   const canReadOrigin=uuid(route.params.recordId)||routeIds(section.value.path).every(k=>uuid(reference.value[k]))

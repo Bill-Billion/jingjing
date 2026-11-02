@@ -31,6 +31,10 @@ export function actionAvailability(domain: string, operation: Operation, record:
   }
   const states = allowedStates[domain]?.[key]
   if (states && record && recordId(record) && !states.includes(status)) return blocked('当前记录尚未到这一步，或已完成办理；请先核对处理进度。')
+  if (domain === 'participation' && key === 'manual-confirm') {
+    if (!context.owner || data.rights_owner_party_id !== context.partyId) return blocked('只有这份委托中的艺人本人可以确认，机构不能代同意。')
+    if (data.confirmation) return blocked('本版本人确认已记录，请按原委托继续办理。')
+  }
   if (domain === 'stock') {
     if (key === 'checkout' && (!record?.id || !record.offer_sha256)) return blocked('先读取当前公开销售的作品及本版许可。')
     if (key === 'unlist' && data.rights_hold === true) return blocked('本影片处于权利暂停，须先独立核对权利处理。')

@@ -1,3 +1,5 @@
+import '../rights/rights_widgets.dart';
+import '../rights/rights_models.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,13 @@ class ManualSample {
           d['rights_owner_party_id'],
           d['merchant_party_id']
         ].contains(party) &&
-        d['ownership'] == 'ARTIST_RETAINS_OWNERSHIP' &&
+        (d['ownership'] == 'ARTIST_RETAINS_OWNERSHIP' ||
+            d['ownership'] == 'PRODUCER_COPYRIGHT_PERSONALITY_RETAINED' &&
+                isCopyrightTerms(d['copyright_terms']) &&
+                d['copyright_terms']['mode'] == 'PRODUCER_OWNERSHIP_LICENSE' &&
+                d['copyright_owner_party_id'] == d['merchant_party_id'] &&
+                d['personality_rights_owner_party_id'] ==
+                    d['rights_owner_party_id']) &&
         d['territory'] is String &&
         d['terms'] is String);
     final c = productionMap(d['cast']);
@@ -181,6 +189,10 @@ class _ManualSampleState extends State<_ManualSample> {
         context, api.pending == null ? '本人确认这版人工样片约定' : '恢复原本人确认', [
       tradeFact('具体真人', s.cast['person_id']),
       tradeFact('具体数字人', s.cast['avatar_id']),
+      CopyrightFacts(
+          terms: s.data['copyright_terms'] is Map
+              ? productionMap(s.data['copyright_terms'])
+              : null),
       SelectableText(s.data['terms']),
       const Text('仅确认这版明确授权的人工样片委托，不开放长期模型或额外商业使用。')
     ])) {
@@ -250,7 +262,7 @@ class _ManualSampleState extends State<_ManualSample> {
           if (notice != null) appNotice(notice!),
           if (s != null) ...[
             tradeSection('具体权利与委托', [
-              tradeFact('权利所属本人', s.data['rights_owner_party_id']),
+              tradeFact('肖像声音等权利所属本人', s.data['rights_owner_party_id']),
               tradeFact('委托方', s.data['commissioner_party_id']),
               tradeFact('平台制作方', s.data['merchant_party_id']),
               tradeFact('具体真人', s.cast['person_id']),
@@ -258,7 +270,15 @@ class _ManualSampleState extends State<_ManualSample> {
               tradeFact('用途地区', s.data['territory']),
               SelectableText(s.data['terms'],
                   style: const TextStyle(height: 1.7)),
-              appNotice('所有权仍归艺人本人。只有已绑定快照并经本人明确确认，才可形成此类样片订单；不通过普通私人定制表单补造。')
+              CopyrightFacts(
+                  terms: s.data['copyright_terms'] is Map
+                      ? productionMap(s.data['copyright_terms'])
+                      : null),
+              if (s.data['copyright_owner_party_id'] != null)
+                tradeFact('成片版权人', s.data['copyright_owner_party_id']),
+              appNotice(s.data['ownership'] == 'ARTIST_RETAINS_OWNERSHIP'
+                  ? '原记录表述：所有权仍归艺人本人；按原合同核对。'
+                  : '制作方拥有成片版权，艺人的肖像、声音等人格权仍归本人。只有本人确认当前内容，才可形成该样片订单，机构不能代确认。')
             ]),
             tradeSection('本人确认', [
               tradeFact('当前状态',

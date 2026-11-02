@@ -1,3 +1,4 @@
+import { rightsErrors } from './modules/rights'
 /**
  * 后端错误码 → 一句人话。
  *
@@ -302,6 +303,7 @@ const CODE_MESSAGES: Record<string, string> = {
   AUDITION_L2_REQUIRED: '试镜需要有效的主角光环人工审核；缴费、待审或补件不等于通过。',
   STOCK_NOT_LISTED: '作品当前未公开销售，请返回选购影片列表查看当前作品。',
   STOCK_RIGHTS_CHANGED: '作品授权依据已变化，当前版本暂不可使用。请返回选购影片列表查看当前作品。',
+  ...rightsErrors,
   STOCK_SALE_CONSENT_REQUIRED: '作品当前授权未覆盖现货销售和公开展示，请返回选购影片列表查看其他作品。',
   MEDIA_SOURCE_CHANGED: '媒体版本在读取期间发生变化，请刷新作品详情后重新读取封面与时长。',
   STOCK_SALES_RULE_NOT_PUBLISHED: '本商品尚无可用的已审销售说明，或说明已停用。请重新选择，或联系平台先发布。',

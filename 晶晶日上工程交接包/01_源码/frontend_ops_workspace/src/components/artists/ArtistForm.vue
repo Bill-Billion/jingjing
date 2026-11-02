@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { commercialUses } from '@/api/modules/rights'
 import { computed, reactive, ref, watch, onUnmounted } from 'vue'
 import { validSupplyId,type SupplyAsset } from '@/api/modules/supply'
 import { sha256,features,purposes,delegatedActions,artistMediaTypes,type ArtistDetail,type ArtistServices,type ArtistRecord } from '@/api/modules/artists'
@@ -15,6 +16,7 @@ const evidence=()=>f('evidence_asset_ids','已上传证明材料编号（每行�
 const offer=computed(()=>props.services?.offers.items.find(o=>o.spec_id===form.spec_id))
 const reviewService=computed(()=>props.reviewServices?.find(r=>r.id===form.service_id&&r.kind==='SERVICE'))
 const newReview=computed(()=>props.action==='HALO'&&form.level==='2'&&(reviewService.value?.kind==='SERVICE'?reviewService.value.data.specification.service.rule_version==='CONTRACT_20261029':props.services?.offers.contract_policy==='CONTRACT_20261029'))
+const selectedCommercialUses=ref<string[]>([])
 const replaceable=computed(()=>props.action==='SUPPLEMENT'&&props.record?.kind==='HALO'&&props.record.data.rule_version==='CONTRACT_20261029')
 const classified=computed(()=>newReview.value||replaceable.value&&form.replace_materials==='true')
 const freeOffer=computed(()=>props.services?.offers.current_status==='CONFIGURED'?props.services.offers.free_services?.find(o=>form.spec_id==='free:'+o.kind):undefined)
@@ -55,7 +57,7 @@ const payload=computed(()=>{
  switch(props.action){
   case 'PERSON':case 'AVATAR':return {display_name:value('display_name')}
   case 'IDENTITY':return {session_ref:value('session_ref')}
-  case 'CONSENT':if(!selectedFeatures.value.length||!selectedPurposes.value.length||ids('territories').length>30||!ids('territories').length||ids('territories').some(v=>Array.from(v).length>100)||iso(form.valid_from)>=iso(form.valid_until))return null;return {avatar_id:value('avatar_id'),consent:{features:[...selectedFeatures.value],purposes:[...selectedPurposes.value],grantee_party_id:value('grantee_party_id'),territories:ids('territories'),valid_from:iso(form.valid_from),valid_until:iso(form.valid_until),terms:value('terms'),evidence_asset_ids:ids('evidence_asset_ids')}}
+  case 'CONSENT':if(selectedPurposes.value.includes('STOCK_COMMERCIAL')&&!selectedCommercialUses.value.length)return null;if(!selectedFeatures.value.length||!selectedPurposes.value.length||ids('territories').length>30||!ids('territories').length||ids('territories').some(v=>Array.from(v).length>100)||iso(form.valid_from)>=iso(form.valid_until))return null;return {avatar_id:value('avatar_id'),consent:{features:[...selectedFeatures.value],purposes:[...selectedPurposes.value],...(selectedPurposes.value.includes('STOCK_COMMERCIAL')?{stock_commercial_uses:[...selectedCommercialUses.value]}:{}),grantee_party_id:value('grantee_party_id'),territories:ids('territories'),valid_from:iso(form.valid_from),valid_until:iso(form.valid_until),terms:value('terms'),evidence_asset_ids:ids('evidence_asset_ids')}}
   case 'DELEGATION':if(!selectedActions.value.length||iso(form.valid_from)>=iso(form.valid_until))return null;return {delegation:{organization_party_id:value('organization_party_id'),relation_id:value('relation_id'),actions:[...selectedActions.value],valid_from:iso(form.valid_from),valid_until:iso(form.valid_until),terms:value('terms'),evidence_asset_ids:ids('evidence_asset_ids')}}
   case 'VARIANT':return {avatar_id:value('avatar_id'),kind:value('kind'),variant:{previous_version_id:value('previous_version_id')||null,display_name:value('display_name'),material_asset_ids:ids('material_asset_ids'),consent_id:value('consent_id')}}
   case 'HALO':if(form.ownership_promise!=='true')return null;return {level:Number(form.level),service_id:form.level==='1'?null:value('service_id'),ownership_promise:true,evidence_asset_ids:ids('evidence_asset_ids'),...(materials?{certification_materials:materials}:{})}
@@ -94,7 +96,7 @@ const needsConfirmation=computed(()=>['CONSENT','DELEGATION','HALO','LISTING','R
    </div>
    <template v-if="action==='CONSENT'">
     <fieldset class="artist-choices"><legend>本人同意使用的特征 *</legend><label v-for="(label,key) in features" :key="key"><input v-model="selectedFeatures" type="checkbox" :value="key">{{label}}</label></fieldset>
-    <fieldset class="artist-choices"><legend>这次明确允许的用途 *</legend><label v-for="(label,key) in purposes" :key="key"><input v-model="selectedPurposes" type="checkbox" :value="key" :disabled="key==='LONG_LIVED_MODEL'">{{label}}</label></fieldset>
+    <fieldset class="artist-choices"><legend>这次明确允许的用途 *</legend><label v-for="(label,key) in purposes" :key="key"><input v-model="selectedPurposes" type="checkbox" :value="key" :disabled="key==='LONG_LIVED_MODEL'">{{label}}</label></fieldset><fieldset v-if="selectedPurposes.includes('STOCK_COMMERCIAL')" class="artist-choices"><legend>本人明确允许的商用用途 *</legend><label v-for="(label,key) in commercialUses" :key="key"><input v-model="selectedCommercialUses" type="checkbox" :value="key">{{label}}</label><p>只允许以下填写地域与期间内的所选用途。个人授权不替代商用，机构不能代本人同意。</p></fieldset>
    </template>
    <fieldset v-if="action==='DELEGATION'" class="artist-choices"><legend>逐项选择代办权限 *</legend><label v-for="(label,key) in delegatedActions" :key="key"><input v-model="selectedActions" type="checkbox" :value="key">{{label}}</label></fieldset>
    <label v-if="action==='HALO'" class="artist-check"><input :checked="form.ownership_promise==='true'" type="checkbox" @change="form.ownership_promise=($event.target as HTMLInputElement).checked?'true':'false'">我确认所提交材料属于本人，具有本次审核所需的权利。</label>

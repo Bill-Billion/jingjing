@@ -1,4 +1,4 @@
-import 'dart:convert';
+import '../rights/rights_models.dart';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
 import '../gigs/gig_models.dart' show gigCommercial, GigRecord;
@@ -223,8 +223,9 @@ const artistServiceNames = {
   'HALO_REVIEW': '认证资料审核',
 };
 bool customizationDay(dynamic value) {
-  if (value is! String || !RegExp(r'^20\d{2}-\d{2}-\d{2}$').hasMatch(value))
+  if (value is! String || !RegExp(r'^20\d{2}-\d{2}-\d{2}$').hasMatch(value)) {
     return false;
+  }
   final date = DateTime.tryParse('${value}T00:00:00Z');
   return date != null && date.toIso8601String().substring(0, 10) == value;
 }
@@ -281,12 +282,14 @@ String customizationAcceptanceLabel(Map<String, dynamic> terms) =>
         ? '最终成片5个工作日；节假日和调休按本单约定（北京时间），其余阶段须明确确认'
         : "${terms['acceptance_hours']} 小时（原订单约定）";
 String customizationDeadlineLabel(Map<String, dynamic> receipt) {
-  if (receipt['deadline_at'] == null)
+  if (receipt['deadline_at'] == null) {
     return receipt['deadline_basis']?['mode'] == 'EXPLICIT_CONFIRMATION'
         ? '本阶段须明确确认成果，不自动倒计时'
         : '尚待确认收到';
-  if (receipt['deadline_basis']?['mode'] != 'WORKING_DAYS')
+  }
+  if (receipt['deadline_basis']?['mode'] != 'WORKING_DAYS') {
     return DateTime.parse(receipt['deadline_at']).toLocal().toString();
+  }
   final date = DateTime.parse(receipt['deadline_at'])
       .toUtc()
       .add(const Duration(hours: 8));
@@ -306,33 +309,8 @@ bool tradeCustomizationRulesReady(TradeRecord order) =>
             .every((l) => l['specification']['customization_delivery'] != null);
 
 void validateTradeSpecification(dynamic value) => _spec(value);
-void validateTradeStockLicense(dynamic value, {bool snapshot = false}) {
-  final d = tradeMap(value);
-  tradeRequire(d.length == (snapshot ? 9 : 7) &&
-      d['scope'] == 'PERSONAL_NONCOMMERCIAL' &&
-      d['exclusive'] == false &&
-      d['territory'] == 'WORLDWIDE' &&
-      d['duration'] == 'PERPETUAL' &&
-      d['personal_social_sharing'] == true &&
-      d['acceptance_hours'] is int &&
-      d['acceptance_hours'] >= 1 &&
-      d['acceptance_hours'] <= 720 &&
-      _text(d['aftercare_terms']));
-  if (snapshot) {
-    const excluded = [
-      'COMMERCIAL_ADVERTISING',
-      'ADAPTATION',
-      'DISTRIBUTION',
-      'VOICE_SEPARATELY',
-      'AI_REGENERATION',
-      'SOURCE_OR_MODEL_FILES',
-      'NEW_AVATAR_CONTENT',
-      'EXCLUSIVE_BUYOUT'
-    ];
-    tradeRequire(d['limited_to_buyer'] == true &&
-        jsonEncode(d['excluded']) == jsonEncode(excluded));
-  }
-}
+void validateTradeStockLicense(dynamic value, {bool snapshot = false}) =>
+    tradeRequire(isStockTerms(value, snapshot: snapshot));
 
 void validateTradeAuditionTerms(dynamic value) {
   final d = tradeMap(value);
@@ -368,6 +346,9 @@ void _spec(dynamic value, {bool participation = false}) {
     tradeRequire(
         d.length == 2 && _text(d['version'], 128) && _text(d['terms']));
     return;
+  }
+  if (d.containsKey('copyright_terms')) {
+    tradeRequire(isCopyrightTerms(d['copyright_terms']));
   }
   if (d.containsKey('stock_license')) {
     tradeRequire(
@@ -434,6 +415,9 @@ void _spec(dynamic value, {bool participation = false}) {
 }
 
 void _quote(Map<String, dynamic> d) {
+  if (d.containsKey('customization_copyright')) {
+    tradeRequire(isCopyrightSnapshot(d['customization_copyright']));
+  }
   final fullCoverage = d['discount'] is Map &&
       d['discount']['coverage'] == 'FULL' &&
       d['total_minor'] == 0;
@@ -731,7 +715,7 @@ String tradeChannel(dynamic channel) =>
     '未知渠道';
 
 String tradeSpecificationTitle(Map<String, dynamic> spec) =>
-    '${spec['service_tier'] ?? (spec['stock_license'] != null ? '现成视频个人许可' : spec['audition'] != null ? '试镜预约服务' : '参演约定')} / ${spec['version']}';
+    '${spec['service_tier'] ?? (spec['stock_license'] != null ? (spec['stock_license']['scope'] == 'COMMERCIAL_LIMITED' ? '现成视频商用许可' : '现成视频个人许可') : spec['audition'] != null ? '试镜预约服务' : '参演约定')} / ${spec['version']}';
 
 void validateTradeQuoteData(dynamic value) => _quote(tradeMap(value));
 

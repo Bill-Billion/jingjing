@@ -1,3 +1,4 @@
+import '../rights/rights_widgets.dart';
 import 'package:flutter/material.dart';
 import '../account/account_session.dart';
 import '../account/account_api.dart';
@@ -598,6 +599,8 @@ class _TradeDetailState extends State<_TradeDetail> {
                 ? '由服务提供方直接履约'
                 : '平台作为交易主体')
       ]),
+      if (d['customization'] != null || d['customization_copyright'] != null)
+        CopyrightFacts(snapshot: d['customization_copyright'] is Map ? tradeMap(d['customization_copyright']) : null),
       tradeSection('报价明细', [
         for (final l in tradeRows(d['lines'])) ...[
           tradeFact(l['title'], tradeMoney(l['total_minor']), accent: true),
@@ -700,7 +703,7 @@ class _TradeDetailState extends State<_TradeDetail> {
         appNotice(fullyCovered
             ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
             : r.quote['stock_video'] != null
-                ? '付款核实后查看本单内容、个人许可与售后。'
+                ? '付款核实后查看本单内容、原购买许可与售后。'
                 : r.quote['audition'] != null
                     ? '按本单接单与核实收款状态办理预约、材料和售后。'
                     : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
@@ -724,6 +727,8 @@ class _TradeDetailState extends State<_TradeDetail> {
       if (r.quote['artist_service'] != null)
         tradeSection(
             '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
+      if (r.quote['customization'] != null || r.quote['customization_copyright'] != null)
+        CopyrightFacts(snapshot: r.quote['customization_copyright'] is Map ? tradeMap(r.quote['customization_copyright']) : null),
       if (r.quote['customization'] != null)
         appNotice(tradeCustomizationRulesReady(r)
             ? fullyCovered

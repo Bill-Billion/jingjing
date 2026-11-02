@@ -32,6 +32,8 @@ const links = [
   { to: '/licensing/catalog', label: '选剧本', icon: Reading },
   { to: '/licensing/products', label: '许可商品', icon: Tickets },
   { to: '/licensing/reservations', label: '许可办理', icon: Document },
+  { to: '/licensing/procurement-events', label: 'IP开发与上线', icon: Document },
+  { to: '/licensing/royalty-statements', label: 'IP收益账单', icon: Tickets },
   { to: '/licensing/projects', label: '项目与绑定', icon: OfficeBuilding },
   { to: '/licensing/readings', label: '受控阅稿', icon: View },
   { to: '/trade/specifications', label: '商品规格', icon: Collection },
@@ -64,6 +66,8 @@ const reviews = [
   { to: '/supply/reviews/profile', label: '供给审核' },
   { to: '/supply/reviews/rights', label: '作品审核' },
   { to: '/licensing/reviews/products', label: '许可核验' },
+  { to: '/licensing/reviews/procurement-events', label: 'IP开发上线核验' },
+  { to: '/licensing/reviews/royalty-statements', label: 'IP账单核验' },
   { to: '/trade/reviews/specifications', label: '规格审核' },
   { to: '/trade/reviews/quotes', label: '报价审核' },
   { to: '/trade/reviews/refunds', label: '退款与旧单核对' },
@@ -99,7 +103,7 @@ function active(target: string) {
   if (target === '/trade/payments') return /^\/trade\/(payments|refunds|legacy)(\/|$)/.test(route.path)
   if (target === '/trade/reviews/refunds') return /^\/trade\/reviews\/(refunds|legacy)(\/|$)/.test(route.path)
   if (target === '/supply/works' && route.path.startsWith('/supply/adaptations/')) return true
-  if (target === '/licensing/reviews/products') return route.path.startsWith('/licensing/reviews/')
+  if (target === '/licensing/reviews/products') return route.path.startsWith('/licensing/reviews/') && !/\/(procurement-events|royalty-statements)(\/|$)/.test(route.path)
   if (target === '/licensing/reservations') return ['reservations', 'evidence', 'grants'].some(section => route.path === `/licensing/${section}` || route.path.startsWith(`/licensing/${section}/`))
   if (target === '/licensing/projects' && route.path.startsWith('/licensing/bindings')) return true
   if (target === '/supply/reviews/rights') {

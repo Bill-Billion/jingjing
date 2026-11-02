@@ -154,21 +154,21 @@ class StockApi extends V5Api {
   }
 
   Future<V5Page<StockPurchase>> purchases({String? cursor}) {
-    final p = owner(personal: true);
+    final p = owner();
     return get('/purchases',
         (d) => V5Page.parse(d, (r) => StockPurchase(r, p), previous: cursor),
         query: {'limit': 20, if (cursor != null) 'cursor': cursor});
   }
 
   Future<StockPurchase> purchase(String id) {
-    final p = owner(personal: true);
+    final p = owner();
     return get(
         '/purchases/${key(id)}', (d) => StockPurchase(d, p, orderId: id));
   }
 
   Future<TradeRecord> checkout(StockOffer offer, String channel,
       {bool retry = false}) async {
-    final p = owner(personal: true);
+    final p = owner();
     TradeRecord parse(Map<String, dynamic> d) =>
         TradeRecord.parse(d, p, kind: 'ORDER');
     if (retry) {
@@ -200,8 +200,7 @@ class StockApi extends V5Api {
     if (!['receipt', 'acceptance', 'cases'].contains(action)) {
       throw const AccountError(400, 'INVALID_ACTION');
     }
-    final p = owner(personal: true),
-        suffix = '/purchases/${purchase.orderId}/$action';
+    final p = owner(), suffix = '/purchases/${purchase.orderId}/$action';
     StockPurchase parse(Map<String, dynamic> d) =>
         StockPurchase(d, p, orderId: purchase.orderId);
     return retry
@@ -214,7 +213,7 @@ class StockApi extends V5Api {
   Future<StockPurchase> notification(StockPurchase purchase,
       {required bool opened,
       void Function(bool writing)? onMarkReadPhase}) async {
-    final p = owner(personal: true), epoch = session.epoch;
+    final p = owner(), epoch = session.epoch;
     final current = await this.purchase(purchase.orderId),
         id = current.data['notification_event_id'];
     if (!opened ||

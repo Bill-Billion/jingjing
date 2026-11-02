@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
@@ -78,7 +79,10 @@ class _ArtistFormState extends State<_ArtistForm> {
       voices = <ArtistRecord>[],
       serviceRecords = <ArtistRecord>[],
       relations = <GigRecord>[];
-  final features = <String>{}, purposes = <String>{}, delegated = <String>{};
+  final features = <String>{},
+      purposes = <String>{},
+      delegated = <String>{},
+      selectedCommercialUses = <String>{};
   List<String> files = [];
   final classifiedFiles = <String, List<String>>{
     'model_card_asset_id': [],
@@ -423,16 +427,20 @@ class _ArtistFormState extends State<_ArtistForm> {
       case 'CONSENT':
         if (features.isEmpty ||
             purposes.isEmpty ||
-            purposes.length > 4 ||
+            purposes.length > 9 ||
+            purposes.contains('STOCK_COMMERCIAL') &&
+                selectedCommercialUses.isEmpty ||
             files.isEmpty ||
             purposes.contains('LONG_LIVED_MODEL')) {
-          throw const FormatException('请明确形象或声音、最多四项用途，并上传本人同意证据。');
+          throw const FormatException('请明确形象或声音、具体用途及商用范围，并上传本人同意证据。');
         }
         value = {
           'avatar_id': chosen(a, '具体数字人'),
           'consent': {
             'features': features.toList(),
             'purposes': purposes.toList(),
+            if (purposes.contains('STOCK_COMMERCIAL'))
+              'stock_commercial_uses': selectedCommercialUses.toList(),
             'grantee_party_id': idInput('grantee', '使用方主体'),
             'territories': parts('territories', '适用地区'),
             ...period(),
@@ -891,7 +899,11 @@ class _ArtistFormState extends State<_ArtistForm> {
           avatarInput(),
           tradeSection('本次允许使用什么', [
             choices(artistFeatures, features),
-            choices(artistPurposes, purposes, purpose: true)
+            choices(artistPurposes, purposes, purpose: true),
+            if (purposes.contains('STOCK_COMMERCIAL')) ...[
+              const Text('明确商用用途（须覆盖所填地域和期间）'),
+              choices(commercialUses, selectedCommercialUses)
+            ]
           ]),
           text('grantee', '使用方主体编号', max: 36),
           text('territories', '适用地区', hint: '多个地区以逗号分隔', max: 2000),

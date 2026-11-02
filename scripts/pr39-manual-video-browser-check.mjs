@@ -14,8 +14,9 @@ const mysql=require('mysql2/promise'),{openDatabase}=require(resolve(b,'src/infr
 const {chromium}=webRequire('playwright-core'),{preview}=await import(pathToFileURL(webRequire.resolve('vite')))
 const env=JSON.parse(await readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'))
 for(const [k,v] of Object.entries({NODE_ENV:'test',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v)
+const copyrightMode=process.env.JX_PR39_COPYRIGHT_MODE||null;assert(copyrightMode===null||['BUYER_OWNERSHIP','PRODUCER_OWNERSHIP_LICENSE'].includes(copyrightMode));
 const couponMode=process.env.JX_PR39_COUPON_TEST==='1',unitMinor=couponMode?50000:10001,originalParts=couponMode?[15000,20000,15000]:[3000,4000,3001],netParts=couponMode?[13500,18000,13500]:originalParts;
-const out=resolve(root,couponMode?'.local/pr39-coupon-browser':'.local/pr39-manual-video-browser');await mkdir(out,{recursive:true})
+const out=resolve(root,copyrightMode?'.local/pr39-copyright-'+copyrightMode:couponMode?'.local/pr39-coupon-browser':'.local/pr39-manual-video-browser');await mkdir(out,{recursive:true})
 const name='jx_test_manual_ui_'+randomBytes(8).toString('hex'),checks=[],requests=[],errors=[],ids={}
 let control,db,server,browser,web,created=false,completed=false,problem
 const key=randomUUID
@@ -26,9 +27,9 @@ try{
  db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db)
  const f=await require(resolve(b,'test/support/customization-delivery.cjs')).seed(db),{producer,buyer,reviewer}=f.people
  const template=await f.stories.publishTemplate(producer.ctx,{category_code:'blessing_manual',template_version:1,template_snapshot:require(resolve(b,'src/modules/customization/blessing-template.json')),source_ref:'synthetic:manual-browser',operation_key:key()})
- const model=await f.newOrder({preview:'SCRIPT_BEFORE_INTERIM',calendar:require(resolve(b,'test/support/working-calendar.cjs'))(),unitMinor,title:'合成新版人工短视频规格'})
+ const model=await f.newOrder({preview:'SCRIPT_BEFORE_INTERIM',calendar:require(resolve(b,'test/support/working-calendar.cjs'))(),unitMinor,copyrightTerms:copyrightMode?require(resolve(b,'test/support/copyright-terms.cjs'))(copyrightMode):null,title:'合成新版人工短视频规格'})
  const old=await f.newOrder({unitMinor:10001,title:'合成旧版私人定制规格'})
- server=require(resolve(b,'src/http/account-api')).createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r))
+ server=require(resolve(b,'src/http/account-api')).createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,...(copyrightMode?{COPYRIGHT_CONTRACT_POLICY:'CONTRACT_20261029'}:{})}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r))
  const base='http://127.0.0.1:'+server.address().port
  web=await preview({root:w,configFile:false,preview:{host:'127.0.0.1',port:5174,strictPort:true,proxy:{'/api':{target:base}}}})
  const origin='http://127.0.0.1:5174'
@@ -65,6 +66,7 @@ try{
   quote=await post(operator,'/trade/quotes',()=>operator.getByTestId('trade-quote-submit').click());ids.quote=quote.id;quote=await f.reviewTrade(quote)
   await goto(customer,'/trade/quotes/'+quote.id);if(couponMode)await chooseCoupon(await grantFor(model.spec));await customer.getByRole('checkbox',{name:'我已核对本报价的服务、分期、期限和条款。'}).check();order=await post(customer,'/acceptance',()=>customer.getByRole('button',{name:'确认报价并建立订单',exact:true}).click());ids.order=order.id
   assert.deepEqual(order.data.quote.installments.map(i=>i.allocations[0].amount_minor),netParts);assert.deepEqual(order.data.contract.commitments.quote.installments,order.data.quote.installments);assert.equal(order.data.quote.customization.request_id,story.id)
+  if(copyrightMode){assert.equal(order.data.quote.customization_copyright.terms.mode,copyrightMode);assert.deepEqual(order.data.quote.customization_copyright,order.data.contract.commitments.quote.customization_copyright);assert.match(await customer.locator('body').innerText(),/成片版权|版权人/);}
   await customer.screenshot({path:resolve(out,'02-order.png'),fullPage:true})
  })
  const repo=require(resolve(b,'src/modules/production/repository')).createProductionRepository(db,{resolvePrincipal:f.resolvePrincipal})

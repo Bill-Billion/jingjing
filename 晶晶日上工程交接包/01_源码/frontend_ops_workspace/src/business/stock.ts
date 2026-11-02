@@ -1,7 +1,7 @@
 import { type Domain, type Field, text,long,id,hash,integer,select,group,rows,fixed,reason,operation as op,bool } from './model'
 const approved=(fields:Field[]):Field=>({...group('verification','已实际检查的依据',fields),visible:r=>r.decision==='APPROVED',inactive:null})
 const participants=rows('participants','出镜人物',[id('person_id','真实人物'),id('avatar_id','具体数字人'),id('consent_id','本次销售与展示授权')],20,0)
-export const stock:Domain={key:'stock',title:'现成影片',journal:'FILM EDITIONS / 05',intro:'先看已审核影片与个人使用许可，再购买并取得正式文件。',note:'个人收藏与个人社交分享许可：非独家、全球、永久、非商用。广告、改编、发行、重新生成、独立声音、源文件与买断不包含。普通下架保留已售许可，权利暂停将限制再次下载。',sections:[
+export const stock:Domain={key:'stock',title:'现成影片',journal:'FILM EDITIONS / 05',intro:'先看已审核影片及明确的个人或商用许可，再购买并取得正式文件。',note:'个人商品为收藏与社交分享许可；独立商用商品须逐项核对用途、地域与期间。未明确授权的广告，以及改编、发行、重新生成、独立声音、源文件与买断不包含。普通下架保留已售许可，权利暂停将限制再次下载。',sections:[
 {key:'sales-publications',label:'发布销售说明',path:'/stock/sales-publications',party:'none',note:'平台将已审规格与生效规则绑定，另一个运营复核后卖家才可选用。停用不改写历史购买。'},
 {key:'catalog',label:'选购影片',path:'/stock/catalog',detail:'/stock/catalog/:record_id',party:'none',query:[{...text('city','城市',100),optional:true},{...id('person_id','具体人物'),optional:true}],files:[{label:'播放影片预览',path:'/stock/catalog/:record_id/preview',party:'none',type:'video/mp4'}]},
 {key:'purchases',label:'已购影片',path:'/stock/purchases',detail:'/stock/purchases/:record_id',party:'required',files:[{label:'明确取得正式影片',path:'/stock/purchases/:record_id/content',party:'required',type:'video/mp4',observe:true}]},
