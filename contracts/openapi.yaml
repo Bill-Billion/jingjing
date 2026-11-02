@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.22-rc.1
+  version: 0.31.23-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -30644,6 +30644,574 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/daily-reconciliations:
+    post:
+      operationId: createDailyReconciliation
+      summary: 建立一个已结束入账日的对账批次
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDailyReconciliationInput'
+    get:
+      operationId: listDailyReconciliations
+      summary: 查看每日对账及需要重查的批次
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: merchant_party_id
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: business_date
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/daily-reconciliations/{report_id}:
+    get:
+      operationId: getDailyReconciliation
+      summary: 读取当前对账及来源是否仍有效
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/daily-reconciliations/{report_id}/facts:
+    get:
+      operationId: listDailyReconciliationFacts
+      summary: 分页查看程序直接核验的原始账务事实
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: source_fingerprint
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/daily-reconciliations/{report_id}/history:
+    get:
+      operationId: getDailyReconciliationHistory
+      summary: 查看原始独立复核快照
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/daily-reconciliations/{report_id}/files/{asset_id}:
+    get:
+      operationId: downloadDailyReconciliationEvidence
+      summary: 受控下载本批或历史复核凭据
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: asset_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/finance/daily-reconciliations/{report_id}/statements:
+    post:
+      operationId: importDailyReconciliationStatement
+      summary: 导入五类账单中的一类
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportDailyStatementInput'
+  /api/v1/finance/daily-reconciliations/{report_id}/manual-evidence:
+    post:
+      operationId: recordDailyReconciliationManualEvidence
+      summary: 记录手续费及银行的独立核验材料
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordDailyManualEvidenceInput'
+  /api/v1/finance/daily-reconciliations/{report_id}/comparison:
+    post:
+      operationId: compareDailyReconciliation
+      summary: 计算差异与完整性
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareDailyReconciliationInput'
+  /api/v1/finance/daily-reconciliations/{report_id}/review:
+    post:
+      operationId: reviewDailyReconciliation
+      summary: 独立复核对账结果
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewDailyReconciliationInput'
+  /api/v1/finance/daily-reconciliations/{report_id}/reopen:
+    post:
+      operationId: reopenDailyReconciliation
+      summary: 保留原审阅并重新核对
+      tags:
+      - daily-reconciliation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: path
+        name: report_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 已实现隔离对账；需财务凭据及独立复核，不代表真实支付或转账。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReconciliationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReopenDailyReconciliationInput'
 components:
   securitySchemes:
     bearerAuth:
@@ -30874,6 +31442,673 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    DailyReconciliationScope:
+      type: object
+      additionalProperties: false
+      properties:
+        business_date:
+          type: string
+          format: date
+        merchant_party_id:
+          type: string
+          format: uuid
+        provider:
+          enum:
+          - ALIPAY
+          - APPLE
+        environment:
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        app_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        merchant_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - business_date
+      - merchant_party_id
+      - provider
+      - environment
+      - app_id
+      - merchant_id
+    DailyReconciliationLine:
+      type: object
+      additionalProperties: false
+      properties:
+        record_id:
+          type: string
+          format: uuid
+        external_reference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        direction:
+          enum:
+          - IN
+          - OUT
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required:
+      - record_id
+      - external_reference
+      - direction
+      - amount_minor
+    DailyReconciliationManualInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - FEE
+          - BANK
+        source_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+        external_reference:
+          type: string
+        direction:
+          enum:
+          - IN
+          - OUT
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        evidence_asset_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - id
+      - kind
+      - source_ids
+      - external_reference
+      - direction
+      - amount_minor
+      - evidence_asset_id
+      - reason
+    DailyReconciliationManualFact:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          enum:
+          - FEE
+          - BANK
+        source_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+        external_reference:
+          type: string
+        direction:
+          enum:
+          - IN
+          - OUT
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        evidence_asset_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        entered_by:
+          type: string
+          format: uuid
+      required:
+      - id
+      - kind
+      - source_ids
+      - external_reference
+      - direction
+      - amount_minor
+      - evidence_asset_id
+      - reason
+      - entered_by
+    DailyReconciliationBook:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyReconciliationLine'
+          maxItems: 2000
+        external_reference:
+          type: string
+        evidence_asset_id:
+          type: string
+          format: uuid
+        no_activity_reason:
+          type: string
+        imported_by:
+          type: string
+          format: uuid
+      required:
+      - items
+      - external_reference
+      - evidence_asset_id
+      - no_activity_reason
+      - imported_by
+    DailyReconciliationDifference:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - RECEIPT
+          - REFUND
+          - SPLIT
+          - FEE
+          - BANK
+        reason:
+          type: string
+        record_id:
+          type: string
+          format: uuid
+        external_reference:
+          type: string
+        expected_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        actual_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required:
+      - kind
+      - reason
+    DailyReconciliationComparison:
+      type: object
+      additionalProperties: false
+      properties:
+        differences:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyReconciliationDifference'
+        totals:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: false
+            properties:
+              expected_count:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              statement_count:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              expected_net_minor:
+                type: integer
+              statement_net_minor:
+                type: integer
+            required:
+            - expected_count
+            - statement_count
+            - expected_net_minor
+            - statement_net_minor
+        matched:
+          type: boolean
+        manual_evidence_categories:
+          const:
+          - FEE
+          - BANK
+        meaning:
+          const: COMPARISON_ONLY_NO_PAYMENT_OR_TRANSFER
+        source_fingerprint:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        checked_at:
+          type: string
+          format: date-time
+      required:
+      - differences
+      - totals
+      - matched
+      - manual_evidence_categories
+      - meaning
+      - source_fingerprint
+      - checked_at
+    DailyReconciliationVerification:
+      type: object
+      additionalProperties: false
+      properties:
+        scope_verified:
+          type: boolean
+        statements_complete:
+          type: boolean
+        manual_evidence_verified:
+          type: boolean
+        sources_verified:
+          type: boolean
+      required:
+      - scope_verified
+      - statements_complete
+      - manual_evidence_verified
+      - sources_verified
+    DailyReconciliationReview:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+        verification:
+          $ref: '#/components/schemas/DailyReconciliationVerification'
+        reviewed_by:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+        comparison:
+          $ref: '#/components/schemas/DailyReconciliationComparison'
+      required:
+      - decision
+      - reason
+      - verification
+      - reviewed_by
+      - at
+      - comparison
+    DailyReconciliationData:
+      type: object
+      additionalProperties: false
+      properties:
+        scope:
+          $ref: '#/components/schemas/DailyReconciliationScope'
+        note:
+          type: string
+        books:
+          type: object
+          additionalProperties: false
+          properties:
+            RECEIPT:
+              $ref: '#/components/schemas/DailyReconciliationBook'
+            REFUND:
+              $ref: '#/components/schemas/DailyReconciliationBook'
+            SPLIT:
+              $ref: '#/components/schemas/DailyReconciliationBook'
+            FEE:
+              $ref: '#/components/schemas/DailyReconciliationBook'
+            BANK:
+              $ref: '#/components/schemas/DailyReconciliationBook'
+        manual_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyReconciliationManualFact'
+          maxItems: 2000
+        comparison:
+          anyOf:
+          - $ref: '#/components/schemas/DailyReconciliationComparison'
+          - type: 'null'
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/DailyReconciliationReview'
+          - type: 'null'
+        editors:
+          type: array
+          items:
+            type: string
+            format: uuid
+        history:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              event:
+                type: string
+              by:
+                type: string
+                format: uuid
+              at:
+                type: string
+                format: date-time
+              reason:
+                type: string
+            required:
+            - event
+            - by
+            - at
+            - reason
+      required:
+      - scope
+      - note
+      - books
+      - manual_items
+      - comparison
+      - review
+      - editors
+      - history
+    DailyReconciliationRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_by:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 1
+        current_status:
+          enum:
+          - DRAFT
+          - DIFFERENCES
+          - READY
+          - REVIEWED
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        data:
+          $ref: '#/components/schemas/DailyReconciliationData'
+        source_fingerprint:
+          type: string
+        sources_current:
+          type: boolean
+        evidence_current:
+          type: boolean
+        evidence_reason:
+          type: string
+        effective_status:
+          enum:
+          - DRAFT
+          - DIFFERENCES
+          - READY
+          - REVIEWED
+          - RECHECK_REQUIRED
+      required:
+      - id
+      - created_by
+      - object_version
+      - current_status
+      - content_sha256
+      - data
+    DailyReconciliationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/DailyReconciliationRecord'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    scope:
+                      $ref: '#/components/schemas/DailyReconciliationScope'
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    current_status:
+                      enum:
+                      - DRAFT
+                      - DIFFERENCES
+                      - READY
+                      - REVIEWED
+                    effective_status:
+                      enum:
+                      - DRAFT
+                      - DIFFERENCES
+                      - READY
+                      - REVIEWED
+                      - RECHECK_REQUIRED
+                    needs_recheck:
+                      type: boolean
+                  required:
+                  - id
+                  - scope
+                  - object_version
+                  - current_status
+                  - effective_status
+                  - needs_recheck
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - items
+            - next_cursor
+          - type: object
+            additionalProperties: false
+            properties:
+              report_id:
+                type: string
+                format: uuid
+              source_fingerprint:
+                type: string
+              basis:
+                const: PLATFORM_POSTING_DAY_ASIA_SHANGHAI
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    record_id:
+                      type: string
+                      format: uuid
+                    external_reference:
+                      type: string
+                      minLength: 1
+                      maxLength: 128
+                    direction:
+                      enum:
+                      - IN
+                      - OUT
+                    amount_minor:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    kind:
+                      enum:
+                      - RECEIPT
+                      - REFUND
+                      - SPLIT
+                      - FEE
+                      - BANK
+                    source_key:
+                      type: string
+                  required:
+                  - record_id
+                  - external_reference
+                  - direction
+                  - amount_minor
+                  - kind
+                  - source_key
+              next_cursor:
+                anyOf:
+                - type: string
+                - type: 'null'
+              warnings:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyReconciliationDifference'
+            required:
+            - report_id
+            - source_fingerprint
+            - basis
+            - items
+            - next_cursor
+            - warnings
+          - type: object
+            additionalProperties: false
+            properties:
+              report_id:
+                type: string
+                format: uuid
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    reviewed_by:
+                      type: string
+                      format: uuid
+                    snapshot:
+                      $ref: '#/components/schemas/DailyReconciliationData'
+                  required:
+                  - id
+                  - object_version
+                  - reviewed_by
+                  - snapshot
+            required:
+            - report_id
+            - items
+      required:
+      - meta
+      - data
+    CreateDailyReconciliationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        scope:
+          $ref: '#/components/schemas/DailyReconciliationScope'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - scope
+      - note
+    ImportDailyStatementInput:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - RECEIPT
+          - REFUND
+          - SPLIT
+          - FEE
+          - BANK
+        mode:
+          enum:
+          - REPLACE
+          - APPEND
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyReconciliationLine'
+          maxItems: 200
+        external_reference:
+          type: string
+        evidence_asset_id:
+          type: string
+          format: uuid
+        no_activity_reason:
+          type: string
+          maxLength: 2000
+      required:
+      - kind
+      - mode
+      - items
+      - external_reference
+      - evidence_asset_id
+      - no_activity_reason
+    RecordDailyManualEvidenceInput:
+      type: object
+      additionalProperties: false
+      properties:
+        mode:
+          enum:
+          - REPLACE
+          - APPEND
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyReconciliationManualInput'
+          maxItems: 200
+      required:
+      - mode
+      - items
+    CompareDailyReconciliationInput:
+      type: object
+      additionalProperties: false
+      properties: {}
+      required: []
+    ReviewDailyReconciliationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          enum:
+          - APPROVE
+          - REJECT
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        verification:
+          $ref: '#/components/schemas/DailyReconciliationVerification'
+      required:
+      - decision
+      - reason
+      - verification
+    ReopenDailyReconciliationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
     DiscoveryCities:
       type: object
       additionalProperties: false
@@ -46765,7 +48000,7 @@ components:
           type: string
           format: uuid
         rounding:
-          const: HALF_UP_PLATFORM_REMAINDER
+          enum: [HALF_UP_PLATFORM_REMAINDER, LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN]
         rules:
           $ref: '#/components/schemas/FinanceRules'
         rule_snapshot:
@@ -46852,7 +48087,7 @@ components:
         referrer_party_id: *market6_id003
         referral_bps: *market6_id002
         rounding:
-          const: HALF_UP_PLATFORM_REMAINDER
+          enum: [HALF_UP_PLATFORM_REMAINDER, LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN]
       required:
       - model
       - product_type

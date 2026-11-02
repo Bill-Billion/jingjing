@@ -154,6 +154,22 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   const refs=require('../src/modules/settlement/source');const f=await db.withTransaction(tx=>refs.facts(tx,g)),items=f.references.map(x=>({record_id:x.record_id,direction:x.direction,external_reference:x.external_reference,amount_minor:x.amount_minor}));
   const input={provider:'ALIPAY',environment:'SANDBOX',external_reference:'synthetic.statement',items,evidence_asset_id:proof.id};assert.equal(ft(await fp('/agreements/'+g.id+'/reconciliations',g,input)).current_status,'MATCHED');assert.equal(ft(await fp('/agreements/'+g.id+'/reconciliations',g,{...input,items:[]})).current_status,'DIFFERENCES');assert.equal((await fp('/agreements/'+g.id+'/reconciliations',g,{...input,environment:'PRODUCTION'})).status,409);
  });
+
+ await t.test('daily books include verified refunds, actual split payments and returned split money, not reservations',async()=>{
+  const daily=require('../src/modules/reconciliation/sources');
+  const day=new Date(Date.now()-86400000+8*3600000).toISOString().slice(0,10),posted=day+' 04:00:00.000';
+  await db.execute('UPDATE trade_journal SET created_at=? WHERE order_id=?',[posted,order.id]);
+  await db.execute('UPDATE finance_entries SET created_at=? WHERE agreement_id=?',[posted,g.id]);
+  const scope={business_date:day,merchant_party_id:producer.personal_party_id,...config};
+  const facts=await db.withTransaction(tx=>daily.facts(tx,scope));
+  assert.equal(facts.items.filter(x=>x.kind==='RECEIPT').reduce((n,x)=>n+x.amount_minor,0),10000);
+  assert.equal(facts.items.filter(x=>x.kind==='REFUND').reduce((n,x)=>n+x.amount_minor,0),4000);
+  assert.equal(facts.items.filter(x=>x.kind==='SPLIT'&&x.direction==='OUT').reduce((n,x)=>n+x.amount_minor,0),2000);
+  assert.equal(facts.items.filter(x=>x.kind==='SPLIT'&&x.direction==='IN').reduce((n,x)=>n+x.amount_minor,0),1000);
+  assert.equal(facts.warnings.length,0);
+  assert.equal((await db.withTransaction(tx=>daily.facts(tx,{...scope,merchant_id:'wrong-account'}))).items.length,0);
+  assert.equal((await db.withTransaction(tx=>daily.facts(tx,{...scope,environment:'PRODUCTION'}))).items.length,0);
+ });
  let revenue,statement;
  await t.test('external release statement is accrued revenue, not cash received or automatic payout',async()=>{
   const rr={...rules,release_condition:'RECEIVED',lines:[{line_id:'revenue',shares:[{party_id:buyer.personal_party_id,bps:6000,role:'PRODUCER'},{party_id:producer.personal_party_id,bps:4000,role:'RIGHTSHOLDER'}],deductions:[]}]};

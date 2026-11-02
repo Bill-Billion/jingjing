@@ -1,5 +1,5 @@
 {
-  "version": "0.31.22-rc.1",
+  "version": "0.31.23-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -572,7 +572,18 @@
     "createGuardianRefundRequest",
     "requestReviewedGuardianRefund",
     "listGuardianSuitableContent",
-    "downloadGuardianSuitablePreview"
+    "downloadGuardianSuitablePreview",
+    "createDailyReconciliation",
+    "listDailyReconciliations",
+    "getDailyReconciliation",
+    "listDailyReconciliationFacts",
+    "getDailyReconciliationHistory",
+    "downloadDailyReconciliationEvidence",
+    "importDailyReconciliationStatement",
+    "recordDailyReconciliationManualEvidence",
+    "compareDailyReconciliation",
+    "reviewDailyReconciliation",
+    "reopenDailyReconciliation"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1172,5 +1183,29 @@
     ],
     "production_enabled": false,
     "migration": "0201"
+  },
+  "daily_reconciliation": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createDailyReconciliation",
+      "listDailyReconciliations",
+      "getDailyReconciliation",
+      "listDailyReconciliationFacts",
+      "getDailyReconciliationHistory",
+      "downloadDailyReconciliationEvidence",
+      "importDailyReconciliationStatement",
+      "recordDailyReconciliationManualEvidence",
+      "compareDailyReconciliation",
+      "reviewDailyReconciliation",
+      "reopenDailyReconciliation"
+    ],
+    "migration": "0204",
+    "record": "docs/tasks/records/CORE-finance-closure-20261102.md",
+    "limits": [
+      "No funds transfer",
+      "Fee/bank evidence requires independent manual review",
+      "Mixed-channel payout needs explicit allocation, cannot close by waiver",
+      "New rounding version; legacy contracts unchanged"
+    ]
   }
 }

@@ -6151,7 +6151,359 @@
           }
         }
       }
+    },
+    {
+      "schema": "DailyReconciliationResponse",
+      "value": {
+        "meta": {
+          "request_id": "47b0f9af-4738-41b4-9df0-fb1ffd07bbee",
+          "actor": {
+            "account_id": "952a358c-6b57-4a17-a6f7-0367c0a88e42"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "30074fbf-9c07-4dbe-bc0d-13fb36de6b44",
+          "created_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+          "object_version": 20,
+          "current_status": "REVIEWED",
+          "content_sha256": "9e343927a36e1bdd6dfbe13ec5234bc7ae7aa5c2f7cb888e5db3671089fead81",
+          "data": {
+            "note": "Synthetic day",
+            "books": {
+              "FEE": {
+                "items": [
+                  {
+                    "direction": "OUT",
+                    "record_id": "2d995488-f0d2-4c73-8854-2840268390cb",
+                    "amount_minor": 1,
+                    "external_reference": "synthetic-fee"
+                  }
+                ],
+                "imported_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "evidence_asset_id": "c83aacd1-7195-44d7-b788-b885e045161f",
+                "external_reference": "synthetic-FEE",
+                "no_activity_reason": ""
+              },
+              "BANK": {
+                "items": [
+                  {
+                    "direction": "IN",
+                    "record_id": "49465639-50e7-4977-b89f-8019e9015af2",
+                    "amount_minor": 99,
+                    "external_reference": "synthetic-bank"
+                  }
+                ],
+                "imported_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "evidence_asset_id": "c83aacd1-7195-44d7-b788-b885e045161f",
+                "external_reference": "synthetic-BANK",
+                "no_activity_reason": ""
+              },
+              "SPLIT": {
+                "items": [],
+                "imported_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "evidence_asset_id": "c83aacd1-7195-44d7-b788-b885e045161f",
+                "external_reference": "synthetic-SPLIT",
+                "no_activity_reason": "Synthetic no activity declaration"
+              },
+              "REFUND": {
+                "items": [],
+                "imported_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "evidence_asset_id": "c83aacd1-7195-44d7-b788-b885e045161f",
+                "external_reference": "synthetic-REFUND",
+                "no_activity_reason": "Synthetic no activity declaration"
+              },
+              "RECEIPT": {
+                "items": [
+                  {
+                    "direction": "IN",
+                    "record_id": "52d9ac88-658c-4787-81f5-627d0eba57a9",
+                    "amount_minor": 100,
+                    "external_reference": "synthetic.52d9ac88-658c-4787-81f5-627d0eba57a9"
+                  },
+                  {
+                    "direction": "IN",
+                    "record_id": "e6957a93-9e48-47fc-a47e-12bc24aa952b",
+                    "amount_minor": 100,
+                    "external_reference": "synthetic.e6957a93-9e48-47fc-a47e-12bc24aa952b"
+                  }
+                ],
+                "imported_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "evidence_asset_id": "c83aacd1-7195-44d7-b788-b885e045161f",
+                "external_reference": "synthetic-RECEIPT",
+                "no_activity_reason": ""
+              }
+            },
+            "scope": {
+              "app_id": "synthetic.app",
+              "provider": "ALIPAY",
+              "environment": "SANDBOX",
+              "merchant_id": "synthetic.merchant",
+              "business_date": "2026-11-01",
+              "merchant_party_id": "506fe30a-bd13-4a94-84c4-647003bc44b6"
+            },
+            "review": {
+              "at": "2026-11-02T15:22:23.360Z",
+              "reason": "Second independent review",
+              "decision": "APPROVE",
+              "comparison": {
+                "totals": {
+                  "FEE": {
+                    "expected_count": 1,
+                    "statement_count": 1,
+                    "expected_net_minor": -1,
+                    "statement_net_minor": -1
+                  },
+                  "BANK": {
+                    "expected_count": 1,
+                    "statement_count": 1,
+                    "expected_net_minor": 99,
+                    "statement_net_minor": 99
+                  },
+                  "SPLIT": {
+                    "expected_count": 0,
+                    "statement_count": 0,
+                    "expected_net_minor": 0,
+                    "statement_net_minor": 0
+                  },
+                  "REFUND": {
+                    "expected_count": 0,
+                    "statement_count": 0,
+                    "expected_net_minor": 0,
+                    "statement_net_minor": 0
+                  },
+                  "RECEIPT": {
+                    "expected_count": 2,
+                    "statement_count": 2,
+                    "expected_net_minor": 200,
+                    "statement_net_minor": 200
+                  }
+                },
+                "matched": true,
+                "meaning": "COMPARISON_ONLY_NO_PAYMENT_OR_TRANSFER",
+                "checked_at": "2026-11-02T15:22:23.339Z",
+                "differences": [],
+                "source_fingerprint": "dbef520dd577ca563f92a97609d7282e59a9a6ec6f93720a90eb1076b4ec3f67",
+                "manual_evidence_categories": [
+                  "FEE",
+                  "BANK"
+                ]
+              },
+              "reviewed_by": "952a358c-6b57-4a17-a6f7-0367c0a88e42",
+              "verification": {
+                "scope_verified": true,
+                "sources_verified": true,
+                "statements_complete": true,
+                "manual_evidence_verified": true
+              }
+            },
+            "editors": [
+              "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+              "952a358c-6b57-4a17-a6f7-0367c0a88e42"
+            ],
+            "history": [
+              {
+                "at": "2026-11-02T15:22:22.981Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "CREATED",
+                "reason": "Synthetic day"
+              },
+              {
+                "at": "2026-11-02T15:22:23.019Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "COMPARED",
+                "reason": "差异未消除，不可结案"
+              },
+              {
+                "at": "2026-11-02T15:22:23.028Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "RECEIPT"
+              },
+              {
+                "at": "2026-11-02T15:22:23.034Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "COMPARED",
+                "reason": "差异未消除，不可结案"
+              },
+              {
+                "at": "2026-11-02T15:22:23.055Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "MANUAL_EVIDENCE_ENTERED",
+                "reason": "手续费/银行核验依据，尚未经独立复核"
+              },
+              {
+                "at": "2026-11-02T15:22:23.061Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "RECEIPT"
+              },
+              {
+                "at": "2026-11-02T15:22:23.067Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "REFUND"
+              },
+              {
+                "at": "2026-11-02T15:22:23.072Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "SPLIT"
+              },
+              {
+                "at": "2026-11-02T15:22:23.078Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "FEE"
+              },
+              {
+                "at": "2026-11-02T15:22:23.083Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "BANK"
+              },
+              {
+                "at": "2026-11-02T15:22:23.097Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "COMPARED",
+                "reason": "待独立核对凭据与账单完整性"
+              },
+              {
+                "at": "2026-11-02T15:22:23.117Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "MANUAL_EVIDENCE_ENTERED",
+                "reason": "手续费/银行核验依据，尚未经独立复核"
+              },
+              {
+                "at": "2026-11-02T15:22:23.134Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "MANUAL_EVIDENCE_ENTERED",
+                "reason": "手续费/银行核验依据，尚未经独立复核"
+              },
+              {
+                "at": "2026-11-02T15:22:23.146Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "COMPARED",
+                "reason": "待独立核对凭据与账单完整性"
+              },
+              {
+                "at": "2026-11-02T15:22:23.178Z",
+                "by": "952a358c-6b57-4a17-a6f7-0367c0a88e42",
+                "event": "INDEPENDENT_REVIEW",
+                "reason": "Independent synthetic evidence checked"
+              },
+              {
+                "at": "2026-11-02T15:22:23.305Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "REOPENED",
+                "reason": "Late source arrived"
+              },
+              {
+                "at": "2026-11-02T15:22:23.316Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "COMPARED",
+                "reason": "差异未消除，不可结案"
+              },
+              {
+                "at": "2026-11-02T15:22:23.325Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "STATEMENT_IMPORTED",
+                "reason": "RECEIPT"
+              },
+              {
+                "at": "2026-11-02T15:22:23.339Z",
+                "by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "event": "COMPARED",
+                "reason": "待独立核对凭据与账单完整性"
+              },
+              {
+                "at": "2026-11-02T15:22:23.361Z",
+                "by": "952a358c-6b57-4a17-a6f7-0367c0a88e42",
+                "event": "INDEPENDENT_REVIEW",
+                "reason": "Second independent review"
+              }
+            ],
+            "comparison": {
+              "totals": {
+                "FEE": {
+                  "expected_count": 1,
+                  "statement_count": 1,
+                  "expected_net_minor": -1,
+                  "statement_net_minor": -1
+                },
+                "BANK": {
+                  "expected_count": 1,
+                  "statement_count": 1,
+                  "expected_net_minor": 99,
+                  "statement_net_minor": 99
+                },
+                "SPLIT": {
+                  "expected_count": 0,
+                  "statement_count": 0,
+                  "expected_net_minor": 0,
+                  "statement_net_minor": 0
+                },
+                "REFUND": {
+                  "expected_count": 0,
+                  "statement_count": 0,
+                  "expected_net_minor": 0,
+                  "statement_net_minor": 0
+                },
+                "RECEIPT": {
+                  "expected_count": 2,
+                  "statement_count": 2,
+                  "expected_net_minor": 200,
+                  "statement_net_minor": 200
+                }
+              },
+              "matched": true,
+              "meaning": "COMPARISON_ONLY_NO_PAYMENT_OR_TRANSFER",
+              "checked_at": "2026-11-02T15:22:23.339Z",
+              "differences": [],
+              "source_fingerprint": "dbef520dd577ca563f92a97609d7282e59a9a6ec6f93720a90eb1076b4ec3f67",
+              "manual_evidence_categories": [
+                "FEE",
+                "BANK"
+              ]
+            },
+            "manual_items": [
+              {
+                "id": "2d995488-f0d2-4c73-8854-2840268390cb",
+                "kind": "FEE",
+                "reason": "Synthetic fee proof",
+                "direction": "OUT",
+                "entered_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "source_ids": [
+                  "52d9ac88-658c-4787-81f5-627d0eba57a9"
+                ],
+                "amount_minor": 1,
+                "evidence_asset_id": "8c3fb8d5-596c-4ae3-965f-408460c6b2e4",
+                "external_reference": "synthetic-fee"
+              },
+              {
+                "id": "49465639-50e7-4977-b89f-8019e9015af2",
+                "kind": "BANK",
+                "reason": "Synthetic net bank credit",
+                "direction": "IN",
+                "entered_by": "c7cdee37-bae5-4ff5-ad2a-6880ef0a4ff9",
+                "source_ids": [
+                  "52d9ac88-658c-4787-81f5-627d0eba57a9"
+                ],
+                "amount_minor": 99,
+                "evidence_asset_id": "72d1096b-d35c-4a23-821b-e77cbe5a41fe",
+                "external_reference": "synthetic-bank"
+              }
+            ]
+          },
+          "source_fingerprint": "dbef520dd577ca563f92a97609d7282e59a9a6ec6f93720a90eb1076b4ec3f67",
+          "sources_current": true,
+          "evidence_current": true,
+          "effective_status": "REVIEWED"
+        }
+      },
+      "name": "daily reconciliation reviewed synthetic report"
     }
   ],
-  "contract_version": "0.31.22-rc.1"
+  "contract_version": "0.31.22-rc.1",
+  "version": "0.31.23-rc.1"
 }
