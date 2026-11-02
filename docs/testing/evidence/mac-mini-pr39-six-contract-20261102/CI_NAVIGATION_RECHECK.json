@@ -1,0 +1,565 @@
+{
+  "implementation_commit": "9432eb04410c88b009cf051544682641be8f7a95",
+  "checked_at": "2026-11-02T17:52:01.066197+00:00",
+  "synthetic_only": true,
+  "regression": "CI stage20 expected 74 navigation entries after 3 new entries raised count to 77",
+  "failed_runs": [
+    "https://github.com/Bill-Billion/jingjing/actions/runs/41492231758",
+    "https://github.com/Bill-Billion/jingjing/actions/runs/41492218910"
+  ],
+  "fix": "Update maintained navigation expectations to 77; stage20 explicitly requires all three six-contract entries and still traverses every URL, comparing menu/highlight/no-404/narrow-layout. Business sources unchanged.",
+  "changed_scripts": [
+    "scripts/pr18-ui-browser-check.mjs",
+    "scripts/pr20-ui-browser-check.mjs",
+    "scripts/pr21-ui-browser-check.mjs",
+    "scripts/v5-editorial-visual-check.mjs",
+    "scripts/v5-r03-artists-browser-check.mjs",
+    "scripts/v5-r03-web-visual-check.mjs",
+    "scripts/v5-r04-reissue-browser-check.mjs",
+    "scripts/v5-r04-web-browser-check.mjs",
+    "scripts/v5-r05-r12-web-browser-check.mjs"
+  ],
+  "runs": [
+    {
+      "source": "Normal SMS / explicit OWNER or independent no-acting browser UI → isolated HTTP/MySQL",
+      "synthetic_only": true,
+      "web_build": {
+        "index_sha256": "e51475c030f3e0c438f4bc9f9c096774e07908fc1207908f99a9e6533e24025c",
+        "entry_path": "/assets/index-C2U3_e52.js",
+        "entry_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836"
+      },
+      "total": 21,
+      "passed": 21,
+      "pageErrors": [],
+      "results": [
+        {
+          "label": "正常短信OWNER与个人通知按account+party读取，新feed与精确全部已读入口保留单条原业务重读",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3310
+        },
+        {
+          "label": "已读commit后503，GET本人原事件核实且另一主体仍未读，不能换页",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3941
+        },
+        {
+          "label": "四种真实原对象入口桥接、来源编号与版本准确，正常UI发送纯文本",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3601
+        },
+        {
+          "label": "同对象回复与4000字界限、非作者不能撤回，纯文本不执行HTML",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 1510
+        },
+        {
+          "label": "留言503原key/body不变恢复仅一条，锁定导航及切换身份",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 2239
+        },
+        {
+          "label": "本人撤回503原IfMatch恢复，接口及界面body=null不保留旧正文",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 2260
+        },
+        {
+          "label": "独立无acting隐藏503原key/body/version恢复，不能隐藏自身留言",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 4110
+        },
+        {
+          "label": "两位正常独立会话实际留言412，清旧选择和理由后要求重读确认",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3322
+        },
+        {
+          "label": "运营审计只读来源过滤、四类原业务历史和独立权限撤销实拒绝",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 2420
+        },
+        {
+          "label": "报表无默认环境期间，明确UTC366天界限与三个类别",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 630
+        },
+        {
+          "label": "三个Web报表真实入队worker关闭保持PENDING，无CSV或假成功",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3559
+        },
+        {
+          "label": "OWNER本方结算报表原主体申请，未知503保留原key参数取回同任务",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 1786
+        },
+        {
+          "label": "原后台worker真实生成三类结果，JSON指纹与业务来源逐行核对",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 2234
+        },
+        {
+          "label": "真实CSV三类别BOM/CRLF/元数据/数值分、页面元和JSON不同指纹，完成不可变",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3835
+        },
+        {
+          "label": "真实BLOCKED具体错误与同任务retry503原key恢复，再由worker生成",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 1480
+        },
+        {
+          "label": "明确PRODUCTION环境不混入沙盒流水，零行真实报表仍可下载",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 1966
+        },
+        {
+          "label": "失去一个PRODUCTION来源权限拒整份WORKLOAD CSV及JSON、回收Blob，CASH仍可读",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3024
+        },
+        {
+          "label": "OPERATIONS_REPORT与COMMENT_MODERATE失权实拒绝，外部404/MEMBER403不泄露私有记录",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3902
+        },
+        {
+          "label": "真实membership撤权及退出清正文草稿、下载Blob和身份，恢复正常读取",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 3730
+        },
+        {
+          "label": "真实私有来源材料损坏或storage不可用拒绝，恢复下载按原大小hash核对",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 958
+        },
+        {
+          "label": "完整77项分类菜单每入口新版有效无404、高亮稳定及390宽通知留言报告",
+          "result": "PASS",
+          "build_sha256": "aefc4431ea43f3b8ef56526a9398e2f92f5e1924826b73d42c6d6255281e8836",
+          "elapsed_ms": 21284
+        }
+      ],
+      "command": "JX_MYSQL_TEST_ENV_FILE=<private path> CHROME_PATH=<local Chrome> JX_BROWSER_EVIDENCE_DIR=<isolated path> node scripts/run-ui-browser-check.cjs 20 --built",
+      "exit_code": 0,
+      "navigation_verification": [
+        {
+          "check": "all63 current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport",
+          "menu_count": 77,
+          "menu": [
+            {
+              "href": "/workspace",
+              "text": "账号与机构"
+            },
+            {
+              "href": "/me/phone-change",
+              "text": "更换登录手机号"
+            },
+            {
+              "href": "/invoices/requests",
+              "text": "我的开票"
+            },
+            {
+              "href": "/me/business/contracts",
+              "text": "我的合同和约定"
+            },
+            {
+              "href": "/me/business/works",
+              "text": "我的作品与已购视频"
+            },
+            {
+              "href": "/me/business/income",
+              "text": "我的收入核算"
+            },
+            {
+              "href": "/me/collections/favorites",
+              "text": "我的收藏"
+            },
+            {
+              "href": "/me/collections/history",
+              "text": "浏览记录"
+            },
+            {
+              "href": "/support/tickets",
+              "text": "我的反馈与举报"
+            },
+            {
+              "href": "/contracts",
+              "text": "合同与规则"
+            },
+            {
+              "href": "/guardians/records",
+              "text": "监护管理与未成年退款"
+            },
+            {
+              "href": "/infringement/cases",
+              "text": "侵权通知与反通知"
+            },
+            {
+              "href": "/wallet/summary",
+              "text": "晶钻与会员"
+            },
+            {
+              "href": "/engagement/dashboard",
+              "text": "经营、成长与榜单"
+            },
+            {
+              "href": "/redemption/catalog",
+              "text": "权益与礼遇"
+            },
+            {
+              "href": "/privacy/requests",
+              "text": "本人资料与权益"
+            },
+            {
+              "href": "/discovery",
+              "text": "查找公开内容"
+            },
+            {
+              "href": "/directory/organizations",
+              "text": "公开机构"
+            },
+            {
+              "href": "/directory/featured",
+              "text": "精选艺人"
+            },
+            {
+              "href": "/directory/manage",
+              "text": "本机构公开资料"
+            },
+            {
+              "href": "/supply/profiles",
+              "text": "供给申请"
+            },
+            {
+              "href": "/supply/works",
+              "text": "我的作品"
+            },
+            {
+              "href": "/artists/people",
+              "text": "真人与数字人"
+            },
+            {
+              "href": "/artists/reviews/CONSENT",
+              "text": "艺人资料核验"
+            },
+            {
+              "href": "/supply/reviews/profile",
+              "text": "供给审核"
+            },
+            {
+              "href": "/supply/reviews/rights",
+              "text": "作品审核"
+            },
+            {
+              "href": "/participation/projects",
+              "text": "出演、会签与发行"
+            },
+            {
+              "href": "/media/tasks",
+              "text": "素材审核与标识"
+            },
+            {
+              "href": "/licensing/catalog",
+              "text": "选剧本"
+            },
+            {
+              "href": "/licensing/products",
+              "text": "许可商品"
+            },
+            {
+              "href": "/licensing/reservations",
+              "text": "许可办理"
+            },
+            {
+              "href": "/licensing/procurement-events",
+              "text": "IP开发与上线"
+            },
+            {
+              "href": "/licensing/royalty-statements",
+              "text": "IP收益账单"
+            },
+            {
+              "href": "/licensing/projects",
+              "text": "项目与绑定"
+            },
+            {
+              "href": "/licensing/readings",
+              "text": "受控阅稿"
+            },
+            {
+              "href": "/trade/specifications",
+              "text": "商品规格"
+            },
+            {
+              "href": "/trade/quotes",
+              "text": "报价订单"
+            },
+            {
+              "href": "/trade/payments",
+              "text": "付款退款"
+            },
+            {
+              "href": "/licensing/reviews/products",
+              "text": "许可核验"
+            },
+            {
+              "href": "/licensing/reviews/procurement-events",
+              "text": "IP开发上线核验"
+            },
+            {
+              "href": "/licensing/reviews/royalty-statements",
+              "text": "IP账单核验"
+            },
+            {
+              "href": "/trade/reviews/specifications",
+              "text": "规格审核"
+            },
+            {
+              "href": "/trade/reviews/quotes",
+              "text": "报价审核"
+            },
+            {
+              "href": "/trade/reviews/refunds",
+              "text": "退款与旧单核对"
+            },
+            {
+              "href": "/stock/sales-publications",
+              "text": "现成影片"
+            },
+            {
+              "href": "/gigs/catalogue",
+              "text": "商单需求与提案"
+            },
+            {
+              "href": "/gigs/relations",
+              "text": "直接 MCN 合作"
+            },
+            {
+              "href": "/gigs/commissions",
+              "text": "佣金计提"
+            },
+            {
+              "href": "/gigs/rankings",
+              "text": "商单榜单"
+            },
+            {
+              "href": "/gigs/reviews/requests",
+              "text": "商单与提案核验"
+            },
+            {
+              "href": "/gigs/reviews/rules",
+              "text": "商单规则核验"
+            },
+            {
+              "href": "/handover/orders",
+              "text": "机构解除后的旧单交接"
+            },
+            {
+              "href": "/notices/catalog",
+              "text": "通告与投稿"
+            },
+            {
+              "href": "/operations/customization",
+              "text": "故事收件与受理"
+            },
+            {
+              "href": "/auditions/catalog",
+              "text": "试镜与取样"
+            },
+            {
+              "href": "/conversations/messages",
+              "text": "商单订单会话"
+            },
+            {
+              "href": "/cocreation/rooms",
+              "text": "共同成片"
+            },
+            {
+              "href": "/production/projects",
+              "text": "制作项目"
+            },
+            {
+              "href": "/projects/projects",
+              "text": "项目选角"
+            },
+            {
+              "href": "/projects/plans",
+              "text": "项目会签"
+            },
+            {
+              "href": "/projects/releases",
+              "text": "项目发行"
+            },
+            {
+              "href": "/projects/channels",
+              "text": "渠道档案"
+            },
+            {
+              "href": "/production/reviews/projects",
+              "text": "制作独立核验"
+            },
+            {
+              "href": "/projects/reviews/plans",
+              "text": "项目独立核验"
+            },
+            {
+              "href": "/invoices/operations/handle",
+              "text": "开票受理与录入"
+            },
+            {
+              "href": "/invoices/operations/verify",
+              "text": "票据独立核准"
+            },
+            {
+              "href": "/support/operations",
+              "text": "客服处理"
+            },
+            {
+              "href": "/directory/reviews/ORGANIZATION",
+              "text": "机构资料与精选审核"
+            },
+            {
+              "href": "/finance/agreements",
+              "text": "结算约定与余额"
+            },
+            {
+              "href": "/finance/payouts",
+              "text": "财务付款"
+            },
+            {
+              "href": "/finance/income",
+              "text": "渠道收入与对账"
+            },
+            {
+              "href": "/finance/disputes",
+              "text": "争议与账务调整"
+            },
+            {
+              "href": "/operations/notifications",
+              "text": "业务通知与留言"
+            },
+            {
+              "href": "/operations/reports",
+              "text": "经营报表"
+            },
+            {
+              "href": "/operations/moderation",
+              "text": "留言独立管理"
+            },
+            {
+              "href": "/operations/audit",
+              "text": "操作审计"
+            },
+            {
+              "href": "/finance/reviews/agreements",
+              "text": "独立财务核验"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "Vue normal SMS/OWNER UI → isolated real HTTP/MySQL",
+      "synthetic_only": true,
+      "total": 14,
+      "passed": 14,
+      "pageErrors": [],
+      "results": [
+        {
+          "label": "正常短信及机构OWNER建立项目，公开范围与授权日期明确",
+          "result": "PASS",
+          "elapsed_ms": 751
+        },
+        {
+          "label": "明确角色条款和总容量，定向邀请不是筛选或入组",
+          "result": "PASS",
+          "elapsed_ms": 999
+        },
+        {
+          "label": "本人公开脸声授权及报价，回应邀请成为APPLIED",
+          "result": "PASS",
+          "elapsed_ms": 465
+        },
+        {
+          "label": "发起方筛选未知结果保留原key、原内容、原版本，原请求恢复",
+          "result": "PASS",
+          "elapsed_ms": 490
+        },
+        {
+          "label": "获选者本人精确确认入组，不由发起方代签",
+          "result": "PASS",
+          "elapsed_ms": 377
+        },
+        {
+          "label": "现行V5参演前置：本人具体版本、独立读审、三方原哈希会签及原订单实收",
+          "result": "PASS",
+          "elapsed_ms": 243
+        },
+        {
+          "label": "六层权利、准确制作与原V5参演订单来源全部明确，提交新方案",
+          "result": "PASS",
+          "elapsed_ms": 1215
+        },
+        {
+          "label": "独立核验不代会签，确认按前置顺序并以GET准确确认记录证明",
+          "result": "PASS",
+          "elapsed_ms": 2865
+        },
+        {
+          "label": "真实单项开工条件和已付资金，由发起方按当前版本启动",
+          "result": "PASS",
+          "elapsed_ms": 416
+        },
+        {
+          "label": "已验收付清FINAL成片材料独立核验，再次准确会签",
+          "result": "PASS",
+          "elapsed_ms": 3092
+        },
+        {
+          "label": "已核验渠道与新发行材料，内部审核只到可送出",
+          "result": "PASS",
+          "elapsed_ms": 1376
+        },
+        {
+          "label": "外部凭据登记仍待审，独立核实后才记录真实提交",
+          "result": "PASS",
+          "elapsed_ms": 1141
+        },
+        {
+          "label": "渠道登记与独立核验分人办理，不提供虚构平台接入",
+          "result": "PASS",
+          "elapsed_ms": 1023
+        },
+        {
+          "label": "统一导航与窄屏、当前隐私边界、旧制作与商业菜单并存",
+          "result": "PASS",
+          "elapsed_ms": 4509
+        }
+      ],
+      "command": "JX_MYSQL_TEST_ENV_FILE=<private path> CHROME_PATH=<local Chrome> JX_BROWSER_EVIDENCE_DIR=<isolated path> node scripts/run-ui-browser-check.cjs 18 --built",
+      "exit_code": 0,
+      "limits": "Main 14-case stage18 suite ran; optional JX_BROWSER_FOLLOWUP_DIR navigation branch did not. Full 77-entry traversal is covered by stage20."
+    }
+  ],
+  "diagnostic_only_after_run": "stage20 verification label changed all63 to all77 after successful run; no assertion or runtime behavior changed."
+}
