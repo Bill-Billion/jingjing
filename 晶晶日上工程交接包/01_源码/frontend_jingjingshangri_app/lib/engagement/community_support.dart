@@ -222,6 +222,9 @@ String communityError(Object error) {
 class CommunityApi {
   CommunityApi(this.session, this.domain) {
     if (![
+      'guardians',
+      'infringement',
+      'gigs',
       'engagement',
       'cocreation',
       'redemption',
@@ -240,15 +243,22 @@ class CommunityApi {
   final AccountSession session;
   final String domain;
   String get prefix => '/api/v1/$domain/';
-  bool get personal =>
-      ['privacy', 'me/collections', 'directory', 'discovery'].contains(domain);
+  bool get personal => [
+        'guardians',
+        'privacy',
+        'me/collections',
+        'directory',
+        'discovery'
+      ].contains(domain);
   String? party(bool account) {
     if (!session.isLoggedIn) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
     if ((domain == 'projects'
         ? session.projectsAccessDenied
-        : session.isDomainDenied(prefix))) {
+        : domain == 'gigs'
+            ? session.gigsAccessDenied
+            : session.isDomainDenied(prefix))) {
       throw const AccountError(403, 'ACCESS_DENIED');
     }
     if (account || personal) return null;
@@ -265,7 +275,9 @@ class CommunityApi {
         !session.isLoggedIn ||
         (domain == 'projects'
             ? session.projectsAccessDenied
-            : session.isDomainDenied(prefix)) ||
+            : domain == 'gigs'
+                ? session.gigsAccessDenied
+                : session.isDomainDenied(prefix)) ||
         p != null && p != session.partyId) {
       throw const AccountError(0, 'CONTEXT_CHANGED');
     }
@@ -338,7 +350,9 @@ class CommunityGate extends StatelessWidget {
     final permitted = s.isLoggedIn &&
         !(domain == 'projects'
             ? s.projectsAccessDenied
-            : s.isDomainDenied(prefix)) &&
+            : (domain == 'gigs'
+                ? s.gigsAccessDenied
+                : s.isDomainDenied(prefix))) &&
         (!partyRequired ||
             s.partyId != null &&
                 s.selected?['membership']?['current_status'] == 'ACTIVE' &&
@@ -354,7 +368,9 @@ class CommunityGate extends StatelessWidget {
           ? '请先登录，再查看属于你的业务。'
           : (domain == 'projects'
                   ? s.projectsAccessDenied
-                  : s.isDomainDenied(prefix))
+                  : (domain == 'gigs'
+                      ? s.gigsAccessDenied
+                      : s.isDomainDenied(prefix)))
               ? '当前访问权限已失效，私有资料已清空。请重新核对身份。'
               : '请先选择有效的办事身份。'),
       tradeButton(
@@ -367,11 +383,13 @@ class CommunityGate extends StatelessWidget {
                       builder: (_) => LoginPage(returnRoute: route)))),
       if ((domain == 'projects'
           ? s.projectsAccessDenied
-          : s.isDomainDenied(prefix)))
+          : (domain == 'gigs' ? s.gigsAccessDenied : s.isDomainDenied(prefix))))
         tradeButton('重新核对访问权限', () async {
           try {
             if (domain == 'projects') {
               await s.retryProjectsAccess();
+            } else if (domain == 'gigs') {
+              await s.retryGigsAccess();
             } else {
               await s.retryDomainAccess(prefix, personal: !partyRequired);
             }
@@ -451,7 +469,9 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
       if (e.status != 401 && e.code != 'CONTEXT_CHANGED') {
         domain == 'projects'
             ? session.denyProjects()
-            : session.denyDomain(api.prefix);
+            : domain == 'gigs'
+                ? session.denyGigs()
+                : session.denyDomain(api.prefix);
       }
     }
     error = communityError(e);

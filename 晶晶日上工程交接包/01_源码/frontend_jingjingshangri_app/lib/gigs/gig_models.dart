@@ -324,8 +324,18 @@ class GigRecord {
           'accepted_by',
           'ended_reason'
         ], optional: [
-          'v5_terms'
+          'v5_terms',
+          'handover'
         ]);
+        if (d.containsKey('handover')) {
+          final h = gigMap(d['handover']);
+          gigRequire(h['policy'] == 'CONTRACT_20261029' &&
+              h['new_business_allowed'] == false &&
+              gigInstant(h['started_at']) &&
+              gigInstant(h['deadline_at']) &&
+              h['order_count'] is int &&
+              h['order_count'] >= 0);
+        }
         if (d.containsKey('v5_terms')) gigSupplyTerms(d['v5_terms']);
         gigRequire(gigId(r['owner_party_id']) &&
             gigId(r['counterparty_id']) &&
@@ -537,6 +547,9 @@ String gigError(Object e, {bool writing = false}) {
     return writing ? '操作结果未知。原请求与内容已保留，请恢复核对。' : '暂时无法读取，请稍后重新核对。';
   }
   const messages = {
+    'HANDOVER_NOT_ACTIVE': '七日交接期已到期或关系不适用，旧单沟通已停止；历史账目保留。',
+    'HANDOVER_ORDER_NOT_OPEN': '该旧订单不在交接清单或双方已确认，机构不能继续沟通。',
+    'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分账尾差异常，旧账保留并暂停新增付款，待人工复核。',
     'MCN_CAPABILITY_REQUIRED': '当前身份尚无有效 MCN 服务授权。合作授权须独立办理，不能自行批准。',
     'COMMERCIAL_CONSENT_REQUIRED': '本人同意未覆盖本次商业用途、地区或完整有效期。',
     'DIRECT_RELATION_REQUIRED': 'MCN 佣金须引用有效直接合作；未引用合作时请明确填写 0%。',

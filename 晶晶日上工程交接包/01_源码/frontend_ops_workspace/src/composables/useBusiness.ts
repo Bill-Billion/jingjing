@@ -3,7 +3,7 @@ import { ApiError, asApiError, newIdempotencyKey, outcomeUnknown } from '@/api/c
 import { businessBytes, readBusiness, writeBusiness, type BusinessData } from '@/api/modules/business'
 import type { PartyMode } from '@/business/model'
 export interface BusinessContext {token:string|null;accountId:string;partyId:string;sessionTag:string;domain:string}
-export interface BusinessCommand {path:string;body?:unknown;method:'POST'|'PATCH';party:PartyMode;version?:number;label:string;key:string;checked:boolean;rawBody?:Blob;readPath?:string;readParty?:PartyMode}
+export interface BusinessCommand {path:string;body?:unknown;method:'POST'|'PATCH'|'PUT';party:PartyMode;version?:number;label:string;key:string;checked:boolean;rawBody?:Blob;readPath?:string;readParty?:PartyMode}
 export function useBusiness(context:()=>BusinessContext){
  const data=shallowRef<BusinessData|null>(null),result=shallowRef<BusinessData|null>(null),error=shallowRef<ApiError|null>(null),busy=ref(false),notice=ref(''),pending=shallowRef<BusinessCommand|null>(null),conflict=ref(false),confirmed=ref(false),securityRevision=ref(0),retryAt=ref(0)
  let generation=0,readSequence=0,controller:AbortController|null=null,urls:string[]=[],disposed=false

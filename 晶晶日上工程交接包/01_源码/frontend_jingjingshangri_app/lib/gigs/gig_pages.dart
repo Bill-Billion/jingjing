@@ -649,6 +649,17 @@ class _RecordState extends State<_Record> {
                 marketplace: d['marketplace_terms'], v5: d['v5_terms'])
           ]),
           if (d['ended_reason'] != null) tradeFact('结束原因', d['ended_reason']),
+          if (d['handover'] != null) ...[
+            tradeFact('七日旧单交接截止', tradeDate(d['handover']['deadline_at'])),
+            supplyNote('立即停止新业务，旧单按仍有效授权限期交接；旧账不改写。'),
+            tradeButton(
+                '查看旧单并确认交接',
+                busy
+                    ? null
+                    : () => Navigator.pushNamed(
+                        context, '/contract-six/handover?id=${r.id}'),
+                outline: true),
+          ],
           if (r.status == 'INVITED' && r.counterparty == api.owner()) ...[
             tradeButton(
                 '接受合作',

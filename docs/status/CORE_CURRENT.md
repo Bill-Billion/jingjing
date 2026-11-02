@@ -1,10 +1,10 @@
 # 当前进度：个人额度与奖池公示后端已补，继续完整办理验收
 
-产品处于**新合同收尾、两端接入和完整测试版验收**。原18组、12条路线、151标准保持；正式登记0通过、14条已有局部证据关联，不能当成151个未开发功能。全局见[产品总览](../collaboration/client-complete-20261028/PRODUCT_STATUS.md)及[下一步安排](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md)。
+产品处于**新合同收尾、两端接入和完整测试版验收**。原18组、12条路线、151标准保持；正式登记0通过、26条已有局部证据关联，不能当成151个未开发功能。全局见[产品总览](../collaboration/client-complete-20261028/PRODUCT_STATUS.md)及[下一步安排](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md)。
 
 后端负责人 **chengcongcong222** 本批完成5项子工作：个人充值/消费额度、请求实际拦截与冷静期、取消余额预留修复、新奖池七日公示、接口及验证交接。接口0.31.24-rc.1、数据库0206。专项结果与完整检查见[本轮记录](../tasks/records/CORE-consumer-controls-20261103.md)及[证据](../testing/evidence/consumer-controls-20261103/RESULTS.md)。24小时、本人主动提额确认和统计口径是明确记录的实施建议，不冒充甲方原文。
 
-前端负责人 **Bill-Billion** 已交付版权/商用等既有页面；本批开始核对远端没有新前端提交，不重复派工。待认领的工作分三批：上一批六项合同流程、财务工作台/新尾差兼容、本批[个人额度与奖池公示](../collaboration/client-complete-20261028/CONSUMER_CONTROLS_HANDOFF_20261103.md)。用户会转发原六项，之后任务直接更新仓库；不把发布当作认领或复验。
+前端负责人 **Bill-Billion** 本轮新增9432eb04，六项合同流程双端已交付，记录App805、Vue561及同记录原生/网页证据；本侧已合入工作树，正在做组合复验，不再列为待认领。新尾差枚举兼容也已交付。仍待认领：[财务工作台](../collaboration/client-complete-20261028/FINANCE_DAILY_HANDOFF_20261102.md)、本批[个人额度与奖池公示](../collaboration/client-complete-20261028/CONSUMER_CONTROLS_HANDOFF_20261103.md)。后续任务按用户要求直接更新仓库，上传不等于已认领。
 
 后端下一步核37号高频/夜间提示与偏好实际执行、奖品正式配置与兑现，继续12路线和151标准证据队列；前端接入一批即同版复验。页面、模拟资料、整链和实审都完成后才固定完整甲方版。真实昆山API联调前提前索要，OSS上线前最后处理；不因此停止独立开发。
 

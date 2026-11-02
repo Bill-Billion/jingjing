@@ -228,6 +228,8 @@ class StockPurchase {
     ]) {
       v5Require(data.containsKey(k) && (data[k] == null || v5Date(data[k])));
     }
+    v5Require(data['acceptance_started_at'] == null ||
+        v5Date(data['acceptance_started_at']));
     v5Require(data['notification_event_id'] == null ||
         v5Int(data['notification_event_id'], min: 1));
     v5Require(data['current_case_id'] == null || v5Id(data['current_case_id']));

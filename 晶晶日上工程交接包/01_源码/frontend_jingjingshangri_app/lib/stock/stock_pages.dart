@@ -693,6 +693,9 @@ class _StockScreenState extends State<_StockScreen> {
                       : () => purchaseAction('acceptance'),
                   outline: true),
             ],
+            if (p.data['acceptance_started_at'] != null)
+              tradeFact(
+                  '服务器记录的原下单起点', tradeDate(p.data['acceptance_started_at'])),
             if (p.data['deadline_at'] != null)
               tradeFact('服务器记录的核对截止', tradeDate(p.data['deadline_at'])),
             if (p.data['accepted_at'] != null)

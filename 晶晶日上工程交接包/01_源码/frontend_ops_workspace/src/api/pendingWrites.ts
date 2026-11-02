@@ -7,7 +7,7 @@ export interface SavedWrite {
   authority: string
   route: string
   path: string
-  method: 'POST' | 'PATCH' | 'DELETE'
+  method: 'POST' | 'PATCH' | 'PUT' | 'DELETE'
   key: string
   body: unknown
   ifMatch?: number

@@ -332,6 +332,8 @@ class _AppShellState extends State<AppShell> {
         '隐私设置 · 账号管理 · 帮助反馈',
         [
           ('个人信息与隐私权益', '/privacy/requests'),
+          ('监护管理与未成年退款', '/contract-six/guardians'),
+          ('侵权通知与反通知', '/contract-six/infringement'),
           ('设置与帮助', '/settings'),
           ('帮助与反馈', '/help'),
         ]

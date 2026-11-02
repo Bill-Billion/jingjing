@@ -27,7 +27,7 @@ export interface ArtistServiceSnapshot { service_id:string;person_id:string;avat
 export interface TradeArtistRequest { id:string }
 export interface Review { decision:'APPROVED'|'REJECTED'; reason:string; account_id:string }
 export interface ProductProfile { version:'V5'; type:'PRIVATE_CUSTOMIZATION'|'MANUAL_SAMPLE'|'STOCK_VIDEO'|'COMMERCIAL'|'AUDITION'|'AVATAR_CREATION'|'AVATAR_HOSTING'|'HALO_REVIEW' }
-export interface CustomizationFinance { model:'V5_SELF_OPERATED'; platform_party_id:string; rounding:'HALF_UP_PLATFORM_REMAINDER'; rules:Rules; rule_snapshot:{content:RuleContent;current_status:'EFFECTIVE';effective_at:string} }
+export interface CustomizationFinance { model:'V5_SELF_OPERATED'; platform_party_id:string; rounding:'HALF_UP_PLATFORM_REMAINDER'|'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'; rules:Rules; rule_snapshot:{content:RuleContent;current_status:'EFFECTIVE';effective_at:string} }
 export interface SpecData { product_profile?:ProductProfile; title:string; provider_party_id:string; line_kind:keyof typeof lineKinds; unit_minor:number; currency:'CNY'; specification:Specification; review:Review|null }
 export interface QuoteLine extends SpecData { line_id:string; spec_id:string; spec_version:number; quantity:number; total_minor:number }
 export interface Allocation { line_id:string; amount_minor:number }
@@ -94,7 +94,7 @@ function artistQuote(v:Record<string,unknown>,ls:QuoteLine[],ins:Installment[]):
 }
 export const isProductProfile=(v:unknown):v is ProductProfile=>obj(v)&&Object.keys(v).length===2&&v.version==='V5'&&['PRIVATE_CUSTOMIZATION','MANUAL_SAMPLE','STOCK_VIDEO','COMMERCIAL','AUDITION','AVATAR_CREATION','AVATAR_HOSTING','HALO_REVIEW'].includes(String(v.type))
 export const isCustomizationSource=(v:unknown):v is CustomizationQuoteSource=>obj(v)&&Object.keys(v).length===3&&validSupplyId(v.request_id)&&validSupplyId(v.submission_id)&&hash(v.content_sha256)
-export function isCustomizationFinance(v:unknown):v is CustomizationFinance { return obj(v)&&Object.keys(v).length===5&&v.model==='V5_SELF_OPERATED'&&validSupplyId(v.platform_party_id)&&v.rounding==='HALF_UP_PLATFORM_REMAINDER'&&isRules(v.rules)&&v.rules.release_condition==='DELIVERY_ACCEPTED'&&obj(v.rule_snapshot)&&Object.keys(v.rule_snapshot).length===3&&ruleContent(v.rule_snapshot.content)&&v.rule_snapshot.current_status==='EFFECTIVE'&&instant(v.rule_snapshot.effective_at) }
+export function isCustomizationFinance(v:unknown):v is CustomizationFinance { return obj(v)&&Object.keys(v).length===5&&v.model==='V5_SELF_OPERATED'&&validSupplyId(v.platform_party_id)&&['HALF_UP_PLATFORM_REMAINDER','LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'].includes(String(v.rounding))&&isRules(v.rules)&&v.rules.release_condition==='DELIVERY_ACCEPTED'&&obj(v.rule_snapshot)&&Object.keys(v.rule_snapshot).length===3&&ruleContent(v.rule_snapshot.content)&&v.rule_snapshot.current_status==='EFFECTIVE'&&instant(v.rule_snapshot.effective_at) }
 const spec=(v:unknown):v is SpecData=>obj(v)&&text(v.title,200)&&validSupplyId(v.provider_party_id)&&Object.hasOwn(lineKinds,String(v.line_kind))&&integer(v.unit_minor)&&v.currency==='CNY'&&isSpecification(v.specification)&&(!v.specification.service||obj(v.product_profile)&&v.product_profile.type===v.specification.service.kind)&&review(v.review)&&(v.product_profile===undefined||isProductProfile(v.product_profile))
 const allocation=(v:unknown):v is Allocation=>obj(v)&&text(v.line_id,128)&&integer(v.amount_minor)
 const allocations=(v:unknown):v is Allocation[]=>rows(v,allocation)&&unique(v as unknown[],x=>(x as Allocation).line_id)

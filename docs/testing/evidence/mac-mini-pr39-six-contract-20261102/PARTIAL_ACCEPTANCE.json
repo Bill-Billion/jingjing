@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "kind": "partial_contract_extension_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "cde0518fac17c5e72b17f77d4744c693bc3c6444",
+  "working_tree": true,
+  "checked_at": "2026-11-02T17:25:36.933826+00:00",
+  "source_manifest": "docs/testing/evidence/mac-mini-pr39-six-contract-20261102/SOURCE_MANIFEST.json",
+  "interface_version": "0.31.23-rc.1",
+  "migration": "0204",
+  "formal_151_pass_count": 0,
+  "items": [
+    {
+      "id": "SC-01",
+      "work": "机构7日交接",
+      "groups": [
+        2,
+        10,
+        11
+      ],
+      "standards": [
+        "ACC-DEL-25.03",
+        "E2E-10",
+        "TASK-02",
+        "TASK-10",
+        "TASK-11"
+      ],
+      "expected": "解除后只准捕获旧单、双方确认后停止机构沟通，7日到期/撤权不能续权；旧账按原约。",
+      "steps": [
+        "机构与艺人网页互认及商单报价独审",
+        "模拟付款，解除，部分退款后旧账重算",
+        "网页机构ACK→原生艺人ACK→网页重读",
+        "陌生身份读取拒绝"
+      ],
+      "actual": "同一订单双方确认持久化，网页直接显示回执，原生读取旧收入；10,000分付款部分退5,000分后MCN原比例收益为780分、已付0。到期/撤权会话拒绝由MySQL专项通过。",
+      "records": {
+        "relation": "ce914654-57d9-477e-be0d-d89e8802b83d",
+        "order": "4ac32c2c-1a43-4ae1-8561-81f07d4d1b1a",
+        "commission": "341eec6f-88d8-46cd-b65e-933e463d5183"
+      },
+      "evidence": [
+        "handover-web.json",
+        "handover-native.json",
+        "handover-final.log",
+        "backend-mysql.log"
+      ],
+      "limits": "到期/撤权原生全链未重跑；不代E2E-10全部跨端场景。"
+    },
+    {
+      "id": "SC-02",
+      "work": "48小时和旧单时钟",
+      "groups": [
+        1,
+        11
+      ],
+      "standards": [
+        "E2E-01",
+        "E2E-03",
+        "TASK-01"
+      ],
+      "expected": "新现货下单、新试镜交付独审起算48h，旧单不改；未付/文件不可用/争议不能自动完成。",
+      "steps": [
+        "网页读新/旧现货并刷新",
+        "网页和原生读同一新试镜",
+        "MySQL验证自动确认安全前提"
+      ],
+      "actual": "新现货48h与旧72h原约正确，刷新一致；试镜同一服务器审核起点在网页/原生一致；执行门槛专项通过。",
+      "records": {
+        "stock_order": "ef58dc69-57b3-44dd-90f3-20df51aaaa7f",
+        "legacy_order": "84aa1f6c-fda6-4d99-a46b-51a29ab18d0a",
+        "audition_booking": "999e9774-d00e-46cb-83ae-685d84e5bd38"
+      },
+      "evidence": [
+        "web-main.json",
+        "web-finish.json",
+        "native-finish.json",
+        "backend-mysql.log"
+      ],
+      "limits": "没有冒称本批原生从购买到收讫完整链；正式新规格未发布。"
+    },
+    {
+      "id": "SC-03",
+      "work": "新直推10–15%和历史版本",
+      "groups": [
+        11,
+        15
+      ],
+      "standards": [
+        "ACC-DEL-26.02"
+      ],
+      "expected": "新规则四类都为1000–1500基点，旧5%保留；新归因不可借旧规则绕过。",
+      "steps": [
+        "网页四类0/500/1600本地拒绝，无POST",
+        "1000及1500提交并独审",
+        "旧5%及新订单快照读取",
+        "MySQL核新归因/旧单保护"
+      ],
+      "actual": "比例校验及新版独审成功，旧5%未改；新旧尾差枚举均兼容，未知值仍拒绝。",
+      "records": {
+        "id": "SC03-new-and-legacy-rules",
+        "result": "PASS",
+        "new_rule": "5a6577ed-e634-4def-8cd3-284516d4a553",
+        "legacy_rule": "82c9c7a3-0d0b-4e84-8b51-7656f483ea3b"
+      },
+      "evidence": [
+        "web-finish.json",
+        "web-main.json",
+        "backend-mysql.log",
+        "web-all.log",
+        "app-full.log"
+      ],
+      "limits": "仅配置发布标准局部关联，不代全部佣金及活动规则或财务工作台。"
+    },
+    {
+      "id": "SC-04",
+      "work": "监护使用、信息及原支付退款",
+      "groups": [
+        2,
+        4,
+        13
+      ],
+      "standards": [
+        "ACC-DEL-02.04",
+        "ACC-DEL-23.01",
+        "ACC-DEL-23.03",
+        "TASK-04"
+      ],
+      "expected": "三方独立关系核验；孩子不能关闭限制；其他家庭不可见；真实儿童/付款关闭；申请与实际结果分开。",
+      "steps": [
+        "网页监护邀请/孩子确认/独审",
+        "设置PUT响应丢失，刷新原键恢复",
+        "网页消费同意、隐私申请、退款独审及模拟原款成功",
+        "原生关闭→孩子403→无法移除限制→开启及分钟申请→已审核预览目录→读同单结果"
+      ],
+      "actual": "网页完整办理通过，原PUT键/版本/正文一致；原生七步实测通过，内容拒绝不锁整个家庭入口；原生测试随后因侵权测试点击定位失败而整体失败，已诚实保留部分证据。",
+      "records": {
+        "guardian_link": "35adf5aa-b80b-457f-a596-a6341b5998c8",
+        "guardian_privacy": "3f306764-d109-43e9-9071-460d1b7c0e56",
+        "guardian_refund": "f428ebac-ecb6-428f-a972-f9cacda69ce5",
+        "case_id": "17f36365-51ea-4739-8cb6-49e1a9826a6e"
+      },
+      "evidence": [
+        "web-main.json",
+        "native-guardian-partial.json",
+        "native-guardian-partial.log",
+        "app-full.log",
+        "backend-mysql.log"
+      ],
+      "limits": "原生未重复邀请/退款发起全段；预览目录非播放；月限额/冷静期及真实年龄服务未验，原标准不关闭。"
+    },
+    {
+      "id": "SC-05",
+      "work": "回复与核验后注销执行期限",
+      "groups": [
+        4,
+        13
+      ],
+      "standards": [
+        "ACC-DEL-23.01",
+        "TASK-04",
+        "E2E-11"
+      ],
+      "expected": "核验前无执行倒计时，延期保留原期限，真实执行和独审后才结案。",
+      "steps": [
+        "网页未核验→核验及独审→延期及独审",
+        "无执行COMPLETE拒绝",
+        "另一无业务合成账号：鉴权API执行关闭及独审→网页保留回复独审→网页结案独审",
+        "原生读取同一完成结果"
+      ],
+      "actual": "无执行409；原期限保留；实际账号关闭后旧会话401，结案才显示完成；无已审日历时明确估算。",
+      "records": {
+        "extended_request": "7c60e25e-ff47-4687-ba9c-a19279993719",
+        "id": "SC05-actual-account-execution-independent-completion",
+        "result": "PASS",
+        "request_id": "a7a76243-8590-4357-a346-ddb492c0a128",
+        "execution_id": "c9e9f3f4-eb03-4cb5-99d0-752e8608cec3",
+        "execution_via": "authenticated local API",
+        "completion_via": "real Vue controls",
+        "old_session_revoked": true
+      },
+      "evidence": [
+        "web-main.json",
+        "web-finish.json",
+        "native-finish.json",
+        "native-guardian-partial.json",
+        "backend-mysql.log"
+      ],
+      "limits": "执行为鉴权本地API，非原生按钮；无待删文件fixture，不代表供应商/备份清除已验。"
+    },
+    {
+      "id": "SC-06",
+      "work": "侵权通知、反通知和独立恢复",
+      "groups": [
+        9,
+        10
+      ],
+      "standards": [
+        "ACC-DEL-23.04",
+        "TASK-09",
+        "TASK-10"
+      ],
+      "expected": "材料最少送达、明确已读、自审禁止；撤回不直接解冻，两案仅解一案不恢复下载。",
+      "steps": [
+        "网页通知/补件/冻结/选材料送达/ACK/反通知/送达/独立处理",
+        "原生通知人→冻结运营→对方反通知→提议运营→独立复核者→通知人读结果",
+        "MySQL双冻结、撤回、文件访问边界"
+      ],
+      "actual": "网页补件全段及原生四角色流程通过；未送达404、联系人不披露、自审禁用，单案独审解除。",
+      "records": {
+        "web_case": "17f36365-51ea-4739-8cb6-49e1a9826a6e",
+        "native_case": "c1003da1-82b4-4b54-8edd-cd9b35556143"
+      },
+      "evidence": [
+        "web-main.json",
+        "native-infringement.json",
+        "native-infringement.log",
+        "backend-mysql.log"
+      ],
+      "limits": "双冻结/撤回由接口专项，不冒称每个原生异常都重跑；24h为运营目标。"
+    }
+  ]
+}

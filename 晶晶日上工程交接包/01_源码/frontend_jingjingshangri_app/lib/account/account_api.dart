@@ -6,6 +6,8 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
 const additionalBusinessPrefixes = [
+  '/api/v1/guardians/',
+  '/api/v1/infringement/',
   '/api/v1/stock/',
   '/api/v1/notices/',
   '/api/v1/auditions/',
