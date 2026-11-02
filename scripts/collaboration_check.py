@@ -28,17 +28,17 @@ def render_tasks(board):
               'BLOCKED': '遇到阻碍，见具体任务记录'}
     lines = [
         '# 全部工作安排：谁做什么，怎样算做完', '',
-        '**本侧负责服务器和数据库；队友负责App和网页。** '
+        '**后端负责人 chengcongcong222负责服务器和数据库；前端负责人 Bill-Billion负责App和网页。** '
         f'下面共{len(board["tasks"])}组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
         '这张表记录完整工作范围，逐次成果与待审状态以当前进度为准；各阶段完成部分不等于整组已经验收。'
-        '本侧负责后端，队友负责App与网页，按当前阶段说明协作。'
-        '用户已授权本侧主测完整流程并修复必要页面问题；具体分工以对应工作行和任务记录为准。'
+        '双方按当前阶段说明协作。'
+        '用户已授权后端负责人 chengcongcong222主测完整流程并修复必要页面问题；具体分工以对应工作行和任务记录为准。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
         '表中的“需先完成”指整项工作最后验收前需要的其他成果。'
-        '队友可先整理页面；双方约好数据格式后，可以用明确标注的测试数据做页面，'
+        '前端负责人 Bill-Billion可先整理页面；双方约好数据格式后，可以用明确标注的测试数据做页面，'
         '不必等服务器全部功能结束。测试数据不能冒充真实付款、实名或制作结果。', '',
-        '“本侧／队友”是分工，“尚未接手”是仓库中的实际登记状态。'
+        '负责人按账号明确标注；“尚未接手”是仓库中的实际登记状态，新安排不等于对方已确认。'
         '一项基础工作完成，不代表整个相关业务正式可用，也不代表原有问题都已修复。', ''
     ]
     for stage, title in enumerate(stages):
@@ -47,8 +47,7 @@ def render_tasks(board):
         for t in board['tasks']:
             if t['stage'] != stage:
                 continue
-            who = explanations[t['id']].get('responsibility',
-                '本侧：服务器和数据' if t['stream'] == 'Core' else '队友：App和网页')
+            who = ('后端负责人 ' if t['stream'] == 'Core' else '前端负责人 ') + (t['owner'] or '待认领')
             who += '；已接手' if t['owner'] else '；尚未接手'
             dependencies = '；'.join(names[d] for d in t['dependencies']) or '可独立开始'
             lines.append('|{}|{}|{}|{}|{}|'.format(names[t['id']], who,
