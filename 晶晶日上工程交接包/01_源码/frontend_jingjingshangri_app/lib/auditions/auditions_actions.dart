@@ -340,7 +340,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         ]),
         if (a == 'delivery') ...[
           tradeBanner('按本单真实规则取样',
-              '${r.data['rules']['photo_count']} 张照片、${r.data['rules']['video_count']} 段视频；明确收讫后 ${r.data['rules']['acceptance_hours']} 小时。'),
+              '${r.data['rules']['photo_count']} 张照片、${r.data['rules']['video_count']} 段视频；${r.data['rules']['acceptance_policy'] == 'CONTRACT_20261029' ? '交付审核通过起' : '明确收讫后'} ${r.data['rules']['acceptance_hours']} 小时。'),
           if (consents.isEmpty)
             appNotice('尚无本人可选择的本次取样授权。受托机构不能读取本人私有同意；首次受托交付需要平台补齐安全授权选择。')
         ],

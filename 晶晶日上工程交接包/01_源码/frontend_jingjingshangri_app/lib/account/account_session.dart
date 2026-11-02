@@ -3,6 +3,22 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'account_api.dart';
 
+// Expected usage/decision denials clear the current preview in its page, but
+// do not revoke the family's entire account area or erase a pending command.
+bool _scopedContractDenial(String path, AccountError error) =>
+    path.startsWith('/api/v1/guardians/') &&
+    const {
+      'GUARDIAN_DISABLED',
+      'MINOR_NIGHT_RESTRICTED',
+      'GUARDIAN_USAGE_SESSION_REQUIRED',
+      'MINOR_DAILY_TIME_LIMIT',
+      'MINOR_SPEND_NOT_ALLOWED',
+      'MINOR_DAILY_SPEND_LIMIT',
+      'MINOR_CONTENT_POOL_NOT_ENABLED',
+      'UNDER_14_PROCESSING_DISABLED',
+      'GUARDIAN_LINK_NOT_ACTIVE',
+    }.contains(error.code);
+
 /// New account state stays in memory. No tokens or private account lists are
 /// written to the legacy preferences; app restart requires phone verification.
 class AccountSession extends ChangeNotifier {
@@ -441,7 +457,8 @@ class AccountSession extends ChangeNotifier {
       if ([403, 404].contains(error.status) &&
           started == _epoch &&
           !unopenedWallet &&
-          !_publicDirectoryMissing(path, error)) {
+          !_publicDirectoryMissing(path, error) &&
+          !_scopedContractDenial(path, error)) {
         for (final prefix in additionalBusinessPrefixes) {
           if (path.startsWith(prefix)) {
             denyDomain(prefix);
@@ -563,7 +580,8 @@ class AccountSession extends ChangeNotifier {
         final domain = additionalBusinessPrefixes.where(path.startsWith);
         if ([403, 404].contains(e.status) &&
             domain.isNotEmpty &&
-            !_publicDirectoryMissing(path, e)) {
+            !_publicDirectoryMissing(path, e) &&
+            !_scopedContractDenial(path, e)) {
           denyDomain(domain.first);
         } else if (path.startsWith('/api/v1/artists/') &&
             [403, 404].contains(e.status)) {

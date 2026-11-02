@@ -488,7 +488,10 @@ void _quote(Map<String, dynamic> d) {
       tradeRequire(d['customization'] != null &&
           finance['model'] == 'V5_SELF_OPERATED' &&
           isContractId('${finance['platform_party_id']}') &&
-          finance['rounding'] == 'HALF_UP_PLATFORM_REMAINDER' &&
+          [
+            'HALF_UP_PLATFORM_REMAINDER',
+            'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'
+          ].contains(finance['rounding']) &&
           snapshot['current_status'] == 'EFFECTIVE' &&
           DateTime.tryParse('${snapshot['effective_at']}') != null);
       financeRules(finance['rules']);
@@ -506,7 +509,8 @@ void _quote(Map<String, dynamic> d) {
     tradeRequire(a['model'] == 'V5_TWO_LAYER' &&
         a['fee_base'] == 'NET_PAID' &&
         ['STOCK_VIDEO', 'COMMERCIAL', 'AUDITION'].contains(a['product_type']) &&
-        a['rounding'] == 'HALF_UP_PLATFORM_REMAINDER');
+        ['HALF_UP_PLATFORM_REMAINDER', 'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN']
+            .contains(a['rounding']));
     for (final key in ['platform_bps', 'mcn_supply_bps', 'referral_bps']) {
       tradeRequire(a[key] is int && a[key] >= 0 && a[key] <= 10000);
     }
@@ -903,6 +907,7 @@ Map<String, int> tradeRefundRemaining(
 String tradeError(Object e, {bool writing = false}) {
   if (e is! AccountError) return '返回内容无法识别，请重新读取。';
   const contractErrors = {
+    'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分钱存在尾差异常，旧账保留，暂停新增付款并等待人工复核。',
     'MARKETPLACE_CONTRACT_RULE_REQUIRED':
         '缺少已生效的分配规则，请工作人员维护现货18%或商单22%规则后核对原请求。',
     'MARKETPLACE_CONTRACT_RATE_MISMATCH': '分配规则类别或费率不符，请工作人员核对，暂不能进入付款。',

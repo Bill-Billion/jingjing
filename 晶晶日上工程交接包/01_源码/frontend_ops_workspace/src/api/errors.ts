@@ -15,6 +15,30 @@ import { rightsErrors } from './modules/rights'
 
 /** 已知错误码的说明。键是后端返回的 error.code。 */
 const CODE_MESSAGES: Record<string, string> = {
+  GUARDIAN_LINK_NOT_ACTIVE: '监护关系未生效、已到期、撤销或有异议，请核对原关系。',
+  GUARDIAN_DISABLED: '监护人已关闭使用，请返回核对关系。',
+  GUARDIAN_USAGE_SESSION_REQUIRED: '本次一分钟使用时段已结束，需孩子本人明确申请下一时段。',
+  MINOR_NIGHT_RESTRICTED: '北京时间22点至次日8点不可使用，不自动续时。',
+  MINOR_DAILY_TIME_LIMIT: '今天已达到已审使用上限。',
+  MINOR_DAILY_SPEND_LIMIT: '今天的消费同意已达累计上限。',
+  MINOR_SPEND_NOT_ALLOWED: '本次金额超过已审限制，真实付款保持关闭。',
+  GUARDIAN_NOT_FOUND: '此记录不存在或不属于本账号获准的家庭，请返回列表。',
+  GUARDIAN_REVIEW_FORBIDDEN: '本账号不能独立审核这份监护或退款申请。',
+  GUARDIAN_VERIFIED_IDENTITY_REQUIRED: '请先完成双方当前有效的身份核验。',
+  MINOR_CONTENT_POOL_NOT_ENABLED: '适龄内容预览尚未启用，真实服务保持关闭。',
+  GUARDIAN_CONTENT_RULE_REQUIRED: '还没有独立审核的适龄预览名单。',
+  GUARDIAN_REFUND_APPROVAL_REQUIRED: '未成年退款须先独立审核，再继续原支付退款流程。',
+  UNDER_14_PROCESSING_DISABLED: '未满14岁的实际处理保持关闭。',
+  INFRINGEMENT_NOT_FOUND: '本案或材料尚未获准向当前身份披露，请核对送达记录。',
+  INFRINGEMENT_ACTION_NOT_ALLOWED: '案件状态已变化，请重新读取并明确下一步。',
+  INDEPENDENT_RIGHTS_REVIEW_REQUIRED: '冻结或提议人不能复核本案，需要另一名获准人员。',
+  DISCLOSURE_SCOPE_INVALID: '仅可逐项选择原通知中的必要材料送达。',
+  DELIVERY_NOT_AVAILABLE: '尚无待确认已读的对方送达材料。',
+  INDEPENDENT_CLOSURE_REVIEW_REQUIRED: '核验、延期和结案需另一名获准人员独立复核。',
+  ACCOUNT_CLOSURE_NOT_EXECUTED: '账号及相关资料的实际执行尚未完成，不能结案。',
+  HANDOVER_NOT_ACTIVE: '七日交接期已到期或关系不适用，旧单沟通已停止，旧账保留。',
+  HANDOVER_ORDER_NOT_OPEN: '此旧单已双方确认或不在交接清单，机构不能继续沟通。',
+  FINANCE_ROUNDING_REVIEW_REQUIRED: '历史分账尾差异常，原账保留并暂停新增付款，待人工复核。',
   INVOICE_AMOUNT_UNAVAILABLE: '原订单开票额度已变化，请重读额度并核对本次金额。',
   INVOICE_STATE_CONFLICT: '申请状态已变化，请重读记录后重新选择办理事项。',
   INVOICE_ISSUER_NOT_READY: '本开具方尚未获准提供正式票据，请联系办理人员核对。',
@@ -427,7 +451,7 @@ export interface ErrorLike {
   message: string;
   retryable: boolean;
   requestId?: string | null;
-  requestMethod?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  requestMethod?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 }
 
 /** 取一句给人看的中文说明。找不到就返回 null，让调用方决定怎么展示。 */

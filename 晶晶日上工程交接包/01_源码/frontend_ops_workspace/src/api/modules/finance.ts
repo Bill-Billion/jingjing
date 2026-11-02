@@ -96,14 +96,14 @@ export const kindLabels:Record<FinanceKind,string>={AGREEMENT:'结算约定',SET
 export const statusLabels:Record<string,string>={IN_REVIEW:'待独立复核',REQUESTED:'申请待复核，额度已占用',APPROVED:'已复核，仍需按后续流程办理',REJECTED:'已拒绝，历史保留',SUPERSEDED:'被新约定替代',CANCELLED:'已取消未执行申请',PAID:'实际付款已核实',FAILED:'付款失败已核实，占用已释放',RETURNED:'款项退回已核实，另行申请重付',OPEN:'异议待处理，暂停新付款',ACTION_REQUIRED:'需要补救，暂停新付款',RESOLVED:'本次处理决定已保存',RECORDED:'说明已保存',MATCHED:'与已核实事实匹配，不新增付款',DIFFERENCES:'与已核实事实存在差异'}
 export const financeStatus=(r:Pick<FinanceRecord,'kind'|'current_status'>)=>r.kind==='PAYOUT'&&r.current_status==='APPROVED'?'已批准，尚未实际付款':r.kind==='PAYOUT_EVIDENCE'&&r.current_status==='IN_REVIEW'?'外部报告待独立核实，尚未记实付':statusLabels[r.current_status]||r.current_status
 
-export const financeReasons:Record<string,string>={FINANCE_AGREEMENT_NOT_APPROVED:'约定尚未独立复核通过',FINANCE_CONFIRMATIONS_REQUIRED:'约定各方准确版本确认尚未完成',FINANCE_DISPUTED:'存在待处理异议，暂停新付款',RETAINED_INCOME_NOT_PAYOUT:'商家保留金额，不再次转给自己',SETTLEMENT_DATE_NOT_REACHED:'尚未达到约定结算时间',CUSTOMER_PAYMENT_REVIEW_REQUIRED:'客户原付款待核实',REVENUE_NOT_RECEIVED:'渠道应收尚未实际到账',FINANCE_DELIVERY_NOT_ACCEPTED:'原制作交付尚未实际验收',CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED:'当前事实须重新生成结算单、独立复核并完成各方确认'}
+export const financeReasons:Record<string,string>={FINANCE_ROUNDING_REVIEW_REQUIRED:'历史分钱的尾差或负数须人工复核；原账保留，暂停新增付款。',FINANCE_AGREEMENT_NOT_APPROVED:'约定尚未独立复核通过',FINANCE_CONFIRMATIONS_REQUIRED:'约定各方准确版本确认尚未完成',FINANCE_DISPUTED:'存在待处理异议，暂停新付款',RETAINED_INCOME_NOT_PAYOUT:'商家保留金额，不再次转给自己',SETTLEMENT_DATE_NOT_REACHED:'尚未达到约定结算时间',CUSTOMER_PAYMENT_REVIEW_REQUIRED:'客户原付款待核实',REVENUE_NOT_RECEIVED:'渠道应收尚未实际到账',FINANCE_DELIVERY_NOT_ACCEPTED:'原制作交付尚未实际验收',CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED:'当前事实须重新生成结算单、独立复核并完成各方确认'}
 
-export interface MarketplaceAllocation { model:'V5_TWO_LAYER'; product_type:'STOCK_VIDEO'|'COMMERCIAL'|'AUDITION'; fee_base:'NET_PAID'; platform_party_id:string; platform_bps:number; supplier_party_id:string; mcn_party_id:string|null; mcn_supply_bps:number; referrer_party_id:string|null; referral_bps:number; rounding:'HALF_UP_PLATFORM_REMAINDER' }
+export interface MarketplaceAllocation { model:'V5_TWO_LAYER'; product_type:'STOCK_VIDEO'|'COMMERCIAL'|'AUDITION'; fee_base:'NET_PAID'; platform_party_id:string; platform_bps:number; supplier_party_id:string; mcn_party_id:string|null; mcn_supply_bps:number; referrer_party_id:string|null; referral_bps:number; rounding:'HALF_UP_PLATFORM_REMAINDER'|'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN' }
 export function isMarketplaceAllocation(a:unknown):a is MarketplaceAllocation {
  return exact(a,['model','product_type','fee_base','platform_party_id','platform_bps','supplier_party_id','mcn_party_id','mcn_supply_bps','referrer_party_id','referral_bps','rounding']) &&
   a.model==='V5_TWO_LAYER' && ['STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(String(a.product_type)) && a.fee_base==='NET_PAID' &&
   validSupplyId(a.platform_party_id) && validSupplyId(a.supplier_party_id) && nullableId(a.mcn_party_id) && nullableId(a.referrer_party_id) &&
-  ['platform_bps','mcn_supply_bps','referral_bps'].every(k=>amount(a[k],0,10000)) && a.rounding==='HALF_UP_PLATFORM_REMAINDER'
+  ['platform_bps','mcn_supply_bps','referral_bps'].every(k=>amount(a[k],0,10000)) && ['HALF_UP_PLATFORM_REMAINDER','LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'].includes(String(a.rounding))
 }
 export interface MarketplacePreview {
  meaning:'PREVIEW_ONLY_NOT_ORDER_OR_PAYABLE'; rule_id:string; rule_content_sha256:string; allocation:MarketplaceAllocation

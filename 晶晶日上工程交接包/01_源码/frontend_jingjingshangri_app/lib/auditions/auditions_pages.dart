@@ -1,3 +1,4 @@
+import '../contract_six/contract_six_models.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -457,7 +458,9 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
               tradeFact('原规则', r.data['rules']['terms']),
               tradeFact('取样约定',
                   '${r.data['rules']['photo_count']}照 / ${r.data['rules']['video_count']}视频'),
-              tradeFact('明确收讫后的期限', '${r.data['rules']['acceptance_hours']} 小时')
+              tradeFact(
+                  acceptanceOrigin(v5Map(r.data['rules']), audition: true),
+                  '${r.data['rules']['acceptance_hours']} 小时')
             ]),
             if (r.status == 'PUBLISHED')
               V5Form(
@@ -590,7 +593,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         tradeFact('本单含交通一口价', v5Money(d['offer']['unit_minor'])),
         tradeFact('取样约定',
             '${d['rules']['photo_count']} 照 / ${d['rules']['video_count']} 视频'),
-        tradeFact('收讫后期限', '${d['rules']['acceptance_hours']} 小时'),
+        tradeFact(acceptanceOrigin(v5Map(d['rules']), audition: true),
+            '${d['rules']['acceptance_hours']} 小时'),
         SelectableText(d['rules']['terms'])
       ]),
       appNotice('试镜完成不授予买家出演、发行或重新生成权。付款、接受、联系方式与取样许可分别核对。'),
@@ -666,11 +670,15 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 }
               }),
         if (isBuyer && r.status == 'DELIVERED') ...[
-          appNotice('须逐项成功查看或保存本次全部取样，再明确收讫；上传或付款时间不能启动验收计时。'),
+          appNotice(d['rules']['acceptance_policy'] == 'CONTRACT_20261029'
+              ? '本单从交付审核通过起计48小时；文件不可用或争议时不能自动完成。本人收讫仍须实际取得全部取样，不会重置服务器期限。'
+              : '须逐项成功查看或保存本次全部取样，再明确收讫；上传或付款时间不能启动验收计时。'),
           _receiptForm(r, 'receipt', allOpened, '明确确认本次全部取样已收到'),
           _receiptForm(r, 'confirm', allOpened, '明确确认本次试镜履约完成'),
         ],
       ],
+      if (d['acceptance_started_at'] != null)
+        tradeFact('服务器记录的实际起点', tradeDate(d['acceptance_started_at'])),
       if (d['deadline_at'] != null)
         tradeFact('服务器记录的截止时间', tradeDate(d['deadline_at'])),
       if (d['acceptance_method'] == 'AGREED_TIMEOUT')

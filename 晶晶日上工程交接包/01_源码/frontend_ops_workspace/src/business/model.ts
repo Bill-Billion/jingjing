@@ -7,8 +7,9 @@ export interface Field {
   choices?: readonly (string | readonly [string,string])[]; fields?: Field[]; nullable?: boolean; optional?: boolean
   fixed?: unknown; min?: number; max?: number; length?: number; hint?: string; agree?: boolean; readonly?: boolean
   visible?: (root: Record<string,unknown>) => boolean; inactive?:unknown
+  manual?: boolean
 }
-export interface Operation { key:string; label:string; path:string; fields:Field[]; party:PartyMode; match?:boolean; method?:'POST'|'PATCH'; note?:string; sections?:string[] }
+export interface Operation { key:string; label:string; path:string; fields:Field[]; party:PartyMode; match?:boolean; method?:'POST'|'PATCH'|'PUT'; note?:string; sections?:string[] }
 export interface FileAction { label:string; path:string; party:PartyMode; type?:string; observe?:boolean }
 export interface Section { key:string; label:string; path:string; detail?:string; party:PartyMode; query?:Field[]; fixedQuery?:Record<string,string>; files?:FileAction[]; note?:string }
 export interface Domain { key:string; title:string; journal:string; intro:string; sections:Section[]; operations:Operation[]; note?:string }
@@ -49,7 +50,7 @@ export function encode(fields:Field[],value:Record<string,unknown>,root=value,pa
   case 'values':if(!Array.isArray(v)||!v.length||v.some(x=>!f.choices?.some(c=>(typeof c==='string'?c:c[0])===x)))invalid(f);result[f.key]=v;break;
   case 'money':{const n=yuanInput(String(v??''),f.min===0||f.min===undefined?0:1);if(n===null||n<(f.min??0))invalid(f);result[f.key]=n;break}
   case 'integer':{if(String(v??'').trim()==='')invalid(f);const n=Number(v);if(!Number.isSafeInteger(n)||n<(f.min??0)||n>(f.max??1000000000))invalid(f);result[f.key]=n;break}
-  case 'ids':{const a=String(v??'').trim().split(/[\s,，]+/).filter(Boolean);if(a.length>(f.max??20)||a.some(x=>!uuid(x))||new Set(a).size!==a.length)invalid(f);result[f.key]=a;break}
+  case 'ids':{const a=String(v??'').trim().split(/[\s,，]+/).filter(Boolean);if(a.length<(f.min??0)||a.length>(f.max??20)||a.some(x=>!uuid(x))||new Set(a).size!==a.length)invalid(f);result[f.key]=a;break}
   case 'lines':{const a=String(v??'').trim().split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(a.length>(f.max??30)||a.some(x=>x.length>2000))invalid(f);result[f.key]=a;break}
   case 'numbers':{const a=String(v??'').trim().split(/[\s,，]+/).filter(Boolean).map(Number);if(!a.length||f.length!==undefined&&a.length!==f.length||a.some(n=>!Number.isSafeInteger(n)||n<0))invalid(f);result[f.key]=a;break}
   case 'datetime':{if(typeof v!=='string'||!v.trim()||!Number.isFinite(Date.parse(v)))invalid(f);result[f.key]=new Date(v as string).toISOString();break}

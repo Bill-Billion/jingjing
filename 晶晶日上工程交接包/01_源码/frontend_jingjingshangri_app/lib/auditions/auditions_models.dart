@@ -118,9 +118,14 @@ class AuditionRecord {
           v5Int(rules['photo_count'], min: 1, max: 30) &&
           v5Int(rules['video_count'], min: 1, max: 5) &&
           v5Int(rules['acceptance_hours'], min: 1, max: 720) &&
-          rules['terms'] is String);
+          rules['terms'] is String &&
+          (rules['acceptance_policy'] == null ||
+              rules['acceptance_policy'] == 'CONTRACT_20261029' &&
+                  rules['acceptance_hours'] == 48));
     }
     if (this.kind == 'BOOKING') {
+      v5Require(data['acceptance_started_at'] == null ||
+          v5Date(data['acceptance_started_at']));
       v5Require(data['status'] == status &&
           raw['performance_rights_granted'] == false &&
           raw['refund_is_verified'] is bool &&

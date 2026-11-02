@@ -614,6 +614,14 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       communityFact('申请范围',
           (q['scopes'] as List).map((s) => privacyScopes[s] ?? s).join('、')),
       communityFact('原申请说明', q['details']),
+      if (q['type'] == 'CLOSE_ACCOUNT')
+        tradeButton(
+            '核对回复与核验后执行期限',
+            enabled
+                ? () => Navigator.pushNamed(
+                    context, '/contract-six/closure?id=${r['id']}')
+                : null,
+            outline: true),
       communityFact('答复目标日期', r['response_due_on']),
       if (r['deadline_basis'] != 'REVIEWED_CALENDAR')
         appNotice('该日期按普通工作日估算，仍需人工核对工作日历，不作为已确认的法定期限。'),

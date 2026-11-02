@@ -44,6 +44,7 @@ import 'engagement/engagement_pages.dart';
 import 'cocreation/cocreation_pages.dart';
 import 'redemption/redemption_pages.dart';
 import 'privacy/privacy_pages.dart';
+import 'contract_six/contract_six_pages.dart';
 import 'utils/responsive.dart';
 import 'pages/login/login_page.dart';
 import 'pages/splash/splash_page.dart';
@@ -350,6 +351,14 @@ class JingjingShangriApp extends StatelessWidget {
                       uri.queryParameters['id'],
                   quoteId: uri.queryParameters['quoteId'],
                   benefitId: uri.queryParameters['benefitId']),
+              '/contract-six/guardians' ||
+              '/contract-six/infringement' ||
+              '/contract-six/handover' ||
+              '/contract-six/closure' =>
+                ContractSixPage(
+                    kind: uri.pathSegments.last,
+                    id: uri.queryParameters['id'],
+                    operations: uri.queryParameters['operations'] == 'true'),
               '/privacy/requests' => PrivacyPage(
                   view: uri.queryParameters['view'] ?? 'requests',
                   recordId: uri.queryParameters['recordId'] ??
