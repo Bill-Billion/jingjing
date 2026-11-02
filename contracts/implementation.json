@@ -1,5 +1,5 @@
 {
-  "version": "0.31.12-rc.1",
+  "version": "0.31.14-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -531,7 +531,10 @@
     "sendPhoneChangeChallenge",
     "verifyPhoneChangeChallenge",
     "confirmPhoneChange",
-    "cancelPhoneChange"
+    "cancelPhoneChange",
+    "getMyPartyAccess",
+    "getInvoiceCommandResult",
+    "getOperatorInvoiceCommandResult"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1029,7 +1032,9 @@
       "listInvoiceDocumentsForOperator",
       "actOnInvoiceForOperator",
       "downloadInvoiceEvidenceForOperator",
-      "downloadInvoiceDocumentForOperator"
+      "downloadInvoiceDocumentForOperator",
+      "getInvoiceCommandResult",
+      "getOperatorInvoiceCommandResult"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/invoices.integration.test.cjs",
     "production_enabled": false,
@@ -1056,6 +1061,18 @@
       "前端页面待接；本轮只用内存短信验证，无真实发送",
       "旧号码不可用仅客服登记核查，不提供人工自动换绑",
       "确认会注销本人全部旧登录，使用新号码重新登录，账号和历史业务不变"
+    ]
+  },
+  "identity_recovery": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getMyPartyAccess"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端身份恢复及私有缓存修复待接；接口可用不代表4个浏览器问题已经关闭",
+      "只返回当前账号有效成员关系，停用主体动作为空；写操作另核权限"
     ]
   }
 }

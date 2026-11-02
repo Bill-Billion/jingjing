@@ -10,7 +10,7 @@ test('invoice original-order HTTP lifecycle and controlled documents',{skip:!pro
   const S=await require('./helpers/stock-seed.cjs').seedStock(db),fixtures=[],invoiceEnv={NODE_ENV:'test',INVOICE_SANDBOX_ENABLED:'true'};let revokeOnDownload=false;
   for(const [u,actions] of [[S.reviewer,['INVOICE_HANDLE','INVOICE_VERIFY']],[S.outsider,['INVOICE_VERIFY']],[S.buyer,['INVOICE_HANDLE']]])for(const action of actions)await require('../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:u.account_id,action,enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:invoice',reason:'isolated test only'});
   server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyEnv:invoiceEnv,supplyStorageFactory:()=>({...S.storageFactory(),getBuffer:async k=>{const b=await S.storageFactory().getBuffer(k);if(revokeOnDownload)await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE account_id=?",[S.buyer.account_id]);return b;}})}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1/invoices';
-  async function call(method,url,{user=S.buyer,body,version,op=key(),party=user?.personal_party_id}={}){const r=await fetch(base+url,{method,headers:{...(user?{Authorization:'Bearer '+user.token}:{}),...(body?{'Content-Type':'application/json'}:{}),...(method!=='GET'?{'Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{}),...(party?{'X-Acting-Party':party}:{})},...(body?{body:JSON.stringify(body)}:{})});if(!r.headers.get('content-type')?.includes('application/json'))return {status:r.status,bytes:Buffer.from(await r.arrayBuffer()),headers:r.headers};const value=await r.json(),p=url.split('?')[0];fixtures.push({method,path:new URL(base+url).pathname,schema:r.ok?(p.endsWith('/eligibility')?'InvoiceEligibilityResponse':p.endsWith('/history')?'InvoiceHistoryResponse':p.endsWith('/documents')?'InvoiceDocumentsResponse':p.endsWith('/requests')&&method==='GET'?'InvoiceListResponse':'InvoiceResponse'):'ErrorResponse',value});return {status:r.status,...value};}
+  async function call(method,url,{user=S.buyer,body,version,op=key(),party=user?.personal_party_id}={}){const r=await fetch(base+url,{method,headers:{...(user?{Authorization:'Bearer '+user.token}:{}),...(body?{'Content-Type':'application/json'}:{}),...(method!=='GET'?{'Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{}),...(party?{'X-Acting-Party':party}:{})},...(body?{body:JSON.stringify(body)}:{})});if(!r.headers.get('content-type')?.includes('application/json'))return {status:r.status,bytes:Buffer.from(await r.arrayBuffer()),headers:r.headers};const value=await r.json(),p=url.split('?')[0];fixtures.push({method,path:new URL(base+url).pathname,schema:r.ok?(p.includes('/command-results/')?'InvoiceCommandResultResponse':p.endsWith('/eligibility')?'InvoiceEligibilityResponse':p.endsWith('/history')?'InvoiceHistoryResponse':p.endsWith('/documents')?'InvoiceDocumentsResponse':p.endsWith('/requests')&&method==='GET'?'InvoiceListResponse':'InvoiceResponse'):'ErrorResponse',value});return {status:r.status,...value};}
   const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;},bad=(r,code)=>{assert.equal(r.error.code,code,JSON.stringify(r));};
   const handler={user:S.reviewer,party:null},verifier={user:S.outsider,party:null};const h={kind:'PERSON',title:'Synthetic buyer',tax_id:null};
   const upload=async(u,body,type='text/plain')=>S.supply.upload(u.ctx,{party_id:u.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:type,body:Buffer.from(body),operation_key:key()});
@@ -66,6 +66,45 @@ test('invoice original-order HTTP lifecycle and controlled documents',{skip:!pro
    assert.equal((await call('GET','/operations/requests/'+r.id+'/documents/'+originalDoc+'/content',verifier)).status,200);
    assert.equal((await call('GET','/requests?limit=51')).status,400);assert.equal((await call('GET','/requests?status=BAD')).status,400);
    assert.equal((await call('GET','/requests/'+r.id+'/documents/'+key()+'/content')).status,404);
+  });
+  await t.test('read-only recovery finds committed create after a lost response and never reserves or replays',async()=>{
+   const x=await fresh(),op=key(),url='/command-results/'+op+'?operation=CREATE&order_id='+x.order.id;
+   const count=async()=>Number((await db.execute('SELECT COUNT(*) n FROM invoice_commands'))[0][0].n);
+   const before=await count();let result=ok(await call('GET',url));assert.equal(result.current_status,'NOT_RECORDED');assert.equal(result.invoice,null);assert.equal(await count(),before);
+   assert.equal(ok(await call('GET','/orders/'+x.order.id+'/eligibility')).available_minor,100);
+   // Deliberately discard the successful write response, as a browser would after connection loss.
+   await call('POST','/requests',{op,body:body(x.order)});
+   result=ok(await call('GET',url));assert.equal(result.current_status,'RECORDED');const q=result.invoice;
+   assert.equal(q.order_id,x.order.id);assert.equal(q.object_version,1);assert.equal(await count(),before+1);
+   const retry=ok(await call('POST','/requests',{op,body:body(x.order)}));assert.equal(retry.id,q.id);assert.equal(await count(),before+1);
+   await act(q,'WITHDRAW');const later=ok(await call('GET',url));assert.equal(later.invoice.current_status,'WITHDRAWN');assert.equal(later.invoice.id,q.id);
+   const y=await fresh();assert.equal((await call('GET','/command-results/'+op+'?operation=CREATE&order_id='+y.order.id)).status,404);
+   assert.equal((await call('GET',url,{user:S.seller})).status,404);
+   assert.equal((await call('GET',url,{party:S.seller.personal_party_id})).status,403);
+   assert.equal((await call('GET',url,{user:null})).status,401);
+   assert.equal((await call('GET',url+'&extra=x')).status,400);
+   assert.equal((await call('GET','/command-results/'+op+'?operation=BAD&order_id='+x.order.id)).status,400);
+   assert.equal((await call('GET','/command-results/'+op+'?operation=CREATE')).status,400);
+   await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE account_id=? AND party_id=?",[S.buyer.account_id,S.buyer.personal_party_id]);
+   assert.equal((await call('GET',url)).status,403);
+   await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE account_id=? AND party_id=?",[S.buyer.account_id,S.buyer.personal_party_id]);
+  });
+  await t.test('operator recovery is actor scoped, rechecks current grants and does not rerun a later changed invoice',async()=>{
+   const x=await fresh();let q=ok(await call('POST','/requests',{body:body(x.order)}));const op=key(),url='/operations/command-results/'+op+'?operation=ACTION&invoice_id='+q.id;
+   assert.equal(ok(await call('GET',url,handler)).current_status,'NOT_RECORDED');
+   q=ok(await call('POST','/operations/requests/'+q.id+'/actions',{...handler,version:q.object_version,op,body:{action:'APPROVE',text:'Synthetic approved'}}));
+   assert.equal(ok(await call('GET',url,handler)).invoice.object_version,q.object_version);
+   assert.equal(ok(await call('GET',url,verifier)).current_status,'NOT_RECORDED');
+   assert.equal((await call('GET',url,{user:S.seller,party:null})).status,403);
+   const [grants]=await db.execute("SELECT action_code,enabled FROM governance_operator_grants WHERE account_id=? AND action_code IN ('INVOICE_HANDLE','INVOICE_VERIFY')",[S.reviewer.account_id]);
+   await db.execute("UPDATE governance_operator_grants SET enabled=0 WHERE account_id=? AND action_code IN ('INVOICE_HANDLE','INVOICE_VERIFY')",[S.reviewer.account_id]);
+   assert.equal((await call('GET',url,handler)).status,403);
+   for(const g of grants)await db.execute('UPDATE governance_operator_grants SET enabled=? WHERE account_id=? AND action_code=?',[g.enabled,S.reviewer.account_id,g.action_code]);
+   const after=ok(await act(q,'WITHDRAW'));assert.equal(ok(await call('GET',url,handler)).invoice.current_status,after.current_status);
+   assert.equal((await call('GET','/operations/command-results/'+op+'?operation=CREATE&order_id='+x.order.id,handler)).status,400);
+   const hash=digest([S.reviewer.account_id,'ACTION',op]);await db.execute('UPDATE invoice_commands SET invoice_id=NULL WHERE id=?',[hash]);
+   const pending=ok(await call('GET',url,handler));assert.equal(pending.current_status,'PROCESSING');assert.equal(pending.invoice,null);
+   await db.execute('UPDATE invoice_commands SET invoice_id=? WHERE id=?',[q.id,hash]);
   });
   if(process.env.JX_INVOICE_EVIDENCE_DIR){await fs.mkdir(process.env.JX_INVOICE_EVIDENCE_DIR,{recursive:true});await fs.writeFile(path.join(process.env.JX_INVOICE_EVIDENCE_DIR,'http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures.map((f,i)=>({name:`invoice-http-${i+1}`,method:f.method,path:f.path,schema:f.schema,value:f.value})),fixtures},null,2)+'\n');}
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}

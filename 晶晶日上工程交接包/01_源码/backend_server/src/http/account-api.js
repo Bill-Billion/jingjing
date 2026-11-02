@@ -85,6 +85,11 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   const scope='parties',p=page(req,scope),rows=await party.listParties(req,{after:p.after,limit:p.limit+1});
   reply(req,res,pageData(req,scope,rows,p.limit,x=>x.party_id,x=>({party:partyData(x),membership:membershipData(x,req.account.id)})));
  }));
+ app.get('/api/v1/me/parties/:party_id',wrap(async(req,res)=>{
+  shape(req.query,[]);if(req.get('X-Acting-Party'))throw error('ACTING_PARTY_NOT_ALLOWED',400);
+  const row=await party.getMembership(req,req.params.party_id);
+  reply(req,res,{party:partyData(row),membership:membershipData(row,req.account.id)});
+ }));
  app.post('/api/v1/organizations',wrap(async(req,res)=>{shape(req.body,['display_name']);reply(req,res,await party.createOrganization(req,{display_name:req.body.display_name,operation_key:key(req)}));}));
  app.get('/api/v1/parties/:party_id',wrap(async(req,res)=>{
   const partyId=acting(req),rows=await party.listParties(req,{partyId,limit:1});if(!rows.length)throw error('PARTY_NOT_FOUND',404);

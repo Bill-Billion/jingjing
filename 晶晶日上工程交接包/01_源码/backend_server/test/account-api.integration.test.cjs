@@ -78,6 +78,43 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    const [[stored]]=await db.execute('SELECT * FROM auth_login_results WHERE token_hash=?',[auth.secure.digest('token',token)]);assert.ok(!stored.encrypted_token.includes(token));
    const reordered=await request('POST','/api/v1/auth/sessions',{code:c.code,phone:c.phone,challenge_id:c.response.body.data.challenge_id},null,{'Idempotency-Key':k});assert.equal(reordered.status,200);assert.equal(reordered.body.data.access_token,token);
   });
+  await t.test('saved identity outside page one resolves current membership without selecting another identity',async()=>{
+   const loginResult=await login(await challenge()),token=loginResult.body.data.access_token,account=loginResult.body.data.account.id;
+   for(let n=0;n<3;n++)assert.equal((await request('POST','/api/v1/organizations',{display_name:'Synthetic restore '+n},token,{'Idempotency-Key':key()})).status,200);
+   const first=await request('GET','/api/v1/me/parties?limit=1',undefined,token);
+   const next=await request('GET','/api/v1/me/parties?limit=1&cursor='+encodeURIComponent(first.body.data.next_cursor),undefined,token);
+   const target=next.body.data.items[0],url='/api/v1/me/parties/'+target.party.id;
+   assert.notEqual(target.party.id,first.body.data.items[0].party.id);
+   const read=async()=>{const r=await request('GET',url,undefined,token);record('PartyAccessResponse',r);assert.equal(r.headers['cache-control'],'no-store');return r.body.data;};
+   assert.deepEqual(await read(),target);
+   await db.execute("UPDATE party_memberships SET object_version=object_version+1 WHERE id=?",[target.membership.id]);
+   let data=await read();assert.deepEqual(data.membership.roles,target.membership.roles);assert.equal(data.membership.object_version,target.membership.object_version+1);
+   await db.execute("UPDATE parties SET current_status='SUSPENDED',object_version=object_version+1 WHERE id=?",[target.party.id]);
+   data=await read();assert.equal(data.party.current_status,'SUSPENDED');assert.deepEqual(data.party.allowed_actions,[]);
+   await db.execute("UPDATE party_memberships SET current_status='REVOKED',object_version=object_version+1 WHERE id=?",[target.membership.id]);
+   assert.equal((await request('GET',url,undefined,token)).status,404);
+   const other=await login(await challenge());assert.equal((await request('GET',url,undefined,other.body.data.access_token)).status,404);
+   assert.equal((await request('GET',url)).status,401);
+   assert.equal((await request('GET',url,undefined,token,{'X-Acting-Party':target.party.id})).status,400);
+   assert.equal((await request('GET',url+'?account_id='+account,undefined,token)).status,400);
+   await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[account]);
+   assert.equal((await request('GET',url,undefined,token)).status,403);
+  });
+  await t.test('identity recovery returns fresh roles after an authorized member relationship changes',async()=>{
+   const owner=await user(),member=await user();
+   const created=await request('POST','/api/v1/organizations',{display_name:'Synthetic role refresh'},owner.token,{'Idempotency-Key':key()});
+   const partyId=created.body.data.party_id,headers={'X-Acting-Party':partyId,'Idempotency-Key':key()},base='/api/v1/parties/'+partyId;
+   const invitation=await request('POST',base+'/invitations',{invitee_account_id:member.id,expires_at:new Date(Date.now()+3600000).toISOString()},owner.token,headers);
+   assert.equal(invitation.status,200);const invitationId=invitation.body.data.invitation_id;
+   assert.equal((await request('POST',base+'/invitations/'+invitationId+'/responses',{decision:'ACCEPT'},member.token,{...headers,'Idempotency-Key':key(),'If-Match':'"1"'})).status,200);
+   const read=async()=>{const r=await request('GET','/api/v1/me/parties/'+partyId,undefined,member.token);record('PartyAccessResponse',r);return r.body.data;};
+   let r=await read();assert.deepEqual(r.membership.roles,['MEMBER']);assert.deepEqual(r.party.allowed_actions,['READ_PARTY']);
+   // Isolated fixture models a separately approved role change; no public role-grant endpoint is introduced.
+   await db.execute("UPDATE party_memberships SET role_code='OWNER',consent_invitation_id=NULL,object_version=object_version+1 WHERE id=?",[r.membership.id]);
+   r=await read();assert.deepEqual(r.membership.roles,['OWNER']);assert(r.party.allowed_actions.includes('MANAGE_MEMBERS'));
+   await db.execute("UPDATE party_memberships SET role_code='MEMBER',consent_invitation_id=?,object_version=object_version+1 WHERE id=?",[invitationId,r.membership.id]);
+   r=await read();assert.deepEqual(r.membership.roles,['MEMBER']);assert.deepEqual(r.party.allowed_actions,['READ_PARTY']);
+  });
   await t.test('attempt counters commit on failure; expired and superseded codes are rejected',async()=>{
    const c=await challenge(),input={phone:c.phone,challenge_id:c.response.body.data.challenge_id,code:c.code==='000000'?'000001':'000000'};
    for(let i=0;i<5;i++)assert.equal((await request('POST','/api/v1/auth/sessions',input,null,{'Idempotency-Key':key()})).status,401);

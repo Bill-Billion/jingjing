@@ -41,6 +41,23 @@ function createInvoiceRepository(db,{resolvePrincipal=async()=>null,env={}}={}){
  }
  async function document(tx,r,key,i){const d=await A.one(tx,'SELECT * FROM invoice_documents WHERE id=? AND invoice_id=? FOR SHARE',[id(key),r.id]);if(!d||!i.operations&&!['ISSUED','SUPERSEDED'].includes(d.current_status))throw error('INVOICE_DOCUMENT_NOT_FOUND',404);const content=A.parse(d.content_json);if(digest(content)!==d.content_sha256)throw error('STORED_CONTENT_MISMATCH',503);return {...d,content};}
  const api={
+ async commandResult(ctx,i){
+  shape(i,['operations','party_id','operation','operation_key','order_id','invoice_id']);
+  if(!['CREATE','ACTION'].includes(i.operation)||i.operation==='CREATE'&&(i.operations||!i.order_id||i.invoice_id)||i.operation==='ACTION'&&(!i.invoice_id||i.order_id))throw error('INVALID_INPUT',400);
+  const operationKey=ref(i.operation_key);
+  return db.withTransaction(async tx=>{
+   const a=await actor(tx,ctx);let r,o;
+   if(i.operation==='CREATE'){o=await order(tx,i.order_id);await access(tx,a,o,i);}else{({r,o}=await locked(tx,i.invoice_id));await access(tx,a,r,i);}
+   // Lock the same order as writers before observing the committed command. This query never creates or replays work.
+   const command=await A.one(tx,'SELECT invoice_id FROM invoice_commands WHERE id=? FOR SHARE',[digest([a.id,i.operation,operationKey])]);
+   if(!command)return {operation:i.operation,current_status:'NOT_RECORDED',invoice:null};
+   if(!command.invoice_id)return {operation:i.operation,current_status:'PROCESSING',invoice:null};
+   const target=await load(tx,command.invoice_id,'');
+   if(target.order_id!==o.id||r&&target.id!==r.id)throw error('INVOICE_COMMAND_NOT_FOUND',404);
+   await access(tx,a,target,i);
+   return {operation:i.operation,current_status:'RECORDED',invoice:await dto(tx,target,o,a,i)};
+  });
+ },
  async eligibility(ctx,i){return db.withTransaction(async tx=>{const a=await actor(tx,ctx),o=await order(tx,i.order_id);await access(tx,a,o,{party_id:i.party_id});return basis(tx,o);});},
  async create(ctx,i){shape(i,['order_id','party_id','amount_minor','header','text','asset_ids','operation_key']);P.money(i.amount_minor);const h=P.header(i.header);label(i.text,2000);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),o=await order(tx,i.order_id);await access(tx,a,o,i);return command(tx,a,'CREATE',i,o,async()=>{const b=await basis(tx,o);if(i.amount_minor>b.available_minor||!b.environment)throw error('INVOICE_AMOUNT_UNAVAILABLE',409);await assets(tx,a,i.asset_ids,i.party_id);const key=randomUUID();await tx.execute('INSERT INTO invoice_requests(id,order_id,buyer_party_id,issuer_party_id,created_by,environment,currency,requested_minor,occupied_minor,header_json,header_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[key,o.id,o.buyer_party_id,o.merchant_party_id,a.id,b.environment,b.currency,i.amount_minor,i.amount_minor,JSON.stringify(h),digest(h)]);const r=await load(tx,key);await event(tx,a,r,{...i,action:'SUBMIT'},i.asset_ids);return r;});});},
  async read(ctx,i){return db.withTransaction(async tx=>{const a=await actor(tx,ctx),{r,o}=await locked(tx,i.invoice_id);await access(tx,a,r,i);return dto(tx,r,o,a,i);});},

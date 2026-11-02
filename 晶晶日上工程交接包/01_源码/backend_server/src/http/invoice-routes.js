@@ -11,6 +11,10 @@ function createInvoiceRouter(options){
  router.get('/orders/:order_id/eligibility',wrap(async(req,res)=>{shape(req.query,[]);const s=scope(req,false);reply(req,res,await repo.eligibility(req,{party_id:s.party_id,order_id:id(req.params.order_id)}));}));
  router.post('/requests',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,['order_id','amount_minor','header','text','asset_ids']);const s=scope(req,false);reply(req,res,await repo.create(req,{...req.body,party_id:s.party_id,operation_key:ref(req.get('Idempotency-Key'))}));}));
  for(const operations of [false,true]){
+  router.get((operations?'/operations':'')+'/command-results/:operation_key',wrap(async(req,res)=>{
+   shape(req.query,['operation','order_id','invoice_id']);
+   reply(req,res,await repo.commandResult(req,{...scope(req,operations),operation:req.query.operation,operation_key:ref(req.params.operation_key),...req.query.order_id?{order_id:id(req.query.order_id)}:{},...req.query.invoice_id?{invoice_id:id(req.query.invoice_id)}:{}}));
+  }));
   const prefix=operations?'/operations/requests':'/requests';
   router.get(prefix,wrap(async(req,res)=>{shape(req.query,['cursor','limit','status']);reply(req,res,await repo.list(req,{...scope(req,operations),...page(req),...req.query.status?{status:req.query.status}:{}}));}));
   router.get(prefix+'/:invoice_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.read(req,scope(req,operations)));}));

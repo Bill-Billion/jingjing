@@ -171,6 +171,7 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.update({'cocreationDownloadReviewFile', 'cocreationReviewCase', 'cocreationClose', 'cocreationQueue', 'cocreationReviewSnippet', 'cocreationRules', 'cocreationCreateRule', 'cocreationCases', 'cocreationRoom', 'cocreationReviewRule'})
             account_scoped_supply.update({'reviewParticipationAgreement', 'getParticipationProgress'})
             account_scoped_supply.update({'redemptionExposures', 'redemptionCatalog', 'redemptionEvidence', 'redemptionReviewPool', 'redemptionRetirePool', 'redemptionPools', 'redemptionPool', 'redemptionProposeDelivery', 'redemptionReviewStock', 'redemptionReviewDelivery', 'redemptionQueue', 'redemptionReviewRemedy', 'redemptionFinish'})
+            account_scoped_supply.add('getOperatorInvoiceCommandResult')
             account_scoped_supply.update({'listInvoiceRequestsForOperator', 'downloadInvoiceDocumentForOperator', 'listInvoiceDocumentsForOperator', 'downloadInvoiceEvidenceForOperator', 'listInvoiceHistoryForOperator', 'actOnInvoiceForOperator', 'getInvoiceRequestForOperator'})
             account_scoped_supply.update({'actOnSupportTicketForSupport', 'downloadSupportEvidenceForSupport', 'listSupportHistoryForSupport', 'listSupportTicketsForSupport', 'getSupportTicketForSupport'})
             if op['operationId'] in customization_account_scopes:
@@ -183,9 +184,9 @@ def validate(runtime_fixtures=None):
                     check('X-Acting-Party' not in headers, 'Customization account-scoped action: '+path)
             if op['operationId'] in account_scoped_supply:
                 check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
-            if op['operationId'] in personal_collection_ops:
+            if op['operationId'] in personal_collection_ops | {'getMyPartyAccess'}:
                 check(op.get('x-actor-scope') == 'ACCOUNT' and 'X-Acting-Party' not in headers, 'Personal collection scope: '+path)
-            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) | personal_collection_ops and path not in {
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) | personal_collection_ops | {'getMyPartyAccess'} and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
                     '/api/v1/me/parties','/api/v1/identity-verifications/current',
                     '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:

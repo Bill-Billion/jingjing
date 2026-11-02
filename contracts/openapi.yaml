@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.13-rc.1
+  version: 0.31.14-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -492,6 +492,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/me/parties/{party_id}:
+    get:
+      operationId: getMyPartyAccess
+      x-actor-scope: ACCOUNT
+      summary: 按保存的身份编号读取本人最新身份和成员权限
+      description: 无需翻页，无需X-Acting-Party；禁止传入该身份头。只返回当前账号的有效成员关系；已移除/无权404。主体停用仍返回其停用状态及空动作，页面应清理私有缓存并提示，不能静默切换身份。每次业务写入仍独立核权。
+      tags:
+      - party
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/party_id'
+      responses:
+        '200':
+          description: Success; only after real validation/committed work.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartyAccessResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -27346,6 +27382,126 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvoiceEligibilityResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/command-results/{operation_key}:
+    get:
+      operationId: getInvoiceCommandResult
+      summary: 查询本人原开票操作结果（只读）
+      description: 只查当前登录账号的原请求键，不执行或重放写入。CREATE必须传order_id且不能传invoice_id；ACTION必须传invoice_id且不能传order_id。运营仅支持ACTION，且禁止X-Acting-Party。本人查询需原购买身份。RECORDED表示操作已提交，invoice是当前记录（可能已被后续操作改变）；NOT_RECORDED仅代表查询时未记录，不证明旧请求不会稍后到达，仍只能用原键原内容重试。PROCESSING须继续查询，不换键重提。每次查询重新核验当前访问权限。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: operation_key
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$
+      - name: operation
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - CREATE
+          - ACTION
+      - name: invoice_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: order_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceCommandResultResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/invoices/operations/command-results/{operation_key}:
+    get:
+      operationId: getOperatorInvoiceCommandResult
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      summary: 查询工作人员原开票操作结果（只读）
+      description: 只查当前登录账号的原请求键，不执行或重放写入。CREATE必须传order_id且不能传invoice_id；ACTION必须传invoice_id且不能传order_id。运营仅支持ACTION，且禁止X-Acting-Party。本人查询需原购买身份。RECORDED表示操作已提交，invoice是当前记录（可能已被后续操作改变）；NOT_RECORDED仅代表查询时未记录，不证明旧请求不会稍后到达，仍只能用原键原内容重试。PROCESSING须继续查询，不换键重提。每次查询重新核验当前访问权限。
+      tags:
+      - invoices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: operation_key
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$
+      - name: operation
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ACTION
+      - name: invoice_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 隔离实现，前端接入与整条业务验收单列。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceCommandResultResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -58914,6 +59070,67 @@ components:
       required:
       - meta
       - data
+    PartyAccessResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/PartyAccess'
+    InvoiceCommandResult:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - operation
+        - current_status
+        - invoice
+        properties:
+          operation:
+            type: string
+            enum:
+            - CREATE
+            - ACTION
+          current_status:
+            type: string
+            enum:
+            - RECORDED
+          invoice:
+            $ref: '#/components/schemas/Invoice'
+      - type: object
+        additionalProperties: false
+        required:
+        - operation
+        - current_status
+        - invoice
+        properties:
+          operation:
+            type: string
+            enum:
+            - CREATE
+            - ACTION
+          current_status:
+            type: string
+            enum:
+            - NOT_RECORDED
+            - PROCESSING
+          invoice:
+            type: 'null'
+    InvoiceCommandResultResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/InvoiceCommandResult'
     InvoiceHeader:
       oneOf:
       - type: object

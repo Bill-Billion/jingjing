@@ -118,6 +118,18 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
    }
    return result;
   },
+  async getMembership(context,partyId) {
+   id(partyId);const a=await actor(context);
+   return db.withTransaction(async tx=>{
+    await active(tx,a);
+    const p=await one(tx,'SELECT * FROM parties WHERE id=? FOR SHARE',[partyId]);
+    const m=await one(tx,'SELECT * FROM party_memberships WHERE party_id=? AND account_id=? FOR SHARE',[partyId,a.account_id]);
+    if(!p||!m||m.current_status!=='ACTIVE')throw error('PARTY_NOT_FOUND',404);
+    const [capabilities]=await tx.execute('SELECT code,current_status,object_version FROM party_capabilities WHERE party_id=? ORDER BY code FOR SHARE',[partyId]);
+    return {party_id:p.id,kind:p.kind,display_name:p.display_name,current_status:p.current_status,object_version:p.object_version,
+     membership_id:m.id,membership_version:m.object_version,role:m.role_code,capabilities,allowed_actions:allowedActions(p,m)};
+   });
+  },
   async assertPermission(context,input) {
    shape(input,['party_id','action']);const {party_id,action}=input;
    const a=await actor(context);

@@ -5836,6 +5836,90 @@
       "name": "PhoneChangeEmptyRequest",
       "schema": "PhoneChangeEmptyRequest",
       "value": {}
+    },
+    {
+      "name": "PartyAccessResponse",
+      "schema": "PartyAccessResponse",
+      "value": {
+        "meta": {
+          "request_id": "test-request-001",
+          "actor": {
+            "account_id": "acc_test"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "party": {
+            "id": "party_test",
+            "kind": "PERSON",
+            "display_name": "Test author",
+            "current_status": "ACTIVE",
+            "object_version": 7,
+            "capabilities": [
+              {
+                "code": "AUTHOR",
+                "current_status": "ACTIVE",
+                "allowed_actions": []
+              }
+            ],
+            "allowed_actions": [
+              "READ_PARTY",
+              "REQUEST_CAPABILITY"
+            ]
+          },
+          "membership": {
+            "id": "member_test",
+            "account_id": "acc_test",
+            "party_id": "party_test",
+            "current_status": "ACTIVE",
+            "roles": [
+              "OWNER"
+            ],
+            "object_version": 1,
+            "allowed_actions": []
+          }
+        }
+      }
+    },
+    {
+      "name": "InvoiceCommandResultResponse",
+      "schema": "InvoiceCommandResultResponse",
+      "value": {
+        "meta": {
+          "request_id": "62e0639c-254e-48ea-aed7-c0c8a53f8b2a",
+          "actor": {
+            "account_id": "760e4f5a-695d-4ad4-a408-a94abebe6db5"
+          },
+          "acting_party": "b191843e-a736-4317-ac55-6e0075a16ed3"
+        },
+        "data": {
+          "operation": "CREATE",
+          "current_status": "RECORDED",
+          "invoice": {
+            "id": "70ba551c-0cd2-40f2-8248-d0cf9422a97b",
+            "order_id": "c91e009a-6163-48bb-9e73-55a3f16ba6ed",
+            "buyer_party_id": "b191843e-a736-4317-ac55-6e0075a16ed3",
+            "issuer_party_id": "498a5045-0987-4b47-ac59-5619f6c028d5",
+            "environment": "SANDBOX",
+            "currency": "CNY",
+            "requested_minor": 100,
+            "occupied_minor": 100,
+            "current_status": "REQUESTED",
+            "object_version": 1,
+            "header": {
+              "kind": "PERSON",
+              "title": "Synthetic buyer",
+              "tax_id": null
+            },
+            "issued_document_id": null,
+            "pending_document_id": null,
+            "requires_correction": false,
+            "available_for_this_request_minor": 100,
+            "created_at": "2026-10-30T08:41:24.564Z",
+            "updated_at": "2026-10-30T08:41:24.564Z"
+          }
+        }
+      }
     }
   ],
   "contract_version": "0.31.10-rc.1"
