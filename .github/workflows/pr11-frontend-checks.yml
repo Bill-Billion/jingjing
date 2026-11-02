@@ -219,7 +219,7 @@ jobs:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
           PR19_WEB_URL: http://127.0.0.1:5209
           VITE_BACKEND_ORIGIN: http://127.0.0.1:3342
-        run: node scripts/run-ui-browser-check.cjs 19
+        run: node scripts/run-ui-browser-check.cjs 19 --built
       - name: 用真实通知、留言、审计和报表接口检查网页
         working-directory: ${{ github.workspace }}
         shell: bash
@@ -227,7 +227,7 @@ jobs:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
           PR20_WEB_URL: http://127.0.0.1:5211
           VITE_BACKEND_ORIGIN: http://127.0.0.1:3362
-        run: node scripts/run-ui-browser-check.cjs 20
+        run: node scripts/run-ui-browser-check.cjs 20 --built
       - name: 清理本次测试数据库
         if: always()
         working-directory: ${{ github.workspace }}

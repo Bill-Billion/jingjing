@@ -1,3 +1,5 @@
+2026-11-02候选0.31.13-rc.1：Invoice新增allowed_actions，按实时岗位/状态/录入者返回，服务端写入仍独立核权，数据库仍0192。新合同对付款/准入/期限的改变尚未反映为已交付接口；见[需求变更与依赖](../docs/requirements/CONTRACT_CHANGES_20261102.md)。
+
 当前候选0.31.9-rc.1：正式反馈／举报与未读通知14项新接口，迁移到0181。旧通知列表保留原域，新页面用feed和快照。见[本批接法](../docs/collaboration/client-complete-20261028/FRONTEND_SUPPORT_MESSAGES_HANDOFF.md)；页面和整组验收未完成，上传事实见CURRENT。
 
 当前候选0.31.8-rc.1：新增本人收藏、主动开启浏览记录、清理和失效提示9项接口；迁移0171—0173。旧接口兼容，前端接法见[收藏交接](../docs/collaboration/client-complete-20261028/FRONTEND_COLLECTIONS_HANDOFF.md)。页面与完整业务验收尚未完成，实际上传状态见CURRENT。以下版本按历史保留。

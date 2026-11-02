@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
-const {spawn} = require('node:child_process');
+const {spawn,spawnSync} = require('node:child_process');
 const {createRequire} = require('node:module');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 function localUrl(value) {
@@ -35,7 +35,7 @@ async function stop(handle) {
   if(handle.cleanupIpc && handle.child.connected) handle.child.send({type:'JX_TEST_SHUTDOWN'});
   else handle.child.kill('SIGTERM');
   let timer;
-  const exited=await Promise.race([handle.done.then(()=>true),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),5000);})]).finally(()=>clearTimeout(timer));
+  const exited=await Promise.race([handle.done.then(()=>true),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),handle.cleanupIpc?30000:5000);})]).finally(()=>clearTimeout(timer));
   if (!exited) { handle.child.kill('SIGKILL'); await handle.done; if(handle.cleanupIpc) throw Error('TEST_DATABASE_CLEANUP_TIMEOUT'); }
   if(handle.cleanupIpc && (await handle.done).code!==0) throw Error('TEST_DATABASE_CLEANUP_FAILED');
 }
@@ -87,7 +87,8 @@ async function runSession(options) {
 async function main() {
   const stage=process.argv[2];
   const sms=process.argv[3]==='--sms';
-  if(process.argv.length>3 && !(sms && stage==='11' && process.argv.length===4)) throw Error('UNKNOWN_BROWSER_CHECK_OPTION');
+  const built=process.argv[3]==='--built';
+  if(process.argv.length>3 && !((built || sms && stage==='11') && process.argv.length===4)) throw Error('UNKNOWN_BROWSER_CHECK_OPTION');
   const ports={'11':[3220,5199],'14':[3242,5202],'15':[3262,5203],'16':[3282,5206],'17':[3302,5205],'18':[3322,5207],'19':[3342,5209],'20':[3362,5211]};
   if(!ports[stage]) throw Error('UNKNOWN_BROWSER_TEST_STAGE');
   const root=path.resolve(__dirname,'..'), webRoot=path.join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace');
@@ -97,10 +98,20 @@ async function main() {
   const env={...process.env,VITE_BACKEND_ORIGIN:apiUrl,BASE_URL:webUrl,[`PR${stage}_WEB_URL`]:webUrl,[`PR${stage}_UI_STATE_FILE`]:statePath,
     CHROME_PATH:process.env.CHROME_PATH||requireWeb('playwright-core').chromium.executablePath()};
   const check=sms?{file:path.join(root,'scripts/sms-login-browser-check.mjs'),cwd:root}:stage==='11'?{file:path.join(webRoot,'tools/e2e-login.mjs'),cwd:webRoot}:{file:path.join(root,`scripts/pr${stage}-ui-browser-check.mjs`),cwd:root};
+  const vite=path.join(webRoot,'node_modules/vite/bin/vite.js');
+  const buildDir=path.join(root,`.local/browser-build-${stage}`);
+  if(built){
+    if(fs.existsSync(statePath))throw Error('STALE_TEST_STATE_REFUSED');
+    await freePort(apiUrl);await freePort(webUrl);
+    fs.mkdirSync(logDir,{recursive:true});
+    const result=spawnSync(process.execPath,[vite,'build','--outDir',buildDir],{cwd:webRoot,env,windowsHide:true,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024});
+    fs.writeFileSync(path.join(logDir,'build.log'),(result.stdout||'')+(result.stderr||''));
+    if(result.error||result.status!==0)throw Error('TEST_WEB_BUILD_FAILED');
+  }
   await runSession({api:{file:path.join(root,`scripts/pr${stage}-ui-test-server.cjs`),args:['--test-only'],cwd:root},
-    web:{file:path.join(webRoot,'node_modules/vite/bin/vite.js'),args:['--host','127.0.0.1','--port',String(ports[stage][1]),'--strictPort'],cwd:webRoot},
+    web:{file:vite,args:[...(built?['preview','--outDir',buildDir]:[]),'--host','127.0.0.1','--port',String(ports[stage][1]),'--strictPort'],cwd:webRoot},
     check,statePath,apiUrl,webUrl,logDir,env});
-  console.log(`Browser stage ${stage}: PASS; API and web processes stopped. Logs: .local/browser-check-${stage}`);
+  console.log(`Browser stage ${stage}${built?' (fresh built assets)':''}: PASS; API and web processes stopped. Logs: .local/browser-check-${stage}`);
 }
 if(require.main===module) main().catch(error=>{
   console.error(error.message);

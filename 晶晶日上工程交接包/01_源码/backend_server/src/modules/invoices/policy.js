@@ -19,4 +19,23 @@ function issuer(env,merchant,environment,now=Date.now()){
  return {...p,simulated:false};
 }
 function verified(row){const data=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;if(digest(data)!==row.data_sha256)throw error('STORED_CONTENT_MISMATCH',503);return data;}
-module.exports={money,header,page,issuer,verified,states};
+// Available controls are suggestions for this actor, never a substitute for POST authorization.
+function allowedActions({state,operations,handle=false,verify=false,pending=false,recordedBySelf=false,issued=false}){
+ if(!states.includes(state))return [];
+ if(!operations)return [
+  ...(['NEEDS_INFO'].includes(state)?['SUPPLEMENT']:[]),
+  ...(!issued&&['REQUESTED','NEEDS_INFO','APPROVED','DOCUMENT_REVIEW'].includes(state)?['WITHDRAW']:[]),
+  ...(state==='ISSUED'?['REQUEST_CORRECTION']:[])
+ ];
+ const result=[];
+ if(handle){
+  if(['REQUESTED','APPROVED'].includes(state))result.push('REQUEST_INFO');
+  if(state==='REQUESTED')result.push('APPROVE');
+  if(['REQUESTED','NEEDS_INFO','APPROVED'].includes(state))result.push('REJECT');
+  if(state==='ISSUED')result.push('REQUEST_CORRECTION');
+  if(['APPROVED','CORRECTION_REQUESTED'].includes(state))result.push('RECORD_DOCUMENT');
+ }
+ if(verify&&state==='DOCUMENT_REVIEW'&&pending&&!recordedBySelf)result.push('VERIFY_DOCUMENT','REJECT_DOCUMENT');
+ return result;
+}
+module.exports={money,header,page,issuer,verified,states,allowedActions};

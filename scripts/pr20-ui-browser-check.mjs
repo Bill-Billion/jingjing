@@ -20,7 +20,7 @@ const indexHtml=await index.text(),entryPath=indexHtml.match(/<script[^>]+src="(
 const entry=await fetch(new URL(entryPath,base));assert(entry.ok)
 const sha=b=>createHash('sha256').update(b).digest('hex')
 const build={index_sha256:sha(indexHtml),entry_path:entryPath,entry_sha256:sha(Buffer.from(await entry.arrayBuffer()))}
-const evidence=resolve(root,'docs/ux/pr20-ui/evidence'),shots=resolve(evidence,'screenshots'),resultPath=resolve(evidence,'web-browser-results.json')
+const evidence=resolve(root,process.env.JX_BROWSER_EVIDENCE_DIR||'docs/ux/pr20-ui/evidence'),shots=resolve(evidence,'screenshots'),resultPath=resolve(evidence,'web-browser-results.json')
 await mkdir(shots,{recursive:true})
 const results=[],screenshots=[],verification=[],pageErrors=[],requests=[],actors={},facts={},resumeHistory=[]
 let page,complete=false,error=null,resumed=0
@@ -294,7 +294,7 @@ try{
  for(const g of expectedGalleries)assert(screenshots.some(s=>s.gallery===g),'Missing actual gallery '+g)
  for(const s of screenshots)await stat(resolve(evidence,s.file))
  complete=true;console.log('✓ All real UI checks, six Web gallery pages and zero pageerrors')
-}catch(e){error=redact(e.message).slice(0,1600);console.error(redact(e.stack));process.exitCode=1;if(page){await page.screenshot({path:resolve(shots,'debug-web.png'),fullPage:true}).catch(()=>{});await writeFile(resolve(root,'.local/pr20-web-debug.html'),redact(await page.content().catch(()=>'')))}}
+}catch(e){error=redact(e.message).slice(0,1600);console.error(redact(e.stack));console.error('Failed route:',redact(page?.url()));process.exitCode=1;if(page){await page.screenshot({path:resolve(shots,'debug-web.png'),fullPage:true}).catch(()=>{});await writeFile(resolve(root,'.local/pr20-web-debug.html'),redact(await page.content().catch(()=>'')))}}
 finally{
  for(const action of alteredGrants)await control('/reviewer-permission?action='+action+'&enabled=true').catch(()=>{})
  if(membershipChanged)await control('/party-permission?account=payer&enabled=true').catch(()=>{})

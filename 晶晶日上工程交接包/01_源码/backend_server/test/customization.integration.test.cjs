@@ -421,6 +421,19 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    assert.equal(current.payment,undefined);assert.equal(current.production_id,undefined);
    assert.equal((await request('GET','/customization-requests/'+intaken.id)).headers.get('cache-control'),'no-store');
   });
+  await t.test('blessing video is a private human-readable request with explicit operator intake, never an automatic generation',async()=>{
+   const spec=require('../src/modules/customization/blessing-template.json');
+   const template=await publish('blessing_manual',spec);
+   const answers={occasion:'生日祝福',recipient:'合成测试亲友',message:'感谢一直以来的陪伴，生日快乐',use_scope:'仅家庭播放，不商用'};
+   const created=capture(await request('POST','/customization-requests',buyer,{template_version_id:template.template_version_id,answers},buyer.personal_party_id,{'Idempotency-Key':key()}),'CustomizationRequestResponse');
+   failed(await request('GET','/customization-requests/'+created.id,operator,undefined,null),404);
+   const sent=capture(await submit(created),'CustomizationRequestResponse');assert.equal(sent.current_status,'SUBMITTED');
+   const read=capture(await request('GET','/customization-requests/'+sent.id,operator,undefined,null),'CustomizationRequestResponse');
+   assert.equal(read.submission.answers.message,answers.message);
+   const accepted=capture(await intake(sent),'CustomizationRequestResponse');assert.equal(accepted.current_status,'INTAKE');assert.equal(accepted.intake_by,operator.account_id);
+   assert.equal(spec.fields.some(f=>f.key==='prompt'),false);
+   for(const table of ['trade_records','trade_journal','production_records'])assert.equal(await count(table),0,'intake must not auto-create '+table);
+  });
   fixtures.push({schema:'CreateCustomizationRequest',value:{template_version_id:wedding.template_version_id,answers:{}}},{schema:'UpdateCustomizationRequest',value:{answers:{story:''}}},{schema:'CustomizationEmptyCommand',value:{}});
   const out=path.resolve(__dirname,'../../../..','.local/customization-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{

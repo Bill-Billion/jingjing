@@ -34,3 +34,8 @@ test('端口被其他进程使用时拒绝启动且不杀该进程',async t=>{
 test('已有运行状态不覆盖，避免使用陈旧测试身份',async t=>{
  const a=await options(t);fs.writeFileSync(a.statePath,'preserve');await assert.rejects(runSession(a),/STALE_TEST_STATE_REFUSED/);assert.equal(fs.readFileSync(a.statePath,'utf8'),'preserve');
 });
+
+test('API cleanup exceeding five seconds finishes before reporting success',async t=>{
+ const a=await options(t,{env:{...process.env,JX_TEST_API_CLEANUP_DELAY_MS:'5500'}});
+ await runSession(a);assert(!fs.existsSync(a.statePath));await isFree(a.apiUrl);await isFree(a.webUrl);
+});
