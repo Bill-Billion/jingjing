@@ -61,7 +61,7 @@ async function actorPage(role){
 async function inspect(page,c,width){
  assert.equal(new URL(page.url()).pathname,c.path)
  assert.equal(await page.getByTestId('artists-workspace').count(),1)
- assert.equal(await page.locator('.workspace-nav a').count(),70);assert.equal(await page.locator('.workspace-nav-parent').count(),7)
+ assert.equal(await page.locator('.workspace-nav a').count(),74);assert.equal(await page.locator('.workspace-nav-parent').count(),7)
  const links=await page.locator('.workspace-nav a').evaluateAll(as=>as.map(a=>({href:a.getAttribute('href'),label:a.textContent.trim(),current:a.getAttribute('aria-current')==='page'})))
  assert.equal(new Set(links.map(l=>l.href)).size,70);for(const href of original41)assert(links.some(l=>l.href===href),'Original entrance missing: '+href)
  assert.deepEqual(links.filter(l=>l.current).map(l=>l.href),[c.role==='reviewer'?'/artists/reviews/CONSENT':'/artists/people'])
@@ -72,7 +72,7 @@ async function inspect(page,c,width){
  if(style.primary){assert.equal(style.primary.background,'rgb(23, 23, 23)');assert.equal(style.primary.color,'rgb(243, 240, 231)');assert.equal(style.primary.radius,'0px')}
  assert(style.requiredLabelsInline,'Required marker stays with the field label')
  assert.equal(writes.length,0,'Visual acceptance cannot send business writes')
- return {style,original_41_preserved:true,navigation_count:70,navigation_groups:7,navigation_active:links.filter(l=>l.current)[0].href,credentials_visible:false,...matrix.length===0?{navigation:links}:{}}
+ return {style,original_41_preserved:true,navigation_count:74,navigation_groups:7,navigation_active:links.filter(l=>l.current)[0].href,credentials_visible:false,...matrix.length===0?{navigation:links}:{}}
 }
 async function shot(page,c,width,suffix='overview'){
  const name=`${c.key}-${width}-${suffix}.png`;await page.mouse.move(0,0);await page.screenshot({path:join(out,name),fullPage:false})
