@@ -1,3 +1,5 @@
+2026-11-02当前先读[新合同付款与工作日验收合并接法](collaboration/client-complete-20261028/CONTRACT_CALENDAR_HANDOFF_20261102.md)。后端已自测，正式规格、网站切换及前端整链仍待完成。
+
 2026-11-02新合同付款请先读[本批规则与前端接法](collaboration/client-complete-20261028/PAYMENT_CONTRACT_HANDOFF_20261102.md)。新规格付款能力已隔离验证；全站规格切换/工作日/页面整链仍未完成。上批恢复任务用户已转发，前端认领未确认。
 
 2026-11-02当前先读[恢复修复与新合同分工](collaboration/client-complete-20261028/RECOVERY_AND_CONTRACT_PLAN_20261102.md)。后端恢复接口已自测，前端4项待修；新付款等规则仍待开发。

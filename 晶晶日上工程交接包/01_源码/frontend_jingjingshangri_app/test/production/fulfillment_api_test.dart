@@ -15,6 +15,53 @@ import 'production_fixtures.dart';
 import 'fulfillment_fixtures.dart';
 
 void main() {
+  test('新工作日条款解析null小时并拒绝无效或冲突日历，保留旧小时', () {
+    validateCustomizationDeliveryTerms(workingFulfillmentTerms());
+    validateCustomizationDeliveryTerms(fulfillmentTerms());
+    for (final mutate in <void Function(Map<String, dynamic>)>[
+      (t) => t['acceptance_hours'] = 120,
+      (t) => t['acceptance_calendar']['valid_from'] = '2026-02-30',
+      (t) => t['acceptance_calendar']['working_dates'] = ['2026-10-01'],
+      (t) => t.remove('acceptance_calendar'),
+    ]) {
+      final terms = workingFulfillmentTerms();
+      mutate(terms);
+      expect(() => validateCustomizationDeliveryTerms(terms),
+          throwsA(isA<AccountError>()));
+    }
+  });
+  test('非最终明确收讫没有倒计时，最终显示服务端北京时间截止', () {
+    final raw = fulfillmentData(viewed: true, received: true)
+      ..['terms'] = workingFulfillmentTerms();
+    raw['receipt'].addAll({
+      'started_at': null,
+      'deadline_at': null,
+      'job_id': null,
+      'deadline_basis': {'mode': 'EXPLICIT_CONFIRMATION'}
+    });
+    final flow = ProductionFulfillment(
+        raw, ProductionRecord.parse(fulfillmentProjectData()));
+    expect(customizationDeadlineLabel(flow.receipt!), contains('不自动倒计时'));
+    raw['receipt'].addAll({
+      'started_at': fulfillmentDate,
+      'deadline_at': '2026-10-29T15:59:59.999Z',
+      'job_id': otherVersionId,
+      'deadline_basis': {
+        'mode': 'WORKING_DAYS',
+        'days': 5,
+        'timezone': 'Asia/Shanghai',
+        'calendar_version': 'synthetic-calendar',
+        'calendar_sha256': 'a' * 64,
+        'received_date': '2026-10-22',
+        'deadline_date': '2026-10-29'
+      }
+    });
+    expect(
+        customizationDeadlineLabel(ProductionFulfillment(
+                raw, ProductionRecord.parse(fulfillmentProjectData()))
+            .receipt!),
+        contains('2026-10-29 23:59:59（北京时间）'));
+  });
   test('履约独立于PROJECT状态，保留真实规则、收讫与取消应退/实退', () {
     final p = ProductionRecord.parse(fulfillmentProjectData());
     final f = ProductionFulfillment(fulfillmentData(cancelled: true), p);

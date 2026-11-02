@@ -1,3 +1,5 @@
+0.31.16-rc.1新增工作日日历与验收依据，旧小时条款保持；迁移仍0192。详见[合并接法](../docs/collaboration/client-complete-20261028/CONTRACT_CALENDAR_HANDOFF_20261102.md)。新页面必须支持acceptance_hours=null，不可显示0小时。
+
 0.31.15-rc.1新增SCRIPT_BEFORE_INTERIM规格及CUSTOMIZATION_SCRIPT_CONFIRMED付款节点，旧节点含义不变；数据库0192。[接法与发布限制](../docs/collaboration/client-complete-20261028/PAYMENT_CONTRACT_HANDOFF_20261102.md)。
 
 0.31.14-rc.1新增本人身份及开票原操作只读查询，旧接口兼容；迁移0192不变。见[接法](../docs/collaboration/client-complete-20261028/RECOVERY_AND_CONTRACT_PLAN_20261102.md)。

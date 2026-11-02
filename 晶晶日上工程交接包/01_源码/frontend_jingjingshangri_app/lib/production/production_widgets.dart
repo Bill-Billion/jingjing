@@ -181,7 +181,7 @@ Widget productionCurrentTasks(
                     ? '本次未读取到交付指定版本，请从正式交付记录核对。'
                     : !receiptVersion.current(project)
                         ? '交付指向历史版本；旧版收讫不代表当前版本已收讫。'
-                        : receipt['started_at'] != null
+                        : receipt['notified_at'] != null
                             ? '该正式版本已明确收讫；版本验收仍另行核对。'
                             : receipt['view_observed_at'] == null
                                 ? '先真实打开本次正式版本，再核对通知与明确收讫。'

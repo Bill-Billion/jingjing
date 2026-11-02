@@ -267,8 +267,10 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
                         'PREVIEW_BEFORE_INTERIM'
                     ? '正式预览确认后，按原订单补款'
                     : '沿用本单先中间付款、再预览的历史约定'),
-        tradeFact('明确收讫后的原约定期限',
-            '${spec['customization_delivery']['acceptance_hours']} 小时'),
+        tradeFact(
+            '明确收讫后的原约定期限',
+            customizationAcceptanceLabel(
+                tradeMap(spec['customization_delivery']))),
         tradeFact('取消约定', spec['customization_delivery']['cancellation_terms']),
       ]
     ];

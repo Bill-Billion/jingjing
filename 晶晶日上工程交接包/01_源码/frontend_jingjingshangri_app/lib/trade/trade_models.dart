@@ -222,9 +222,40 @@ const artistServiceNames = {
   'AVATAR_HOSTING': '数字人托管',
   'HALO_REVIEW': '认证资料审核',
 };
+bool customizationDay(dynamic value) {
+  if (value is! String || !RegExp(r'^20\d{2}-\d{2}-\d{2}$').hasMatch(value))
+    return false;
+  final date = DateTime.tryParse('${value}T00:00:00Z');
+  return date != null && date.toIso8601String().substring(0, 10) == value;
+}
+
+void validateCustomizationCalendar(dynamic value) {
+  final c = tradeMap(value);
+  tradeRequire(c.length == 7 &&
+      _text(c['version'], 128) &&
+      _text(c['source_ref'], 128) &&
+      c['timezone'] == 'Asia/Shanghai' &&
+      customizationDay(c['valid_from']) &&
+      customizationDay(c['valid_until']));
+  final from = DateTime.parse(c['valid_from']),
+      until = DateTime.parse(c['valid_until']);
+  tradeRequire(
+      !until.isBefore(from) && until.difference(from).inDays <= 3 * 366);
+  final seen = <String>{};
+  for (final key in ['non_working_dates', 'working_dates']) {
+    tradeRequire(c[key] is List && c[key].length <= 1100);
+    for (final day in c[key]) {
+      tradeRequire(customizationDay(day) &&
+          day.compareTo(c['valid_from']) >= 0 &&
+          day.compareTo(c['valid_until']) <= 0 &&
+          seen.add(day));
+    }
+  }
+}
+
 void validateCustomizationDeliveryTerms(dynamic value) {
-  final d = tradeMap(value);
-  tradeRequire(d.length == 5 &&
+  final d = tradeMap(value), working = d.containsKey('acceptance_working_days');
+  tradeRequire(d.length == (working ? 7 : 5) &&
       _text(d['version'], 128) &&
       _text(d['source_ref'], 128) &&
       _text(d['cancellation_terms']) &&
@@ -232,10 +263,34 @@ void validateCustomizationDeliveryTerms(dynamic value) {
         'PREVIEW_BEFORE_INTERIM',
         'INTERIM_BEFORE_PREVIEW',
         'SCRIPT_BEFORE_INTERIM'
-      ].contains(d['preview_payment_order']) &&
-      d['acceptance_hours'] is int &&
-      d['acceptance_hours'] >= 1 &&
-      d['acceptance_hours'] <= 720);
+      ].contains(d['preview_payment_order']));
+  if (working) {
+    tradeRequire(d['acceptance_working_days'] == 5 &&
+        d['acceptance_hours'] == null &&
+        d['preview_payment_order'] == 'SCRIPT_BEFORE_INTERIM');
+    validateCustomizationCalendar(d['acceptance_calendar']);
+  } else {
+    tradeRequire(d['acceptance_hours'] is int &&
+        d['acceptance_hours'] >= 1 &&
+        d['acceptance_hours'] <= 720);
+  }
+}
+
+String customizationAcceptanceLabel(Map<String, dynamic> terms) =>
+    terms['acceptance_working_days'] == 5
+        ? '最终成片5个工作日；节假日和调休按本单约定（北京时间），其余阶段须明确确认'
+        : "${terms['acceptance_hours']} 小时（原订单约定）";
+String customizationDeadlineLabel(Map<String, dynamic> receipt) {
+  if (receipt['deadline_at'] == null)
+    return receipt['deadline_basis']?['mode'] == 'EXPLICIT_CONFIRMATION'
+        ? '本阶段须明确确认成果，不自动倒计时'
+        : '尚待确认收到';
+  if (receipt['deadline_basis']?['mode'] != 'WORKING_DAYS')
+    return DateTime.parse(receipt['deadline_at']).toLocal().toString();
+  final date = DateTime.parse(receipt['deadline_at'])
+      .toUtc()
+      .add(const Duration(hours: 8));
+  return '${date.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}（北京时间）';
 }
 
 bool tradeCustomizationRulesReady(TradeRecord order) =>
@@ -825,6 +880,13 @@ Map<String, int> tradeRefundRemaining(
 
 String tradeError(Object e, {bool writing = false}) {
   if (e is! AccountError) return '返回内容无法识别，请重新读取。';
+  const contractErrors = {
+    'CUSTOMIZATION_CONTRACT_VERSION_REQUIRED': '该规格已不用于新报价，请选择新版；旧订单保留原约定。',
+    'CUSTOMIZATION_CALENDAR_COVERAGE_REQUIRED':
+        '该日期的验收安排尚未确认，请联系平台处理；仍可主动确认成果或提出异议。',
+    'CUSTOMIZATION_ACCEPTANCE_CLOCK_MISMATCH': '验收计时记录需核对，暂不自动确认。',
+  };
+  if (contractErrors.containsKey(e.code)) return contractErrors[e.code]!;
   if (e.code == 'INVALID_TRADE_RESPONSE') {
     return writing ? '返回内容无法核对，操作结果未知。请恢复原请求核对。' : '交易记录格式无法识别，请重新读取。';
   }

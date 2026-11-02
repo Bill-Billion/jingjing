@@ -246,6 +246,10 @@ String productionError(AccountError e, {bool writing = false}) {
     'CUSTOMIZATION_CHANGE_QUOTE_REQUIRED':
         '原订单创意修改次数已用完。新增要求请从原项目开问题单，另行报价、确认和付款。',
     'CUSTOMIZATION_CASE_ALREADY_OPEN': '原项目已有一份未解决的问题，请先查看原处理记录。',
+    'CUSTOMIZATION_CONTRACT_VERSION_REQUIRED': '该规格已不用于新报价，请选择新版；旧订单保留原约定。',
+    'CUSTOMIZATION_CALENDAR_COVERAGE_REQUIRED':
+        '该日期的验收安排尚未确认，请联系平台处理；仍可主动确认成果或提出异议。',
+    'CUSTOMIZATION_ACCEPTANCE_CLOCK_MISMATCH': '验收计时记录需核对，暂不自动确认。',
     'CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED': '请先核对原订单的中间补款节点。预览或成片确认不表示钱已到账。',
     'CUSTOMIZATION_REFUND_RECONCILIATION_REQUIRED':
         '收退款记录与取消决定需要进一步核对，不能记为已退款。',
