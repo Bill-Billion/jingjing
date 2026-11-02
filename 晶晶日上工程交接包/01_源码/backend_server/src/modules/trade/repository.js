@@ -54,10 +54,16 @@ function createTradeRepository(db,{resolvePrincipal=async()=>null,fulfillmentGat
  async stockCheckout(ctx,input){shape(input,['party_id','listing_id','offer_sha256','channel','operation_key']);if(!['ALIPAY','APPLE','CUSTODY'].includes(input.channel))throw error('INVALID_PAYMENT_CHANNEL',400);return db.withTransaction(async tx=>{
  const a=await actor(tx,ctx),C=require('../stock/context'),A=require('../artists/context');
  const party=await one(tx,'SELECT * FROM parties WHERE id=? FOR UPDATE',[id(input.party_id)]);await owner(tx,a,input.party_id);
- if(party.kind!=='PERSON')throw error('STOCK_PERSONAL_BUYER_REQUIRED',409);
- const person=await one(tx,'SELECT id FROM artist_people WHERE owner_party_id=? FOR SHARE',[input.party_id]);if(!person)throw error('STOCK_BUYER_IDENTITY_REQUIRED',409);require('../artists/policy').adult(await A.person(tx,person.id),await A.now(tx));
+ // Owner/active status is checked before replay; a changed catalogue must not create a second order.
  return command(tx,a,'STOCK_CHECKOUT',input,async()=>{
- const listing=await C.listed(tx,input.listing_id);if(listing.seller_party_id===input.party_id)throw error('STOCK_SELF_PURCHASE',409);if(listing.data_sha256!==input.offer_sha256)throw error('STOCK_OFFER_CHANGED',412);
+ const listing=await C.listed(tx,input.listing_id),lic=require('../stock/policy').license(listing.data.spec.specification);
+ if(party.kind!=='PERSON'){
+  if(!require('../stock/policy').commercial(lic))throw error('STOCK_PERSONAL_BUYER_REQUIRED',409);
+  if(party.kind!=='ORGANIZATION'||!await one(tx,"SELECT party_id FROM party_capabilities WHERE party_id=? AND code='BRAND_CLIENT' AND current_status='ACTIVE' FOR SHARE",[input.party_id]))throw error('STOCK_COMMERCIAL_BUYER_REQUIRED',409);
+ }
+ const identityParty=party.kind==='PERSON'?party.id:(await one(tx,"SELECT p.id FROM parties p JOIN party_memberships m ON m.party_id=p.id WHERE p.kind='PERSON' AND m.account_id=? AND m.role_code='OWNER' AND m.current_status='ACTIVE' FOR SHARE",[a.id]))?.id;
+ const person=identityParty&&await one(tx,'SELECT id FROM artist_people WHERE owner_party_id=? FOR SHARE',[identityParty]);if(!person)throw error('STOCK_BUYER_IDENTITY_REQUIRED',409);require('../artists/policy').adult(await A.person(tx,person.id),await A.now(tx));
+if(listing.seller_party_id===input.party_id)throw error('STOCK_SELF_PURCHASE',409);if(listing.data_sha256!==input.offer_sha256)throw error('STOCK_OFFER_CHANGED',412);
  const [existing]=await tx.execute('SELECT order_id FROM stock_purchases WHERE buyer_party_id=? AND listing_id=?',[input.party_id,listing.id]);for(const e of existing){const prior=await load(tx,e.order_id,'ORDER');if(!['CANCELLED','REFUNDED'].includes(prior.current_status))throw error('STOCK_ORDER_ALREADY_EXISTS',409);}
  const d=listing.data;if(input.channel==='APPLE'&&!d.apple_product_id)throw error('STOCK_APPLE_PRODUCT_NOT_READY',409);
  const rule=await one(tx,"SELECT id FROM governance_rules WHERE id=? AND current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) FOR SHARE",[d.rule_id]);if(!rule)throw error('RULE_NOT_EFFECTIVE',409);

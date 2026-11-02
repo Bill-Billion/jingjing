@@ -14,14 +14,15 @@ async function video(tx,key,seller){await require('../privacy/restrictions').ass
 async function sellerAdmission(tx,p){const [rows]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='HALO' FOR SHARE",[p.id]);return require('../artists/commerce-admission').stockStatus(p,rows.map(A.checked),await A.now(tx));}
 async function requireAdmission(tx,p){const status=await sellerAdmission(tx,p);if(!status.eligible)throw error(status.blocking_reasons[0],409);}
 async function validateRights(tx,r,a,{newSale=true}={}){if(r.id)await require('../privacy/restrictions').assertUnrestricted(tx,'STOCK_LISTING',r.id);
- const sellerParty=await A.activeParty(tx,r.seller_party_id);const at=await A.now(tx),snap=[];
+ const sellerParty=await A.activeParty(tx,r.seller_party_id);const at=await A.now(tx),snap=[],lic=P.license(r.data.spec.specification);P.active(lic,at);
  const seller=await A.person(tx,r.data.seller_person_id);require('../artists/policy').adult(seller,at);
  await A.authorize(tx,a||{id:r.created_by},seller,r.seller_party_id,'SUBMIT_LISTING');
  const [halos]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='HALO' AND current_status='APPROVED' FOR SHARE",[seller.id]);
  if(!halos.map(A.checked).some(h=>h.data.level===1&&h.data.valid_until>at))throw error('STOCK_L1_REQUIRED',409);
  if(newSale)await requireAdmission(tx,seller);
  for(const x of r.data.participants){const p=await A.person(tx,x.person_id);require('../artists/policy').adult(p,at);if(newSale&&p.id!==seller.id)await requireAdmission(tx,p);await A.avatar(tx,x.avatar_id,p);if(sellerParty.kind==='ORGANIZATION')await A.authorize(tx,a||{id:r.created_by},p,r.seller_party_id,'SUBMIT_LISTING');
-  const c=await A.load(tx,x.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==x.avatar_id||c.current_status!=='APPROVED'||c.data.grantee_party_id!==r.seller_party_id||!['STOCK_LICENSE','PUBLIC_DISPLAY'].every(v=>c.data.purposes.includes(v))||!c.data.territories.includes('WORLDWIDE')||!require('../artists/policy').active(c.data,at))throw error('STOCK_SALE_CONSENT_REQUIRED',409);
+  const c=await A.load(tx,x.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==x.avatar_id||c.current_status!=='APPROVED'||c.data.grantee_party_id!==r.seller_party_id||!['STOCK_LICENSE','PUBLIC_DISPLAY'].every(v=>c.data.purposes.includes(v))||!c.data.territories.some(t=>t==='WORLDWIDE'||t===lic.territory)||!require('../artists/policy').active(c.data,at))throw error('STOCK_SALE_CONSENT_REQUIRED',409);
+  P.coversConsent(lic,c.data);
   snap.push({person_id:p.id,avatar_id:x.avatar_id,consent_id:c.id,content_sha256:c.content_sha256});
  }
  if(r.data.rights_snapshot&&digest(snap)!==digest(r.data.rights_snapshot))throw error('STOCK_RIGHTS_CHANGED',409);
@@ -32,10 +33,10 @@ async function validateRights(tx,r,a,{newSale=true}={}){if(r.id)await require('.
  if(r.data.files&&(full.content_sha256!==r.data.files.full_sha256||preview.content_sha256!==r.data.files.preview_sha256))throw error('STORED_CONTENT_MISMATCH',503);
  return {rights_snapshot:snap,files:{full_sha256:full.content_sha256,preview_sha256:preview.content_sha256}};
 }
-async function listed(tx,key,options){const r=await listing(tx,key);if(r.current_status!=='LISTED')throw error('STOCK_NOT_LISTED',409);if(r.data.sales_publication_id)await require('./sales-publications').binding(tx,r.seller_party_id,r.data.spec_id,r.data.rule_id,r.data.sales_publication_id);await validateRights(tx,r,null,options);return r;}
+async function listed(tx,key,options){const r=await listing(tx,key);if(r.current_status!=='LISTED')throw error('STOCK_NOT_LISTED',409);if(P.commercial(r.data.spec.specification.stock_license)&&process.env.STOCK_COMMERCIAL_LICENSE_ENABLED!=='true')throw error('STOCK_COMMERCIAL_NOT_ENABLED',409);if(r.data.sales_publication_id)await require('./sales-publications').binding(tx,r.seller_party_id,r.data.spec_id,r.data.rule_id,r.data.sales_publication_id);await validateRights(tx,r,null,options);return r;}
 function publicDTO(r){return {id:r.id,seller_party_id:r.seller_party_id,title:r.data.title,description:r.data.description,city:r.data.city,person_ids:r.data.participants.map(x=>x.person_id),unit_minor:r.data.spec.unit_minor,currency:'CNY',license:P.license(r.data.spec.specification),object_version:r.object_version,offer_sha256:r.data_sha256};}
 async function bind(tx,order,r){const data={status:'AWAITING_PAYMENT',seller_admission_policy:require('../artists/commerce-admission').POLICY,listing_snapshot:r.data,offer_sha256:r.data_sha256,license:P.license(r.data.spec.specification),granted_at:null,notification_event_id:null,viewed_at:null,observed_rights_epoch:null,receipt_at:null,deadline_at:null,job_id:null,accepted_at:null,acceptance_method:null,cases:[],current_case_id:null};await tx.execute('INSERT INTO stock_purchases(order_id,listing_id,buyer_party_id,data_json,data_sha256) VALUES (?,?,?,?,?)',[order.id,r.id,order.buyer_party_id,JSON.stringify(data),digest(data)]);}
-async function paymentAllowed(tx,order){if(!order.data.quote.stock_video)return;if(Date.parse(order.data.quote.expires_at)<=Date.parse(await A.now(tx)))throw error('STOCK_CHECKOUT_EXPIRED',409);const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR SHARE',[order.id]));await listed(tx,order.data.quote.stock_video.listing_id,{newSale:p.data.seller_admission_policy===require('../artists/commerce-admission').POLICY});if(p.data.current_case_id)throw error('STOCK_AFTERCARE_PENDING',409);}
+async function paymentAllowed(tx,order){if(!order.data.quote.stock_video)return;if(Date.parse(order.data.quote.expires_at)<=Date.parse(await A.now(tx)))throw error('STOCK_CHECKOUT_EXPIRED',409);const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR SHARE',[order.id]));await listed(tx,order.data.quote.stock_video.listing_id,{newSale:p.data.seller_admission_policy===require('../artists/commerce-admission').POLICY});P.active(p.data.license,await A.now(tx));await currentPurchaseConsent(tx,order,p);if(p.data.current_case_id)throw error('STOCK_AFTERCARE_PENDING',409);}
 async function financial(tx,order){
  if(!order.data.quote.stock_video)return;const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR UPDATE',[order.id]));let d={...p.data};
  if(order.data.financial.refunded_minor>0){d.status='REVOKED';d.deadline_at=null;d.job_id=null;}
@@ -46,7 +47,7 @@ async function financial(tx,order){
  const next=await save(tx,null,p,d,event);if(issued){d.notification_event_id=await audit(tx,null,next,'STOCK_DELIVERY_AVAILABLE',true);await tx.execute('UPDATE stock_purchases SET data_json=?,data_sha256=? WHERE order_id=?',[JSON.stringify(d),digest(d),p.order_id]);}
 }
 async function refundAllowed(tx,order,allocations){if(!order.data.quote.stock_video)return;const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR SHARE',[order.id]));if(allocations.length!==1||allocations[0].line_id!=='stock'||allocations[0].amount_minor!==order.data.quote.total_minor)throw error('STOCK_FULL_REFUND_REQUIRED',409);if(p.data.granted_at&&!p.data.cases.some(c=>c.resolution?.decision==='REFUND'))throw error('STOCK_REFUND_REVIEW_REQUIRED',409);}
-async function usable(tx,order,p){await require('../privacy/restrictions').assertUnrestricted(tx,'STOCK_LISTING',p.listing_id);await currentPurchaseConsent(tx,order,p);if(order.current_status!=='PAID'||p.data.status!=='ACTIVE'||p.data.current_case_id)throw error('STOCK_LICENSE_NOT_ACTIVE',409);const r=await listing(tx,p.listing_id);if(r.data.rights_hold===true)throw error('STOCK_RIGHTS_HOLD',409);const file=await video(tx,p.data.listing_snapshot.file_id,order.merchant_party_id);if(file.content_sha256!==p.data.listing_snapshot.files.full_sha256)throw error('STORED_CONTENT_MISMATCH',503);return file;}
+async function usable(tx,order,p){await require('../privacy/restrictions').assertUnrestricted(tx,'STOCK_LISTING',p.listing_id);await currentPurchaseConsent(tx,order,p);P.active(p.data.license,await A.now(tx));if(order.current_status!=='PAID'||p.data.status!=='ACTIVE'||p.data.current_case_id)throw error('STOCK_LICENSE_NOT_ACTIVE',409);const r=await listing(tx,p.listing_id);if(r.data.rights_hold===true)throw error('STOCK_RIGHTS_HOLD',409);const file=await video(tx,p.data.listing_snapshot.file_id,order.merchant_party_id);if(file.content_sha256!==p.data.listing_snapshot.files.full_sha256)throw error('STORED_CONTENT_MISMATCH',503);return file;}
 // Further downloads recheck the consent captured by the purchase, without
 // rewriting the purchased licence, issuing refunds, or applying new seller tiers.
 async function currentPurchaseConsent(tx,order,p){
@@ -55,6 +56,7 @@ async function currentPurchaseConsent(tx,order,p){
   const person=await A.person(tx,x.person_id);await A.activeParty(tx,person.owner_party_id);
   const c=await A.load(tx,x.consent_id,'CONSENT');
   if(c.person_id!==person.id||c.avatar_id!==x.avatar_id||c.current_status!=='APPROVED'||c.data.grantee_party_id!==order.merchant_party_id||!['STOCK_LICENSE','PUBLIC_DISPLAY'].every(v=>c.data.purposes.includes(v))||!require('../artists/policy').active(c.data,at))throw error('STOCK_SALE_CONSENT_REQUIRED',409);
+  P.coversConsent(p.data.license,c.data);
  }
 }
 module.exports={sellerAdmission,requireAdmission,checked,listing,purchase,listingDTO,audit,save,command,reviewer,video,validateRights,listed,publicDTO,bind,paymentAllowed,financial,refundAllowed,usable};

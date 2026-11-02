@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.20-rc.1
+  version: 0.31.21-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -45472,6 +45472,7 @@ components:
             - NEW_GENERATION
             - COOPERATION_SUBMISSION
             - AUDITION_SAMPLES
+            - STOCK_COMMERCIAL
           minItems: 1
           maxItems: 4
         grantee_party_id:
@@ -45502,6 +45503,16 @@ components:
             format: uuid
           minItems: 1
           maxItems: 30
+        stock_commercial_uses:
+          type: array
+          items:
+            enum:
+            - BRAND_PROMOTION
+            - COMMERCIAL_ADVERTISING
+            - CORPORATE_DISPLAY
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
       required:
       - features
       - purposes
@@ -45511,6 +45522,19 @@ components:
       - valid_until
       - terms
       - evidence_asset_ids
+      allOf:
+      - if:
+          properties:
+            purposes:
+              contains:
+                const: STOCK_COMMERCIAL
+        then:
+          required:
+          - stock_commercial_uses
+        else:
+          not:
+            required:
+            - stock_commercial_uses
     ArtistDelegationInput:
       type: object
       additionalProperties: false
@@ -45990,6 +46014,7 @@ components:
             - NEW_GENERATION
             - COOPERATION_SUBMISSION
             - AUDITION_SAMPLES
+            - STOCK_COMMERCIAL
           minItems: 1
           maxItems: 4
         grantee_party_id:
@@ -46125,6 +46150,16 @@ components:
             - previous_review
           minItems: 0
           maxItems: 100
+        stock_commercial_uses:
+          type: array
+          items:
+            enum:
+            - BRAND_PROMOTION
+            - COMMERCIAL_ADVERTISING
+            - CORPORATE_DISPLAY
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
       required:
       - features
       - purposes
@@ -46137,6 +46172,19 @@ components:
       - declared_by
       - declared_at
       - review
+      allOf:
+      - if:
+          properties:
+            purposes:
+              contains:
+                const: STOCK_COMMERCIAL
+        then:
+          required:
+          - stock_commercial_uses
+        else:
+          not:
+            required:
+            - stock_commercial_uses
     ArtistConsentRecord:
       type: object
       additionalProperties: false
@@ -49092,6 +49140,125 @@ components:
       - commercial_watermark_verified
       - ai_label_verified
 
+    StockCommercialTerms:
+      type: object
+      additionalProperties: false
+      properties:
+        scope:
+          const: COMMERCIAL_LIMITED
+        exclusive:
+          const: false
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 100
+        duration:
+          const: FIXED_TERM
+        personal_social_sharing:
+          const: false
+        acceptance_hours:
+          type: integer
+          minimum: 1
+          maximum: 720
+        aftercare_terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        commercial_uses:
+          type: array
+          items:
+            enum:
+            - BRAND_PROMOTION
+            - COMMERCIAL_ADVERTISING
+            - CORPORATE_DISPLAY
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+      required:
+      - scope
+      - exclusive
+      - territory
+      - duration
+      - personal_social_sharing
+      - acceptance_hours
+      - aftercare_terms
+      - commercial_uses
+      - valid_from
+      - valid_until
+    StockCommercialLicense:
+      type: object
+      additionalProperties: false
+      properties:
+        scope:
+          const: COMMERCIAL_LIMITED
+        exclusive:
+          const: false
+        territory:
+          type: string
+          minLength: 1
+          maxLength: 100
+        duration:
+          const: FIXED_TERM
+        personal_social_sharing:
+          const: false
+        acceptance_hours:
+          type: integer
+          minimum: 1
+          maximum: 720
+        aftercare_terms:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        commercial_uses:
+          type: array
+          items:
+            enum:
+            - BRAND_PROMOTION
+            - COMMERCIAL_ADVERTISING
+            - CORPORATE_DISPLAY
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        limited_to_buyer:
+          const: true
+        excluded:
+          type: array
+          items:
+            enum:
+            - COMMERCIAL_ADVERTISING
+            - ADAPTATION
+            - DISTRIBUTION
+            - VOICE_SEPARATELY
+            - AI_REGENERATION
+            - SOURCE_OR_MODEL_FILES
+            - NEW_AVATAR_CONTENT
+            - EXCLUSIVE_BUYOUT
+          uniqueItems: true
+      required:
+      - scope
+      - exclusive
+      - territory
+      - duration
+      - personal_social_sharing
+      - acceptance_hours
+      - aftercare_terms
+      - commercial_uses
+      - valid_from
+      - valid_until
+      - limited_to_buyer
+      - excluded
     StockSpecification:
       type: object
       additionalProperties: false
@@ -49101,35 +49268,37 @@ components:
           minLength: 1
           maxLength: 128
         stock_license:
-          type: object
-          additionalProperties: false
-          properties:
-            scope:
-              const: PERSONAL_NONCOMMERCIAL
-            exclusive:
-              const: false
-            territory:
-              const: WORLDWIDE
-            duration:
-              const: PERPETUAL
-            personal_social_sharing:
-              const: true
-            acceptance_hours:
-              type: integer
-              minimum: 1
-              maximum: 720
-            aftercare_terms:
-              type: string
-              minLength: 1
-              maxLength: 8000
-          required:
-          - scope
-          - exclusive
-          - territory
-          - duration
-          - personal_social_sharing
-          - acceptance_hours
-          - aftercare_terms
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              scope:
+                const: PERSONAL_NONCOMMERCIAL
+              exclusive:
+                const: false
+              territory:
+                const: WORLDWIDE
+              duration:
+                const: PERPETUAL
+              personal_social_sharing:
+                const: true
+              acceptance_hours:
+                type: integer
+                minimum: 1
+                maximum: 720
+              aftercare_terms:
+                type: string
+                minLength: 1
+                maxLength: 8000
+            required:
+            - scope
+            - exclusive
+            - territory
+            - duration
+            - personal_social_sharing
+            - acceptance_hours
+            - aftercare_terms
+          - $ref: '#/components/schemas/StockCommercialTerms'
         terms:
           type: string
           minLength: 1
@@ -49139,49 +49308,51 @@ components:
       - stock_license
       - terms
     StockLicense:
-      type: object
-      additionalProperties: false
-      properties:
-        scope:
-          const: PERSONAL_NONCOMMERCIAL
-        exclusive:
-          const: false
-        territory:
-          const: WORLDWIDE
-        duration:
-          const: PERPETUAL
-        personal_social_sharing:
-          const: true
-        acceptance_hours:
-          type: integer
-          minimum: 1
-          maximum: 720
-        aftercare_terms:
-          type: string
-          minLength: 1
-          maxLength: 8000
-        limited_to_buyer:
-          const: true
-        excluded:
-          const:
-          - COMMERCIAL_ADVERTISING
-          - ADAPTATION
-          - DISTRIBUTION
-          - VOICE_SEPARATELY
-          - AI_REGENERATION
-          - SOURCE_OR_MODEL_FILES
-          - NEW_AVATAR_CONTENT
-          - EXCLUSIVE_BUYOUT
-      required:
-      - scope
-      - exclusive
-      - territory
-      - duration
-      - personal_social_sharing
-      - acceptance_hours
-      - aftercare_terms
-      - limited_to_buyer
-      - excluded
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          scope:
+            const: PERSONAL_NONCOMMERCIAL
+          exclusive:
+            const: false
+          territory:
+            const: WORLDWIDE
+          duration:
+            const: PERPETUAL
+          personal_social_sharing:
+            const: true
+          acceptance_hours:
+            type: integer
+            minimum: 1
+            maximum: 720
+          aftercare_terms:
+            type: string
+            minLength: 1
+            maxLength: 8000
+          limited_to_buyer:
+            const: true
+          excluded:
+            const:
+            - COMMERCIAL_ADVERTISING
+            - ADAPTATION
+            - DISTRIBUTION
+            - VOICE_SEPARATELY
+            - AI_REGENERATION
+            - SOURCE_OR_MODEL_FILES
+            - NEW_AVATAR_CONTENT
+            - EXCLUSIVE_BUYOUT
+        required:
+        - scope
+        - exclusive
+        - territory
+        - duration
+        - personal_social_sharing
+        - acceptance_hours
+        - aftercare_terms
+        - limited_to_buyer
+        - excluded
+      - $ref: '#/components/schemas/StockCommercialLicense'
     StockTradeSnapshot:
       type: object
       additionalProperties: false
@@ -49439,6 +49610,8 @@ components:
                             source_sha256:
                               type: string
                               pattern: ^[a-f0-9]{64}$
+                            commercial_use_verified:
+                              const: true
                           required:
                           - rights_verified
                           - all_people_authorized
@@ -49502,6 +49675,8 @@ components:
                             source_sha256:
                               type: string
                               pattern: ^[a-f0-9]{64}$
+                            commercial_use_verified:
+                              const: true
                           required:
                           - rights_verified
                           - all_people_authorized
@@ -49987,6 +50162,8 @@ components:
               source_sha256:
                 type: string
                 pattern: ^[a-f0-9]{64}$
+              commercial_use_verified:
+                const: true
             required:
             - rights_verified
             - all_people_authorized
@@ -57996,6 +58173,8 @@ components:
           minimum: 1
         currency:
           const: CNY
+        license:
+          $ref: '#/components/schemas/StockLicense'
       required:
       - id
       - spec_id
@@ -58036,6 +58215,24 @@ components:
         valid_until:
           type: string
           format: date-time
+        territories:
+          type: array
+          items:
+            type: string
+        purposes:
+          type: array
+          items:
+            type: string
+        stock_commercial_uses:
+          type: array
+          items:
+            enum:
+            - BRAND_PROMOTION
+            - COMMERCIAL_ADVERTISING
+            - CORPORATE_DISPLAY
+          minItems: 0
+          maxItems: 3
+          uniqueItems: true
       required:
       - person_id
       - person_name

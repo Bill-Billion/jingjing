@@ -1,3 +1,11 @@
+## 0.31.21-rc.1 — 独立商用视频许可与隐私工作日
+
+复用现货接口，StockSpecification/StockLicense新增COMMERCIAL_LIMITED分支；个人非商用原结构保留。商用固定日期、地域和用途不可缺；ArtistConsent新增STOCK_COMMERCIAL及stock_commercial_uses，权利审核须明确commercial_use_verified。上架选项增加许可/授权范围信息，机构购买须有已审核BRAND_CLIENT能力及成年实名负责人。
+
+STOCK_COMMERCIAL_LICENSE_ENABLED默认false；开启前同步App/网页，不能让旧客户端把新范围按个人许可展示。已购订单按冻结范围读取，关闭新售开关不取消已购权利；退款、撤权、到期仍阻止受控下载。未增加改编、转售、再许可、发行或模型训练授权。无新路径/迁移，仍0193。
+
+隐私申请从已生效privacy.working-calendar规则计算15工作日回复日期，冻结规则编号；缺日历/覆盖不足明确为估算。历史日期不被新版日历改写。这不是“注销已完成”，核验后实际执行期限另有待补任务。
+
 2026-11-02 0.31.18-rc.1：补新版分类认证材料、原申请补件/撤回、新审核费不退、免费基础创建/永久免费托管接口。新增ARTIST_CONTRACT_POLICY显式切换，新旧订单分开，数据库仍0192；页面和真实服务另验收。
 
 2026-11-02 0.31.17-rc.1：新增getStockSellerEligibility；StockResponse新增资格返回，qualification最低级别兼容1/2但新记录保存2，购买新增可选seller_admission_policy。试镜检查人工认证生效区间；无数据库迁移。
