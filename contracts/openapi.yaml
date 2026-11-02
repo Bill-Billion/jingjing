@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.17-rc.1
+  version: 0.31.18-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -10047,7 +10047,7 @@ paths:
     post:
       operationId: requestArtistHalo
       summary: 申请认证且关联同一笔审核费用
-      description: 本侧后端隔离测试；双方尚未审阅合入。儿童实际处理按用户确认关闭。机构受托不改变所有权。所有修改须提供独立请求键；列表游标是记录编号，换主体后仍重新核权。
+      description: 本侧后端隔离测试；双方尚未审阅合入。儿童实际处理按用户确认关闭。机构受托不改变所有权。所有修改须提供独立请求键；列表游标是记录编号，换主体后仍重新核权。 新合同L2申请须有分类材料；补件沿用原服务，替换分类资料时保留旧版本，不能重复收费。
       tags:
       - artists
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -10117,6 +10117,8 @@ paths:
                   - type: string
                     format: uuid
                   - type: 'null'
+                certification_materials:
+                  $ref: '#/components/schemas/ArtistCertificationMaterials'
               required:
               - level
               - ownership_promise
@@ -10328,7 +10330,7 @@ paths:
     post:
       operationId: supplementArtistRecord
       summary: 补齐原审核申请的材料
-      description: 本侧后端隔离测试；双方尚未审阅合入。儿童实际处理按用户确认关闭。机构受托不改变所有权。所有修改须提供独立请求键；列表游标是记录编号，换主体后仍重新核权。
+      description: 本侧后端隔离测试；双方尚未审阅合入。儿童实际处理按用户确认关闭。机构受托不改变所有权。所有修改须提供独立请求键；列表游标是记录编号，换主体后仍重新核权。 新合同L2申请须有分类材料；补件沿用原服务，替换分类资料时保留旧版本，不能重复收费。
       tags:
       - artists
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -10396,6 +10398,8 @@ paths:
                   type: string
                   minLength: 1
                   maxLength: 2000
+                certification_materials:
+                  $ref: '#/components/schemas/ArtistCertificationMaterials'
               required:
               - evidence_asset_ids
               - note
@@ -10473,6 +10477,74 @@ paths:
               required:
               - evidence_asset_ids
               - reason
+  /api/v1/artists/people/{person_id}/free-services:
+    post:
+      operationId: requestFreeArtistService
+      summary: 申请新版免费基础创建或永久免费托管
+      description: 须ARTIST_CONTRACT_POLICY=CONTRACT_20261029、有效平台主体及成年人本人确认。同一形象同类进行中或已交付免费服务重复申请返回原记录。免费创建为待人工交付，托管为免费权益，不创建现金订单、不扣晶钻、不表示真实云或模型已启用。旧收费单独保留。
+      tags:
+      - artists
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: path
+        name: person_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistRecordResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                avatar_id:
+                  type: string
+                  format: uuid
+                kind:
+                  type: string
+                  enum:
+                  - AVATAR_CREATION
+                  - AVATAR_HOSTING
+                rule_version:
+                  const: CONTRACT_20261029
+              required:
+              - avatar_id
+              - kind
+              - rule_version
   /api/v1/artists/people/{person_id}/services:
     post:
       operationId: requestArtistService
@@ -45229,6 +45301,43 @@ components:
       - voice_version_id
       - audition_public
       - preview_asset_ids
+    ArtistCertificationMaterials:
+      type: object
+      additionalProperties: false
+      properties:
+        model_card_asset_id:
+          type: string
+          format: uuid
+        lifestyle_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+        full_body_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 10
+          uniqueItems: true
+        personal_introduction:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        resume:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - model_card_asset_id
+      - lifestyle_asset_ids
+      - full_body_asset_ids
+      - personal_introduction
+      - resume
     ArtistServiceSpecification:
       type: object
       additionalProperties: false
@@ -45257,6 +45366,8 @@ components:
               - PERSON_FIRST
               - AVATAR_MONTH
               - HALO_APPLICATION
+              - AVATAR
+              - AVATAR_PERPETUAL
             rule_version:
               type: string
               minLength: 1
@@ -45283,7 +45394,11 @@ components:
                 - 3
               - type: 'null'
             failure_policy:
-              const: REFUND_UNDELIVERED
+              type: string
+              enum:
+              - REFUND_UNDELIVERED
+              - REVIEW_FEE_NON_REFUNDABLE
+              - NO_CASH_REFUND
           required:
           - kind
           - unit
@@ -46840,6 +46955,10 @@ components:
                   - reviewed_by
                   - reviewed_at
                 - type: 'null'
+              certification_materials:
+                $ref: '#/components/schemas/ArtistCertificationMaterials'
+              previous_certification_materials:
+                $ref: '#/components/schemas/ArtistCertificationMaterials'
             required:
             - evidence_asset_ids
             - note
@@ -46847,6 +46966,8 @@ components:
             - previous_review
           minItems: 0
           maxItems: 100
+        certification_materials:
+          $ref: '#/components/schemas/ArtistCertificationMaterials'
       required:
       - level
       - service_id
@@ -46888,6 +47009,7 @@ components:
           - APPROVED
           - REJECTED
           - NEEDS_MATERIAL
+          - WITHDRAWN
         object_version:
           type: integer
           minimum: 1
@@ -47095,13 +47217,15 @@ components:
           - AVATAR_HOSTING
           - HALO_REVIEW
         spec_id:
-          type: string
-          format: uuid
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
         specification:
           $ref: '#/components/schemas/ArtistServiceSpecification'
         price_minor:
           type: integer
-          minimum: 1
+          minimum: 0
         currency:
           const: CNY
         renewal_reminder:
@@ -47161,6 +47285,7 @@ components:
                 enum:
                 - APPROVE
                 - REJECT
+                - WITHDRAW
               at:
                 type: string
                 format: date-time
@@ -47178,8 +47303,12 @@ components:
                 type: string
                 format: date-time
               valid_until:
-                type: string
-                format: date-time
+                anyOf:
+                - type: string
+                  format: date-time
+                - type: 'null'
+              perpetual:
+                const: true
             required:
             - valid_from
             - valid_until
@@ -47324,6 +47453,8 @@ components:
             - previous_review
           minItems: 0
           maxItems: 100
+        payment_requirement:
+          const: NONE
       required:
       - kind
       - spec_id
@@ -47336,6 +47467,30 @@ components:
       - hosting_period
       - refund
       - attempts
+      allOf:
+      - if:
+          required:
+          - payment_requirement
+        then:
+          properties:
+            spec_id:
+              type: 'null'
+            price_minor:
+              const: 0
+            kind:
+              enum:
+              - AVATAR_CREATION
+              - AVATAR_HOSTING
+            refund:
+              type: 'null'
+        else:
+          properties:
+            spec_id:
+              type: string
+              format: uuid
+            price_minor:
+              type: integer
+              minimum: 1
     ArtistServiceRecord:
       type: object
       additionalProperties: false
@@ -47370,6 +47525,7 @@ components:
           - CANCELLED
           - REFUND_REQUIRED
           - REFUNDED
+          - FAILED
         object_version:
           type: integer
           minimum: 1
@@ -47434,6 +47590,7 @@ components:
           - CANCELLED
           - REFUND_REQUIRED
           - REFUNDED
+          - FAILED
         object_version:
           type: integer
           minimum: 1
@@ -47764,6 +47921,37 @@ components:
                 minLength: 1
                 maxLength: 128
               - type: 'null'
+            contract_policy:
+              type: string
+              enum:
+              - LEGACY_COMPATIBLE
+              - CONTRACT_20261029
+            free_services:
+              type: array
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  kind:
+                    type: string
+                    enum:
+                    - AVATAR_CREATION
+                    - AVATAR_HOSTING
+                  price_minor:
+                    const: 0
+                  currency:
+                    const: CNY
+                  payment_requirement:
+                    const: NONE
+                  specification:
+                    $ref: '#/components/schemas/ArtistServiceSpecification'
+                required:
+                - kind
+                - price_minor
+                - currency
+                - payment_requirement
+                - specification
           required:
           - items
           - current_status

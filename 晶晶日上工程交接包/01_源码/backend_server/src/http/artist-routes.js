@@ -6,8 +6,8 @@ const {createArtistAssetsRepository}=require('../modules/artists/assets');
 const {createArtistIdentityProvider}=require('../modules/artists/identity-provider');
 const {createSupplyAssets}=require('../modules/works/assets');
 function createArtistRouter({db,resolvePrincipal,env={},storageFactory,identityProviderFactory}){
- const router=express.Router(),repo=createArtistRepository(db,{resolvePrincipal}),assets=createSupplyAssets({db,repository:createArtistAssetsRepository(db,{resolvePrincipal}),env,storageFactory}),identity=identityProviderFactory?identityProviderFactory():createArtistIdentityProvider(db,env);
- const services=require('../modules/artists/services').createArtistServices(db,{resolvePrincipal,merchantPartyId:env.ARTIST_PLATFORM_MERCHANT_PARTY_ID||null});
+ const router=express.Router(),repo=createArtistRepository(db,{resolvePrincipal,contractPolicy:env.ARTIST_CONTRACT_POLICY}),assets=createSupplyAssets({db,repository:createArtistAssetsRepository(db,{resolvePrincipal}),env,storageFactory}),identity=identityProviderFactory?identityProviderFactory():createArtistIdentityProvider(db,env);
+ const services=require('../modules/artists/services').createArtistServices(db,{resolvePrincipal,merchantPartyId:env.ARTIST_PLATFORM_MERCHANT_PARTY_ID||null,contractPolicy:env.ARTIST_CONTRACT_POLICY});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const value=req.get('X-Acting-Party');if(!value&&required)throw error('ACTING_PARTY_REQUIRED',400);req.actingParty=value?id(value):null;return req.actingParty;};
  const operator=req=>{if(req.get('X-Acting-Party'))throw error('ACTING_PARTY_NOT_ALLOWED',400);req.actingParty=null;};
@@ -20,7 +20,7 @@ function createArtistRouter({db,resolvePrincipal,env={},storageFactory,identityP
 
  router.get('/reviews',wrap(async(req,res)=>{const p=page(req,['kind']);operator(req);reply(req,res,await repo.inbox(req,{...p,kind:req.query.kind}));}));
  router.get('/people/:person_id/records',wrap(async(req,res)=>{const p=page(req,['kind']);reply(req,res,await repo.listRecords(req,{...p,kind:req.query.kind,person_id:person(req),party_id:acting(req)}));}));
- router.post('/people/:person_id/records/:record_id/supplements',wrap(async(req,res)=>reply(req,res,await repo.supplement(req,{...body(req,['evidence_asset_ids','note']),person_id:person(req),party_id:acting(req),record_id:id(req.params.record_id),expected_version:expected(req),operation_key:key(req)}))));
+ router.post('/people/:person_id/records/:record_id/supplements',wrap(async(req,res)=>reply(req,res,await repo.supplement(req,{...body(req,['evidence_asset_ids','note','certification_materials']),person_id:person(req),party_id:acting(req),record_id:id(req.params.record_id),expected_version:expected(req),operation_key:key(req)}))));
  router.post('/people/:person_id/records/:record_id/appeals',wrap(async(req,res)=>reply(req,res,await repo.appeal(req,{...body(req,['evidence_asset_ids','reason']),person_id:person(req),party_id:acting(req),record_id:id(req.params.record_id),operation_key:key(req)}))));
  const reviewedAssets=createSupplyAssets({db,repository:{assetAccess:async(req,asset_id)=>repo.reviewAsset(req,{person_id:person(req),record_id:id(req.params.record_id),asset_id})},env,storageFactory});
  const publicAssets=createSupplyAssets({db,repository:{assetAccess:async(req,asset_id)=>repo.publicAsset(req,{listing_id:id(req.params.listing_id),asset_id})},env,storageFactory});
@@ -28,6 +28,7 @@ function createArtistRouter({db,resolvePrincipal,env={},storageFactory,identityP
  router.get('/catalog/:listing_id/media',wrap(async(req,res)=>{shape(req.query,[]);operator(req);res.set('Cache-Control','no-store');reply(req,res,await repo.publicMedia(req,{listing_id:id(req.params.listing_id)}));}));
  router.get('/catalog/:listing_id',wrap(async(req,res)=>{shape(req.query,[]);operator(req);reply(req,res,await repo.publicDetail(req,{listing_id:id(req.params.listing_id)}));}));
  router.get('/services',wrap(async(req,res)=>{shape(req.query,[]);operator(req);reply(req,res,{identity:await identity.readiness(),long_lived_model:{current_status:'NOT_ENABLED',reason_code:'PROVIDER_NOT_IMPLEMENTED'},offers:await services.offers(req)});}));
+ router.post('/people/:person_id/free-services',wrap(async(req,res)=>reply(req,res,await services.requestFree(req,{...body(req,['avatar_id','kind','rule_version']),person_id:person(req),party_id:acting(req),operation_key:key(req)}))));
  router.post('/people/:person_id/services',wrap(async(req,res)=>reply(req,res,await services.request(req,{...body(req,['avatar_id','spec_id','renewal_reminder']),person_id:person(req),party_id:acting(req),operation_key:key(req)}))));
  router.get('/people/:person_id/services/:record_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await services.get(req,{person_id:person(req),party_id:acting(req),record_id:id(req.params.record_id)}));}));
  for(const [path,method,fields,match] of [['sync','sync',[],false],['cancel','cancel',['reason'],true],['reminder','reminder',['enabled'],true]])router.post('/people/:person_id/services/:record_id/'+path,wrap(async(req,res)=>reply(req,res,await services[method](req,{...body(req,fields),person_id:person(req),party_id:acting(req),record_id:id(req.params.record_id),...(match?{expected_version:expected(req)}:{}),operation_key:key(req)}))));
@@ -37,7 +38,7 @@ function createArtistRouter({db,resolvePrincipal,env={},storageFactory,identityP
  router.get('/people',wrap(async(req,res)=>reply(req,res,await repo.list(req,{...page(req),party_id:acting(req)}))));
  router.get('/people/:person_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.get(req,{person_id:person(req),party_id:acting(req)}));}));
  router.get('/people/:person_id/records/:record_id',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.getRecord(req,{person_id:person(req),record_id:id(req.params.record_id),party_id:acting(req,false)}));}));
- for(const [path,method,fields] of [['avatars','createAvatar',['display_name']],['consents','declareConsent',['avatar_id','consent']],['delegations','createDelegation',['delegation']],['variants','createVariant',['avatar_id','kind','variant']],['halos','requestHalo',['level','ownership_promise','evidence_asset_ids','service_id']],['listings','submitListing',['avatar_id','listing']]]){
+ for(const [path,method,fields] of [['avatars','createAvatar',['display_name']],['consents','declareConsent',['avatar_id','consent']],['delegations','createDelegation',['delegation']],['variants','createVariant',['avatar_id','kind','variant']],['halos','requestHalo',['level','ownership_promise','evidence_asset_ids','service_id','certification_materials']],['listings','submitListing',['avatar_id','listing']]]){
   router.post('/people/:person_id/'+path,wrap(async(req,res)=>reply(req,res,await repo[method](req,{...body(req,fields),person_id:person(req),party_id:acting(req),operation_key:key(req)}))));
  }
  router.post('/people/:person_id/records/:record_id/reviews',wrap(async(req,res)=>{const input=body(req,['decision','reason']);operator(req);reply(req,res,await repo.review(req,{...input,person_id:person(req),record_id:id(req.params.record_id),expected_version:expected(req),operation_key:key(req)}));}));
