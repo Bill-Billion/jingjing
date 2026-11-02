@@ -92,7 +92,7 @@ App `/ai-create` 现在进入 `CustomizationPage(createNew: true, initialCategor
 ## 主要代码定位
 
 - 身份恢复与权限指纹：`frontend_ops_workspace/src/stores/session.ts`（authority、loadParties、refreshSelected）。
-- 开票刷新与原请求恢复：`src/api/pendingWrites.ts`、`src/composables/useServiceContext.ts`（restoreWrite/resolvePending）、`src/views/InvoicesView.vue`（registerRecovery）。
+- 开票刷新与原请求恢复：`src/api/pendingWrites.ts`、`src/composables/useServiceContext.ts`（restoreWrite/inspect）、`src/views/InvoicesView.vue`（enableRecovery）。
 - 401原路返回：`frontend_ops_workspace/src/App.vue`；工作台成员失效恢复：`src/views/WorkspaceView.vue`。
 - App有界身份刷新：`frontend_jingjingshangri_app/lib/account/account_session.dart`和`account_page.dart`；失败/成功回归：`test/account/account_widgets_test.dart`及`session_recovery_test.dart`。
 - 双端新付款和验收：网页`src/api/modules/customizationDelivery.ts`、`TradeSpecForm.vue`、`TradeRecordPanel.vue`、`DeliveryView.vue`；App `lib/trade/trade_models.dart`及`lib/production/fulfillment_models.dart`、`fulfillment_pages.dart`、`production_pages.dart`。
