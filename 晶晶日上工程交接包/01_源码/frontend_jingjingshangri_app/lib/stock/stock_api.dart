@@ -64,6 +64,12 @@ class StockApi extends V5Api {
         .raw;
   }
 
+  Future<StockEligibility> sellerEligibility(String person) {
+    final party = owner();
+    return get('/seller-eligibility', (d) => StockEligibility(d, person, party),
+        query: {'person_id': key(person)});
+  }
+
   Future<List<Map<String, dynamic>>> salesPublications() =>
       _options('/sales-publications');
   Future<List<Map<String, dynamic>>> participantOptions(String personId) =>

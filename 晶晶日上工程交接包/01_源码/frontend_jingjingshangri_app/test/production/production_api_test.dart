@@ -12,6 +12,73 @@ import 'production_fixtures.dart';
 const feedbackPath =
     '/api/v1/production/versions/$productionVersionId/feedback';
 void main() {
+  Map<String, dynamic> receiptFeedback({String stage = 'SCRIPT'}) {
+    final r = productionData('FEEDBACK', stage: stage);
+    final d = r['data'] as Map<String, dynamic>;
+    d.addAll({
+      'decision': 'ACCEPT',
+      'checklist': {for (final k in productionCheckNames(stage)) k: true},
+      'acceptance_method': 'BUYER_EXPLICIT',
+      'change_kind': null,
+      'acceptance_receipt': <String, dynamic>{
+        'delivery_id': productionFileId,
+        'version_id': productionVersionId,
+        'notification_event_id': 26,
+        'view_observed_at': '2026-11-02T07:25:02.732Z',
+        'notified_at': null,
+        'started_at': null,
+        'deadline_at': null,
+        'job_id': null,
+        'buyer_account_id': r['created_by']
+      }
+    });
+    return r;
+  }
+
+  test('真实原生确认回包含验收凭据，确认成功清原请求且可继续同项目', () async {
+    final adapter = productionAdapter(
+        override: (r) => r.method == 'POST' && r.path == feedbackPath
+            ? envelope(receiptFeedback())
+            : null);
+    final session = await buyerSession(adapter), api = ProductionApi(session);
+    final result = await api.feedback(
+        ProductionRecord.parse(productionData('VERSION')),
+        ProductionRecord.parse(productionData('PROJECT')),
+        'ACCEPT',
+        '完整阅读当前脚本',
+        {'script_reviewed': true});
+    expect(result.projectId, productionProjectId);
+    expect(
+        result.data['acceptance_receipt']['version_id'], productionVersionId);
+    expect(api.pending(feedbackPath), isNull);
+  });
+  test('验收凭据按本版核对并兼容原无凭据记录，拒绝其他版本与错误工作日', () {
+    expect(ProductionRecord.parse(productionData('FEEDBACK')).kind, 'FEEDBACK');
+    final current = receiptFeedback();
+    expect(ProductionRecord.parse(current).kind, 'FEEDBACK');
+    current['data']['acceptance_receipt']['version_id'] = otherVersionId;
+    expect(() => ProductionRecord.parse(current), throwsA(isA<AccountError>()));
+    final finalVersion = receiptFeedback(stage: 'FINAL');
+    final receipt = finalVersion['data']['acceptance_receipt'];
+    receipt['notified_at'] = '2026-11-02T07:25:03.000Z';
+    receipt['started_at'] = receipt['notified_at'];
+    receipt['deadline_at'] = '2026-11-09T15:59:59.999Z';
+    receipt['job_id'] = productionFeedbackId;
+    receipt['deadline_basis'] = {
+      'mode': 'WORKING_DAYS',
+      'days': 5,
+      'timezone': 'Asia/Shanghai',
+      'calendar_version': 'synthetic-2026',
+      'calendar_sha256': 'a' * 64,
+      'received_date': '2026-11-02',
+      'deadline_date': '2026-11-09'
+    };
+    expect(ProductionRecord.parse(finalVersion).kind, 'FEEDBACK');
+    receipt['deadline_basis']['days'] = 7;
+    expect(() => ProductionRecord.parse(finalVersion),
+        throwsA(isA<AccountError>()));
+  });
+
   test('实际PROJECT VERSION FILE FEEDBACK DTO不依赖昵称、时间或动作字段', () {
     for (final kind in ['PROJECT', 'VERSION', 'FILE', 'FEEDBACK']) {
       final r = ProductionRecord.parse(productionData(kind));

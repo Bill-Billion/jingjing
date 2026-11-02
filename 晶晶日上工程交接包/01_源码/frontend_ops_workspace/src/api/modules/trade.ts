@@ -16,7 +16,7 @@ export type TradeKind = typeof tradeKinds[number]
 export const lineKinds = { LICENSE:'许可', PRODUCTION:'制作', OTHER:'其他明确服务' } as const
 export const triggers = { ORDER_ACCEPTED:'确认订单', SAMPLE_ACCEPTED:'当前样片版本验收', FINAL_ACCEPTED:'当前成片版本验收', CUSTOMIZATION_SCRIPT_CONFIRMED:'脚本／图纸确认后付中款40%', CUSTOMIZATION_INTERIM_CONFIRMED:'历史定制中间条件确认（补至累计90%）' } as const
 export const artistServiceKinds = { AVATAR_CREATION:'首次创建数字人档案', AVATAR_HOSTING:'数字人托管', HALO_REVIEW:'认证资料审核' } as const
-export interface ArtistServiceTerms { kind:keyof typeof artistServiceKinds; unit:'PERSON_FIRST'|'AVATAR_MONTH'|'HALO_APPLICATION'; rule_version:string; source_ref:string; retry_limit:number; hosting_months:number|null; halo_level:2|3|null; failure_policy:'REFUND_UNDELIVERED' }
+export interface ArtistServiceTerms { kind:keyof typeof artistServiceKinds; unit:'PERSON_FIRST'|'AVATAR_MONTH'|'HALO_APPLICATION'|'AVATAR'|'AVATAR_PERPETUAL'; rule_version:string; source_ref:string; retry_limit:number; hosting_months:number|null; halo_level:2|3|null; failure_policy:'REFUND_UNDELIVERED'|'REVIEW_FEE_NON_REFUNDABLE'|'NO_CASH_REFUND' }
 interface SpecificationBase { version:string; service_tier:string; deliverables:string[]; terms:string }
 export type FilmSpecification = SpecificationBase & {service?:never;sample_seconds:number;final_seconds:number;revision_limit:number;customization_delivery?:DeliveryTerms}
 export interface StockLicense {scope:'PERSONAL_NONCOMMERCIAL';exclusive:false;territory:'WORLDWIDE';duration:'PERPETUAL';personal_social_sharing:true;acceptance_hours:number;aftercare_terms:string}
@@ -63,7 +63,8 @@ const rows=(v:unknown,guard:(x:unknown)=>boolean,max=30)=>Array.isArray(v)&&v.le
 const unique=(v:unknown[],key:(x:unknown)=>unknown)=>new Set(v.map(key)).size===v.length
 const review=(v:unknown)=>v===null||obj(v)&&['APPROVED','REJECTED'].includes(String(v.decision))&&text(v.reason)&&validSupplyId(v.account_id)
 export function isArtistServiceTerms(v:unknown):v is ArtistServiceTerms {
- if(!obj(v)||Object.keys(v).length!==8||!Object.hasOwn(artistServiceKinds,String(v.kind))||!text(v.rule_version,128)||!text(v.source_ref,128)||!integer(v.retry_limit,0,100)||v.failure_policy!=='REFUND_UNDELIVERED')return false
+ if(!obj(v)||Object.keys(v).length!==8||!Object.hasOwn(artistServiceKinds,String(v.kind))||!text(v.rule_version,128)||!text(v.source_ref,128)||!integer(v.retry_limit,0,100)||!(v.failure_policy==='REFUND_UNDELIVERED'||v.rule_version==='CONTRACT_20261029'&&(v.kind==='HALO_REVIEW'?v.failure_policy==='REVIEW_FEE_NON_REFUNDABLE':v.failure_policy==='NO_CASH_REFUND')))return false
+ if(v.failure_policy==='NO_CASH_REFUND')return v.rule_version==='CONTRACT_20261029'&&v.unit===(v.kind==='AVATAR_CREATION'?'AVATAR':'AVATAR_PERPETUAL')&&v.retry_limit===0&&v.hosting_months===null&&v.halo_level===null
  if(v.kind==='AVATAR_CREATION')return v.unit==='PERSON_FIRST'&&v.hosting_months===null&&v.halo_level===null
  if(v.kind==='AVATAR_HOSTING')return v.unit==='AVATAR_MONTH'&&integer(v.hosting_months,1,120)&&v.halo_level===null&&v.retry_limit===0
  return v.unit==='HALO_APPLICATION'&&[2,3].includes(Number(v.halo_level))&&typeof v.halo_level==='number'&&v.hosting_months===null&&v.retry_limit===0

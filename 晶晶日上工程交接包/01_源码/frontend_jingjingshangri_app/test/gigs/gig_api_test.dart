@@ -12,6 +12,29 @@ import '../supply/supply_fixtures.dart';
 import 'gig_fixtures.dart';
 
 void main() {
+  test('目录兼容新增合同版本字段，保留旧服务器并拒绝未知字段或版本', () {
+    final old = catalogue();
+    expect(GigCatalogue.parse(old).items, isNotEmpty);
+    for (final policy in ['LEGACY_COMPATIBLE', 'CONTRACT_20261029']) {
+      expect(
+          GigCatalogue.parse({...old, 'marketplace_contract_policy': policy})
+              .items,
+          GigCatalogue.parse(old).items);
+    }
+    for (final policy in [null, '', 'UNREVIEWED']) {
+      expect(
+          () => GigCatalogue.parse(
+              {...old, 'marketplace_contract_policy': policy}),
+          throwsA(isA<AccountError>()));
+    }
+    expect(
+        () => GigCatalogue.parse({
+              ...old,
+              'allowed_actions': ['BYPASS']
+            }),
+        throwsA(isA<AccountError>()));
+  });
+
   test('合作名称校验双方编号、拒绝越权失败，兼容旧服务器404', () async {
     final r = GigRecord.parse(gigData('RELATION'), party: personId);
     var status = 200;

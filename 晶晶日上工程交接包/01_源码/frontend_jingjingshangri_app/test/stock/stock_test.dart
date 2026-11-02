@@ -1,3 +1,4 @@
+import 'stock_eligibility_fixtures.dart' show eligibility;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -98,6 +99,8 @@ void main() {
           'next_cursor': null
         });
       }
+      if (r.path == '/api/v1/stock/seller-eligibility')
+        return envelope(eligibility());
       if (r.path == '/api/v1/stock/participant-options') {
         return envelope({
           'items': [
