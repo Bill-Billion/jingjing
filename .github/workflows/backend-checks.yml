@@ -46,8 +46,9 @@ jobs:
   backend:
     name: 数据库、后台任务和服务器功能
     runs-on: ubuntu-24.04
-    # 31 suites plus 35 HTTP contract reports; measured duplicate run exceeded 15 minutes.
-    timeout-minutes: 20
+    # Full regression plus HTTP contract reports exceeded 20 minutes twice on hosted runners.
+    # Keep every check and reserve bounded time for contract validation and cleanup.
+    timeout-minutes: 35
     defaults:
       run:
         shell: bash
