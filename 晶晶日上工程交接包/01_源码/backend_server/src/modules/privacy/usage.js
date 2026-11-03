@@ -14,10 +14,11 @@ function methods({db,actor,command,decode}){
   // Account row is the common lock with preferences; multiple devices count wall time once.
   const a=await actor(tx,ctx,'FOR UPDATE'),at=await A.now(tx);
   const prefs=await A.one(tx,'SELECT * FROM privacy_preferences WHERE account_id=?',[a.id]);
-  const minutes=prefs?decode(prefs.data_json,prefs.data_sha256).rest_reminder_minutes:0;
+  const preferences=prefs?decode(prefs.data_json,prefs.data_sha256):{},minutes=preferences.rest_reminder_minutes||0;
+  const view=(d,v)=>({...P.view(d,at,minutes,v),night_reminder:require('./notification-policy').night(preferences,at)});
   const r=await A.one(tx,'SELECT * FROM privacy_usage_state WHERE account_id=?',[a.id]);
   const data=r?decode(r.data_json,r.data_sha256):P.empty(at),v=r?.object_version||0;
-  if(action==='READ'||!minutes&&action==='PULSE')return P.view(data,at,minutes,v);
+  if(action==='READ'||!minutes&&action==='PULSE')return view(data,v);
   const write=async()=>{
    if(v>=4294967294)throw error('OBJECT_VERSION_EXHAUSTED',409);
    let next;
@@ -27,7 +28,7 @@ function methods({db,actor,command,decode}){
     next={...P.current(data,at),reminder_seconds:0,last_at:at};
    }else next=P.pulse(data,at);
    await tx.execute('INSERT INTO privacy_usage_state(account_id,object_version,data_json,data_sha256) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE object_version=VALUES(object_version),data_json=VALUES(data_json),data_sha256=VALUES(data_sha256)',[a.id,v+1,JSON.stringify(next),digest(next)]);
-   return P.view(next,at,minutes,v+1);
+   return view(next,v+1);
   };
   // Pulses carry no caller time or duration and never replay financial or business actions.
   return action==='ACK'?command(tx,a,'REST_ACK',i,async()=>{await write();return {acknowledged:true};}):write();

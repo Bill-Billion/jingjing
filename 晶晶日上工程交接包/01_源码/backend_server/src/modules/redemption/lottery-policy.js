@@ -5,7 +5,7 @@ const {shape,label,error}=require('../party/policy'),{integer}=require('./policy
 const GUARANTEED=new Set(['INTERVIEW_OPEN','INTERVIEW_PRIORITY','PRODUCTION_CREDIT','PRODUCTION_FREE']);
 const KINDS=new Set([...GUARANTEED,'EXPOSURE','POINT_BACK','NONE']);
 function pool(input){
- shape(input,['version','single_points','ten_points','prizes','algorithm']);label(input.version,100);
+ shape(input,['version','single_points','ten_points','prizes','algorithm','source_profile','cost_basis']);label(input.version,100);
  if(input.single_points!==300||input.ten_points!==2700||input.algorithm!=='NINE_THEN_CONDITIONAL_TENTH_V1')throw error('LOTTERY_RULE_INVALID',400);
  if(!Array.isArray(input.prizes)||!input.prizes.length||input.prizes.length>50)throw error('LOTTERY_RULE_INVALID',400);
  let sum=0,guarantee=0;const seen=new Set();
@@ -13,7 +13,7 @@ function pool(input){
   shape(p,['key','kind','weight','estimated_cost_minor']);label(p.key,100);integer(p.weight,1,10000);integer(p.estimated_cost_minor,0);
   if(seen.has(p.key)||!KINDS.has(p.kind))throw error('LOTTERY_PRIZE_INVALID',400);seen.add(p.key);sum+=p.weight;if(GUARANTEED.has(p.kind))guarantee+=p.weight;
  }
- if(sum!==10000||!guarantee)throw error('LOTTERY_PROBABILITY_INVALID',400);return structuredClone(input);
+ if(sum!==10000||!guarantee)throw error('LOTTERY_PROBABILITY_INVALID',400);require('./contract-pool').checkConfig(input);return structuredClone(input);
 }
 function choose(prizes,random=randomInt){
  const total=prizes.reduce((n,p)=>n+p.weight,0),ticket=random(total);

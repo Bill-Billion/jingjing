@@ -55,4 +55,4 @@ function createConsumerControls(db,{resolvePrincipal=async()=>null}={}){
   async history(ctx,{party_id,after='',limit=20}){if(after)id(after);if(!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIST',400);return run(ctx,party_id,async tx=>{const [rows]=await tx.execute("SELECT * FROM wallet_records WHERE owner_party_id=? AND kind='CONSUMER_LIMIT_EVENT' AND id>? ORDER BY id LIMIT ?",[party_id,after,limit+1]);return {items:rows.slice(0,limit).map(C.checked),next_cursor:rows.length>limit?rows[limit-1].id:null};});}
  };
 }
-module.exports={createConsumerControls,check,usage};
+module.exports={createConsumerControls,check,usage,lock};

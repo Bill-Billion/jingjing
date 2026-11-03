@@ -63,6 +63,18 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
   await t.test('ten guarantee survives mostly no-win pool and records actual conditional draws',async()=>{
    stock=await freeStock(100);let p=await create(stock,[{key:'free',kind:'PRODUCTION_FREE',weight:1,estimated_cost_minor:50000},{key:'points',kind:'POINT_BACK',weight:4999,estimated_cost_minor:0},{key:'none',kind:'NONE',weight:5000,estimated_cost_minor:0}]);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);const d=await draw(p);assert.ok(d.data.results.some(x=>x.kind==='PRODUCTION_FREE'));assert.equal(d.data.rule_snapshot.rules_sha256,p.data.rules_sha256);assert.equal(d.data.results.length,10);const earnings=(await request('/wallet/records?kind=EARNING',buyer)).items;assert.equal(earnings.filter(x=>x.data.event_kind==='REWARD').length,d.data.results.filter(x=>x.point_earning_id).length);await request('/wallet/summary',buyer);
   });
+  await t.test('rational confirmation and participation limits precede point deduction; recovery returns original winners',async()=>{
+   const R=require('../src/modules/wallet/risk').createConsumerRisk(db,{resolvePrincipal:S.resolvePrincipal});
+   let rr=await R.createRule(producer.ctx,{rule:{version:'synthetic rational lottery',source_ref:'synthetic:37',message:'Synthetic rational participation',window_seconds:3600,trigger_count:2,large_recharge_minor:null,night:null,confirmation_seconds:600,lottery_window_max_draws:40,lottery_daily_points:100000},operation_key:key()});
+   await R.reviewRule(reviewer.ctx,{record_id:rr.id,expected_version:rr.object_version,decision:'APPROVE',reason:'Synthetic only',operation_key:key()});
+   const s=await freeStock(20);let p=await create(s);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);
+   const before=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,op=key(),target={kind:'LOTTERY',pool_id:p.id,count:10,request_key:op};
+   await assert.rejects(draw(p,10,op),{code:'CONSUMER_RISK_CONFIRMATION_REQUIRED'});assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,before);
+   const v=await R.preview(buyer.ctx,{party_id:buyer.personal_party_id,target});await R.confirm(buyer.ctx,{party_id:buyer.personal_party_id,target,preview_sha256:v.preview_sha256,read_confirmed:true,operation_key:key()});
+   const d=await draw(p,10,op);assert.deepEqual(await draw(p,10,op),d);assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,before-2700);
+   await assert.rejects(draw(p,1),{code:'LOTTERY_PARTICIPATION_LIMIT'});
+   const grants=(await db.execute("SELECT id FROM redemption_records WHERE kind='GRANT' AND owner_party_id=?",[buyer.personal_party_id]))[0];for(const result of d.data.results)assert(grants.some(g=>g.id===result.grant_id));
+  });
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/redemption-lottery-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

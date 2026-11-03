@@ -19,6 +19,7 @@ async function inventory(tx,r,count=1){
   const promised=r.data.prize_promises?.find(x=>x.key===p.key);if(promised&&digest(promised.template)!==digest(t))throw error('LOTTERY_PRIZE_PROMISE_CHANGED',409);
   if(s.current_status!=='AVAILABLE'||t.available_until<=await A.now(tx)||t.capacity-s.data.issued<count)throw error('LOTTERY_STOCK_NOT_READY',409);
  }
+ require('./contract-pool').checkBindings(r.data.config,r.data.bindings,stocks);
  return stocks;
 }
 function publicPool(r){return {id:r.id,object_version:r.object_version,current_status:r.current_status,config:r.data.config,distribution:r.data.distribution,bindings:r.data.bindings,starts_at:r.data.starts_at,ends_at:r.data.ends_at,rules_sha256:r.data.rules_sha256,terms:r.data.terms,inventory_policy:'PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE',prize_promises:r.data.prize_promises||[],...(r.data.publication_notice?{publication_notice:r.data.publication_notice}:{})};}
@@ -53,7 +54,7 @@ function methods({db,actor}){return {
   shape(i,['party_id','pool_id','rules_sha256','count','operation_key']);if(![1,10].includes(i.count))throw error('LOTTERY_COUNT_INVALID',400);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await C.owner(tx,a,i.party_id,true);const r=await C.load(tx,i.pool_id,'POOL');
    return C.command(tx,a,'DRAW',i,async()=>{const at=await A.now(tx);if(r.current_status!=='PUBLISHED'||r.data.starts_at>at||r.data.ends_at<=at||r.data.rules_sha256!==i.rules_sha256)throw error('LOTTERY_NOT_OPEN',409);if(r.data.publication_notice&&at<r.data.publication_notice.opens_at)throw error('LOTTERY_NOTICE_PERIOD',409);
-    const stocks=await inventory(tx,r,i.count),draft=await C.insert(tx,a,'DRAW',i.party_id,r.id,'PENDING',{pool_id:r.id,rules_sha256:r.data.rules_sha256,rule_snapshot:publicPool(r),at,count:i.count,points:i.count===1?300:2700,hold_id:null,results:[]});
+    await require('../wallet/risk').enforce(tx,i.party_id,{kind:'LOTTERY',pool_id:r.id,count:i.count,request_key:i.operation_key,rules_sha256:r.data.rules_sha256,amount_minor:i.count===1?300:2700});const stocks=await inventory(tx,r,i.count),draft=await C.insert(tx,a,'DRAW',i.party_id,r.id,'PENDING',{pool_id:r.id,rules_sha256:r.data.rules_sha256,rule_snapshot:publicPool(r),at,count:i.count,points:i.count===1?300:2700,hold_id:null,results:[]});
     const hold_id=await require('./points').spend(tx,ctx,draft,draft.data.points,'LOTTERY'),draw=P.draw(r.data.config,i.count),results=[];
     for(const result of draw.results){const b=r.data.bindings.find(x=>x.key===result.key);let grant_id=null,point_earning_id=null;
      if(b.stock_id){const stock=await C.load(tx,b.stock_id,'STOCK'),grant=await require('./repository').issue(tx,a,stock,i.party_id,['LOTTERY',draft.id,String(result.index)]);grant_id=grant.id;}

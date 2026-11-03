@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.25-rc.1
+  version: 0.31.26-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -31603,6 +31603,350 @@ paths:
               required: []
       x-actor-scope: ACCOUNT
       description: 仅本人账号，不使用X-Acting-Party。未开启定时休息不计时；前台30秒报告一次，超过90秒空档不计入。时长是估计，不作为年龄或付款控制依据。详见USAGE_REMINDERS_HANDOFF_20261103.md。
+  /api/v1/wallet/consumer-risk/status:
+    get:
+      operationId: getConsumerRiskStatus
+      summary: 查看消费提示规则是否已配置
+      description: 依据合同包37号；金额/次数阈值须独立审核。确认绑定本人、具体请求与金额及当前规则/使用情况。无规则时返回未配置，不代表正式保护已启用。详见CONSUMER_PROTECTION_HANDOFF_20261103.md。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerRiskStatusResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/wallet/consumer-risk/rules:
+    get:
+      operationId: listConsumerRiskRules
+      summary: 运营查看消费提示规则
+      description: 依据合同包37号；金额/次数阈值须独立审核。确认绑定本人、具体请求与金额及当前规则/使用情况。无规则时返回未配置，不代表正式保护已启用。详见CONSUMER_PROTECTION_HANDOFF_20261103.md。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+    post:
+      operationId: createConsumerRiskRule
+      summary: 提交消费提示规则供独立审核
+      description: 依据合同包37号；金额/次数阈值须独立审核。确认绑定本人、具体请求与金额及当前规则/使用情况。无规则时返回未配置，不代表正式保护已启用。详见CONSUMER_PROTECTION_HANDOFF_20261103.md。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                rule:
+                  $ref: '#/components/schemas/ConsumerRiskRule'
+              required:
+              - rule
+  /api/v1/wallet/consumer-risk/rules/{record_id}/review:
+    post:
+      operationId: reviewConsumerRiskRule
+      summary: 另一位运营审核消费提示规则
+      description: 依据合同包37号；金额/次数阈值须独立审核。确认绑定本人、具体请求与金额及当前规则/使用情况。无规则时返回未配置，不代表正式保护已启用。详见CONSUMER_PROTECTION_HANDOFF_20261103.md。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletReviewRequest'
+  /api/v1/wallet/consumer-risk/preview:
+    get:
+      operationId: previewConsumerRisk
+      summary: 查看本笔付款或抽奖需要确认的提示
+      description: 依据合同包37号；金额/次数阈值须独立审核。确认绑定本人、具体请求与金额及当前规则/使用情况。无规则时返回未配置，不代表正式保护已启用。详见CONSUMER_PROTECTION_HANDOFF_20261103.md。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: kind
+        required: true
+        schema:
+          enum:
+          - RECHARGE
+          - PAYMENT
+          - PAYMENT_RECORD
+          - LOTTERY
+      - in: query
+        name: order_id
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - in: query
+        name: installment_key
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - in: query
+        name: request_key
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - in: query
+        name: payment_id
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - in: query
+        name: amount_minor
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+      - in: query
+        name: pool_id
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - in: query
+        name: count
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 9007199254740991
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: 当前设置版本，修改时原样传给If-Match。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerRiskPreviewResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACTING_PARTY
+  /api/v1/wallet/consumer-risk/confirm:
+    post:
+      operationId: confirmConsumerRisk
+      summary: 本人明确确认已阅读本次消费提示
+      description: 依据合同包37号；金额/次数阈值须独立审核。确认绑定本人、具体请求与金额及当前规则/使用情况。无规则时返回未配置，不代表正式保护已启用。详见CONSUMER_PROTECTION_HANDOFF_20261103.md。
+      tags:
+      - wallet
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                target:
+                  $ref: '#/components/schemas/ConsumerRiskTarget'
+                preview_sha256:
+                  type: string
+                  pattern: ^[0-9a-f]{64}$
+                read_confirmed:
+                  const: true
+              required:
+              - target
+              - preview_sha256
+              - read_confirmed
 components:
   securitySchemes:
     bearerAuth:
@@ -33430,6 +33774,28 @@ components:
           - const: 0
           - minimum: 15
             maximum: 240
+        push_enabled:
+          type: boolean
+        night_reminder_enabled:
+          type: boolean
+        quiet_hours:
+          type: object
+          additionalProperties: false
+          properties:
+            enabled:
+              type: boolean
+            start_minute:
+              type: integer
+              minimum: 0
+              maximum: 1439
+            end_minute:
+              type: integer
+              minimum: 0
+              maximum: 1439
+          required:
+          - enabled
+          - start_minute
+          - end_minute
       required:
       - personalization
       - marketing
@@ -33457,6 +33823,28 @@ components:
               - const: 0
               - minimum: 15
                 maximum: 240
+            push_enabled:
+              type: boolean
+            night_reminder_enabled:
+              type: boolean
+            quiet_hours:
+              type: object
+              additionalProperties: false
+              properties:
+                enabled:
+                  type: boolean
+                start_minute:
+                  type: integer
+                  minimum: 0
+                  maximum: 1439
+                end_minute:
+                  type: integer
+                  minimum: 0
+                  maximum: 1439
+              required:
+              - enabled
+              - start_minute
+              - end_minute
           required:
           - object_version
           - personalization
@@ -41361,6 +41749,10 @@ components:
       type: object
       additionalProperties: false
       properties:
+        consumer_request_key:
+          type: string
+          minLength: 1
+          maxLength: 128
         provider:
           type: string
           enum:
@@ -57042,6 +57434,8 @@ components:
         id: *walletSchema003
         kind:
           enum:
+          - CONSUMER_RISK_RULE
+          - CONSUMER_RISK_ACK
           - RULE
           - ACCOUNT
           - EARNING
@@ -57097,6 +57491,8 @@ components:
           - $ref: '#/components/schemas/WalletCashReconciliation'
           - $ref: '#/components/schemas/WalletRecharge'
           - $ref: '#/components/schemas/WalletPointHold'
+          - $ref: '#/components/schemas/ConsumerRiskRuleData'
+          - $ref: '#/components/schemas/ConsumerRiskAcknowledgement'
           - $ref: '#/components/schemas/WalletLevelReview'
         pending_reason:
           anyOf:
@@ -59865,6 +60261,28 @@ components:
       type: object
       additionalProperties: false
       properties:
+        source_profile:
+          const: CONTRACT_20261029
+        cost_basis:
+          type: object
+          additionalProperties: false
+          properties:
+            source_ref:
+              type: string
+              minLength: 1
+              maxLength: 200
+            single_consumption_minor:
+              type: integer
+              minimum: 1
+              maximum: 1000000000
+            ten_consumption_minor:
+              type: integer
+              minimum: 1
+              maximum: 1000000000
+          required:
+          - source_ref
+          - single_consumption_minor
+          - ten_consumption_minor
         version:
           type: string
           minLength: 1
@@ -66207,6 +66625,30 @@ components:
               const: FOREGROUND_HEARTBEAT_ESTIMATE
             purpose:
               const: PERSONAL_REST_REMINDER
+            night_reminder:
+              type: object
+              additionalProperties: false
+              properties:
+                enabled:
+                  type: boolean
+                due:
+                  type: boolean
+                timezone:
+                  const: Asia/Shanghai
+                start_minute:
+                  type: integer
+                  minimum: 0
+                  maximum: 1439
+                end_minute:
+                  type: integer
+                  minimum: 0
+                  maximum: 1439
+              required:
+              - enabled
+              - due
+              - timezone
+              - start_minute
+              - end_minute
           required:
           - object_version
           - enabled
@@ -66242,3 +66684,358 @@ components:
       required:
       - meta
       - data
+
+    ConsumerRiskRule:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 200
+        source_ref:
+          type: string
+          minLength: 1
+          maxLength: 200
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        window_seconds:
+          type: integer
+          minimum: 60
+          maximum: 86400
+        trigger_count:
+          type: integer
+          minimum: 2
+          maximum: 1000
+        large_recharge_minor:
+          anyOf:
+          - type: integer
+            minimum: 1
+            maximum: 9007199254740991
+          - type: 'null'
+        night:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              start_minute:
+                type: integer
+                minimum: 0
+                maximum: 1439
+              end_minute:
+                type: integer
+                minimum: 0
+                maximum: 1439
+              minimum_minor:
+                type: integer
+                minimum: 1
+                maximum: 9007199254740991
+            required:
+            - start_minute
+            - end_minute
+            - minimum_minor
+          - type: 'null'
+        confirmation_seconds:
+          type: integer
+          minimum: 60
+          maximum: 3600
+        lottery_window_max_draws:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        lottery_daily_points:
+          type: integer
+          minimum: 300
+          maximum: 100000000
+      required:
+      - version
+      - source_ref
+      - message
+      - window_seconds
+      - trigger_count
+      - large_recharge_minor
+      - night
+      - confirmation_seconds
+      - lottery_window_max_draws
+      - lottery_daily_points
+    ConsumerRiskTarget:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: RECHARGE
+          amount_minor:
+            type: integer
+            minimum: 1
+            maximum: 9007199254740991
+          request_key:
+            type: string
+            minLength: 1
+            maxLength: 128
+        required:
+        - kind
+        - amount_minor
+        - request_key
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: PAYMENT
+          order_id:
+            type: string
+            format: uuid
+          installment_key:
+            type: string
+            minLength: 1
+            maxLength: 128
+          request_key:
+            type: string
+            minLength: 1
+            maxLength: 128
+        required:
+        - kind
+        - order_id
+        - installment_key
+        - request_key
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: PAYMENT_RECORD
+          payment_id:
+            type: string
+            format: uuid
+        required:
+        - kind
+        - payment_id
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: LOTTERY
+          pool_id:
+            type: string
+            format: uuid
+          count:
+            enum:
+            - 1
+            - 10
+          request_key:
+            type: string
+            minLength: 1
+            maxLength: 128
+        required:
+        - kind
+        - pool_id
+        - count
+        - request_key
+    ConsumerRiskPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        configured:
+          type: boolean
+        required:
+          type: boolean
+        rule_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        preview_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+        reasons:
+          type: array
+          items:
+            enum:
+            - FREQUENT_CASH_REQUESTS
+            - LARGE_RECHARGE
+            - LARGE_NIGHT_SPENDING
+            - RATIONAL_LOTTERY_PARTICIPATION
+        message:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 2000
+          - type: 'null'
+        target:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: RECHARGE
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 9007199254740991
+              request_key:
+                type: string
+                minLength: 1
+                maxLength: 128
+            required:
+            - kind
+            - amount_minor
+            - request_key
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: PAYMENT
+              order_id:
+                type: string
+                format: uuid
+              installment_key:
+                type: string
+                minLength: 1
+                maxLength: 128
+              request_key:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 9007199254740991
+            required:
+            - kind
+            - order_id
+            - installment_key
+            - request_key
+            - amount_minor
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: LOTTERY
+              pool_id:
+                type: string
+                format: uuid
+              count:
+                enum:
+                - 1
+                - 10
+              request_key:
+                type: string
+                minLength: 1
+                maxLength: 128
+              amount_minor:
+                enum:
+                - 300
+                - 2700
+              rules_sha256:
+                type: string
+                pattern: ^[0-9a-f]{64}$
+            required:
+            - kind
+            - pool_id
+            - count
+            - request_key
+            - amount_minor
+            - rules_sha256
+        expires_in_seconds:
+          anyOf:
+          - type: integer
+            minimum: 60
+            maximum: 3600
+          - type: 'null'
+      required:
+      - configured
+      - required
+      - rule_id
+      - preview_sha256
+      - reasons
+      - message
+      - target
+      - expires_in_seconds
+    ConsumerRiskPreviewResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/ConsumerRiskPreview'
+      required:
+      - meta
+      - data
+    ConsumerRiskStatusResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            configured:
+              type: boolean
+            rule:
+              anyOf:
+              - $ref: '#/components/schemas/WalletRecord'
+              - type: 'null'
+            real_services_enabled:
+              const: false
+          required:
+          - configured
+          - rule
+          - real_services_enabled
+      required:
+      - meta
+      - data
+    ConsumerRiskRuleData:
+      type: object
+      additionalProperties: false
+      properties:
+        rule:
+          $ref: '#/components/schemas/ConsumerRiskRule'
+        review:
+          anyOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              by:
+                type: string
+                format: uuid
+              reason:
+                type: string
+                minLength: 1
+                maxLength: 2000
+              at:
+                type: string
+                format: date-time
+            required:
+            - by
+            - reason
+            - at
+          - type: 'null'
+      required:
+      - rule
+      - review
+    ConsumerRiskAcknowledgement:
+      type: object
+      additionalProperties: false
+      properties:
+        preview:
+          $ref: '#/components/schemas/ConsumerRiskPreview'
+        confirmed_by:
+          type: string
+          format: uuid
+        confirmed_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - preview
+      - confirmed_by
+      - confirmed_at
+      - expires_at
