@@ -354,7 +354,7 @@ void main() {
             .map((r) => r.path),
         [
           '/api/v1/auth/sessions',
-          '/api/v1/privacy/preferences',
+          '/api/v1/privacy/usage',
           '/api/v1/artists/catalog',
           '/api/v1/directory/featured-artists',
           '/api/v1/stock/catalog',

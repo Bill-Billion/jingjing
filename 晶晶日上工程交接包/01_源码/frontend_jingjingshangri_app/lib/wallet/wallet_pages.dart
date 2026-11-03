@@ -154,6 +154,7 @@ class _WalletScreenState extends State<_WalletScreen> {
                 ? _footer()
                 : null,
         children: [
+          tradeButton('个人月度限额', () => go('/wallet/limits'), outline: true),
           tradeHeading(widget.mode == 'scout' ? '进阶星探' : title,
               eyebrow: switch (widget.mode) {
                 'summary' => '当前托管渠道暂未接通',

@@ -9,6 +9,24 @@ import '../trade/trade_models.dart';
 import '../engagement/community_support.dart';
 import '../cocreation/cocreation_cast.dart';
 
+String? lotteryAvailability(Map<String, dynamic> r, {DateTime? now}) {
+  final at = now ?? DateTime.now(), notice = r['publication_notice'];
+  if (notice != null) {
+    final n = communityMap(notice);
+    communityRequire(n['days'] == 7 &&
+        DateTime.tryParse('${n['published_at']}') != null &&
+        DateTime.tryParse('${n['opens_at']}') != null);
+    if (at.isBefore(DateTime.parse('${n['opens_at']}'))) {
+      return '奖池规则正在公示，尚未开放抽奖。';
+    }
+  }
+  final starts = DateTime.tryParse('${r['starts_at']}'),
+      ends = DateTime.tryParse('${r['ends_at']}');
+  if (starts != null && at.isBefore(starts)) return '活动尚未开始。';
+  if (ends != null && !at.isBefore(ends)) return '活动已结束。';
+  return r['current_status'] == 'PUBLISHED' ? null : '奖池尚未开放或已停止。';
+}
+
 String redemptionKind(Object? kind) =>
     const {
       'PRODUCTION_CREDIT': '制作金',
@@ -245,6 +263,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
   }
 
   void validatePool(Map<String, dynamic> r) {
+    lotteryAvailability(r);
     communityRequire(communityId(r['id']) &&
         r['object_version'] is int &&
         r['rules_sha256'] is String &&
@@ -816,6 +835,16 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     return [
       communityHeading(communityText(c['version']), '开奖结果由服务器保存，每次请求只扣一次。'),
       communityFact('活动进展', communityState(r['current_status'])),
+      if (r['publication_notice'] != null) ...[
+        communityFact(
+            '本版实际公示时间',
+            communityDate(
+                communityMap(r['publication_notice'])['published_at'])),
+        communityFact('公示结束后最早开放',
+            communityDate(communityMap(r['publication_notice'])['opens_at'])),
+        appNotice('公示期内可查看规则与概率；公示期届满仍须满足活动起止、资格和库存条件。'),
+      ],
+      if (lotteryAvailability(r) != null) appNotice(lotteryAvailability(r)!),
       communityFact('开始', communityDate(r['starts_at'])),
       communityFact('截止', communityDate(r['ends_at'])),
       communitySection('本次完整条款', [
@@ -842,7 +871,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       for (final count in [1, 10])
         tradeButton(
             count == 1 ? '按本次规则单抽' : '按本次规则十连',
-            enabled && agreed && r['current_status'] == 'PUBLISHED'
+            enabled && agreed && lotteryAvailability(r) == null
                 ? () => submit(() async {
                       if (await confirm('确认本次${count == 1 ? '单抽' : '十连'}',
                           '将扣用${count == 1 ? c['single_points'] : c['ten_points']}晶钻。提交后先核对同一次结果，不更换编号重复抽取。')) {
@@ -858,6 +887,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                         if (out != null && mounted) {
                           setState(() => agreed = false);
                           open('draw', out['id']);
+                        } else if (mounted &&
+                            recovery == null &&
+                            error?.contains('奖池规则正在公示') == true) {
+                          final message = error;
+                          await load();
+                          if (mounted) setState(() => error = message);
                         }
                       }
                     })

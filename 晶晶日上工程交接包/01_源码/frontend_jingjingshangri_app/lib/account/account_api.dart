@@ -57,9 +57,13 @@ class AccountApi {
   int _accountEpoch = 0;
   void clearAccountOperations() {
     _accountEpoch++;
-    bool phone(String key) => (jsonDecode(key) as List)[3]
-        .toString()
-        .startsWith('/api/v1/me/phone-changes');
+    bool phone(String key) =>
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/me/phone-changes') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/privacy/usage');
     _keys.removeWhere((key, _) => phone(key));
     _pending.removeWhere((key, _) => phone(key));
     _running.removeWhere((key, _) => phone(key));
@@ -68,7 +72,10 @@ class AccountApi {
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
-        _privateRequestPath((jsonDecode(key) as List)[3].toString());
+        _privateRequestPath((jsonDecode(key) as List)[3].toString()) &&
+        !(jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/privacy/usage');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -183,11 +190,14 @@ class AccountApi {
     void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
-    final writing = method != 'GET';
-    final supply = _privateRequestPath(path);
+    // Heartbeats are ephemeral samples, never queued or assigned a command key.
+    final usage = path.startsWith('/api/v1/privacy/usage');
+    final writing = method != 'GET' &&
+        !(method == 'POST' && path == '/api/v1/privacy/usage/pulse');
+    final supply = _privateRequestPath(path) && !usage;
     final started = _supplyEpoch;
     final accountStarted = _accountEpoch;
-    final phone = path.startsWith('/api/v1/me/phone-changes');
+    final phone = path.startsWith('/api/v1/me/phone-changes') || usage;
     bool current() =>
         (!supply || started == _supplyEpoch) &&
         (!phone || accountStarted == _accountEpoch);

@@ -140,6 +140,10 @@ class _TradeListState extends State<_TradeList> {
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path'])),
           ]),
         if (error != null) supplyNote(error!, error: true),
+        if (error?.contains('个人月度限额') == true)
+          tradeButton(
+              '查看个人月度限额', () => Navigator.pushNamed(context, '/wallet/limits'),
+              outline: true),
         if (busy) const LinearProgressIndicator(),
         if (!busy && items.isEmpty && error == null)
           tradeSection('暂无${tradeKinds[kind]}',
@@ -600,7 +604,10 @@ class _TradeDetailState extends State<_TradeDetail> {
                 : '平台作为交易主体')
       ]),
       if (d['customization'] != null || d['customization_copyright'] != null)
-        CopyrightFacts(snapshot: d['customization_copyright'] is Map ? tradeMap(d['customization_copyright']) : null),
+        CopyrightFacts(
+            snapshot: d['customization_copyright'] is Map
+                ? tradeMap(d['customization_copyright'])
+                : null),
       tradeSection('报价明细', [
         for (final l in tradeRows(d['lines'])) ...[
           tradeFact(l['title'], tradeMoney(l['total_minor']), accent: true),
@@ -727,8 +734,12 @@ class _TradeDetailState extends State<_TradeDetail> {
       if (r.quote['artist_service'] != null)
         tradeSection(
             '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
-      if (r.quote['customization'] != null || r.quote['customization_copyright'] != null)
-        CopyrightFacts(snapshot: r.quote['customization_copyright'] is Map ? tradeMap(r.quote['customization_copyright']) : null),
+      if (r.quote['customization'] != null ||
+          r.quote['customization_copyright'] != null)
+        CopyrightFacts(
+            snapshot: r.quote['customization_copyright'] is Map
+                ? tradeMap(r.quote['customization_copyright'])
+                : null),
       if (r.quote['customization'] != null)
         appNotice(tradeCustomizationRulesReady(r)
             ? fullyCovered
@@ -1298,6 +1309,10 @@ class _TradeDetailState extends State<_TradeDetail> {
                 eyebrow: '${tradeKinds[r.kind]} / ${shortSupplyId(r.id)}'),
           if (busy) const LinearProgressIndicator(),
           if (error != null) supplyNote(error!, error: true),
+          if (error?.contains('个人月度限额') == true)
+            tradeButton('查看个人月度限额',
+                () => Navigator.pushNamed(context, '/wallet/limits'),
+                outline: true),
           for (final op in widget.session.tradePending)
             tradeSection('操作结果待核实', [
               appNotice('请恢复原请求核对，不要修改原内容或重复建立付款。'),
