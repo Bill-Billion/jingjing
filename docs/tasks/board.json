@@ -4670,7 +4670,7 @@
       ],
       "current_plan": "docs/collaboration/client-complete-20261028/DEMO_DELIVERY_PLAN_20261103.md",
       "requirements_change_ref": "docs/requirements/CONTRACT_CHANGES_20261102.md",
-      "current_increment": "已有双端换号、原请求恢复、重新登录及数据保留。剩余：多设备旧登录失效整链验证；昆山真实短信待资源",
+      "current_increment": "本轮接口换号与原订单/文件/发票/工单连续性12组通过；旧登录和旧号重注册隔离已验。原生与网页完整操作及真实短信另验。",
       "current_status_ref": "docs/collaboration/client-complete-20261028/PRODUCT_STATUS.md",
       "updated_on": "2026-11-03",
       "delivery_scope_note": "已有实现增量已在PR39，uploaded不表示整组验收或本次文档已上传；未合入integration。"
@@ -4733,7 +4733,7 @@
         "TASK-13"
       ],
       "updated_on": "2026-11-03",
-      "current_increment": "已有双端换号、原请求恢复、重新登录及数据保留。剩余：多设备旧登录失效整链验证；昆山真实短信待资源",
+      "current_increment": "本轮接口换号与原订单/文件/发票/工单连续性12组通过；旧登录和旧号重注册隔离已验。原生与网页完整操作及真实短信另验。",
       "frontend_increment_verification": {
         "scope": "本增量，不等于整组或151条验收",
         "status": "PASS",
@@ -6487,6 +6487,38 @@
       "updated_on": "2026-11-03",
       "implementation": "COMPLETE",
       "implementation_scope": "共创邀请后端4操作与隔离备份恢复；不含新邀请页面或全部18组定版",
+      "production_enabled": false
+    },
+    {
+      "id": "CORE-DEMO-DAY-CLOSURE-20261103",
+      "title": "今日业务主测：换号连续性、交易测试资料修复与付款退款复验",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/CORE-demo-day-closure-20261103.md",
+        "docs/collaboration/client-complete-20261028/TODAY_BACKEND_PLAN_20261103.md"
+      ],
+      "acceptance": "新测试资料不覆盖旧演示；换号后原记录连续；当前交易页面失败有根因及复验；独立首购至退款有同记录证据；原151标准不虚报关闭",
+      "shared_boundaries": [],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/CORE-demo-day-closure-20261103.md",
+        "docs/testing/evidence/demo-day-closure-20261103/REPORT.md",
+        "docs/testing/evidence/demo-money-flows-20261103/REPORT.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-03",
+      "implementation": "COMPLETE",
+      "implementation_scope": "交易夹具修复、换号连续性、六组网页及独立现货/试镜付款退款；不含全部18组正式验收",
       "production_enabled": false
     }
   ],
@@ -13169,6 +13201,28 @@
     "formal_pass": 0,
     "partial_links": 74,
     "client_test_version_ready": false,
-    "plan": "docs/collaboration/client-complete-20261028/DEMO_DELIVERY_PLAN_20261103.md"
+    "plan": "docs/collaboration/client-complete-20261028/DEMO_DELIVERY_PLAN_20261103.md",
+    "published_commit": "4c81ab79cda8b7eb8e57c69a6d482b2732f805ef",
+    "published_pr": 39,
+    "frontend_task_published": true,
+    "frontend_claim_confirmed": false,
+    "ci": "client-tools success; backend and frontend workflows still in progress at upload check",
+    "backend_regression": {
+      "passed": 1278,
+      "failed": 0,
+      "skipped": 1
+    }
+  },
+  "demo_day_closure_20261103": {
+    "task": "CORE-DEMO-DAY-CLOSURE-20261103",
+    "web_checks": 86,
+    "account_continuity_groups": 12,
+    "account_continuity_requests": 54,
+    "independent_money_journeys": 2,
+    "new_confirmed_p0_p1": 0,
+    "frontend_invitation": "PUBLISHED_NOT_CONFIRMED",
+    "formal_pass": 0,
+    "partial_links": 74,
+    "ready": false
   }
 }

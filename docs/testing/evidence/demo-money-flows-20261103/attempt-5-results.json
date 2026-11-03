@@ -1,0 +1,687 @@
+[
+  {
+    "type": "stock",
+    "database": "jx_test_money_11636_1998138943db",
+    "synthetic_only": true,
+    "steps": [
+      {
+        "name": "fixture-approved-listing",
+        "listing_id": "b68bf01f-8047-4950-8763-1ea53a79a3ff",
+        "bytes": 23600,
+        "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950"
+      },
+      {
+        "name": "page-stock-purchase",
+        "order_id": "07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e"
+      },
+      {
+        "name": "external-payment-simulated",
+        "payment_id": "d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+        "real_money": false
+      },
+      {
+        "name": "page-payment-created-and-reconciled",
+        "order_id": "07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "payment_id": "d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c"
+      },
+      {
+        "name": "page-download-exact-original-bytes",
+        "order_id": "07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950"
+      },
+      {
+        "name": "page-stock-aftercare-approved",
+        "case_id": "1d63f7df-aa1f-4b04-b4b6-35d87063429b"
+      },
+      {
+        "name": "external-refund-simulated",
+        "refund_id": "8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "real_money": false
+      },
+      {
+        "name": "page-refund-request-review-execute-reconcile",
+        "refund_id": "8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "amount_minor": 100
+      },
+      {
+        "name": "page-refunded-download-denied",
+        "status": 409,
+        "error": "STOCK_LICENSE_NOT_ACTIVE"
+      },
+      {
+        "name": "same-order-fully-refunded",
+        "order_id": "07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "received_minor": 100,
+        "refunded_minor": 100
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/catalog/b68bf01f-8047-4950-8763-1ea53a79a3ff",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/catalog/b68bf01f-8047-4950-8763-1ea53a79a3ff/media",
+        "status": 503
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/collections/targets/STOCK/b68bf01f-8047-4950-8763-1ea53a79a3ff",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/collections/preferences",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/stock/checkout",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/collections/targets/STOCK/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/wallet/consumer-risk/preview",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/payments",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/wallet/consumer-risk/preview",
+        "status": 409
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/payments/d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c/reconciliation",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e/content",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e/cases",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e/case-resolution",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/refunds",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4/reviews",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/refunds/8121f02a-e0cc-4138-97bb-1db1bd90fef4/execution",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/refunds/8121f02a-e0cc-4138-97bb-1db1bd90fef4/reconciliation",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/8121f02a-e0cc-4138-97bb-1db1bd90fef4",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/stock/purchases/07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e/content",
+        "status": 409
+      }
+    ],
+    "records": {
+      "listing": "b68bf01f-8047-4950-8763-1ea53a79a3ff",
+      "order": "07ddb8ed-529e-4bc4-b1a6-f3a550f5e86e",
+      "payment": "d245e5e6-1a6c-479c-ba1c-f3f2c7ea2a6c",
+      "case": "1d63f7df-aa1f-4b04-b4b6-35d87063429b",
+      "refund": "8121f02a-e0cc-4138-97bb-1db1bd90fef4"
+    },
+    "failures": [],
+    "cleanup": {
+      "database_removed": true,
+      "services_stopped": true
+    }
+  },
+  {
+    "type": "auditions",
+    "database": "jx_test_money_11636_2371672cfbef",
+    "synthetic_only": true,
+    "steps": [
+      {
+        "name": "fixture-approved-offer",
+        "offer_id": "df256851-1ba5-4e53-b444-74f6341d8b99"
+      },
+      {
+        "name": "page-audition-booking-safety-checkout",
+        "booking_id": "9df12bf5-5611-4fef-b354-c0ba57667305",
+        "order_id": "b8a6a701-8615-4401-8c27-c9ca3d09c919"
+      },
+      {
+        "name": "external-payment-simulated",
+        "payment_id": "3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0",
+        "real_money": false
+      },
+      {
+        "name": "page-payment-created-and-reconciled",
+        "order_id": "b8a6a701-8615-4401-8c27-c9ca3d09c919",
+        "payment_id": "3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0"
+      },
+      {
+        "name": "page-paid-audition-decline",
+        "booking_id": "9df12bf5-5611-4fef-b354-c0ba57667305",
+        "status": "REFUND_REQUIRED"
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/discovery/cities",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auditions/catalog",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auditions/catalog",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auditions/bookings",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auditions/records/9df12bf5-5611-4fef-b354-c0ba57667305",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auditions/bookings/9df12bf5-5611-4fef-b354-c0ba57667305/reviews",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auditions/records/9df12bf5-5611-4fef-b354-c0ba57667305",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auditions/checkout",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/b8a6a701-8615-4401-8c27-c9ca3d09c919",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/wallet/consumer-risk/preview",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/payments",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/wallet/consumer-risk/preview",
+        "status": 409
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/trade/payments/3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0/reconciliation",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auditions/records/9df12bf5-5611-4fef-b354-c0ba57667305",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auditions/bookings/9df12bf5-5611-4fef-b354-c0ba57667305/decision",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/trade/records/3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0",
+        "status": 200
+      }
+    ],
+    "records": {
+      "offer": "df256851-1ba5-4e53-b444-74f6341d8b99",
+      "booking": "9df12bf5-5611-4fef-b354-c0ba57667305",
+      "order": "b8a6a701-8615-4401-8c27-c9ca3d09c919",
+      "payment": "3b5d77c8-88e7-46ae-b6d8-c13e8fe83fc0"
+    },
+    "failures": [
+      {
+        "step": "page-refund",
+        "error": "locator.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '提交退款申请', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button disabled class=\"primary\">提交退款申请</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    29 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\demo-money-flows-20261103\\run.mjs:27:1482\n    at post (D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\demo-money-flows-20261103\\run.mjs:21:177)\n    at refund (D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\demo-money-flows-20261103\\run.mjs:27:1405)\n    at async flow (D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\demo-money-flows-20261103\\run.mjs:43:535)\n    at async file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/.local/demo-money-flows-20261103/run.mjs:49:79"
+      }
+    ],
+    "cleanup": {
+      "database_removed": true,
+      "services_stopped": true
+    }
+  }
+]

@@ -4,6 +4,10 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(__dirname,'../..');
 async function main(){
  const name=process.argv[2];assert(/^jx_test_explore_[0-9]+_[a-f0-9]{12}$/.test(name));
+ const evidenceName=process.argv[3]||('complete-flows-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+key());
+ assert(/^[a-zA-Z0-9-]{1,100}$/.test(evidenceName),'Evidence label must be a simple directory name.');
+ const out=path.join(root,'docs/testing/evidence',evidenceName),output=path.join(out,'complete-flow.json');
+ assert(!fs.existsSync(output),'Preserve earlier evidence; choose a new evidence label.');
  const dir=path.join(root,'.local/client-persistent',name),marker=path.join(dir,'complete-check.json');
  assert(!fs.existsSync(marker),'This fixture has already been tested; prepare a fresh one to repeat.');
  const runtime=await require('./persistent-story.cjs').start(name,{hours:1}),f=runtime.access,c=f.scenarios.complete;
@@ -91,7 +95,7 @@ async function main(){
  finally{await runtime.stop();}
  const report={result:failure?'FAIL':'PASS',synthetic_only:true,database:name,checks,requests,failure,cleanup:'SERVER_STOPPED_CODES_AND_TOKENS_REMOVED_DATA_RETAINED',limits:['接口完整办理检查，不代表前端页面或151条全部验收','内存短信、模拟付款和明确标记的凭证；真实服务均未调用']};
  fs.writeFileSync(marker,JSON.stringify(report,null,2));
- const out=path.join(root,'docs/testing/evidence/complete-flows-20261030');fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'complete-flow.json'),JSON.stringify(report,null,2));
+ fs.mkdirSync(out,{recursive:true});fs.writeFileSync(output,JSON.stringify(report,null,2),{flag:'wx'});
  console.log(JSON.stringify({result:report.result,checks:checks.length,requests:requests.length,failure,database:name}));
 }
 main().catch(e=>{console.error(JSON.stringify({error:e.code||e.message,at:e.stack?.split('\n').slice(1,3)}));process.exitCode=1;});
