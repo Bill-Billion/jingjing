@@ -1,5 +1,5 @@
 {
-  "version": "0.31.25-rc.1",
+  "version": "0.31.26-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -591,7 +591,13 @@
     "listConsumerLimitHistory",
     "getPersonalUsage",
     "reportPersonalUsage",
-    "acknowledgePersonalRest"
+    "acknowledgePersonalRest",
+    "getConsumerRiskStatus",
+    "listConsumerRiskRules",
+    "createConsumerRiskRule",
+    "reviewConsumerRiskRule",
+    "previewConsumerRisk",
+    "confirmConsumerRisk"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1240,5 +1246,23 @@
     "migration": "0207",
     "record": "docs/tasks/records/CORE-usage-reminders-20261103.md",
     "production_enabled": false
+  },
+  "consumer_protection": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getConsumerRiskStatus",
+      "listConsumerRiskRules",
+      "createConsumerRiskRule",
+      "reviewConsumerRiskRule",
+      "previewConsumerRisk",
+      "confirmConsumerRisk"
+    ],
+    "migrations": [
+      "0208",
+      "0209"
+    ],
+    "record": "docs/tasks/records/CORE-consumer-protection-closure-20261103.md",
+    "production_enabled": false,
+    "notification_provider": "NOT_CONNECTED"
   }
 }

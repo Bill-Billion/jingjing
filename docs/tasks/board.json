@@ -6257,6 +6257,39 @@
       "implementation_scope": "本批休息提醒后端；夜间免打扰和高频消费确认未包含"
     },
     {
+      "id": "CORE-CONSUMER-PROTECTION-20261103",
+      "title": "完成消费确认、夜间通知和奖品兑现的后端收尾",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/CORE-consumer-protection-closure-20261103.md",
+        "docs/collaboration/client-complete-20261028/CONSUMER_PROTECTION_HANDOFF_20261103.md",
+        "docs/testing/evidence/consumer-protection-20261103/RESULTS.md"
+      ],
+      "acceptance": "本人的消费确认不能被换金额、换键、并发或旧规则绕过；通知发送前重查偏好；同一中奖记录可兑现交付；页面与真实启用分开。",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/testing/evidence/consumer-protection-20261103/RESULTS.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-03",
+      "implementation": "COMPLETE",
+      "implementation_scope": "消费风险规则/确认、夜间与推送队列约束、新合同奖池校验和后端兑现验证；不含真实推送供应商或未交付页面"
+    },
+    {
       "id": "UX-MACMINI-FOUR-PAGES-20261103",
       "title": "财务日对账、个人限额、奖池公示与定时休息四组页面",
       "stage": 6,
@@ -12861,5 +12894,53 @@
       "fail": 0,
       "skipped": 3
     }
+  },
+  "consumer_protection_20261103": {
+    "record": "docs/tasks/records/CORE-consumer-protection-closure-20261103.md",
+    "handoff": "docs/collaboration/client-complete-20261028/CONSUMER_PROTECTION_HANDOFF_20261103.md",
+    "original_groups": [
+      4,
+      10,
+      11,
+      14,
+      16,
+      17
+    ],
+    "backend_owner": "chengcongcong222",
+    "frontend_owner": "Bill-Billion",
+    "implementation": "IMPLEMENTED_ISOLATED_VERIFIED",
+    "frontend_status": "NOT_CONFIRMED_CLAIMED",
+    "contract_version": "0.31.26-rc.1",
+    "migration": "0209",
+    "formal_acceptance_pass": 0,
+    "merged": false,
+    "deployed": false,
+    "real_services": false,
+    "backend_full": {
+      "tests": 1265,
+      "pass": 1264,
+      "fail": 0,
+      "skipped": 1
+    },
+    "additional_consumer_tests": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "skipped": 0
+    },
+    "additional_cocreation_tests": {
+      "tests": 26,
+      "pass": 26,
+      "fail": 0,
+      "skipped": 0
+    },
+    "final_launch_guard": {
+      "tests": 56,
+      "pass": 56,
+      "fail": 0,
+      "skipped": 0
+    },
+    "backend_full_baseline_commit": "c258dd63",
+    "full_rerun_after_launch_guard": false
   }
 }
