@@ -15,6 +15,19 @@ import { rightsErrors } from './modules/rights'
 
 /** 已知错误码的说明。键是后端返回的 error.code。 */
 const CODE_MESSAGES: Record<string, string> = {
+ CONSUMER_MONTHLY_LIMIT_EXCEEDED:'本次操作超过你设置的月度额度；先核对占用和待确认金额，不要重复付款。',
+ CONSUMER_LIMIT_COOLING_PERIOD:'提高额度还需要等待，请刷新并核对服务器可确认时间。',
+ CONSUMER_LIMIT_CHANGE_NOT_PENDING:'该提额申请已处理或不存在，请核对当前记录。',
+ CONSUMER_LIMIT_UNCHANGED:'额度与当前设置相同，请核对当前记录。',
+ CONSUMER_USAGE_REVIEW_REQUIRED:'本月记录需要核对，暂不显示可用额度，请联系平台。',
+ LOTTERY_NOTICE_PERIOD:'奖池规则正在公示，尚未开放抽奖，请刷新查看开放时间。',
+ LOTTERY_NOTICE_EXCEEDS_PERIOD:'公示期超过活动结束时间，请调整活动窗口后重新审核。',
+ RECONCILIATION_SOURCES_CHANGED:'平台记账事实已变化，请清空旧分页并重新核对。',
+ RECONCILIATION_NOT_MATCHED:'仍有差异或尚未重新比对，不能审核结案。',
+ RECONCILIATION_DAY_NOT_CLOSED:'本业务日尚未结束，请选择北京时间已结束的业务日。',
+ RECONCILIATION_DAY_TOO_LARGE:'本日事实超过安全核对范围，请先联系平台拆解核查，不展示截断后的合计。',
+ INDEPENDENT_RECONCILIATION_EVIDENCE_REQUIRED:'核验凭证不能与账单使用相同内容，请补充独立依据。',
+
   GUARDIAN_LINK_NOT_ACTIVE: '监护关系未生效、已到期、撤销或有异议，请核对原关系。',
   GUARDIAN_DISABLED: '监护人已关闭使用，请返回核对关系。',
   GUARDIAN_USAGE_SESSION_REQUIRED: '本次一分钟使用时段已结束，需孩子本人明确申请下一时段。',

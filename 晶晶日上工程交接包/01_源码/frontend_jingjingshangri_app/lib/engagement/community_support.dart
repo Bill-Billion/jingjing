@@ -194,6 +194,12 @@ String communityError(Object error) {
   if (error.status == 412) return '这份记录已有新进展，已保留填写内容；请读取新版本后再次明确确认。';
   if ([401, 403, 404].contains(error.status)) return '记录不存在或当前身份已无权办理，私有内容已清空。';
   return const {
+        'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
+            '本次操作超过你设置的月度额度，请到个人月度限额核对占用和待确认金额；不要重复付款。',
+        'CONSUMER_LIMIT_COOLING_PERIOD': '提高额度还需要等待，请刷新并核对最早可确认时间。',
+        'CONSUMER_LIMIT_CHANGE_NOT_PENDING': '该提额申请已处理或不存在，请读取当前记录。',
+        'CONSUMER_LIMIT_UNCHANGED': '额度与当前设置相同，请读取当前记录。',
+        'CONSUMER_USAGE_REVIEW_REQUIRED': '本月记录需要核对，暂不显示可用额度，请联系平台。',
         'CUSTODY_PROVIDER_NOT_CONNECTED': '资金托管服务尚未接通，不能充值或以托管余额付款。',
         'CUSTOMIZATION_ORDER_EXISTS': '这份故事已有原订单，请从原订单继续；追加制作需关联有效创意工单。',
         'COCREATION_NOT_READY': '有效人数、资料、授权或首款尚未齐备。',
@@ -201,6 +207,8 @@ String communityError(Object error) {
         'COCREATION_PARTICIPATION_REQUIRED': '参与条款已变化，请核对本次授权后重新确认。',
         'COCREATION_SNIPPET_NOT_READY': '该片段尚不满足领取条件。',
         'REDEMPTION_STOCK_UNAVAILABLE': '该权益库存不足或已停止兑换，请刷新目录。',
+        'LOTTERY_NOTICE_PERIOD': '奖池规则正在公示，尚未开放抽奖，请刷新查看开放时间。',
+        'LOTTERY_NOTICE_EXCEEDS_PERIOD': '公示期超过活动结束时间，请工作人员调整活动窗口。',
         'LOTTERY_STOCK_INSUFFICIENT': '奖品库存不足，本次未扣分，请刷新后再核对。',
         'REVIEW_FULFILLED_ORDER_REQUIRED':
             '这笔订单尚未同时满足正式付款、实际履约、无争议和双方独立要求，请先核对原订单。',
@@ -228,6 +236,7 @@ class CommunityApi {
       'engagement',
       'cocreation',
       'redemption',
+      'wallet',
       'privacy',
       'projects',
       'directory',
@@ -403,6 +412,7 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   AccountSession get session;
   String get domain;
   CommunityApi get api => CommunityApi(session, domain);
+  String get recoveryPrefix => api.prefix;
   bool busy = false, checking = false;
   String? error, notice;
   int ticket = 0;
@@ -425,7 +435,7 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   void initState() {
     super.initState();
     final pending =
-        session.pendingForPrefix(api.prefix, personal: api.personal);
+        session.pendingForPrefix(recoveryPrefix, personal: api.personal);
     if (pending.isNotEmpty) {
       final op = pending.first, path = op['path'];
       if (path is String && path.startsWith(api.prefix)) {

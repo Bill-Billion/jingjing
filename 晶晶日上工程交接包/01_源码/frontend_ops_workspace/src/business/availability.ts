@@ -1,3 +1,4 @@
+import {lotteryReason} from './fourPages'
 import {sixActionReason} from './contractSix'
 import { recordId, rowData, versionOf, type BusinessData } from '@/api/modules/business'
 import type { Operation } from './model'
@@ -14,6 +15,7 @@ export function actionAvailability(domain: string, operation: Operation, record:
   if (operation.match && (!record || versionOf(record) === null)) return blocked('先读取本次原记录，核对最新状态与版本。')
   const sixReason=sixActionReason(domain,key,record,context.accountId,context.partyId)
   if(sixReason)return blocked(sixReason)
+  if(domain==='redemption'&&['draw-one','draw-ten'].includes(key)){const reason=lotteryReason(record);if(reason)return blocked(reason)}
   let explicit = false
   if (targetsRecord && record && Array.isArray(record.allowed_actions)) {
     const roomActions: Record<string, string[]> = { invite: ['INVITE'], close: ['CLOSE'], case: ['REQUEST_EXTENSION', 'REQUEST_RESUME', 'REQUEST_CANCEL'] }

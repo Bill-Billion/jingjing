@@ -907,6 +907,12 @@ Map<String, int> tradeRefundRemaining(
 String tradeError(Object e, {bool writing = false}) {
   if (e is! AccountError) return '返回内容无法识别，请重新读取。';
   const contractErrors = {
+    'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
+        '本次操作超过你设置的月度额度，请到个人月度限额核对占用和待确认金额；不要重复付款。',
+    'CONSUMER_LIMIT_COOLING_PERIOD': '提高额度还需要等待，请刷新并核对最早可确认时间。',
+    'CONSUMER_LIMIT_CHANGE_NOT_PENDING': '该提额申请已处理或不存在，请读取当前记录。',
+    'CONSUMER_LIMIT_UNCHANGED': '额度与当前设置相同，请读取当前记录。',
+    'CONSUMER_USAGE_REVIEW_REQUIRED': '本月记录需要核对，暂不显示可用额度，请联系平台。',
     'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分钱存在尾差异常，旧账保留，暂停新增付款并等待人工复核。',
     'MARKETPLACE_CONTRACT_RULE_REQUIRED':
         '缺少已生效的分配规则，请工作人员维护现货18%或商单22%规则后核对原请求。',

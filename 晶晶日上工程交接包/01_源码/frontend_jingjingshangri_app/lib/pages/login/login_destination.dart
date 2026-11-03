@@ -173,6 +173,7 @@ const _readAndFormRoutes = <String>{
   '/video-order',
   '/wallet',
   '/wallet/level-six',
+  '/wallet/limits',
   '/wallet/points',
   '/wallet/recharge',
   '/wallet/records',

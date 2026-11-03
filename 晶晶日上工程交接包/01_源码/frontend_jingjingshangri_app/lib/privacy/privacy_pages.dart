@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/rest_reminder.dart';
 import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
@@ -539,6 +540,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         communityField(minutes, '休息提醒间隔（分钟）',
             keyboard: TextInputType.number, enabled: enabled),
         const Text('0为关闭；开启时15—240分钟。'),
+        const RestUsageSummary(),
         tradeButton(
             '保存本次偏好',
             enabled

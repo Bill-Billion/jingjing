@@ -119,13 +119,13 @@ const entries:Entry[] = [
   ...Object.values(domains).map(d => ({to:`/${d.key}/${d.sections[0]!.key}`,label:d.title,icon:Collection,domain:d.key})),
 ]
 const categories = [
-  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','wallet','redemption','engagement','privacy','guardians','infringement','me/collections','me/business','me/phone-change','invoices/requests','support/tickets','support/new']},
+  {id:'account',icon:Setting,label:'账号与个人服务',roots:['workspace','contracts','consumer','wallet','redemption','engagement','privacy','guardians','infringement','me/collections','me/business','me/phone-change','invoices/requests','support/tickets','support/new']},
   {id:'people',icon:User,label:'人物与作品',roots:['artists','supply','media','participation','discovery','directory/organizations','directory/featured','directory/manage']},
   {id:'trade',icon:Film,label:'影片与许可交易',roots:['stock','licensing','trade']},
   {id:'gigs',icon:Briefcase,label:'商单与通告',roots:['gigs','notices','handover']},
   {id:'creation',icon:EditPen,label:'故事与共创',roots:['operations/customization','cocreation','auditions','conversations']},
   {id:'production',icon:VideoCamera,label:'制作与发行',roots:['production','projects']},
-  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['finance','operations','invoices/operations','support/operations','directory/reviews']},
+  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['daily-finance','finance','operations','invoices/operations','support/operations','directory/reviews']},
 ]
 const categoryFor = (entry:Entry) => categories.find(group => group.roots.some(root => entry.to === `/${root}` || entry.to.startsWith(`/${root}/`)))!
 const groups = categories.map(group => ({...group,entries:entries.filter(entry => categoryFor(entry).id === group.id)}))

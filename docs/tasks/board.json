@@ -6319,6 +6319,56 @@
       "updated_on": "2026-11-03",
       "implementation": "COMPLETE",
       "implementation_scope": "消费风险规则/确认、夜间与推送队列约束、新合同奖池校验和后端兑现验证；不含真实推送供应商或未交付页面"
+    },
+    {
+      "id": "UX-MACMINI-FOUR-PAGES-20261103",
+      "title": "财务日对账、个人限额、奖池公示与定时休息四组页面",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/UX-mac-mini-four-pages-20261103.md",
+        "docs/reviews/mac-mini-pr39-four-pages-20261103/REPORT.md",
+        "docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json"
+      ],
+      "acceptance": "同版接入四组页面，验证操作、权限、重复请求、断网恢复与真实网页/Android相关路径；休息提醒至少一条实际15分钟；按标准编号登记局部证据，不冒称151条正式通过。",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission",
+        "payments/refunds"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-mac-mini-four-pages-20261103.md",
+        "docs/reviews/mac-mini-pr39-four-pages-20261103/REPORT.md",
+        "docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-03",
+      "actual_implementer": "Bill-Billion",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户2026-11-03 02:05:15 UTC转交四组分工；继续Mac mini原PR39开发测试流程，禁止PR评论、合并部署和真实服务。",
+      "implementation_scope": "财务日对账运营Web；本人限额/付款提示及奖池公示App/Web；休息提醒偏好及前台生命周期。后端高频/夜间确认、免打扰发送执行、奖品兑现仍由chengcongcong222负责。",
+      "baseline_commit": "bb62eae60e2cf238a072053af5311aeb5c55403c",
+      "api_version": "0.31.26-rc.1",
+      "migration": "0209",
+      "pr_url": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "integration_base": "20a0a25ef69e18aaaf00941251dfb0f48dbb28ae",
+      "backend_base": "504ae6566f7682b7a6b4d5900b70cd5df4d26c21",
+      "verification_limits": [
+        "实际Chrome隐藏未产生，Web后台仅状态机验证，Android系统后台已验",
+        "原生到期用夹具；真实15分钟为Chromium页面",
+        "未重验全部人工定制/试镜商单钱账与151正式标准",
+        "后发消费/夜间/推送页面独立增量未认领"
+      ]
     }
   ],
   "delivery_policy": {
@@ -12944,7 +12994,7 @@
       "SKIP": 1,
       "TODO": 0
     },
-    "partial_links": 67,
+    "partial_links": 72,
     "formal_pass": 0,
     "frontend": "NO_NEW_COMMIT_FOUND",
     "merged": false,
@@ -12954,6 +13004,8 @@
     "report_history_tests": 41,
     "browser_checks": 21,
     "browser_harness_tests": 8,
-    "full_rerun_after_report_history": false
+    "full_rerun_after_report_history": false,
+    "frontend_combined_commit": "4414de7636e05be5c2fa5117af14dfd43c9c9b46",
+    "frontend_remaining": "原四组页面已由前端负责人 Bill-Billion 交付至4414de76：财务每日对账、个人额度与冷静期、奖池七日公示、本人开启后的休息提醒。已合入本地并完成组合网页自动检查、类型检查/构建及9组实际浏览器操作。不要重复派成未开发。后发增量仍待接入确认：消费风险预览/主动确认及运营规则审核、新合同奖池候选/理性确认、夜间/推送设置、本人报表列表。它们归原四组，未新增产品阶段。"
   }
 }

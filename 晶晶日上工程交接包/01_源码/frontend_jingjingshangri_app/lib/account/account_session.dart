@@ -413,8 +413,9 @@ class AccountSession extends ChangeNotifier {
     final started = _epoch;
     final loginStarted = _loginEpoch;
     final phoneChange = path.startsWith('/api/v1/me/phone-changes');
-    bool current() =>
-        phoneChange ? loginStarted == _loginEpoch : started == _epoch;
+    bool current() => phoneChange || path.startsWith('/api/v1/privacy/usage')
+        ? loginStarted == _loginEpoch
+        : started == _epoch;
     if (phoneChange && actingParty != null) {
       throw const AccountError(400, 'ACTING_PARTY_NOT_ALLOWED');
     }

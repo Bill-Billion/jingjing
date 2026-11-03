@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'account_session.dart';
+import 'account_theme.dart';
+import 'rest_usage.dart';
 
-/// A foreground reminder based on the person's saved preference. No background
-/// notification, device permission or business record is created by this timer.
 class RestReminder extends StatefulWidget {
   const RestReminder({super.key, required this.child});
   final Widget child;
@@ -14,11 +13,7 @@ class RestReminder extends StatefulWidget {
 
 class _RestReminderState extends State<RestReminder>
     with WidgetsBindingObserver {
-  Timer? timer;
-  AccountSession? session;
-  (String?, int, int?, bool)? contextKey;
-  String? fetchedAccount;
-  bool foreground = true;
+  RestUsageController? controller;
   @override
   void initState() {
     super.initState();
@@ -28,73 +23,71 @@ class _RestReminderState extends State<RestReminder>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    session = context.watch<AccountSession>();
-    final s = session!, account = s.account?['id'] as String?;
-    final next = (
-      account,
-      s.epoch,
-      s.restReminderMinutes,
-      s.isDomainDenied('/api/v1/privacy/')
-    );
-    if (contextKey != next) {
-      contextKey = next;
-      arm();
-    }
-    if (account == null) {
-      fetchedAccount = null;
-    } else if (fetchedAccount != account) {
-      fetchedAccount = account;
-      if(s.restReminderMinutes == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (!mounted || session != s || s.account?['id'] != account) return;
-        try {
-          await s.read('/api/v1/privacy/preferences');
-        } catch (_) {}
-      });
-      }
-    }
-  }
-
-  void arm() {
-    timer?.cancel();
-    timer = null;
-    final s = session, minutes = s?.restReminderMinutes;
-    if (!foreground ||
-        s == null ||
-        !s.isLoggedIn ||
-        minutes == null ||
-        minutes == 0 ||
-        s.isDomainDenied('/api/v1/privacy/')) {
-      return;
-    }
-    final epoch = s.epoch, account = s.account?['id'];
-    timer = Timer(Duration(minutes: minutes), () {
-      if (!mounted ||
-          !foreground ||
-          s.epoch != epoch ||
-          s.account?['id'] != account) {
-        return;
-      }
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
-          content: Text('已连续使用 $minutes 分钟，起身休息一下吧。'),
-          duration: const Duration(seconds: 6)));
-      arm();
-    });
+    controller ??= RestUsageController(context.read<AccountSession>())
+      ..setVisible(WidgetsBinding.instance.lifecycleState == null ||
+          WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed);
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    foreground = state == AppLifecycleState.resumed;
-    arm();
-  }
-
+  void didChangeAppLifecycleState(AppLifecycleState state) =>
+      controller?.setVisible(state == AppLifecycleState.resumed);
   @override
   void dispose() {
-    timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    controller?.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) =>
+      ChangeNotifierProvider<RestUsageController>.value(
+          value: controller!,
+          child: Consumer<RestUsageController>(
+              builder: (_, c, child) => Column(children: [
+                    Expanded(child: child!),
+                    if (c.data?.due == true || c.pending != null)
+                      Material(
+                          color: AccountTheme.canvas,
+                          child: SafeArea(
+                              top: false,
+                              child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (c.data?.due == true)
+                                          const Text('已连续使用一段时间，建议休息。'),
+                                        if (c.error != null) Text(c.error!),
+                                        TextButton(
+                                            onPressed: c.busy
+                                                ? null
+                                                : () => c.acknowledge(
+                                                    recover: c.pending != null),
+                                            child: Text(c.pending != null
+                                                ? '恢复同一次提醒确认'
+                                                : '知道了'))
+                                      ]))))
+                  ]),
+              child: widget.child));
+}
+
+class RestUsageSummary extends StatelessWidget {
+  const RestUsageSummary({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.watch<RestUsageController?>(), d = c?.data;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const SizedBox(height: 16),
+      const Text('使用时长估计', style: TextStyle(fontWeight: FontWeight.bold)),
+      if (d != null)
+        Text(d.enabled
+            ? '今天约 ${d.duration('day_seconds')}；连续约 ${d.duration('reminder_seconds')}'
+            : '定时休息已关闭，不报告使用状态。'),
+      if (c?.error != null) Text(c!.error!),
+      const Text('依据前台心跳估算，并非精确屏幕时长。短于90秒的离开或网络延迟可能计入；后台不补发。提醒不阻止必要业务办理。'),
+      TextButton(
+          onPressed: c == null || c.busy ? null : c.refresh,
+          child: const Text('刷新本人统计')),
+    ]);
+  }
 }

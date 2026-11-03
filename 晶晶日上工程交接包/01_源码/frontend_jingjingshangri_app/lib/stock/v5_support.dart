@@ -580,6 +580,12 @@ String v5Error(AccountError e, {bool writing = false}) {
   if (e.status == 412) return '记录已有新版本。输入已保留，请读取最新状态并重新确认。';
   if ([403, 404].contains(e.status)) return '当前身份不能读取或办理这份记录，私有内容已清空。';
   const messages = {
+    'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
+        '本次操作超过你设置的月度额度，请到个人月度限额核对占用和待确认金额；不要重复付款。',
+    'CONSUMER_LIMIT_COOLING_PERIOD': '提高额度还需要等待，请刷新并核对最早可确认时间。',
+    'CONSUMER_LIMIT_CHANGE_NOT_PENDING': '该提额申请已处理或不存在，请读取当前记录。',
+    'CONSUMER_LIMIT_UNCHANGED': '额度与当前设置相同，请读取当前记录。',
+    'CONSUMER_USAGE_REVIEW_REQUIRED': '本月记录需要核对，暂不显示可用额度，请联系平台。',
     'AUTHENTICATION_REQUIRED': '请先登录并核对办事身份。',
     'INVALID_ID': '请选择有效记录，或核对原记录编号。',
     'INVALID_AMOUNT': '金额须为正数且最多两位小数；次数和时限须为约定范围内整数。',
