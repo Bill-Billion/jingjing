@@ -24,6 +24,14 @@ test('浏览器检查失败仍清理两个服务',async t=>{
 test('网页提前退出立即报错，不误把旧服务当新服务',async t=>{
  const a=await options(t);a.web.args=['exit'];await assert.rejects(runSession(a),/TEST_SERVICE_EXITED_BEFORE_READY/);await isFree(a.apiUrl);
 });
+test('启动失败不显示旧浏览器通过日志，原证据保留在同目录',async t=>{
+ const a=await options(t);fs.writeFileSync(path.join(a.logDir,'check.log'),'previous run PASS');a.web.args=['exit'];
+ await assert.rejects(runSession(a),/TEST_SERVICE_EXITED_BEFORE_READY/);
+ assert(!fs.existsSync(path.join(a.logDir,'check.log')));
+ const archived=fs.readdirSync(a.logDir).filter(n=>n.startsWith('check.previous-'));
+ assert.equal(archived.length,1);assert.equal(fs.readFileSync(path.join(a.logDir,archived[0]),'utf8'),'previous run PASS');
+ await isFree(a.apiUrl);await isFree(a.webUrl);
+});
 test('网页代理不能访问后端时不启动浏览器检查',async t=>{
  const a=await options(t);a.web.args[0]='wrong-proxy';await assert.rejects(runSession(a),/TEST_PROXY_READINESS_TIMEOUT/);assert(!fs.existsSync(path.join(a.logDir,'check.log')));await isFree(a.apiUrl);await isFree(a.webUrl);
 });

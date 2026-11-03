@@ -25,7 +25,16 @@ async function authorized(tx,r,a){
 function createPushDelivery(db,{provider=null,environment=process.env.NODE_ENV}={}){
  // Synthetic adapters may only run in an explicitly isolated test environment.
  const ready=()=>environment==='test'&&provider?.environment==='SANDBOX'&&typeof provider.send==='function';
- async function finish(record,result){const status=result?.status==='ACCEPTED'?'ACCEPTED':result?.status==='FAILED'?'FAILED':'UNKNOWN';const receipt=typeof result?.receipt_id==='string'&&/^[A-Za-z0-9_.:-]{1,128}$/.test(result.receipt_id)?result.receipt_id:null;await db.execute("UPDATE notification_deliveries SET current_status=?,provider_receipt=?,reason=? WHERE id=? AND current_status IN ('DISPATCHING','UNKNOWN')",[status,receipt,status==='UNKNOWN'?'PROVIDER_RESULT_UNKNOWN':null,record.id]);return {id:record.id,status,simulated:true};}
+ async function finish(record,result){
+  const status=result?.status==='ACCEPTED'?'ACCEPTED':result?.status==='FAILED'?'FAILED':'UNKNOWN';
+  const receipt=typeof result?.receipt_id==='string'&&/^[A-Za-z0-9_.:-]{1,128}$/.test(result.receipt_id)?result.receipt_id:null;
+  await db.execute("UPDATE notification_deliveries SET current_status=?,provider_receipt=?,reason=? WHERE id=? AND current_status IN ('DISPATCHING','UNKNOWN')",[status,receipt,status==='UNKNOWN'?'PROVIDER_RESULT_UNKNOWN':null,record.id]);
+  // A concurrent query may already have established a terminal result. Return the
+  // stored result, never the late response that the conditional update rejected.
+  const saved=await A.one(db,'SELECT id,current_status,simulated FROM notification_deliveries WHERE id=?',[record.id]);
+  if(!saved)throw error('NOTIFICATION_NOT_FOUND',404);
+  return {id:saved.id,status:saved.current_status,simulated:!!saved.simulated};
+ }
  return {
   status:()=>({configured:ready(),environment:ready()?'SANDBOX':'DISABLED',real_services_enabled:false}),
   async dispatch(recordId){id(recordId);if(!ready())return {id:recordId,status:'PROVIDER_NOT_CONFIGURED',simulated:false};

@@ -97,6 +97,15 @@ test('reviewed consumer protection binds real operations, preserves recovery and
  await t.test('unknown push response is queried using original key, never automatically resent',async()=>{
   await db.execute("UPDATE notification_deliveries SET dispatched_at='2020-01-01' WHERE account_id=?",[buyer.account_id]);const r=await enqueue();let calls=0;const d=push.createPushDelivery(db,{environment:'test',provider:{...provider,send:async()=>{calls++;throw Error('lost response');}}});assert.equal((await d.dispatch(r.id)).status,'UNKNOWN');assert.equal((await d.dispatch(r.id)).status,'UNKNOWN');assert.equal(calls,1);assert.equal((await d.reconcile(r.id)).status,'ACCEPTED');assert.equal(calls,1);
  });
+ await t.test('late unknown send result returns the accepted status already established by reconciliation',async()=>{
+  await db.execute("UPDATE notification_deliveries SET dispatched_at='2020-01-01' WHERE account_id=?",[buyer.account_id]);
+  const r=await enqueue();let release,started,calls=0;const entered=new Promise(resolve=>{started=resolve;}),pending=new Promise(resolve=>{release=resolve;});
+  const d=push.createPushDelivery(db,{environment:'test',provider:{...provider,send:async()=>{calls++;started();return pending;}}});
+  const sending=d.dispatch(r.id);await entered;
+  try{await db.execute("UPDATE notification_deliveries SET dispatched_at='2020-01-01' WHERE id=?",[r.id]);assert.equal((await d.reconcile(r.id)).status,'ACCEPTED');}
+  finally{release(null);}
+  assert.equal((await sending).status,'ACCEPTED');assert.equal((await d.dispatch(r.id)).status,'ACCEPTED');assert.equal(calls,1);
+ });
  const out=path.resolve(__dirname,'../../../..','.local/consumer-risk-http-fixtures.json');await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
 });

@@ -49,6 +49,10 @@ async function runSession(options) {
   if(fs.existsSync(statePath)) throw Error('STALE_TEST_STATE_REFUSED');
   await freePort(apiUrl); await freePort(webUrl);
   fs.mkdirSync(logDir,{recursive:true});
+  // A startup failure must never print a previous run's successful browser log.
+  // Preserve that evidence, but remove it from the current diagnostic location.
+  const priorCheck=path.resolve(logDir,'check.log');
+  if(fs.existsSync(priorCheck))fs.renameSync(priorCheck,path.resolve(logDir,'check.previous-'+require('node:crypto').randomUUID()+'.log'));
   let apiProcess,webProcess,checkProcess,interrupted=false;
   const signal=()=>{interrupted=true;};
   process.on('SIGINT',signal); process.on('SIGTERM',signal);
