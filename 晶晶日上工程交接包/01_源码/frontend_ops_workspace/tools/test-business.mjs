@@ -452,5 +452,24 @@ try{
   const {html}=await render('/stock/listings/'+id(5),{id:id(5),object_version:1,current_status:'REJECTED',data:{}});assert(!html.includes('关联新版本尚未开放'));assert(html.includes('修改材料并重新提交'))
  })
 
+ test('隐私规则目录按本人动作和运营留存类别分开，不复用素材清理规则',()=>{
+  for(const action of ['PROFILE_CORRECTION','FILE_ERASURE','ACCOUNT_CLOSURE','RESTRICT_CONTENT','RELEASE_CONTENT']){
+   const source=references.sourceFor('policy_rule_id',{request_id:id(5),action},'privacy',id(2));assert.equal(source.party,'none');assert.equal(source.path,`/privacy/${action.includes('CONTENT')?'operations/':''}requests/${id(5)}/execution-policy-options?action=${action}&limit=20`)
+  }
+  const retained=references.sourceFor('policy_rule_id',{request_id:id(5),scope:'TRANSACTIONS'},'privacy',id(2));assert.equal(retained.path,`/privacy/operations/requests/${id(5)}/retention-policy-options?scope=TRANSACTIONS&limit=20`)
+  assert.equal(references.sourceFor('policy_rule_id',{request_id:id(5),action:'NOT_ALLOWED'},'privacy',id(2)),null)
+  assert.equal(references.sourceFor('target_id',{request_id:id(5),action:'FILE_ERASURE'},'privacy',id(2)).path,`/privacy/requests/${id(5)}/file-options?kind=FILE`)
+ })
+ test('隐私规则必须属于同一申请和动作，拒绝错包与重复或倒退游标',async()=>{
+  const source=references.sourceFor('policy_rule_id',{request_id:id(5),action:'ACCOUNT_CLOSURE'},'privacy',id(2)),identity={token:'test',accountId:id(1),partyId:id(2)},data={request_id:id(5),action:'ACCOUNT_CLOSURE',items:[{id:id(10),version:'合成版本',basis:'仅本人核对后关闭账号',contact_reference:'合成隐私联系人',retention_rule_id:id(9)}],next_cursor:null}
+  let actual;globalThis.fetch=async(url,o)=>{actual={url,o};return response(data,null)};const result=await references.readReferences(source,identity);assert(!actual.o.headers['X-Acting-Party']);assert(references.referenceOptions(result.items,'policy_rule_id')[0].label.includes('仅本人核对后关闭账号'))
+  for(const bad of [{...data,request_id:id(6)},{...data,action:'FILE_ERASURE'},{...data,next_cursor:'invalid'},{...data,next_cursor:id(8)},{...data,items:[data.items[0],data.items[0]]},{...data,items:[{...data.items[0],retention_rule_id:'bad'}]}]){globalThis.fetch=async()=>response(bad,null);await assert.rejects(references.readReferences(source,identity,id(8)),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')}
+  globalThis.fetch=async()=>response({...data,items:[],next_cursor:id(9)},null);assert.equal((await references.readReferences(source,identity,id(8))).data.next_cursor,id(9))
+ })
+ test('分类留存只展示所选类别和实际依据，错类别或无效期限拒绝显示',async()=>{
+  const source=references.sourceFor('policy_rule_id',{request_id:id(5),scope:'TRANSACTIONS'},'privacy',id(2)),identity={token:'test',accountId:id(1),partyId:id(2)},category={scope:'TRANSACTIONS',basis:'合成交易留存依据',max_review_days:30},data={request_id:id(5),scope:'TRANSACTIONS',items:[{id:id(10),version:'合成',categories:[category]}],next_cursor:null}
+  globalThis.fetch=async()=>response(data,null);const result=await references.readReferences(source,identity);const label=references.referenceOptions(result.items,'policy_rule_id')[0].label;assert(label.includes('交易记录'));assert(label.includes('合成交易留存依据'));assert(label.includes('30天内复核'))
+  for(const bad of [{...data,scope:'PROFILE'},{...data,items:[{...data.items[0],categories:[{...category,scope:'PROFILE'}]}]},{...data,items:[{...data.items[0],categories:[{...category,max_review_days:0}]}]}]){globalThis.fetch=async()=>response(bad,null);await assert.rejects(references.readReferences(source,identity),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')}
+ })
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} business checks passed.`)
 }finally{globalThis.fetch=savedFetch;if(storageDescriptor)Object.defineProperty(globalThis,'sessionStorage',storageDescriptor);else delete globalThis.sessionStorage;await server.close()}

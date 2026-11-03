@@ -74,6 +74,41 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   return own;
  }
  return {
+  async executionPolicyOptions(ctx,i){
+   if(!(i.operations?['RESTRICT_CONTENT','RELEASE_CONTENT']:['PROFILE_CORRECTION','FILE_ERASURE','ACCOUNT_CLOSURE']).includes(i.action))throw error('PRIVACY_ACTION_INVALID',400);
+   if(!Number.isInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIST',400);if(i.after)id(i.after);
+   return db.withTransaction(async tx=>{
+    const {request}=await access(tx,ctx,i),spec=decode(request.request_json,request.request_sha256);
+    const types={PROFILE_CORRECTION:['CORRECT'],FILE_ERASURE:['DELETE','CLOSE_ACCOUNT'],ACCOUNT_CLOSURE:['CLOSE_ACCOUNT'],RESTRICT_CONTENT:['COMPLAINT'],RELEASE_CONTENT:['COMPLAINT']};
+    const scope=i.action==='PROFILE_CORRECTION'?'PROFILE':i.action==='FILE_ERASURE'?'ARTIST_MATERIALS':'ALL';
+    if(!types[i.action].includes(spec.type)||!i.operations&&!spec.scopes.includes('ALL')&&!spec.scopes.includes(scope))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+    const [rows]=await tx.execute("SELECT * FROM governance_rules WHERE rule_key='privacy.execution' AND current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) AND id>? ORDER BY id LIMIT ?",[i.after||'',i.limit+1]);
+    const items=[];
+    for(const row of rows.slice(0,i.limit))try{
+     await policy(tx,row.id,i.action);const c=parse(row.content_json),p=c.terms.privacy_execution;
+     items.push({id:row.id,version:c.version,basis:p.basis,contact_reference:p.contact_reference,retention_rule_id:p.retention_rule_id||null});
+    }catch(e){if(e.status!==409)throw e;}
+    return {request_id:request.id,action:i.action,items,next_cursor:rows.length>i.limit?rows[i.limit-1].id:null};
+   });
+  },
+  async retentionPolicyOptions(ctx,i){
+   if(i.scope==='ALL'||!require('./policy').scopes.includes(i.scope))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',400);
+   if(!Number.isInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIST',400);if(i.after)id(i.after);
+   return db.withTransaction(async tx=>{
+    const {request}=await access(tx,ctx,{...i,operations:true}),spec=decode(request.request_json,request.request_sha256);
+    if(!spec.scopes.includes('ALL')&&!spec.scopes.includes(i.scope))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+    const [rows]=await tx.execute("SELECT * FROM governance_rules WHERE rule_key='privacy.retention' AND current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) AND id>? ORDER BY id LIMIT ?",[i.after||'',i.limit+1]);
+    const items=[];
+    for(const row of rows.slice(0,i.limit)){
+     const c=parse(row.content_json);verifyRuleContent(c);
+     const categories=c.terms.privacy_retention?.categories;
+     if(!Array.isArray(categories))continue;
+     const allowed=categories.filter(x=>x.scope===i.scope&&typeof x.basis==='string'&&x.basis.trim()&&Number.isSafeInteger(x.max_review_days)&&x.max_review_days>0).map(x=>({scope:x.scope,basis:x.basis,max_review_days:x.max_review_days}));
+     if(allowed.length)items.push({id:row.id,version:c.version,categories:allowed});
+    }
+    return {request_id:request.id,scope:i.scope,items,next_cursor:rows.length>i.limit?rows[i.limit-1].id:null};
+   });
+  },
   async fileOptions(ctx,i){
    if(!['FILE','POLICY'].includes(i.kind)||!Number.isInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIST',400);if(i.after)id(i.after);
    return db.withTransaction(async tx=>{

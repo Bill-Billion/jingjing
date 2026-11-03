@@ -15,7 +15,8 @@ for(const modern of [false,true])test('gigs '+(modern?'20261029 supply-share':'h
  const people=[];for(const label of ['supplier','buyer','mcn','reviewer','rule-author','outsider']){const ctx={};principals.set(ctx,{subject_ref:'synthetic:'+key()});const p={ctx,...await parties.registerAccount(ctx,{display_name:label}),token:randomBytes(32).toString('base64url')};people.push(p);await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[auth.secure.digest('token',p.token),p.account_id]);}
  const [seller,buyer,mcn,reviewer,author,outsider]=people;for(const p of [reviewer,author,seller,mcn])for(const action of ['GIG_REVIEW','TRADE_REVIEW','TRADE_REFUND','SUPPLY_REVIEW_CONSENT'])await maintainOperatorGrant(db,{account_id:p.account_id,action,enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:test',reason:'isolated test'});
  await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[mcn.personal_party_id]);
- const files=new Map(),storageFactory=()=>({async put({key,body}){files.set(key,Buffer.from(body));return {key,size:body.length,sha256:createHash('sha256').update(body).digest('hex')};},async getBuffer(key){return files.get(key);}}),assets=createSupplyAssets({db,repository:supply,storageFactory});
+ let duringStorageRead=null;
+ const files=new Map(),storageFactory=()=>({async put({key,body}){files.set(key,Buffer.from(body));return {key,size:body.length,sha256:createHash('sha256').update(body).digest('hex')};},async getBuffer(key){if(duringStorageRead){const hook=duringStorageRead;duringStorageRead=null;await hook();}return files.get(key);}}),assets=createSupplyAssets({db,repository:supply,storageFactory});
  const upload=(p,purpose)=>assets.upload(p.ctx,{party_id:p.personal_party_id,purpose,media_type:'text/plain',body:Buffer.from('synthetic '+purpose+key()),operation_key:key()});
  const evidence=await upload(seller,'RIGHTS_EVIDENCE'),buyerEvidence=await upload(buyer,'RIGHTS_EVIDENCE'),mcnEvidence=await upload(mcn,'RIGHTS_EVIDENCE'),material=await upload(seller,'AVATAR_MATERIAL'),consentEvidence=await upload(seller,'CONSENT_EVIDENCE');
  const avatar=await supply.createAvatar(seller.ctx,{party_id:seller.personal_party_id,display_name:'synthetic',material_asset_ids:[material.id],operation_key:key()});
@@ -87,6 +88,23 @@ for(const modern of [false,true])test('gigs '+(modern?'20261029 supply-share':'h
  await t.test('commercial commitments are included before quote and sealed in order',async()=>{const q=await quoteFor(offer);assert.equal(q.data.commercial.offer_id,offer.id);order=await trade.accept(buyer.ctx,{record_id:q.id,party_id:buyer.personal_party_id,expected_version:q.object_version,quote_sha256:q.content_sha256,operation_key:key()});assert.deepEqual(order.data.quote.commercial.commission,relationInput.commission);const q2=await quoteFor(offer);await assert.rejects(trade.accept(buyer.ctx,{record_id:q2.id,party_id:buyer.personal_party_id,expected_version:q2.object_version,quote_sha256:q2.content_sha256,operation_key:key()}),e=>e.code==='COMMERCIAL_ORDER_EXISTS');});
  const config={provider:'ALIPAY',environment:'PRODUCTION',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:seller.personal_party_id,config_revision:'synthetic'};
  await t.test('no verified receipt means zero commission; verified receipt creates conserved accrual',async()=>{commission=take(await api('POST','/commissions',seller,{order_id:order.id}));assert.equal(commission.data.amounts.net_minor,0);payment=await trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:order.id,installment_key:'full',operation_key:key()},config);await trade.applyPayment({...config,payment_id:payment.id,currency:'CNY',amount_minor:10001,transaction_id:'synthetic.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null});await db.execute("UPDATE trade_journal SET created_at=CURRENT_TIMESTAMP(3)-INTERVAL 1 DAY WHERE order_id=?",[order.id]);commission=take(await api('POST','/commissions',mcn,{order_id:order.id}));assert.deepEqual(commission.data.amounts,modern?{net_minor:10001,supplier_minor:6241,platform_minor:2200,mcn_minor:1560}:{net_minor:10001,supplier_minor:8001,platform_minor:1500,mcn_minor:500});assert.equal(commission.data.paid_out_minor,0);});
+ await t.test('restricted commercial attachments stay blocked across concurrent restrictions and storage-read races',async()=>{
+  const privacy=await require('./helpers/gig-privacy-restriction.cjs')({db,resolvePrincipal,author,reviewer,applicant:outsider});
+  const root='/orders/'+order.id+'/conversation',file=await upload(seller,'WORK_CONTENT');
+  const sent=await api('POST',root+'/messages',seller,{kind:'MEDIA',asset_id:file.id});assert.equal(sent.status,200,JSON.stringify(sent.body));
+  const url=root+'/messages/'+sent.body.data.id+'/file';assert.equal((await api('GET',url,buyer)).status,200);
+  const first=await privacy.restrict(file.id),second=await privacy.restrict(file.id);
+  try{
+   for(const u of [buyer,seller]){const response=await api('GET',url,u);assert.equal(response.status,409);assert.equal(response.body.error.code,'CONTENT_RESTRICTED');}
+   assert.equal((await api('GET',url,outsider)).status,404);
+   await privacy.release(first);assert.equal((await api('GET',url,buyer)).status,409);
+  }finally{await privacy.release(second);}
+  assert.equal((await api('GET',url,buyer)).status,200);
+  let racing;duringStorageRead=async()=>{racing=await privacy.restrict(file.id);};
+  try{const response=await api('GET',url,buyer);assert.equal(response.status,409);assert.equal(response.body.error.code,'CONTENT_RESTRICTED');}
+  finally{duringStorageRead=null;if(racing)await privacy.release(racing);}
+  assert.equal((await api('GET',url,buyer)).status,200);
+ });
  await t.test('commercial conversation needs payment, participant access and explicit contacts; support joins and freezes',async()=>{
  const root='/orders/'+order.id+'/conversation';const get=async()=>{const r=await api('GET',root+'/messages',buyer);assert.equal(r.status,200,JSON.stringify(r.body));return r.body.data;};
  assert.equal((await api('GET',root+'/messages',outsider)).status,404);let thread=await get();assert.equal(thread.status,'OPEN');
