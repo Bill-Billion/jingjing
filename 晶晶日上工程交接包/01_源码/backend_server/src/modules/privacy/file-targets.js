@@ -12,6 +12,7 @@ async function dependencies(tx,assetId){
   ['artist_records','ARTIST_ARCHIVE','已被艺人档案、授权或公开资料引用，先核对影响范围'],
   ['supply_records','SUPPLY_ARCHIVE','已被作品或数字人资料引用，先核对相关约定'],
   ['cocreation_records','COCREATION','已被多人共创引用，须核对其他参与人的约定'],
+  ['audition_records','AUDITION_DELIVERY','已被试镜预约或交付引用，须先核对履约、售后及保留范围'],
   ['production_records','PRODUCTION','已被制作项目引用，须核对交付和争议'],
   ['trade_records','TRANSACTION','已被交易约定引用，须核对订单保留依据']
  ]){

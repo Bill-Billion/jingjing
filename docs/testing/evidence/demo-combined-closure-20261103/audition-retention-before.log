@@ -1,0 +1,134 @@
+TAP version 13
+# Subtest: booking scoped delivery options preserve person recipient and live permissions
+    # Subtest: unpaid booking cannot browse delivery materials
+    ok 1 - unpaid booking cannot browse delivery materials
+      ---
+      duration_ms: 52.141
+      type: 'test'
+      ...
+    # Subtest: six linked photos paginate once; video separate; no storage paths or private evidence
+    ok 2 - six linked photos paginate once; video separate; no storage paths or private evidence
+      ---
+      duration_ms: 64.9107
+      type: 'test'
+      ...
+    # Subtest: consent matches booking person avatar purpose and recipient; foreign and other-avatar consents excluded
+    ok 3 - consent matches booking person avatar purpose and recipient; foreign and other-avatar consents excluded
+      ---
+      duration_ms: 51.5821
+      type: 'test'
+      ...
+    # Subtest: buyer operator stranger spoofed identity and missing identity cannot enumerate
+    ok 4 - buyer operator stranger spoofed identity and missing identity cannot enumerate
+      ---
+      duration_ms: 49.6101
+      type: 'test'
+      ...
+    # Subtest: invalid types limits and caller-selected person rejected
+    ok 5 - invalid types limits and caller-selected person rejected
+      ---
+      duration_ms: 23.7573
+      type: 'test'
+      ...
+    # Subtest: unlinked same-owner upload and another persons linked upload excluded
+    ok 6 - unlinked same-owner upload and another persons linked upload excluded
+      ---
+      duration_ms: 35.3867
+      type: 'test'
+      ...
+    # Subtest: unused linked material can be reviewed for deletion before any audition delivery uses it
+    not ok 7 - unused linked material can be reviewed for deletion before any audition delivery uses it
+      ---
+      duration_ms: 60.4056
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:46:11'
+      failureType: 'testCodeFailure'
+      error: 'PRIVACY_FORBIDDEN'
+      code: 'PRIVACY_FORBIDDEN'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        operator (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\privacy\repository.js:7:119)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async access (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\privacy\execution.js:49:19)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\privacy\execution.js:171:23
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:56:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:46:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    # Subtest: actual submission still validates chosen options and cannot reuse selection during review
+    ok 8 - actual submission still validates chosen options and cannot reuse selection during review
+      ---
+      duration_ms: 34.8577
+      type: 'test'
+      ...
+    # Subtest: submitted audition materials disclose retention reason without private booking data
+    not ok 9 - submitted audition materials disclose retention reason without private booking data
+      ---
+      duration_ms: 18.4715
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:61:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'READY_FOR_REVIEW'
+        - 'DEPENDENCY_REVIEW'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'DEPENDENCY_REVIEW'
+      actual: 'READY_FOR_REVIEW'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:63:116)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:61:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: prior approved deletion is refused after delivery references the asset and leaves the file intact
+    not ok 10 - prior approved deletion is refused after delivery references the asset and leaves the file intact
+      ---
+      duration_ms: 5.8125
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:66:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        The validation function is expected to return "true". Received false
+        
+        Caught error:
+        
+        Error: PRIVACY_EXECUTION_NOT_APPROVED
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:67:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:66:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..10
+not ok 1 - booking scoped delivery options preserve person recipient and live permissions
+  ---
+  duration_ms: 8709.1848
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 11
+# suites 0
+# pass 7
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8917.6376

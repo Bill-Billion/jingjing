@@ -42,8 +42,32 @@ test('booking scoped delivery options preserve person recipient and live permiss
    const other=await assets.upload(buyer.ctx,{person_id:buyer.person.id,party_id:buyer.personal_party_id,purpose:'AVATAR_MATERIAL',media_type:'image/jpeg',body:Buffer.from('synthetic other owner'),operation_key:key()});
    const d=ok(await query('PHOTO'));assert.equal(d.items.length,6);assert(!d.items.some(x=>x.id===other.id));
   });
+  let privacy,privacyRequest,erasure;
+  await t.test('unused linked material can be reviewed for deletion before any audition delivery uses it',async()=>{
+   const {createRuleContent}=require('../src/modules/governance/content');
+   async function rule(rule_key,terms){const id=key(),c=createRuleContent({id,rule_key,version:id,terms});await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[id,rule_key,id,JSON.stringify(c),'2020-01-01 00:00:00',reviewer.account_id,'EFFECTIVE']);return id;}
+   const retention=await rule('privacy.retention',{privacy_retention:{categories:[{scope:'TRANSACTIONS',basis:'synthetic pending delivery review',max_review_days:30}]}});
+   const policy=await rule('privacy.execution',{privacy_execution:{actions:['FILE_ERASURE'],basis:'synthetic not formal policy',contact_reference:'synthetic:contact',backup_strategy:'REAPPLY_ERASURE_REGISTER_BEFORE_ACCESS',retention_rule_id:retention}});
+   for(const action of ['PRIVACY_HANDLE','PRIVACY_REVIEW'])await require('../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:reviewer.account_id,action,enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:review',reason:'isolated test'});
+   privacy=require('../src/modules/privacy/repository').createPrivacyRepository(db,{resolvePrincipal:S.resolvePrincipal,storageFactory:()=>({...S.storageFactory(),identity:{provider_code:'aliyun-oss',environment:'SANDBOX'},inspect:()=>({implemented:true,configured:true,config_revision:'synthetic-audition'})})});
+   privacyRequest=await privacy.create(seller.ctx,{request:{type:'DELETE',scopes:['ARTIST_MATERIALS'],details:'Synthetic unused original material'},operation_key:key()});
+   const before=await privacy.fileOptions(seller.ctx,{request_id:privacyRequest.id,kind:'FILE',limit:100});assert.equal(before.items.find(x=>x.id===S.delivery.photos[0]).disposition,'READY_FOR_REVIEW');
+   erasure=await privacy.proposeExecution(seller.ctx,{request_id:privacyRequest.id,expected_version:privacyRequest.object_version,action:'FILE_ERASURE',target_id:S.delivery.photos[0],policy_rule_id:policy,details:{reason:'Synthetic deletion before delivery'},operations:false,operation_key:key()});
+   erasure=await privacy.reviewExecution(reviewer.ctx,{request_id:privacyRequest.id,execution_id:erasure.id,expected_version:erasure.object_version,proposal_sha256:erasure.proposal_sha256,decision:'APPROVE',reason:'Synthetic independent review',scope_verified:true,retention_verified:true,operation_key:key()});
+  });
   await t.test('actual submission still validates chosen options and cannot reuse selection during review',async()=>{
    booking=await R.deliver(seller.ctx,{record_id:booking.id,party_id:seller.personal_party_id,expected_version:booking.object_version,delivery:S.delivery,operation_key:key()});assert.equal(booking.current_status,'DELIVERY_REVIEW');assert.equal((await query('PHOTO')).error.code,'AUDITION_NOT_DELIVERABLE');
+  });
+  await t.test('submitted audition materials disclose retention reason without private booking data',async()=>{
+   const d=await privacy.fileOptions(seller.ctx,{request_id:privacyRequest.id,kind:'FILE',limit:100});
+   for(const asset of [...S.delivery.photos,...S.delivery.videos]){const item=d.items.find(x=>x.id===asset);assert.equal(item.disposition,'DEPENDENCY_REVIEW');assert(item.dependencies.some(x=>x.code==='AUDITION_DELIVERY'));}
+   assert(!JSON.stringify(d).includes(booking.id));assert(!JSON.stringify(d).includes(buyer.account_id));
+  });
+  await t.test('prior approved deletion is refused after delivery references the asset and leaves the file intact',async()=>{
+   await assert.rejects(privacy.execute(seller.ctx,{request_id:privacyRequest.id,execution_id:erasure.id,expected_version:erasure.object_version,confirmed:true,operations:false,operation_key:key()}),e=>e.code==='PRIVACY_FILE_RETENTION_REVIEW_REQUIRED');
+   assert.equal((await db.execute('SELECT current_status FROM supply_assets WHERE id=?',[S.delivery.photos[0]]))[0][0].current_status,'READY');
+   assert.equal((await privacy.executions(seller.ctx,{request_id:privacyRequest.id,limit:20})).items[0].current_status,'APPROVED');
+   assert.equal((await db.execute('SELECT COUNT(*) n FROM privacy_tombstones WHERE asset_id=?',[S.delivery.photos[0]]))[0][0].n,'0');
   });
  }finally{
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();if(created)await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();
