@@ -4,7 +4,7 @@
 
 ## 范围与版本
 
-用户02:05:15 UTC转交的原四组为：运营Web财务日对账、App/Web本人月度限额、已有奖池公示、服务端定时休息执行。上一批六项合同、恢复、付款、认证等成果保留，不重复开发。当前受测代码为本地组合 `20a0a25ef69e18aaaf00941251dfb0f48dbb28ae` 加本批最后修复；它保留实现提交 `fc7521d` 和后端 `504ae6566f7682b7a6b4d5900b70cd5df4d26c21`。接口 `0.31.26-rc.1`、迁移 `0209`，实际文件哈希见 [SOURCE_MANIFEST](../../testing/evidence/mac-mini-pr39-four-pages-20261103/SOURCE_MANIFEST.json)。最终上传提交和远端检查以[原PR39](https://github.com/Bill-Billion/jingjing/pull/39)及本机推送后回执为准，本报告编写时尚未推送，不沿用旧SHA全绿。
+用户02:05:15 UTC转交的原四组为：运营Web财务日对账、App/Web本人月度限额、已有奖池公示、服务端定时休息执行。上一批六项合同、恢复、付款、认证等成果保留，不重复开发。当前受测代码为本地组合 `20a0a25ef69e18aaaf00941251dfb0f48dbb28ae` 加本批最后修复；它保留实现提交 `fc7521d` 和后端 `504ae6566f7682b7a6b4d5900b70cd5df4d26c21`。接口 `0.31.26-rc.1`、迁移 `0209`，实际文件哈希见 [SOURCE_MANIFEST](../../testing/evidence/mac-mini-pr39-four-pages-20261103/SOURCE_MANIFEST.json)。原四组已先推送6602d794，最后仅补金额标签与渲染回归。最终上传提交和远端检查以[原PR39](https://github.com/Bill-Billion/jingjing/pull/39)及本机推送后回执为准，本报告最后补记时该小修尚未推送，不沿用旧SHA全绿。
 
 后端随后发布的 [消费与通知接法](../../collaboration/client-complete-20261028/CONSUMER_PROTECTION_HANDOFF_20261103.md) 已读取并保留。原日对账接口未变；本人限额和七日公示仍兼容；偏好旧三字段保存不会覆盖新增夜间/推送字段，使用统计可忽略新增字段。消费预览/主动确认、运营阈值审核、新合同奖池成本候选及理性抽奖确认、夜间提醒/推送设置属于独立新增功能，本批没有认领或实现。新规则若要求主动确认，旧页面会被服务器拦截，不能称该新流程已可办理。正式阈值、真实奖品成本、概率/保底解释未签认，未自行确定或开启。
 
@@ -35,7 +35,8 @@
 3. 财务私有文本凭据带 `text/plain;charset=utf-8`，旧显示逻辑未识别。按基础MIME识别并使用合适Accept读取，实际独立凭据文本可核对；位置 `BusinessView.vue`、`src/api/client.ts`。
 4. App通用业务API未允许wallet域，新限额页真实启动抛ArgumentError。补允许域及实际页面挂载/断网清空回归；位置 `lib/engagement/community_support.dart`、`test/wallet/four_pages_test.dart`。
 5. 新财务状态缺少通用中文标签，已审核仍显示“未识别状态”。补REVIEWED/DIFFERENCES/RECHECK_REQUIRED映射，实际报告只读复拍和页面渲染测试通过；位置 `src/business/fourPages.ts`、`labels.ts`。
-6. 新增错误文案与已有错误键重复导致TypeScript构建失败。保留既有通用键，最终类型检查/构建通过。
+6. 详情金额已经由分转换为人民币元，但新增标签误写“分”。删除相冲突的单位文字，保留实际金额格式；真实详情组件渲染反例、Web573项及构建重新通过，未改钱账计算。
+7. 新增错误文案与已有错误键重复导致TypeScript构建失败。保留既有通用键，最终类型检查/构建通过。
 
 源码前缀均在 `晶晶日上工程交接包/01_源码/`。主要新实现：Web `src/usage/controller.ts`、`src/stores/restUsage.ts`、`src/components/RestUsage.vue`、`src/business/fourPages.ts`；App `lib/account/rest_usage.dart`、`lib/privacy/rest_reminder.dart`、`lib/wallet/consumer_limits.dart`。正常产品代码不包含测试到期控制接口。
 
