@@ -7,6 +7,6 @@
 3. [最新合同需求](requirements/CONTRACT_CHANGES_20261102.md)及[合同差距计划](collaboration/client-complete-20261028/CONTRACT_CLOSURE_PLAN_20261102.md)。
 4. [后端当前记录](status/CORE_CURRENT.md)、[前端当前记录](status/EXPERIENCE_CURRENT.md)、[主线记录](status/MAINLINE_PROGRESS.md)用于查版本与证据；历史条目不是当前待办。
 
-后端负责人chengcongcong222；前端负责人Bill-Billion。前端已交付恢复/付款/工作日/现货资格/认证免费；新分成页面已交付并复验；版权与商用两批已交付350857f9/86a0ab92，本侧组合网页复验通过。本轮六项后端已补齐，页面接法见[六项交接](collaboration/client-complete-20261028/SIX_CONTRACT_HANDOFF_20261102.md)。完整18组、12条路线和151条尚未统一验收；后端已补日对账与尾差，接口0.31.23-rc.1/0204；接着做同版完整测试与证据，新增财务页面接法直接更新仓库，不把六项完成当整个产品完成。
+后端负责人 chengcongcong222；前端负责人 Bill-Billion。恢复、付款、版权/商用、六项合同及尾差兼容已交付并完成所列组合复验，不再重派。本轮补本人使用估计和休息提醒，接口0.31.25-rc.1/0207；[本批接法](collaboration/client-complete-20261028/USAGE_REMINDERS_HANDOFF_20261103.md)。财务工作台、个人额度、奖池公示和定时休息执行四组页面尚未确认认领。后端继续消费确认/免打扰缺口、奖品兑现及12条整链；原18组和151条仍未统一验收。
 
 旧启动入口按原样保留于[历史存档](reviews/progress-repair-20261102/before/START_HERE.md)，不再据其旧版本/旧认领状态安排施工。

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.24-rc.1
+  version: 0.31.25-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -31453,6 +31453,156 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACTING_PARTY
+  /api/v1/privacy/usage:
+    get:
+      operationId: getPersonalUsage
+      summary: 查看本人当日使用估计与休息提醒
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 本人使用时长或提醒确认结果；不证明实际休息或外部推送已启用。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalUsageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT
+      description: 仅本人账号，不使用X-Acting-Party。未开启定时休息不计时；前台30秒报告一次，超过90秒空档不计入。时长是估计，不作为年龄或付款控制依据。详见USAGE_REMINDERS_HANDOFF_20261103.md。
+  /api/v1/privacy/usage/pulse:
+    post:
+      operationId: reportPersonalUsage
+      summary: 本人前台使用报告，由服务器计时
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 本人使用时长或提醒确认结果；不证明实际休息或外部推送已启用。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              schema:
+                type: string
+              description: Current object version; preferences start at zero.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalUsageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+              required: []
+      x-actor-scope: ACCOUNT
+      description: 仅本人账号，不使用X-Acting-Party。未开启定时休息不计时；前台30秒报告一次，超过90秒空档不计入。时长是估计，不作为年龄或付款控制依据。详见USAGE_REMINDERS_HANDOFF_20261103.md。
+        该操作只采样服务端时间，不接受客户端时间和时长；同一时刻并发不重复计时，不承诺重试返回旧结果。无需持久化逐次心跳请求键。
+      x-idempotency-mode: SERVER_TIME_SAMPLE
+  /api/v1/privacy/usage/acknowledge:
+    post:
+      operationId: acknowledgePersonalRest
+      summary: 确认已看到休息提醒，不代表实际休息
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^"(0|[1-9][0-9]*)"$
+      responses:
+        '200':
+          description: 本人使用时长或提醒确认结果；不证明实际休息或外部推送已启用。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalRestAcknowledgementResponse'
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+              required: []
+      x-actor-scope: ACCOUNT
+      description: 仅本人账号，不使用X-Acting-Party。未开启定时休息不计时；前台30秒报告一次，超过90秒空档不计入。时长是估计，不作为年龄或付款控制依据。详见USAGE_REMINDERS_HANDOFF_20261103.md。
 components:
   securitySchemes:
     bearerAuth:
@@ -66007,3 +66157,88 @@ components:
         days:
           const: 7
       required: [version, published_at, opens_at, days]
+
+    PersonalUsageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            object_version:
+              type: integer
+              minimum: 0
+            enabled:
+              type: boolean
+            local_date:
+              type: string
+              format: date
+            timezone:
+              const: Asia/Shanghai
+            day_seconds:
+              type: integer
+              minimum: 0
+              maximum: 86400
+            reminder_seconds:
+              type: integer
+              minimum: 0
+              maximum: 86400
+            rest_reminder_minutes:
+              type: integer
+              minimum: 0
+            rest_due:
+              type: boolean
+            seconds_until_reminder:
+              anyOf:
+              - type: integer
+                minimum: 0
+              - type: 'null'
+            heartbeat_seconds:
+              const: 30
+            idle_after_seconds:
+              const: 90
+            as_of:
+              type: string
+              format: date-time
+            measurement:
+              const: FOREGROUND_HEARTBEAT_ESTIMATE
+            purpose:
+              const: PERSONAL_REST_REMINDER
+          required:
+          - object_version
+          - enabled
+          - local_date
+          - timezone
+          - day_seconds
+          - reminder_seconds
+          - rest_reminder_minutes
+          - rest_due
+          - seconds_until_reminder
+          - heartbeat_seconds
+          - idle_after_seconds
+          - as_of
+          - measurement
+          - purpose
+      required:
+      - meta
+      - data
+    PersonalRestAcknowledgementResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            acknowledged:
+              const: true
+          required:
+          - acknowledged
+      required:
+      - meta
+      - data

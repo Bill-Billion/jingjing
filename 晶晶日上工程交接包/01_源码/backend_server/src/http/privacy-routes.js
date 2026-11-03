@@ -18,6 +18,9 @@ function createPrivacyRouter(options){const router=express.Router(),repo=createP
  for(const prefix of ['/requests','/operations/requests'])router.get(prefix+'/:request_id/closure-clock',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.closureClock(req,{request_id:id(req.params.request_id),operations:prefix.includes('operations')}));}));
  router.post('/operations/requests/:request_id/closure-clock/proposals',wrap(async(req,res)=>reply(req,res,await repo.proposeClosureClock(req,{...input(req,['kind','reason','evidence_asset_ids','due_on']),operations:true}))));
  router.post('/operations/requests/:request_id/closure-clock/reviews',wrap(async(req,res)=>reply(req,res,await repo.reviewClosureClock(req,{...input(req,['decision','reason']),operations:true}))));
+ router.get('/usage',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.usageStatus(req));}));
+ router.post('/usage/pulse',wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,[]);reply(req,res,await repo.usagePulse(req));}));
+ router.post('/usage/acknowledge',wrap(async(req,res)=>reply(req,res,await repo.acknowledgeRest(req,input(req,[])))));
  router.get('/preferences',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.preferences(req));}));
  router.patch('/preferences',wrap(async(req,res)=>{const i=input(req,['personalization','marketing','rest_reminder_minutes']);reply(req,res,await repo.savePreferences(req,{preferences:req.body,operation_key:i.operation_key,expected_version:i.expected_version}));}));
  router.post('/requests',wrap(async(req,res)=>{const i=input(req,['type','scopes','details'],false);reply(req,res,await repo.create(req,{request:req.body,operation_key:i.operation_key}));}));

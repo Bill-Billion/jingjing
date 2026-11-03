@@ -168,6 +168,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
       if(a.object_version!==s.account_version)throw error('VERSION_CONFLICT',412);
       if(s.closure_clock_policy){const c=await require('./closure-clock').loadClock(tx,request.id);if(!c?.verified_at||c.verified_at!==s.verified_at)throw error('CLOSURE_VERIFICATION_REQUIRED',409);}const blockers=await closureBlockers(tx,a);if(blockers.length)throw error(blockers[0],409);
       await tx.execute("UPDATE identity_accounts SET current_status='CLOSED',object_version=object_version+1 WHERE id=?",[a.id]);
+      await tx.execute('DELETE FROM privacy_usage_state WHERE account_id=?',[a.id]);
       await tx.execute('UPDATE auth_sessions SET revoked=TRUE WHERE account_id=?',[a.id]);
       await tx.execute("UPDATE parties SET current_status='CLOSED',object_version=object_version+1 WHERE kind='PERSON' AND personal_account_id=?",[a.id]);
       await tx.execute("UPDATE party_memberships SET current_status='REVOKED',object_version=object_version+1 WHERE account_id=? AND current_status<>'REVOKED'",[a.id]);

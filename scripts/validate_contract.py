@@ -152,7 +152,10 @@ def validate(runtime_fixtures=None):
             if op['operationId'] in provider_callbacks:
                 check(op.get('x-provider-signature-required') is True, 'Provider signature required: '+path)
             if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
-                check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
+                if op['operationId'] == 'reportPersonalUsage':
+                    check(path == '/api/v1/privacy/usage/pulse' and method == 'post' and op.get('x-idempotency-mode') == 'SERVER_TIME_SAMPLE', 'Server time sampling exception is explicit and bounded')
+                else:
+                    check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
             if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest','requestCustomizationSupplement','submitCustomizationSupplement'}:
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
@@ -166,6 +169,7 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.update({'withdrawPrivacyConsent', 'requestPrivacyModelDeletion', 'getPrivacyActions', 'getPrivacyModelAssets', 'getPrivacyModelCreations'})
             account_scoped_supply.update({'applyPrivacyExecution', 'applyPrivacyExecutionForHandler', 'getMediaTask', 'proposePrivacyExecutionForHandler', 'listPrivacyExecutionsForHandler', 'listPrivacyExecutions', 'reviewPrivacyExecution', 'exportPrivacyData', 'proposePrivacyExecution'})
             account_scoped_supply.update({'reviewMediaTask', 'getMediaTaskForReview'})
+            personal_collection_ops.update({'getPersonalUsage','reportPersonalUsage','acknowledgePersonalRest'})
             account_scoped_supply.update({'listPrivacyFileOptions','downloadPrivacyOriginalFile','getPrivacyRequest', 'startPrivacyRequest', 'reviewPrivacyResponse', 'downloadPrivacyResponseFile', 'createPrivacyRequest', 'savePrivacyPreferences', 'getPrivacyPreferences', 'getPrivacyRequestForHandler', 'proposePrivacyResponse', 'listPrivacyRequestsForHandler', 'getPrivacyResponseHistory', 'reopenPrivacyRequest', 'listPrivacyRequests'})
             account_scoped_supply.update({'reviewProjectIncomeAgreement','controlCommercialConversation', 'engagementProposeTie', 'engagementQueue', 'engagementCompetitionResult', 'listAuditionSupplements', 'engagementInteraction', 'listCommercialMessages', 'engagementRead', 'readCommercialMessage', 'engagementSyncGrowth', 'engagementReviewTie', 'engagementBuyerCityRank', 'engagementReviewRule', 'reviewAuditionSupplementRefund', 'engagementFinalize', 'engagementRankings', 'engagementExposures', 'engagementReviewRewardStock', 'engagementModerate', 'engagementCreateRule', 'engagementRedeemReward', 'engagementReferralSync', 'engagementExcludeOrder', 'engagementVoteReview', 'engagementCompetition', 'downloadCommercialMessageFile', 'getCommercialContacts', 'engagementRankingSnapshot', 'reviewAuditionSupplement', 'engagementReviewCandidate', 'engagementRankingIndex', 'sendCommercialMessage', 'moderateCommercialMessage', 'engagementCompetitions', 'downloadEngagementListen', 'engagementJudge', 'engagementResolveAppeal', 'engagementReviewCompetition'})
             account_scoped_supply.update({'cocreationDownloadReviewFile', 'cocreationReviewCase', 'cocreationClose', 'cocreationQueue', 'cocreationReviewSnippet', 'cocreationRules', 'cocreationCreateRule', 'cocreationCases', 'cocreationRoom', 'cocreationReviewRule'})
