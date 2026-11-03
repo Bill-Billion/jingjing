@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.27-rc.1
+  version: 0.31.28-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -32002,6 +32002,206 @@ paths:
               - target
               - preview_sha256
               - read_confirmed
+  /api/v1/cocreation/rooms/{record_id}/invite-links:
+    post:
+      operationId: cocreationCreateInviteLink
+      summary: 生成一次共创邀请凭证
+      description: 仅登录本人领取；发起人生成/撤销/查看。一次凭证最多24小时且不晚于房间截止，不公开人员目录、不携带私人故事；领取不自动参演，仍需本人确认条款和素材授权。相同请求键恢复原操作，撤权/过期/闭房重新核验。
+      tags:
+      - cocreation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CocreationInviteLinkResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CocreationEmptyRequest'
+    get:
+      operationId: cocreationInviteLinks
+      summary: 查看本人房间邀请凭证状态
+      description: 仅登录本人领取；发起人生成/撤销/查看。一次凭证最多24小时且不晚于房间截止，不公开人员目录、不携带私人故事；领取不自动参演，仍需本人确认条款和素材授权。相同请求键恢复原操作，撤权/过期/闭房重新核验。
+      tags:
+      - cocreation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CocreationInviteLinkResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/cocreation/invite-links/{record_id}/revoke:
+    post:
+      operationId: cocreationRevokeInviteLink
+      summary: 撤销尚未领取的共创邀请凭证
+      description: 仅登录本人领取；发起人生成/撤销/查看。一次凭证最多24小时且不晚于房间截止，不公开人员目录、不携带私人故事；领取不自动参演，仍需本人确认条款和素材授权。相同请求键恢复原操作，撤权/过期/闭房重新核验。
+      tags:
+      - cocreation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CocreationInviteLinkResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CocreationEmptyRequest'
+  /api/v1/cocreation/invite-links/claim:
+    post:
+      operationId: cocreationClaimInviteLink
+      summary: 本人领取共创邀请，不代替参演同意
+      description: 仅登录本人领取；发起人生成/撤销/查看。一次凭证最多24小时且不晚于房间截止，不公开人员目录、不携带私人故事；领取不自动参演，仍需本人确认条款和素材授权。相同请求键恢复原操作，撤权/过期/闭房重新核验。
+      tags:
+      - cocreation
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CocreationInviteClaimResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CocreationInviteClaimRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -32232,6 +32432,109 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    CocreationInviteLink:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        room_id:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - ACTIVE
+          - CLAIMED
+          - REVOKED
+        object_version:
+          type: integer
+          minimum: 1
+        expires_at:
+          type: string
+          format: date-time
+        token:
+          type: string
+          pattern: ^[a-f0-9-]{36}\.[a-f0-9]{64}$
+        participation_required:
+          const: true
+      required:
+      - id
+      - room_id
+      - current_status
+      - object_version
+      - expires_at
+    CocreationInviteLinkResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/CocreationInviteLink'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/CocreationInviteLink'
+            required:
+            - items
+      required:
+      - meta
+      - data
+    CocreationInviteClaimRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          pattern: ^[a-f0-9-]{36}\.[a-f0-9]{64}$
+        person_id:
+          type: string
+          format: uuid
+      required:
+      - token
+      - person_id
+    CocreationInviteClaimResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            invitation_id:
+              type: string
+              format: uuid
+            room_id:
+              type: string
+              format: uuid
+            person_id:
+              type: string
+              format: uuid
+            current_status:
+              const: INVITED
+            participation_required:
+              const: true
+          required:
+          - invitation_id
+          - room_id
+          - person_id
+          - current_status
+          - participation_required
+      required:
+      - meta
+      - data
+    CocreationEmptyRequest:
+      type: object
+      additionalProperties: false
+      properties: {}
     DailyReconciliationScope:
       type: object
       additionalProperties: false

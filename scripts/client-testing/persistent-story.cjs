@@ -44,6 +44,7 @@ async function start(name, { hours = 72, port = 0 } = {}) {
   const parent = path.join(root, '.local/client-persistent'), dir = path.join(parent, name);
   assert(fs.realpathSync(parent) === parent && fs.realpathSync(dir) === dir);
   const manifestFile = path.join(dir, 'manifest.json'); assert(!fs.lstatSync(manifestFile).isSymbolicLink());
+  assert(!fs.existsSync(path.join(dir, 'RESTORE_INCOMPLETE')), 'Restore is incomplete; never start this fixture.');
   const m = JSON.parse(fs.readFileSync(manifestFile, 'utf8')); validateManifest(m, name);
   assert(!fs.existsSync(path.join(dir, 'stop')), 'Remove the completed stop request explicitly before restarting.');
   const lock = path.join(dir, 'runtime.lock'), fd = fs.openSync(lock, 'wx', 0o600); fs.writeFileSync(fd, String(process.pid));

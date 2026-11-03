@@ -1,5 +1,5 @@
 {
-  "version": "0.31.27-rc.1",
+  "version": "0.31.28-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -598,7 +598,11 @@
     "reviewConsumerRiskRule",
     "previewConsumerRisk",
     "confirmConsumerRisk",
-    "listMyBusinessReports"
+    "listMyBusinessReports",
+    "cocreationCreateInviteLink",
+    "cocreationInviteLinks",
+    "cocreationRevokeInviteLink",
+    "cocreationClaimInviteLink"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1270,6 +1274,13 @@
     "status": "IMPLEMENTED_ISOLATED_TESTS",
     "scope": "Current requester and exact acting identity, summaries only; source permission rechecked, keyset pagination. Frontend list pending.",
     "evidence": "docs/tasks/records/CORE-backend-acceptance-closure-20261103.md",
+    "production_enabled": false
+  },
+  "cocreation_invite_links": {
+    "test": "test/cocreation-invite-links.integration.test.cjs",
+    "scope": "Authenticated private family invitation, one-time claim, expiry/revocation, original request recovery; personal consent remains separate",
+    "migration": "none; existing cocreation records",
+    "frontend": "pending integration",
     "production_enabled": false
   }
 }

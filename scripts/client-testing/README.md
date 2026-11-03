@@ -35,7 +35,7 @@ node scripts/client-testing/review.cjs <批次名>生成独立问题工作台配
 
 browser-check.mjs默认仅本机。公网检查须显式设置CLIENT_TEST_PUBLIC_ORIGIN等于当前私有配置中的HTTPS地址，并设置CLIENT_TEST_SESSION；只接受本轮trycloudflare测试域名。public-check.mjs同样要求明确地址和本机私有会话，检查公开路径、会话和身份边界。公网调用不放进自动CI。
 
-反馈加密备份与恢复命令仍见docs/operations/client-testing/FIXED_HOSTING_20261026.md。业务库目前只验证保留重启，独立备份恢复未完成。
+反馈加密备份与恢复命令仍见docs/operations/client-testing/FIXED_HOSTING_20261026.md。11月3日新增业务库与私有附件加密备份/新库恢复，179表、131附件及原已付款文件、同订单反馈的9项演练已通过。详见[恢复说明](../../docs/operations/client-testing/BUSINESS_RECOVERY_20261103.md)。最终候选构建和回退验收仍单列，不因恢复演练通过自动定版。
 
 ## 艺人和机构测试扩充
 
