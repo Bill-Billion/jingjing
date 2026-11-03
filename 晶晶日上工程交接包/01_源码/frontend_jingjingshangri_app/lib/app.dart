@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'account/account_theme.dart';
 import 'account/rest_reminder.dart';
+import 'account/consumer_confirmation.dart';
 import 'artists/artists_pages.dart';
 import 'artists/artists_forms.dart';
 import 'account/account_page.dart';
@@ -431,8 +432,10 @@ class JingjingShangriApp extends StatelessWidget {
         navigatorObservers: navigatorObservers,
         debugShowCheckedModeBanner: false,
         theme: AccountTheme.data,
-        builder: (context, child) => RestReminder(
-            child: LimitedTextScale(child: child ?? const SizedBox.shrink())),
+        builder: (context, child) => ConsumerConfirmation(
+            child: RestReminder(
+                child:
+                    LimitedTextScale(child: child ?? const SizedBox.shrink()))),
         onGenerateRoute: _generate,
         // One initial route prevents a delayed root bootstrap from replacing a
         // private deep link. Every child provides its own safe root fallback.

@@ -107,11 +107,20 @@ export interface ApiResult<T> {
   version: string | null
 }
 
+/** Installed by the account UI; only explicit consumption commands use it. */
+export type RequestGate = (path:string, options:RequestOptions) => Promise<ApiResult<unknown>>
+let consumptionGate:RequestGate|null=null
+export function installConsumptionGate(gate:RequestGate|null){consumptionGate=gate}
+export async function request<T>(path:string,options:RequestOptions={}):Promise<ApiResult<T>> {
+  if(consumptionGate&&options.method==='POST'&&(/^\/trade\/payments(?:\/[a-f0-9-]{36}\/reconciliation)?$/.test(path)||path==='/wallet/recharges'||path==='/redemption/draws'))return consumptionGate(path,options) as Promise<ApiResult<T>>
+  return directRequest<T>(path,options)
+}
+
 /**
  * 发一次请求。
  * 失败一定抛 ApiError，绝不返回"看起来成功"的空结果。
  */
-export async function request<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
+export async function directRequest<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
   const { method = 'GET', body, rawBody, token, actingParty, idempotencyKey, ifMatch, signal, cache } = options
 
   const headers: Record<string, string> = {

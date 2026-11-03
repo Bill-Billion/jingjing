@@ -5,6 +5,17 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
+typedef ConsumerTransport = Future<Map<String, dynamic>> Function(
+    String method, String path,
+    {Map<String, dynamic>? body, Map<String, dynamic>? query, String? key});
+typedef ConsumptionGuard = Future<Map<String, dynamic>> Function(
+    String path,
+    Map<String, dynamic>? body,
+    String key,
+    String? party,
+    Future<Map<String, dynamic>> Function() send,
+    ConsumerTransport transport);
+
 const additionalBusinessPrefixes = [
   '/api/v1/guardians/',
   '/api/v1/infringement/',
@@ -53,6 +64,7 @@ class AccountApi {
             ));
 
   final Dio _dio;
+  ConsumptionGuard? consumptionGuard;
   int _supplyEpoch = 0;
   int _accountEpoch = 0;
   void clearAccountOperations() {
@@ -237,19 +249,53 @@ class AccountApi {
     }
     final key = writing ? _keys.putIfAbsent(fingerprint, _newKey) : null;
     String? resultId = unresolved?['resultId'];
-    final future = _send(method, path,
-            token: token,
-            party: party,
-            body: body,
-            query: query,
-            version: version,
-            key: key,
-            bytes: bytes,
-            onSendProgress: onSendProgress == null
-                ? null
-                : (sent, total) {
-                    if (current()) onSendProgress(sent, total);
-                  })
+    Future<Map<String, dynamic>> send() {
+      if (!current()) {
+        return Future.error(const AccountError(0, 'CONTEXT_CHANGED'));
+      }
+      return _send(method, path,
+          token: token,
+          party: party,
+          body: body,
+          query: query,
+          version: version,
+          key: key,
+          bytes: bytes,
+          onSendProgress: onSendProgress == null
+              ? null
+              : (sent, total) {
+                  if (current()) onSendProgress(sent, total);
+                });
+    }
+
+    final consume = method == 'POST' &&
+        (path == '/api/v1/trade/payments' ||
+            path == '/api/v1/wallet/recharges' ||
+            path == '/api/v1/redemption/draws' ||
+            RegExp(r'^/api/v1/trade/payments/[a-f0-9-]{36}/reconciliation$')
+                .hasMatch(path));
+    Future<Map<String, dynamic>> transport(String m, String p,
+        {Map<String, dynamic>? body,
+        Map<String, dynamic>? query,
+        String? key}) {
+      if (!current()) {
+        return Future.error(const AccountError(0, 'CONTEXT_CHANGED'));
+      }
+      if (!p.startsWith('/api/v1/wallet/consumer-risk/') &&
+          !RegExp(r'^/api/v1/redemption/pools/[a-f0-9-]{36}$').hasMatch(p)) {
+        return Future.error(const AccountError(400, 'CONSUMER_TARGET_INVALID'));
+      }
+      return _send(m, p,
+          token: token,
+          party: p.startsWith('/api/v1/redemption/pools/') ? null : party,
+          body: body,
+          query: query,
+          key: key);
+    }
+
+    final future = (consume && consumptionGuard != null
+            ? consumptionGuard!(path, body, key!, party, send, transport)
+            : send())
         .then((data) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (data['id'] is String) resultId = data['id'];
@@ -444,6 +490,14 @@ class AccountError implements Exception {
         return '上次操作还在处理中，请稍后重试原操作核对结果。';
       case 'PENDING_OPERATION_CHANGED':
         return '上次操作的结果尚未确认，请先重试原内容核对结果，再发起新的操作。';
+      case 'CONSUMER_POLICY_NOT_CONFIGURED':
+        return '活动保护规则待审核，暂不可参与。';
+      case 'LOTTERY_PARTICIPATION_LIMIT':
+        return '当前抽奖次数或当日晶钻消耗已达到规则上限，请稍后再参与，不要更换请求重复提交。';
+      case 'CONSUMER_RISK_PREVIEW_CHANGED':
+      case 'CONSUMER_RISK_CONFIRMATION_EXPIRED':
+      case 'CONSUMER_RISK_CONFIRMATION_REQUIRED':
+        return '消费提示需要更新，请重新读取并主动确认原操作。';
       case 'CONTEXT_CHANGED':
         return '账号或身份已切换，请在当前身份下重新操作。';
       case 'SMS_NOT_READY':

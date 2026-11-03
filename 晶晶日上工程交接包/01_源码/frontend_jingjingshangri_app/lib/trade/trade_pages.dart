@@ -1170,7 +1170,11 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeBanner(
             tradeStatuses[r.status]!,
             r.status == 'SUCCEEDED'
-                ? '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
+                ? r.data['environment'] == 'SANDBOX' &&
+                        r.data['app_id'] == 'SIMULATED_ONLY' &&
+                        r.data['merchant_id'] == 'SIMULATED_ONLY'
+                    ? '服务器已核实模拟收款，没有真实资金；仍须另行办理制作、签署和许可。'
+                    : '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
                 : '请先核对这笔付款，不要重复支付。客户端不能发起实际支付。',
             icon: Icons.receipt_long_outlined),
         if (r.data['provider'] == 'APPLE')

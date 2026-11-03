@@ -1,3 +1,4 @@
+import {onConsumerRecovery} from '@/consumer/recovery'
 import { onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { ApiError, asApiError, newIdempotencyKey, outcomeUnknown } from '@/api/client'
 import { businessBytes, readBusiness, writeBusiness, type BusinessData } from '@/api/modules/business'
@@ -20,6 +21,7 @@ export function useBusiness(context:()=>BusinessContext){
  async function check(path:string,party:PartyMode){const r=await load(pending.value?.readPath||path,pending.value?.readParty||party);if(r&&pending.value){pending.value={...pending.value,checked:true};save()}return r}
  async function file(path:string,party:PartyMode,type:string){if(busy.value||pending.value)return null;const s=snapshot(),g=generation;busy.value=true;error.value=null;revoke();try{const blob=await businessBytes(path,options(party),type);if(s!==snapshot()||g!==generation||disposed)return null;const url=URL.createObjectURL(blob);urls.push(url);return{blob,url}}catch(e){if(s===snapshot()&&g===generation)failure(e);return null}finally{if(s===snapshot()&&g===generation)busy.value=false}}
  const objectUrl=(blob:Blob)=>{const url=URL.createObjectURL(blob);urls.push(url);return url}
- onScopeDispose(()=>{disposed=true;generation++;controller?.abort();revoke()})
+ const stopRecovery=onConsumerRecovery(e=>{const c=context(),p=pending.value;if(disposed||!c.token||e.accountId!==c.accountId||e.partyId!==c.partyId||p?.key!==e.key||p.path!==e.path)return;pending.value=null;save();error.value=null;notice.value='原消费已恢复，请核对最新记录。';if(p.readPath)void load(p.readPath,p.readParty||p.party)})
+ onScopeDispose(()=>{stopRecovery();disposed=true;generation++;controller?.abort();revoke()})
  return{data,result,error,busy,notice,pending,conflict,confirmed,securityRevision,retryAt,load,execute,check,file,clear,revoke,restore,objectUrl}
 }

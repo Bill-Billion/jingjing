@@ -15,6 +15,11 @@ import { rightsErrors } from './modules/rights'
 
 /** 已知错误码的说明。键是后端返回的 error.code。 */
 const CODE_MESSAGES: Record<string, string> = {
+ CONSUMER_POLICY_NOT_CONFIGURED:'活动保护规则待审核，暂不可参与。',
+ LOTTERY_PARTICIPATION_LIMIT:'当前抽奖次数或当日晶钻消耗已达到规则上限，请稍后再参与，不要换键重复提交。',
+ CONSUMER_RISK_CONFIRMATION_REQUIRED:'请阅读当前消费提示，明确确认后继续原操作。',
+ CONSUMER_RISK_CONFIRMATION_EXPIRED:'原确认已过期，请重新读取并确认原操作。',
+ CONSUMER_RISK_PREVIEW_CHANGED:'规则或消费状态已变化，请重新读取并确认。',
  CONSUMER_MONTHLY_LIMIT_EXCEEDED:'本次操作超过你设置的月度额度；先核对占用和待确认金额，不要重复付款。',
  CONSUMER_LIMIT_COOLING_PERIOD:'提高额度还需要等待，请刷新并核对服务器可确认时间。',
  CONSUMER_LIMIT_CHANGE_NOT_PENDING:'该提额申请已处理或不存在，请核对当前记录。',
