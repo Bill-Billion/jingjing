@@ -15,10 +15,11 @@ const state = JSON.parse(await readFile(resolve(root, process.env.PR15_UI_STATE_
 assert.equal(state.testOnly, true)
 const base = process.env.PR15_WEB_URL || 'http://127.0.0.1:5204'
 const onlyLogin = process.argv.includes('--only-login-return')
+const testUnverifiedLegacy = process.env.PR15_TEST_UNVERIFIED_LEGACY === '1'
 for (const url of [state.apiUrl, state.controlUrl, base]) assert.equal(new URL(url).hostname, '127.0.0.1')
 const evidence = resolve(root, process.env.PR15_UI_EVIDENCE_DIR || 'docs/ux/pr15-ui/evidence'), shots = resolve(evidence, 'screenshots')
 await mkdir(shots, { recursive: true })
-const results = [], pageErrors = [], screenshots = [], actors = {}, suffix = Date.now().toString(36)
+const results = [], pageErrors = [], screenshots = [], actors = {}, evidenceRecords = {}, suffix = Date.now().toString(36)
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true })
 const redact = value => {
   let text = String(value)
@@ -139,12 +140,48 @@ async function run() {
     assert.equal(seen.length, 1); assert.deepEqual(JSON.parse(seen[0].body), { quote_sha256: quote.content_sha256 }); p.off('request', observe)
     await p.getByText('合同内容已保存，尚未签署', { exact: false }).first().waitFor(); await shot(p, 'order-desktop')
   })
-  await check('付款实际503保留原请求；核对列表再同编号重试，返回UNKNOWN原付款', async () => {
+  if (testUnverifiedLegacy) await check('未核验账号仍可核对本人已发出的旧付款，不另建付款', async () => {
+    const p = buyer.page, previous = state.records.unknownPayment, created = []
+    assert.equal(previous.status, 'UNKNOWN'); assert.equal(previous.buyerPartyId, buyer.personalPartyId)
+    await go(p, '/trade/payments/' + previous.id)
+    await control('/payment-query?payment_id=' + previous.id + '&result=SUCCEEDED')
+    const observe = r => { if (r.method() === 'POST' && new URL(r.url()).pathname === '/api/v1/trade/payments') created.push(r.url()) }; p.on('request', observe)
+    const response = post(p, '/payments/' + previous.id + '/reconciliation')
+    await p.getByRole('button', { name: '核实支付结果', exact: true }).click()
+    const original = await data(await response)
+    assert.equal(original.id, previous.id); assert.equal(original.current_status, 'SUCCEEDED'); assert.equal(created.length, 0)
+    await p.getByTestId('sandbox-payment').getByText('测试环境中的付款记录，不代表真实资金到账。').waitFor()
+    evidenceRecords.legacy_payment = { payment_id: previous.id, order_id: previous.orderId, from: previous.status, to: original.current_status, new_payment_requests: created.length }
+    p.off('request', observe)
+  })
+  await check(testUnverifiedLegacy ? '未核验拦截新付款；合成成年后付款503保留原请求并同编号恢复' : '付款实际503保留原请求；核对列表再同编号重试，返回UNKNOWN原付款', async () => {
     const p = buyer.page, seen = []; await go(p, '/trade/payments/new')
     await p.getByTestId('trade-order-id').fill(order.id); await p.getByRole('button', { name: '读取原订单', exact: true }).click()
     await p.getByTestId('trade-installment').selectOption('browser-first'); await shot(p, 'payment-create-desktop')
-    await control('/payment-create?result=TIMEOUT')
     const observe = r => { if (r.method() === 'POST' && new URL(r.url()).pathname === '/api/v1/trade/payments') seen.push({ key: r.headers()['idempotency-key'], body: r.postData() }) }; p.on('request', observe)
+    if (testUnverifiedLegacy) {
+      // The new preview requires an adult identity. First verify the actual
+      // rejection and absence of a payment request, then authorize a wholly
+      // synthetic adult inside this disposable database to test recovery.
+      const denied = p.waitForResponse(r => r.request().method() === 'GET' && new URL(r.url()).pathname === '/api/v1/wallet/consumer-risk/preview')
+      await p.getByRole('button', { name: '建立本期付款记录', exact: true }).click()
+      const deniedResponse = await denied; assert.equal(deniedResponse.status(), 409)
+      assert.equal((await deniedResponse.json()).error.code, 'VERIFIED_ADULT_REQUIRED')
+      await p.getByText('VERIFIED_ADULT_REQUIRED', { exact: false }).waitFor(); assert.equal(seen.length, 0)
+      // The fixture prepared this historical payment directly before any
+      // synthetic identity verification; record the existing API/UI mismatch.
+      const protectionStatus = await api(buyer, 'GET', '/wallet/consumer-risk/status', undefined, { party: null })
+      assert.equal(protectionStatus.configured, false)
+      assert.equal(state.records.succeededPayment.buyerPartyId, buyer.personalPartyId)
+      assert.equal(state.records.succeededPayment.status, 'SUCCEEDED')
+      evidenceRecords.unverified_policy_difference = { prior_direct_payment_id: state.records.succeededPayment.id,
+        prior_direct_status: state.records.succeededPayment.status, preview_status: deniedResponse.status(),
+        preview_code: 'VERIFIED_ADULT_REQUIRED', policy_configured: protectionStatus.configured }
+      assert.equal((await control('/synthetic-verify-buyer')).status, 'VERIFIED')
+      await go(p, '/trade/payments/new'); await p.getByTestId('trade-order-id').fill(order.id)
+      await p.getByRole('button', { name: '读取原订单', exact: true }).click(); await p.getByTestId('trade-installment').selectOption('browser-first')
+    }
+    await control('/payment-create?result=TIMEOUT')
     const first = post(p, '/payments'); await p.getByRole('button', { name: '建立本期付款记录', exact: true }).click(); assert.equal((await first).status(), 503)
     await p.getByRole('button', { name: '先核对原记录', exact: true }).click()
     const second = post(p, '/payments'); await p.getByRole('button', { name: '使用原编号重试', exact: true }).click(); payment = await data(await second)
@@ -231,6 +268,6 @@ try {
   console.error(redact(cause.stack)); process.exitCode = 1
   for (const [name, a] of Object.entries(actors)) await a.page.screenshot({ path: resolve(shots, `debug-${name}.png`), fullPage: true }).catch(() => {})
 } finally {
-  await writeFile(resolve(evidence, onlyLogin ? 'web-login-return-results.json' : 'web-browser-results.json'), JSON.stringify({ synthetic_only: true, source: 'Vue UI → actual isolated HTTP/MySQL; synthetic external transports', results, pageErrors, screenshots, total: results.length, passed: results.filter(r => r.result === 'PASS').length }, null, 2) + '\n')
+  await writeFile(resolve(evidence, onlyLogin ? 'web-login-return-results.json' : 'web-browser-results.json'), JSON.stringify({ synthetic_only: true, source: 'Vue UI → actual isolated HTTP/MySQL; synthetic external transports', results, evidence_records: evidenceRecords, pageErrors, screenshots, total: results.length, passed: results.filter(r => r.result === 'PASS').length }, null, 2) + '\n')
   await browser.close()
 }

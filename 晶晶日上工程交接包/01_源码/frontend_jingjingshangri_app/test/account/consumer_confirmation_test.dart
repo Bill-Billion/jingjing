@@ -75,6 +75,94 @@ class Harness {
 }
 
 void main() {
+  test('旧付款读取迟到时切身份，不能继续核对旧账号', () async {
+    final h = Harness();
+    await h.start();
+    final pending = Completer<ResponseBody>();
+    final path = '$pay/$invitationId/reconciliation';
+    h.handler = (r) {
+      if (r.path == '$risk/preview') {
+        return envelope({'code': 'VERIFIED_ADULT_REQUIRED'},
+            status: 409, error: true);
+      }
+      if (r.path == '/api/v1/trade/records/$invitationId')
+        return pending.future;
+      return null;
+    };
+    final action = h.session.write('POST', path,
+        actingParty: personId, body: {'transaction_id': null});
+    final expected = expectLater(
+        action,
+        throwsA(isA<AccountError>()
+            .having((e) => e.code, 'context', 'CONTEXT_CHANGED')));
+    await settle();
+    h.session.select(identity(orgId));
+    pending.complete(envelope({
+      'id': invitationId,
+      'kind': 'PAYMENT',
+      'buyer_party_id': personId,
+      'current_status': 'UNKNOWN'
+    }));
+    await expected;
+    expect(h.adapter.requests.where((r) => r.path == path), isEmpty);
+    h.dispose();
+  });
+  test('未核验者只能核对本人已发出的原付款，不能借旧单发起新消费', () async {
+    for (final sample in [
+      ('UNKNOWN', invitationId, personId, true),
+      ('PENDING', invitationId, personId, true),
+      ('CREATED', invitationId, personId, false),
+      ('CLOSED', invitationId, personId, false),
+      ('UNKNOWN', orgId, personId, false),
+      ('UNKNOWN', invitationId, orgId, false),
+    ]) {
+      final h = Harness();
+      await h.start();
+      final path = '$pay/$invitationId/reconciliation';
+      h.handler = (r) {
+        if (r.path == '$risk/preview') {
+          return envelope({'code': 'VERIFIED_ADULT_REQUIRED'},
+              status: 409, error: true);
+        }
+        if (r.path == '/api/v1/trade/records/$invitationId') {
+          return envelope({
+            'id': sample.$2,
+            'kind': 'PAYMENT',
+            'buyer_party_id': sample.$3,
+            'current_status': sample.$1
+          });
+        }
+        return null;
+      };
+      final action = h.session.write('POST', path,
+          actingParty: personId, body: {'transaction_id': null});
+      if (sample.$4) {
+        await action;
+      } else {
+        await expectLater(action, throwsA(isA<AccountError>()));
+      }
+      expect(h.adapter.requests.where((r) => r.path == path),
+          hasLength(sample.$4 ? 1 : 0));
+      expect(h.payments, isEmpty);
+      h.dispose();
+    }
+    final h = Harness();
+    await h.start();
+    h.handler = (r) => r.path == '$risk/preview'
+        ? envelope({'code': 'VERIFIED_ADULT_REQUIRED'},
+            status: 401, error: true)
+        : null;
+    final path = '$pay/$invitationId/reconciliation';
+    await expectLater(
+        h.session.write('POST', path,
+            actingParty: personId, body: {'transaction_id': null}),
+        throwsA(isA<AccountError>()));
+    expect(
+        h.adapter.requests.where((r) =>
+            r.path == '/api/v1/trade/records/$invitationId' || r.path == path),
+        isEmpty);
+    h.dispose();
+  });
   test('未发送原付款预览按契约展开，保留原编号确认和原核对请求', () async {
     final h = Harness();
     await h.start();

@@ -281,7 +281,14 @@ class AccountApi {
       if (!current()) {
         return Future.error(const AccountError(0, 'CONTEXT_CHANGED'));
       }
-      if (!p.startsWith('/api/v1/wallet/consumer-risk/') &&
+      final originalPayment =
+          RegExp(r'^/api/v1/trade/payments/([a-f0-9-]{36})/reconciliation$')
+              .firstMatch(path);
+      final originalRead = m == 'GET' &&
+          originalPayment != null &&
+          p == '/api/v1/trade/records/${originalPayment[1]}';
+      if (!originalRead &&
+          !p.startsWith('/api/v1/wallet/consumer-risk/') &&
           !RegExp(r'^/api/v1/redemption/pools/[a-f0-9-]{36}$').hasMatch(p)) {
         return Future.error(const AccountError(400, 'CONSUMER_TARGET_INVALID'));
       }

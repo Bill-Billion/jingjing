@@ -61,7 +61,18 @@ export class ConsumerController {
  private async run(ctx:RiskContext,c:Command,o:RequestOptions):Promise<ApiResult<unknown>> {
   const g=this.generation;this.active=true;this.busy=true;this.result=null;this.message='';this.phase=null;this.persist();this.publish()
   const send=(path:string,opts:RequestOptions)=>{this.valid(ctx,g);return this.io.send(path,{...opts,token:ctx.token,actingParty:'actingParty' in opts?opts.actingParty:ctx.party})}
-  const read=async()=>{const query=new URLSearchParams(Object.entries(c.target).map(([k,v])=>[k,String(v)]));try{return consumerPreview((await send(prefix+'/preview?'+query,{cache:'no-store'})).data,c.target)}catch(e){if(c.target.kind==='PAYMENT_RECORD'&&e instanceof ApiError&&e.code==='CONSUMER_TARGET_NOT_PENDING')return null;throw e}}
+  const read=async()=>{const query=new URLSearchParams(Object.entries(c.target).map(([k,v])=>[k,String(v)]));try{return consumerPreview((await send(prefix+'/preview?'+query,{cache:'no-store'})).data,c.target)}catch(e){
+   if(c.target.kind==='PAYMENT_RECORD'&&e instanceof ApiError){
+    if(e.code==='CONSUMER_TARGET_NOT_PENDING')return null
+    if(e.status===409&&e.code==='VERIFIED_ADULT_REQUIRED'){
+     // Only query an existing, already-dispatched payment owned by this party.
+     // CREATED is still subject to the original consumption confirmation.
+     const r=(await send('/trade/records/'+c.target.payment_id,{cache:'no-store'})).data as {id?:unknown;kind?:unknown;buyer_party_id?:unknown;current_status?:unknown};this.valid(ctx,g)
+     if(r?.id===c.target.payment_id&&r.kind==='PAYMENT'&&r.buyer_party_id===ctx.party&&['SUBMITTING','PENDING','UNKNOWN','SUCCEEDED','REFUNDED','REVIEW_REQUIRED'].includes(String(r.current_status)))return null
+    }
+   }
+   throw e
+  }}
   try {
    for(;;){
     this.valid(ctx,g)

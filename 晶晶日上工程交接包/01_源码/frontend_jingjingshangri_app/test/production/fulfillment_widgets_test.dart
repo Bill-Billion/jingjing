@@ -81,7 +81,7 @@ void main() {
           findsOneWidget);
       expect(find.text('已确认 0/4 个阶段'), findsOneWidget);
       await reveal(t, find.text('该正式版本已明确收讫；版本验收仍另行核对。'));
-      await reveal(t, find.textContaining('约定款项已收齐；已核实收款'));
+      await reveal(t, find.textContaining('约定款项已收齐；订单记账收款'));
       if (state != 'STARTED') {
         expect(find.text('当前待办：审阅并确认当前最终成片'), findsNothing);
       }
@@ -167,6 +167,8 @@ void main() {
     expect(find.byType(EditorialFeature), findsOneWidget);
     expect(t.widget<EditorialFeature>(find.byType(EditorialFeature)).title,
         '私人短片制作');
+    await reveal(t, find.text('订单记账收款'));
+    await reveal(t, find.text('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'));
     await reveal(t, find.text('这笔制作不使用可识别人物，普通买家无需先建立或购买自己的数字人。'));
     await reveal(t, find.text('查看订单固定的原故事'));
     await t.tap(find.text('查看订单固定的原故事'));

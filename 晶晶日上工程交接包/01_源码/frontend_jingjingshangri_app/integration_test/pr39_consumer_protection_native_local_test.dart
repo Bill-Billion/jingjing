@@ -237,6 +237,32 @@ void main() {
       (t) async {
     await boot(t, 'consumer', 'buyer2');
     const phase = String.fromEnvironment('NATIVE_PHASE', defaultValue: 'all');
+    if (phase == 'legacy') {
+      paymentId = const String.fromEnvironment('NATIVE_EXISTING_PAYMENT');
+      final before = await session!.read('/api/v1/trade/records/$paymentId',
+          actingParty: session!.partyId);
+      expect(before['current_status'], 'UNKNOWN');
+      await control('legacy-payment-query', {'record_id': paymentId});
+      await open(t, '/trade/record?recordId=$paymentId');
+      await press(t, find.text('核对这笔付款'));
+      await press(t, find.text('确认办理'));
+      await reveal(t, find.textContaining('服务器已核实成功'));
+      await reveal(t, find.textContaining('测试环境的渠道回执'));
+      expect(find.textContaining('不代表真实资金到账'), findsOneWidget);
+      final after = await session!.read('/api/v1/trade/records/$paymentId',
+          actingParty: session!.partyId);
+      expect(after['id'], paymentId);
+      expect(after['current_status'], 'SUCCEEDED');
+      expect(paymentKeys, isEmpty);
+      expect(ackKeys, isEmpty);
+      await control('record', {
+        'id': 'CP09-legacy-payment-native',
+        'payment_id': paymentId,
+        'from': 'UNKNOWN',
+        'to': after['current_status']
+      });
+      await shot(t, 'native-cp-legacy-payment');
+    }
     if (phase == 'prepared') {
       paymentId = const String.fromEnvironment('NATIVE_EXISTING_PAYMENT');
       final before = await session!.read('/api/v1/trade/records/$paymentId',

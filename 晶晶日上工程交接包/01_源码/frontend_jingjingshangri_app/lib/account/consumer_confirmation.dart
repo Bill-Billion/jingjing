@@ -197,7 +197,28 @@ class ConsumerConfirmationController extends ChangeNotifier {
                 await transport('GET', '$prefix/preview', query: c.target),
                 c.target);
           } on AccountError catch (e) {
-            if (c.target['kind'] != 'PAYMENT_RECORD' ||
+            if (c.target['kind'] == 'PAYMENT_RECORD' &&
+                e.status == 409 &&
+                e.code == 'VERIFIED_ADULT_REQUIRED') {
+              // An already-dispatched payment can still be queried without
+              // starting another charge. CREATED must keep the normal gate.
+              final original = await transport(
+                  'GET', '/api/v1/trade/records/${c.target['payment_id']}');
+              _check(g);
+              if (original['id'] != c.target['payment_id'] ||
+                  original['kind'] != 'PAYMENT' ||
+                  original['buyer_party_id'] != party ||
+                  ![
+                    'SUBMITTING',
+                    'PENDING',
+                    'UNKNOWN',
+                    'SUCCEEDED',
+                    'REFUNDED',
+                    'REVIEW_REQUIRED',
+                  ].contains(original['current_status'])) {
+                rethrow;
+              }
+            } else if (c.target['kind'] != 'PAYMENT_RECORD' ||
                 e.code != 'CONSUMER_TARGET_NOT_PENDING') {
               rethrow;
             }

@@ -23,6 +23,7 @@ const apiUrl = `http://127.0.0.1:${apiPort}`, controlUrl = `http://127.0.0.1:${c
 let mysql, db, connection, apiServer, controlServer, startupPromise, cleanupPromise, stateOwned = false;
 let schemaCreated = false, phase = 'configuration', storageAvailable = true, nextCreate = 'ACCEPT';
 let providers, tradeEnv, organization, ruleId, grantMaintainer, readiness;
+let syntheticBuyerVerified = false;
 const reviewerGrants = new Map(), readinessStates = new Map();
 
 function cleanup() {
@@ -183,12 +184,19 @@ async function main() {
   const { seller, buyer, reviewer, member, legacyReviewer } = people;
   // The current consumer preview requires a verified adult. Prepare that prerequisite
   // through the real identity endpoint with a synthetic provider, never by bypassing it.
-  const unverifiedPreview = await request('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-precheck', { person: buyer, party: buyer.personalPartyId, status: 409 });
-  assert.equal(unverifiedPreview.body.error.code, 'VERIFIED_ADULT_REQUIRED');
-  const buyerIdentity = await call('POST', '/artists/people', { person: buyer, party: buyer.personalPartyId, body: { display_name: 'PR15合成成年买家（非真实核验）' } });
-  assert.equal((await call('POST', `/artists/people/${buyerIdentity.id}/identity`, { person: buyer, party: buyer.personalPartyId, body: { session_ref: 'synthetic:pr15-identity' } })).current_status, 'VERIFIED');
-  assert.equal((await call('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-precheck', { person: buyer, party: buyer.personalPartyId })).required, false);
-  checks.push('Consumer preflight rejects unverified buyer; synthetic adult verification uses real API before payment UI tests');
+  async function verifySyntheticBuyer() {
+    assert.equal(syntheticBuyerVerified, false);
+    const unverifiedPreview = await request('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-precheck', { person: buyer, party: buyer.personalPartyId, status: 409 });
+    assert.equal(unverifiedPreview.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+    const buyerIdentity = await call('POST', '/artists/people', { person: buyer, party: buyer.personalPartyId, body: { display_name: 'PR15合成成年买家（非真实核验）' } });
+    assert.equal((await call('POST', `/artists/people/${buyerIdentity.id}/identity`, { person: buyer, party: buyer.personalPartyId, body: { session_ref: 'synthetic:pr15-identity' } })).current_status, 'VERIFIED');
+    assert.equal((await call('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-precheck', { person: buyer, party: buyer.personalPartyId })).required, false);
+    syntheticBuyerVerified = true;
+    checks.push('Consumer preflight rejects unverified buyer; synthetic adult verification uses real API before payment UI tests');
+  }
+  // Default CI keeps the colleague's real-API synthetic identity setup. Only
+  // the dedicated old-payment regression delays it to check the unverified UI.
+  if (process.env.PR15_TEST_UNVERIFIED_LEGACY !== '1') await verifySyntheticBuyer();
   organization = await call('POST', '/organizations', { person: seller, body: { display_name: '晴川制作工作室（隔离测试）' } });
   const invitation = await call('POST', `/parties/${organization.party_id}/invitations`, { person: seller, party: organization.party_id,
     body: { invitee_account_id: member.accountId, expires_at: new Date(Date.now() + 86400000).toISOString() } });
@@ -498,6 +506,10 @@ async function main() {
         else refundQueries.set(r.id, result); out = { refundId: r.id, result };
       } else if (req.method === 'POST' && url.pathname === '/payment-create') {
         assert(['ACCEPT', 'TIMEOUT'].includes(get('result'))); nextCreate = get('result'); out = { nextPaymentCreate: nextCreate };
+      } else if (req.method === 'POST' && url.pathname === '/synthetic-verify-buyer') {
+        assert.equal(process.env.PR15_TEST_UNVERIFIED_LEGACY, '1');
+        await verifySyntheticBuyer();
+        out = { synthetic_only: true, status: 'VERIFIED' };
       } else if (req.method === 'POST' && url.pathname === '/provider-ready') {
         const channel = get('channel'), enabled = get('enabled'); assert(['ALIPAY', 'APPLE'].includes(channel)); assert(['true', 'false'].includes(enabled));
         await providerReady(channel, enabled === 'true'); out = { channel, enabled: enabled === 'true' };

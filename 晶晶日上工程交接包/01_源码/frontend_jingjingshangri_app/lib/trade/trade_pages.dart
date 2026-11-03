@@ -164,7 +164,7 @@ class _TradeListState extends State<_TradeList> {
             tradeFact('当前状态', tradeStatuses[r.status]),
             if (r.kind == 'ORDER')
               tradeFact(
-                  '已核实收款', tradeMoney(r.data['financial']['received_minor'])),
+                  '订单记账收款', tradeMoney(r.data['financial']['received_minor'])),
             if (r.kind == 'LEGACY') appNotice('仅保留历史依据，不代表渠道已确认到账。'),
             tradeButton('查看${tradeKinds[r.kind]}', busy ? null : () => open(r))
           ]),
@@ -838,10 +838,11 @@ class _TradeDetailState extends State<_TradeDetail> {
             outline: true),
         tradeFact('应付总额', tradeMoney(r.amount)),
         const Divider(),
-        tradeFact('已核实收款', tradeMoney(f['received_minor']), accent: true),
+        tradeFact('订单记账收款', tradeMoney(f['received_minor']), accent: true),
         const Divider(),
-        tradeFact('已核实退款', tradeMoney(f['refunded_minor'])),
-        tradeFact('净收款', tradeMoney(f['net_minor']))
+        tradeFact('订单记账退款', tradeMoney(f['refunded_minor'])),
+        tradeFact('订单记账净额', tradeMoney(f['net_minor'])),
+        appNotice('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。')
       ]),
       tradeSection('合同与许可', [
         tradeButton(
@@ -1000,9 +1001,10 @@ class _TradeDetailState extends State<_TradeDetail> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         tradeFact('订单编号', shortSupplyId(order.id)),
         tradeFact('合同现金总额', tradeMoney(order.amount)),
-        tradeFact('当前已核实收款', tradeMoney(financial['received_minor'])),
-        tradeFact('当前已核实退款', tradeMoney(financial['refunded_minor'])),
-        tradeFact('当前净收款', tradeMoney(financial['net_minor'])),
+        tradeFact('当前订单记账收款', tradeMoney(financial['received_minor'])),
+        tradeFact('当前订单记账退款', tradeMoney(financial['refunded_minor'])),
+        tradeFact('当前订单记账净额', tradeMoney(financial['net_minor'])),
+        appNotice('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'),
         tradeFact('合同服务方', shortSupplyId(order.merchant)),
       ]),
       Container(
@@ -1174,7 +1176,9 @@ class _TradeDetailState extends State<_TradeDetail> {
                         r.data['app_id'] == 'SIMULATED_ONLY' &&
                         r.data['merchant_id'] == 'SIMULATED_ONLY'
                     ? '服务器已核实模拟收款，没有真实资金；仍须另行办理制作、签署和许可。'
-                    : '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
+                    : r.data['environment'] == 'SANDBOX'
+                        ? '服务器已核实测试环境的渠道回执，不代表真实资金到账；仍须另行办理制作、签署和许可。'
+                        : '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
                 : '请先核对这笔付款，不要重复支付。客户端不能发起实际支付。',
             icon: Icons.receipt_long_outlined),
         if (r.data['provider'] == 'APPLE')

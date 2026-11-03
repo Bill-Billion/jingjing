@@ -191,7 +191,7 @@ Widget productionCurrentTasks(
           '原订单款项',
           order == null
               ? '请由买方或商户负责人核对原订单，当前未读取款项记录。'
-              : '${tradeStatuses[order.status]}；已核实收款 ${tradeMoney(order.data['financial']['received_minor'])}，退款 ${tradeMoney(order.data['financial']['refunded_minor'])}。'),
+              : '${tradeStatuses[order.status]}；订单记账收款 ${tradeMoney(order.data['financial']['received_minor'])}，记账退款 ${tradeMoney(order.data['financial']['refunded_minor'])}。'),
       supplyNote('最终原片每次下载仍须重新核验当前版本、财务状态与有效权利。'),
     ]),
   ]);

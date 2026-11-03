@@ -66,9 +66,10 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
               tradeMoney(tradeRows(i['allocations'])
                   .fold<int>(0, (n, a) => n + (a['amount_minor'] as int)))),
         tradeFact(
-            '已核实收款', tradeMoney(order.data['financial']['received_minor'])),
+            '订单记账收款', tradeMoney(order.data['financial']['received_minor'])),
         tradeFact(
-            '已核实退款', tradeMoney(order.data['financial']['refunded_minor'])),
+            '订单记账退款', tradeMoney(order.data['financial']['refunded_minor'])),
+        appNotice('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'),
       ] else
         supplyNote('请由买方或商户负责人从原订单核对具体金额与实收。'),
       if (flow.manualSample)
@@ -126,8 +127,9 @@ List<Widget> fulfillmentSections(BuildContext context, AccountSession session,
       if (cancel != null) ...[
         tradeFact('独立核定保留费用', tradeMoney(cancel['retained_minor'])),
         tradeFact('应退款', tradeMoney(cancel['refund_minor'])),
-        tradeFact('已核实实际退款', tradeMoney(cancel['actual_refunded_minor'])),
+        tradeFact('订单记账退款', tradeMoney(cancel['actual_refunded_minor'])),
         appNotice('应退金额和渠道处理中都不等于钱已退回。原单与追加订单分别核对，迟到收款仍需重新核对。'),
+        appNotice('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'),
       ],
       tradeButton(
           '查看处理记录与补充问题',
@@ -558,16 +560,16 @@ class _AftercareState extends State<_Aftercare> {
                           appNotice('对方私人证据由提交方与独立审核岗位读取，项目可见不等于证据可见。'),
                       ]),
                     if (cancel != null)
-                      tradeSection('取消与实际退款', [
+                      tradeSection('取消与订单记账退款', [
                         tradeFact(
-                            '当时核实收款', tradeMoney(cancel['received_minor'])),
+                            '取消时订单记账收款', tradeMoney(cancel['received_minor'])),
                         tradeFact(
                             '独立核定保留', tradeMoney(cancel['retained_minor'])),
                         tradeFact('应退款', tradeMoney(cancel['refund_minor'])),
-                        tradeFact('已核实实际退款',
+                        tradeFact('订单记账退款',
                             tradeMoney(cancel['actual_refunded_minor'])),
                         appNotice(
-                            '这里只核对原项目收退款账，不执行退款。追加订单另行核对，迟到收款也可能增加应核对金额。'),
+                            '这里只核对原项目收退款账，不执行退款。追加订单另行核对，迟到收款也可能增加应核对金额。测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'),
                         tradeButton('核对原项目实际收退款', busy ? null : syncRefund,
                             outline: true),
                         if (owner)
