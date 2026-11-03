@@ -1,0 +1,141 @@
+{
+  "phase": "business",
+  "selected_actions": [
+    "stock",
+    "coupon",
+    "participation",
+    "conversation"
+  ],
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:57333/api/v1",
+  "checks": [
+    {
+      "name": "未播放时通知与收件不可办理",
+      "result": "PASS"
+    },
+    {
+      "name": "现货私有MP4在App实际解码播放",
+      "result": "PASS"
+    },
+    {
+      "name": "明确收件是服务器实际记录",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "action-stock_paid-playing.png",
+      "route": "/stock/purchase?orderId=1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "source": "12-artist-stock-producer.png",
+      "note": "合成色条，只证明受控文件接线和实际解码",
+      "width": 390,
+      "height": 844,
+      "sha256": "6a4e6d2fa128d0d9a6f00e0c7b16f4c267e60cab81416b7903b300ce796cbc7b"
+    },
+    {
+      "file": "action-stock_paid-receipt.png",
+      "route": "/stock/purchase?orderId=1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "source": "39-story-top.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "5d711d07b853a5039e841d7c1ce4f07962a34d235cf578b5afb26ae3935d2515"
+    },
+    {
+      "file": "failure-business.png",
+      "route": "/stock/purchase?orderId=1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "source": "40-states-a-top.png",
+      "note": "Error: Control not visible: getByRole('button', { name: '确认本次个人许可交付', exact: true })\n    at reveal (file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/scripts/v5-r05-r12-app-actions.mjs:27:286)\n    at async press (file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/scripts/v5-r05-r12-app-actions.mjs:28:38)\n    at async file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/scripts/v5-r05-r12-app-actions.mjs:44:3",
+      "width": 390,
+      "height": 844,
+      "sha256": "eb1d229a1c356d2acf654b424864c7f987c334149918e9af6ebd1c514aab0163"
+    }
+  ],
+  "network": [
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a/content",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/operations/notifications",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/operations/notifications/15/read",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a/receipt",
+      "method": "POST",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/operations/notifications/15/read",
+      "method": "POST",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "key_sha256": "c8693c90102217ed98bd4b871f30828a6b87e8970e13c5d46de57f9b9e4cf831"
+    },
+    {
+      "path": "/api/v1/stock/purchases/1d11837a-3680-43fb-bdcd-380bf8ca6d7a/receipt",
+      "method": "POST",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "key_sha256": "1ab033f7f83ee12cc813f2f4d4e618845cd68f6415e19761be37bb72c66dadb4",
+      "version": "\"3\""
+    }
+  ],
+  "created": {},
+  "errors": [],
+  "failure": "Error: Control not visible: getByRole('button', { name: '确认本次个人许可交付', exact: true })\n    at reveal (file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/scripts/v5-r05-r12-app-actions.mjs:27:286)\n    at async press (file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/scripts/v5-r05-r12-app-actions.mjs:28:38)\n    at async file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/scripts/v5-r05-r12-app-actions.mjs:44:3",
+  "result": "FAIL"
+}

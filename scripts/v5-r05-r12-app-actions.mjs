@@ -9,7 +9,7 @@ import {appActionOptions,completeAppActionReport} from './v5-r05-r12-app-actions
 const {phase,actions:chosen}=appActionOptions(process.env);
 const f=JSON.parse(await readFile(process.env.V5_ACCESS_FILE,'utf8'));
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
-const out=resolve('output/playwright/v5-r05-r12/app');await mkdir(out,{recursive:true});
+const out=resolve(process.env.V5_APP_EVIDENCE_DIR||'output/playwright/v5-r05-r12/app');await mkdir(out,{recursive:true});
 const {chromium}=createRequire(join(process.cwd(),'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const secrets=Object.values(f.accounts).map(a=>a.bearer_token),redact=v=>secrets.reduce((s,t)=>s.replaceAll(t,'[redacted]'),String(v));
@@ -39,9 +39,9 @@ try{
   await reveal(button('确认本次交付通知已读'));const unreadDisabled=await button('确认本次交付通知已读').isDisabled();await reveal(button('明确确认本次文件已收到'));check('未播放时通知与收件不可办理',unreadDisabled&&await button('明确确认本次文件已收到').isDisabled());
   await press(button('受控播放已购作品'));await button('暂停预览').waitFor();await page.waitForTimeout(250);
   check('现货私有MP4在App实际解码播放',await page.locator('video').evaluateAll(v=>v.some(x=>x.readyState>=2&&x.currentTime>0)));await shot('action-'+stockKey+'-playing','12-artist-stock-producer.png','合成色条，只证明受控文件接线和实际解码');
-  await press(button('确认本次交付通知已读'));await page.waitForLoadState('networkidle');await page.waitForTimeout(500);await press(button('明确确认本次文件已收到'));await confirm();
+  await press(button('确认本次交付通知已读'));await page.waitForLoadState('networkidle');await page.waitForTimeout(500);if(!(await api('/stock/purchases/'+stock.order_id,'stock_buyer')).data.receipt_at){await press(button('明确确认本次文件已收到'));await confirm();}
   let p=await api('/stock/purchases/'+stock.order_id,'stock_buyer');check('明确收件是服务器实际记录',!!p.data.receipt_at);await shot('action-'+stockKey+'-receipt','39-story-top.png');
-  await press(button('确认本次个人许可交付'));await confirm();p=await api('/stock/purchases/'+stock.order_id,'stock_buyer');check('个人许可明确验收保留原合同',!!p.data.accepted_at&&p.data.acceptance_method==='BUYER_EXPLICIT');await shot('action-'+stockKey+'-accepted','39-story-top.png');
+  await press(button('确认本次原单许可交付'));await confirm();p=await api('/stock/purchases/'+stock.order_id,'stock_buyer');check('个人许可明确验收保留原合同',!!p.data.accepted_at&&p.data.acceptance_method==='BUYER_EXPLICIT');await shot('action-'+stockKey+'-accepted','39-story-top.png');
   }
   if(chosen.includes('coupon')) {
   const quoteState=await api('/trade/records/'+s.full_coupon.quote_id,'buyer');
@@ -79,7 +79,7 @@ try{
  }
  }
  if(phase==='cross'){
-  const ids=JSON.parse(await readFile('output/playwright/v5-r05-r12/web/CROSS_TO_APP.json','utf8'));
+  const ids=JSON.parse(await readFile(resolve(process.env.V5_WEB_EVIDENCE_DIR||'output/playwright/v5-r05-r12/web','CROSS_TO_APP.json'),'utf8'));
   for(const[name,role,route,path]of[
    ['notice-case','notices_seller','/notices/record?recordId='+ids.notice_case_id,'/notices/records/'+ids.notice_case_id],
    ['privacy','buyer','/privacy?view=request&recordId='+ids.privacy_request_id,'/privacy/requests/'+ids.privacy_request_id],
