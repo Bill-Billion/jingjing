@@ -47,7 +47,7 @@ async function evaluate(tx,party,t){
  const fingerprint=digest({party_id:party,rule_id:r.id,target:b,usage:u,reasons});
  return {configured:true,required:reasons.length>0,rule_id:r.id,preview_sha256:fingerprint,reasons,message:r.data.rule.message,target:b,expires_in_seconds:r.data.rule.confirmation_seconds};
 }
-async function enforce(tx,party,t){const v=await evaluate(tx,party,t);if(!v.required)return;
+async function enforce(tx,party,t,{require_configured=false}={}){const v=await evaluate(tx,party,t);if(require_configured&&!v.configured)throw error('CONSUMER_POLICY_NOT_CONFIGURED',409);if(!v.required)return;
  const raw=await A.one(tx,"SELECT * FROM wallet_records WHERE kind='CONSUMER_RISK_ACK' AND source_key=?",[digest(['CONSUMER_RISK_ACK',[party,v.preview_sha256]])]);
  if(!raw)throw error('CONSUMER_RISK_CONFIRMATION_REQUIRED',409);const ack=C.checked(raw);
  if(ack.data.expires_at<=await A.now(tx))throw error('CONSUMER_RISK_CONFIRMATION_EXPIRED',409);

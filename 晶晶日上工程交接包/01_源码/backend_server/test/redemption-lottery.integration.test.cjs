@@ -63,6 +63,13 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
   await t.test('ten guarantee survives mostly no-win pool and records actual conditional draws',async()=>{
    stock=await freeStock(100);let p=await create(stock,[{key:'free',kind:'PRODUCTION_FREE',weight:1,estimated_cost_minor:50000},{key:'points',kind:'POINT_BACK',weight:4999,estimated_cost_minor:0},{key:'none',kind:'NONE',weight:5000,estimated_cost_minor:0}]);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);const d=await draw(p);assert.ok(d.data.results.some(x=>x.kind==='PRODUCTION_FREE'));assert.equal(d.data.rule_snapshot.rules_sha256,p.data.rules_sha256);assert.equal(d.data.results.length,10);const earnings=(await request('/wallet/records?kind=EARNING',buyer)).items;assert.equal(earnings.filter(x=>x.data.event_kind==='REWARD').length,d.data.results.filter(x=>x.point_earning_id).length);await request('/wallet/summary',buyer);
   });
+  await t.test('new-contract pool cannot draw before a consumer policy is independently reviewed',async()=>{
+   const s=await freeStock(20);let p=await create(s);p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);
+   // Isolate the launch gate only: mark this synthetic pool as new-contract in the test DB.
+   // Actual candidate probabilities/bindings are separately validated before publication.
+   const d={...p.data,config:{...p.data.config,source_profile:'CONTRACT_20261029'}};d.rules_sha256=require('../src/modules/redemption/lottery-policy').rulesHash(d);await db.execute('UPDATE redemption_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(d),digest(d),p.id]);
+   const before=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points;await assert.rejects(draw({...p,data:d},1),{code:'CONSUMER_POLICY_NOT_CONFIGURED'});assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,before);assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM redemption_records WHERE kind='DRAW' AND parent_id=?",[p.id]))[0][0].n),0);
+  });
   await t.test('rational confirmation and participation limits precede point deduction; recovery returns original winners',async()=>{
    const R=require('../src/modules/wallet/risk').createConsumerRisk(db,{resolvePrincipal:S.resolvePrincipal});
    let rr=await R.createRule(producer.ctx,{rule:{version:'synthetic rational lottery',source_ref:'synthetic:37',message:'Synthetic rational participation',window_seconds:3600,trigger_count:2,large_recharge_minor:null,night:null,confirmation_seconds:600,lottery_window_max_draws:40,lottery_daily_points:100000},operation_key:key()});

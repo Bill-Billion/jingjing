@@ -63,6 +63,8 @@
 
 预览`configured=false`表示没有审核规则；不能显示“已经通过正式消费风控”。`required=false`时无需确认；`required=true`时显示服务端message和reasons，由本人明确点击继续。确认返回成功后才继续原操作，不代表钱已付、抽奖已完成。操作最终结果仍读原业务接口。
 
+新合同奖池（source_profile=CONTRACT_20261029）须先有独立审核生效的消费保护规则；缺少时抽奖返回CONSUMER_POLICY_NOT_CONFIGURED，不扣钻、不创建抽奖记录。页面提示“活动保护规则待审核，暂不可参与”，不能在configured=false时直接继续这类抽奖。历史奖池不套用新启用条件。
+
 `CONSUMER_RISK_CONFIRMATION_REQUIRED / EXPIRED / PREVIEW_CHANGED`：重新查当前预览、显示提示，等本人确认。`LOTTERY_PARTICIPATION_LIMIT`：解释当前参与受限，不能循环换键重试。原确认请求断网先沿原确认键恢复；已过期需新的**确认键**，原付款/抽奖键不换。登录失效或切身份后不自动重放消费。
 
 运营规则严格字段见OpenAPI `ConsumerRiskRule`。包含观察秒数、触发次数、大额充值分值、夜间区间及金额、确认有效秒数、抽奖窗口次数和当天晶钻上限。**均须真实运营审核，不内置正式金额/次数**；本机测试数值只为构造边界，不是甲方经营规则。新规则生效不改旧订单价款或退款约定，只约束尚未向供应商发出的新消费。已发出/结果未知的付款、回执和退款继续原核对流程。
