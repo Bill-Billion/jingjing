@@ -42,7 +42,8 @@ def main():
             available = {x["id"] for x in report.get("items", report.get("checks", []))}
             assert set(partial["checks"]) <= available, item["id"]
             refs.append(", ".join(partial["checks"]) + "（局部）")
-        work = item.get("work", item.get("effective_expected", ""))[:180]
+        # Show the approved current expectation; preserve original wording in the register.
+        work = item.get("effective_expected") or item.get("work", "")
         lines.append("|" + "|".join(map(cell, [
             item["id"] + " " + work,
             "、".join(SURFACES.get(v, v) for v in item["required_surfaces"]),

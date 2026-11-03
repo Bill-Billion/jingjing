@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.29-rc.1
+  version: 0.31.30-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -53280,6 +53280,8 @@ components:
         valid_until:
           type: string
           format: date-time
+        acceptance_policy:
+          const: CONTRACT_20261029
       required:
       - scope
       - exclusive
@@ -53291,6 +53293,14 @@ components:
       - commercial_uses
       - valid_from
       - valid_until
+      allOf:
+      - if:
+          required:
+          - acceptance_policy
+        then:
+          properties:
+            acceptance_hours:
+              const: 48
     StockCommercialLicense:
       type: object
       additionalProperties: false
@@ -53400,6 +53410,8 @@ components:
                 type: string
                 minLength: 1
                 maxLength: 8000
+              acceptance_policy:
+                const: CONTRACT_20261029
             required:
             - scope
             - exclusive
@@ -53408,6 +53420,14 @@ components:
             - personal_social_sharing
             - acceptance_hours
             - aftercare_terms
+            allOf:
+            - if:
+                required:
+                - acceptance_policy
+              then:
+                properties:
+                  acceptance_hours:
+                    const: 48
           - $ref: '#/components/schemas/StockCommercialTerms'
         terms:
           type: string

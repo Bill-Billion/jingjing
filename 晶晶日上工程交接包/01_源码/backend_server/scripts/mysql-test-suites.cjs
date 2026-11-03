@@ -20,7 +20,7 @@ module.exports=Object.freeze({
  redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs'],
  cocreation:['test/cocreation-policy.test.cjs','test/cocreation.integration.test.cjs','test/cocreation-invite-links.integration.test.cjs','test/cocreation-modern-journey.integration.test.cjs'],
  engagement:['test/engagement-policy.test.cjs','test/engagement.integration.test.cjs'],
- wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs'],
+ wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs','test/wallet-refund-entitlement-journey.integration.test.cjs'],
  auditions:['test/auditions-policy.test.cjs','test/auditions.integration.test.cjs','test/auditions-supplements.integration.test.cjs','test/auditions-delivery-options.integration.test.cjs','test/auditions-delivery-staff.integration.test.cjs'],
  notices:['test/notices-policy.test.cjs','test/notices.integration.test.cjs'],
  'stock-commercial':['test/stock-commercial-policy.test.cjs','test/stock-commercial.integration.test.cjs'],
