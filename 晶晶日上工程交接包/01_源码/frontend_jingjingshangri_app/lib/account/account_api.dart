@@ -198,6 +198,7 @@ class AccountApi {
     Map<String, dynamic>? body,
     Map<String, dynamic>? query,
     int? version,
+    String? operationKey,
     Uint8List? bytes,
     void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
@@ -206,6 +207,13 @@ class AccountApi {
     final usage = path.startsWith('/api/v1/privacy/usage');
     final writing = method != 'GET' &&
         !(method == 'POST' && path == '/api/v1/privacy/usage/pulse');
+    if (operationKey != null &&
+        (!writing ||
+            !RegExp(r'^/api/v1/cocreation/(?:rooms/[0-9a-f-]{36}/invite-links|invite-links/(?:claim|[0-9a-f-]{36}/revoke))$')
+                .hasMatch(path) ||
+            !RegExp(r'^app-[a-f0-9]{48}$').hasMatch(operationKey))) {
+      return Future.error(const AccountError(400, 'INVALID_OPERATION_KEY'));
+    }
     final supply = _privateRequestPath(path) && !usage;
     final started = _supplyEpoch;
     final accountStarted = _accountEpoch;
@@ -247,7 +255,12 @@ class AccountApi {
     if (writing && _running.containsKey(fingerprint)) {
       return _running[fingerprint]!;
     }
-    final key = writing ? _keys.putIfAbsent(fingerprint, _newKey) : null;
+    final key = writing
+        ? _keys.putIfAbsent(fingerprint, () => operationKey ?? _newKey())
+        : null;
+    if (operationKey != null && key != operationKey) {
+      return Future.error(const AccountError(409, 'PENDING_OPERATION_CHANGED'));
+    }
     String? resultId = unresolved?['resultId'];
     Future<Map<String, dynamic>> send() {
       if (!current()) {

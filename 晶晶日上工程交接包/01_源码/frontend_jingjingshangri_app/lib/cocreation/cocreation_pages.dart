@@ -15,6 +15,7 @@ import '../customization/private_draft_guard.dart';
 import '../engagement/community_support.dart';
 import 'cocreation_cast.dart';
 import 'creation_options.dart';
+import 'invite_panel.dart';
 
 class CocreationPage extends StatelessWidget {
   const CocreationPage({super.key, this.view = 'rooms', this.recordId});
@@ -199,6 +200,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           cs = communityItems(await api.read('rooms/${d['id']}/cases'));
         }
         ms = communityItems(await api.read('members'));
+      } else if (widget.view == 'claim') {
+        // The invitation panel reads only the recipient's own people.
       } else if (widget.view == 'invitations') {
         r = communityItems(await api.read('invitations'));
       } else if (widget.view == 'members') {
@@ -307,6 +310,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         for (final x in [
           ('rooms', '我的共创'),
           ('invitations', '收到邀请'),
+          ('claim', '领取家人邀请'),
           ('members', '我的参加资料'),
           ('snippets', '我的片段'),
           ('benefits', '服务额度')
@@ -681,6 +685,9 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               '20人服务权益', communityMap(snapshot['benefit'])['description'])
       ]),
       if (actions.contains('INVITE'))
+        CocreationInvitePanel(
+            session: session, room: r['id'], version: r['object_version']),
+      if (actions.contains('INVITE'))
         communitySection('邀请具体真人参加', [
           communitySelect(
               '已关联的受邀真人',
@@ -689,8 +696,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               enabled
                   ? (v) => setState(() => invitePerson.text = v ?? '')
                   : null),
-          if (people.isEmpty)
-            appNotice('尚无可选择的已关联真人。邀请其他参与者还需平台提供安全的查找或邀请入口，不通过手填编号查人。'),
+          if (people.isEmpty) appNotice('尚无可选择的已关联真人，可使用上方家人或朋友邀请。'),
           tradeButton(
               '发送本人的共创邀请',
               enabled &&
@@ -937,6 +943,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             ...switch (widget.view) {
               'new' => createView(),
               'room' => roomView(),
+              'claim' => [CocreationInvitePanel(session: session)],
               'join' || 'member' => participationView(),
               _ => listView()
             },

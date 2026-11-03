@@ -313,11 +313,15 @@ class CommunityApi {
   Future<Map<String, dynamic>> write(String suffix, Map<String, dynamic> body,
       {bool account = false,
       int? version,
+      String? operationKey,
       String method = 'POST',
       FutureOr<void> Function(Map<String, dynamic>)? validate}) async {
     final p = party(account), e = session.epoch;
     final r = await session.write(method, path(suffix),
-        actingParty: p, body: body, version: version, validate: (r) async {
+        actingParty: p,
+        body: body,
+        version: version,
+        operationKey: operationKey, validate: (r) async {
       check(e, p);
       await validate?.call(r);
       check(e, p);
@@ -434,8 +438,12 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   @override
   void initState() {
     super.initState();
-    final pending =
-        session.pendingForPrefix(recoveryPrefix, personal: api.personal);
+    final pending = session
+        .pendingForPrefix(recoveryPrefix, personal: api.personal)
+        .where((op) => !RegExp(
+                r'^/api/v1/cocreation/(?:rooms/[0-9a-f-]{36}/invite-links|invite-links/)')
+            .hasMatch(op['path']?.toString() ?? ''))
+        .toList();
     if (pending.isNotEmpty) {
       final op = pending.first, path = op['path'];
       if (path is String && path.startsWith(api.prefix)) {

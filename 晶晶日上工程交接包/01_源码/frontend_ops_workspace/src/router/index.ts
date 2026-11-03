@@ -10,6 +10,7 @@ import { customizationRoutes } from './customizationRoutes'
 import { artistsRoutes } from './artistsRoutes'
 import { clientServiceRoutes } from './clientServiceRoutes'
 import { businessRoutes } from './businessRoutes'
+import { captureFragment } from '@/cocreation/invite'
 
 /**
  * 路由表。
@@ -90,6 +91,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
+  // Remove the bearer credential before the login guard can build a redirect query.
+  if (to.path === '/cocreation/invitations' && to.hash) {
+    captureFragment(to.hash)
+    return { path: to.path, replace: true }
+  }
   const session = useSessionStore()
   // 没有令牌却要进非公开页 → 回登录页，并记住原来想去哪
   if (!to.meta.public && !session.isLoggedIn) {

@@ -6,6 +6,8 @@ import 'account_api.dart';
 // Expected usage/decision denials clear the current preview in its page, but
 // do not revoke the family's entire account area or erase a pending command.
 bool _scopedContractDenial(String path, AccountError error) =>
+    (path == '/api/v1/cocreation/invite-links/claim' &&
+        error.code == 'COCREATION_INVITE_LINK_UNAVAILABLE') ||
     path.startsWith('/api/v1/guardians/') &&
         const {
           'GUARDIAN_DISABLED',
@@ -420,6 +422,7 @@ class AccountSession extends ChangeNotifier {
     Map<String, dynamic>? query,
     String? actingParty,
     int? version,
+    String? operationKey,
     Uint8List? bytes,
     void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
@@ -443,6 +446,7 @@ class AccountSession extends ChangeNotifier {
           body: body,
           query: query,
           version: version,
+          operationKey: operationKey,
           bytes: bytes,
           onSendProgress: onSendProgress == null
               ? null
@@ -571,12 +575,14 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     Map<String, dynamic>? body,
     int? version,
+    String? operationKey,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) =>
       _request(method, path,
           actingParty: actingParty,
           body: body ?? {},
           version: version,
+          operationKey: operationKey,
           validate: validate);
 
   Future<Map<String, dynamic>> upload(String path, Uint8List bytes,
