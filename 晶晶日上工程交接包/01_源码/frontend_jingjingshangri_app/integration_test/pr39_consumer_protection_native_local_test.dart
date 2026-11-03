@@ -25,6 +25,7 @@ void main() {
   final paymentKeys = <String>[], drawKeys = <String>[];
   final commandKeys = <String>[];
   final ackKeys = <String>[];
+  final previews = <Map<String, dynamic>>[];
   Future<Map<String, dynamic>> control(String action,
       [Map<String, dynamic> args = const {}]) async {
     debugPrint(
@@ -142,6 +143,10 @@ void main() {
         h.next(o);
       }
     }, onResponse: (r, h) {
+      if (r.requestOptions.path.endsWith('/consumer-risk/preview') &&
+          r.statusCode == 200) {
+        previews.add(Map<String, dynamic>.from(r.data['data']));
+      }
       debugPrint(
           'NATIVE_HTTP_RESULT ${r.statusCode} ${r.requestOptions.uri.path}');
       final path = r.requestOptions.path;
@@ -232,6 +237,38 @@ void main() {
       (t) async {
     await boot(t, 'consumer', 'buyer2');
     const phase = String.fromEnvironment('NATIVE_PHASE', defaultValue: 'all');
+    if (phase == 'prepared') {
+      paymentId = const String.fromEnvironment('NATIVE_EXISTING_PAYMENT');
+      final before = await session!.read('/api/v1/trade/records/$paymentId',
+          actingParty: session!.partyId);
+      expect(before['current_status'], 'CREATED');
+      await open(t, '/trade/record?recordId=$paymentId');
+      await press(t, find.text('核对这笔付款'));
+      await press(t, find.text('确认办理'));
+      await wait(t, find.text('本次消费提示'));
+      expect(previews.last['target']['kind'], 'PAYMENT');
+      expect((previews.last['target'] as Map).containsKey('payment_id'), false);
+      expect(previews.last['target']['order_id'], before['order_id']);
+      await press(t, find.text('我已阅读本次提示，愿意继续原操作'));
+      await press(t, find.text('已阅读，继续原操作'));
+      await frames(t, 12);
+      final after = await session!.read('/api/v1/trade/records/$paymentId',
+          actingParty: session!.partyId);
+      expect(after['id'], paymentId);
+      expect(after['current_status'], isNot('CREATED'));
+      expect(paymentKeys, isEmpty);
+      expect(ackKeys, hasLength(1));
+      await control('record', {
+        'id': 'CP08-prepared-payment-native',
+        'payment_id': paymentId,
+        'order_id': before['order_id'],
+        'from': 'CREATED',
+        'to': after['current_status'],
+        'preview': previews.last,
+        'confirmation_keys': ackKeys
+      });
+      await shot(t, 'native-cp-prepared-payment');
+    }
     if (phase == 'all' || phase == 'payment') {
       await open(t, '/trade/record?recordId=${data['order_id']}');
       loseRiskAck = true;
@@ -260,15 +297,22 @@ void main() {
       expect(paymentKeys.length, 1);
       await press(t, find.text('恢复原请求核对'));
       await press(t, find.text('确认办理'));
-      await wait(t, find.text('核对这笔付款'));
+      await reveal(t, find.text('核对这笔付款'));
       expect(paymentKeys.length, 2);
       expect(paymentKeys[0], paymentKeys[1]);
       expect(paymentId, isNotNull);
+    }
+    if (phase == 'after-payment') {
+      paymentId = const String.fromEnvironment('NATIVE_EXISTING_PAYMENT');
+      expect(paymentId, isNotEmpty);
+      await open(t, '/trade/record?recordId=$paymentId');
+    }
+    if (['all', 'payment', 'after-payment'].contains(phase)) {
       await control(
           'sim-result', {'record_id': paymentId, 'state': 'SUCCEEDED'});
       await press(t, find.text('核对这笔付款'));
       await press(t, find.text('确认办理'));
-      await wait(t, find.textContaining('模拟收款'));
+      await reveal(t, find.textContaining('模拟收款'));
       await control('record', {
         'id': 'native-cp-payment-original-recovery',
         'order_id': data['order_id'],
@@ -278,12 +322,12 @@ void main() {
       });
       await shot(t, 'native-cp-payment-success');
       await open(t, '/trade/record?recordId=${data['web_refund']}');
-      await wait(t, find.textContaining('服务器已核实退款'));
+      await reveal(t, find.textContaining('服务器已核实退款'));
       await shot(t, 'native-cp-web-same-refund');
     }
-    if (phase == 'all' || phase == 'preferences') {
+    if (['all', 'after-payment', 'preferences'].contains(phase)) {
       await open(t, '/privacy?view=preferences');
-      await wait(t, find.text('系统推送开关'));
+      await reveal(t, find.text('系统推送开关'));
       Future<void> toggle(String title, bool value) async {
         final f = find.widgetWithText(SwitchListTile, title);
         await reveal(t, f);
@@ -316,7 +360,7 @@ void main() {
       if (find.text('本日夜间提示已读').evaluate().isNotEmpty)
         await press(t, find.text('本日夜间提示已读'));
       await open(t, '/privacy?view=preferences');
-      await wait(t, find.text('系统推送开关'));
+      await reveal(t, find.text('系统推送开关'));
       expect(find.text('本日夜间提示已读'), findsNothing);
       await control('record', {
         'id': 'native-cp-preferences-original-recovery',
@@ -325,12 +369,12 @@ void main() {
       });
       await shot(t, 'native-cp-notification-settings');
     }
-    if (phase == 'all' || phase == 'draw') {
+    if (['all', 'after-payment', 'draw'].contains(phase)) {
       await open(t, '/redemption?view=pool&id=${data['pool_id']}');
       await press(t, find.text('我已核对本次条款、实际概率、扣用晶钻及库存不足处理'));
       loseDraw = true;
       await press(t, find.text('按本次规则单抽'));
-      await press(t, find.text('确认办理'));
+      await press(t, find.text('确认本次操作'));
       await wait(t, find.text('本次消费提示'));
       await wait(t, find.text('本次 300 晶钻'));
       await press(t, find.text('我已阅读本次提示，愿意继续原操作'));

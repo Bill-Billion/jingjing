@@ -43,14 +43,31 @@ Map<String, dynamic>? consumptionTarget(
 Map<String, dynamic> consumerPreview(
     Map<String, dynamic> p, Map<String, dynamic> target) {
   final t = p['target'];
+  // PAYMENT_RECORD is resolved server-side to the original PAYMENT binding.
+  // The published preview deliberately omits payment_id; confirmation must
+  // still send the original PAYMENT_RECORD target, never the expanded fields.
+  final matches = t is Map &&
+      (target['kind'] == 'PAYMENT_RECORD'
+          ? t.length == 5 &&
+              t['kind'] == 'PAYMENT' &&
+              t['order_id'] is String &&
+              RegExp(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$')
+                  .hasMatch(t['order_id']) &&
+              t['installment_key'] is String &&
+              (t['installment_key'] as String).isNotEmpty &&
+              (t['installment_key'] as String).length <= 128 &&
+              t['request_key'] is String &&
+              (t['request_key'] as String).isNotEmpty &&
+              (t['request_key'] as String).length <= 128 &&
+              t['amount_minor'] is int &&
+              t['amount_minor'] > 0 &&
+              t['amount_minor'] <= 9007199254740991
+          : target.entries.every((x) => t[x.key] == x.value));
   if (p['configured'] is! bool ||
       p['required'] is! bool ||
       p['reasons'] is! List ||
       (p['reasons'] as List).any((x) => x is! String) ||
-      t is! Map ||
-      target.entries.any((x) => x.key == 'kind' && x.value == 'PAYMENT_RECORD'
-          ? t['kind'] != 'PAYMENT'
-          : t[x.key] != x.value) ||
+      !matches ||
       p['required'] == true &&
           (p['configured'] != true ||
               p['message'] is! String ||

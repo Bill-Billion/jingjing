@@ -75,6 +75,75 @@ class Harness {
 }
 
 void main() {
+  test('未发送原付款预览按契约展开，保留原编号确认和原核对请求', () async {
+    final h = Harness();
+    await h.start();
+    h.handler = (r) => r.path == '$risk/preview'
+        ? envelope({
+            'configured': true,
+            'required': true,
+            'rule_id': invitationId,
+            'preview_sha256': hash,
+            'reasons': ['FREQUENT_CASH_REQUESTS'],
+            'message': '合成提示',
+            'expires_in_seconds': 60,
+            'target': {
+              'kind': 'PAYMENT',
+              'order_id': personId,
+              'installment_key': 'stock',
+              'request_key': 'original-payment',
+              'amount_minor': 100
+            }
+          })
+        : null;
+    final path = '$pay/$invitationId/reconciliation';
+    final p = h.session.write('POST', path,
+        actingParty: personId, body: {'transaction_id': null});
+    await settle();
+    expect(h.c.phase, 'read');
+    expect(h.adapter.requests.where((r) => r.path == path), isEmpty);
+    h.c.choose(true);
+    await p;
+    expect(h.confirmations.single.data['target'],
+        {'kind': 'PAYMENT_RECORD', 'payment_id': invitationId});
+    expect(h.adapter.requests.where((r) => r.path == path), hasLength(1));
+    expect(h.payments, isEmpty);
+    h.dispose();
+  });
+  test('缺失或错误预览不能靠未配置规则绕过消费校验', () async {
+    for (final target in [
+      null,
+      {'kind': 'PAYMENT'},
+      {
+        'kind': 'PAYMENT',
+        'order_id': 'wrong',
+        'installment_key': 'stock',
+        'request_key': 'key',
+        'amount_minor': 100
+      }
+    ]) {
+      final h = Harness();
+      await h.start();
+      h.handler = (r) => r.path == '$risk/preview'
+          ? envelope({
+              'configured': false,
+              'required': false,
+              'reasons': [],
+              'target': target
+            })
+          : null;
+      final path = '$pay/$invitationId/reconciliation';
+      await expectLater(
+          h.session.write('POST', path,
+              actingParty: personId, body: {'transaction_id': null}),
+          throwsA(isA<AccountError>()));
+      expect(
+          h.adapter.requests.where((r) =>
+              r.path == path || r.path == pay || r.path == '$risk/confirm'),
+          isEmpty);
+      h.dispose();
+    }
+  });
   test('主动阅读后继续原付款，确认键独立且原始目标不混入计算金额', () async {
     final h = Harness();
     await h.start();

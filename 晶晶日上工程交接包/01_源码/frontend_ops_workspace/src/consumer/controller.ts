@@ -21,8 +21,15 @@ export function consumptionTarget(path:string,o:RequestOptions):Target|null {
  return m?{kind:'PAYMENT_RECORD',payment_id:m[1]!}:null
 }
 export function consumerPreview(value:unknown,target:Target):Preview {
- const p=value as Preview,ok=!!p&&typeof p.configured==='boolean'&&typeof p.required==='boolean'&&Array.isArray(p.reasons)&&p.reasons.every(x=>typeof x==='string')&&!!p.target&&Object.entries(target).every(([k,v])=>k==='kind'&&v==='PAYMENT_RECORD'?p.target.kind==='PAYMENT':p.target[k]===v)
- if(!ok||p.required&&(!p.configured||typeof p.message!=='string'||!p.message.trim()||!/^\w{64}$/.test(p.preview_sha256||'')||!Number.isSafeInteger(p.expires_in_seconds)||Number(p.expires_in_seconds)<1))throw fail('UNEXPECTED_RESPONSE_SHAPE','本次消费提示无法核对，未继续消费。',200)
+ const p=value as Preview,t=p?.target
+ // PAYMENT_RECORD resolves to the original PAYMENT binding. The contract
+ // excludes payment_id here; confirmation keeps the original target and ID.
+ const ref=(v:unknown)=>typeof v==='string'&&v.length>0&&v.length<=128
+ const matches=!!t&&(target.kind==='PAYMENT_RECORD'
+  ?Object.keys(t).length===5&&t.kind==='PAYMENT'&&typeof t.order_id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(t.order_id)&&ref(t.installment_key)&&ref(t.request_key)&&Number.isSafeInteger(t.amount_minor)&&Number(t.amount_minor)>0
+  :Object.entries(target).every(([k,v])=>t[k]===v))
+ const ok=!!p&&typeof p.configured==='boolean'&&typeof p.required==='boolean'&&Array.isArray(p.reasons)&&p.reasons.every(x=>typeof x==='string')&&matches
+ if(!ok||p.required&&(!p.configured||typeof p.message!=='string'||!p.message.trim()||! /^[a-f0-9]{64}$/.test(p.preview_sha256||'')||!Number.isSafeInteger(p.expires_in_seconds)||Number(p.expires_in_seconds)<1))throw fail('UNEXPECTED_RESPONSE_SHAPE','本次消费提示无法核对，未继续消费。',200)
  return p
 }
 /** One explicit action at a time. No retry is made without a new user click. */

@@ -64,6 +64,22 @@ class FakeAccountAdapter implements HttpClientAdapter {
   }
 
   ResponseBody defaultReply(RequestOptions options) {
+    // The default legacy fixture has no active consumption policy. Still return
+    // the real preview envelope: missing/malformed previews must block writes.
+    if (options.path == '/api/v1/wallet/consumer-risk/preview' &&
+        options.method == 'GET' &&
+        options.queryParameters['kind'] == 'PAYMENT') {
+      return envelope({
+        'configured': false,
+        'required': false,
+        'rule_id': null,
+        'preview_sha256': null,
+        'reasons': [],
+        'message': null,
+        'target': {...options.queryParameters, 'amount_minor': 100},
+        'expires_in_seconds': null
+      });
+    }
     if (options.path.startsWith('/api/v1/me/business/')) {
       return envelope(businessResponse(
           options.path.split('/').last, options.headers['X-Acting-Party'],
