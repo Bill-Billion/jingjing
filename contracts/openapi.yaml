@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.26-rc.1
+  version: 0.31.27-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -8199,6 +8199,61 @@ paths:
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
   /api/v1/operations/reports:
+    get:
+      operationId: listMyBusinessReports
+      summary: 按当前账号和办事身份查找自己申请的报表
+      tags:
+      - business-operations
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+      responses:
+        '200':
+          description: Isolated implementation; permissions rechecked; not production
+            enablement.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsReportListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅返回当前仍可访问的报表摘要，不返回财务明细；按编号稳定分页。被撤权的记录跳过，空页仍可能有next_cursor。
     post:
       operationId: requestBusinessReport
       summary: 申请带期间和环境的后台统计报表
@@ -67039,3 +67094,92 @@ components:
       - confirmed_by
       - confirmed_at
       - expires_at
+
+    OpsReportSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        party_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        request:
+          type: object
+          additionalProperties: false
+          properties:
+            kind:
+              type: string
+              enum:
+              - CASH
+              - SETTLEMENT
+              - WORKLOAD
+            environment:
+              type: string
+              enum:
+              - SANDBOX
+              - PRODUCTION
+            period_start:
+              type: string
+              format: date-time
+            period_end:
+              type: string
+              format: date-time
+            metric_version:
+              const: '1'
+          required:
+          - kind
+          - environment
+          - period_start
+          - period_end
+          - metric_version
+        current_status:
+          type: string
+          enum:
+          - PENDING
+          - RUNNING
+          - RETRY
+          - SUCCEEDED
+          - FAILED
+          - BLOCKED
+        error_code:
+          anyOf:
+          - type: string
+            minLength: 1
+            maxLength: 80
+          - type: 'null'
+      required:
+      - id
+      - party_id
+      - request
+      - current_status
+      - error_code
+    OpsReportListResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 50
+              items:
+                $ref: '#/components/schemas/OpsReportSummary'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data

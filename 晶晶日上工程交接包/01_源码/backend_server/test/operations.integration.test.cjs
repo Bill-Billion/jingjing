@@ -131,7 +131,7 @@ test('operations actual HTTP permissions, comments, notifications and report job
   const notices=ok(await call('GET','/notifications?limit=100',buyer),'OpsNotificationListResponse');assert.ok(notices.items.some(x=>x.record_id===planned));
   await db.withTransaction(tx=>require('../src/modules/operations/events').publishEvent(tx,{domain:'PROJECTS',record_id:plan,event_id:key(),event_code:'PLAN_CREATED',object_version:1,actor_account_id:seller.account_id}));assert.ok(ok(await call('GET','/notifications?limit=100',buyer)).items.some(x=>x.record_id===plan));
   // Permission is checked again against each source even when the report is already complete.
-  const saved=ok(await call('POST','/reports',buyer,{...reportBody,kind:'SETTLEMENT'}));await runJob();data.parties=[seller.personal_party_id];await db.execute('UPDATE finance_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),agreement]);assert.equal((await call('GET','/reports/'+saved.id)).status,404);
+  const saved=ok(await call('POST','/reports',buyer,{...reportBody,kind:'SETTLEMENT'}));await runJob();data.parties=[seller.personal_party_id];await db.execute('UPDATE finance_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),agreement]);assert.equal((await call('GET','/reports/'+saved.id)).status,404);assert.equal(ok(await call('GET','/reports?limit=50')).items.some(x=>x.id===saved.id),false);
   data.parties.push(buyer.personal_party_id);await db.execute('UPDATE finance_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),agreement]);
   // A too-large export is blocked explicitly, never silently cut off and called complete.
   for(let batch=0;batch<4;batch++){const values=[],parts=[];for(let n=0;n<500;n++){parts.push("(?,?,?,'ACCRUAL',1,?,?,?)");values.push(agreement,buyer.personal_party_id,digest(key()),agreement,JSON.stringify(entry),digest(entry));}await db.execute('INSERT INTO finance_entries(agreement_id,party_id,fact_key,category,amount_minor,source_id,data_json,data_sha256) VALUES '+parts.join(','),values);}
@@ -156,6 +156,20 @@ test('operations actual HTTP permissions, comments, notifications and report job
   const result=ok(await call('GET','/reports/'+fresh.id),'OpsReportResponse').result;
   const cash=result.rows.filter(x=>x.record_id===order.id);assert.ok(cash.length);for(const row of cash)assert.equal(row.occurred_at,expected);
   assert.match(result.generated_at,/\.\d{3}Z$/);assert.equal(JSON.stringify(ok(await call('GET','/reports/'+report.id))),historical);
+ });
+ await t.test('report history lists current account and exact identity with stable cursors and no financial rows',async()=>{
+  const own=[];for(let n=0;n<3;n++)own.push(ok(await call('POST','/reports',buyer,reportBody)).id);
+  const all=ok(await call('GET','/reports?limit=50',buyer),'OpsReportListResponse');for(const rid of own)assert(all.items.some(x=>x.id===rid));
+  for(const row of all.items){assert.equal(row.party_id,buyer.personal_party_id);assert.equal(Object.hasOwn(row,'result'),false);assert.equal(Object.hasOwn(row,'content_sha256'),false);}
+  const ids=[];let cursor=null,pages=0;do{const page=ok(await call('GET','/reports?limit=1'+(cursor?'&cursor='+cursor:''),buyer),'OpsReportListResponse');ids.push(...page.items.map(x=>x.id));cursor=page.next_cursor;assert(++pages<100);}while(cursor);
+  assert.deepEqual(ids,all.items.map(x=>x.id));assert.equal(new Set(ids).size,ids.length);
+  assert.equal((await call('GET','/reports',stranger,undefined,buyer.personal_party_id)).status,403);
+  assert.deepEqual(ok(await call('GET','/reports',stranger)).items,[]);
+  assert.equal((await call('GET','/reports',buyer,undefined,null)).status,403);
+  assert.equal((await call('GET','/reports',null)).status,401);
+  for(const query of ['?limit=0','?limit=51','?limit=1&limit=2','?cursor=bad','?created_by='+buyer.account_id])assert.equal((await call('GET','/reports'+query)).status,400);
+  await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE account_id=? AND party_id=?",[buyer.account_id,buyer.personal_party_id]);
+  try{assert.equal((await call('GET','/reports',buyer)).status,403);}finally{await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE account_id=? AND party_id=?",[buyer.account_id,buyer.personal_party_id]);}
  });
  const out=path.resolve(__dirname,'../../../..','.local/operations-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:opsFixtures,requests},null,2));
  }finally{if(server)await new Promise(r=>{server.close(r);server.closeAllConnections();});if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
