@@ -30,7 +30,7 @@ export function lotteryReason(record:BusinessData|null,now=Date.now()):string|nu
 }
 export function validateFourForm(domain:string,key:string,body:BusinessData,record:BusinessData|null){
  const fail=(message:string)=>{throw new ApiError({status:400,code:'CLIENT_FORM_INVALID',message})}
- if(domain==='privacy'&&key==='preferences'){const n=body.rest_reminder_minutes;if(n!==0&&!(typeof n==='number'&&n>=15&&n<=240))fail('休息提醒只能关闭，或选择15—240分钟。')}
+ if(domain==='privacy'&&key==='preferences'){const q=body.quiet_hours as BusinessData|undefined;if(q&&q.start_minute===q.end_minute)fail('夜间起止时刻不能相同。');const n=body.rest_reminder_minutes;if(n!==0&&!(typeof n==='number'&&n>=15&&n<=240))fail('休息提醒只能关闭，或选择15—240分钟。')}
  if(domain==='daily-finance'&&key==='statement'){if(body.no_activity_reason===null)body.no_activity_reason='';if(!(body.items as unknown[]).length&&!String(body.no_activity_reason||'').trim())fail('空账单须说明已经核对本日无该类业务。')}
  if(domain==='daily-finance'&&key==='create'){const d=String((body.scope as BusinessData).business_date);if(!/^20\d\d-\d\d-\d\d$/.test(d)||!Number.isFinite(Date.parse(d))||new Date(d).toISOString().slice(0,10)!==d)fail('请填写有效的北京时间业务日期。')}
  if(domain==='consumer'&&key!=='change'){const k=String(body.kind),p=(record?.pending as BusinessData|undefined)?.[k] as BusinessData|undefined;if(!p)fail('没有该类别的待生效申请，请刷新。');if(key==='confirm'&&Date.parse(String(p?.confirm_after))>Date.parse(String(record?.as_of)))fail('提高额度还需要等待；刷新后核对服务器可确认时间。')}

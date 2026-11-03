@@ -12,6 +12,8 @@ export const useRestUsageStore=defineStore('rest-usage',()=>{
   pulse:async()=>(await request('/privacy/usage/pulse',{token:session.token,method:'POST',body:{}})).data,
   ack:async(c:UsageAck)=>(await request(path,{token:session.token,method:'POST',body:{},ifMatch:c.version,idempotencyKey:c.key})).data,
   newKey:newIdempotencyKey,
+  nightSeen:date=>localStorage.getItem('ops.night-seen.'+session.account!.id)===date,
+  markNightSeen:date=>localStorage.setItem('ops.night-seen.'+session.account!.id,date),
   restore:()=>{const c=savedWrite('rest-usage',session.account!.id,null,route);return c?{version:c.ifMatch!,key:c.key}:null},
   save:c=>saveWrite({namespace:'rest-usage',accountId:session.account!.id,selectedId:'',partyId:null,authority:'ACCOUNT',route,path,method:'POST',key:c.key,body:{},ifMatch:c.version}),
   remove:c=>removeWrite(c.key),changed:()=>revision.value++

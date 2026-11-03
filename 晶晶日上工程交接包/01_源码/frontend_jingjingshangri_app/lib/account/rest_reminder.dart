@@ -45,7 +45,9 @@ class _RestReminderState extends State<RestReminder>
           child: Consumer<RestUsageController>(
               builder: (_, c, child) => Column(children: [
                     Expanded(child: child!),
-                    if (c.data?.due == true || c.pending != null)
+                    if (c.data?.due == true ||
+                        c.pending != null ||
+                        c.nightVisible)
                       Material(
                           color: AccountTheme.canvas,
                           child: SafeArea(
@@ -55,17 +57,27 @@ class _RestReminderState extends State<RestReminder>
                                   child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        if (c.nightVisible) ...[
+                                          const Text(
+                                              '已到你设置的夜间时段，建议适时休息。提醒不强迫退出。'),
+                                          TextButton(
+                                              onPressed: c.dismissNight,
+                                              child: const Text('本日夜间提示已读'))
+                                        ],
                                         if (c.data?.due == true)
                                           const Text('已连续使用一段时间，建议休息。'),
                                         if (c.error != null) Text(c.error!),
-                                        TextButton(
-                                            onPressed: c.busy
-                                                ? null
-                                                : () => c.acknowledge(
-                                                    recover: c.pending != null),
-                                            child: Text(c.pending != null
-                                                ? '恢复同一次提醒确认'
-                                                : '知道了'))
+                                        if (c.data?.due == true ||
+                                            c.pending != null)
+                                          TextButton(
+                                              onPressed: c.busy
+                                                  ? null
+                                                  : () => c.acknowledge(
+                                                      recover:
+                                                          c.pending != null),
+                                              child: Text(c.pending != null
+                                                  ? '恢复同一次提醒确认'
+                                                  : '知道了'))
                                       ]))))
                   ]),
               child: widget.child));

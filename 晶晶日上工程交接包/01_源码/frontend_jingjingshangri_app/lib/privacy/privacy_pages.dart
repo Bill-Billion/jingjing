@@ -109,7 +109,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   late final details = field(),
       why = field(),
       minutes = field(),
-      fileReason = field();
+      fileReason = field(),
+      quietStart = field(),
+      quietEnd = field();
   String? selectedFile, selectedPolicy;
   List<Map<String, dynamic>> fileTargets = [], filePolicies = [];
   String type = 'QUERY', copyCategory = 'PROFILE';
@@ -119,6 +121,11 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       loadedPreferences = false,
       agreed = false;
   int preferenceVersion = 0;
+  bool pushEnabled = false,
+      nightEnabled = false,
+      quietEnabled = false,
+      notificationSupported = false;
+  Map<String, dynamic>? remotePreferences;
   String? cursor, nextCursor, dataCursor, nextDataCursor;
   List<Map<String, dynamic>> rows = [],
       history = [],
@@ -160,6 +167,15 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     scopes.clear();
     personalization = false;
     marketing = false;
+    loadedPreferences = false;
+    preferenceVersion = 0;
+    remotePreferences = null;
+    pushEnabled = false;
+    nightEnabled = false;
+    quietEnabled = false;
+    notificationSupported = false;
+    quietStart.clear();
+    quietEnd.clear();
     agreed = false;
   }
 
@@ -207,6 +223,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       String? next;
       if (widget.view == 'preferences') {
         final p = await api.read('preferences');
+        if (!mounted || t != ticket) return;
         communityRequire(p['object_version'] is int &&
             p['object_version'] >= 0 &&
             p['personalization'] is bool &&
@@ -215,10 +232,32 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             p['rest_reminder_minutes'] >= 0 &&
             p['rest_reminder_minutes'] <= 240);
         preferenceVersion = p['object_version'];
+        remotePreferences = p;
+        notificationSupported = p['push_enabled'] is bool &&
+            p['night_reminder_enabled'] is bool &&
+            p['quiet_hours'] is Map;
+        if (notificationSupported) {
+          final q = p['quiet_hours'];
+          communityRequire(q['enabled'] is bool &&
+              q['start_minute'] is int &&
+              q['end_minute'] is int &&
+              q['start_minute'] >= 0 &&
+              q['start_minute'] < 1440 &&
+              q['end_minute'] >= 0 &&
+              q['end_minute'] < 1440 &&
+              q['start_minute'] != q['end_minute']);
+        }
         if (!loadedPreferences) {
           personalization = p['personalization'];
           marketing = p['marketing'];
           minutes.text = '${p['rest_reminder_minutes']}';
+          if (notificationSupported) {
+            pushEnabled = p['push_enabled'];
+            nightEnabled = p['night_reminder_enabled'];
+            quietEnabled = p['quiet_hours']['enabled'];
+            quietStart.text = '${p['quiet_hours']['start_minute']}';
+            quietEnd.text = '${p['quiet_hours']['end_minute']}';
+          }
           loadedPreferences = true;
         }
       } else if (widget.view == 'request') {
@@ -346,6 +385,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
 
   @override
   Future<void> recovered(Map<String, dynamic> value) async {
+    if (value.containsKey('personalization')) loadedPreferences = false;
     await super.recovered(value);
     if (mounted) draftGuard.currentState?.markSaved();
   }
@@ -528,6 +568,66 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         ),
       );
 
+  Future<void> savePreferences({bool unsubscribe = false}) async {
+    final n = int.tryParse(minutes.text);
+    if (!unsubscribe && (n == null || n != 0 && (n < 15 || n > 240))) {
+      throw const AccountError(400, '请选择0，或15—240分钟的提醒间隔');
+    }
+    final start = int.tryParse(quietStart.text),
+        end = int.tryParse(quietEnd.text);
+    if (!unsubscribe &&
+        notificationSupported &&
+        (start == null ||
+            end == null ||
+            start < 0 ||
+            start > 1439 ||
+            end < 0 ||
+            end > 1439 ||
+            start == end)) {
+      throw const AccountError(400, '夜间时段须为0—1439分钟，且起止不同');
+    }
+    final body = unsubscribe
+        ? <String, dynamic>{
+            for (final k in [
+              'personalization',
+              'marketing',
+              'rest_reminder_minutes',
+              'push_enabled',
+              'night_reminder_enabled',
+              'quiet_hours'
+            ])
+              if (remotePreferences!.containsKey(k)) k: remotePreferences![k],
+            'marketing': false
+          }
+        : <String, dynamic>{
+            'personalization': personalization,
+            'marketing': marketing,
+            'rest_reminder_minutes': n,
+            if (notificationSupported) ...{
+              'push_enabled': pushEnabled,
+              'night_reminder_enabled': nightEnabled,
+              'quiet_hours': {
+                'enabled': quietEnabled,
+                'start_minute': start,
+                'end_minute': end
+              }
+            }
+          };
+    final r = await act('preferences', body,
+        version: preferenceVersion,
+        method: 'PATCH',
+        account: true,
+        reload: false,
+        validate: (r) => communityRequire(r['object_version'] is int &&
+            r['personalization'] == body['personalization'] &&
+            r['marketing'] == body['marketing'] &&
+            r['rest_reminder_minutes'] == body['rest_reminder_minutes']));
+    if (r != null && mounted) {
+      loadedPreferences = false;
+      await load();
+    }
+  }
+
   List<Widget> preferenceView() => [
         communityHeading('资料与设置', '个性化与营销初始关闭，选择会保存为本人账号偏好。',
             eyebrow: '你的资料与使用偏好'),
@@ -541,31 +641,30 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             keyboard: TextInputType.number, enabled: enabled),
         const Text('0为关闭；开启时15—240分钟。'),
         const RestUsageSummary(),
+        if (notificationSupported) ...[
+          _preferenceSwitch(
+              '系统推送开关',
+              '供应商尚未接通，设置不代表已送达手机；必要站内通知保留',
+              pushEnabled,
+              enabled ? (v) => setState(() => pushEnabled = v) : null),
+          _preferenceSwitch('夜间休息提醒', '使用下面的北京时间时段，独立于推送免打扰', nightEnabled,
+              enabled ? (v) => setState(() => nightEnabled = v) : null),
+          _preferenceSwitch('夜间推送免打扰', '此时段暂停非必要推送，不隐藏站内业务通知', quietEnabled,
+              enabled ? (v) => setState(() => quietEnabled = v) : null),
+          communityField(quietStart, '夜间开始：距北京时间零点分钟数',
+              keyboard: TextInputType.number, enabled: enabled),
+          communityField(quietEnd, '夜间结束：距北京时间零点分钟数',
+              keyboard: TextInputType.number, enabled: enabled),
+          const Text('0—1439，起止不能相同。跨午夜可设置开始大于结束。'),
+        ],
         tradeButton(
-            '保存本次偏好',
-            enabled
-                ? () => submit(() async {
-                      final n = int.tryParse(minutes.text);
-                      if (n == null || n != 0 && (n < 15 || n > 240)) {
-                        throw const AccountError(400, '请选择0，或15—240分钟的提醒间隔');
-                      }
-                      await act(
-                          'preferences',
-                          {
-                            'personalization': personalization,
-                            'marketing': marketing,
-                            'rest_reminder_minutes': n
-                          },
-                          version: preferenceVersion,
-                          method: 'PATCH',
-                          account: true,
-                          validate: (r) => communityRequire(
-                              r['object_version'] is int &&
-                                  r['personalization'] == personalization &&
-                                  r['marketing'] == marketing &&
-                                  r['rest_reminder_minutes'] == n));
-                    })
-                : null),
+            '保存本次偏好', enabled ? () => submit(() => savePreferences()) : null),
+        if (remotePreferences?['marketing'] == true)
+          tradeButton(
+              '关闭营销通知',
+              enabled
+                  ? () => submit(() => savePreferences(unsubscribe: true))
+                  : null),
         appNotice('保存偏好不等于已经启用画像推荐或系统营销推送。业务办理结果通知仍会按实际规则送达。')
       ];
   List<Widget> responseFacts(Map<String, dynamic> result) => [

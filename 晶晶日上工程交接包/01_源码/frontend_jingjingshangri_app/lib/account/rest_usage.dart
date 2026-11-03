@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'account_api.dart';
 import 'account_session.dart';
 
@@ -25,7 +26,20 @@ class RestUsage {
         value['purpose'] != 'PERSONAL_REST_REMINDER') {
       throw const AccountError(503, 'INVALID_USAGE_RESPONSE', uncertain: true);
     }
+    final n = value['night_reminder'];
+    if (n != null &&
+        (n is! Map ||
+            n['enabled'] is! bool ||
+            n['due'] is! bool ||
+            n['timezone'] != 'Asia/Shanghai' ||
+            !integer(n['start_minute'], 1439) ||
+            !integer(n['end_minute'], 1439) ||
+            n['start_minute'] == n['end_minute'])) {
+      throw const AccountError(503, 'INVALID_NIGHT_REMINDER', uncertain: true);
+    }
   }
+  bool get nightEnabled => value['night_reminder']?['enabled'] == true;
+  bool get nightDue => value['night_reminder']?['due'] == true;
   final Map<String, dynamic> value;
   bool get enabled => value['enabled'] == true;
   bool get due => value['rest_due'] == true;
@@ -45,6 +59,8 @@ class RestUsageController extends ChangeNotifier {
   static const path = '/api/v1/privacy/usage';
   final AccountSession session;
   RestUsage? data;
+  bool nightVisible = false;
+  String? _nightDate;
   String? error;
   bool busy = false, visible = true, _disposed = false;
   int generation = 0;
@@ -65,7 +81,7 @@ class RestUsageController extends ChangeNotifier {
     final next = (
       session.loginEpoch,
       session.isLoggedIn,
-      session.restReminderMinutes,
+      session.usagePreferencesRevision,
       session.isDomainDenied('/api/v1/privacy/')
     );
     if (_scope == next) return;
@@ -73,6 +89,8 @@ class RestUsageController extends ChangeNotifier {
     generation++;
     _cancel();
     data = null;
+    nightVisible = false;
+    _nightDate = null;
     error = null;
     busy = false;
     if (session.isLoggedIn &&
@@ -100,10 +118,12 @@ class RestUsageController extends ChangeNotifier {
     if (!_disposed &&
         visible &&
         session.isLoggedIn &&
-        data?.enabled == true &&
-        pending == null) {
+        (data?.nightEnabled == true ||
+            data?.enabled == true && pending == null)) {
       _timer = Timer(
-          const Duration(seconds: 30), () => unawaited(_read(pulse: true)));
+          const Duration(seconds: 30),
+          () => unawaited(
+              _read(pulse: data?.enabled == true && pending == null)));
     }
   }
 
@@ -125,6 +145,8 @@ class RestUsageController extends ChangeNotifier {
           ? await session.write('POST', '$path/pulse')
           : await session.read(path));
       if (!_current(g)) return;
+      await _showNight(result, g);
+      if (!_current(g)) return;
       data = result;
       error = null;
       if (!result.enabled && pending != null) {
@@ -133,6 +155,7 @@ class RestUsageController extends ChangeNotifier {
     } catch (_) {
       if (_current(g)) {
         data = null;
+        nightVisible = false;
         error = '统计暂不可用，请稍后重试。';
       }
     } finally {
@@ -142,6 +165,34 @@ class RestUsageController extends ChangeNotifier {
         _schedule();
       }
     }
+  }
+
+  Future<void> _showNight(RestUsage d, int g) async {
+    if (!d.nightDue) {
+      nightVisible = false;
+      return;
+    }
+    final date = d.value['local_date'] as String;
+    if (_nightDate == date) return;
+    final id = session.account?['id'];
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!_current(g)) return;
+      _nightDate = date;
+      if (prefs.getString('jx.night-seen.$id') == date) return;
+      nightVisible = true;
+      await prefs.setString('jx.night-seen.$id', date);
+    } catch (_) {
+      if (_current(g)) {
+        _nightDate = date;
+        nightVisible = true;
+      }
+    }
+  }
+
+  void dismissNight() {
+    nightVisible = false;
+    _publish();
   }
 
   Future<void> acknowledge({bool recover = false}) async {

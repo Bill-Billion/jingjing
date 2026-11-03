@@ -1,0 +1,54 @@
+{
+  "completed": true,
+  "started_at": "2026-11-03T04:34:10.550Z",
+  "finished_at": "2026-11-03T04:34:15.174Z",
+  "checks": [
+    {
+      "id": "CP08-prepared-payment-web",
+      "result": "PASS",
+      "payment_id": "2f23352b-37f9-41da-b164-177b0ed39450",
+      "order_id": "a8bbef64-74bc-420c-888c-42ed1d40901e",
+      "from": "CREATED",
+      "to": "PENDING",
+      "preview": {
+        "configured": true,
+        "required": true,
+        "rule_id": "5eede3c4-b8e1-4e95-8d0c-53f15494e83f",
+        "preview_sha256": "99bbe9006e3939bff587c4b578db4bb4ba9c7d9cf988fe012bb080ee306a1134",
+        "reasons": [
+          "FREQUENT_CASH_REQUESTS"
+        ],
+        "message": "合成提示：请确认本次消费与个人预算。",
+        "target": {
+          "kind": "PAYMENT",
+          "order_id": "a8bbef64-74bc-420c-888c-42ed1d40901e",
+          "installment_key": "stock",
+          "request_key": "1c2eb61d-db6c-4d50-b4e0-6a19fb1681da",
+          "amount_minor": 100
+        },
+        "expires_in_seconds": 60
+      }
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "key": "93aba3bb-7800-4267-a5e5-616adaa2b537",
+      "body": {
+        "target": {
+          "kind": "PAYMENT_RECORD",
+          "payment_id": "2f23352b-37f9-41da-b164-177b0ed39450"
+        },
+        "preview_sha256": "99bbe9006e3939bff587c4b578db4bb4ba9c7d9cf988fe012bb080ee306a1134",
+        "read_confirmed": true
+      }
+    },
+    {
+      "path": "/api/v1/trade/payments/2f23352b-37f9-41da-b164-177b0ed39450/reconciliation",
+      "key": "b4d21520-1b3b-4684-80c6-01fe0296f35f",
+      "body": {
+        "transaction_id": null
+      }
+    }
+  ]
+}

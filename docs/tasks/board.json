@@ -6367,7 +6367,7 @@
         "实际Chrome隐藏未产生，Web后台仅状态机验证，Android系统后台已验",
         "原生到期用夹具；真实15分钟为Chromium页面",
         "未重验全部人工定制/试镜商单钱账与151正式标准",
-        "后发消费/夜间/推送页面独立增量未认领"
+        "后发消费/夜间/推送增量已在UX-MACMINI-CONSUMER-PROTECTION-20261103认领交付，原批证据不替代增量"
       ]
     },
     {
@@ -6395,12 +6395,64 @@
       "test_status": "PASS",
       "evidence": [
         "docs/tasks/records/CORE-business-journey-review-20261103.md",
-        "docs/testing/evidence/business-journeys-20261103/REPORT.md"
+        "docs/testing/evidence/business-journeys-20261103/REPORT.md",
+        "docs/testing/evidence/business-journeys-20261103/combined-consumer/REPORT.md"
       ],
       "blockers": [],
       "updated_on": "2026-11-03",
       "implementation": "COMPLETE",
-      "implementation_scope": "消费风险规则/确认、夜间与推送队列约束、新合同奖池校验和后端兑现验证；不含真实推送供应商或未交付页面"
+      "implementation_scope": "本轮既有业务复审、测试工具修复、最新前端组合复验与全局剩余分工；不是全部18组正式验收完成"
+    },
+    {
+      "id": "UX-MACMINI-CONSUMER-PROTECTION-20261103",
+      "title": "消费确认、抽奖确认与夜间通知设置前端增量",
+      "stage": 6,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/UX-mac-mini-consumer-protection-20261103.md",
+        "docs/reviews/mac-mini-pr39-consumer-protection-20261103/REPORT.md",
+        "docs/testing/evidence/mac-mini-pr39-consumer-protection-20261103/PARTIAL_ACCEPTANCE.json"
+      ],
+      "acceptance": "同版接入四组页面，验证操作、权限、重复请求、断网恢复与真实网页/Android相关路径；休息提醒至少一条实际15分钟；按标准编号登记局部证据，不冒称151条正式通过。",
+      "shared_boundaries": [
+        "OpenAPI",
+        "auth/permission",
+        "payments/refunds"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS",
+      "evidence": [
+        "docs/tasks/records/UX-mac-mini-consumer-protection-20261103.md",
+        "docs/reviews/mac-mini-pr39-consumer-protection-20261103/REPORT.md",
+        "docs/testing/evidence/mac-mini-pr39-consumer-protection-20261103/PARTIAL_ACCEPTANCE.json"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-03",
+      "actual_implementer": "Bill-Billion",
+      "implementation_branch": "core/full-business-closure-20261028",
+      "implementation_authority": "用户2026-11-03 03:31:56 UTC转交四组最新分工，新增消费提示、抽奖确认、休息及通知设置；继续原PR39，不发评论。",
+      "implementation_scope": "App/Web消费预览和主动确认、原请求恢复；运营规则独审与新合同候选成本；本人夜间/推送/免打扰/退订；财务当前账号及身份报表列表。",
+      "baseline_commit": "4414de7636e05be5c2fa5117af14dfd43c9c9b46",
+      "api_version": "0.31.27-rc.1",
+      "migration": "0209",
+      "pr_url": "https://github.com/Bill-Billion/jingjing/pull/39",
+      "integration_base": "a9eba1cf0a09b32a111fcf13470c3eef7ff1b3b0",
+      "backend_base": "29fb4f1739db1c2c8ed8535d77fe4d2b4ba9c59a",
+      "verification_limits": [
+        "消费/通知主链用0.31.26沙箱；0.31.27报表及未发送付款Web/Android补验、最新接口专项另验，精确源码见摘要",
+        "原生分段续验；前序脚本定位失败保持失败记录，不称一次整条脚本通过",
+        "真实15分钟为原批Chromium，Android到期夹具；Chrome实际后台仍未成功",
+        "11项候选未正式发布，真实成本/经营阈值/概率说明未签认",
+        "本批局部证据不代151正式验收，真实推送及资金关闭"
+      ]
     }
   ],
   "delivery_policy": {
@@ -13059,6 +13111,18 @@
     "migration": "0209",
     "native_android": "NOT_RUN",
     "formal_acceptance_changed": false,
-    "evidence": "docs/testing/evidence/business-journeys-20261103/REPORT.md"
+    "evidence": "docs/testing/evidence/business-journeys-20261103/REPORT.md",
+    "combined_frontend": {
+      "commit": "d33f68373569a28a80e2eadadd061cea9b3250b4",
+      "browser_checks": 13,
+      "app_targeted_tests": 215,
+      "api": "0.31.27-rc.1",
+      "migration": "0209",
+      "partial_links": 74,
+      "formal_pass": 0,
+      "evidence": "docs/testing/evidence/business-journeys-20261103/combined-consumer/REPORT.md",
+      "real_services": false,
+      "deployed": false
+    }
   }
 }

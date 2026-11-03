@@ -40,6 +40,8 @@ class AccountSession extends ChangeNotifier {
   int get epoch => _epoch;
   int _loginEpoch = 0;
   int get loginEpoch => _loginEpoch;
+  int usagePreferencesRevision = 0;
+  String? _usagePreferencesKey;
   int? _restReminderMinutes;
   int? get restReminderMinutes => _restReminderMinutes;
   final _domainDenials = <String>{};
@@ -375,6 +377,8 @@ class AccountSession extends ChangeNotifier {
     _token = null;
     account = null;
     _restReminderMinutes = null;
+    _usagePreferencesKey = null;
+    usagePreferencesRevision++;
     selected = null;
     parties = [];
     partiesCursor = null;
@@ -444,8 +448,19 @@ class AccountSession extends ChangeNotifier {
             result['marketing'] is bool &&
             minutes is int &&
             (minutes == 0 || minutes >= 15 && minutes <= 240) &&
-            _restReminderMinutes != minutes) {
+            _usagePreferencesKey !=
+                jsonEncode([
+                  minutes,
+                  result['night_reminder_enabled'],
+                  result['quiet_hours']
+                ])) {
           _restReminderMinutes = minutes;
+          _usagePreferencesKey = jsonEncode([
+            minutes,
+            result['night_reminder_enabled'],
+            result['quiet_hours']
+          ]);
+          usagePreferencesRevision++;
           notifyListeners();
         }
       }
