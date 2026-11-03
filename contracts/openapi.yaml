@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.28-rc.1
+  version: 0.31.29-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -16555,6 +16555,7 @@ paths:
                     enum:
                     - READ_PROFILE
                     - MANAGE_AUDITIONS
+                    - MANAGE_MATERIALS
                     - COMMERCIAL_MESSAGES
                     - READ_INCOME
                     - MANAGE_LISTINGS
@@ -25153,6 +25154,74 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/auditions/bookings/{record_id}/delivery-options:
+    get:
+      operationId: listAuditionDeliveryOptions
+      summary: 艺人按本次已付款预约选择照片、视频和买家取样授权
+      description: 本人或同时具试镜和材料管理权限的机构读取。真人、形象与买家由预约确定；仅在可交付状态返回已就绪且未受限制的该真人照片或视频，以及对本买家有效的取样授权。分页可能因授权失效过滤而为空，仍须沿next_cursor读取；不返回存储路径、证据、密钥或下载权限。提交交付仍重新核验。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: kind
+        required: true
+        schema:
+          type: string
+          enum:
+          - PHOTO
+          - VIDEO
+          - CONSENT
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionDeliveryOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_ACTING_PARTY
   /api/v1/auditions/offer-options:
     get:
       operationId: listAuditionOfferOptions
@@ -57007,6 +57076,77 @@ components:
       - appointment
       - share
       - safety
+    AuditionDeliveryOptionsResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - booking_id
+          - person_id
+          - avatar_id
+          - kind
+          - items
+          - next_cursor
+          properties:
+            booking_id: &auditionDelivery001
+              type: string
+              format: uuid
+            person_id: *auditionDelivery001
+            avatar_id: *auditionDelivery001
+            kind:
+              type: string
+              enum:
+              - PHOTO
+              - VIDEO
+              - CONSENT
+            items:
+              type: array
+              maxItems: 100
+              items:
+                oneOf:
+                - type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - media_type
+                  - byte_size
+                  - content_sha256
+                  properties:
+                    id: *auditionDelivery001
+                    media_type:
+                      type: string
+                      enum:
+                      - image/jpeg
+                      - image/png
+                      - video/mp4
+                    byte_size:
+                      type: integer
+                      minimum: 1
+                    content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                - type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - valid_until
+                  properties:
+                    id: *auditionDelivery001
+                    valid_until:
+                      type: string
+                      format: date-time
+            next_cursor:
+              anyOf:
+              - *auditionDelivery001
+              - type: 'null'
     AuditionResponse:
       type: object
       additionalProperties: false
