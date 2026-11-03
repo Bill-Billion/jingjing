@@ -820,6 +820,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                         'READ_PROFILE': '读取资料',
                         'COMMISSION_PRODUCTION': '代办制作',
                         'MANAGE_AUDITIONS': '管理试镜',
+                        'MANAGE_MATERIALS': '管理艺人材料',
                         'COMMERCIAL_MESSAGES': '商单消息',
                         'READ_INCOME': '读取收入',
                         'MANAGE_LISTINGS': '管理上架'
@@ -880,6 +881,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             ('READ_PROFILE', '读取资料'),
             ('COMMISSION_PRODUCTION', '代办制作'),
             ('MANAGE_AUDITIONS', '管理试镜'),
+            ('MANAGE_MATERIALS', '管理艺人材料'),
             ('COMMERCIAL_MESSAGES', '商单消息'),
             ('READ_INCOME', '读取收入'),
             ('MANAGE_LISTINGS', '管理上架')

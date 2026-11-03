@@ -578,6 +578,10 @@ String v5Error(AccountError e, {bool writing = false}) {
     return '现货分配规则尚未就绪或费率不符，请工作人员核对18%规则后恢复原请求。暂不能进入付款。';
   }
   if (e.status == 412) return '记录已有新版本。输入已保留，请读取最新状态并重新确认。';
+  if (const ['MCN_EMPLOYEE_SCOPE_REQUIRED', 'ARTIST_DELEGATION_REQUIRED']
+      .contains(e.code)) {
+    return '当前缺少本艺人试镜或材料管理授权，请机构负责人核对后重新读取。';
+  }
   if ([403, 404].contains(e.status)) return '当前身份不能读取或办理这份记录，私有内容已清空。';
   const messages = {
     'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
@@ -624,6 +628,9 @@ String v5Error(AccountError e, {bool writing = false}) {
     'MESSAGE_REQUIRES_MODERATION': '请只填写本单业务内容，不包含站外联系方式或付款引导。',
     'CONTACT_CONSENT_REQUIRED': '请明确选择本单联系卡授予或撤回；授予时填写真实有效联系电话。',
     'AUDITION_DELIVERY_COUNT_MISMATCH': '取样数量须与本单审核规则一致。',
+    'AUDITION_DELIVERY_OPTIONS_CHANGED': '本预约材料或授权已变化，请重新读取并选择。',
+    'AUDITION_DELIVERY_READ_FAILED': '未能重新核对本预约材料，本次尚未提交，请检查网络后重试。',
+    'AUDITION_NOT_DELIVERABLE': '本预约当前不能交付，请核对付款、接单、争议及改期状态。',
     'AUDITION_CONVERSATION_NOT_OPEN': '本单会话尚未开放或已冻结，请核对实际付款和接单状态。',
     'WALLET_ACCOUNT_REQUIRED': '尚未开立个人账本，请先阅读并接受有效规则。',
     'WALLET_NOT_FOUND': '本人的账本或订单记录尚不存在。',
@@ -717,6 +724,7 @@ class V5Form extends StatefulWidget {
       this.canSubmit = true,
       this.beforeSubmit,
       this.facts = const [],
+      this.factsBuilder,
       this.extra});
   final V5Api api;
   final bool canSubmit;
@@ -731,6 +739,7 @@ class V5Form extends StatefulWidget {
   final Future<int?> Function()? reload;
   final void Function(Map<String, dynamic>)? onSuccess;
   final List<Widget> facts;
+  final List<Widget> Function(Map<String, dynamic>)? factsBuilder;
   final List<Widget> Function(
       Map<String, dynamic>, void Function(String, dynamic), bool)? extra;
   @override
@@ -962,7 +971,8 @@ class V5FormState extends State<V5Form>
                                 .join('\n')
                             : f.choices?[values[f.keyName]] ??
                                 values[f.keyName]),
-              ...widget.facts
+              ...widget.facts,
+              ...?widget.factsBuilder?.call(values)
             ],
             theme: Theme.of(context))) {
       return;

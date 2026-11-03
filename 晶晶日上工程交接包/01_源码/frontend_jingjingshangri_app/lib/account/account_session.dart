@@ -7,17 +7,27 @@ import 'account_api.dart';
 // do not revoke the family's entire account area or erase a pending command.
 bool _scopedContractDenial(String path, AccountError error) =>
     path.startsWith('/api/v1/guardians/') &&
-    const {
-      'GUARDIAN_DISABLED',
-      'MINOR_NIGHT_RESTRICTED',
-      'GUARDIAN_USAGE_SESSION_REQUIRED',
-      'MINOR_DAILY_TIME_LIMIT',
-      'MINOR_SPEND_NOT_ALLOWED',
-      'MINOR_DAILY_SPEND_LIMIT',
-      'MINOR_CONTENT_POOL_NOT_ENABLED',
-      'UNDER_14_PROCESSING_DISABLED',
-      'GUARDIAN_LINK_NOT_ACTIVE',
-    }.contains(error.code);
+        const {
+          'GUARDIAN_DISABLED',
+          'MINOR_NIGHT_RESTRICTED',
+          'GUARDIAN_USAGE_SESSION_REQUIRED',
+          'MINOR_DAILY_TIME_LIMIT',
+          'MINOR_SPEND_NOT_ALLOWED',
+          'MINOR_DAILY_SPEND_LIMIT',
+          'MINOR_CONTENT_POOL_NOT_ENABLED',
+          'UNDER_14_PROCESSING_DISABLED',
+          'GUARDIAN_LINK_NOT_ACTIVE',
+        }.contains(error.code) ||
+    RegExp(r'^/api/v1/auditions/bookings/[0-9a-fA-F-]{36}/delivery-options$')
+            .hasMatch(path) &&
+        const {
+          'MCN_EMPLOYEE_SCOPE_REQUIRED',
+          'ARTIST_DELEGATION_REQUIRED',
+          'AUDITION_PARTY_FORBIDDEN',
+          'AUDITION_NOT_FOUND',
+          'ARTIST_NOT_FOUND',
+          'ARTIST_AVATAR_NOT_FOUND',
+        }.contains(error.code);
 
 /// New account state stays in memory. No tokens or private account lists are
 /// written to the legacy preferences; app restart requires phone verification.

@@ -41,7 +41,7 @@ try{
  test('试镜方案时段、安全安排和取样按原约定数量编码',()=>{const o={offer:{person_id:id(1),avatar_id:id(2),public_consent_id:id(3),rule_id:id(4),title:'synthetic',city:'synthetic',service_area:'synthetic',mode:'OFFLINE',public_booking:false,public_price:false,unit_minor:'10.25',slots:[{starts_at:at,ends_at:'2026-10-22T09:00:00Z'}],terms:'synthetic'}},r=encoded('auditions','offer',o);assert.equal(backend('auditions').offer(r.offer).unit_minor,1025);const b=encoded('auditions','booking',{offer_id:id(5),offer_sha256:sha,invitation_id:'',appointment:{mode:'ONLINE_MATERIALS',city:'synthetic',venue:'synthetic',address:'synthetic',starts_at:at,ends_at:'2026-10-22T09:00:00Z',purpose:'synthetic'}});assert.equal(backend('auditions').appointment(b.appointment).mode,'ONLINE_MATERIALS')})
  test('试镜消息与商单媒体使用各自实际枚举，不互相替代',()=>{assert.equal(encoded('auditions','message',{kind:'DELIVERY_MEDIA',body:'',asset_id:id(5)}).kind,'DELIVERY_MEDIA');assert.equal(encoded('conversations','message',{kind:'MEDIA',body:'',asset_id:id(5)}).kind,'MEDIA');assert.deepEqual(encoded('conversations','message',{kind:'TEXT',body:'synthetic message',asset_id:''}),{kind:'TEXT',body:'synthetic message',asset_id:null})})
  test('钱包如实保留资金未接通，兑换抽奖使用独立业务接口',()=>{assert(domains.wallet.note.includes('尚未接通'));assert(!domains.wallet.operations.some(o=>o.path==='/wallet/recharges'));assert.equal(operation('redemption','draw-one').path,'/redemption/draws');assert(!domains.redemption.operations.some(o=>o.path.startsWith('/wallet/')))})
- test('MCN成员授权仅限后端允许的逐人动作',()=>{const actions=operation('engagement','staff').fields.find(f=>f.key==='actions').choices.map(x=>Array.isArray(x)?x[0]:x);assert.deepEqual(actions,['READ_PROFILE','COMMISSION_PRODUCTION','MANAGE_AUDITIONS','COMMERCIAL_MESSAGES','READ_INCOME','MANAGE_LISTINGS'])})
+ test('MCN成员授权仅限后端允许的逐人动作',()=>{const actions=operation('engagement','staff').fields.find(f=>f.key==='actions').choices.map(x=>Array.isArray(x)?x[0]:x);assert.deepEqual(actions,['READ_PROFILE','COMMISSION_PRODUCTION','MANAGE_AUDITIONS','MANAGE_MATERIALS','COMMERCIAL_MESSAGES','READ_INCOME','MANAGE_LISTINGS'])})
  test('MCN非负责人展示仅保留当前账号派单及对应订单，不显示机构关系和总额',()=>{const a={id:id(10),data:{account_id:id(1),order_id:id(20)}},b={id:id(11),data:{account_id:id(2),order_id:id(21)}},r={assignments:[a,b],relations:[{private_person:'other'}],orders:[{id:id(20)},{id:id(21)}],total_accrual_minor:9900,history_preserved:true},v=mcnDashboardView(r,id(1),false);assert.deepEqual(v.assignments,[a]);assert.deepEqual(v.orders,[{id:id(20)}]);assert(!('relations'in v));assert(!('total_accrual_minor'in v));assert(v.scope_note.includes('不展示全机构关系和收入'));assert.equal(mcnDashboardView(r,id(1),true),r)})
  test('冠军规则结构、独立权重和风险票处置使用实际契约',()=>{const rules=operation('engagement','competition').fields.find(f=>f.key==='rules');assert.equal(rules.type,'group');assert.deepEqual(rules.fields.map(f=>f.key),['official_bps','ranking_bps','vote_bps','vote_cost','daily_cap','tie_mode','void_point_policy']);assert.deepEqual(operation('engagement','vote-review').fields[0].choices.map(x=>x[0]),['SUSPEND','VOID','RESTORE','RETURN_POINTS'])})
  test('共创人数规则和额度不默认生成正式参数',()=>{const r=encoded('cocreation','rule',{rule:{version:'synthetic',source_ref:'synthetic',max_people:'40',extension_days:'3',participation_terms:'synthetic',benefit:{service_code:'synthetic',description:'synthetic',credit_minor:'100.00',valid_days:'30'}}});assert.equal(backend('cocreation').rules(r.rule).benefit.credit_minor,10000);assert.deepEqual(backend('cocreation').counts([{active:true,valid:true,person_id:id(1)},{active:true,valid:true,person_id:id(1)}]).eligible_count,1)})
@@ -471,5 +471,50 @@ try{
   globalThis.fetch=async()=>response(data,null);const result=await references.readReferences(source,identity);const label=references.referenceOptions(result.items,'policy_rule_id')[0].label;assert(label.includes('交易记录'));assert(label.includes('合成交易留存依据'));assert(label.includes('30天内复核'))
   for(const bad of [{...data,scope:'PROFILE'},{...data,items:[{...data.items[0],categories:[{...category,scope:'PROFILE'}]}]},{...data,items:[{...data.items[0],categories:[{...category,max_review_days:0}]}]}]){globalThis.fetch=async()=>response(bad,null);await assert.rejects(references.readReferences(source,identity),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')}
  })
+
+ test('试镜首次交付从原预约分类型读取受控材料，校验返回上下文',async()=>{
+  const context={record_id:id(5),audition_delivery:true,delivery_person_id:id(6),delivery_avatar_id:id(7)}
+  for(const [field,kind]of [['photos','PHOTO'],['videos','VIDEO'],['consent_id','CONSENT']]){
+   const source=references.sourceFor(field,context,'auditions',id(2));assert(source);assert.equal(source.path,`/auditions/bookings/${id(5)}/delivery-options?kind=${kind}&limit=20`);assert.equal(source.party,'required')
+   const item=kind==='CONSENT'?{id:id(21),valid_until:until}:{id:id(21),media_type:kind==='PHOTO'?'image/jpeg':'video/mp4',byte_size:123,content_sha256:sha}
+   globalThis.fetch=async()=>response({booking_id:id(5),person_id:id(6),avatar_id:id(7),kind,items:[item],next_cursor:null})
+   assert.equal((await references.readReferences(source,{token:'synthetic-token',accountId:id(1),partyId:id(2)})).data.items.length,1)
+   globalThis.fetch=async()=>response({booking_id:id(9),person_id:id(6),avatar_id:id(7),kind,items:[item],next_cursor:null})
+   await assert.rejects(references.readReferences(source,{token:'synthetic-token',accountId:id(1),partyId:id(2)}))
+  }
+  assert.equal(references.sourceFor('photos',{...context,record_id:'bad'},'auditions',id(2)),null)
+ })
+ test('试镜材料翻过空页，失权清除旧选择且不得提交',async()=>{
+  const record={id:id(5),kind:'BOOKING',object_version:1,current_status:'ACCEPTED',owner_party_id:id(3),counterparty_id:id(2),data:{offer:{person_id:id(6),avatar_id:id(7)},rules:{photo_count:1,video_count:1},appointment:{mode:'ONLINE_MATERIALS'},dispute:null,reschedule:null,fulfilled_at:null}}
+  await render('/auditions/bookings/'+id(5),record,async vm=>{
+   vm.chooseAction('delivery');const seen=[]
+   globalThis.fetch=async url=>{const u=new URL(String(url),'http://local');seen.push(u.search);const kind=u.searchParams.get('kind');let items=[];let next_cursor=null
+    if(kind==='PHOTO'&&!u.searchParams.get('cursor'))next_cursor=id(90)
+    else if(kind==='PHOTO')items=[{id:id(21),media_type:'image/jpeg',byte_size:123,content_sha256:sha}]
+    else if(kind==='VIDEO')items=[{id:id(22),media_type:'video/mp4',byte_size:234,content_sha256:sha}]
+    else items=[{id:id(23),valid_until:until}]
+    return response({booking_id:id(5),person_id:id(6),avatar_id:id(7),kind,items,next_cursor})}
+   for(const [field,key]of [['photos','delivery-delivery-photos'],['videos','delivery-delivery-videos'],['consent_id','delivery-delivery-consent_id']])await vm.loadChoices({field:field==='consent_id'?model.id(field,'授权'):model.ids(field,field),context:vm.draft.delivery,key})
+   assert(seen.some(x=>x.includes('cursor='+id(90))));assert.equal(vm.refOptions['delivery-delivery-photos'][0].value,id(21))
+   Object.assign(vm.draft.delivery,{photos:id(21),videos:id(22),consent_id:id(23)});assert.equal(vm.auditionDeliveryReady,true)
+   globalThis.fetch=async()=>failure(403,'MCN_EMPLOYEE_SCOPE_REQUIRED');await vm.loadChoices({field:model.ids('photos','照片'),context:vm.draft.delivery,key:'delivery-delivery-photos'})
+   assert.equal(vm.auditionDeliveryReady,false);assert.equal(vm.draft.delivery.photos,'');assert.equal(vm.draft.delivery.consent_id,'');assert.equal((vm.refOptions['delivery-delivery-videos']||[]).length,0)
+  })
+ })
+
+
+ test('试镜选项迟到时切身份，不显示旧预约材料',async()=>{
+  const record={id:id(5),kind:'BOOKING',object_version:1,current_status:'ACCEPTED',owner_party_id:id(3),counterparty_id:id(2),data:{offer:{person_id:id(6),avatar_id:id(7)},rules:{photo_count:1,video_count:1},appointment:{mode:'ONLINE_MATERIALS'},dispute:null,reschedule:null,fulfilled_at:null}}
+  await render('/auditions/bookings/'+id(5),record,async(vm,session)=>{vm.chooseAction('delivery');let release;globalThis.fetch=()=>new Promise(resolve=>release=resolve);const pending=vm.loadChoices({field:model.ids('photos','照片'),context:vm.draft.delivery,key:'delivery-delivery-photos'});session.selectedId=id(99);release(response({booking_id:id(5),person_id:id(6),avatar_id:id(7),kind:'PHOTO',items:[{id:id(21),media_type:'image/jpeg',byte_size:100,content_sha256:sha}],next_cursor:null}));await pending;assert.equal(vm.operationKey,'');assert.deepEqual(vm.refOptions,{})})
+ })
+ test('试镜重复提交只保留原请求，断线后以原键恢复',async()=>{
+  storage.clear();const record={id:id(5),kind:'BOOKING',object_version:1,current_status:'ACCEPTED',owner_party_id:id(3),counterparty_id:id(2),data:{offer:{person_id:id(6),avatar_id:id(7)},rules:{photo_count:1,video_count:1},appointment:{mode:'ONLINE_MATERIALS'},dispute:null,reschedule:null,fulfilled_at:null}},writes=[]
+  await render('/auditions/bookings/'+id(5),record,async vm=>{
+   vm.chooseAction('delivery');globalThis.fetch=async(url,o={})=>{if(o.method==='POST'){writes.push({body:o.body,key:o.headers['Idempotency-Key']});return writes.length===1?failure(503,'COMMIT_OUTCOME_UNKNOWN'):response({...record,current_status:'DELIVERY_REVIEW',object_version:2})}const u=new URL(String(url),'http://local');if(u.pathname.endsWith('/delivery-options')){const kind=u.searchParams.get('kind'),items=kind==='PHOTO'?[{id:id(21),media_type:'image/jpeg',byte_size:100,content_sha256:sha}]:kind==='VIDEO'?[{id:id(22),media_type:'video/mp4',byte_size:100,content_sha256:sha}]:[{id:id(23),valid_until:until}];return response({booking_id:id(5),person_id:id(6),avatar_id:id(7),kind,items,next_cursor:null})}return response(record)}
+   for(const [field,key]of [['photos','delivery-delivery-photos'],['videos','delivery-delivery-videos'],['consent_id','delivery-delivery-consent_id']])await vm.loadChoices({field:field==='consent_id'?model.id(field,'授权'):model.ids(field,field),context:vm.draft.delivery,key})
+   Object.assign(vm.draft.delivery,{photos:id(21),videos:id(22),consent_id:id(23)});vm.agreed=true;await Promise.all([vm.submit(),vm.submit()]);assert.equal(writes.length,1);assert(vm.ui.pending.value);await vm.checkPending();await vm.recover();assert.equal(writes.length,2);assert.equal(writes[0].key,writes[1].key);assert.equal(writes[0].body,writes[1].body)
+  })
+ })
+
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} business checks passed.`)
 }finally{globalThis.fetch=savedFetch;if(storageDescriptor)Object.defineProperty(globalThis,'sessionStorage',storageDescriptor);else delete globalThis.sessionStorage;await server.close()}
