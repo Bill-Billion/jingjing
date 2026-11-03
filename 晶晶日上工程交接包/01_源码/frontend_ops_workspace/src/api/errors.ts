@@ -27,8 +27,6 @@ const CODE_MESSAGES: Record<string, string> = {
  RECONCILIATION_DAY_NOT_CLOSED:'本业务日尚未结束，请选择北京时间已结束的业务日。',
  RECONCILIATION_DAY_TOO_LARGE:'本日事实超过安全核对范围，请先联系平台拆解核查，不展示截断后的合计。',
  INDEPENDENT_RECONCILIATION_EVIDENCE_REQUIRED:'核验凭证不能与账单使用相同内容，请补充独立依据。',
- SELF_REVIEW_FORBIDDEN:'本项需另一位与录入和商家无回避关系的获准人员独立审核。',
- FINANCE_REVIEW_FORBIDDEN:'本账号没有独立财务审核岗位，机构管理身份不授予此权限。',
 
   GUARDIAN_LINK_NOT_ACTIVE: '监护关系未生效、已到期、撤销或有异议，请核对原关系。',
   GUARDIAN_DISABLED: '监护人已关闭使用，请返回核对关系。',

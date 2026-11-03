@@ -36,6 +36,7 @@ export function validateFourForm(domain:string,key:string,body:BusinessData,reco
  if(domain==='consumer'&&key!=='change'){const k=String(body.kind),p=(record?.pending as BusinessData|undefined)?.[k] as BusinessData|undefined;if(!p)fail('没有该类别的待生效申请，请刷新。');if(key==='confirm'&&Date.parse(String(p?.confirm_after))>Date.parse(String(record?.as_of)))fail('提高额度还需要等待；刷新后核对服务器可确认时间。')}
 }
 export const fourLabels:Record<string,string>={source_fingerprint:'本轮平台事实校验值',sources_current:'平台事实仍为当前版本',evidence_current:'私有凭证仍可核验',evidence_reason:'凭证待核原因',effective_status:'当前有效结论',business_date:'北京时间业务日期',books:'五类外部账单',manual_items:'手续费与银行独立凭证',comparison:'本次逐笔比对',editors:'本报告参与录入人员',expected_count:'平台事实行数',statement_count:'账单行数',expected_net_minor:'平台净额（分）',statement_net_minor:'账单净额（分）',differences:'逐笔差异',source_ids:'实际付款或凭证来源',source_key:'平台原记账定位',no_activity_reason:'无业务说明',limits:'本人当前月度上限',usage:'本月现金额度占用',pending_minor:'其中待确认金额（分）',used_minor:'本月已占用金额（分）',remaining_minor:'剩余额度（分）',over_limit:'占用是否超过当前上限',monthly_limit_minor:'申请的月度上限（分）',confirm_after:'本人最早可确认时间',cooling_hours:'本次冷静期小时',publication_notice:'奖池规则公示',published_at:'本版实际公示时间',opens_at:'公示结束后最早开放',days:'公示天数'}
+export const fourStates:Record<string,string>={REVIEWED:'本版已独立审核',DIFFERENCES:'仍有账目差异',RECHECK_REQUIRED:'当前事实变化，须重新核对',PAYMENT:'本人现金消费',RECHARGE:'本人充值'}
 export function validateFourRead(domain:string,section:string,r:BusinessData,party:string){
  if(domain!=='consumer'||section!=='settings')return
  const int=(n:unknown)=>Number.isSafeInteger(n)&&Number(n)>=0&&Number(n)<=900000000000
