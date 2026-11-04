@@ -55,6 +55,7 @@ try{
   globalThis.fetch=async()=>response({items:[{...mine,id:'bad'}]});await assert.rejects(references.readReferences(source,{token:'test',accountId:id(1),partyId:id(2)}))
  })
  test('权益履约依据限本单与用途，换记录、失权和迟到结果不保留旧材料',async()=>{
+  const {explainError}=await server.ssrLoadModule('/src/api/errors.ts');assert(explainError({status:409,code:'REWARD_EVIDENCE_SUBMISSION_NOT_AVAILABLE',message:'',retryable:false,requestMethod:'POST'}).includes('刷新本项记录'));assert(explainError({status:409,code:'REWARD_EVIDENCE_LIMIT',message:'',retryable:false,requestMethod:'GET'}).includes('达到上限'))
   const grant=id(9),other=id(10),asset=id(11),source=references.sourceFor('evidence_asset_id',{record_id:grant,redemption_action:'delivery'},'redemption',id(2));assert.equal(source.party,'none');assert.equal(source.path,`/redemption/grants/${grant}/evidence-options?purpose=SCHEDULE`);assert.equal(references.sourceFor('evidence_asset_id',{record_id:'bad',redemption_action:'delivery'},'redemption',id(2)),null)
   const row={id:asset,submission_id:id(12),purpose:'SCHEDULE',media_type:'text/plain',byte_size:24,content_sha256:sha},valid={grant_id:grant,purpose:'SCHEDULE',items:[row]},identity={token:'test',accountId:id(1),partyId:id(2)};let request
   globalThis.fetch=async(url,o)=>{request={url,o};return response(valid,null)};const result=await references.readReferences(source,identity);assert.equal(references.referenceOptions(result.items,'evidence_asset_id')[0].value,asset);assert(!request.o.headers['X-Acting-Party'])

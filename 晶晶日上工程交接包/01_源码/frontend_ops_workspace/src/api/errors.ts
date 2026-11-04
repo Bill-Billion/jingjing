@@ -15,6 +15,8 @@ import { rightsErrors } from './modules/rights'
 
 /** 已知错误码的说明。键是后端返回的 error.code。 */
 const CODE_MESSAGES: Record<string, string> = {
+ REWARD_EVIDENCE_SUBMISSION_NOT_AVAILABLE:'当前权益状态与依据用途不匹配，请刷新本项记录，排期前提交排期依据，确认排期后再提交完成依据。',
+ REWARD_EVIDENCE_LIMIT:'本项权益的材料已达到上限，请联系运营核对已有材料。',
  CONTENT_RESTRICTED:'材料当前受到限制，暂不能读取。限制解除后可重新读取。',
  CONSUMER_POLICY_NOT_CONFIGURED:'活动保护规则待审核，暂不可参与。',
  LOTTERY_PARTICIPATION_LIMIT:'当前抽奖次数或当日晶钻消耗已达到规则上限，请稍后再参与，不要换键重复提交。',
