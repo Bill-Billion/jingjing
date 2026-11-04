@@ -1,4 +1,6 @@
-# Android 四组离线演示交付记录
+# Android 四组离线演示初版记录（历史）
+
+本文记录0173a973初版APK当时的验证结果，以下“最终包”仅指初版阶段。后续机构名称修复包及追加原生验收见[当前报告](../android-offline-native-20261105/REPORT.md)。
 
 四组流程已在独立本地分支实现，34项测试通过；最终APK在飞行模式下完成祝福视频全流程、本地视频播放与重启恢复。本次仍为模拟演示，实体Android设备验收和另一方审阅未进行。
 
@@ -7,7 +9,7 @@
 - 分支：`ux/android-offline-demo-20261105`。
 - 基线：PR39 `0a0f856a1d00b40fdc086bb90004dad46c2fd193`。
 - APK对应源码提交：`ac552448baf9f7daa52a4130cf95fe6dafa9f681`；之后只补验证脚本、证据和交付文档。
-- 本机文件：`/Users/yanghaoran/Documents/Codex/2026-11-05/task/artifacts/jingjing-android-offline-demo-debug.apk`。
+- 本机文件：`/Users/yanghaoran/Documents/Codex/2026-11-05/task/artifacts/archive/jingjing-android-offline-demo-0173a973.apk`。
 - 名称“晶晶日上·离线演示”，应用标识 `com.jingjingshangri.jingjingshangri_app.offline`，与原App共存。
 - Android 7.0／API24及以上，debug签名，208,535,855字节，支持arm64-v8a、armeabi-v7a、x86_64；本次实际运行arm64。
 - SHA-256：`0173a973e4458f7eaa6170d51d4042fcb49d91547d13a32a7a29faa1cdbfb174`。已安装包与交付文件的校验值一致。

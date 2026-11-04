@@ -1,0 +1,858 @@
+{
+  "build": {
+    "apk": "jingjing-android-offline-demo-debug.apk",
+    "sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+    "bytes": 208535855,
+    "application_id": "com.jingjingshangri.jingjingshangri_app.offline",
+    "network_permissions": false,
+    "min_sdk": 24,
+    "abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86_64"
+    ],
+    "base_commit": "0a0f856a1d00b40fdc086bb90004dad46c2fd193",
+    "branch": "ux/android-offline-demo-20261105",
+    "build": "debug",
+    "source_commit": "f5c907aaea92829e61b47e6912f58b2c021c92bf"
+  },
+  "scenarios": [
+    {
+      "scenario": "restart",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [],
+      "checks": []
+    },
+    {
+      "scenario": "artist",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "我的",
+        "我的艺人形象",
+        "编辑形象资料",
+        "fill field: [empty]",
+        "保存",
+        "fill field: Lin Xia Native",
+        "从设备导入",
+        "从设备导入",
+        "jx-offline-artist.jpg",
+        "保存"
+      ],
+      "checks": [
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "empty artist name rejected",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 请填写艺名",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "artist profile saved as draft",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "device image copied into private media",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "private imported bytes match jx-offline-artist.jpg",
+          "passed": true,
+          "detail": {
+            "sha256": "d030e57417d5d21e3886944286375d84c2989a4e3a9d2c9d3daf319eafae3e4b",
+            "bytes": 77615
+          }
+        },
+        {
+          "name": "artist-draft-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "artist-authorize",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "我的",
+        "我的艺人形象",
+        "本人授权并申请展示",
+        "取消",
+        "本人授权并申请展示",
+        "确认",
+        "模拟形象审核通过"
+      ],
+      "checks": [
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "artist-consent: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "artist authorization approved",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "private imported bytes match jx-offline-artist.jpg",
+          "passed": true,
+          "detail": {
+            "sha256": "d030e57417d5d21e3886944286375d84c2989a4e3a9d2c9d3daf319eafae3e4b",
+            "bytes": 77615
+          }
+        },
+        {
+          "name": "artist-approved-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "audition-create",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "陈悦 · 普通客户",
+        "试镜",
+        "预约试镜",
+        "提交预约",
+        "fill field: Native audition for a short film",
+        "提交预约",
+        "模拟支付试镜费用",
+        "取消",
+        "模拟支付试镜费用",
+        "确认"
+      ],
+      "checks": [
+        {
+          "name": "account switched to customer",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 请填写试镜要求",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "empty audition requirements rejected",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "audition created without implicit payment",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "audition-payment: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "one audition payment recorded",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "audition-paid-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "audition-deliver",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "试镜",
+        "试镜 auditions-30",
+        "接受试镜预约",
+        "提交试镜样照与视频",
+        "从设备导入",
+        "jx-offline-artist.jpg",
+        "从设备导入",
+        "jx-offline-audition.mp4",
+        "提交试镜素材",
+        "模拟试镜素材审核通过",
+        "播放本地视频"
+      ],
+      "checks": [
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 预约 auditions-30",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "same audition has imported photo and video",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "private imported bytes match jx-offline-artist.jpg",
+          "passed": true,
+          "detail": {
+            "sha256": "d030e57417d5d21e3886944286375d84c2989a4e3a9d2c9d3daf319eafae3e4b",
+            "bytes": 77615
+          }
+        },
+        {
+          "name": "private imported bytes match jx-offline-audition.mp4",
+          "passed": true,
+          "detail": {
+            "sha256": "9778e713aecfcfab9b266436a5af788a45c4a1ff14b1404eec63b71de4100a87",
+            "bytes": 529849
+          }
+        },
+        {
+          "name": "audition-ready-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "audition-confirm",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "陈悦 · 普通客户",
+        "试镜",
+        "试镜 auditions-30",
+        "播放本地视频",
+        "确认试镜交付",
+        "取消",
+        "确认试镜交付",
+        "确认"
+      ],
+      "checks": [
+        {
+          "name": "account switched to customer",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "private imported bytes match jx-offline-artist.jpg",
+          "passed": true,
+          "detail": {
+            "sha256": "d030e57417d5d21e3886944286375d84c2989a4e3a9d2c9d3daf319eafae3e4b",
+            "bytes": 77615
+          }
+        },
+        {
+          "name": "private imported bytes match jx-offline-audition.mp4",
+          "passed": true,
+          "detail": {
+            "sha256": "9778e713aecfcfab9b266436a5af788a45c4a1ff14b1404eec63b71de4100a87",
+            "bytes": 529849
+          }
+        },
+        {
+          "name": "visible: 预约 auditions-30",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "audition-confirmation: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "customer completed the same audition",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "audition-completed-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "project",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "我的",
+        "我的参演项目",
+        "本人确认参演约定",
+        "取消",
+        "本人确认参演约定",
+        "确认",
+        "模拟出品方付款",
+        "模拟更新：开始拍摄",
+        "模拟更新：拍摄完成"
+      ],
+      "checks": [
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "resume the same selected project without confirming it",
+          "passed": true,
+          "detail": {
+            "resumed_from": "offered"
+          }
+        },
+        {
+          "name": "project-contract: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "project completed with one simulated payment",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "project-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "organization",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "fill field: Qingchuan Native",
+        "保存",
+        "邀请许安加入机构",
+        "取消",
+        "邀请许安加入机构",
+        "确认",
+        "切换演示账号",
+        "许安 · 机构成员",
+        "我的",
+        "我的机构",
+        "接受机构邀请"
+      ],
+      "checks": [
+        {
+          "name": "resume only the unsaved owner form",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "organization profile saved",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "organization-invite: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "invitation awaiting same member",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "invitation records the edited organization name",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to member",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: Qingchuan Native",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "member accepted same organization",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "organization-accepted-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "organization-permissions",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "周宁 · 机构负责人",
+        "我的",
+        "我的机构",
+        "设置成员权限",
+        "查看艺人资料",
+        "协助试镜",
+        "保存权限",
+        "切换演示账号",
+        "许安 · 机构成员",
+        "我的",
+        "我的机构",
+        "切换演示账号",
+        "周宁 · 机构负责人",
+        "我的",
+        "我的机构",
+        "移除成员",
+        "取消",
+        "移除成员",
+        "确认",
+        "切换演示账号",
+        "许安 · 机构成员",
+        "我的",
+        "我的机构"
+      ],
+      "checks": [
+        {
+          "name": "account switched to owner",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "both permissions persisted",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to member",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 可协助整理试镜安排",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to owner",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "organization-remove: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to member",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 当前未加入机构",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "revocation takes effect across accounts",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "organization-removed-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "notice-create",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "顾川 · 出品方",
+        "通告",
+        "发布新通告",
+        "保存通告草稿",
+        "fill field: Native Casting",
+        "fill field: Bookshop Clerk",
+        "fill field: A short film in Suzhou",
+        "fill field: Portrait and audition video required",
+        "保存通告草稿",
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "通告",
+        "切换演示账号",
+        "顾川 · 出品方",
+        "通告",
+        "Native Casting",
+        "确认发布条件并提交",
+        "取消",
+        "确认发布条件并提交",
+        "确认",
+        "模拟退回修改"
+      ],
+      "checks": [
+        {
+          "name": "account switched to producer",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "empty notice rejected",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 请填写通告标题",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "notice draft persisted",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 等待一份新的邀请",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to producer",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "notice-conditions: cancel leaves state unchanged",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "review rejection preserves same notice",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "notice-rejected-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "notice-publish",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "顾川 · 出品方",
+        "通告",
+        "Native Casting",
+        "编辑通告资料",
+        "fill field: Revised short film in Suzhou",
+        "fill field: Adult performer. Portrait and audition video required",
+        "保存通告草稿",
+        "确认发布条件并提交",
+        "确认",
+        "模拟审核通过并发布"
+      ],
+      "checks": [
+        {
+          "name": "account switched to producer",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "revised notice published",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "notice-published-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "notice-apply",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "通告",
+        "Native Casting",
+        "提交我的艺人资料",
+        "fill field: Interested in the bookshop role",
+        "确认投稿",
+        "本人同意向此通告提交当前艺人资料",
+        "确认投稿"
+      ],
+      "checks": [
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: Revised short film in Suzhou",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "submission without consent rejected",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "submission uses same notice and artist snapshot",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "application-pending-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    },
+    {
+      "scenario": "notice-handle",
+      "status": "PASS",
+      "serial": "emulator-5580",
+      "airplane_mode": true,
+      "apk_sha256": "9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058",
+      "events": [
+        "切换演示账号",
+        "顾川 · 出品方",
+        "通告",
+        "Native Casting",
+        "Lin Xia Native",
+        "感兴趣 · 转客服跟进",
+        "切换演示账号",
+        "林夏 · 艺人本人",
+        "通告",
+        "Native Casting",
+        "查看我的投稿"
+      ],
+      "checks": [
+        {
+          "name": "account switched to producer",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "producer handled the same application",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "interest does not change participation or charge",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "account switched to artist",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "visible: 模拟客服待办",
+          "passed": true,
+          "detail": null
+        },
+        {
+          "name": "application-handled-restart: all persisted state and account restored",
+          "passed": true,
+          "detail": null
+        }
+      ]
+    }
+  ],
+  "restart_comparisons": [
+    {
+      "scenario": "restart",
+      "before": "before-restart.json",
+      "after": "after-restart.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "091ba05285dc85075dba3831243443807b4e5dc485708e1bae7e74abf4133703"
+    },
+    {
+      "scenario": "artist",
+      "before": "artist-draft-restart-before.json",
+      "after": "artist-draft-restart-after.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "8c923c07db1e67f847db4c59d39288c3d26310966ff80a23dc9fd37f473b1777"
+    },
+    {
+      "scenario": "artist-authorize",
+      "before": "artist-approved-restart-before.json",
+      "after": "artist-approved-restart-after.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "f8dd656c06924e9d7c9dd7fccdfb1a20e3ae7e6e0a353097fdfec5d897b35517"
+    },
+    {
+      "scenario": "audition-create",
+      "before": "audition-paid-restart-before.json",
+      "after": "audition-paid-restart-after.json",
+      "equal": true,
+      "account": "customer",
+      "snapshot_sha256": "fa2c3f4dc88a8f7d1d7c1b2bb6ab35383536ae623e8edb01bd7b33aad17b3d19"
+    },
+    {
+      "scenario": "audition-deliver",
+      "before": "audition-ready-restart-before.json",
+      "after": "audition-ready-restart-after.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "f6e78a673fb30366504f7b59359c633f7f9c0be60232ccfdd4c21aca2fa66bfc"
+    },
+    {
+      "scenario": "audition-confirm",
+      "before": "audition-completed-restart-before.json",
+      "after": "audition-completed-restart-after.json",
+      "equal": true,
+      "account": "customer",
+      "snapshot_sha256": "b8bec4dbe5a3b1b8e2ba58298a9cfa436995ffdcdf7051b9893d22a579e7a1b1"
+    },
+    {
+      "scenario": "project",
+      "before": "project-restart-before.json",
+      "after": "project-restart-after.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "658b44034da43a1795bfedcabc80709559fbe81b4787d677e206acc496bd1e33"
+    },
+    {
+      "scenario": "organization",
+      "before": "organization-accepted-restart-before.json",
+      "after": "organization-accepted-restart-after.json",
+      "equal": true,
+      "account": "member",
+      "snapshot_sha256": "f78390af8bc1652fc07e501c4e474992fc901f8b874f0ca87cdb3d00ce11d388"
+    },
+    {
+      "scenario": "organization-permissions",
+      "before": "organization-removed-restart-before.json",
+      "after": "organization-removed-restart-after.json",
+      "equal": true,
+      "account": "member",
+      "snapshot_sha256": "87d8df43641a25a6eb9905db64be6001b5f9cbb6e3bdff54fbd4997a676038a5"
+    },
+    {
+      "scenario": "notice-create",
+      "before": "notice-rejected-restart-before.json",
+      "after": "notice-rejected-restart-after.json",
+      "equal": true,
+      "account": "producer",
+      "snapshot_sha256": "3074f0bb5f2a646e95570cbb911f6969e7b53641f914046d146b38ec1c94b188"
+    },
+    {
+      "scenario": "notice-publish",
+      "before": "notice-published-restart-before.json",
+      "after": "notice-published-restart-after.json",
+      "equal": true,
+      "account": "producer",
+      "snapshot_sha256": "67320a2d4ead2237f344ca271f8a52f372024a8b24b0bfd04fc7e0e9e1a22cb9"
+    },
+    {
+      "scenario": "notice-apply",
+      "before": "application-pending-restart-before.json",
+      "after": "application-pending-restart-after.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "3246b28c3c5fbf31fb9ad50228233f6bac3e5389235097cd7fb7c31ef682f5b8"
+    },
+    {
+      "scenario": "notice-handle",
+      "before": "application-handled-restart-before.json",
+      "after": "application-handled-restart-after.json",
+      "equal": true,
+      "account": "artist",
+      "snapshot_sha256": "d9af1487fb6d7b3e453036293629b9ff025ea8b0b7eee749491f90767f64336e"
+    }
+  ],
+  "automated_tests": {
+    "passed": 34,
+    "offline_state": 12,
+    "offline_widgets": 7,
+    "existing_navigation": 15
+  },
+  "dart_analysis": "PASS",
+  "application_defects_fixed": [
+    "Organization invitation history and member messages now use the edited organization name."
+  ],
+  "not_run": [
+    "Physical Android devices and additional Android versions",
+    "Native notice decline and deadline expiry",
+    "Native disk-full or corrupted-storage injection",
+    "External reviewer approval",
+    "Remote push, merge, or deployment"
+  ]
+}

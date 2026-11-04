@@ -1,0 +1,19 @@
+UI: 切换演示账号
+UI: 林夏 · 艺人本人
+CHECK: account switched to artist PASS
+UI: 我的
+UI: 我的参演项目
+CHECK: participation starts separately PASS
+UI: 报名参演
+UI: 模拟筛选通过并生成约定
+UI: 本人确认参演约定
+UI: 取消
+CHECK: project-contract: cancel leaves state unchanged FAIL
+Traceback (most recent call last):
+  File "/Users/yanghaoran/Documents/Codex/2026-11-05/task/jingjing-offline/scripts/offline-demo-device-check.py", line 378, in <module>
+    cancel_confirmation('本人确认参演约定', 'project-contract')
+  File "/Users/yanghaoran/Documents/Codex/2026-11-05/task/jingjing-offline/scripts/offline-demo-device-check.py", line 207, in cancel_confirmation
+    check(name + ': cancel leaves state unchanged', database(name + '-after-cancel') == before)
+  File "/Users/yanghaoran/Documents/Codex/2026-11-05/task/jingjing-offline/scripts/offline-demo-device-check.py", line 128, in check
+    assert passed, name
+AssertionError: project-contract: cancel leaves state unchanged
