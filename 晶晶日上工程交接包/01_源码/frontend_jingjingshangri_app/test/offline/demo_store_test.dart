@@ -167,12 +167,14 @@ void main() {
     await account('owner');
     await store.send('org_save', {...store.organization, 'name': '新机构（演示）'});
     await store.send('org_invite');
+    expect(store.organization['history'].last['text'], '新机构（演示）邀请许安加入');
     await expectLater(
         store.send('org_permissions', {
           'permissions': ['查看艺人资料']
         }),
         throwsA(isA<DemoFailure>()));
     await account('member');
+    expect(store.list('messages').first['text'], '新机构（演示）邀请许安加入');
     await store.send('org_accept');
     await expectLater(store.send('org_remove'), throwsA(isA<DemoFailure>()));
     await account('owner');

@@ -325,7 +325,8 @@ class DemoEngine {
         require(row['memberStatus'] == 'removed', '该成员已经在职或已有待接受邀请。');
         row['memberStatus'] = 'invited';
         row['permissions'] = <dynamic>[];
-        event(row, '晴川工作室邀请许安加入', to: 'member', domain: 'organization');
+        event(row, '${row['name']}邀请许安加入',
+            to: 'member', domain: 'organization');
       case 'org_permissions':
         require(row['memberStatus'] == 'active', '成员接受邀请后才能授权。');
         final permissions = input['permissions'];
