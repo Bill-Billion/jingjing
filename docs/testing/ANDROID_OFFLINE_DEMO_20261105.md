@@ -39,4 +39,6 @@ flutter test --no-pub test/offline
 dart analyze lib/offline lib/main_offline.dart test/offline
 ```
 
-实际受测构建、原生设备、截图、测试结果与剩余限制在本次任务记录中登记。不得把本机演示通过记成原18组、12路线、151条正式验收通过。
+本次34项离线与既有导航测试通过。最终APK在飞行模式下走通祝福视频全流程、本地媒体播放和重启数据保留；其余三组由状态与组件测试验证，实体设备验收未进行。[最终交付记录与截图](evidence/android-offline-demo-20261105/REPORT.md)列明安装包、校验值和剩余限制。不得把本机演示通过记成原18组、12路线、151条正式验收通过。
+
+可用 `scripts/offline-demo-device-check.py` 复跑原生祝福和重启检查，必须显式指定隔离模拟器序列号、390×844显示尺寸和飞行模式。该脚本通过页面操作，只读核对本机数据库，不修改数据库推动业务状态。

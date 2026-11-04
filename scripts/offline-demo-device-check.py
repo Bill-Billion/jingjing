@@ -104,9 +104,24 @@ def type_text(text):
 
 
 def capture(name):
-    (out / (name + '.png')).write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
     tree = screen()
+    (out / (name + '.png')).write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
     (out / (name + '.xml')).write_text(ET.tostring(tree, encoding='unicode'))
+
+
+def wait_for_home():
+    # Activity launch can finish before Flutter publishes its accessibility
+    # tree on a slow AVD. Require the actual demo home, not a fixed delay.
+    deadline = time.monotonic() + 180
+    while time.monotonic() < deadline:
+        try:
+            tree = screen()
+            if match_node(tree, '定制祝福视频') is not None:
+                return
+        except RuntimeError:
+            pass
+        time.sleep(0.5)
+    raise RuntimeError('The offline demo home did not become ready after restart.')
 
 
 def database(name):
@@ -173,6 +188,7 @@ try:
         before = database('before-restart')
         adb('shell', 'am', 'force-stop', package)
         adb('shell', 'am', 'start', '-n', package + '/com.jingjingshangri.jingjingshangri_app.MainActivity')
+        wait_for_home()
         capture('after-restart')
         after = database('after-restart')
         assert before == after
