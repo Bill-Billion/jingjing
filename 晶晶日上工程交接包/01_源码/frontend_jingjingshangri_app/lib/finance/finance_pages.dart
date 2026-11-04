@@ -927,17 +927,28 @@ class _RecordState extends State<_Record> {
                 locked
                     ? null
                     : () async {
-                        setState(() => busy = true);
+                        final epoch = widget.session.epoch, owner = api.owner();
+                        setState(() {
+                          busy = true;
+                          error = null;
+                          notice = null;
+                        });
                         try {
                           final bytes = await api.evidence(x, id);
                           if (!mounted) return;
+                          api.check(epoch, owner);
                           await FilePicker.saveFile(
                               dialogTitle: '保存私有结算材料',
                               fileName: 'finance-evidence-$id.bin',
                               bytes: bytes);
+                          api.check(epoch, owner);
                           if (mounted) setState(() => notice = '已按当前权限读取材料。');
                         } on AccountError catch (e) {
                           if (mounted) setState(() => error = financeError(e));
+                        } catch (_) {
+                          if (mounted) {
+                            setState(() => error = '文件保存未完成，请检查设备后重试。');
+                          }
                         } finally {
                           if (mounted) setState(() => busy = false);
                         }

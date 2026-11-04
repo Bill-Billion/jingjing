@@ -589,6 +589,7 @@ String projectError(AccountError e, {bool writing = false}) {
   if (e.uncertain && writing) return '本次操作结果待核实。原请求内容、版本和编号已保留，请恢复原请求核对。';
   if ([401, 403, 404].contains(e.status)) return '请重新登录，或切换有权限的负责人身份。私有内容已清空。';
   const reasons = {
+    'CONTENT_RESTRICTED': '材料当前受到限制，暂不能读取。限制解除后可重新读取。',
     'PRODUCTION_NOT_READY': '原制作已暂停、撤回或不再满足制作条件，需要按有效流程复核恢复。',
     'PRODUCTION_ORDER_BLOCKED': '原制作订单已取消、退款或财务状态阻止后续使用。',
     'PRODUCTION_PAYMENT_REQUIRED': '原制作付款节点尚未核实。',

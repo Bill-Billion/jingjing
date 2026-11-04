@@ -547,6 +547,7 @@ String gigError(Object e, {bool writing = false}) {
     return writing ? '操作结果未知。原请求与内容已保留，请恢复核对。' : '暂时无法读取，请稍后重新核对。';
   }
   const messages = {
+    'CONTENT_RESTRICTED': '材料当前受到限制，暂不能读取。限制解除后可重新读取。',
     'HANDOVER_NOT_ACTIVE': '七日交接期已到期或关系不适用，旧单沟通已停止；历史账目保留。',
     'HANDOVER_ORDER_NOT_OPEN': '该旧订单不在交接清单或双方已确认，机构不能继续沟通。',
     'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分账尾差异常，旧账保留并暂停新增付款，待人工复核。',

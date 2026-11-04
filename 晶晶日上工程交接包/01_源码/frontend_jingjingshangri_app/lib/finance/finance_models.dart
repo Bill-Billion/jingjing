@@ -576,6 +576,7 @@ String financeError(AccountError e, {bool writing = false}) {
   if (e.uncertain && writing) return '操作结果尚未确认。原请求、内容与版本已保留，请先恢复原请求核对。';
   if (e.status == 412) return '内容已更新，请重新查看当前记录并重新确认。旧决定不会自动重放。';
   return {
+        'CONTENT_RESTRICTED': '材料当前受到限制，暂不能读取。限制解除后可重新读取。',
         'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分钱存在尾差异常，旧账保留，暂停新增付款并等待人工复核。',
         'FINANCE_AGREEMENT_NOT_APPROVED': '结算约定尚未审核通过。',
         'FINANCE_CONFIRMATIONS_REQUIRED': '相关方尚未完整确认这份准确约定。',
