@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.33-rc.1
+  version: 0.31.34-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -13602,6 +13602,59 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NoticeDecisionRequest'
+  /api/v1/notices/cases/{record_id}/quote-options:
+    get:
+      operationId: listNoticeCaseQuoteOptions
+      summary: 客服选择当前工单可关联的已审报价
+      description: 仅独立NOTICE_SUPPORT岗位，无X-Acting-Party。按当前双方、形象和有效授权筛选已审未过期且未被其他工单关联的报价，仅返回最小选择信息。空页可能仍有next_cursor；关联提交仍重新核对。
+      tags:
+      - notices
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeCaseQuoteOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
   /api/v1/notices/cases/{record_id}/quote:
     post:
       operationId: linkNoticeQuote
@@ -32613,6 +32666,114 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CocreationInviteClaimRequest'
+  /api/v1/gigs/relation-options:
+    get:
+      operationId: listGigRelationOptions
+      summary: MCN负责人选择当前公开且授权有效的艺人
+      description: 按当前身份重新核对可见资料；可分页，空页可能仍有next_cursor。选择不能代替邀请接受、本人委托及提交时重核；不列全账号，不默认给予机构代签权。
+      tags:
+      - gigs
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GigRelationOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/artists/people/{person_id}/delegation-options:
+    get:
+      operationId: listArtistDelegationOptions
+      summary: 艺人本人选择已互认机构或本人委托证明
+      description: 按当前身份重新核对可见资料；可分页，空页可能仍有next_cursor。选择不能代替邀请接受、本人委托及提交时重核；不列全账号，不默认给予机构代签权。
+      tags:
+      - artists
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - RELATION
+          - EVIDENCE
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistDelegationOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -48431,6 +48592,10 @@ components:
         artist_party_id:
           type: string
           format: uuid
+        source_listing_id:
+          type: string
+          format: uuid
+          description: 新选择入口提交当前公开资料编号；服务端重查它与受邀艺人一致，旧请求可省略。
         scope:
           const: COMMERCIAL
         valid_from:
@@ -68145,6 +68310,233 @@ components:
           - scope
           - items
           - next_cursor
+      required:
+      - meta
+      - data
+
+    NoticeCaseQuoteOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            case_id:
+              type: string
+              format: uuid
+            submission_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  object_version:
+                    type: integer
+                    minimum: 1
+                  current_status:
+                    type: string
+                    enum:
+                    - APPROVED
+                  content_sha256:
+                    type: string
+                    pattern: ^[a-f0-9]{64}$
+                  total_minor:
+                    type: integer
+                    minimum: 0
+                  currency:
+                    type: string
+                    enum:
+                    - CNY
+                  expires_at:
+                    type: string
+                    format: date-time
+                  title:
+                    type: string
+                required:
+                - id
+                - object_version
+                - current_status
+                - content_sha256
+                - total_minor
+                - currency
+                - expires_at
+                - title
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - case_id
+          - submission_id
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+
+    GigRelationOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            party_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  listing_id:
+                    type: string
+                    format: uuid
+                  person_id:
+                    type: string
+                    format: uuid
+                  avatar_id:
+                    type: string
+                    format: uuid
+                  artist_party_id:
+                    type: string
+                    format: uuid
+                  display_name:
+                    type: string
+                  city:
+                    type: string
+                required:
+                - listing_id
+                - person_id
+                - avatar_id
+                - artist_party_id
+                - display_name
+                - city
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - party_id
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+    ArtistDelegationOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              person_id:
+                type: string
+                format: uuid
+              kind:
+                const: RELATION
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    organization_party_id:
+                      type: string
+                      format: uuid
+                    display_name:
+                      type: string
+                    valid_from:
+                      type: string
+                      format: date-time
+                    valid_until:
+                      type: string
+                      format: date-time
+                  required:
+                  - id
+                  - organization_party_id
+                  - display_name
+                  - valid_from
+                  - valid_until
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - person_id
+            - kind
+            - items
+            - next_cursor
+          - type: object
+            additionalProperties: false
+            properties:
+              person_id:
+                type: string
+                format: uuid
+              kind:
+                const: EVIDENCE
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    purpose:
+                      const: CONSENT_EVIDENCE
+                    media_type:
+                      type: string
+                    byte_size:
+                      type: integer
+                      minimum: 0
+                    content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                  required:
+                  - id
+                  - purpose
+                  - media_type
+                  - byte_size
+                  - content_sha256
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+            required:
+            - person_id
+            - kind
+            - items
+            - next_cursor
       required:
       - meta
       - data

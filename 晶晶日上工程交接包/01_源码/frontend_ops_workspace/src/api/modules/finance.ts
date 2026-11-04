@@ -6,7 +6,7 @@ export {iso,parseMoney}
 export type Environment='SANDBOX'|'PRODUCTION'
 export interface Share {party_id:string;bps:number;role:'SUPPLIER'|'PLATFORM'|'MCN'|'RIGHTSHOLDER'|'PRODUCER'|'PARTICIPANT'}
 export interface Deduction {category:'CHANNEL_FEE'|'TAX'|'DISCOUNT'|'OTHER';party_id:string;amount_minor:number;basis:string;refund_behavior:'RETAIN'|'PROPORTIONAL'}
-export interface Rules {version:string;settlement_at:string;release_condition:'RECEIVED'|'DELIVERY_ACCEPTED';terms:string;lines:{line_id:string;shares:Share[];deductions:Deduction[]}[]}
+export interface Rules {version:string;settlement_at:string;release_condition:'RECEIVED'|'DELIVERY_ACCEPTED';terms:string;lines:{line_id:string;shares?:Share[];allocation?:MarketplaceAllocation;deductions:Deduction[]}[]}
 export const checks={parties_verified:'主体已核实',contract_verified:'合同已核实',amount_verified:'金额已核实',evidence_verified:'凭据已核实'} as const
 export interface Review {decision:'APPROVED'|'REJECTED';reason:string;verification:Record<keyof typeof checks,boolean>;reviewer_account_id:string;method:'INDEPENDENT_MANUAL_EVIDENCE_REVIEW'}
 export interface Balance {party_id:string;accrued_minor:number;adjustment_minor:number;paid_minor:number;balance_minor:number}
@@ -48,7 +48,13 @@ const ids=(v:unknown,max=100)=>Array.isArray(v)&&v.length<=max&&v.every(validSup
 const incremental=(v:unknown)=>typeof v==='string'&&/^[1-9][0-9]*$/.test(v)&&Number.isSafeInteger(Number(v))
 export function isRules(v:unknown):v is Rules {
  if(!exact(v,['version','settlement_at','release_condition','terms','lines'])||!str(v.version,128)||!iso(v.settlement_at)||!['RECEIVED','DELIVERY_ACCEPTED'].includes(String(v.release_condition))||!str(v.terms)||!Array.isArray(v.lines)||!v.lines.length||v.lines.length>30||new Set(v.lines.map(l=>obj(l)?l.line_id:null)).size!==v.lines.length)return false
- return v.lines.every(l=>exact(l,['line_id','shares','deductions'])&&str(l.line_id,128)&&Array.isArray(l.shares)&&l.shares.length>0&&l.shares.length<=30&&new Set(l.shares.map(s=>obj(s)?s.party_id:null)).size===l.shares.length&&l.shares.every(s=>exact(s,['party_id','bps','role'])&&validSupplyId(s.party_id)&&amount(s.bps,0,10000)&&['SUPPLIER','PLATFORM','MCN','RIGHTSHOLDER','PRODUCER','PARTICIPANT'].includes(String(s.role)))&&l.shares.reduce((n,s)=>n+Number(s.bps),0)===10000&&Array.isArray(l.deductions)&&l.deductions.length<=30&&l.deductions.every(f=>exact(f,['category','party_id','amount_minor','basis','refund_behavior'])&&['CHANNEL_FEE','TAX','DISCOUNT','OTHER'].includes(String(f.category))&&validSupplyId(f.party_id)&&(l.shares as Share[]).some(s=>s.party_id===f.party_id)&&amount(f.amount_minor)&&str(f.basis,2000)&&['RETAIN','PROPORTIONAL'].includes(String(f.refund_behavior))))
+ return v.lines.every(l=>{
+  if(!obj(l)||!str(l.line_id,128))return false
+  let parties:string[]=[]
+  if('allocation'in l){if(!exact(l,['line_id','allocation','deductions'])||!isMarketplaceAllocation(l.allocation))return false;parties=[l.allocation.platform_party_id,l.allocation.supplier_party_id,l.allocation.mcn_party_id,l.allocation.referrer_party_id].filter((id):id is string=>id!==null)}
+  else {if(!exact(l,['line_id','shares','deductions'])||!Array.isArray(l.shares)||!l.shares.length||l.shares.length>30||new Set(l.shares.map(s=>obj(s)?s.party_id:null)).size!==l.shares.length||!l.shares.every(s=>exact(s,['party_id','bps','role'])&&validSupplyId(s.party_id)&&amount(s.bps,0,10000)&&['SUPPLIER','PLATFORM','MCN','RIGHTSHOLDER','PRODUCER','PARTICIPANT'].includes(String(s.role)))||l.shares.reduce((n,s)=>n+Number(s.bps),0)!==10000)return false;parties=(l.shares as Share[]).map(s=>s.party_id)}
+  return Array.isArray(l.deductions)&&l.deductions.length<=30&&l.deductions.every(f=>exact(f,['category','party_id','amount_minor','basis','refund_behavior'])&&['CHANNEL_FEE','TAX','DISCOUNT','OTHER'].includes(String(f.category))&&validSupplyId(f.party_id)&&parties.includes(f.party_id)&&amount(f.amount_minor)&&str(f.basis,2000)&&['RETAIN','PROPORTIONAL'].includes(String(f.refund_behavior)))
+ })
 }
 function review(v:unknown){return v===null||exact(v,['decision','reason','verification','reviewer_account_id','method'])&&['APPROVED','REJECTED'].includes(String(v.decision))&&str(v.reason,4000)&&validSupplyId(v.reviewer_account_id)&&v.method==='INDEPENDENT_MANUAL_EVIDENCE_REVIEW'&&exact(v.verification,Object.keys(checks))&&Object.values(v.verification).every(x=>typeof x==='boolean')&&(v.decision!=='APPROVED'||Object.values(v.verification).every(x=>x===true))}
 const balance=(v:unknown)=>exact(v,['party_id','accrued_minor','adjustment_minor','paid_minor','balance_minor'])&&validSupplyId(v.party_id)&&['accrued_minor','adjustment_minor','paid_minor','balance_minor'].every(k=>signed(v[k]))
@@ -103,7 +109,7 @@ export function isMarketplaceAllocation(a:unknown):a is MarketplaceAllocation {
  return exact(a,['model','product_type','fee_base','platform_party_id','platform_bps','supplier_party_id','mcn_party_id','mcn_supply_bps','referrer_party_id','referral_bps','rounding']) &&
   a.model==='V5_TWO_LAYER' && ['STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(String(a.product_type)) && a.fee_base==='NET_PAID' &&
   validSupplyId(a.platform_party_id) && validSupplyId(a.supplier_party_id) && nullableId(a.mcn_party_id) && nullableId(a.referrer_party_id) &&
-  ['platform_bps','mcn_supply_bps','referral_bps'].every(k=>amount(a[k],0,10000)) && ['HALF_UP_PLATFORM_REMAINDER','LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'].includes(String(a.rounding))
+  ['platform_bps','mcn_supply_bps','referral_bps'].every(k=>amount(a[k],0,10000)) && Number(a.referral_bps)<=Number(a.platform_bps) && (a.mcn_party_id===null?a.mcn_supply_bps===0:Number(a.mcn_supply_bps)>=1000&&Number(a.mcn_supply_bps)<=3000) && (a.referrer_party_id!==null||a.referral_bps===0) && new Set([a.platform_party_id,a.supplier_party_id,a.mcn_party_id,a.referrer_party_id].filter(Boolean)).size===[a.platform_party_id,a.supplier_party_id,a.mcn_party_id,a.referrer_party_id].filter(Boolean).length && ['HALF_UP_PLATFORM_REMAINDER','LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'].includes(String(a.rounding))
 }
 export interface MarketplacePreview {
  meaning:'PREVIEW_ONLY_NOT_ORDER_OR_PAYABLE'; rule_id:string; rule_content_sha256:string; allocation:MarketplaceAllocation

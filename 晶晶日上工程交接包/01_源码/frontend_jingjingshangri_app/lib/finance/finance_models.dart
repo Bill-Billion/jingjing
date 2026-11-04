@@ -1,3 +1,4 @@
+import '../contracts/marketplace_allocation.dart';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
 import 'dart:convert';
@@ -152,21 +153,37 @@ void financeRules(dynamic v) {
   final lines = financeList(d['lines'], min: 1, max: 30);
   final ids = <String>{};
   for (final l in lines) {
-    final x = financeMap(l, required: ['line_id', 'shares', 'deductions']);
+    final x = financeMap(l,
+        required: ['line_id', 'deductions'],
+        optional: ['shares', 'allocation']);
+    financeRequire(x.containsKey('shares') != x.containsKey('allocation'));
     financeRequire(financeText(x['line_id'], 128) && ids.add(x['line_id']));
     final parties = <String>{};
-    var bps = 0;
-    for (final s in financeList(x['shares'], min: 1, max: 30)) {
-      final z = financeMap(s, required: ['party_id', 'bps', 'role']);
-      financeRequire(financeId(z['party_id']) &&
-          parties.add(z['party_id']) &&
-          z['bps'] is int &&
-          z['bps'] >= 0 &&
-          z['bps'] <= 10000 &&
-          financeRoles.containsKey(z['role']));
-      bps += z['bps'] as int;
+    if (x.containsKey('allocation')) {
+      final allocation = x['allocation'];
+      financeRequire(marketplaceAllocationValid(allocation));
+      for (final key in [
+        'platform_party_id',
+        'supplier_party_id',
+        'mcn_party_id',
+        'referrer_party_id'
+      ]) {
+        if (allocation[key] != null) parties.add(allocation[key] as String);
+      }
+    } else {
+      var bps = 0;
+      for (final s in financeList(x['shares'], min: 1, max: 30)) {
+        final z = financeMap(s, required: ['party_id', 'bps', 'role']);
+        financeRequire(financeId(z['party_id']) &&
+            parties.add(z['party_id']) &&
+            z['bps'] is int &&
+            z['bps'] >= 0 &&
+            z['bps'] <= 10000 &&
+            financeRoles.containsKey(z['role']));
+        bps += z['bps'] as int;
+      }
+      financeRequire(bps == 10000);
     }
-    financeRequire(bps == 10000);
     for (final f in financeList(x['deductions'], max: 30)) {
       final z = financeMap(f, required: [
         'category',

@@ -34,6 +34,21 @@ function createPortal(config,{current=()=>true}={}){
   for(const i of config.invites){assert(/^[a-f0-9]{64}$/.test(i.code_hash));assert(i.name&&typeof i.reviewer==='boolean');if(!i.reviewer){const a=config.accounts[i.account];assert(a&&/^http:\/\/127\.0\.0\.1:\d+\/api\/v1$/.test(a.base_url));assert(a.bearer_token&&a.party_id);}}
   const free=config.open_exploration;
   if(free){assert(typeof free.visitor_secret==='string'&&free.visitor_secret.length>=40);assert(free.personas.length>0&&free.personas.every(p=>config.accounts[p.account]&&['/app/#/square','/workspace/workspace'].includes(p.home)));assert(free.personas.some(p=>p.account===free.default_account));}
+  if(free?.visitor_slots){
+    assert(Array.isArray(free.visitor_slots)&&free.visitor_slots.length>0);
+    assert(new Set(free.visitor_slots.map(s=>s.id)).size===free.visitor_slots.length);
+    const owners=new Map(), parties=new Map(), roles=free.personas.map(p=>p.account).sort();
+    for(const slot of free.visitor_slots){
+      assert(/^[a-zA-Z0-9_-]{1,100}$/.test(slot.id));
+      assert.deepEqual(Object.keys(slot.accounts).sort(),roles);
+      for(const key of Object.values(slot.accounts)){
+        const account=config.accounts[key];assert(account&&account.account_id&&account.bearer_token&&account.party_id&&/^http:\/\/127\.0\.0\.1:\d+\/api\/v1$/.test(account.base_url));
+        assert(!owners.has(account.account_id)||owners.get(account.account_id)===slot.id,'不同访客不能共用业务账号');owners.set(account.account_id,slot.id);
+        assert(!parties.has(account.party_id)||parties.get(account.party_id)===slot.id,'不同访客不能共用机构或个人业务身份');parties.set(account.party_id,slot.id);
+      }
+    }
+  }
+  const poolFingerprint=free?.visitor_slots?Object.fromEntries(free.visitor_slots.map(s=>[s.id,sha(JSON.stringify(Object.entries(s.accounts).sort(([a],[b])=>a.localeCompare(b)).map(([role,key])=>[role,config.accounts[key].account_id,config.accounts[key].party_id])))])):null;
   const store=openStore(config.data_dir),sessions=new Map(),limits=new Map();
   function limited(key,max){const now=Math.floor(Date.now()/60000);const old=limits.get(key);const n=old?.minute===now?old.count+1:1;limits.set(key,{minute:now,count:n});if(n>max)throw fault(429,'操作频繁，请稍后再试。');}
   const json=(res,status,value)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(value));};
@@ -59,7 +74,9 @@ function createPortal(config,{current=()=>true}={}){
         for(const [key,value]of sessions)if(value.created_at&&Date.now()-value.created_at>12*3600000)sessions.delete(key);
         if(sessions.size>=200)throw fault(429,'同时体验人数已达上限，请稍后再试');
         const sid=crypto.randomBytes(32).toString('hex'),alias=crypto.randomBytes(32).toString('hex');
-        const actor={id:sha(visitor),name:'体验访客 '+sha(visitor).slice(0,6),reviewer:false,account:persona.account};
+        const slotId=free.visitor_slots?store.visitorSlot(sha(visitor),free.visitor_slots.map(s=>s.id),poolFingerprint):null;
+        const slot=free.visitor_slots?.find(s=>s.id===slotId);
+        const actor={id:sha(visitor),name:'体验访客 '+sha(visitor).slice(0,6),reviewer:false,account:slot?slot.accounts[persona.account]:persona.account,persona:persona.account};
         sessions.set(sid,{actor,alias,created_at:Date.now()});const suffix=`; HttpOnly; SameSite=Strict; Path=/; Max-Age=${Math.floor((expires-Date.now())/1000)}${origin.protocol==='https:'?'; Secure':''}`;
         res.setHeader('Set-Cookie',[`jx_test=${sid}${suffix}`,`jx_visitor=${visitor}.${sign(visitor)}${suffix}`]);return json(res,200,{ok:true});
       }
@@ -72,7 +89,7 @@ function createPortal(config,{current=()=>true}={}){
       const sid=(req.headers.cookie||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('jx_test='))?.slice(8),session=sessions.get(sid);
       if(!session)throw fault(401,free?'体验会话已结束，请重新进入':'请先输入专属测试邀请码');const actor=session.actor;if(p.startsWith('/api/')||(p.startsWith('/__test/')&&!/\.(js|css)$/.test(p)))limited(actor.id,300);
       if(req.method==='POST'&&p==='/__test/logout'){sessions.delete(sid);res.setHeader('Set-Cookie','jx_test=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0');return json(res,200,{ok:true});}
-      if(req.method==='GET'&&p==='/__test/me')return json(res,200,{id:actor.id,name:free?(free.personas.find(p=>p.account===actor.account)?.title||actor.name):actor.name,account:actor.account,open_exploration:!!free,personas:free?free.personas:[],home:free?.personas.find(p=>p.account===actor.account)?.home,reviewer:actor.reviewer,version:config.version,expires_at:config.expires_at,routes:actor.reviewer?[]:config.routes.filter(r=>r.accounts.includes(actor.account)).map(({accounts,...r})=>r)});
+      if(req.method==='GET'&&p==='/__test/me')return json(res,200,{id:actor.id,name:free?(free.personas.find(p=>p.account===(actor.persona||actor.account))?.title||actor.name):actor.name,account:actor.persona||actor.account,open_exploration:!!free,personas:free?free.personas:[],home:free?.personas.find(p=>p.account===(actor.persona||actor.account))?.home,reviewer:actor.reviewer,version:config.version,expires_at:config.expires_at,routes:actor.reviewer?[]:config.routes.filter(r=>r.accounts.includes(actor.account)).map(({accounts,...r})=>r)});
       if(req.method==='GET'&&p==='/__test/bootstrap'){
         if(actor.reviewer)throw fault(403,'问题处理身份没有业务操作权限');const a=config.accounts[actor.account];
         return json(res,200,{synthetic_only:true,version:config.version,expires_at:config.expires_at,base_url:config.origin+'/api/v1',bearer_token:session.alias,account_id:a.account_id,party_id:a.party_id,role:a.label||actor.account});
@@ -82,7 +99,7 @@ function createPortal(config,{current=()=>true}={}){
       if(req.method==='POST'&&p==='/__test/issues'){
         const b=await body(req);if(!['BUG','CONFUSING','REQUIREMENT','SUGGESTION'].includes(b.category))throw fault(400,'请选择问题类型');
         if(b.image&&b.image_confirmed!==true)throw fault(400,'请先确认截图内容');
-        const payload={category:b.category,description:text(b.description,3,3000),expected:text(b.expected,0,2000),context:{route:safeRoute(b.context?.route||'/'),reference:text(b.context?.reference||'',0,100),scenario:config.routes.find(r=>r.id===b.context?.scenario&&r.accounts.includes(actor.account))?.id||null,version:config.version,role:free?(free.personas.find(p=>p.account===actor.account)?.title||'体验访客'):(config.accounts[actor.account]?.label||'测试负责人'),device:text(b.context?.device||'',0,160)},image:image(b.image)};
+        const payload={category:b.category,description:text(b.description,3,3000),expected:text(b.expected,0,2000),context:{route:safeRoute(b.context?.route||'/'),reference:text(b.context?.reference||'',0,100),scenario:config.routes.find(r=>r.id===b.context?.scenario&&r.accounts.includes(actor.account))?.id||null,version:config.version,role:free?(free.personas.find(p=>p.account===(actor.persona||actor.account))?.title||'体验访客'):(config.accounts[actor.account]?.label||'测试负责人'),device:text(b.context?.device||'',0,160)},image:image(b.image)};
         return json(res,201,store.create(actor,req.headers['idempotency-key'],payload));
       }
       let match=/^\/__test\/issues\/([a-f0-9-]{36})(\/image)?$/.exec(p);
@@ -126,7 +143,7 @@ module.exports={createPortal,safeRoute};
 if(require.main===module){
   (async()=>{const file=path.resolve(process.argv[2]||'');assert(file.includes(path.sep+'.local'+path.sep));const config=JSON.parse(fs.readFileSync(file,'utf8'));if(!config.review_only&&!config.build_manifest)verifyBuildManifest(config);assert(config.fixture_files?.length||config.review_only===true);if(config.review_only)assert(config.invites.every(i=>i.reviewer)&&Object.keys(config.accounts).length===0&&config.routes.length===0);const workspace=fs.realpathSync(path.resolve(__dirname,'../..','.local'));
     const dataParent=fs.realpathSync(path.dirname(config.data_dir));assert(dataParent===workspace||dataParent.startsWith(workspace+path.sep));
-    if(!config.review_only){const source=path.resolve(__dirname,'../../晶晶日上工程交接包/01_源码');for(const [kind,folder]of Object.entries({app:'frontend_jingjingshangri_app',workspace:'frontend_ops_workspace'}))assert(['client-web',...(config.open_exploration?['explore-web']:[])].some(build=>fs.existsSync(path.join(source,folder,'.local',build))&&fs.realpathSync(config.builds[kind])===fs.realpathSync(path.join(source,folder,'.local',build))));}
+    if(!config.review_only){const source=path.resolve(__dirname,'../../晶晶日上工程交接包/01_源码');for(const [kind,folder]of Object.entries({app:'frontend_jingjingshangri_app',workspace:'frontend_ops_workspace'})){const actual=fs.realpathSync(config.builds[kind]);assert(actual.startsWith(workspace+path.sep)||['client-web',...(config.open_exploration?['explore-web']:[])].some(build=>fs.existsSync(path.join(source,folder,'.local',build))&&actual===fs.realpathSync(path.join(source,folder,'.local',build))));}}
     const allowedAccounts=[],proofs=[];
     for(const input of config.fixture_files){const p=fs.realpathSync(input);assert(p.startsWith(workspace+path.sep)&&path.basename(p)==='access.json');const name=path.basename(path.dirname(p));assert(/^jx_test_(story|artists|delivery|r05r12|explore)_\d+_[0-9a-f]{12}$/.test(name));const stateFile=path.join(path.dirname(p),'status.json'),state=JSON.parse(fs.readFileSync(stateFile)),fixture=JSON.parse(fs.readFileSync(p));assert(state.status==='RUNNING'&&state.synthetic_only===true&&fixture.synthetic_only===true&&state.database===name);assert(fixture.base_url===`http://127.0.0.1:${state.port}/api/v1`);if(state.persistent){assert(p.startsWith(path.join(workspace,'client-persistent')+path.sep)&&fixture.persistent===true);const owned=JSON.parse(fs.readFileSync(path.join(path.dirname(p),'manifest.json')));require('./persistent-story.cjs').validateManifest(owned,name);assert(owned.environment_id===state.environment_id&&Date.parse(config.expires_at)<=Date.parse(state.expires_at));}assert(Date.parse(config.expires_at)<=fs.statSync(stateFile).mtimeMs+state.expires_in_minutes*60000);for(const a of Object.values(fixture.accounts))allowedAccounts.push({...a,base_url:fixture.base_url});proofs.push({p,hash:sha(fs.readFileSync(p))},{p:stateFile,hash:sha(fs.readFileSync(stateFile))});}
     for(const a of Object.values(config.accounts))assert(allowedAccounts.some(x=>['base_url','account_id','party_id','bearer_token'].every(k=>a[k]===x[k])));

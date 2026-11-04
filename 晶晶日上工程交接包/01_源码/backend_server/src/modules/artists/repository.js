@@ -96,6 +96,6 @@ function createArtistRepository(db,{resolvePrincipal=async()=>null,contractPolic
   // Higher levels cannot be sold/approved until the paid review and objective metrics are linked.
   if(b.level===1){if(b.service_id)throw error('HALO_L1_IS_FREE',409);return;}if(!b.service_id)throw error('HALO_PAID_REVIEW_REQUIRED',409);const service=await C.load(tx,b.service_id,'SERVICE');if(service.person_id!==p.id||service.data.kind!=='HALO_REVIEW'||service.data.specification.service.halo_level!==b.level||service.current_status!=='READY')throw error('HALO_PAID_REVIEW_REQUIRED',409);await require('./services').fullyPaid(tx,service);const [applications]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='HALO' FOR SHARE",[p.id]);if(applications.map(C.checked).some(h=>h.data.service_id===b.service_id&&h.current_status!=='SUBMITTED'&&h.current_status!=='NEEDS_MATERIAL'))throw error('HALO_REVIEW_SERVICE_CONSUMED',409);const [rights]=await tx.execute("SELECT * FROM artist_records WHERE person_id=? AND kind='CONSENT' AND current_status='APPROVED' FOR SHARE",[p.id]);const approved=rights.map(C.checked).filter(c=>P.active(c.data,at)&&c.data.grantee_party_id===p.owner_party_id);if(!['FACE','VOICE'].every(f=>approved.some(c=>c.data.features.includes(f))))throw error('HALO_FACE_VOICE_CONSENT_REQUIRED',409);if(b.level===3)throw error('HALO_VERIFIED_METRICS_NOT_AVAILABLE',409);
  }
- return Object.freeze(api);
+ return Object.freeze(Object.assign(api,require('./delegation-options').methods({db,actor})));
 }
 module.exports={createArtistRepository};

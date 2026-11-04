@@ -251,7 +251,7 @@ function selectedReference({field,record,key}:{field:Field;record:BusinessData;k
  chosenReferences.value=[...chosenReferences.value.filter(item=>recordId(item)!==recordId(record)),record]
  if(isRoomCreation.value&&['request_id','producer_party_id','rule_id'].includes(field.key)){agreed.value=false;if(field.key==='request_id')void readCreationContext();return}
  const data=rowData(record),source={...data,...record}
- for(const [name,target]of Object.entries({rule_id:'rule_sha256',offer_id:'offer_sha256',listing_id:'offer_sha256',booking_id:'booking_sha256',stock_id:'template_sha256',pool_id:'rules_sha256',agreement_id:'agreement_sha256'})){
+ for(const [name,target]of Object.entries({quote_id:'quote_sha256',rule_id:'rule_sha256',offer_id:'offer_sha256',listing_id:'offer_sha256',booking_id:'booking_sha256',stock_id:'template_sha256',pool_id:'rules_sha256',agreement_id:'agreement_sha256'})){
   if(field.key===name){const value=source[target]||source.content_sha256;if(typeof value==='string')draft.value={...draft.value,[target]:value}}
  }
  if(field.key==='person_id'||field.key==='seller_person_id')clearReferenceFields(key?.slice(0,-field.key.length),['avatar_id','consent_id','public_consent_id','artist_consent_ids','look_version_id','voice_version_id','previous_version_id'])

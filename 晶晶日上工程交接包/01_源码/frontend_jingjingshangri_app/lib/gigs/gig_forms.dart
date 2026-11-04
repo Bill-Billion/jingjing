@@ -57,6 +57,8 @@ class _GigFormState extends State<_GigForm> {
   List<Map<String, dynamic>> rules = [], avatars = [], consents = [];
   List<TradeRecord> specs = [];
   List<GigRecord> relations = [];
+  List<Map<String, dynamic>> relationArtists = [];
+  String? sourceListing;
   bool modern = false;
   final supplyShare = TextEditingController(text: '20');
   Map<String, dynamic>? gig;
@@ -115,6 +117,9 @@ class _GigFormState extends State<_GigForm> {
                   gigParsePercent(supplyShare.text)! >= 1000 &&
                   gigParsePercent(supplyShare.text)! <= 3000)) &&
           mcnActive &&
+          relationArtists.any((r) =>
+              r['listing_id'] == sourceListing &&
+              r['artist_party_id'] == artist.text.trim()) &&
           gigId(artist.text.trim()) &&
           artist.text.trim() != widget.session.partyId &&
           validFrom != null &&
@@ -188,12 +193,19 @@ class _GigFormState extends State<_GigForm> {
       avatars = [];
       consents = [];
       relations = [];
+      relationArtists = [];
+      sourceListing = null;
+      artist.clear();
       gig = null;
     });
     try {
       final cat = await api.catalogue();
       if (mounted && t == ticket) {
         modern = cat.contractPolicy == 'CONTRACT_20261029';
+      }
+      if (widget.kind == 'RELATION' && mcnActive) {
+        final candidates = await api.relationOptions();
+        if (mounted && t == ticket) relationArtists = candidates;
       }
       if (widget.kind == 'OFFER') {
         if (!gigId(widget.gigId)) throw const AccountError(400, 'INVALID_ID');
@@ -316,6 +328,7 @@ class _GigFormState extends State<_GigForm> {
     if (widget.kind == 'RELATION') {
       return {
         'artist_party_id': artist.text.trim(),
+        'source_listing_id': sourceListing,
         'scope': 'COMMERCIAL',
         'valid_from': validFrom!.toUtc().toIso8601String(),
         'valid_until': validUntil!.toUtc().toIso8601String(),
@@ -587,9 +600,18 @@ class _GigFormState extends State<_GigForm> {
           supplyNote('MCN 能力须已获有效服务授权；不能在此自行批准。服务授权不代表有权代本人接受合作。')
         ]),
         supplyCard('2 直接合作对象与范围', [
-          gigTextField(artist, '合作本人主体编号', max: 36, enabled: !locked),
+          select('选择公开展示的艺人', sourceListing, [
+            for (final r in relationArtists)
+              (r['listing_id'] as String, '${r['display_name']} · ${r['city']}')
+          ], (v) {
+            sourceListing = v;
+            artist.text = relationArtists
+                    .where((r) => r['listing_id'] == v)
+                    .firstOrNull?['artist_party_id'] ??
+                '';
+          }),
           tradeFact('范围', '商业用途'),
-          supplyNote('由对方提供完整主体编号。没有公开艺人目录，不推测昵称、资料或上下级关系。')
+          supplyNote('只列仍获本人授权公开展示的艺人，邀请后仍须本人接受，不替本人授权。')
         ]),
         supplyCard('3 期间与排他', [
           timeField('合作开始', true),

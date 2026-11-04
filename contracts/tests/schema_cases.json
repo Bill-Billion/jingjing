@@ -4,12 +4,19 @@
     {
       "name": "empty audition dispute evidence rejected",
       "schema": "AuditionDisputeEvidenceRequest",
-      "value": {"evidence_asset_ids": []}
+      "value": {
+        "evidence_asset_ids": []
+      }
     },
     {
       "name": "duplicate audition dispute evidence rejected",
       "schema": "AuditionDisputeEvidenceRequest",
-      "value": {"evidence_asset_ids": ["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000001"]}
+      "value": {
+        "evidence_asset_ids": [
+          "00000000-0000-4000-8000-000000000001",
+          "00000000-0000-4000-8000-000000000001"
+        ]
+      }
     },
     {
       "name": "fractional minor units rejected",
@@ -2102,6 +2109,93 @@
           "acceptance_policy": "UNKNOWN"
         },
         "terms": "Synthetic schema fixture, not commercial terms"
+      }
+    },
+    {
+      "name": "NoticeCaseQuoteOptionsResponse rejects unrelated private fields",
+      "schema": "NoticeCaseQuoteOptionsResponse",
+      "value": {
+        "meta": {
+          "request_id": "07ada625-a45b-44e4-b26c-920d8001962f",
+          "actor": {
+            "account_id": "dca9d322-82a7-44c5-a4ee-4fa61f350fef"
+          },
+          "acting_party": "0af1c703-629c-48aa-a78f-1f6bad7439c6"
+        },
+        "data": {
+          "case_id": "00000000-0000-4000-8000-000000000001",
+          "submission_id": "00000000-0000-4000-8000-000000000001",
+          "items": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "object_version": 1,
+              "current_status": "APPROVED",
+              "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "total_minor": 10000,
+              "currency": "CNY",
+              "expires_at": "2026-11-05T12:00:00Z",
+              "title": "合成商单报价",
+              "private_terms": "not-public"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "GigRelationOptionsResponse rejects unrelated private fields",
+      "schema": "GigRelationOptionsResponse",
+      "value": {
+        "meta": {
+          "request_id": "07ada625-a45b-44e4-b26c-920d8001962f",
+          "actor": {
+            "account_id": "dca9d322-82a7-44c5-a4ee-4fa61f350fef"
+          },
+          "acting_party": "0af1c703-629c-48aa-a78f-1f6bad7439c6"
+        },
+        "data": {
+          "party_id": "00000000-0000-4000-8000-000000000001",
+          "items": [
+            {
+              "listing_id": "00000000-0000-4000-8000-000000000001",
+              "person_id": "00000000-0000-4000-8000-000000000001",
+              "avatar_id": "00000000-0000-4000-8000-000000000001",
+              "artist_party_id": "00000000-0000-4000-8000-000000000001",
+              "display_name": "合成艺人",
+              "city": "苏州",
+              "phone": "synthetic-hidden"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "ArtistDelegationOptionsResponse rejects unrelated private fields",
+      "schema": "ArtistDelegationOptionsResponse",
+      "value": {
+        "meta": {
+          "request_id": "07ada625-a45b-44e4-b26c-920d8001962f",
+          "actor": {
+            "account_id": "dca9d322-82a7-44c5-a4ee-4fa61f350fef"
+          },
+          "acting_party": "0af1c703-629c-48aa-a78f-1f6bad7439c6"
+        },
+        "data": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "kind": "RELATION",
+          "items": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "organization_party_id": "00000000-0000-4000-8000-000000000001",
+              "display_name": "合成机构",
+              "valid_from": "2026-11-01T00:00:00Z",
+              "valid_until": "2027-11-01T00:00:00Z",
+              "bearer_token": "synthetic-not-allowed"
+            }
+          ],
+          "next_cursor": null
+        }
       }
     }
   ]

@@ -1,9 +1,9 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {prepare}=require('./prepare.cjs');
 const root=path.resolve(__dirname,'../..');
-function run(access,{folder,port,origin,expires_at,campaign='client-free-20261026'}){
+function run(access,{folder,port,origin,expires_at,campaign='client-free-20261026',builds:providedBuilds}){
  const src=path.join(root,'晶晶日上工程交接包/01_源码');
- const builds={app:path.join(src,'frontend_jingjingshangri_app/.local/explore-web'),workspace:path.join(src,'frontend_ops_workspace/.local/client-web')};
+ const builds=providedBuilds||{app:path.join(src,'frontend_jingjingshangri_app/.local/explore-web'),workspace:path.join(src,'frontend_ops_workspace/.local/client-web')};
  const result=prepare([access],{folder,port,origin,campaign,expires_at,builds,durationMinutes:Math.min(4000,Math.floor((Date.parse(expires_at)-Date.now())/60000))});
  const file=path.join(root,result.config_file),config=JSON.parse(fs.readFileSync(file,'utf8'));
  const descriptions={buyer:'客户小晶 · 定制、购买、钱包与共创',artist:'艺人小夏 · 本人档案和授权',producer:'制作平台 · 受理、报价与交付',reviewer:'独立审核员 · 制作与权益审核',stock_buyer:'客户小林 · 已购视频和售后',stock_seller:'视频作者 · 现成视频管理',stock_reviewer:'视频审核员 · 权利与内容检查',notices_buyer:'通告发布人 · 查看报名和商单',notices_seller:'报名艺人 · 通告报名和约定',notices_reviewer:'通告审核员 · 报名与发布审核',auditions_buyer:'试镜客户 · 预约和服务验收',auditions_seller:'试镜艺人 · 接单与交付',auditions_reviewer:'试镜审核员 · 预约和交付审核',participant:'共创参与者 · 加入、授权与作品',mcn_owner:'机构负责人 · 艺人和员工管理',mcn_staff:'机构员工 · 本人获派业务'};

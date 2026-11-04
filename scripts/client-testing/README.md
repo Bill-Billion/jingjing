@@ -6,6 +6,22 @@
 
 ## 旧邀请模式准备顺序（当前自由体验按上述专用说明）
 
+2026-11-04新增的持续自由体验请先读下节；旧邀请方式不再作为当前客户的操作入口。
+
+## 多人各自操作，不共用订单（2026-11-04）
+
+当前工具支持2–8套独立、已保留的合成数据库。`run-isolated-explore.cjs` 读取 `.local` 内的私有计划，逐个启动原库、固定网页构建，然后只监听本机。计划字段为 `synthetic_only: true`、`hours`（1–72）、`databases`（不同的保留测试库名），以及 `options` 内的 `folder`、`campaign`、`port`、本机 `origin`、`builds.app/workspace`。路径和口令不要写进共享交接或示例。
+
+由后端准备与运行：`node scripts/client-testing/run-isolated-explore.cjs <本机私有计划文件>`。用户只打开已启动的网站，不负责执行命令。原库、附件不能重置；自动检查使用另一批资料。构建可以放仓库 `.local` 下的冻结目录，不必覆盖旧测试人正在使用的构建。
+
+每个浏览器第一次进入分配自己的整套业务资料；切本人、机构、运营岗位仍在该套内。席位不足明确拒绝，不回退共用资料。保留浏览器 Cookie、反馈批次和原数据库才可恢复原人原单；新浏览器或清除 Cookie 会新占席位，这不是正式跨设备账号登录。增加新资料可以扩容，替换或移除旧席位拒绝恢复，账号和主体不能跨席位重复。
+
+停止时仅在本轮 config.json 同目录写 `stop` 文件；编排工具关闭本轮门户和内部服务，保留数据库、附件及反馈。不要关闭共用MySQL。重启须用新的会话目录、原 campaign 和相同资料顺序；开放期限须按实际授权重新确定，不能自动延长旧公网窗口。新启动方式仅支持本机 origin，不会自动打通外网。
+
+新增 `visitor-isolation.test.cjs` 覆盖不同浏览器代理隔离、切岗位旧令牌失效、反馈隔离、重启/扩容不换人及伪造拒绝；`persistent-login-restart-check.cjs` 用隔离数据库核短信登录后的重启、旧登录请求不复活和原订单保留。测试记录和新接口交接见 [后端整包交接](../../docs/collaboration/client-complete-20261028/TONIGHT_BACKEND_HANDOFF_20261104.md)。
+
+## 旧邀请模式的具体步骤（历史兼容）
+
 1. 从本轮受测代码构建。Flutter使用本仓库test/support/client_testing_main.dart，CLIENT_TEST_ONLY=true，base-href /app/，输出到App工程.local/client-web，并指定--no-web-resources-cdn。本专用入口只在运行时读取当前邀请身份，不包含任何账号令牌。普通lib/main.dart构建不加载测试入口。
 2. Vue先运行npm run type-check，再运行npm run build-only -- --base /workspace/ --outDir .local/client-web，VITE_API_ORIGIN留空。同源测试启动脚本在测试服务器提供HTML时注入，不进入正式构建。
 3. 设置JX_MYSQL_TEST_ENV_FILE为既有隔离MySQL配置；设置FFMPEG_PATH为本机ffmpeg路径。按需启动scripts/customization-sandbox.cjs、artists-sandbox.cjs、customization-delivery-sandbox.cjs、v5-r05-r12-sandbox.cjs。只能使用这些脚本新建的随机测试库，不读生产.env。

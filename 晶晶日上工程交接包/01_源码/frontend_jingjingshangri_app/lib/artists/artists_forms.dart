@@ -79,6 +79,7 @@ class _ArtistFormState extends State<_ArtistForm> {
       voices = <ArtistRecord>[],
       serviceRecords = <ArtistRecord>[],
       relations = <GigRecord>[];
+  final relationNames = <String, String>{};
   final features = <String>{},
       purposes = <String>{},
       delegated = <String>{},
@@ -299,6 +300,12 @@ class _ArtistFormState extends State<_ArtistForm> {
                   DateTime.tryParse(r.data['valid_until'] ?? '')
                           ?.isAfter(now) ==
                       true));
+        }
+        if (mode == 'DELEGATION') {
+          for (final r in relations) {
+            final names = await GigApi(widget.session).relationNames(r);
+            relationNames[r.id] = names[r.owner] ?? '机构名称暂不可读';
+          }
         }
         if (mounted) {
           controller('grantee').text = d.person.owner;
@@ -924,7 +931,7 @@ class _ArtistFormState extends State<_ArtistForm> {
                 for (final r in relations)
                   (
                     r.id,
-                    '机构 ${shortSupplyId(r.owner!)} · 关系 ${shortSupplyId(r.id)}'
+                    '${relationNames[r.id] ?? '机构名称暂不可读'} · 合作至 ${r.data['valid_until'].toString().substring(0, 10)}'
                   )
               ],
               (v) => relation = v),

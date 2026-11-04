@@ -1,3 +1,4 @@
+import '../contracts/marketplace_allocation.dart';
 import '../rights/rights_models.dart';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
@@ -501,6 +502,10 @@ void _quote(Map<String, dynamic> d) {
           snapshot['current_status'] == 'EFFECTIVE' &&
           DateTime.tryParse('${snapshot['effective_at']}') != null);
       financeRules(finance['rules']);
+      tradeRequire((finance['rules']['lines'] as List).every((line) =>
+          line is Map &&
+          line.containsKey('shares') &&
+          !line.containsKey('allocation')));
       tradeRequire(
           finance['rules']['release_condition'] == 'DELIVERY_ACCEPTED');
       ContractApi.validateRule(tradeMap(snapshot['content']));
@@ -512,20 +517,7 @@ void _quote(Map<String, dynamic> d) {
   if (d['marketplace_finance'] != null) {
     final snap = tradeMap(d['marketplace_finance']),
         a = tradeMap(snap['allocation']);
-    tradeRequire(a['model'] == 'V5_TWO_LAYER' &&
-        a['fee_base'] == 'NET_PAID' &&
-        ['STOCK_VIDEO', 'COMMERCIAL', 'AUDITION'].contains(a['product_type']) &&
-        ['HALF_UP_PLATFORM_REMAINDER', 'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN']
-            .contains(a['rounding']));
-    for (final key in ['platform_bps', 'mcn_supply_bps', 'referral_bps']) {
-      tradeRequire(a[key] is int && a[key] >= 0 && a[key] <= 10000);
-    }
-    for (final key in ['platform_party_id', 'supplier_party_id']) {
-      tradeRequire(isContractId('${a[key]}'));
-    }
-    for (final key in ['mcn_party_id', 'referrer_party_id']) {
-      tradeRequire(a[key] == null || isContractId('${a[key]}'));
-    }
+    tradeRequire(marketplaceAllocationValid(a));
     final savedRule = tradeMap(snap['rule_snapshot']),
         rule = tradeMap(savedRule['content']);
     ContractApi.validateRule(rule);

@@ -13,7 +13,8 @@ function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/rules','createRule',['rule'],{party:false});
  post('/records/:record_id/reviews','review',['decision','reason','checks'],{party:false,existing:true});
  post('/rules/:record_id/retirement','retireRule',['reason'],{party:false,existing:true});
- post('/relations','relation',['artist_party_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
+ router.get('/relation-options',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.relationOptions(req,{party_id:acting(req),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
+ post('/relations','relation',['artist_party_id','source_listing_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
  post('/relations/:record_id/decision','relationDecision',['decision','reason'],{existing:true});
  post('/relations/:record_id/handover','acknowledgeHandover',['order_id','note'],{existing:true});
  router.get('/relations/:record_id/handover',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.handover(req,{record_id:id(req.params.record_id),party_id:acting(req),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));

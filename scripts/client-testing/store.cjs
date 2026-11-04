@@ -28,6 +28,17 @@ function openStore(dir) {
     const next=structuredClone(data),result=fn(next);next.commands[k]={fingerprint,result};save(next);return result;
   }
   return {
+    visitorSlot(visitor, slots, fingerprint) {
+      assert(/^[a-f0-9]{64}$/.test(visitor) && Array.isArray(slots) && slots.length > 0 && fingerprint && typeof fingerprint==='object' && slots.every(s=>/^[a-f0-9]{64}$/.test(fingerprint[s])));
+      assert(!data.visitor_pool||typeof data.visitor_pool==='object'&&Object.entries(data.visitor_pool).every(([s,h])=>fingerprint[s]===h),'原测试账号已被替换，请恢复原资料，不能静默换人。');
+      const assigned=data.visitor_slots||{};
+      assert(Object.values(assigned).every(s=>slots.includes(s)), '测试席位已变化，请恢复原资料，不能把旧访客换到他人资料。');
+      assert(new Set(Object.values(assigned)).size===Object.values(assigned).length);
+      if(Object.hasOwn(assigned,visitor))return assigned[visitor];
+      const slot=slots.find(s=>!Object.values(assigned).includes(s));
+      if(!slot)throw fault(503,'独立测试资料已全部分配，请用原浏览器继续，或联系负责人增加资料；不会共用他人的订单。');
+      const next=structuredClone(data);next.visitor_pool=fingerprint;next.visitor_slots={...assigned,[visitor]:slot};save(next);return slot;
+    },
     list(actor){return {issues:data.issues.filter(r=>allowed(actor,r)).map(({image,...r})=>({...r,has_image:!!image})),results:data.results.filter(r=>allowed(actor,r))};},
     image(actor,id){const r=data.issues.find(r=>r.id===id);if(!r||!allowed(actor,r)||!r.image)throw fault(404,'截图不存在或无权查看');return r.image;},
     create(actor,key,payload){return mutate(actor,key,payload,n=>{if(n.issues.length>=1000)throw fault(507,'本轮问题数量已达上限'); const row={...payload,id:crypto.randomUUID(),number:'TEST-'+String(n.issues.length+1).padStart(4,'0'),owner:actor.id,reporter:actor.name,status:'NEW',version:1,created_at:new Date().toISOString(),history:[]};n.issues.push(row);const {image,...publicRow}=row;return {...publicRow,has_image:!!image};});},
