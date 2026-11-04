@@ -114,7 +114,8 @@ class _WalletScreenState extends State<_WalletScreen> {
     } on AccountError catch (e) {
       if (mounted && t == ticket) {
         setState(() {
-          if (['summary', 'points', 'scout'].contains(widget.mode) &&
+          if (['summary', 'points', 'scout', 'recharge']
+                  .contains(widget.mode) &&
               e.status == 404 &&
               e.code == 'WALLET_NOT_FOUND') {
             missing = true;
@@ -290,6 +291,7 @@ class _WalletScreenState extends State<_WalletScreen> {
                 ? '模拟余额充值，不涉及真实资金。成功后记入测试账本，充值不直接赠消费晶钻。'
                 : '消费者充值托管尚未接通。本页按实际接口核对未开通结果；未产生充值、到账或自动扣款事实。充值不是会费，也不直接赠消费晶钻。'),
             V5Form(
+                key: const ValueKey('wallet-recharge-form'),
                 api: api,
                 title: '核对本次充值',
                 action: const bool.fromEnvironment('CLIENT_TEST_ONLY')

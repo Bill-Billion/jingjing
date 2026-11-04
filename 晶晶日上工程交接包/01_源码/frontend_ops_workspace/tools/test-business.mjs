@@ -9,7 +9,7 @@ import {renderToString} from '@vue/server-renderer'
 import {createPinia} from 'pinia'
 import {createRouter,createMemoryHistory,RouterView} from 'vue-router'
 const root=fileURLToPath(new URL('..',import.meta.url)),require=createRequire(import.meta.url),backend=key=>require(`${root}/../backend_server/src/modules/${key}/policy.js`)
-const server=await createServer({root,configFile:false,plugins:[vue()],resolve:{alias:{'@':`${root}/src`}},server:{middlewareMode:true},appType:'custom'})
+const server=await createServer({root,configFile:false,plugins:[vue()],resolve:{alias:{'@':`${root}/src`}},server:{middlewareMode:true,hmr:false},appType:'custom'})
 const savedFetch=globalThis.fetch,storageDescriptor=Object.getOwnPropertyDescriptor(globalThis,'sessionStorage'),storage=new Map()
 Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k)}})
 const tests=[],test=(name,run)=>tests.push({name,run}),id=n=>`00000000-0000-0000-0000-${String(n).padStart(12,'0')}`,sha='a'.repeat(64),at='2026-10-22T08:00:00.000Z',until='2026-11-22T08:00:00.000Z'
@@ -54,6 +54,18 @@ try{
   globalThis.fetch=async()=>response({items:[mine,other]});const result=await references.readReferences(source,{token:'test',accountId:id(1),partyId:id(2)});const options=references.referenceOptions(result.items,'profile_id');assert.deepEqual(options.map(x=>x.value),[id(4)]);assert(options[0].label.includes('合成城'))
   globalThis.fetch=async()=>response({items:[{...mine,id:'bad'}]});await assert.rejects(references.readReferences(source,{token:'test',accountId:id(1),partyId:id(2)}))
  })
+ test('权益履约依据限本单与用途，换记录、失权和迟到结果不保留旧材料',async()=>{
+  const grant=id(9),other=id(10),asset=id(11),source=references.sourceFor('evidence_asset_id',{record_id:grant,redemption_action:'delivery'},'redemption',id(2));assert.equal(source.party,'none');assert.equal(source.path,`/redemption/grants/${grant}/evidence-options?purpose=SCHEDULE`);assert.equal(references.sourceFor('evidence_asset_id',{record_id:'bad',redemption_action:'delivery'},'redemption',id(2)),null)
+  const row={id:asset,submission_id:id(12),purpose:'SCHEDULE',media_type:'text/plain',byte_size:24,content_sha256:sha},valid={grant_id:grant,purpose:'SCHEDULE',items:[row]},identity={token:'test',accountId:id(1),partyId:id(2)};let request
+  globalThis.fetch=async(url,o)=>{request={url,o};return response(valid,null)};const result=await references.readReferences(source,identity);assert.equal(references.referenceOptions(result.items,'evidence_asset_id')[0].value,asset);assert(!request.o.headers['X-Acting-Party'])
+  globalThis.fetch=async()=>response({...valid,grant_id:other},null);await assert.rejects(references.readReferences(source,identity),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+  globalThis.fetch=async()=>response({...valid,items:[{...row,purpose:'COMPLETION'}]},null);await assert.rejects(references.readReferences(source,identity),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE')
+  const record={id:grant,kind:'GRANT',current_status:'BOUND',object_version:1,data:{template:{kind:'EXPOSURE'}}};await render('/redemption/reviews',record,async vm=>{
+   vm.operationKey='delivery';vm.draft.evidence_asset_id=asset;vm.refOptions['delivery-evidence_asset_id']=[{value:asset,label:'旧依据',record:row}];vm.agreed=true
+   let finish;globalThis.fetch=()=>new Promise(resolve=>finish=resolve);const pending=vm.loadChoices({field:model.id('evidence_asset_id','实际排期依据'),context:vm.draft,key:'delivery-evidence_asset_id'});await Promise.resolve();assert.equal(vm.draft.evidence_asset_id,'');assert.equal(vm.agreed,false)
+   vm.selected={...record,id:other};vm.bindReferences(vm.selected);finish(response(valid,null));await pending;assert.equal((vm.refOptions['delivery-evidence_asset_id']||[]).length,0);assert.equal(vm.assetId,'')
+  })
+ })
  test('既有业务与新增合同域均注册真实读取、字段表单和独立业务按钮',()=>{assert.deepEqual(Object.keys(domains).sort(),['auditions','cocreation','consumer','conversations','daily-finance','engagement','guardians','handover','infringement','media','notices','participation','privacy','redemption','stock','wallet'].sort());for(const d of Object.values(domains)){assert(d.sections.length);assert(d.operations.length);for(const o of d.operations){assert(o.label);assert(o.path.startsWith('/'));assert(!o.label.includes('POST'));assert(o.fields.every(f=>f.label));assert(['required','optional','none'].includes(o.party))}}})
  test('新路由逐域严格登录恢复，拒绝未知参数与外链',()=>{for(const d of Object.values(domains)){for(const s of d.sections){const path=`/${d.key}/${s.key}`;assert.equal(loginRedirect(path),path);assert.equal(loginRedirect(path+'/'+id(4)),path+'/'+id(4));assert.equal(loginRedirect(path+'?admin=true'),'/workspace');assert.equal(loginRedirect(path+'?action=made-up'),'/workspace')}}assert.equal(loginRedirect('//evil.test/stock/catalog'),'/workspace')})
  test('引用仅接受真实UUID，hash不能任意文本，动态路径不能注入',()=>{assert.throws(()=>model.encode([model.id('person','真人')],{person:'abc'}));assert.throws(()=>model.encode([model.hash()],{content_sha256:'x'}));assert.throws(()=>model.pathFor('/stock/purchases/:record_id',{record_id:'../../admin'}));assert.equal(model.pathFor('/stock/purchases/:record_id',{record_id:id(3)}),'/stock/purchases/'+id(3))})
@@ -95,6 +107,28 @@ try{
  test('同身份较早GET和迟到403不能覆盖后来记录',async()=>{storage.clear();const {ui,scope}=state();let one,two,n=0;globalThis.fetch=()=>new Promise(resolve=>{if(++n===1)one=resolve;else two=resolve});const a=ui.load('/stock/catalog/'+id(3),'none'),b=ui.load('/stock/catalog/'+id(4),'none');one(failure(403,'FORBIDDEN'));await a;two(response({id:id(4)},null));await b;assert.equal(ui.data.value.id,id(4));assert.equal(ui.error.value,null);scope.stop()})
  test('失权、权利暂停或换身份清除旧私密内容与Blob',async()=>{for(const [status,code]of [[403,'FORBIDDEN'],[404,'NOT_FOUND'],[409,'STOCK_RIGHTS_HOLD'],[409,'ARTIST_CONSENT_REQUIRED']]){storage.clear();const {ui,scope}=state();ui.data.value={id:id(3),private_story:'synthetic'};globalThis.fetch=async()=>failure(status,code);await ui.load('/stock/catalog/'+id(3),'none');assert.equal(ui.data.value,null);assert(ui.securityRevision.value>0);scope.stop()}})
  async function render(path,record,exercise){const pinia=createPinia(),session=useSessionStore(pinia);session.token='synthetic-token';session.account={id:id(1),display_name:'合成账号',current_status:'ACTIVE',object_version:1,allowed_actions:[]};session.expiresAt=until;session.parties=[{party:{id:id(2),kind:'PERSON',display_name:'本人合成身份',current_status:'ACTIVE',object_version:1,capabilities:[],allowed_actions:[]},membership:{id:id(8),account_id:id(1),party_id:id(2),current_status:'ACTIVE',roles:['OWNER'],object_version:1,allowed_actions:[]}}];session.selectParty(id(2));const router=createRouter({history:createMemoryHistory(),routes:[...businessRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(path);await router.isReady();let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='BusinessView'){vm=this.$.setupState;vm.loading=false;if(record){vm.selected=record;vm.ui.data.value=record;vm.bindReferences(record)}}},serverPrefetch(){if(this.$options.__name==='BusinessView')return exercise?.(vm,session,router)}});const html=await renderToString(app);return{html,vm}}
+ test('本人开奖记录直接显示已保存结果和可核对权益，不把未完成或异常响应写成中奖',async()=>{
+  const base={id:id(5),kind:'DRAW',object_version:2,current_status:'SETTLED',data:{count:1,points:300,results:[{index:0,kind:'NONE',point_back:0,guaranteed_slot:false,grant_id:null}]}}
+  let page=await render('/redemption/draws/'+id(5),base)
+  assert(page.html.includes('开奖结果已保存'));assert(page.html.includes('第1次'));assert(page.html.includes('本次未获实物权益'));assert(!page.html.includes('未识别状态'))
+  const prize={...base,data:{...base.data,results:[{index:0,kind:'PRODUCTION_FREE',point_back:0,guaranteed_slot:true,grant_id:id(9)}]}}
+  page=await render('/redemption/draws/'+id(5),prize);assert(page.html.includes('指定服务免付权益'));assert(page.html.includes('/redemption/grants/'+id(9)))
+  page=await render('/redemption/draws/'+id(5),{...base,current_status:'PENDING'});assert(!page.html.includes('开奖结果已保存'));assert(!page.html.includes('本次未获实物权益'))
+  page=await render('/redemption/draws/'+id(5),{...base,data:{...base.data,results:[]}});assert(page.html.includes('无法核对本次开奖结果'))
+ })
+ test('月冠军公开名称只匹配当前活动，迟到与失权回复不能覆盖新身份',async()=>{
+  const {useChampionNames}=await server.ssrLoadModule('/src/composables/useChampionNames.ts'),ctx=reactive({token:'synthetic',accountId:id(1),partyId:id(2),revision:1,eventId:id(5),city:'合成城市',personIds:[id(7)],enabled:true,record:{id:id(5)}}),scope=effectScope();let finish
+  const loader=()=>new Promise(resolve=>finish=resolve),names=scope.run(()=>useChampionNames(()=>ctx,loader))
+  const pending=names.load();ctx.revision++;ctx.record={id:id(5)};finish({items:[{person_id:id(7),city:'合成城市',display_name:'旧公开名'}],next_cursor:null});await pending;assert.deepEqual(names.names.value,{})
+  const current=names.load();finish({items:[{person_id:id(7),city:'合成城市',display_name:'公开合成名'},{person_id:id(8),city:'合成城市',display_name:'其他人'}],next_cursor:null});await current;assert.deepEqual(names.names.value,{[id(7)]:'公开合成名'})
+  ctx.record={id:id(5)};assert.deepEqual(names.names.value,{});scope.stop()
+ })
+ test('月冠军仅将核定且彼此一致的赢家和票数显示在当前活动',async()=>{
+  const base={id:id(5),status:'FINALIZED',title:'合成月冠军',city:'合成城市',candidates:[{id:id(6),person_id:id(7),ranking_score:5}],rules:{vote_cost:2,daily_cap:2},result:{winner_person_id:id(7),award_id:id(8),scores:[{candidate_id:id(6),person_id:id(7),official:90,ranking:5,votes:2,total:92}],at:'2026-11-04T00:00:00.000Z'}}
+  let page=await render('/engagement/competitions/'+id(5),base,async vm=>{vm.championNames.names.value={[id(7)]:'公开合成名'}});assert(page.html.includes('公开合成名'));assert(page.html.includes('已核定结果'));assert(page.html.includes('冠军候选人 1'));assert(page.html.includes('有效票 2'));assert(page.html.includes('实际兑现以本人奖励记录为准'))
+  page=await render('/engagement/competitions/'+id(5),{...base,status:'PUBLISHED'});assert(!page.html.includes('冠军候选人 1'))
+  page=await render('/engagement/competitions/'+id(5),{...base,result:{...base.result,winner_person_id:id(9)}});assert(!page.html.includes('冠军候选人 1'));assert(page.html.includes('无法核对本次结果'))
+ })
  test('曝光切换人物时清除旧资料，迟到查询不能恢复旧选择',async()=>{
   const grant={id:id(9),kind:'GRANT',object_version:1,current_status:'AVAILABLE',data:{template:{kind:'EXPOSURE'}}}
   await render('/redemption/grants/'+id(9),grant,async vm=>{

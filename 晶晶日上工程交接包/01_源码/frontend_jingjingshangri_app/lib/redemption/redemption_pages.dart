@@ -33,8 +33,11 @@ String redemptionKind(Object? kind) =>
       'PRODUCTION_FREE': '指定服务免付权益',
       'SERVICE_CREDIT': '共创服务额度',
       'INTERVIEW': '面试权益',
+      'INTERVIEW_OPEN': '公开面试权益',
+      'INTERVIEW_PRIORITY': '优先面试权益',
       'EXPOSURE': '曝光权益',
       'POINT_BACK': '晶钻返还',
+      'NONE': '本次未获实物权益',
       'EMPTY': '本次未获实物权益'
     }[kind] ??
     communityText(kind);

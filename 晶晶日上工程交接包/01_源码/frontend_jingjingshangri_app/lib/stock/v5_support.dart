@@ -533,17 +533,20 @@ class V5Gate extends StatelessWidget {
       return ReadSessionExpiredPage(
           returnRoute: route, label: expiredLabel ?? '原页面', embedded: embedded);
     }
+    final expired = readSessionExpired(s);
     final unavailable = <Widget>[
-      tradeHeading('先确认办事身份', eyebrow: '本人记录 / 私有资料'),
-      appNotice(api.denied
-          ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
-          : personal
-              ? '请选择本人的个人负责人身份。'
-              : ['auditions', 'gigs'].contains(domain)
-                  ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
-                  : '登录并选择有效负责人身份后办理。'),
+      tradeHeading(expired ? '登录状态已过期' : '先确认办事身份', eyebrow: '本人记录 / 私有资料'),
+      appNotice(expired
+          ? '请重新登录并核对原页面。私有内容已清空，不会自动继续原操作。'
+          : api.denied
+              ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
+              : personal
+                  ? '请选择本人的个人负责人身份。'
+                  : ['auditions', 'gigs'].contains(domain)
+                      ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
+                      : '登录并选择有效负责人身份后办理。'),
       tradeButton(
-          '前往账号与身份',
+          expired ? '重新登录' : '前往账号与身份',
           () => s.isLoggedIn
               ? Navigator.pushNamed(context, '/account')
               : Navigator.push(

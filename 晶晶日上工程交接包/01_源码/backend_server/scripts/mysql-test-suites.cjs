@@ -17,7 +17,7 @@ module.exports=Object.freeze({
  privacy:['test/privacy-cross-module.integration.test.cjs','test/privacy-policy-options.integration.test.cjs','test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
  'manual-sample':['test/manual-sample.integration.test.cjs'],
  participation:['test/fixed-income-release.integration.test.cjs','test/participation-amendment.integration.test.cjs','test/project-income.integration.test.cjs','test/participation-policy.test.cjs','test/participation.integration.test.cjs'],
- redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs'],
+ redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs','test/redemption-delivery-evidence.integration.test.cjs'],
  cocreation:['test/cocreation-policy.test.cjs','test/cocreation.integration.test.cjs','test/cocreation-invite-links.integration.test.cjs','test/cocreation-modern-journey.integration.test.cjs'],
  engagement:['test/engagement-policy.test.cjs','test/engagement.integration.test.cjs'],
  wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs','test/wallet-refund-entitlement-journey.integration.test.cjs'],
