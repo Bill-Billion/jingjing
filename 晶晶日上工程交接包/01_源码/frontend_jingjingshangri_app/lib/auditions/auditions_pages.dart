@@ -661,13 +661,29 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                   '$id.${(d['delivery']['photos'] as List).contains(id) ? 'jpg' : 'mp4'}',
               load: () => api.material(r, id),
               onOpened: () async {
+                final epoch = widget.session.epoch,
+                    party = widget.session.partyId;
                 final fresh = await api.record(r.id);
-                if (mounted) {
-                  setState(() {
-                    setRecord(fresh);
-                    if (fresh.mediaIds.contains(id)) opened.add(id);
-                  });
+                if (!mounted ||
+                    widget.session.epoch != epoch ||
+                    widget.session.partyId != party ||
+                    record?.id != r.id) {
+                  return;
                 }
+                setState(() {
+                  // Concurrent media reads may finish out of order. Never replace
+                  // a newer record with an older response.
+                  if (fresh.version >= record!.version) setRecord(fresh);
+                  final current = record!;
+                  if (current.status == 'DELIVERED' &&
+                      current.data['delivery_review']?['decision'] ==
+                          'APPROVE' &&
+                      jsonEncode(current.data['delivery']) ==
+                          jsonEncode(d['delivery']) &&
+                      current.mediaIds.contains(id)) {
+                    opened.add(id);
+                  }
+                });
               }),
         if (isBuyer && r.status == 'DELIVERED') ...[
           appNotice(d['rules']['acceptance_policy'] == 'CONTRACT_20261029'
@@ -811,7 +827,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   Widget _receiptForm(
           AuditionRecord r, String action, bool canSubmit, String title) =>
       V5Form(
-          key: ValueKey('$action:${r.id}'),
+          key: ValueKey('$action:${r.id}:${r.version}'),
           api: api,
           title: title,
           action: title,

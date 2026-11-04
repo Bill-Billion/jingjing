@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -217,6 +219,104 @@ void main() {
         a.requests.where(
             (r) => r.path.endsWith('/receipt') || r.path.endsWith('/confirm')),
         isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('读取取样后收讫表单使用刷新后的预约版本', (t) async {
+    final bytes = base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOo6pr1HwAFvgKesG1tBwAAAABJRU5ErkJggg==');
+    var version = 4;
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith('/records/$auditionId')) {
+        return envelope(auditionBooking(version: version, bytes: bytes));
+      }
+      if (r.path.endsWith('/supplements')) {
+        return envelope({'booking_id': auditionId, 'items': []});
+      }
+      if (r.path.contains('/materials/')) {
+        version = 5; // 服务端实际读取素材时更新预约版本。
+        return ResponseBody.fromBytes(bytes, 200, headers: {
+          Headers.contentTypeHeader: ['application/octet-stream']
+        });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, const AuditionsPage(mode: 'booking', id: auditionId));
+    final initial = find
+        .byWidgetPredicate((w) => w is V5Form && w.suffix.endsWith('/receipt'));
+    await reveal(t, initial);
+    expect(t.state<V5FormState>(initial).version, 4);
+    final firstId = auditionPhotos.first;
+    final hash =
+        auditionBooking(bytes: bytes)['data']['delivery']['hashes'][firstId];
+    final media = find.byKey(ValueKey('$firstId:$hash'));
+    await reveal(t, media);
+    await t.tap(find.descendant(of: media, matching: find.text('实际读取第1张取样照片')));
+    for (var i = 0; i < 4; i++) {
+      await t.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)));
+      await frames(t);
+    }
+    expect(
+        a.requests.where((r) => r.path.endsWith('/records/$auditionId')).length,
+        2,
+        reason: find
+            .byType(Text)
+            .evaluate()
+            .map((e) => (e.widget as Text).data)
+            .join(' | '));
+    await reveal(t, initial);
+    expect(t.state<V5FormState>(initial).version, 5);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('并发读取取样的迟到旧预约不能覆盖新版本', (t) async {
+    final bytes = base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOo6pr1HwAFvgKesG1tBwAAAABJRU5ErkJggg==');
+    final delayed = Completer<ResponseBody>();
+    var version = 4, reads = 0;
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith('/records/$auditionId')) {
+        reads++;
+        if (reads == 2) return delayed.future;
+        return envelope(auditionBooking(version: version, bytes: bytes));
+      }
+      if (r.path.endsWith('/supplements')) {
+        return envelope({'booking_id': auditionId, 'items': []});
+      }
+      if (r.path.contains('/materials/')) {
+        version++;
+        return ResponseBody.fromBytes(bytes, 200, headers: {
+          Headers.contentTypeHeader: ['application/octet-stream']
+        });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, const AuditionsPage(mode: 'booking', id: auditionId));
+    for (var i = 0; i < 2; i++) {
+      final id = auditionPhotos[i];
+      final hash =
+          auditionBooking(bytes: bytes)['data']['delivery']['hashes'][id];
+      final media = find.byKey(ValueKey('$id:$hash'));
+      await reveal(t, media);
+      await t.tap(find.descendant(
+          of: media, matching: find.text('实际读取第${i + 1}张取样照片')));
+      for (var j = 0; j < 4; j++) {
+        await t.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 100)));
+        await frames(t);
+      }
+    }
+    expect(reads, 3);
+    final receipt = find
+        .byWidgetPredicate((w) => w is V5Form && w.suffix.endsWith('/receipt'));
+    await reveal(t, receipt);
+    expect(t.state<V5FormState>(receipt).version, 6);
+    delayed.complete(envelope(auditionBooking(version: 5, bytes: bytes)));
+    await frames(t);
+    expect(t.state<V5FormState>(receipt).version, 6);
     expect(t.takeException(), isNull);
   });
 

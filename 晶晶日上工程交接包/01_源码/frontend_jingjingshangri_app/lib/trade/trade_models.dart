@@ -314,7 +314,13 @@ void validateTradeStockLicense(dynamic value, {bool snapshot = false}) =>
 
 void validateTradeAuditionTerms(dynamic value) {
   final d = tradeMap(value);
-  tradeRequire(d.length == 7 && _text(d['version'], 128) && _text(d['terms']));
+  final modern = d.containsKey('acceptance_policy');
+  tradeRequire(d.length == (modern ? 8 : 7) &&
+      _text(d['version'], 128) &&
+      _text(d['terms']) &&
+      (!modern ||
+          d['acceptance_policy'] == 'CONTRACT_20261029' &&
+              d['acceptance_hours'] == 48));
   for (final entry in {
     'accept_hours': 168,
     'acceptance_hours': 720,
