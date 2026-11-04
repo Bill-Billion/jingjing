@@ -1,5 +1,7 @@
 # 当前执行入口
 
+2026-11-05先读[上线前需求盘点](collaboration/client-complete-20261028/PRELAUNCH_AUDIT_20261105.md)：用户暂不急于人工检查，先查需求实现和上线计划。以下晚间分工保留历史衔接。
+
 2026-11-04晚间先读[双方一次推进的完整计划](collaboration/client-complete-20261028/TONIGHT_EXECUTION_20261104.md)及[交付模板](collaboration/client-complete-20261028/TONIGHT_RESULT_TEMPLATE_20261104.md)。目标今晚内部预验、明天甲方验收；前端六路线、后端六路线及统一环境，原两包认领与新增细化确认分别记录。
 
 当前工作树 client-testing，分支 core/full-business-closure-20261028，集中交付PR39。先核对实际Git和未提交修改，保留双方成果。
