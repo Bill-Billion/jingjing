@@ -102,7 +102,7 @@
 |ACC-DEL-22.01 固定兑换|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-22（局部）；BENEFIT-WEB-01（局部）|NOT_RUN|
 |ACC-DEL-22.02 制作金仅用于人工承制定制片和做剧；不用于现货、人工样片、数字人创建或托管；按券后应付金额计算分期。新合同已审规格采用签约30%、脚本/图纸确认40%、最终验收30%；未确认脚本不能支付中款，未完成最终确认和付款不能取得正式文件。比例须明确写入报价及合同；历史订单按原冻结快照，不追改30/60/10。|后端|正常办理、取消/退款/撤回|BENEFIT-WEB-01（局部）|NOT_RUN|
 |ACC-DEL-22.03 有现金应付的制作金在首笔付款确认后核销，退款不返券且不超实付；全额服务权益现金为0，确认具体服务及免付金额后下单，开工核销、开工前取消释放，开工后按已公布规则处理且不退现金。|后端|正常办理、取消/退款/撤回|BENEFIT-WEB-01（局部）|NOT_RUN|
-|ACC-DEL-22.04 奖品履行|后端|正常办理、取消/退款/撤回|BENEFIT-API-08（局部）|NOT_RUN|
+|ACC-DEL-22.04 奖品履行|后端|正常办理、取消/退款/撤回|AFTERNOON-EXPOSURE-PERM-04（局部）；BENEFIT-API-08（局部）|NOT_RUN|
 |ACC-DEL-23.01 隐私请求|后端|正常办理、取消/退款/撤回|SC-04, SC-05（局部）；SOURCE-BACKEND-23（局部）；ACCESS-PRIVACY-02（局部）；TEAM-A-NATIVE-CLOSE, TEAM-A-NATIVE-CORRECT, TEAM-A-REOPEN, TEAM-A-FINAL-CLOSE, TEAM-A-FINAL-CORRECT（局部）；TEAM-B-DELETION-03（局部）|NOT_RUN|
 |ACC-DEL-23.02 撤回实际影响|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-23.03 年龄与消费|后端|正常办理、取消/退款/撤回|SC-04（局部）|NOT_RUN|
@@ -139,7 +139,7 @@
 |E2E-06 从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-06（局部）；JOURNEY-UI-06（局部）；BENEFIT-WEB-01, BENEFIT-API-05（局部）|NOT_RUN|
 |E2E-07 成年资格→公开奖池→扣2700→十连→发权益→断网重复查询|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-07（局部）；FP-03（局部）；JOURNEY-UI-07（局部）；CP04（局部）|NOT_RUN|
 |E2E-08 充值300→资格解锁→消费发成长→到期/续期→冻结恢复→退款冲回|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-08（局部）；JOURNEY-UI-08（局部）|NOT_RUN|
-|E2E-09 曝光券绑定公开资产→生效7天→到期/下架；月投票→评分→公示→兑奖|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-09（局部）；JOURNEY-UI-09（局部）|NOT_RUN|
+|E2E-09 曝光券绑定公开资产→生效7天→到期/下架；月投票→评分→公示→兑奖|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|AFTERNOON-EXPOSURE-NATIVE-01, AFTERNOON-EXPOSURE-WEB-02, AFTERNOON-EXPOSURE-CROSS-03, AFTERNOON-EXPOSURE-PERM-04（局部）；ROUTE-09（局部）；JOURNEY-UI-09（局部）|NOT_RUN|
 |E2E-10 MCN互认→样片/商单成交→换绑→退款→旧单结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-01（局部）；ROUTE-10（局部）；JOURNEY-UI-10（局部）|NOT_RUN|
 |E2E-11 撤回脸声→下架/禁新增任务→已有订单处置→供应商删除请求→回执→隐私工单|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-05（局部）；ROUTE-11（局部）；JOURNEY-UI-11（局部）；ACCESS-GIG-01, ACCESS-PRIVACY-02（局部）；CLOSURE-LOST-RESPONSE（局部）；TEAM-A-NATIVE-CLOSE, TEAM-A-REOPEN, TEAM-A-FINAL-CLOSE（局部）|NOT_RUN|
 |E2E-12 独立报价合同→具体角色绑定→约定付款→版本会签→外部发行证据→账单到账→结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-12（局部）；JOURNEY-UI-12（局部）；ACCESS-CAST-03（局部）|NOT_RUN|

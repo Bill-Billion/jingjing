@@ -13,6 +13,16 @@ test('engagement real database journey and permission boundaries',{skip:!process
  let rule,profile,snapshot,order,earning,wr,event,candidate,vote,award;
  await t.test('reviewed rules, self-review refusal and explicit unconfigured starlight',async()=>{rule=await write('createRule',outsider,{rule:require('./helpers/engagement-rule.cjs')});await assert.rejects(review('reviewRule',rule,outsider),{code:'SELF_REVIEW_FORBIDDEN'});rule=await review('reviewRule',rule);assert.equal(rule.data.rule.starlight,null);await assert.rejects(write('createRule',buyer,{rule:rule.data.rule}),{code:'ENGAGEMENT_OPERATOR_FORBIDDEN'});});
  await t.test('profile belongs to verified artist, repeated interaction deduplicates',async()=>{const input={party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:true};await assert.rejects(write('rankingProfile',buyer,input));profile=await write('rankingProfile',seller,input);profile=await patch('engagement_records',profile,{registered_at:'2026-01-01T00:00:00.000Z'});const one=await write('interaction',buyer,{profile_id:profile.id,action:'VIEW',device_id:buyer.account_id}),two=await write('interaction',buyer,{profile_id:profile.id,action:'VIEW',device_id:buyer.account_id});assert.equal(one.id,two.id);});
+ await t.test('own visible ranking profile can be selected without revealing another person',async()=>{
+  const mine=await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id});
+  assert.deepEqual(mine.items.map(x=>x.id),[profile.id]);
+  assert.equal(mine.items[0].person_id,seller.person.id);
+  assert.deepEqual((await R.myProfiles(buyer.ctx,{party_id:buyer.personal_party_id})).items,[]);
+  await assert.rejects(R.myProfiles(buyer.ctx,{party_id:seller.personal_party_id}));
+  profile=await write('rankingProfile',seller,{party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:false});
+  assert.deepEqual((await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id})).items,[]);
+  profile=await write('rankingProfile',seller,{party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:true});
+ });
  await t.test('sandbox orders excluded; verified fixture receipts and fulfillment create rank facts',async()=>{
  const mock=await S.checkout(await S.listing());await S.payment(mock);
  wr=await W.createRule(outsider.ctx,{rule:require('./helpers/wallet-rule.cjs'),operation_key:key()});wr=await W.reviewRule(reviewer.ctx,{record_id:wr.id,expected_version:wr.object_version,decision:'APPROVE',reason:'synthetic',operation_key:key()});await W.open(buyer.ctx,{party_id:buyer.personal_party_id,rule_id:wr.id,rule_sha256:wr.content_sha256,operation_key:key()});
@@ -129,6 +139,11 @@ test('engagement real database journey and permission boundaries',{skip:!process
   await assert.rejects(dashboard(reviewer),{code:'MCN_EMPLOYEE_SCOPE_REQUIRED'});
  });
  await t.test('HTTP routes require authentication and preserve response envelope',async()=>{const base='http://127.0.0.1:'+server.address().port+'/api/v1/engagement';let r=await fetch(base+'/rankings/'+snapshot.id);assert.equal(r.status,401);r=await fetch(base+'/rankings/'+snapshot.id,{headers:{Authorization:'Bearer '+buyer.token}});const body=await r.json();assert.equal(r.status,200,JSON.stringify(body));assert.equal(body.data.id,snapshot.id);assert.equal(body.meta.actor.account_id,buyer.account_id);});
+ await t.test('withdrawing public consent immediately removes the selectable profile',async()=>{
+  assert.equal((await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id})).items.length,1);
+  await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'synthetic public consent withdrawal',operation_key:key()});
+  assert.deepEqual((await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id})).items,[]);
+ });
  const output=process.env.ENGAGEMENT_HTTP_FIXTURES_OUT||require('node:path').resolve(__dirname,'../../../..','.local/engagement-http-fixtures.json');await fs.mkdir(require('node:path').dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
 });
