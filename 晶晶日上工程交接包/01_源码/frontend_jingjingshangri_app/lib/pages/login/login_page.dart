@@ -7,6 +7,7 @@ import '../../account/account_api.dart';
 import '../../account/account_session.dart';
 import '../../services/user_provider.dart';
 import '../../widgets/primary_button.dart';
+import '../../privacy/closure_reference.dart';
 import 'login_destination.dart';
 
 /// 手机号 + 验证码登录。
@@ -259,6 +260,7 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 14,
                           color: AccountTheme.muted,
                           height: 1.6)),
+                  const ClosureReferenceNotice(),
                   const SizedBox(height: 20),
                   const Text('手机号',
                       style:

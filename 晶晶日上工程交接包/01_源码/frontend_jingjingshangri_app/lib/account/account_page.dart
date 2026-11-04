@@ -7,6 +7,7 @@ import 'app_visual.dart';
 import 'account_api.dart';
 import 'account_session.dart';
 import '../trade/trade_widgets.dart';
+import '../privacy/closure_reference.dart';
 
 const _capabilities = {
   'AUTHOR': '作者',
@@ -434,7 +435,8 @@ class _AccountPageState extends State<AccountPage> {
             actingParty: session.partyId);
     final body = !session.isLoggedIn
         ? Center(
-            child: Padding(
+            child: SingleChildScrollView(
+                child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Icon(Icons.manage_accounts_outlined,
@@ -444,6 +446,7 @@ class _AccountPageState extends State<AccountPage> {
               const SizedBox(height: 10),
               Text(session.authNotice ?? '使用短信验证码登录，再选择代表谁办事。',
                   textAlign: TextAlign.center),
+              const ClosureReferenceNotice(),
               if (session.hasPendingLogout)
                 TextButton(
                     onPressed: session.retryLogout,
@@ -455,7 +458,7 @@ class _AccountPageState extends State<AccountPage> {
                           builder: (_) => const LoginPage())),
                   child: const Text('手机号登录')),
             ]),
-          ))
+          )))
         : RefreshIndicator(
             onRefresh: _refresh,
             child: ListView(
@@ -463,6 +466,10 @@ class _AccountPageState extends State<AccountPage> {
               padding: const EdgeInsets.fromLTRB(20, 40, 20, 32),
               children: [
                 tradeHeading('账号与身份', eyebrow: '你的资料 / 代表谁办事'),
+                if (session.account?['id'] is String)
+                  ClosureReferenceNotice(
+                      key: ValueKey(session.account!['id']),
+                      accountId: session.account!['id']),
                 if (_busy) const LinearProgressIndicator(),
                 if (_error != null || session.partyNotice != null)
                   Card(
