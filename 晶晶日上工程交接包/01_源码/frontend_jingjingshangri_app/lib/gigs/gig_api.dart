@@ -342,15 +342,22 @@ class GigApi {
             gigInt(r['revision'], min: 1, max: 100000));
         final data = gigMap(r['data']);
         if (kind == 'AVATAR') {
+          final modern = ['artist_person_id', 'archive_status', 'long_lived_model_status'].any(data.containsKey);
           gigMap(data, keys: [
             'display_name',
             'material_asset_ids',
-            'provider_asset_ref'
+            'provider_asset_ref',
+            if (modern) ...['artist_person_id', 'archive_status', 'long_lived_model_status']
           ]);
+          if (modern) {
+            gigRequire(gigId(data['artist_person_id']) &&
+                ['EMPTY', 'DELIVERED'].contains(data['archive_status']) &&
+                data['long_lived_model_status'] == 'NOT_ENABLED');
+          }
           gigRequire(gigText(data['display_name'], 120) &&
               data['provider_asset_ref'] == null &&
               r['current_status'] == 'RECORDED');
-          gigIds(data['material_asset_ids'], min: 1, max: 100);
+          gigIds(data['material_asset_ids'], min: modern ? 0 : 1, max: 100);
         } else {
           gigMap(data, keys: [
             'consent',

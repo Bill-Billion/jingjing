@@ -17,6 +17,7 @@ test('不同浏览器分配独立业务资料，切岗和重启不换到他人�
  const a=client(),b=client(),c=client();let first,second,issue;
  try{
   await t.test('无邀请码自动进入，各自读取独立账号的订单',async()=>{
+   const page=await(await fetch(origin+'/')).text();assert.match(page,/每个浏览器使用独立模拟资料/);assert.doesNotMatch(page,/业务资料由体验者共同使用/);
    assert.equal((await a.call('/__test/enter',{})).status,200);assert.equal((await b.call('/__test/enter',{})).status,200);
    first=(await a.call('/__test/bootstrap')).data;second=(await b.call('/__test/bootstrap')).data;
    assert.notEqual(first.account_id,second.account_id);

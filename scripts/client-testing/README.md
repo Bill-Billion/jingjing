@@ -56,3 +56,5 @@ browser-check.mjs默认仅本机。公网检查须显式设置CLIENT_TEST_PUBLIC
 ## 艺人和机构测试扩充
 
 JX_RETAIN_CLIENT_ARTISTS=true可显式保留艺人合成资料及模拟附件，仍由persistent-story.cjs加载，原短会话默认清理行为不变。新路线、实际公网检查与其他业务清单见docs/testing/CLIENT_ROUTES_20261026.md；不直接放开所有业务。工具检查同时运行synthetic-files.test.cjs。artist-browser-check的实际脚本名为artists-browser-check.mjs，PUBLIC_ORIGIN约束与其他公网检查一致。平台报价邀请必须对应平台机构；过期报价保持过期，不自动改期限。
+
+本机重新准备会话时，私有plan的options.expires_at应填原到期时间；run-isolated-explore按原时间与各后台有效期取更早值，过期拒绝启动，不自动续期。窗口检查使用local-run-window.test.cjs。

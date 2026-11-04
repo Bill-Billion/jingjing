@@ -63,7 +63,7 @@ function createPortal(config,{current=()=>true}={}){
       const mutating=!['GET','HEAD'].includes(req.method);
       if((mutating&&req.headers.origin!==config.origin)||(req.headers.origin&&req.headers.origin!==config.origin)||req.headers['sec-fetch-site']==='cross-site')throw fault(403,'仅允许本测试页面提交');
       if(req.method==='GET'&&['/','/__test/client.js','/__test/explore-client.js','/__test/style.css'].includes(p)){
-        const f=p==='/'?(free?'explore.html':'index.html'):p.split('/').pop();res.setHeader('Content-Type',f.endsWith('html')?'text/html; charset=utf-8':f.endsWith('js')?'text/javascript; charset=utf-8':'text/css; charset=utf-8');return res.end(portalResource(f));
+        const f=p==='/'?(free?'explore.html':'index.html'):p.split('/').pop();res.setHeader('Content-Type',f.endsWith('html')?'text/html; charset=utf-8':f.endsWith('js')?'text/javascript; charset=utf-8':'text/css; charset=utf-8');const resource=portalResource(f);return res.end(f==='explore.html'&&free.visitor_slots?resource.toString('utf8').replace('业务资料由体验者共同使用','每个浏览器使用独立模拟资料；同一浏览器内各岗位共用这一组资料'):resource);
       }
       if(free&&req.method==='POST'&&p==='/__test/enter'){
         limited('enter',100);const b=await body(req,4096),persona=free.personas.find(a=>a.account===(b.account||free.default_account));if(!persona)throw fault(400,'请选择可用体验身份');

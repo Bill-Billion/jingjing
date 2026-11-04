@@ -12,6 +12,24 @@ import '../supply/supply_fixtures.dart';
 import 'gig_fixtures.dart';
 
 void main() {
+  test('新版真人形象兼容独立LOOK材料，伪真人和未知状态仍拒绝', () async {
+    final row = supplyChoice('AVATAR');
+    final data = <String,dynamic>{...row['data'], 'material_asset_ids': <String>[], 'artist_person_id': personId, 'archive_status': 'EMPTY', 'long_lived_model_status': 'NOT_ENABLED'};
+    row['data'] = data;
+    late FakeAccountAdapter a;
+    a = FakeAccountAdapter(handler: (q) => q.path.endsWith('/supply/records') ? envelope({'items':[row],'next_cursor':null}) : a.defaultReply(q));
+    final session = await buyerSession(a); session.select(identity(orgId));
+    final api = GigApi(session);
+    expect((await api.supplyChoices('AVATAR')).single['id'], avatarId);
+    data['archive_status']='DELIVERED';
+    expect((await api.supplyChoices('AVATAR')).length, 1);
+    for(final invalid in <String,dynamic>{'provider_asset_ref': 'not-enabled-provider-output', 'artist_person_id': null, 'archive_status':'READY', 'long_lived_model_status':'ENABLED'}.entries) {
+      final original=data[invalid.key]; data[invalid.key]=invalid.value;
+      await expectLater(api.supplyChoices('AVATAR'), throwsA(isA<AccountError>())); data[invalid.key]=original;
+    }
+    row['data']={'display_name':'旧形象不能空材料','material_asset_ids':<String>[],'provider_asset_ref':null};
+    await expectLater(api.supplyChoices('AVATAR'), throwsA(isA<AccountError>()));
+  });
   test('目录兼容新增合同版本字段，保留旧服务器并拒绝未知字段或版本', () {
     final old = catalogue();
     expect(GigCatalogue.parse(old).items, isNotEmpty);
