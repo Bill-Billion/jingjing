@@ -38,6 +38,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
     'travel': '记录真实出发与到场',
     'delivery': '提交本次试镜取样',
     'cancel': '取消、争议或安全离场',
+    'dispute-evidence': '为本次争议补交私有依据',
     'reschedule': '按原订单申请改期',
     'reschedule-response': '回复本次改期',
     'contact': '本次联系卡另行同意',
@@ -257,9 +258,13 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
       if (v['actual'] != true) {
         throw const AccountError(400, 'INVALID_TRAVEL_ACTION');
       }
+      final evidence = v5InputIds(v['evidence_asset_ids'] ?? '');
+      if (evidence.isEmpty) {
+        throw const AccountError(400, 'AUDITION_TRAVEL_EVIDENCE_REQUIRED');
+      }
       return {
         'action': v['action'],
-        'evidence_asset_ids': v5InputIds(v['evidence_asset_ids'] ?? '')
+        'evidence_asset_ids': evidence
       };
     }
     if (a == 'delivery') {
@@ -290,6 +295,11 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         'safety': v['safety'] == true,
         'evidence_asset_ids': v5InputIds(v['evidence_asset_ids'] ?? '')
       };
+    }
+    if (a == 'dispute-evidence') {
+      final ids = v5InputIds(v['evidence_asset_ids'] ?? '');
+      if (ids.isEmpty) throw const AccountError(400, 'AUDITION_EVIDENCE_REQUIRED');
+      return {'evidence_asset_ids': ids};
     }
     if (a == 'reschedule') {
       return {
@@ -360,6 +370,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             V5Field('reason', '具体问题与双方情况', type: 'multiline'),
             V5Field('safety', '本次涉及安全离场或安全问题', type: 'bool', required: false)
           ],
+        'dispute-evidence' => const [],
         'reschedule' => const [
             V5Field('city', '新城市'),
             V5Field('venue', '新正规场地'),
@@ -431,7 +442,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           consents.isNotEmpty &&
           d['delivery'] != null &&
           d['baseplate_id'] == null,
-      'cancel' => ![
+      'cancel' => d['dispute'] == null && ![
             'CANCELLED',
             'REJECTED',
             'REFUND_REQUIRED',
@@ -439,6 +450,9 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             'PARTIAL_REFUND_SETTLED'
           ].contains(r.status) &&
           (d['order_id'] == null || d['paid_at'] != null),
+      'dispute-evidence' => r.status == 'DISPUTED' &&
+          [r.raw['owner_party_id'], r.raw['counterparty_id'], d['dispute']?['owner_party_id']]
+              .contains(widget.session.partyId),
       'support' => true,
       _ => false
     };
@@ -482,6 +496,8 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         if (a == 'cancel')
           appNotice(
               '出发前按原单申请退款；出发、到场或已交取样后进入争议，暂停计时，由独立客服核定。申请不等于退款到账，安全离场不自动处罚。'),
+        if (a == 'dispute-evidence')
+          appNotice('补交材料会关联当前争议并保留原记录；文件仅供获准独立客服核对。'),
         if (a == 'reschedule') appNotice('须由另一方明确确认，再由独立人员安全复核。完成两步前不改写原行程。'),
         if (a == 'baseplate')
           appNotice('仅艺人本人另给私人归档同意后保存。此次试镜不授予买方出演、发行或重新生成权。'),
@@ -497,7 +513,9 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             canSubmit: allowed(r) && !busy,
             beforeSubmit:
                 a == 'delivery' ? (body) => _recheckDelivery(body, r) : null,
-            factsBuilder: a == 'delivery' ? (v) => [
+            factsBuilder: a == 'dispute-evidence' ? (v) => [
+              tradeFact('本次补交依据', v5InputIds(v['evidence_asset_ids'] ?? '').map((id) => id.substring(28)).join('、'))
+            ] : a == 'delivery' ? (v) => [
               tradeFact('本次照片', v5InputIds(v['photos'] ?? '').map((id) => id.substring(28)).join('、')),
               tradeFact('本次视频', v5InputIds(v['videos'] ?? '').map((id) => id.substring(28)).join('、'))
             ] : null,
@@ -548,7 +566,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             onSuccess: (_) => Navigator.pushReplacementNamed(
                 context, '/auditions/booking?bookingId=${r.id}'),
             extra: (v, set, enabled) => [
-                  if (['travel', 'cancel'].contains(a))
+                  if (['travel', 'cancel', 'dispute-evidence'].contains(a))
                     tradeSection('本次私有证据', [
                       SupplyFiles(
                           api: SupplyApi(widget.session),

@@ -17,7 +17,7 @@ class AuditionsApi extends V5Api {
       return '公开选择';
     }
     if (RegExp(
-            r'^/bookings/[0-9a-fA-F-]{36}/(decision|travel|delivery|receipt|confirm|cancel|contact|support|reschedule|reschedule-response|baseplate|supplements|messages|messages/read)$')
+            r'^/bookings/[0-9a-fA-F-]{36}/(decision|travel|delivery|receipt|confirm|cancel|dispute-evidence|contact|support|reschedule|reschedule-response|baseplate|supplements|messages|messages/read)$')
         .hasMatch(s)) {
       return '本单办理';
     }

@@ -2,6 +2,16 @@
   "description": "Negative protocol payloads. These are schema tests, not runtime authorization or Provider tests.",
   "cases": [
     {
+      "name": "empty audition dispute evidence rejected",
+      "schema": "AuditionDisputeEvidenceRequest",
+      "value": {"evidence_asset_ids": []}
+    },
+    {
+      "name": "duplicate audition dispute evidence rejected",
+      "schema": "AuditionDisputeEvidenceRequest",
+      "value": {"evidence_asset_ids": ["00000000-0000-4000-8000-000000000001", "00000000-0000-4000-8000-000000000001"]}
+    },
+    {
       "name": "fractional minor units rejected",
       "schema": "Money",
       "value": {

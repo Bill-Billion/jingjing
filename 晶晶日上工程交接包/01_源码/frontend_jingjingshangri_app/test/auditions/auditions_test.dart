@@ -7,6 +7,7 @@ import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/auditions/auditions_api.dart';
 import 'package:jingjingshangri_app/auditions/auditions_models.dart';
 import 'package:jingjingshangri_app/auditions/auditions_pages.dart';
+import 'package:jingjingshangri_app/auditions/auditions_actions.dart';
 import 'package:jingjingshangri_app/stock/v5_support.dart';
 import '../account/fake_account_api.dart';
 import '../stock/v5_test_host.dart';
@@ -16,6 +17,43 @@ import 'package:jingjingshangri_app/auditions/auditions_offer_form.dart';
 import '../artists/artists_fixtures.dart' as artist;
 
 void main() {
+  testWidgets('本单双方可补交本人依据，其他身份不可代交，原请求支持中断恢复', (t) async {
+    final record = auditionBooking(status: 'DISPUTED')
+      ..['conversation_status'] = 'FROZEN';
+    record['data']['dispute'] = {
+      'id': auditionOfferId,
+      'owner_party_id': personId,
+      'reason': '合成安全争议',
+      'evidence_asset_ids': <String>[]
+    };
+    final a = FakeAccountAdapter(
+        handler: (r) => r.path.endsWith('/records/$auditionId')
+            ? envelope(record)
+            : FakeAccountAdapter().defaultReply(r));
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    final api = AuditionsApi(s);
+    expect(
+        api.recoveryLabel(
+            '/api/v1/auditions/bookings/$auditionId/dispute-evidence'),
+        '本单办理');
+    await host(
+        t,
+        s,
+        AuditionActionPage(
+            session: s, id: auditionId, action: 'dispute-evidence'));
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isTrue);
+    s.select(identity(orgId, owner: true));
+    await frames(t);
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isTrue);
+    s.select(identity(invitedOrgId, owner: true));
+    await frames(t);
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isFalse);
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.endsWith('/dispute-evidence')),
+        isEmpty);
+  });
+
   testWidgets('首次试镜从当前经营规则和授权选择，不借旧方案', (t) async {
     final a = FakeAccountAdapter(handler: (r) {
       if (r.path == '/api/v1/artists/people') {
