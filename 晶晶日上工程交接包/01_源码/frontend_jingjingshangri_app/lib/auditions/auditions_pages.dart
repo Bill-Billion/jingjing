@@ -43,6 +43,7 @@ class AuditionsPage extends StatelessWidget {
             'travel',
             'delivery',
             'cancel',
+            'dispute-evidence',
             'reschedule',
             'reschedule-response',
             'contact',
@@ -735,7 +736,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             d['reschedule']['other_confirmed'] != true)
           tradeButton('回复本次改期', () => action(r, 'reschedule-response'))
       ],
-      if (![
+      if (d['dispute'] == null && ![
             'CANCELLED',
             'REJECTED',
             'REFUND_REQUIRED',
@@ -747,7 +748,9 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       if (d['dispute'] != null)
         tradeSection('争议待独立处理', [
           Text(d['dispute']['reason']),
-          appNotice('已暂停会话与约定计时。客服独立核定退付，安全离场不自动处罚。')
+          appNotice('已暂停会话与约定计时。客服独立核定退付，安全离场不自动处罚。'),
+          if ([r.raw['owner_party_id'], r.raw['counterparty_id'], d['dispute']['owner_party_id']].contains(widget.session.partyId))
+            tradeButton('为本次争议补交私有依据', () => action(r, 'dispute-evidence'), outline: true)
         ]),
       for (final c in v5Rows(d['cases']))
         tradeSection('原单处理记录', [

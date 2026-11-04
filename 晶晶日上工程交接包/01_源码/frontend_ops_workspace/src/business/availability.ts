@@ -50,6 +50,8 @@ export function actionAvailability(domain: string, operation: Operation, record:
     if (key === 'resolve' && !data.current_case_id) return blocked('当前没有待处理的原订单售后。')
   }
   if (domain === 'auditions' && record?.kind === 'BOOKING') {
+    if (key === 'cancel' && data.dispute) return blocked('本单已有待处理争议，请沿原争议补交依据。')
+    if (key === 'dispute-evidence' && (status !== 'DISPUTED' || ![record.owner_party_id,record.counterparty_id,(data.dispute as BusinessData | undefined)?.owner_party_id].includes(context.partyId))) return blocked('请由本单当事人使用获准身份补交本人的依据。')
     if (['decision', 'travel', 'delivery', 'supplement', 'baseplate'].includes(key) && record.owner_party_id === context.partyId) return blocked('此项由艺人本人或当前获准经营方办理。')
     if (['checkout', 'receipt', 'confirm'].includes(key) && record.owner_party_id && record.owner_party_id !== context.partyId) return blocked('此项由本次预约的买方办理。')
     if (['travel', 'delivery', 'receipt', 'confirm', 'reschedule', 'supplement'].includes(key) && (data.dispute || data.reschedule)) return blocked('原预约正在处理争议或改期，请先完成该项处理。')

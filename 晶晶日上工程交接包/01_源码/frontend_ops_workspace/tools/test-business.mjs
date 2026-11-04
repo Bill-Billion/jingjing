@@ -18,9 +18,35 @@ const failure=(status,code)=>new Response(JSON.stringify({error:{code,message:'s
 try{
  const {domains}=await server.ssrLoadModule('/src/business/index.ts'),model=await server.ssrLoadModule('/src/business/model.ts'),api=await server.ssrLoadModule('/src/api/modules/business.ts'),{useBusiness}=await server.ssrLoadModule('/src/composables/useBusiness.ts'),{businessRoutes}=await server.ssrLoadModule('/src/router/businessRoutes.ts'),{loginRedirect}=await server.ssrLoadModule('/src/router/loginRedirect.ts'),trade=await server.ssrLoadModule('/src/api/modules/trade.ts'),{useSessionStore}=await server.ssrLoadModule('/src/stores/session.ts')
  const references=await server.ssrLoadModule('/src/business/references.ts')
+ const dispute=await server.ssrLoadModule('/src/business/auditionDispute.ts')
+ const availability=await server.ssrLoadModule('/src/business/availability.ts')
  const {mcnDashboardView}=await server.ssrLoadModule('/src/business/presentation.ts')
  const operation=(domain,key)=>{const o=domains[domain].operations.find(o=>o.key===key);assert(o,`${domain}/${key}`);return o},encoded=(domain,key,values)=>model.encode(operation(domain,key).fields,values)
  const state=()=>{const context=reactive({token:'synthetic-secret-token',accountId:id(1),partyId:id(2),sessionTag:until,domain:'test'}),scope=effectScope(),ui=scope.run(()=>useBusiness(()=>context));return{context,scope,ui}}
+ test('试镜争议仅列当前真实依据，须实际读取且版本或身份变化后重新核对',async()=>{
+  const current={id:id(3),kind:'BOOKING',current_status:'DISPUTED',object_version:4,data:{dispute:{id:id(4),owner_party_id:id(2),evidence_asset_ids:[id(5)]}}}
+  assert.deepEqual(dispute.auditionDisputeEvidence(current),[id(5)])
+  assert.deepEqual(dispute.auditionDisputeEvidence({...current,current_status:'DEPARTED'}),[])
+  assert.deepEqual(dispute.auditionDisputeEvidence({...current,data:{dispute:{id:id(4),evidence_asset_ids:[id(5),id(5)]}}}),[])
+  assert.equal(dispute.auditionResolutionEvidenceReady(id(5),[id(5)],[]),false)
+  assert.equal(dispute.auditionResolutionEvidenceReady(id(6),[id(5)],[id(6)]),false)
+  assert.equal(dispute.auditionResolutionEvidenceReady(id(5),[id(5)],[id(5)]),true)
+  const ctx={accountId:id(1),partyId:id(2),membershipActive:true,owner:true}
+  assert.equal(availability.actionAvailability('auditions',operation('auditions','cancel'),current,ctx).blocked,true)
+  assert.equal(availability.actionAvailability('auditions',operation('auditions','dispute-evidence'),current,ctx).blocked,false)
+  assert.equal(availability.actionAvailability('auditions',operation('auditions','dispute-evidence'),current,{...ctx,partyId:id(6)}).blocked,true)
+  assert.throws(()=>encoded('auditions','dispute-evidence',{evidence_asset_ids:''}))
+  const {vm}=await render('/auditions/reviews/'+id(3),current,async vm=>{
+   vm.operationKey='resolve';await vm.loadChoices({field:model.ids('evidence_asset_ids','实际处理依据'),context:vm.draft,key:'resolve-evidence_asset_ids'})
+   assert.deepEqual(vm.refOptions['resolve-evidence_asset_ids'].map(o=>o.value),[id(5)])
+   vm.draft.evidence_asset_ids=id(5);assert.equal(vm.auditionEvidenceReady,false)
+   vm.auditionEvidenceRead=[id(5)];assert.equal(vm.auditionEvidenceReady,true)
+   vm.selected={...current,object_version:5};assert.equal(vm.auditionEvidenceReady,false);assert.equal(vm.draft.evidence_asset_ids,'')
+   vm.selected=current;vm.assetId=id(5);let reply;globalThis.fetch=()=>new Promise(resolve=>{reply=resolve})
+   const late=vm.openFile({path:'/auditions/bookings/:record_id/dispute-evidence/:asset_id',party:'none',type:'private-evidence'});await Promise.resolve();assert(reply);vm.selected={...current,object_version:6};reply(new Response('synthetic',{status:200,headers:{'Content-Type':'text/plain'}}));await late;assert.deepEqual(vm.auditionEvidenceRead,[]);assert.equal(vm.fileText,'')
+  });assert(vm)
+  await render('/auditions/bookings/'+id(3),current,async vm=>{vm.operationKey='dispute-evidence';assert.equal(vm.uploadPurpose,'REVIEW_EVIDENCE')})
+ })
  test('曝光只选择本人当前公开资料，不能混入其他人物或损坏回复',async()=>{
   assert.equal(references.sourceFor('profile_id',{},'redemption',id(2)),null)
   const source=references.sourceFor('profile_id',{person_id:id(3)},'redemption',id(2));assert.equal(source.path,'/engagement/profiles/mine');assert.equal(source.party,'required')

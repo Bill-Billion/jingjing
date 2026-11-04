@@ -3,7 +3,7 @@
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
 后端负责人 chengcongcong222 主测及记录；前端负责人 Bill-Billion 修页面并提供同版产物。原18组和12路线不变。
 
-登记共151条；状态：{'NOT_RUN': 151}；其中81条有显式登记的局部证据关联。
+登记共151条；状态：{'NOT_RUN': 151}；其中82条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
 先办理现货、人工定制、试镜商单与机构，随后共创/权益/抽奖/余额/成长，再隐私/参演发行；遇到页面缺口归负责人，其余路线继续。
@@ -50,7 +50,7 @@
 |ACC-DEL-09.01 可约与报价|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-09（局部）|NOT_RUN|
 |ACC-DEL-09.02 先付后接拒|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-09.03 履约与素材|后端|正常办理、取消/退款/撤回|AUD-LOCAL-01（局部）；BOTH-AUDITION-01（局部）；TEAM-B-NATIVE-01（局部）|NOT_RUN|
-|ACC-DEL-09.04 试镜取消和异常处理遵守当前决定及订单规则快照，资金退款与安全取消/责任独立记录；实际取消条件、重复和恢复均验。|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-09.04 试镜取消和异常处理遵守当前决定及订单规则快照，资金退款与安全取消/责任独立记录；实际取消条件、重复和恢复均验。|后端|正常办理、取消/退款/撤回|AFTERNOON-AUDITION-DECLINE-01, AFTERNOON-AUDITION-REFUND-02, AFTERNOON-AUDITION-SAFETY-03, AFTERNOON-AUDITION-REVIEW-04, AFTERNOON-AUDITION-AUTH-05（局部）|NOT_RUN|
 |ACC-DEL-10.01 六类结构|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-10（局部）|NOT_RUN|
 |ACC-DEL-10.02 权限矩阵|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-10.03 通告非订单|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
@@ -133,7 +133,7 @@
 |ACC-DEL-29.04 发布边界|运营|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |E2E-01 公开已审视频→查看非独家许可→真实测试付款确认→一次发权→播放下载→退款限制或侵权处置|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|RC-05, RC-06（局部）；COMBINED-01（局部）；SC-02（局部）；ROUTE-01（局部）；FP-01（局部）；JOURNEY-UI-01（局部）|NOT_RUN|
 |E2E-02 新合同已审规格采用签约30%、脚本/图纸确认40%、最终验收30%；未确认脚本不能支付中款，未完成最终确认和付款不能取得正式文件。比例须明确写入报价及合同；历史订单按原冻结快照，不追改30/60/10。|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|RC-01（局部）；COMBINED-02（局部）；ROUTE-02（局部）；JOURNEY-UI-02（局部）|NOT_RUN|
-|E2E-03 公开可约→一口价付款→艺人接拒→接受后会话→取样→买方确认→T+1清分|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-02（局部）；ROUTE-03（局部）；JOURNEY-UI-03（局部）；AUD-LOCAL-01（局部）；BOTH-AUDITION-01（局部）；COMBINED-AUDITION（局部）；TEAM-B-NATIVE-01, TEAM-B-SCOPE-02, TEAM-B-TPLUS1-04（局部）|NOT_RUN|
+|E2E-03 公开可约→一口价付款→艺人接拒→接受后会话→取样→买方确认→T+1清分|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|AFTERNOON-AUDITION-DECLINE-01, AFTERNOON-AUDITION-REFUND-02, AFTERNOON-AUDITION-SAFETY-03, AFTERNOON-AUDITION-REVIEW-04, AFTERNOON-AUDITION-AUTH-05（局部）；SC-02（局部）；ROUTE-03（局部）；JOURNEY-UI-03（局部）；AUD-LOCAL-01（局部）；BOTH-AUDITION-01（局部）；COMBINED-AUDITION（局部）；TEAM-B-NATIVE-01, TEAM-B-SCOPE-02, TEAM-B-TPLUS1-04（局部）|NOT_RUN|
 |E2E-04 有效通告→艺人单向投稿→感兴趣→客服工单→报价付款接受→双向会话|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-04（局部）；JOURNEY-UI-04（局部）|NOT_RUN|
 |E2E-05 本人可新建房间；开工至少10位有效独立权利人，付款、授权与资料等条件仍须齐备，具体按已审规则；截止时锁定人数，满20人给发起人一份不可提现服务额度，具体服务/额度/有效期须审核规则。同人多形象不增人数，不改旧合同或自动退整包款。|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-05（局部）；JOURNEY-UI-05（局部）；INVITE-LOCAL-01（局部）；BOTH-INVITE-01（局部）；COMBINED-INVITATION（局部）；TEAM-C-WEB-01, TEAM-C-NATIVE-02, TEAM-C-THRESHOLD-03, TEAM-C-DELIVERY-04（局部）；AFTERNOON-COCREATION-WEB（局部）|NOT_RUN|
 |E2E-06 从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-06（局部）；JOURNEY-UI-06（局部）；BENEFIT-WEB-01, BENEFIT-API-05（局部）|NOT_RUN|
