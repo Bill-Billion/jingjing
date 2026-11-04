@@ -14,7 +14,7 @@ module.exports=Object.freeze({
  discovery:['test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
  directory:['test/directory-policy.test.cjs','test/directory.integration.test.cjs'],
  media:['test/media-marking.test.cjs','test/media.integration.test.cjs'],
- privacy:['test/privacy-policy-options.integration.test.cjs','test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
+ privacy:['test/privacy-cross-module.integration.test.cjs','test/privacy-policy-options.integration.test.cjs','test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
  'manual-sample':['test/manual-sample.integration.test.cjs'],
  participation:['test/fixed-income-release.integration.test.cjs','test/participation-amendment.integration.test.cjs','test/project-income.integration.test.cjs','test/participation-policy.test.cjs','test/participation.integration.test.cjs'],
  redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs'],
