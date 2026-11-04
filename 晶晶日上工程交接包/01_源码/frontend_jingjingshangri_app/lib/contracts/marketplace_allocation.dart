@@ -2,7 +2,9 @@ import 'contract_api.dart' show isContractId;
 
 /// Validates an already frozen allocation, without choosing or recalculating rates.
 bool marketplaceAllocationValid(dynamic value) {
-  if (value is! Map) return false;
+  if (value is! Map) {
+    return false;
+  }
   const keys = {
     'model',
     'product_type',
@@ -16,14 +18,17 @@ bool marketplaceAllocationValid(dynamic value) {
     'referral_bps',
     'rounding',
   };
-  if (value.length != keys.length || !value.keys.every(keys.contains))
+  if (value.length != keys.length || !value.keys.every(keys.contains)) {
     return false;
+  }
   if (value['model'] != 'V5_TWO_LAYER' ||
       value['fee_base'] != 'NET_PAID' ||
       !['STOCK_VIDEO', 'COMMERCIAL', 'AUDITION']
           .contains(value['product_type']) ||
       !['HALF_UP_PLATFORM_REMAINDER', 'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN']
-          .contains(value['rounding'])) return false;
+          .contains(value['rounding'])) {
+    return false;
+  }
   bool id(dynamic v) => v is String && isContractId(v);
   bool rate(dynamic v) => v is int && v >= 0 && v <= 10000;
   if (!id(value['platform_party_id']) ||
@@ -31,15 +36,25 @@ bool marketplaceAllocationValid(dynamic value) {
       !rate(value['platform_bps']) ||
       !rate(value['mcn_supply_bps']) ||
       !rate(value['referral_bps']) ||
-      value['referral_bps'] > value['platform_bps']) return false;
+      value['referral_bps'] > value['platform_bps']) {
+    return false;
+  }
   if (value['mcn_party_id'] == null) {
-    if (value['mcn_supply_bps'] != 0) return false;
+    if (value['mcn_supply_bps'] != 0) {
+      return false;
+    }
   } else if (!id(value['mcn_party_id']) ||
       value['mcn_supply_bps'] < 1000 ||
-      value['mcn_supply_bps'] > 3000) return false;
+      value['mcn_supply_bps'] > 3000) {
+    return false;
+  }
   if (value['referrer_party_id'] == null) {
-    if (value['referral_bps'] != 0) return false;
-  } else if (!id(value['referrer_party_id'])) return false;
+    if (value['referral_bps'] != 0) {
+      return false;
+    }
+  } else if (!id(value['referrer_party_id'])) {
+    return false;
+  }
   final parties = [
     value['platform_party_id'],
     value['supplier_party_id'],

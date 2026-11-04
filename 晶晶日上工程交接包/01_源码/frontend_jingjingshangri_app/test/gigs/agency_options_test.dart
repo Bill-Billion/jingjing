@@ -23,12 +23,13 @@ void main() {
   testWidgets('本人委托显示当前合作机构名称，仍由本人选择权限并上传证明', (t) async {
     final relation = gigData('RELATION', status: 'ACTIVE');
     final a = af.artistAdapter(override: (r) {
-      if (r.path.endsWith('/gigs/records'))
+      if (r.path.endsWith('/gigs/records')) {
         return envelope({
           'items': [relation],
           'next_cursor': null
         });
-      if (r.path.endsWith('/gigs/relations/$relationId/parties'))
+      }
+      if (r.path.endsWith('/gigs/relations/$relationId/parties')) {
         return envelope({
           'record_id': relationId,
           'source': 'CURRENT_DISPLAY_NAME',
@@ -40,6 +41,7 @@ void main() {
             {'party_id': personId, 'display_name': '合成本人'}
           ]
         });
+      }
       return null;
     });
     final s = (await t.runAsync(() => af.artistSession(a)))!;
@@ -90,12 +92,13 @@ void main() {
     late FakeAccountAdapter a;
     a = FakeAccountAdapter(handler: (r) {
       if (r.path.endsWith('/catalogue')) return envelope(catalogue());
-      if (r.path.endsWith('/relation-options'))
+      if (r.path.endsWith('/relation-options')) {
         return envelope({
           'party_id': orgId,
           'items': [candidate()],
           'next_cursor': null
         });
+      }
       return a.defaultReply(r);
     });
     final s = (await t.runAsync(() => buyerSession(a)))!;

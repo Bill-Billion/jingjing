@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.34-rc.1
+  version: 0.31.35-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -21441,6 +21441,120 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RedemptionBindRequest'
+  /api/v1/redemption/fulfillments:
+    get:
+      operationId: redemptionSupplierGrants
+      summary: 履约方读取本身份承接的面试或曝光权益
+      description: 仅返回本履约主体的最少办理信息，不返回持有人私有档案；历史权益不因库存退役而丢失。
+      tags: [redemption]
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: cursor
+        in: query
+        schema: {type: string, format: uuid}
+      - name: limit
+        in: query
+        schema: {type: integer, minimum: 1, maximum: 100}
+      responses:
+        '200':
+          description: 本主体承接的权益摘要及下一页
+          headers:
+            X-Request-Id: {$ref: '#/components/headers/RequestId'}
+            Cache-Control: {$ref: '#/components/headers/NoStore'}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionSupplierGrantsResponse'
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /api/v1/redemption/grants/{record_id}/evidence-submissions:
+    post:
+      operationId: redemptionSubmitDeliveryEvidence
+      summary: 履约方为具体权益提交排期或完成依据
+      description: 仅履约主体负责人可提交其本人所属且未受限的实际材料；不改变原权益版本，不代替独立审核或兑现。
+      tags: [redemption]
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                asset_id: {type: string, format: uuid}
+                purpose: {enum: [SCHEDULE, COMPLETION]}
+              required: [asset_id, purpose]
+      responses:
+        '200':
+          description: 已提交的逐单材料记录
+          headers:
+            X-Request-Id: {$ref: '#/components/headers/RequestId'}
+            Cache-Control: {$ref: '#/components/headers/NoStore'}
+            ETag:
+              description: 已提交记录的版本
+              schema: {type: string}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionEvidenceSubmissionResponse'
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '412': {$ref: '#/components/responses/PreconditionFailed'}
+        '428': {$ref: '#/components/responses/PreconditionRequired'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /api/v1/redemption/grants/{record_id}/evidence-options:
+    get:
+      operationId: redemptionDeliveryEvidenceOptions
+      summary: 独立运营员读取本权益已提交且仍可用的依据选项
+      description: 只列本权益履约方明确提交、用途匹配且当前未受限的材料；读取或提交排期时再次核验权限和限制。
+      tags: [redemption]
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: purpose
+        in: query
+        required: true
+        schema: {enum: [SCHEDULE, COMPLETION]}
+      responses:
+        '200':
+          description: 本单获准选择的材料元数据
+          headers:
+            X-Request-Id: {$ref: '#/components/headers/RequestId'}
+            Cache-Control: {$ref: '#/components/headers/NoStore'}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedemptionDeliveryEvidenceOptionsResponse'
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '503': {$ref: '#/components/responses/Unavailable'}
   /api/v1/redemption/grants/{record_id}/deliveries:
     post:
       operationId: redemptionProposeDelivery
@@ -59789,6 +59903,88 @@ components:
       - interview
       - exposure
 
+    RedemptionSupplierGrantsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta: {$ref: '#/components/schemas/Meta'}
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id: {type: string, format: uuid}
+                  kind: {const: GRANT}
+                  current_status: {type: string, minLength: 1, maxLength: 100}
+                  object_version: {type: integer, minimum: 1}
+                  title: {type: string, minLength: 1, maxLength: 160}
+                  grant_type: {enum: [EXPOSURE, INTERVIEW]}
+                required: [id, kind, current_status, object_version, title, grant_type]
+            next_cursor:
+              anyOf:
+              - {type: string, format: uuid}
+              - {type: 'null'}
+          required: [items, next_cursor]
+      required: [meta, data]
+    RedemptionEvidenceSubmissionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta: {$ref: '#/components/schemas/Meta'}
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            id: {type: string, format: uuid}
+            kind: {const: DELIVERY_EVIDENCE}
+            owner_party_id: {type: string, format: uuid}
+            parent_id: {type: string, format: uuid}
+            created_by: {type: string, format: uuid}
+            current_status: {const: SUBMITTED}
+            object_version: {type: integer, minimum: 1}
+            content_sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+            data:
+              type: object
+              additionalProperties: false
+              properties:
+                asset_id: {type: string, format: uuid}
+                purpose: {enum: [SCHEDULE, COMPLETION]}
+              required: [asset_id, purpose]
+          required: [id, kind, owner_party_id, parent_id, created_by, current_status, object_version, content_sha256, data]
+      required: [meta, data]
+    RedemptionDeliveryEvidenceOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta: {$ref: '#/components/schemas/Meta'}
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            grant_id: {type: string, format: uuid}
+            purpose: {enum: [SCHEDULE, COMPLETION]}
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id: {type: string, format: uuid}
+                  submission_id: {type: string, format: uuid}
+                  purpose: {enum: [SCHEDULE, COMPLETION]}
+                  media_type: {type: string, minLength: 1, maxLength: 100}
+                  byte_size: {type: integer, minimum: 1}
+                  content_sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+                required: [id, submission_id, purpose, media_type, byte_size, content_sha256]
+          required: [grant_id, purpose, items]
+      required: [meta, data]
     RedemptionRecord:
       type: object
       additionalProperties: false

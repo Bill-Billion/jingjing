@@ -6,7 +6,7 @@ const require=createRequire(resolve('晶晶日上工程交接包/01_源码/front
 const {chromium}=require('playwright-core');
 const cfg=JSON.parse(await readFile(process.argv[2],'utf8')),base=cfg.origin;
 assert(base.startsWith('http://127.0.0.1:'));
-const out=resolve('docs/testing/evidence/tonight-complete-20261104/portal'),privateDir=resolve('.local/tonight-execution-20261104');
+const out=resolve(process.env.CLIENT_TEST_EVIDENCE||'docs/testing/evidence/tonight-complete-20261104/portal'),privateDir=resolve(process.env.CLIENT_TEST_PRIVATE_DIR||'.local/tonight-execution-20261104');
 await mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
 const results=[],errors=[];let failure;

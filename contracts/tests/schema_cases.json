@@ -2,6 +2,17 @@
   "description": "Negative protocol payloads. These are schema tests, not runtime authorization or Provider tests.",
   "cases": [
     {
+      "name": "redemption evidence option has a supported purpose",
+      "fixture": "RedemptionDeliveryEvidenceOptionsResponse",
+      "mutate_path": ["data", "items", 0, "purpose"],
+      "replace_with": "UNRELATED"
+    },
+    {
+      "name": "redemption evidence option requires a submission reference",
+      "fixture": "RedemptionDeliveryEvidenceOptionsResponse",
+      "remove_path": ["data", "items", 0, "submission_id"]
+    },
+    {
       "name": "empty audition dispute evidence rejected",
       "schema": "AuditionDisputeEvidenceRequest",
       "value": {
