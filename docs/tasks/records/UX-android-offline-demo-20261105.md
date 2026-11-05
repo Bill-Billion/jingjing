@@ -1,6 +1,6 @@
 # Android 单机离线演示开发
 
-负责人：Bill-Billion。基线：最新 PR39 `0a0f856a1d00b40fdc086bb90004dad46c2fd193`。分支 `ux/android-offline-demo-20261105`。仅本地开发，不推送、合并或部署。原工作树及其未提交改动保留。
+负责人：Bill-Billion。基线：最新 PR39 `0a0f856a1d00b40fdc086bb90004dad46c2fd193`。分支 `ux/android-offline-demo-20261105`。初版阶段仅本地开发；2026-11-05用户新增授权推送同名远端分支，不强推、创建PR、合并或部署。原工作树及其未提交改动保留。
 
 ## 本次用户要求
 
@@ -12,6 +12,14 @@
 > 4.出品方关于通告发布的完整流程
 
 平台为“安卓设备”，并授权“新建一个分支开始按上述需求进行开发”。四组是单机展示范围，不重新定义线上18组/12路线/151条验收。
+
+## 2026-11-05 远端交付授权
+
+用户在确认“推送到同名远端分支，不合并到PR39”的说明后回复“提交”。本轮仅交付 `ux/android-offline-demo-20261105`，不创建PR、不强推、不合并、不部署。
+
+交付前核对：工作区干净，原HEAD为 `f2475fd4b79c62aa4769d7fd55dd988793a35403`；origin为 `https://github.com/Bill-Billion/jingjing.git`，GitHub和Git均未发现同名远端分支。待推送文件检查未发现数据库、APK、私钥或常见凭据格式。该文档同步不修改App源码或已交付APK。
+
+最终远端SHA通过[同名分支](https://github.com/Bill-Billion/jingjing/tree/ux/android-offline-demo-20261105)核对；本次push触发的检查按该SHA在[Actions](https://github.com/Bill-Billion/jingjing/actions?query=branch%3Aux%2Fandroid-offline-demo-20261105)单独跟踪到终态，不沿用旧PR或本地检查冒称远端成功。此前原生报告中的“仅本地”描述保留为当时验收阶段的事实。
 
 ## 流程补全与实施决定
 
@@ -45,13 +53,13 @@
 
 实际发现并修复机构改名后邀请消息仍使用旧名称的问题，先用断言复现，再修复并完成回归及原生复验。当前App源码提交 `f5c907aaea92829e61b47e6912f58b2c021c92bf`，安装包为 `/Users/yanghaoran/Documents/Codex/2026-11-05/task/artifacts/jingjing-android-offline-demo-debug.apk`，最低Android 7.0，debug签名，SHA-256 `9152e0518af14a0fad9eca31c78b1d1582c05b7568daa59b24f1245c4b563058`。每个最终原生场景均核对设备APK与交付文件一致。[追加原生验收报告](../../testing/evidence/android-offline-native-20261105/REPORT.md)列出截图、取消/失败分支、重启比较及脚本问题；[初版报告](../../testing/evidence/android-offline-demo-20261105/REPORT.md)仅保留初版历史结果。未把初版祝福原生结果冒称修复包重新执行。
 
-最终操作报告位于本机 `artifacts/jingjing-android-offline-demo-guide.md`。用户明确同意将最终APK和这份报告保存到其Space作为附件，上传状态以实际回执为准，不包含私有数据库或原生截图。
+最终操作报告位于本机 `artifacts/jingjing-android-offline-demo-guide.md`。最终APK和操作报告已按用户授权保存到其Space，下载副本的大小与SHA-256均核对一致；私有数据库、Library身份及传输资料不提交Git。
 研发环境使用本机已有 Flutter 3.47.5、Dart 3.13.4、JDK17、Android SDK，复制缓存到本次工作目录；未安装新软件。创建独立AVD `JX_OFFLINE_DEMO`／`emulator-5580`，没有操作原 `emulator-5554` 人工会话。新模拟器首次启动出现System UI无响应，关闭该系统提示并降低测试分辨率后App可正常显示；不把这一系统初始化问题记成App功能通过。
 
 ## 与原产品主线的关系
 
 本次是用户另行收敛的单机展示包，不是原线上18组/12路线/151条的整体收尾。原线上基线仍为0/18组正式关闭、151条正式未结案、82条有局部证据；这些是继承的盘点口径，本次没有重新验收或把它们改为完成。原7类正式能力和3类待核边界继续按既有上线盘点推进。
 
-本侧已完成本机实现与上述验证；后续实际Android设备人工检查、按需更换演示素材和另一方审阅仍未发生，任务保持待审阅。真实支付、实名、电子签、服务器部署不属于此APK。未推送、未合入、未部署，用户当前无需补充服务器或密钥。
+本侧已完成本机实现与上述验证；后续实际Android设备人工检查、按需更换演示素材和另一方审阅仍未发生，任务保持待审阅。真实支付、实名、电子签、服务器部署不属于此APK。本次按新增授权推送独立远端分支；未合入、未部署，用户当前无需补充服务器或密钥。
 
 操作与复跑入口：[Android离线演示说明](../../testing/ANDROID_OFFLINE_DEMO_20261105.md)。
