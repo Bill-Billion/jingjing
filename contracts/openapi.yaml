@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.35-rc.1
+  version: 0.31.36-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -25048,7 +25048,9 @@ paths:
       - name: request_id
         in: path
         required: true
-        schema: *seven_paths_001
+        schema:
+          type: string
+          format: uuid
       - name: category
         in: query
         required: true
@@ -25059,10 +25061,14 @@ paths:
           - PRIVATE_STORY
           - TRANSACTIONS
           - CONTENT
+          - CONTRACTS
+          - DIGITAL_MODELS
       - name: cursor
         in: query
         required: false
-        schema: *seven_paths_001
+        schema:
+          type: string
+          format: uuid
       - name: limit
         in: query
         required: false
@@ -25072,8 +25078,7 @@ paths:
           maximum: 100
       responses:
         '200':
-          description: Personal request response; read remaining actions and execution
-            status separately.
+          description: Personal request response; read remaining actions and execution status separately.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/RequestId'
@@ -25099,8 +25104,8 @@ paths:
           $ref: '#/components/responses/PreconditionFailed'
         '428':
           $ref: '#/components/responses/PreconditionRequired'
-      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
-      description: 具体处理结果与整项申请完成分开。规则及原文件变动须重新检查；后台任务成功不代替人工复核或正式启用。
+      x-actor-scope: ACCOUNT_SELF
+      description: 仅本人且按申请范围返回分页副本；coverage明确范围，不自动完成隐私申请；不导出供应商凭据。
   /api/v1/media/tasks:
     post:
       operationId: createMediaTask
@@ -32888,6 +32893,110 @@ paths:
           $ref: '#/components/responses/Conflict'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/privacy/requests/{request_id}/copy-options:
+    get:
+      operationId: getPrivacyCopyOptions
+      summary: 本人查看资料副本覆盖范围和仍需整理的内容
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyCopyOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_SELF
+      description: 仅本人且按申请范围返回分页副本；coverage明确范围，不自动完成隐私申请；不导出供应商凭据。
+  /api/v1/privacy/requests/{request_id}/copies/{asset_id}/content:
+    get:
+      operationId: downloadPrivacyCopyFile
+      summary: 按本人申请复制本人原始素材或作品
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: category
+        in: query
+        required: true
+        schema:
+          enum:
+          - ARTIST_MATERIALS
+          - CONTENT
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_SELF
+      description: 读取前后重查本人、申请范围、文件状态和内容限制；核对字节与SHA256；不暴露存储地址或允许机构代为复制。
 components:
   securitySchemes:
     bearerAuth:
@@ -62814,6 +62923,8 @@ components:
               - PRIVATE_STORY
               - TRANSACTIONS
               - CONTENT
+              - CONTRACTS
+              - DIGITAL_MODELS
             items:
               type: array
               items:
@@ -62831,11 +62942,66 @@ components:
               - OWN_CONTENT_METADATA_ONLY
               - OWN_CURRENT_STORY_TEXT_ONLY
               - OWN_BUYER_ORDER_INDEX_ONLY
+              - OWN_AUTHORIZATION_RECORDS_ONLY
+              - OWN_PRODUCTION_MODEL_RECORDS_ONLY
           required:
           - category
           - items
           - next_cursor
           - coverage
+      required:
+      - meta
+      - data
+    PrivacyCopyOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            categories:
+              type: array
+              maxItems: 7
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  category:
+                    enum:
+                    - PROFILE
+                    - ARTIST_MATERIALS
+                    - PRIVATE_STORY
+                    - TRANSACTIONS
+                    - CONTENT
+                    - CONTRACTS
+                    - DIGITAL_MODELS
+                  coverage:
+                    enum:
+                    - ACCOUNT_PROFILE_ONLY
+                    - OWN_MATERIAL_METADATA_ONLY
+                    - OWN_CONTENT_METADATA_ONLY
+                    - OWN_CURRENT_STORY_TEXT_ONLY
+                    - OWN_BUYER_ORDER_INDEX_ONLY
+                    - OWN_AUTHORIZATION_RECORDS_ONLY
+                    - OWN_PRODUCTION_MODEL_RECORDS_ONLY
+                  remaining:
+                    type: string
+                    minLength: 1
+                  file_copy_supported:
+                    type: boolean
+                required:
+                - category
+                - coverage
+                - remaining
+                - file_copy_supported
+            request_completion:
+              const: NOT_CONFIRMED
+          required:
+          - categories
+          - request_completion
       required:
       - meta
       - data

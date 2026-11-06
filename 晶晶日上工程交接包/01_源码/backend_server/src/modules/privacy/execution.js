@@ -239,6 +239,16 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
     return require('./personal-copy').exportPersonalCopy(tx,a,s,i);
    });
   },
+  async copyOptions(ctx,i){return db.withTransaction(async tx=>{
+   const {request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
+   if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+   return require('./personal-copy').copyOptions(spec);
+  });},
+  async copyFile(ctx,i){return db.withTransaction(async tx=>{
+   id(i.asset_id);const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
+   if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+   return require('./personal-copy').copyFile(tx,a.id,spec,i);
+  });},
  };
 }
 module.exports={createPrivacyExecution,checked,closureBlockers,policy};

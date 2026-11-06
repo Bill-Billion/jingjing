@@ -33,6 +33,7 @@ jobs:
       - name: 核对需求验收登记与拒绝假通过的反例（不表示完整业务通过）
         run: |
           python3 scripts/full_business_check.py
+          python3 scripts/audit_requirement_trace.py --check
           python3 scripts/full_business_check_test.py
           node --test scripts/v5-r05-r12-app-actions-result.test.mjs
       - name: 单独检查账号权限规则
@@ -148,6 +149,7 @@ jobs:
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/consumer-risk-http-fixtures.json --report .local/ci-evidence/consumer-risk-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/usage-http-fixtures.json --report .local/ci-evidence/usage-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-http-fixtures.json --report .local/ci-evidence/privacy-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-20261106/privacy-copy-http.json --report .local/ci-evidence/privacy-copy-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-actions-http-fixtures.json --report .local/ci-evidence/privacy-actions-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-privacy-http.json --report .local/ci-evidence/privacy-execution-contract.json
           .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-media-http.json --report .local/ci-evidence/media-contract.json
