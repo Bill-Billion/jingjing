@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.39-rc.1
+  version: 0.31.40-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33147,7 +33147,7 @@ paths:
   /api/v1/privacy/requests/{request_id}/account-data:
     get:
       operationId: getPrivacyAccountCopy
-      summary: 本人复制账户、钱包与清分记录
+      summary: 本人复制账户、账务与历史协议
       tags:
       - privacy
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -33171,6 +33171,9 @@ paths:
           - WALLET
           - FINANCE
           - FINANCE_AGREEMENTS
+          - LICENSE_AGREEMENTS
+          - PARTICIPATION_AGREEMENTS
+          - AGENCY_AGREEMENTS
       - name: cursor
         in: query
         schema:
@@ -33186,7 +33189,8 @@ paths:
           default: 20
       responses:
         '200':
-          description: Personal request response; read remaining actions and execution status separately.
+          description: Personal request response; read remaining actions and execution
+            status separately.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/RequestId'
@@ -33213,7 +33217,7 @@ paths:
         '428':
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_SELF
-      description: ACCOUNT/PREFERENCES/ARTISTS需要PROFILE，WALLET/FINANCE需要TRANSACTIONS，FINANCE_AGREEMENTS需要CONTRACTS；ALL兼容。仅本人个人身份资料，机构经办权限不能扩大范围。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。未覆盖的其他合同须继续办理，读取不自动结案。
+      description: ACCOUNT/PREFERENCES/ARTISTS需要PROFILE；WALLET/FINANCE需要TRANSACTIONS；四类AGREEMENTS需要CONTRACTS。ALL兼容。仅本人个人身份为当事人的记录，机构经办权限不扩大范围。许可复制历史封存约定；协议副本不附签署证据，不凭状态推断已签。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。读取不自动结案。
   /api/v1/engagement/mcn/batches:
     post:
       operationId: submitOrganizationBatch
@@ -70674,6 +70678,466 @@ components:
                   - source_content_sha256
                   - copy_sha256
                   - copy_kind
+                  - terms
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: LICENSE_AGREEMENTS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    kind:
+                      enum:
+                      - RESERVATION
+                      - GRANT
+                    owner_party_id:
+                      type: string
+                      format: uuid
+                    counterparty_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                    project_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                    current_status:
+                      type: string
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    source_content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    copy_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    copy_kind:
+                      const: REDACTED_AGREEMENT_COPY
+                    signature_evidence:
+                      const: NOT_INCLUDED
+                    terms:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        reservation_id:
+                          type: string
+                          format: uuid
+                        product_id:
+                          type: string
+                          format: uuid
+                        product_version:
+                          type: integer
+                          minimum: 1
+                        work_version_id:
+                          type: string
+                          format: uuid
+                        terms:
+                          $ref: '#/components/schemas/LicenseTerms'
+                        price:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            currency:
+                              const: CNY
+                            amount_minor:
+                              type: integer
+                              minimum: 0
+                          required:
+                          - currency
+                          - amount_minor
+                        payment_due_minor:
+                          type: integer
+                          minimum: 0
+                        party_ids:
+                          type: array
+                          items:
+                            type: string
+                            format: uuid
+                        rule_contents:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/RuleContent'
+                        contract_version_id:
+                          type: string
+                          format: uuid
+                        created_at:
+                          type: string
+                          format: date-time
+                        procurement:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            version:
+                              const: CONTRACT_20261029
+                            mode:
+                              type: string
+                              enum:
+                              - BUYOUT
+                              - REVENUE_SHARE
+                            buyer_party_id:
+                              type: string
+                              format: uuid
+                            upfront_minor:
+                              type: integer
+                              enum:
+                              - 0
+                              - 5000000
+                            royalty_bps:
+                              type: integer
+                              enum:
+                              - 0
+                              - 800
+                            sublicensing_allowed:
+                              const: true
+                            attribution_terms:
+                              type: string
+                              minLength: 1
+                              maxLength: 2000
+                            settlement_annex:
+                              anyOf:
+                              - type: object
+                                additionalProperties: false
+                                properties:
+                                  cycle:
+                                    type: string
+                                    enum:
+                                    - MONTHLY
+                                    - QUARTERLY
+                                    - ANNUAL
+                                    - AGREED
+                                  terms_text:
+                                    type: string
+                                    minLength: 1
+                                    maxLength: 8000
+                                  net_basis:
+                                    const: ALL_RELEASE_AND_DERIVATIVE_INCOME_LESS_PLATFORM_TAX_DISTRIBUTION_PRODUCTION
+                                required:
+                                - cycle
+                                - terms_text
+                                - net_basis
+                              - type: 'null'
+                          required:
+                          - version
+                          - mode
+                          - buyer_party_id
+                          - upfront_minor
+                          - royalty_bps
+                          - sublicensing_allowed
+                          - attribution_terms
+                          - settlement_annex
+                      required:
+                      - reservation_id
+                      - product_id
+                      - product_version
+                      - work_version_id
+                      - terms
+                      - price
+                      - payment_due_minor
+                      - party_ids
+                      - rule_contents
+                      - contract_version_id
+                      - created_at
+                  required:
+                  - id
+                  - kind
+                  - owner_party_id
+                  - counterparty_id
+                  - project_id
+                  - current_status
+                  - object_version
+                  - source_content_sha256
+                  - copy_sha256
+                  - copy_kind
+                  - signature_evidence
+                  - terms
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PARTICIPATION_AGREEMENTS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    kind:
+                      enum:
+                      - PARTICIPATION
+                    owner_party_id:
+                      type: string
+                      format: uuid
+                    counterparty_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                    project_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                    current_status:
+                      type: string
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    source_content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    copy_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    copy_kind:
+                      const: REDACTED_AGREEMENT_COPY
+                    signature_evidence:
+                      const: NOT_INCLUDED
+                    terms:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        candidate_id:
+                          type: string
+                          format: uuid
+                        role_id:
+                          type: string
+                          format: uuid
+                        avatar_id:
+                          type: string
+                          format: uuid
+                        consent_id:
+                          type: string
+                          format: uuid
+                        cast:
+                          $ref: '#/components/schemas/ParticipationCast'
+                        terms:
+                          $ref: '#/components/schemas/ParticipationTerms'
+                        fee_minor:
+                          type: integer
+                          minimum: 0
+                        order_id:
+                          type:
+                          - string
+                          - 'null'
+                          format: uuid
+                        parties:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              party_id:
+                                type: string
+                                format: uuid
+                              responsibility:
+                                type: string
+                              after_party_ids:
+                                type: array
+                                items:
+                                  type: string
+                                  format: uuid
+                            required:
+                            - party_id
+                            - responsibility
+                            - after_party_ids
+                        amendment:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            previous_agreement_id:
+                              type: string
+                              format: uuid
+                            previous_sha256:
+                              type: string
+                              pattern: ^[a-f0-9]{64}$
+                            reason:
+                              type: string
+                              minLength: 1
+                              maxLength: 8000
+                            kind:
+                              enum:
+                              - PRICE_OR_TERMS
+                              - RECAST
+                            cash_required_minor:
+                              type: integer
+                              minimum: 0
+                              maximum: 900000000000
+                          required:
+                          - previous_agreement_id
+                          - previous_sha256
+                          - kind
+                          - cash_required_minor
+                          - reason
+                      required:
+                      - candidate_id
+                      - role_id
+                      - avatar_id
+                      - consent_id
+                      - cast
+                      - terms
+                      - fee_minor
+                      - order_id
+                      - parties
+                  required:
+                  - id
+                  - kind
+                  - owner_party_id
+                  - counterparty_id
+                  - project_id
+                  - current_status
+                  - object_version
+                  - source_content_sha256
+                  - copy_sha256
+                  - copy_kind
+                  - signature_evidence
+                  - terms
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: AGENCY_AGREEMENTS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    kind:
+                      enum:
+                      - RELATION
+                    owner_party_id:
+                      type: string
+                      format: uuid
+                    counterparty_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                    project_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                    current_status:
+                      type: string
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    source_content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    copy_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    copy_kind:
+                      const: REDACTED_AGREEMENT_COPY
+                    signature_evidence:
+                      const: NOT_INCLUDED
+                    terms:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        scope:
+                          const: COMMERCIAL
+                        valid_from:
+                          type: string
+                          format: date-time
+                        valid_until:
+                          type: string
+                          format: date-time
+                        exclusive:
+                          type: boolean
+                        terms:
+                          type: string
+                        commission:
+                          $ref: '#/components/schemas/GigCommissionTerms'
+                        ended_reason:
+                          type:
+                          - string
+                          - 'null'
+                        v5_terms:
+                          $ref: '#/components/schemas/McnV5Terms'
+                      required:
+                      - scope
+                      - valid_from
+                      - valid_until
+                      - exclusive
+                      - terms
+                      - commission
+                      - ended_reason
+                  required:
+                  - id
+                  - kind
+                  - owner_party_id
+                  - counterparty_id
+                  - project_id
+                  - current_status
+                  - object_version
+                  - source_content_sha256
+                  - copy_sha256
+                  - copy_kind
+                  - signature_evidence
                   - terms
                 maxItems: 100
               next_cursor:
