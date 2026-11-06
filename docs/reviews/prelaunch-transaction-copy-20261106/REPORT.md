@@ -32,3 +32,7 @@
 - 原18组/12路线/151标准未缩减：0/18正式关闭，151正式NOT_RUN、82条局部关联；原子缺口总数不详。没有新公网、生产、付费调用或部署。本机3490及离线APK未改。
 
 独立复跑：backend_server下设置已有隔离JX_MYSQL_TEST_ENV_FILE后运行 `node scripts/test-mysql.js privacy` 与 `node scripts/test-mysql.js trade`；仓库根运行 `python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-transaction-copy-20261106/http.json`。测试依赖现有MySQL，不读取业务.env。新接口无迁移、无新增依赖，旧复制入口兼容。
+
+## 集中交付回执
+
+本批业务提交0d5d5ebb已集中上传原PR39，接口0.31.38-rc.1/0209；本机93项隐私、31项交易及41份HTTP协议检查通过。上传后已看到服务器、App/网页、测试工具三组远端检查启动，尚未全部结束；本回执不代替最终提交的检查结果。integration仍468df28a，未合入、未部署。前端接法已发布，认领/交付/复验仍未确认。
