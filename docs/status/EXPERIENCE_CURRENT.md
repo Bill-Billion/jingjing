@@ -17,6 +17,8 @@
 
 [全局总览](../collaboration/client-complete-20261028/PRODUCT_STATUS.md) · [全部剩余计划](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md) · [当前顺序](../collaboration/client-complete-20261028/PRELAUNCH_EXECUTION_20261106.md)。用户现在不必重复要API或逐条转发；实际需要真实接入时按具体缺项索要。
 
+本批业务提交f950966abca5e79c9c05ec097f3b4c239bd60b9a已集中上传原PR39，标题和接续说明已同步。上传后服务器、App/网页、测试工具三组远端检查已排队，尚未返回最终结果；不把本机通过当远端全绿。本回执随阶段同步，最新检查以PR39当前头为准。integration仍468df28a，未合入/部署；三个前端工作包已发布，认领/交付/复验未确认。
+
 ---
 
 ## 以下为历史进展，不能作为当前待办
