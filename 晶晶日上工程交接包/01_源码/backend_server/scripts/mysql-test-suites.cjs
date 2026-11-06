@@ -1,9 +1,11 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
+ 'ranking-contract':['test/ranking-contract.test.cjs','test/ranking-contract.integration.test.cjs'],
+ 'privacy-security-copy':['test/privacy-security-copy.integration.test.cjs'],
  'privacy-agreements':['test/privacy-agreement-copy.integration.test.cjs'],
  'prelaunch-independent':['test/privacy-account-copy.integration.test.cjs','test/organization-batch.integration.test.cjs','test/organization-merchandise-batch.integration.test.cjs','test/recommendations.integration.test.cjs','test/recommendations-boundaries.test.cjs'],
- 'privacy-copy':['test/privacy-agreement-copy.integration.test.cjs','test/privacy-account-copy.integration.test.cjs','test/privacy-transaction-copy.integration.test.cjs','test/privacy-story-copy.integration.test.cjs','test/privacy-copy.integration.test.cjs','test/privacy-execution.integration.test.cjs'],
+ 'privacy-copy':['test/privacy-security-copy.integration.test.cjs','test/privacy-agreement-copy.integration.test.cjs','test/privacy-account-copy.integration.test.cjs','test/privacy-transaction-copy.integration.test.cjs','test/privacy-story-copy.integration.test.cjs','test/privacy-copy.integration.test.cjs','test/privacy-execution.integration.test.cjs'],
  'consumer-protection':['test/consumer-risk-policy.test.cjs','test/consumer-risk.integration.test.cjs','test/contract-pool.test.cjs','test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption.integration.test.cjs','test/usage.integration.test.cjs'],
  'usage-reminders':['test/usage-policy.test.cjs','test/usage.integration.test.cjs'],
  'consumer-controls':['test/consumer-controls-policy.test.cjs','test/consumer-controls.integration.test.cjs'],
@@ -17,12 +19,12 @@ module.exports=Object.freeze({
  discovery:['test/recommendations.integration.test.cjs','test/recommendations-boundaries.test.cjs','test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
  directory:['test/directory-policy.test.cjs','test/directory.integration.test.cjs'],
  media:['test/media-marking.test.cjs','test/media.integration.test.cjs'],
- privacy:['test/privacy-agreement-copy.integration.test.cjs','test/privacy-account-copy.integration.test.cjs','test/privacy-transaction-copy.integration.test.cjs','test/privacy-story-copy.integration.test.cjs','test/privacy-copy.integration.test.cjs','test/privacy-cross-module.integration.test.cjs','test/privacy-policy-options.integration.test.cjs','test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
+ privacy:['test/privacy-security-copy.integration.test.cjs','test/privacy-agreement-copy.integration.test.cjs','test/privacy-account-copy.integration.test.cjs','test/privacy-transaction-copy.integration.test.cjs','test/privacy-story-copy.integration.test.cjs','test/privacy-copy.integration.test.cjs','test/privacy-cross-module.integration.test.cjs','test/privacy-policy-options.integration.test.cjs','test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],
  'manual-sample':['test/manual-sample.integration.test.cjs'],
  participation:['test/fixed-income-release.integration.test.cjs','test/participation-amendment.integration.test.cjs','test/project-income.integration.test.cjs','test/participation-policy.test.cjs','test/participation.integration.test.cjs'],
  redemption:['test/redemption-lottery.integration.test.cjs','test/redemption-checkout.integration.test.cjs','test/redemption-lottery-policy.test.cjs','test/redemption-policy.test.cjs','test/redemption.integration.test.cjs','test/redemption-delivery-evidence.integration.test.cjs'],
  cocreation:['test/cocreation-policy.test.cjs','test/cocreation.integration.test.cjs','test/cocreation-invite-links.integration.test.cjs','test/cocreation-modern-journey.integration.test.cjs'],
- engagement:['test/organization-batch.integration.test.cjs','test/organization-merchandise-batch.integration.test.cjs','test/engagement-policy.test.cjs','test/engagement.integration.test.cjs'],
+ engagement:['test/ranking-contract.test.cjs','test/ranking-contract.integration.test.cjs','test/organization-batch.integration.test.cjs','test/organization-merchandise-batch.integration.test.cjs','test/engagement-policy.test.cjs','test/engagement.integration.test.cjs'],
  wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs','test/wallet-refund-entitlement-journey.integration.test.cjs'],
  auditions:['test/auditions-policy.test.cjs','test/auditions.integration.test.cjs','test/auditions-supplements.integration.test.cjs','test/auditions-delivery-options.integration.test.cjs','test/auditions-delivery-staff.integration.test.cjs'],
  notices:['test/notices-quote-options.integration.test.cjs','test/notices-policy.test.cjs','test/notices.integration.test.cjs'],

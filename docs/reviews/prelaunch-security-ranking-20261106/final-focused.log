@@ -1,0 +1,102 @@
+TAP version 13
+# Subtest: privacy-security-copy isolated MySQL and HTTP
+    # Subtest: retained sessions distinguish active/revoked/expired; legacy timestamp remains unknown
+    ok 1 - retained sessions distinguish active/revoked/expired; legacy timestamp remains unknown
+      ---
+      duration_ms: 48.3376
+      type: 'test'
+      ...
+    # Subtest: copy reference is not a bearer credential or a stored credential cursor
+    ok 2 - copy reference is not a bearer credential or a stored credential cursor
+      ---
+      duration_ms: 34.5763
+      type: 'test'
+      ...
+    # Subtest: session pagination returns each retained row exactly once
+    ok 3 - session pagination returns each retained row exactly once
+      ---
+      duration_ms: 35.9349
+      type: 'test'
+      ...
+    # Subtest: phone-change history is account-bound and only contains masked numbers
+    ok 4 - phone-change history is account-bound and only contains masked numbers
+      ---
+      duration_ms: 35.9518
+      type: 'test'
+      ...
+    # Subtest: scope/account/acting-party and malformed input do not broaden access or complete request
+    ok 5 - scope/account/acting-party and malformed input do not broaden access or complete request
+      ---
+      duration_ms: 55.8874
+      type: 'test'
+      ...
+    # Subtest: invalid timestamps and accidentally unmasked phone values fail closed
+    ok 6 - invalid timestamps and accidentally unmasked phone values fail closed
+      ---
+      duration_ms: 36.3854
+      type: 'test'
+      ...
+    # Subtest: actual auth cleanup invalidates removed cursor without fabricating historical login entries
+    ok 7 - actual auth cleanup invalidates removed cursor without fabricating historical login entries
+      ---
+      duration_ms: 23.4606
+      type: 'test'
+      ...
+    # Subtest: account suspension prevents reuse of prior copy request
+    ok 8 - account suspension prevents reuse of prior copy request
+      ---
+      duration_ms: 7.4452
+      type: 'test'
+      ...
+    1..8
+ok 1 - privacy-security-copy isolated MySQL and HTTP
+  ---
+  duration_ms: 8879.5776
+  type: 'test'
+  ...
+# Subtest: ranking-contract isolated MySQL and HTTP
+    # Subtest: new-contract mode rejects old or mismatched submitted rules
+    ok 1 - new-contract mode rejects old or mismatched submitted rules
+      ---
+      duration_ms: 95.7478
+      type: 'test'
+      ...
+    # Subtest: independent review rejects old pending rule and self approval
+    ok 2 - independent review rejects old pending rule and self approval
+      ---
+      duration_ms: 35.9547
+      type: 'test'
+      ...
+    # Subtest: new snapshots require contract rules; original-key retries and historical reads survive
+    ok 3 - new snapshots require contract rules; original-key retries and historical reads survive
+      ---
+      duration_ms: 68.9702
+      type: 'test'
+      ...
+    1..3
+ok 2 - ranking-contract isolated MySQL and HTTP
+  ---
+  duration_ms: 8775.2251
+  type: 'test'
+  ...
+# Subtest: contract ranking rejects changed weights/coefficients but preserves historical rules
+ok 3 - contract ranking rejects changed weights/coefficients but preserves historical rules
+  ---
+  duration_ms: 5.3889
+  type: 'test'
+  ...
+# Subtest: equal facts apply 1.0/1.3/1.6 multipliers and leave legacy calculations unchanged
+ok 4 - equal facts apply 1.0/1.3/1.6 multipliers and leave legacy calculations unchanged
+  ---
+  duration_ms: 9.4104
+  type: 'test'
+  ...
+1..4
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9083.1014

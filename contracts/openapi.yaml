@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.40-rc.1
+  version: 0.31.41-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33174,6 +33174,8 @@ paths:
           - LICENSE_AGREEMENTS
           - PARTICIPATION_AGREEMENTS
           - AGENCY_AGREEMENTS
+          - SESSION_RECORDS
+          - PHONE_CHANGES
       - name: cursor
         in: query
         schema:
@@ -33218,6 +33220,7 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_SELF
       description: ACCOUNT/PREFERENCES/ARTISTS需要PROFILE；WALLET/FINANCE需要TRANSACTIONS；四类AGREEMENTS需要CONTRACTS。ALL兼容。仅本人个人身份为当事人的记录，机构经办权限不扩大范围。许可复制历史封存约定；协议副本不附签署证据，不凭状态推断已签。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。读取不自动结案。
+        SESSION_RECORDS/PHONE_CHANGES属于PROFILE，仅提供仍保留的会话/换号记录，history_complete=false；会话游标为64位脱敏副本引用，不能用于登录；原游标对应记录已清理时返回400，客户端重新分页。凭据、验证码、完整号码不提供，不延长保留时间。
   /api/v1/engagement/mcn/batches:
     post:
       operationId: submitOrganizationBatch
@@ -36093,9 +36096,13 @@ components:
             - personal_weights
             - organization_weights
             - scout_priority
-          description: Optional reviewed weights. No configuration means factual directory only, ranking disabled.
+          description: Optional reviewed weights. No configuration means factual directory
+            only, ranking disabled.
         referral_contract_policy:
           const: CONTRACT_20261029
+        ranking_contract_policy:
+          const: CONTRACT_20261029
+          description: 仅适用于新合同艺人榜单规则；缺省保留历史规则语义。新模式下新建、审批与新榜单必须声明。
       required:
       - version
       - terms
@@ -36139,6 +36146,26 @@ components:
               - AUDITION
               - CUSTOMIZATION
               - COMMERCIAL
+      - if:
+          required:
+          - ranking_contract_policy
+        then:
+          properties:
+            rank:
+              properties:
+                weights:
+                  const:
+                  - 3000
+                  - 2500
+                  - 2000
+                  - 1000
+                  - 1500
+                halo_bps:
+                  const:
+                  - 0
+                  - 10000
+                  - 13000
+                  - 16000
     ChampionshipRule:
       type: object
       additionalProperties: false
@@ -71154,6 +71181,134 @@ components:
             - next_cursor
             - coverage
             - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: SESSION_RECORDS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    copy_ref:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    authenticated_at:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                    expires_at:
+                      type: string
+                      format: date-time
+                    revoked:
+                      type: boolean
+                    current_status:
+                      enum:
+                      - ACTIVE
+                      - EXPIRED
+                      - REVOKED
+                  required:
+                  - copy_ref
+                  - authenticated_at
+                  - expires_at
+                  - revoked
+                  - current_status
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                pattern: ^[a-f0-9]{64}$
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+              credential_material:
+                const: EXCLUDED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
+            - credential_material
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PHONE_CHANGES
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    old_phone_mask:
+                      type: string
+                      pattern: ^1[3-9][0-9]\*{4}[0-9]{4}$
+                    new_phone_mask:
+                      type: string
+                      pattern: ^1[3-9][0-9]\*{4}[0-9]{4}$
+                    current_status:
+                      enum:
+                      - AWAITING_OLD
+                      - AWAITING_NEW
+                      - READY
+                      - COMPLETED
+                      - CANCELLED
+                      - EXPIRED
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    expires_at:
+                      type: string
+                      format: date-time
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                  required:
+                  - id
+                  - old_phone_mask
+                  - new_phone_mask
+                  - current_status
+                  - object_version
+                  - expires_at
+                  - created_at
+                  - updated_at
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                format: uuid
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+              credential_material:
+                const: EXCLUDED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
+            - credential_material
       required:
       - meta
       - data

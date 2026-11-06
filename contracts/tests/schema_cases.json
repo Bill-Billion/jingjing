@@ -2969,6 +2969,326 @@
           "request_completion": "NOT_CONFIRMED"
         }
       }
+    },
+    {
+      "name": "Security copy rejects token_hash",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "5b3316c7-3e51-4d86-9009-28554835f277",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "SESSION_RECORDS",
+          "items": [
+            {
+              "copy_ref": "2775fa8e7dcc444829d5fc1a373ab3ca87f708ad24513fd791f56d2a54f943e2",
+              "authenticated_at": "2026-11-06T09:15:58.882Z",
+              "expires_at": "2026-11-06T09:26:03.882Z",
+              "revoked": false,
+              "current_status": "ACTIVE",
+              "token_hash": "secret-not-allowed"
+            },
+            {
+              "copy_ref": "8187c4952ac91c92c96465c0feaf3b1db09986c4f2d54c7afb6080ab72467be5",
+              "authenticated_at": null,
+              "expires_at": "2026-11-06T10:16:02.314Z",
+              "revoked": false,
+              "current_status": "ACTIVE"
+            },
+            {
+              "copy_ref": "97396640186f7d19c2297922449ad6e18f67eae53ce698834ecb837781659f3e",
+              "authenticated_at": "2026-11-06T09:15:53.882Z",
+              "expires_at": "2026-11-06T09:24:23.882Z",
+              "revoked": true,
+              "current_status": "REVOKED"
+            },
+            {
+              "copy_ref": "c958b46b0a88ff28dbcf2209b4b40ca801622426c8d6f3232a80cee62082a397",
+              "authenticated_at": "2026-11-06T09:15:03.882Z",
+              "expires_at": "2026-11-06T09:16:02.882Z",
+              "revoked": false,
+              "current_status": "EXPIRED"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": false,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Security copy rejects encrypted_phones",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "696c47ef-e169-4123-81cb-1d50a6cc6b2e",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PHONE_CHANGES",
+          "items": [
+            {
+              "id": "5adfe203-10ea-4594-8e53-3cd82f081390",
+              "old_phone_mask": "139****9801",
+              "new_phone_mask": "138****1234",
+              "current_status": "EXPIRED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.956Z",
+              "updated_at": "2026-11-06T09:16:03.956Z",
+              "encrypted_phones": "secret-not-allowed"
+            },
+            {
+              "id": "5e5d3578-21a3-4c97-ae83-96240b1e2745",
+              "old_phone_mask": "139****9801",
+              "new_phone_mask": "138****1234",
+              "current_status": "COMPLETED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.945Z",
+              "updated_at": "2026-11-06T09:16:03.945Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": false,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Security copy rejects old_phone_mask",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "696c47ef-e169-4123-81cb-1d50a6cc6b2e",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PHONE_CHANGES",
+          "items": [
+            {
+              "id": "5adfe203-10ea-4594-8e53-3cd82f081390",
+              "old_phone_mask": "13900009801",
+              "new_phone_mask": "138****1234",
+              "current_status": "EXPIRED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.956Z",
+              "updated_at": "2026-11-06T09:16:03.956Z"
+            },
+            {
+              "id": "5e5d3578-21a3-4c97-ae83-96240b1e2745",
+              "old_phone_mask": "139****9801",
+              "new_phone_mask": "138****1234",
+              "current_status": "COMPLETED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.945Z",
+              "updated_at": "2026-11-06T09:16:03.945Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": false,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Security copy must not claim complete history",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "5b3316c7-3e51-4d86-9009-28554835f277",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "SESSION_RECORDS",
+          "items": [
+            {
+              "copy_ref": "2775fa8e7dcc444829d5fc1a373ab3ca87f708ad24513fd791f56d2a54f943e2",
+              "authenticated_at": "2026-11-06T09:15:58.882Z",
+              "expires_at": "2026-11-06T09:26:03.882Z",
+              "revoked": false,
+              "current_status": "ACTIVE"
+            },
+            {
+              "copy_ref": "8187c4952ac91c92c96465c0feaf3b1db09986c4f2d54c7afb6080ab72467be5",
+              "authenticated_at": null,
+              "expires_at": "2026-11-06T10:16:02.314Z",
+              "revoked": false,
+              "current_status": "ACTIVE"
+            },
+            {
+              "copy_ref": "97396640186f7d19c2297922449ad6e18f67eae53ce698834ecb837781659f3e",
+              "authenticated_at": "2026-11-06T09:15:53.882Z",
+              "expires_at": "2026-11-06T09:24:23.882Z",
+              "revoked": true,
+              "current_status": "REVOKED"
+            },
+            {
+              "copy_ref": "c958b46b0a88ff28dbcf2209b4b40ca801622426c8d6f3232a80cee62082a397",
+              "authenticated_at": "2026-11-06T09:15:03.882Z",
+              "expires_at": "2026-11-06T09:16:02.882Z",
+              "revoked": false,
+              "current_status": "EXPIRED"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": true,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Contract ranking rejects weights",
+      "schema": "EngagementRule",
+      "value": {
+        "version": "synthetic-contract-20261029",
+        "terms": "Isolated fixture, not approved production rules",
+        "gp": {
+          "STOCK": 1,
+          "AUDITION": 3,
+          "CUSTOMIZATION": 5,
+          "COMMERCIAL": 5,
+          "five_star": 1,
+          "media": 2,
+          "repeat": 2,
+          "refund_penalty": 5
+        },
+        "thresholds": [
+          0,
+          30,
+          120,
+          400,
+          1000
+        ],
+        "retention_days": 90,
+        "retention_bps": 5000,
+        "rank": {
+          "window_days": 30,
+          "popularity_days": 7,
+          "newcomer_days": 30,
+          "cold_start_days": 7,
+          "review_min": 10,
+          "repeat_buyers_min": 20,
+          "bayes_n": 10,
+          "bayes_mean": 4,
+          "weights": [
+            0,
+            0,
+            0,
+            0,
+            10000
+          ],
+          "halo_bps": [
+            0,
+            10000,
+            13000,
+            16000
+          ]
+        },
+        "starlight": null,
+        "risk_first_penalty": 25,
+        "aftercare_days": {
+          "STOCK": 7,
+          "AUDITION": 7,
+          "CUSTOMIZATION": 7,
+          "COMMERCIAL": 7
+        },
+        "referral_bps": {
+          "STOCK": 500,
+          "AUDITION": 500,
+          "CUSTOMIZATION": 500,
+          "COMMERCIAL": 500
+        },
+        "ranking_contract_policy": "CONTRACT_20261029"
+      }
+    },
+    {
+      "name": "Contract ranking rejects halo_bps",
+      "schema": "EngagementRule",
+      "value": {
+        "version": "synthetic-contract-20261029",
+        "terms": "Isolated fixture, not approved production rules",
+        "gp": {
+          "STOCK": 1,
+          "AUDITION": 3,
+          "CUSTOMIZATION": 5,
+          "COMMERCIAL": 5,
+          "five_star": 1,
+          "media": 2,
+          "repeat": 2,
+          "refund_penalty": 5
+        },
+        "thresholds": [
+          0,
+          30,
+          120,
+          400,
+          1000
+        ],
+        "retention_days": 90,
+        "retention_bps": 5000,
+        "rank": {
+          "window_days": 30,
+          "popularity_days": 7,
+          "newcomer_days": 30,
+          "cold_start_days": 7,
+          "review_min": 10,
+          "repeat_buyers_min": 20,
+          "bayes_n": 10,
+          "bayes_mean": 4,
+          "weights": [
+            3000,
+            2500,
+            2000,
+            1000,
+            1500
+          ],
+          "halo_bps": [
+            0,
+            10000,
+            11500,
+            13000
+          ]
+        },
+        "starlight": null,
+        "risk_first_penalty": 25,
+        "aftercare_days": {
+          "STOCK": 7,
+          "AUDITION": 7,
+          "CUSTOMIZATION": 7,
+          "COMMERCIAL": 7
+        },
+        "referral_bps": {
+          "STOCK": 500,
+          "AUDITION": 500,
+          "CUSTOMIZATION": 500,
+          "COMMERCIAL": 500
+        },
+        "ranking_contract_policy": "CONTRACT_20261029"
+      }
     }
   ]
 }
