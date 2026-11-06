@@ -42,11 +42,13 @@ bool gigInstant(dynamic v) =>
     v is String &&
     RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$').hasMatch(v) &&
     DateTime.tryParse(v)?.toUtc().toIso8601String() == v;
-Map<String, dynamic> gigMap(dynamic v, {List<String>? keys}) {
+Map<String, dynamic> gigMap(dynamic v,
+    {List<String>? keys, List<String> optional = const []}) {
   gigRequire(v is Map && v.keys.every((k) => k is String));
   final m = Map<String, dynamic>.from(v as Map);
   if (keys != null) {
-    gigRequire(m.length == keys.length && keys.every(m.containsKey));
+    gigRequire(keys.every(m.containsKey) &&
+        m.keys.every((k) => keys.contains(k) || optional.contains(k)));
   }
   return m;
 }
@@ -90,6 +92,22 @@ Map<String, dynamic> gigCommission(dynamic v) {
   return d;
 }
 
+Map<String, dynamic> gigSupplyTerms(dynamic v) {
+  final d = gigMap(v, keys: ['version', 'supply_share_bps']);
+  gigRequire(d['version'] == 'V5' &&
+      gigInt(d['supply_share_bps'], min: 1000, max: 3000));
+  return d;
+}
+
+Map<String, dynamic> gigMarketplaceTerms(dynamic v) {
+  final d = gigMap(v, keys: ['version', 'platform_bps', 'mcn_supply_bps']);
+  gigRequire(d['version'] == 'CONTRACT_20261029' &&
+      d['platform_bps'] == 2200 &&
+      (d['mcn_supply_bps'] == 0 ||
+          gigInt(d['mcn_supply_bps'], min: 1000, max: 3000)));
+  return d;
+}
+
 void _relationSnapshot(dynamic v) {
   if (v == null) return;
   final d = gigMap(v, keys: [
@@ -125,7 +143,12 @@ void gigCommercial(dynamic v) {
     'avatar_id',
     'consent_id',
     'rule_id'
+  ], optional: [
+    'marketplace_terms'
   ]);
+  if (d.containsKey('marketplace_terms')) {
+    gigMarketplaceTerms(d['marketplace_terms']);
+  }
   gigRequire(d['ranking_opt_in'] is bool &&
       gigHash(d['offer_sha256']) &&
       gigText(d['category'], 128) &&
@@ -300,7 +323,20 @@ class GigRecord {
           'evidence_asset_ids',
           'accepted_by',
           'ended_reason'
+        ], optional: [
+          'v5_terms',
+          'handover'
         ]);
+        if (d.containsKey('handover')) {
+          final h = gigMap(d['handover']);
+          gigRequire(h['policy'] == 'CONTRACT_20261029' &&
+              h['new_business_allowed'] == false &&
+              gigInstant(h['started_at']) &&
+              gigInstant(h['deadline_at']) &&
+              h['order_count'] is int &&
+              h['order_count'] >= 0);
+        }
+        if (d.containsKey('v5_terms')) gigSupplyTerms(d['v5_terms']);
         gigRequire(gigId(r['owner_party_id']) &&
             gigId(r['counterparty_id']) &&
             d['scope'] == 'COMMERCIAL' &&
@@ -353,7 +389,12 @@ class GigRecord {
           'evidence_asset_ids',
           'review',
           'buyer_accepted_by'
+        ], optional: [
+          'marketplace_terms'
         ]);
+        if (d.containsKey('marketplace_terms')) {
+          gigMarketplaceTerms(d['marketplace_terms']);
+        }
         gigRequire(gigId(r['owner_party_id']) &&
             gigId(r['counterparty_id']) &&
             gigId(r['parent_id']) &&
@@ -409,10 +450,21 @@ class GigRecord {
 }
 
 class GigCatalogue {
-  const GigCatalogue(this.items, this.rules);
+  const GigCatalogue(this.items, this.rules,
+      [this.contractPolicy = 'LEGACY_COMPATIBLE']);
+  final String contractPolicy;
   final List<Map<String, dynamic>> items, rules;
   static GigCatalogue parse(dynamic value) {
-    final d = gigMap(value, keys: ['items', 'rules']);
+    final d = gigMap(value);
+    final hasPolicy = d.containsKey('marketplace_contract_policy');
+    gigRequire(d.length == (hasPolicy ? 3 : 2) &&
+        d.containsKey('items') &&
+        d.containsKey('rules'));
+    if (hasPolicy) {
+      gigRequire(['LEGACY_COMPATIBLE', 'CONTRACT_20261029']
+          .contains(d['marketplace_contract_policy']));
+    }
+
     final items = gigList(d['items']).map((v) {
       final r = gigMap(v, keys: [
         'id',
@@ -438,7 +490,8 @@ class GigCatalogue {
     }).toList();
     gigRequire(items.map((r) => r['id']).toSet().length == items.length &&
         rules.map((r) => r['id']).toSet().length == rules.length);
-    return GigCatalogue(items, rules);
+    return GigCatalogue(
+        items, rules, d['marketplace_contract_policy'] ?? 'LEGACY_COMPATIBLE');
   }
 }
 
@@ -494,10 +547,22 @@ String gigError(Object e, {bool writing = false}) {
     return writing ? '操作结果未知。原请求与内容已保留，请恢复核对。' : '暂时无法读取，请稍后重新核对。';
   }
   const messages = {
+    'CONTENT_RESTRICTED': '材料当前受到限制，暂不能读取。限制解除后可重新读取。',
+    'HANDOVER_NOT_ACTIVE': '七日交接期已到期或关系不适用，旧单沟通已停止；历史账目保留。',
+    'HANDOVER_ORDER_NOT_OPEN': '该旧订单不在交接清单或双方已确认，机构不能继续沟通。',
+    'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分账尾差异常，旧账保留并暂停新增付款，待人工复核。',
     'MCN_CAPABILITY_REQUIRED': '当前身份尚无有效 MCN 服务授权。合作授权须独立办理，不能自行批准。',
     'COMMERCIAL_CONSENT_REQUIRED': '本人同意未覆盖本次商业用途、地区或完整有效期。',
     'DIRECT_RELATION_REQUIRED': 'MCN 佣金须引用有效直接合作；未引用合作时请明确填写 0%。',
     'RELATION_NOT_APPLICABLE': '合作已失效、版本已变化或佣金与原合作不一致，请重新核对。',
+    'MARKETPLACE_CONTRACT_RULE_REQUIRED':
+        '缺少已生效的分配规则，请工作人员维护现货18%或商单22%规则后核对原请求。',
+    'MARKETPLACE_CONTRACT_RATE_MISMATCH': '分配规则的类别或费率不符，请工作人员核对；不能据此进入付款。',
+    'COMMERCIAL_CONTRACT_RATE_MISMATCH': '提案仍采用旧费率，请按新版商单约定重新核对。',
+    'MCN_V5_TERMS_REQUIRED': '机构协议尚无双方确认的供给收益比例，请双方重新约定，不自动换算旧协议。',
+    'COMMERCIAL_CONTRACT_OFFER_REQUIRED': '此提案不适用于新版报价，请核对已确认的新版商单来源。',
+    'COMMERCIAL_CONTRACT_OFFER_CHANGED': '提案、规则或机构关系不一致，请重新核对原条款。',
+    'COMMERCIAL_SOURCE_REQUIRED': '请先选择已由买家确认的正式商单提案。',
     'COMMERCIAL_ORDER_EXISTS': '这份接单约定已经形成订单，请查看对应订单。',
     'SELF_DEAL_FORBIDDEN': '需求方不能向自己的商单提交接单约定。',
     'GIG_REVIEW_FORBIDDEN': '此操作须具备独立商单审核授权；负责人身份不能替代。',

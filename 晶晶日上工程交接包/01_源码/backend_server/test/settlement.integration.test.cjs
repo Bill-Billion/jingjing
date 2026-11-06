@@ -19,7 +19,7 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
  const principals=new Map(),resolvePrincipal=async ctx=>principals.get(ctx),parties=createPartyRepository(db,{resolvePrincipal}),secret=randomBytes(32).toString('base64'),auth=createAuthRepository(db,{secret}),supply=createSupplyRepository(db,{resolvePrincipal,verifyProjectSource:require('../src/modules/licensing/repository').validBinding}),trade=createTradeRepository(db,{resolvePrincipal,fulfillmentGate:productionPaymentGate});
  const people=[];for(const label of ['producer','buyer','reviewer','outsider','stranger']){const ctx={};principals.set(ctx,{subject_ref:'synthetic:'+key()});const p={ctx,...await parties.registerAccount(ctx,{display_name:label}),token:randomBytes(32).toString('base64url')};people.push(p);await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[auth.secure.digest('token',p.token),p.account_id]);}
  const [producer,buyer,reviewer,outsider,stranger]=people;for(const person of [reviewer,producer])for(const action of ['FINANCE_REVIEW','TRADE_REFUND','PROJECT_REVIEW','TRADE_REVIEW','PRODUCTION_REVIEW','SUPPLY_REVIEW_PROFILE','SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONTENT','SUPPLY_REVIEW_CONSENT'])await maintainOperatorGrant(db,{account_id:person.account_id,action,enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:test',reason:'isolated test'});
- let holdUpload=null;const files=new Map(),storageFactory=()=>({async put({key,body}){if(holdUpload)await holdUpload();files.set(key,Buffer.from(body));return {key,size:body.length,sha256:createHash('sha256').update(body).digest('hex')};},async getBuffer(key){return files.get(key);}}),assets=createSupplyAssets({db,repository:supply,storageFactory});
+ let holdUpload=null,duringStorageRead=null;const files=new Map(),storageFactory=()=>({async put({key,body}){if(holdUpload)await holdUpload();files.set(key,Buffer.from(body));return {key,size:body.length,sha256:createHash('sha256').update(body).digest('hex')};},async getBuffer(key){if(duringStorageRead)await duringStorageRead();return files.get(key);}}),assets=createSupplyAssets({db,repository:supply,storageFactory});
  const upload=purpose=>assets.upload(producer.ctx,{party_id:producer.personal_party_id,purpose,media_type:'text/plain',body:Buffer.from('synthetic '+purpose),operation_key:key()});
  const proof=await upload('RIGHTS_EVIDENCE'),script=await upload('WORK_CONTENT'),avatarMaterial=await upload('AVATAR_MATERIAL'),consentEvidence=await upload('CONSENT_EVIDENCE');const avatar=await supply.createAvatar(producer.ctx,{party_id:producer.personal_party_id,display_name:'synthetic',material_asset_ids:[avatarMaterial.id],operation_key:key()});let consent=await supply.createConsent(producer.ctx,{consent:{avatar_id:avatar.id,subject_party_id:producer.personal_party_id,features:['FACE'],purposes:['PRIVATE','AI_TRAIN','PUBLIC_SHARE','RELEASE'],territories:['CN'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'Synthetic consent',evidence_asset_ids:[consentEvidence.id]},operation_key:key()});consent=await supply.reviewConsent(reviewer.ctx,{record_id:consent.id,expected_version:1,decision:'APPROVED',reason:'synthetic',operation_key:key()});let profile=await supply.createProfile(producer.ctx,{party_id:producer.personal_party_id,display_name:'synthetic',description:'synthetic',evidence_asset_ids:[proof.id],previous_profile_id:null,operation_key:key()});await supply.reviewProfile(reviewer.ctx,{record_id:profile.id,expected_version:1,decision:'APPROVED',reason:'synthetic',operation_key:key()});
  let work=await supply.createVersion(producer.ctx,{party_id:producer.personal_party_id,work_id:null,previous_version_id:null,title:'Synthetic original',kind:'ORIGINAL',source_version_id:null,project_id:null,content_asset_id:script.id,evidence_ids:[proof.id],credits:[{party_id:producer.personal_party_id,role:'RIGHTS_HOLDER',evidence_asset_ids:[proof.id]}],operation_key:key()});work=await supply.changeVersion(producer.ctx,{party_id:producer.personal_party_id,record_id:work.id,expected_version:1,action:'SUBMIT',reason:null,operation_key:key()});for(const channel of ['RIGHTS','CONTENT'])work=await supply.reviewVersion(reviewer.ctx,{record_id:work.id,expected_version:work.object_version,channel,decision:'APPROVED',reason:'synthetic',operation_key:key()});
@@ -96,6 +96,22 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   for(const p of [producer,buyer,outsider])ft(await fconfirm(g,p));assert.equal((await fc('POST','/agreements',producer,{...agreementInput,previous_agreement_id:g.id})).status,409);
   assert.equal((await fr(g)).data.rules.version,'test.explicit.2');
  });
+ await t.test('restricted finance evidence respects overlapping restrictions and restrictions activated during storage read',async()=>{
+  const restrictions=await require('./helpers/gig-privacy-restriction.cjs')({db,resolvePrincipal,author:producer,reviewer,applicant:stranger});
+  const url='/records/'+g.id+'/evidence/'+proof.id,original=JSON.stringify((await fr(g)).data);
+  assert.equal((await fc('GET',url)).status,200);
+  const first=await restrictions.restrict(proof.id),second=await restrictions.restrict(proof.id);
+  const blocked=await fc('GET',url);assert.equal(blocked.status,409);assert.equal(blocked.body.error.code,'CONTENT_RESTRICTED');
+  assert.equal((await fc('GET',url,reviewer,undefined,null)).status,409);
+  assert.equal((await fc('GET',url,stranger)).status,404);
+  await restrictions.release(first);assert.equal((await fc('GET',url)).status,409);
+  await restrictions.release(second);assert.equal((await fc('GET',url)).status,200);
+  let late;duringStorageRead=async()=>{duringStorageRead=null;late=await restrictions.restrict(proof.id);};
+  try{const result=await fc('GET',url);assert.equal(result.status,409);assert.equal(result.body.error.code,'CONTENT_RESTRICTED');}
+  finally{duringStorageRead=null;if(late)await restrictions.release(late);}
+  assert.equal((await fc('GET',url)).status,200);assert.equal(JSON.stringify((await fr(g)).data),original);
+  await fs.writeFile(path.resolve(__dirname,'../../../..','.local/finance-privacy-check.json'),JSON.stringify({agreement_id:g.id,asset_id:proof.id,restriction_requests:[first.request.id,second.request.id,late.request.id],checks:{restricted:409,reviewer_restricted:409,unrelated_account:404,one_released:409,both_released:200,restricted_during_read:409,restored:200,agreement_unchanged:true},synthetic:true},null,2));
+ });
  await t.test('settlement review and every party confirmation precede available balance',async()=>{
   settlement=ft(await fp('/agreements/'+g.id+'/settlements',g,{period_reference:'initial',note:'synthetic'}));const before=await balances(g);assert.equal(before.items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);
   settlement=ft(await freview(settlement));for(const p of [producer,buyer])ft(await fconfirm(settlement,p));assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);
@@ -125,6 +141,29 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   assert.equal(payout.current_status,'PAID');assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).paid_minor,1000);
   const e2=await fp('/payouts/'+payout.id+'/evidence',payout,evidenceBody('PAID',1000));assert.equal(e2.status,409);
  });
+ await t.test('dispute after payout requests blocks new approval but preserves verified failure and cancellation facts',async()=>{
+  const pending=ft(await fp('/agreements/'+g.id+'/payouts',g,payoutBody(200),outsider));
+  const approved=ft(await freview(ft(await fp('/agreements/'+g.id+'/payouts',g,payoutBody(200),outsider))));
+  const paidBefore=(await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).paid_minor;
+  const dispute=ft(await fp('/records/'+g.id+'/disputes',g,{category:'REFUND',reason:'synthetic objection after payout approval',evidence_asset_ids:[buyerProof.id]},buyer));
+  assert.equal((await fp('/agreements/'+g.id+'/payouts',g,payoutBody(1),outsider)).body.error.code,'FINANCE_DISPUTED');
+  assert.equal((await freview(pending)).body.error.code,'FINANCE_DISPUTED');
+  assert.equal((await fr(pending)).current_status,'REQUESTED');
+  // An approved transfer may already have left the bank: a cancellation cannot
+  // invent a reversal. Only independently verified external results change it.
+  assert.equal((await fp('/payouts/'+approved.id+'/cancellation',approved,{reason:'must not pretend bank cancellation'},outsider)).body.error.code,'PAYOUT_NOT_CANCELLABLE');
+  const failed=ft(await fp('/payouts/'+approved.id+'/evidence',approved,evidenceBody('FAILED',200)));
+  const reviewed=ft(await freview(failed));
+  assert.equal((await fr(approved)).current_status,'FAILED');
+  assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).paid_minor,paidBefore);
+  assert.equal((await fp('/agreements/'+g.id+'/payouts',g,payoutBody(1),outsider)).body.error.code,'FINANCE_DISPUTED');
+  const cancelled=ft(await fp('/payouts/'+pending.id+'/cancellation',pending,{reason:'release pending synthetic reservation'},outsider));
+  assert.equal(cancelled.current_status,'CANCELLED');
+  const resolved=ft(await fp('/disputes/'+dispute.id+'/decisions',dispute,{decision:'RESUME',reason:'independently checked failure and cancellation',action_record_id:null},reviewer,null));
+  assert.equal(resolved.current_status,'RESOLVED');
+  assert.equal((await fr(reviewed)).current_status,'APPROVED');
+  assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).available_minor,500);
+ });
  await t.test('return and failed payouts keep facts and release reservation for a new request',async()=>{
   ft(await freview(ft(await fp('/payouts/'+payout.id+'/evidence',payout,evidenceBody('RETURNED',1000)))));assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).paid_minor,0);
   payout=await approveAll(ft(await fp('/agreements/'+g.id+'/payouts',g,payoutBody(1000),outsider)),[]);
@@ -142,8 +181,14 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   ft(await fc('GET','/notifications',buyer),'FinanceNotificationsResponse');
  });
  await t.test('refund reduces future entitlement, preserves old settlement and actual payout',async()=>{
+  const pendingBeforeRefund=ft(await fp('/agreements/'+g.id+'/payouts',g,payoutBody(200),outsider));
+  const pendingSnapshot=JSON.stringify((await fr(pendingBeforeRefund)).data);
   let refund=await trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:first.id,allocations:[{line_id:'film',amount_minor:4000}],reason:'synthetic refund',operation_key:key()});refund=await reviewTrade(refund);
   const claim=await trade.claim(reviewer.ctx,refund.id,null,'REFUND');await trade.applyRefund(refund.id,{...config,refund_id:refund.id,payment_id:first.id,transaction_id:'test.'+first.id,currency:'CNY',amount_minor:4000,status:'SUCCEEDED'});
+  assert.equal((await freview(pendingBeforeRefund)).body.error.code,'CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED');
+  assert.equal((await fr(pendingBeforeRefund)).current_status,'REQUESTED');
+  assert.equal(JSON.stringify((await fr(pendingBeforeRefund)).data),pendingSnapshot);
+  ft(await fp('/payouts/'+pendingBeforeRefund.id+'/cancellation',pendingBeforeRefund,{reason:'refund changed agreed amounts'},outsider));
   assert.equal((await fp('/agreements/'+g.id+'/payouts',g,payoutBody(1),outsider)).body.error.code,'CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED');
   await settle(g,[producer,buyer,outsider]);const row=(await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id);assert.equal(row.accrued_minor,900);assert.equal(row.paid_minor,1000);assert.equal(row.recovery_due_minor,100);assert.equal(JSON.stringify((await fr(settlement)).data),savedSettlement);
  });
@@ -153,6 +198,22 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
  await t.test('reconciliation compares verified facts without turning imported rows into money',async()=>{
   const refs=require('../src/modules/settlement/source');const f=await db.withTransaction(tx=>refs.facts(tx,g)),items=f.references.map(x=>({record_id:x.record_id,direction:x.direction,external_reference:x.external_reference,amount_minor:x.amount_minor}));
   const input={provider:'ALIPAY',environment:'SANDBOX',external_reference:'synthetic.statement',items,evidence_asset_id:proof.id};assert.equal(ft(await fp('/agreements/'+g.id+'/reconciliations',g,input)).current_status,'MATCHED');assert.equal(ft(await fp('/agreements/'+g.id+'/reconciliations',g,{...input,items:[]})).current_status,'DIFFERENCES');assert.equal((await fp('/agreements/'+g.id+'/reconciliations',g,{...input,environment:'PRODUCTION'})).status,409);
+ });
+
+ await t.test('daily books include verified refunds, actual split payments and returned split money, not reservations',async()=>{
+  const daily=require('../src/modules/reconciliation/sources');
+  const day=new Date(Date.now()-86400000+8*3600000).toISOString().slice(0,10),posted=day+' 04:00:00.000';
+  await db.execute('UPDATE trade_journal SET created_at=? WHERE order_id=?',[posted,order.id]);
+  await db.execute('UPDATE finance_entries SET created_at=? WHERE agreement_id=?',[posted,g.id]);
+  const scope={business_date:day,merchant_party_id:producer.personal_party_id,...config};
+  const facts=await db.withTransaction(tx=>daily.facts(tx,scope));
+  assert.equal(facts.items.filter(x=>x.kind==='RECEIPT').reduce((n,x)=>n+x.amount_minor,0),10000);
+  assert.equal(facts.items.filter(x=>x.kind==='REFUND').reduce((n,x)=>n+x.amount_minor,0),4000);
+  assert.equal(facts.items.filter(x=>x.kind==='SPLIT'&&x.direction==='OUT').reduce((n,x)=>n+x.amount_minor,0),2000);
+  assert.equal(facts.items.filter(x=>x.kind==='SPLIT'&&x.direction==='IN').reduce((n,x)=>n+x.amount_minor,0),1000);
+  assert.equal(facts.warnings.length,0);
+  assert.equal((await db.withTransaction(tx=>daily.facts(tx,{...scope,merchant_id:'wrong-account'}))).items.length,0);
+  assert.equal((await db.withTransaction(tx=>daily.facts(tx,{...scope,environment:'PRODUCTION'}))).items.length,0);
  });
  let revenue,statement;
  await t.test('external release statement is accrued revenue, not cash received or automatic payout',async()=>{
@@ -193,6 +254,14 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   assert.equal((await freview({...settlement,object_version:1})).status,412);
  });
  ft(await fc('GET','/agreements?limit=1'),'FinanceListResponse');ft(await fc('GET','/agreements/'+g.id+'/records?kind=PAYOUT&limit=1'),'FinanceListResponse');ft(await fc('GET','/agreements/'+g.id+'/entries?limit=2'),'FinanceEntriesResponse');ft(await fc('GET','/agreements/'+g.id+'/entries?limit=100'),'FinanceEntriesResponse');ft(await fc('GET','/agreements/'+revenue.id+'/entries?limit=100',buyer),'FinanceEntriesResponse');ft(await fc('GET','/records/'+g.id+'/confirmations'),'FinanceConfirmationsResponse');
+ await t.test('personal income uses posted own shares including payout returns; no other party amounts or estimated revenue',async()=>{
+  for(const category of ['contracts','works']){for(const who of [producer,buyer]){const response=await fetch(base.replace('/production','/me/business/'+category),{headers:{Authorization:'Bearer '+who.token,'X-Acting-Party':who.personal_party_id}});const value=await response.json();assert.equal(response.status,200);assert.equal(value.data.partial,false,JSON.stringify(value));fixtures.push({name:'personal-'+category+'-'+who.account_id,schema:'PersonalCenterResponse',value});if(category==='works'){assert.ok(value.data.sections.find(x=>x.source==='PRODUCTION_PROJECTS').items.some(x=>x.record_id===project.id));if(who===producer)assert.ok(value.data.sections.find(x=>x.source==='SUPPLY_WORKS').items.some(x=>x.record_id===work.id));}}}
+  for(const who of [producer,outsider,buyer]){
+   const response=await fetch(base.replace('/production','/me/business/income'),{headers:{Authorization:'Bearer '+who.token,'X-Acting-Party':who.personal_party_id}});const value=await response.json();assert.equal(response.status,200,JSON.stringify(value));assert.equal(value.data.partial,false,JSON.stringify(value));
+   assert.ok(value.data.sections[0].items.length>0);fixtures.push({name:'personal-income-'+who.account_id,schema:'PersonalCenterResponse',value});
+   for(const item of value.data.sections[0].items){const record=await require('../src/modules/settlement/repository').createSettlementRepository(db,{resolvePrincipal}).read(who.ctx,{record_id:item.record_id,party_id:who.personal_party_id});const totals=await db.withTransaction(tx=>require('../src/modules/settlement/source').totals(tx,record));const own=totals[who.personal_party_id];assert.equal(item.income.accrued_minor,own.accrued_minor);assert.equal(item.income.adjustment_minor,own.adjustment_minor);assert.equal(item.income.verified_paid_minor,own.paid_minor);assert.equal(item.income.pending_minor,record.owner_party_id===who.personal_party_id?0:Math.max(0,own.balance_minor));assert.equal(item.income.retained_minor,record.owner_party_id===who.personal_party_id?Math.max(0,own.balance_minor):0);assert.equal(item.income.recovery_due_minor,Math.max(0,-own.balance_minor));assert.equal(item.income.environment,record.data.environment);assert.equal(item.income.bank_arrival_verified,false);assert.equal(item.income.basis,'POSTED_LEDGER_ONLY');assert.ok(!('parties' in item));}
+  }
+ });
  const out=path.resolve(__dirname,'../../../..','.local/finance-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));await fs.writeFile(out.replace('http-fixtures','request-fixtures'),JSON.stringify(requests,null,2));
  }finally{if(server)await new Promise(r=>{server.close(r);server.closeAllConnections();});if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
 });

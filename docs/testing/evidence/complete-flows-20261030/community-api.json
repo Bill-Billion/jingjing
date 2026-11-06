@@ -1,0 +1,260 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "checks": [
+    {
+      "name": "已审现货预览是真实受控MP4，不先创建本人数字人",
+      "result": "PASS"
+    },
+    {
+      "name": "已购内容保留本人非商业个人许可",
+      "result": "PASS"
+    },
+    {
+      "name": "明确读取已购内容返回合成MP4",
+      "result": "PASS"
+    },
+    {
+      "name": "无关主体不能下载他人已购内容",
+      "result": "PASS"
+    },
+    {
+      "name": "未付款和争议作品均不能读取私有内容",
+      "result": "PASS"
+    },
+    {
+      "name": "首次开户缺账本有独立状态",
+      "result": "PASS"
+    },
+    {
+      "name": "托管充值明确未接通且未改余额",
+      "result": "PASS"
+    },
+    {
+      "name": "六类地域榜及综合分来自实际已发布快照",
+      "result": "PASS"
+    },
+    {
+      "name": "MCN员工已派单读取当前真实账号",
+      "result": "PASS"
+    },
+    {
+      "name": "员工不能管理机构授权",
+      "result": "PASS"
+    },
+    {
+      "name": "20个独立真人均满足适用条件，原主单保持一笔",
+      "result": "PASS"
+    },
+    {
+      "name": "房间摘要不泄漏个人私密故事",
+      "result": "PASS"
+    },
+    {
+      "name": "参与者读取自己单独确认的故事",
+      "result": "PASS"
+    },
+    {
+      "name": "主单交付后本人可领取独审个人片段",
+      "result": "PASS"
+    },
+    {
+      "name": "发起人不能领取参与者个人片段",
+      "result": "PASS"
+    },
+    {
+      "name": "20人服务额度有实际权益记录并非全单免付",
+      "result": "PASS"
+    },
+    {
+      "name": "全额制作权益仍是AVAILABLE真实券，尚未伪装现金",
+      "result": "PASS"
+    },
+    {
+      "name": "奖池显示实际固定规则与概率，不暴露独审私料",
+      "result": "PASS"
+    },
+    {
+      "name": "本人权益申请不能被其他账号读取",
+      "result": "PASS"
+    },
+    {
+      "name": "参演原款项与权利完整保留等候各方会签",
+      "result": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/stock/catalog/3f45113c-5327-452c-8337-e3e1f794cd03",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/stock/catalog/3f45113c-5327-452c-8337-e3e1f794cd03/preview",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/27de60a0-6a9c-4e93-9e86-a754bf35c111",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/27de60a0-6a9c-4e93-9e86-a754bf35c111/content",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/27de60a0-6a9c-4e93-9e86-a754bf35c111/content",
+      "role": "outsider",
+      "status": 404,
+      "error": "STOCK_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/752180ad-b3cc-407c-82e6-bea8266176c2/content",
+      "role": "stock_buyer",
+      "status": 409,
+      "error": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/2f4f7800-47a5-452a-af03-3ce1bfbd79de/content",
+      "role": "stock_buyer",
+      "status": 409,
+      "error": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "role": "outsider",
+      "status": 404,
+      "error": "WALLET_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/recharges",
+      "role": "buyer",
+      "status": 503,
+      "error": "CUSTODY_PROVIDER_NOT_CONNECTED"
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/rankings/5d1da0d4-b469-4c6f-97c6-78cd740fa7a2",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "role": "mcn_staff",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/staff",
+      "role": "mcn_staff",
+      "status": 403,
+      "error": "ARTIST_PARTY_FORBIDDEN"
+    },
+    {
+      "method": "GET",
+      "path": "/cocreation/rooms/28c0231e-197c-4d79-9737-16ce4f7b9916",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/cocreation/members/50c8a084-8467-4443-8c07-1da00c89263a",
+      "role": "participant",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/cocreation/members/50c8a084-8467-4443-8c07-1da00c89263a",
+      "role": "buyer",
+      "status": 404,
+      "error": "ARTIST_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/cocreation/snippets/8731fcce-ad3a-4a08-8b56-32cf9473a4d6/file",
+      "role": "participant",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/cocreation/snippets/8731fcce-ad3a-4a08-8b56-32cf9473a4d6/file",
+      "role": "buyer",
+      "status": 404,
+      "error": "COCREATION_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/cocreation/benefits",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/grants/528f253a-e3c7-4730-8bc5-23e806a79b70",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/pools/04bb16fe-709c-4aff-8754-cbbe5c18fa7d",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/privacy/requests/0644ecfc-ca77-4fd7-b2da-48d818542559",
+      "role": "buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/privacy/requests/0644ecfc-ca77-4fd7-b2da-48d818542559",
+      "role": "outsider",
+      "status": 404,
+      "error": "PRIVACY_REQUEST_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/projects/records/99e16249-033f-4b73-be49-ab14762ef6bc",
+      "role": "buyer",
+      "status": 200
+    }
+  ],
+  "blockers": [
+    {
+      "id": "R05R12-CORE-CUSTODY",
+      "status": 503,
+      "code": "CUSTODY_PROVIDER_NOT_CONNECTED"
+    }
+  ],
+  "limits": [
+    "真实托管未接通是本次预期边界，通过不代表资金服务已启用",
+    "只验证可播放合成色条，不认定真实影像、水印、声音或AI标识质量",
+    "人工注入隔离可信回执不证明真实支付渠道已启用",
+    "MCN单人零商单资料不能证明后台跨人收入隔离已修复"
+  ]
+}

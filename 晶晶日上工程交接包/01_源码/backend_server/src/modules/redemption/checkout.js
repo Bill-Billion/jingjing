@@ -10,7 +10,8 @@ function discounted(q,g,holdId){
  const discount_minor=t.production.face_minor,total_minor=original.total_minor-discount_minor;
  if(total_minor<0||total_minor>0&&total_minor<10)throw error('COUPON_FREE_ORDER_FLOW_REQUIRED',409);
  const lines=original.lines.map(l=>({...l,unit_minor:total_minor,total_minor}));
- const amounts=[Math.floor(total_minor*30/100),Math.floor(total_minor*90/100)-Math.floor(total_minor*30/100),total_minor-Math.floor(total_minor*90/100)];
+ const policy=require('../customization/quote-policy');
+ const amounts=policy.amounts(total_minor,policy.schedule(original.lines).kind);
  require('../customization/quote-policy').plan(original.lines,original.installments);
  const installments=total_minor===0?[]:original.installments.map((s,k)=>({...s,allocations:[{line_id:lines[0].line_id,amount_minor:amounts[k]}]}));
  const adjusted={...original,lines,installments,total_minor,discount:{hold_id:holdId,grant_id:g.id,original_quote_sha256:digest(original),original_total_minor:original.total_minor,original_lines:original.lines,discount_minor,rule_snapshot:t,coverage:total_minor===0?'FULL':'PARTIAL',source_kind:t.kind,refund_forfeit:true,cashable:false}};

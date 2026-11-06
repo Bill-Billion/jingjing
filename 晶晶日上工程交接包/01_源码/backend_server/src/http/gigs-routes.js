@@ -3,7 +3,7 @@ const express=require('express'),{createHash}=require('node:crypto');
 const {createGigsRepository}=require('../modules/gigs/repository');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=createGigsRepository(db,{resolvePrincipal}),caps=new WeakMap();
+ const router=express.Router(),repo=createGigsRepository(db,{resolvePrincipal,marketplaceContractPolicy:env.MARKETPLACE_CONTRACT_POLICY}),caps=new WeakMap();
  const storage=storageFactory?storageFactory():require('../modules/providers/private-storage').createPrivateStorage({env,repository:require('../modules/providers/readiness').createReadinessRepository(db),authorize:async({operation,key,context})=>operation==='get'&&caps.get(context)===key});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}return req.actingParty=id(v);};
@@ -13,8 +13,11 @@ function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/rules','createRule',['rule'],{party:false});
  post('/records/:record_id/reviews','review',['decision','reason','checks'],{party:false,existing:true});
  post('/rules/:record_id/retirement','retireRule',['reason'],{party:false,existing:true});
- post('/relations','relation',['artist_party_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
+ router.get('/relation-options',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.relationOptions(req,{party_id:acting(req),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
+ post('/relations','relation',['artist_party_id','source_listing_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
  post('/relations/:record_id/decision','relationDecision',['decision','reason'],{existing:true});
+ post('/relations/:record_id/handover','acknowledgeHandover',['order_id','note'],{existing:true});
+ router.get('/relations/:record_id/handover',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.handover(req,{record_id:id(req.params.record_id),party_id:acting(req),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
  post('/requests','createGig',['title','brief','category','scope','rule_id','proofs']);
  post('/requests/:record_id/suspension','suspend',['reason'],{party:false,existing:true});
  post('/offers','offer',['gig_id','spec_id','avatar_id','consent_id','relation_id','commission','terms','ranking_opt_in','evidence_asset_ids']);

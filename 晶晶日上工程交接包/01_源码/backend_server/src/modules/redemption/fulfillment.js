@@ -43,6 +43,7 @@ function methods({db,actor}){return {
    return C.command(tx,a,'PROPOSE_DELIVERY',i,async()=>{A.match(r,i.expected_version);const at=await A.now(tx);
     if(r.current_status!=='BOUND'||r.data.expires_at<=at||i.starts_at<at||i.ends_at<=i.starts_at||i.ends_at>r.data.expires_at)throw error('REWARD_SCHEDULE_INVALID',409);
     await validateBinding(tx,r);await A.assets(tx,[id(i.evidence_asset_id)],r.data.fulfillment_party_id,['REVIEW_EVIDENCE','WORK_CONTENT']);
+    await require('./delivery-evidence').assertSubmitted(tx,r,i.evidence_asset_id,'SCHEDULE');
     if(r.data.template.kind==='EXPOSURE'&&Date.parse(i.ends_at)-Date.parse(i.starts_at)!==7*P.DAY)throw error('EXPOSURE_PERIOD_INVALID',400);
     if(await A.one(tx,"SELECT id FROM redemption_records WHERE kind='SCHEDULE' AND parent_id=? AND current_status IN ('IN_REVIEW','APPROVED') LIMIT 1",[r.id]))throw error('REWARD_SCHEDULE_ALREADY_PENDING',409);
     return C.insert(tx,a,'SCHEDULE',r.owner_party_id,r.id,'IN_REVIEW',{starts_at:i.starts_at,ends_at:i.ends_at,reference:i.reference,evidence_asset_id:i.evidence_asset_id,kind:r.data.template.kind,person_id:r.data.binding.person_id,placement:r.data.template.exposure?.placement||null});});});
@@ -74,6 +75,7 @@ function methods({db,actor}){return {
     if(r.current_status!=='CONFIRMED'||r.data.delivery.ends_at>await A.now(tx))throw error('REWARD_DELIVERY_NOT_DUE',409);
     if((r.data.template.kind==='EXPOSURE')!==(i.outcome==='EXPOSURE_COMPLETED'))throw error('INVALID_REWARD_OUTCOME',400);
     await validateBinding(tx,r);await A.assets(tx,[id(i.evidence_asset_id)],r.data.fulfillment_party_id,['REVIEW_EVIDENCE','WORK_CONTENT']);
+    await require('./delivery-evidence').assertSubmitted(tx,r,i.evidence_asset_id,'COMPLETION');
     return C.save(tx,a,r,'FULFILLED',{...r.data,delivery:{...r.data.delivery,outcome:i.outcome,evidence_asset_id:i.evidence_asset_id,reason:i.reason,by:a.id,completed_at:await A.now(tx)}},'REWARD_FULFILLMENT_RECORDED');});});
  },
  async requestRemedy(ctx,i){

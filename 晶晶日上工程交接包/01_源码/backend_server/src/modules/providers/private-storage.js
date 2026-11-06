@@ -36,7 +36,10 @@ function createPrivateStorage({env=process.env, repository, authorize=async()=>f
         const result = await getClient().put(key,body,{mime:contentType,headers:{'x-oss-object-acl':'private','x-oss-forbid-overwrite':'true'}});
         return {key,size:body.length,sha256:createHash('sha256').update(body).digest('hex'),provider_request_id:result?.res?.headers?.['x-oss-request-id']};
       },
-      async get({key}) { const result=await getClient().get(key); return {body:result.content,provider_request_id:result?.res?.headers?.['x-oss-request-id']}; },
+      async get({key,missingOk=false}) {
+        try { const result=await getClient().get(key); return {body:result.content,provider_request_id:result?.res?.headers?.['x-oss-request-id']}; }
+        catch(e) { if(missingOk && e.code==='NoSuchKey' && e.status===404)return {body:null}; throw e; }
+      },
       async sign({key,expires}) {
         const url=await getClient().signatureUrlV4('GET',expires,undefined,key);
         if (typeof url !== 'string' || !url.startsWith('https://')) throw failure('INVALID_PRIVATE_URL');
@@ -78,6 +81,8 @@ function createPrivateStorage({env=process.env, repository, authorize=async()=>f
       return call('put',{key,body,contentType},context);
     },
     getBuffer(key,context) { return call('get',{key},context).then(result=>result.body); },
+    // Only an explicit provider NoSuchKey is absence; timeouts and denied reads still fail.
+    getBufferIfExists(key,context) { return call('get',{key,missingOk:true},context).then(result=>result.body); },
     signedUrl(key,{expires=300}={},context) {
       if (!Number.isInteger(expires) || expires < 1 || expires > 900) return Promise.reject(failure('INVALID_URL_EXPIRY'));
       return call('sign',{key,expires},context);

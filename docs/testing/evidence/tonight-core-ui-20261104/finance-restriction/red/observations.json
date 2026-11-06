@@ -1,0 +1,51 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_40852_ad8eb8cade10",
+  "checks": [
+    {
+      "case": "payout-approval-after-restriction",
+      "evidence": "b681a1da-d857-4382-937d-bfaa412e445f",
+      "payout": "0bd47389-93b0-4d7e-8276-bb09febc8969",
+      "asset": "87b9f597-2f26-4010-a37d-2c27930a4329",
+      "privacy_request": "73f78cae-d4d5-48de-95b2-7d9642b107bf",
+      "expected_status": 409,
+      "actual_status": 200,
+      "actual_error": null,
+      "before": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "after": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      },
+      "payout_status": "PAID",
+      "evidence_status": "APPROVED",
+      "before_paid": 0,
+      "after_paid": 1000
+    },
+    {
+      "case": "restricted-new-draft",
+      "asset": "9d784473-2e65-43ce-8a34-bc54dba75679",
+      "expected_status": 409,
+      "actual_status": 200,
+      "actual_error": null,
+      "before": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      },
+      "after": {
+        "records": 5,
+        "entries": 3,
+        "audit": 16
+      }
+    }
+  ],
+  "cleanup": {
+    "database_removed": true,
+    "server_stopped": true
+  }
+}

@@ -1,0 +1,492 @@
+{
+  "type": "privacy",
+  "database": "jx_test_privacy_30332_0949ad3e6e9e",
+  "synthetic_only": true,
+  "steps": [
+    {
+      "name": "fixture-personal-account-operator-grants-reviewed-policy",
+      "policy": "c5cd80d2-d1e3-4034-87d4-576b08448010",
+      "retention": "67b69cb9-788f-446e-a447-4edc91b2d77d",
+      "proof": "a59f6169-f4eb-4bac-8e61-3902316389b2"
+    },
+    {
+      "name": "page-create-closure-request",
+      "request_id": "e7c63875-55a7-470c-a17f-58b23a06c838"
+    },
+    {
+      "name": "page-operator-start"
+    },
+    {
+      "name": "page-propose-identity-verification"
+    },
+    {
+      "name": "page-independent-verification",
+      "status": "TRACKING",
+      "due_on": "2026-11-24"
+    },
+    {
+      "name": "page-propose-account-closure",
+      "execution_id": "5355f769-c533-4c31-9ff5-298f83a619a6"
+    },
+    {
+      "name": "page-independent-execution-review"
+    },
+    {
+      "name": "page-account-closed-old-session-invalid",
+      "account_status": "CLOSED",
+      "old_session_status": 401,
+      "data_erasure": "NOT_CONFIRMED"
+    },
+    {
+      "name": "page-retention-response-proposed",
+      "retention_rule_id": "67b69cb9-788f-446e-a447-4edc91b2d77d",
+      "scope": "PROFILE",
+      "object_ref": "e7c63875-55a7-470c-a17f-58b23a06c838"
+    },
+    {
+      "name": "page-independent-retention-response-reviewed"
+    },
+    {
+      "name": "page-closure-independently-completed",
+      "status": "COMPLETED"
+    },
+    {
+      "name": "page-profile-correction-executed",
+      "request_id": "b14ede52-ebac-4962-8ea7-c6fabe0d9c7f",
+      "execution_id": "3dba004b-6052-4355-b1a1-1efe0557206d",
+      "display_name": "已核验的合成新名称"
+    },
+    {
+      "name": "independent-policy-counterexample",
+      "path": "/privacy/requests/e7c63875-55a7-470c-a17f-58b23a06c838/execution-policy-options?action=ACCOUNT_CLOSURE",
+      "status": 404,
+      "code": "PRIVACY_REQUEST_NOT_FOUND"
+    },
+    {
+      "name": "independent-policy-counterexample",
+      "path": "/privacy/operations/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/retention-policy-options?scope=PROFILE",
+      "status": 403,
+      "code": "PRIVACY_FORBIDDEN"
+    },
+    {
+      "name": "independent-policy-counterexample",
+      "path": "/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/execution-policy-options?action=ACCOUNT_CLOSURE",
+      "status": 409,
+      "code": "PRIVACY_ACTION_SCOPE_MISMATCH"
+    },
+    {
+      "name": "independent-policy-counterexample",
+      "path": "/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/execution-policy-options?action=PROFILE_CORRECTION&cursor=bad",
+      "status": 400,
+      "code": "INVALID_ID"
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/start",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock/proposals",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/e7c63875-55a7-470c-a17f-58b23a06c838",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/e7c63875-55a7-470c-a17f-58b23a06c838/execution-policy-options",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests/e7c63875-55a7-470c-a17f-58b23a06c838/executions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/executions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/executions/5355f769-c533-4c31-9ff5-298f83a619a6/review",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/e7c63875-55a7-470c-a17f-58b23a06c838/executions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests/e7c63875-55a7-470c-a17f-58b23a06c838/executions/5355f769-c533-4c31-9ff5-298f83a619a6/execute",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/retention-policy-options",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/supply/assets",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/response",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/review",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock/proposals",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/e7c63875-55a7-470c-a17f-58b23a06c838/closure-clock/reviews",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/execution-policy-options",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/executions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/executions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/executions/3dba004b-6052-4355-b1a1-1efe0557206d/review",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/executions",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests/b14ede52-ebac-4962-8ea7-c6fabe0d9c7f/executions/3dba004b-6052-4355-b1a1-1efe0557206d/execute",
+      "status": 200
+    }
+  ],
+  "records": {
+    "request": "e7c63875-55a7-470c-a17f-58b23a06c838",
+    "execution": "5355f769-c533-4c31-9ff5-298f83a619a6",
+    "correction": "b14ede52-ebac-4962-8ea7-c6fabe0d9c7f"
+  },
+  "failures": [],
+  "cleanup": {
+    "database_removed": true,
+    "services_stopped": true
+  },
+  "outcome": "PASS_WITH_LIMITS"
+}

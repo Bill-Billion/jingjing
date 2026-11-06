@@ -84,8 +84,6 @@ class StoryTemplate {
   late final List<StoryField> fields;
   String get title => data['title'];
   String get description => data['description'];
-  bool get submissionAvailable =>
-      !fields.any((f) => f.type == 'PRIVATE_ATTACHMENT' && f.required);
 
   Map<String, String> answers(dynamic value) {
     final result = storyMap(value);
@@ -101,7 +99,9 @@ class StoryTemplate {
     for (final field in fields) {
       final answer = result[field.key];
       if (answer == null) continue;
-      storyRequire(field.type != 'PRIVATE_ATTACHMENT' || answer == '');
+      storyRequire(field.type != 'PRIVATE_ATTACHMENT' ||
+          answer == '' ||
+          storyId(answer));
       storyRequire(
         field.type != 'CHOICE' ||
             answer == '' ||
@@ -124,11 +124,9 @@ class StoryCategory {
     );
     template = StoryTemplate(data['template_snapshot']);
     storyRequire(
-      data['submission_available'] == template.submissionAvailable &&
-          data['unavailable_reason'] ==
-              (template.submissionAvailable
-                  ? null
-                  : 'ATTACHMENT_SUBMISSION_NOT_READY'),
+      data['submission_available']
+          ? data['unavailable_reason'] == null
+          : data['unavailable_reason'] is String,
     );
   }
   final Map<String, dynamic> data;
@@ -136,6 +134,7 @@ class StoryCategory {
   String get id => data['template_version_id'];
   String get code => data['category_code'];
   int get version => data['template_version'];
+  bool get submissionAvailable => data['submission_available'];
 }
 
 class StorySummary {
@@ -372,9 +371,7 @@ String storyReason(String? reason) => switch (reason) {
       'TOO_LONG' => '内容超过该项字数上限，请精简后保存。',
       'TOO_LARGE' => '整份故事内容过长，请精简后再保存。',
       'UNKNOWN_FIELD' => '表单包含当前模板没有的问题，请核对当前版本。',
-      'ATTACHMENT_NOT_SUPPORTED' ||
-      'ATTACHMENT_SUBMISSION_NOT_READY' =>
-        '此项需要私有附件；附件提交尚未开放，可以先保存文字草稿。',
+      'INVALID_ATTACHMENT_REFERENCE' => '请先上传这份故事的附件，再选择对应文件。',
       'INVALID_TYPE' => '内容格式不正确，请检查填写方式。',
       _ => '这一项未通过检查，请核对后重试。',
     };

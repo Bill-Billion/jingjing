@@ -7,6 +7,8 @@ async function snapshot(tx,{rule_id,supplier_party_id,relation_id}){
  if(!row)throw error('RULE_NOT_EFFECTIVE',409);
  let content;try{content=verifyRuleContent(typeof row.content_json==='string'?JSON.parse(row.content_json):row.content_json);}catch{throw error('STORED_CONTENT_MISMATCH',503);}
  if(content.id!==row.id)throw error('STORED_CONTENT_MISMATCH',503);
+ if(!content.terms.marketplace_finance)throw error('MARKETPLACE_CONTRACT_RULE_REQUIRED',409);
+ require('./rounding-policy').newRule(content.terms);
  const cfg=M.config(content.terms.marketplace_finance);
  await C.active(tx,supplier_party_id);await C.active(tx,cfg.platform_party_id);
  const captured_at=new Date().toISOString();let relation_snapshot=null,mcn_party_id=null,mcn_supply_bps=0;

@@ -1,0 +1,26 @@
+"use strict";
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),{randomUUID:key,randomBytes}=require('node:crypto'),mysql=require('mysql2/promise');
+const {openDatabase}=require('../src/infrastructure/database'),{migrate}=require('../src/infrastructure/database/migrator');
+test('copyright choices are reviewed and sealed while historical orders retain original promises',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},async t=>{
+ const env=JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));for(const [k,v] of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
+ const name='jx_test_cutover_'+randomBytes(8).toString('hex'),control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});let db,server;
+ try{
+  await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
+  const f=await require('./support/customization-delivery.cjs').seed(db),{producer,buyer,reviewer,outsider}=f.people,fixtures=[];
+  async function offer(options={}){let saved;const stop=new Error('synthetic quote only');await assert.rejects(f.newOrder({...options,beforeAccept:async data=>{saved=data;throw stop;}}),e=>e===stop);return saved;}
+  const old=await offer();
+  const body=x=>({buyer_party_id:buyer.personal_party_id,lines:[{line_id:'film',spec_id:x.spec.id,quantity:1}],...Object.fromEntries(['installments','channel','transaction_model','rule_id','expires_at','payment_window_minutes','license_reservation_id'].map(k=>[k,x.quote.data[k]])),customization_source:x.quote.data.customization});
+  const oldDraft=await f.trade.quote(producer.ctx,{...body(old),party_id:producer.acting_party_id,operation_key:key()});
+  server=require('../src/http/account-api').createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,COPYRIGHT_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;
+  async function post(route,user,body,version=null,op=key()){
+   const res=await fetch(base+'/api/v1'+route,{method:'POST',headers:{Authorization:'Bearer '+user.token,'Content-Type':'application/json','Idempotency-Key':op,...(user===reviewer?{}:{'X-Acting-Party':user.acting_party_id}),...(version?{'If-Match':'"'+version+'"'}:{})},body:JSON.stringify(body)}),value=await res.json();fixtures.push({method:'POST',path:'/api/v1'+route,schema:res.status===200?'TradeRecordResponse':'ErrorResponse',value});return {status:res.status,value};
+  }
+  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r.value));return r.value.data;},bad=(r,code)=>assert.equal(r.value.error?.code,code,JSON.stringify(r.value));
+  const review=q=>post('/trade/records/'+q.id+'/reviews',reviewer,{decision:'APPROVED',reason:'synthetic independent'},q.object_version);
+  const accept=q=>post('/trade/quotes/'+q.id+'/acceptance',buyer,{quote_sha256:q.content_sha256},q.object_version);
+  await t.test('missing selection blocks new quote and approval, but an approved historical promise survives',async()=>{bad(await post('/trade/quotes',producer,body(old)),'COPYRIGHT_CHOICE_REQUIRED');bad(await review(oldDraft),'COPYRIGHT_CHOICE_REQUIRED');const order=ok(await accept(old.quote));assert.equal(order.data.quote.customization_copyright,undefined);});
+  for(const mode of ['BUYER_OWNERSHIP','PRODUCER_OWNERSHIP_LICENSE'])await t.test(mode+' actual quote, independent review, buyer acceptance and immutable contract',async()=>{const x=await offer({copyrightTerms:require('./support/copyright-terms.cjs')(mode)}),q=ok(await post('/trade/quotes',producer,body(x))),approved=ok(await review(q));bad(await post('/trade/quotes/'+approved.id+'/acceptance',buyer,{quote_sha256:'0'.repeat(64)},approved.object_version),'QUOTE_NOT_ACCEPTABLE');const order=ok(await accept(approved)),snap=order.data.quote.customization_copyright;assert.equal(snap.terms.mode,mode);assert.equal(snap.copyright_owner_party_id,mode==='BUYER_OWNERSHIP'?buyer.personal_party_id:f.org.party_id);assert.deepEqual(order.data.contract.commitments.quote.customization_copyright,snap);assert.equal(snap.terms.personality_rights_retained,true);assert.equal(snap.terms.underlying_assets_excluded,true);});
+  await t.test('a foreign account cannot approve or accept another buyer copyright',async()=>{const x=await offer({copyrightTerms:require('./support/copyright-terms.cjs')()});assert.equal((await post('/trade/quotes/'+x.quote.id+'/acceptance',outsider,{quote_sha256:x.quote.content_sha256},x.quote.object_version)).status,403);});
+  await fs.writeFile(path.resolve(__dirname,'../../../../.local/copyright-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
+ }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
+});

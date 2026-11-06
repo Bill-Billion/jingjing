@@ -7,7 +7,7 @@ const handlers = require('./handlers');
 
 async function main() {
   // Fail visibly until a real domain handler exists; an idle empty process is not readiness evidence.
-  if (handlers.size === 0 && process.env.MEDIA_WORKER_ENABLED !== 'true' && process.env.PRIVACY_WORKER_ENABLED !== 'true' && process.env.PRODUCTION_WORKER_ENABLED !== 'true' && process.env.OPERATIONS_WORKER_ENABLED !== 'true' && process.env.STOCK_WORKER_ENABLED !== 'true' && process.env.AUDITION_WORKER_ENABLED !== 'true' && process.env.WALLET_WORKER_ENABLED !== 'true') throw Object.assign(new Error('No enabled domain handlers'), { code: 'WORKER_NOT_READY' });
+  if (handlers.size === 0 && process.env.COLLECTION_WORKER_ENABLED !== 'true' && process.env.MEDIA_WORKER_ENABLED !== 'true' && process.env.PRIVACY_WORKER_ENABLED !== 'true' && process.env.PRODUCTION_WORKER_ENABLED !== 'true' && process.env.OPERATIONS_WORKER_ENABLED !== 'true' && process.env.STOCK_WORKER_ENABLED !== 'true' && process.env.AUDITION_WORKER_ENABLED !== 'true' && process.env.WALLET_WORKER_ENABLED !== 'true') throw Object.assign(new Error('No enabled domain handlers'), { code: 'WORKER_NOT_READY' });
   const db = await openDatabase();
   let worker, deadline;
   const stop = () => {
@@ -19,6 +19,7 @@ async function main() {
     if (schema.migrations.some((m) => m.status !== 'APPLIED')) throw Object.assign(new Error('Migrations required'), { code: 'WORKER_SCHEMA_NOT_READY' });
     if(!await require('../infrastructure/database/recovery-guard').recoveryAllowed(db))throw Object.assign(new Error('Restored database requires independent review'),{code:'RESTORE_REVIEW_REQUIRED'});
     const enabled = new Map(handlers);
+    if(process.env.COLLECTION_WORKER_ENABLED==='true')for(const [name,handler] of require('../modules/collections/retention').createCollectionHandlers(db,{env:process.env}))enabled.set(name,handler);
     if(process.env.MEDIA_WORKER_ENABLED==='true')for(const [name,handler] of require('../modules/media/service').createMediaHandlers(db,{env:process.env}))enabled.set(name,handler);
     if(process.env.PRIVACY_WORKER_ENABLED==='true')for(const [name,handler] of require('../modules/privacy/erasure').createPrivacyHandlers(db,{env:process.env}))enabled.set(name,handler);
     if (process.env.PRODUCTION_WORKER_ENABLED === 'true') for (const [name,handler] of require('../modules/production/handlers').createProductionHandlers(db,{env:process.env})) enabled.set(name,handler);

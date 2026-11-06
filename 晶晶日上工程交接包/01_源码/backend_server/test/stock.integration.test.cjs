@@ -14,13 +14,54 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
  const change=async(r,action,operator=false)=>ok(await call('POST','/stock/'+(operator?'reviews':'listings')+'/'+r.id+'/status',operator?reviewer:seller,{action,reason:'synthetic test'},operator?null:seller.personal_party_id,headers(r)));
  S.reviewListing=async(r,channel)=>ok(await call('POST','/stock/listings/'+r.id+'/reviews',reviewer,{channel,decision:'APPROVED',reason:'synthetic only',verification:channel==='RIGHTS'?{rights_verified:true,all_people_authorized:true,seller_qualified:true,source_sha256:r.data.files.full_sha256}:{content_verified:true,preview_watermark_verified:true,ai_labels_verified:true,source_sha256:r.data.files.full_sha256}},null,headers(r)));
  let r,order,pay;
- await t.test('L1 may list without paid L2; source and preview must differ',async()=>{assert.equal(S.halo.data.level,1);const i={...S.listingInput,preview_file_id:S.file.id,operation_key:key()};await assert.rejects(stock.create(seller.ctx,i),{code:'STOCK_SEPARATE_PREVIEW_REQUIRED'});const {party_id,...input}=S.listingInput;r=ok(await call('POST','/stock/listings',seller,input,party_id,headers()));assert.equal(r.current_status,'IN_REVIEW');});
+ await t.test('empty seller obtains reviewed choices before first listing',async()=>{assert.equal(ok(await call('GET','/stock/listings',seller)).items.length,0);assert.equal(ok(await call('GET','/stock/sales-publications',seller)).items[0].spec_id,S.spec.id);assert.equal(ok(await call('GET','/stock/participant-options?person_id='+seller.person.id,seller)).items[0].consent_id,S.consent.id);});
+ await t.test('current L1 plus manual approval may list; legacy request flag cannot weaken server policy',async()=>{assert.equal(S.halo.data.level,1);const i={...S.listingInput,preview_file_id:S.file.id,operation_key:key()};await assert.rejects(stock.create(seller.ctx,i),{code:'STOCK_SEPARATE_PREVIEW_REQUIRED'});const {party_id,...input}=S.listingInput;r=ok(await call('POST','/stock/listings',seller,input,party_id,headers()));assert.equal(r.current_status,'IN_REVIEW');assert.equal(r.data.qualification.minimum_halo_level,2);});
+ await t.test('seller can inspect missing manual approval; unrelated accounts cannot inspect qualification',async()=>{
+  const url='/stock/seller-eligibility?person_id='+seller.person.id;
+  let e=ok(await call('GET',url,seller));assert.equal(e.eligible,true);assert.deepEqual(e.blocking_reasons,[]);
+  bad(await call('GET',url,outsider),'ARTIST_NOT_FOUND');
+  await db.execute("UPDATE artist_records SET current_status='SUBMITTED' WHERE id=?",[S.talentId]);
+  e=ok(await call('GET',url,seller));assert.equal(e.manual_review_approved,false);assert.deepEqual(e.blocking_reasons,['STOCK_HALO_REVIEW_REQUIRED']);
+  const {party_id,...input}=S.listingInput;bad(await call('POST','/stock/listings',seller,input,party_id,headers()),'STOCK_HALO_REVIEW_REQUIRED');
+  bad(await call('GET','/stock/participant-options?person_id='+seller.person.id,seller),'STOCK_HALO_REVIEW_REQUIRED');
+  await assert.rejects(S.reviewListing(r,'RIGHTS'),/STOCK_HALO_REVIEW_REQUIRED/);
+  await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);
+ });
+ await t.test('future, expired, rejected or withdrawn manual certification never grants listing',async()=>{
+  for(const state of ['REJECTED','WITHDRAWN']){await db.execute('UPDATE artist_records SET current_status=? WHERE id=?',[state,S.talentId]);await assert.rejects(stock.create(seller.ctx,{...S.listingInput,operation_key:key()}),{code:'STOCK_HALO_REVIEW_REQUIRED'});}
+  for(const data of [{...S.talentData,valid_from:'2098-01-01T00:00:00.000Z'},{...S.talentData,valid_until:'2020-02-01T00:00:00.000Z'}]){
+   await db.execute("UPDATE artist_records SET current_status='APPROVED',data_json=?,data_sha256=? WHERE id=?",[JSON.stringify(data),digest(data),S.talentId]);
+   await assert.rejects(stock.create(seller.ctx,{...S.listingInput,operation_key:key()}),{code:'STOCK_HALO_REVIEW_REQUIRED'});
+  }
+  await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(S.talentData),digest(S.talentData),S.talentId]);
+ });
+ await t.test('each depicted person needs their own manual approval, not only the seller',async()=>{
+  const u=buyer2,ev=await S.supply.upload(u.ctx,{party_id:u.personal_party_id,purpose:'CONSENT_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic additional person evidence'),operation_key:key()});
+  const approve=x=>S.artists.review(reviewer.ctx,{person_id:u.person.id,record_id:x.id,expected_version:x.object_version,decision:'APPROVE',reason:'independent synthetic evidence',operation_key:key()});
+  await approve(await S.artists.requestHalo(u.ctx,{person_id:u.person.id,party_id:u.personal_party_id,level:1,ownership_promise:true,evidence_asset_ids:[ev.id],service_id:null,operation_key:key()}));
+  const avatar=await S.artists.createAvatar(u.ctx,{person_id:u.person.id,party_id:u.personal_party_id,display_name:'synthetic uncertified talent',operation_key:key()});
+  const consent=await approve(await S.artists.declareConsent(u.ctx,{person_id:u.person.id,party_id:u.personal_party_id,avatar_id:avatar.id,consent:{features:['FACE','VOICE'],purposes:['STOCK_LICENSE','PUBLIC_DISPLAY'],grantee_party_id:seller.personal_party_id,territories:['WORLDWIDE'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'Synthetic consent only, no certification implied.',evidence_asset_ids:[ev.id]},operation_key:key()}));
+  await assert.rejects(stock.create(seller.ctx,{...S.listingInput,participants:[...S.listingInput.participants,{person_id:u.person.id,avatar_id:avatar.id,consent_id:consent.id}],operation_key:key()}),{code:'STOCK_HALO_REVIEW_REQUIRED'});
+ });
  await t.test('listing requires current L1 fact, not seller checkbox',async()=>{await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[S.halo.id]);await assert.rejects(stock.create(seller.ctx,{...S.listingInput,operation_key:key()}),{code:'STOCK_L1_REQUIRED'});await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.halo.id]);});
  await t.test('independent rights and content reviews required before public sale',async()=>{await assert.rejects(stock.review(seller.ctx,{record_id:r.id,expected_version:r.object_version,channel:'RIGHTS',decision:'APPROVED',reason:'self',verification:{},operation_key:key()}),{code:'STOCK_REVIEW_FORBIDDEN'});bad(await call('GET','/stock/catalog/'+r.id,buyer,undefined,null),'STOCK_NOT_LISTED');r=await S.reviewListing(r,'RIGHTS');assert.equal(r.current_status,'IN_REVIEW');r=await S.reviewListing(r,'CONTENT');assert.equal(r.current_status,'LISTED');});
  await t.test('catalog reveals no source, private evidence or contact data',async()=>{const out=ok(await call('GET','/stock/catalog',buyer,undefined,null));assert.equal(out.items.length,1);const text=JSON.stringify(out);for(const secret of [S.file.id,S.evidence.id,S.consent.id,'object_key','contact'])assert.ok(!text.includes(secret));assert.equal((await call('GET','/stock/catalog/'+r.id+'/preview',buyer,undefined,null)).status,200);bad(await call('GET','/stock/listings/'+r.id,buyer),'STOCK_NOT_FOUND');});
  await t.test('verified personal buyer needs neither own avatar nor company; unverified account blocked',async()=>{bad(await call('POST','/stock/checkout',outsider,{listing_id:r.id,offer_sha256:r.content_sha256,channel:'ALIPAY'},outsider.personal_party_id,headers()),'STOCK_BUYER_IDENTITY_REQUIRED');assert.equal((await db.execute('SELECT avatar_id FROM artist_avatar_links WHERE person_id=?',[buyer.person.id]))[0].length,0);const k=key(),body={listing_id:r.id,offer_sha256:r.content_sha256,channel:'ALIPAY'};order=ok(await call('POST','/stock/checkout',buyer,body,buyer.personal_party_id,headers(null,k)));assert.equal(ok(await call('POST','/stock/checkout',buyer,body,buyer.personal_party_id,headers(null,k))).id,order.id);bad(await call('POST','/stock/checkout',buyer,body,buyer.personal_party_id,headers()),'STOCK_ORDER_ALREADY_EXISTS');});
+ await t.test('losing manual approval hides existing offers and blocks new checkout and new-order payment',async()=>{
+  await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[S.talentId]);
+  assert.equal(ok(await call('GET','/stock/catalog',buyer,undefined,null)).items.length,0);
+  bad(await call('GET','/stock/catalog/'+r.id,buyer,undefined,null),'STOCK_HALO_REVIEW_REQUIRED');
+  await assert.rejects(S.checkout(r,buyer2),{code:'STOCK_HALO_REVIEW_REQUIRED'});
+  await assert.rejects(S.payment(order,buyer,false),{code:'STOCK_HALO_REVIEW_REQUIRED'});
+  await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);
+ });
  await t.test('unpaid and another buyer cannot download source',async()=>{bad(await call('GET','/stock/purchases/'+order.id+'/content'),'STOCK_LICENSE_NOT_ACTIVE');bad(await call('GET','/stock/purchases/'+order.id,buyer2),'STOCK_NOT_FOUND');const p=await purchased(order);assert.equal(p.data.status,'AWAITING_PAYMENT');assert.equal(p.data.granted_at,null);});
  await t.test('trusted payment grants once and leaves clock stopped until actual receipt',async()=>{pay=await S.payment(order);const p=await purchased(order);assert.equal(p.data.status,'ACTIVE');assert.equal(p.data.license.scope,'PERSONAL_NONCOMMERCIAL');assert.equal(p.data.deadline_at,null);await trade.applyPayment(pay.proof);assert.equal((await purchased(order)).object_version,p.object_version);assert.equal((await db.execute("SELECT id FROM stock_audit WHERE record_id=? AND event_code='STOCK_LICENSE_GRANTED'",[order.id]))[0].length,1);bad(await call('POST','/stock/purchases/'+order.id+'/receipt',buyer,{},buyer.personal_party_id,headers(p)),'STOCK_RECEIPT_NOT_READY');});
+ await t.test('paid purchase keeps contract and access after new-sale qualification is withdrawn',async()=>{
+  const before=await purchased(order);await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[S.talentId]);
+  assert.equal((await call('GET','/stock/purchases/'+order.id+'/content')).status,200);assert.equal((await purchased(order)).contract_sha256,before.contract_sha256);
+  await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);
+ });
  await t.test('ordinary unlisting leaves purchased license and contract unchanged',async()=>{const before=await purchased(order);r=await change(r,'UNLIST');bad(await call('GET','/stock/catalog/'+r.id,buyer,undefined,null),'STOCK_NOT_LISTED');const download=await call('GET','/stock/purchases/'+order.id+'/content');assert.equal(download.status,200);assert.match(download.bytes.toString(),/synthetic full/);assert.equal((await purchased(order)).contract_sha256,before.contract_sha256);});
  await t.test('rights hold remains during re-review; two approvals restore purchased access',async()=>{r=await change(r,'RIGHTS_HOLD',true);bad(await call('GET','/stock/purchases/'+order.id+'/content'),'STOCK_RIGHTS_HOLD');r=await change(r,'REVIEW_AGAIN',true);bad(await call('GET','/stock/purchases/'+order.id+'/content'),'STOCK_RIGHTS_HOLD');r=await S.reviewListing(r,'RIGHTS');bad(await call('GET','/stock/purchases/'+order.id+'/content'),'STOCK_RIGHTS_HOLD');r=await S.reviewListing(r,'CONTENT');assert.equal((await call('GET','/stock/purchases/'+order.id+'/content')).status,200);});
  await t.test('notification read plus actual content access permits explicit receipt clock',async()=>{let p=await purchased(order);const res=await call('POST','/operations/notifications/'+p.data.notification_event_id+'/read',buyer,{},buyer.personal_party_id,headers());ok(res);p=ok(await call('POST','/stock/purchases/'+order.id+'/receipt',buyer,{},buyer.personal_party_id,headers(p)));assert.ok(p.data.deadline_at);assert.equal(Date.parse(p.data.deadline_at)-Date.parse(p.data.receipt_at),72*3600000);});
@@ -47,11 +88,89 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
  const d=await S.artists.createDelegation(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,delegation:{organization_party_id:org.party_id,relation_id:relation,actions:['SUBMIT_LISTING'],valid_from:data.valid_from,valid_until:data.valid_until,evidence_asset_ids:[S.evidence.id],terms:'synthetic listing delegation'},operation_key:key()});
  let c=await S.artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:S.avatar.id,consent:{features:['FACE','VOICE'],purposes:['STOCK_LICENSE','PUBLIC_DISPLAY'],grantee_party_id:org.party_id,territories:['WORLDWIDE'],valid_from:data.valid_from,valid_until:data.valid_until,terms:'synthetic MCN stock consent',evidence_asset_ids:[S.evidence.id]},operation_key:key()});c=await S.artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:c.id,expected_version:c.object_version,decision:'APPROVE',reason:'independent',operation_key:key()});
  let spec=await trade.createSpec(outsider.ctx,{party_id:org.party_id,previous_spec_id:null,...Object.fromEntries(['title','line_kind','unit_minor','currency','specification','product_profile'].map(k=>[k,S.spec.data[k]])),provider_party_id:org.party_id,operation_key:key()});spec=await trade.review(reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'independent',operation_key:key()});
+ await S.publishSales(org.party_id,spec.id);
+ assert.equal((await stock.sellerEligibility(outsider.ctx,{party_id:org.party_id,person_id:seller.person.id})).eligible,true);await assert.rejects(stock.sellerEligibility(outsider.ctx,{party_id:org.party_id,person_id:buyer.person.id}),{code:'ARTIST_DELEGATION_REQUIRED'});
+ const options=await stock.participantOptions(outsider.ctx,{party_id:org.party_id,person_id:seller.person.id});assert.equal(options.items[0].consent_id,c.id);assert.ok(!JSON.stringify(options).includes('evidence_asset_ids'));
  const upload=(purpose,body)=>S.supply.upload(outsider.ctx,{party_id:org.party_id,purpose,media_type:purpose==='WORK_CONTENT'?'video/mp4':'text/plain',body:Buffer.from(body),operation_key:key()});const full=await upload('WORK_CONTENT','synthetic MCN full'),preview=await upload('WORK_CONTENT','synthetic MCN preview'),proof=await upload('RIGHTS_EVIDENCE','synthetic proof');
  let l=await stock.create(outsider.ctx,{...S.listingInput,party_id:org.party_id,spec_id:spec.id,file_id:full.id,preview_file_id:preview.id,participants:[{person_id:seller.person.id,avatar_id:S.avatar.id,consent_id:c.id}],rights_evidence_ids:[proof.id],operation_key:key()});l=await S.reviewListing(l,'RIGHTS');l=await S.reviewListing(l,'CONTENT');assert.equal((await stock.offer(buyer.ctx,{record_id:l.id})).seller_party_id,org.party_id);
  await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:d.id,expected_version:d.object_version,reason:'withdraw listing delegation',operation_key:key()});await assert.rejects(stock.offer(buyer.ctx,{record_id:l.id}),{code:'ARTIST_DELEGATION_REQUIRED'});
  });
+ await t.test('first seller reads published rules and scoped consents without past listings',async()=>{
+ const rules=ok(await call('GET','/stock/sales-publications',seller));assert.equal(rules.items[0].spec_id,S.spec.id);assert.ok(!JSON.stringify(rules).includes('rule_sha256'));
+ const choices=ok(await call('GET','/stock/participant-options?person_id='+seller.person.id,seller));assert.equal(choices.items[0].consent_id,S.consent.id);
+ bad(await call('GET','/stock/participant-options?person_id='+seller.person.id,outsider),'ARTIST_NOT_FOUND');
+ });
+ await t.test('publication independent review, stale versions and withdrawals gate new sale',async()=>{
+ let pub=await stock.createSalesPublication(buyer2.ctx,{seller_party_id:seller.personal_party_id,spec_id:S.spec.id,rule_id:S.ruleId,title:'second publication',terms:'test only',operation_key:key()});
+ await assert.rejects(stock.reviewSalesPublication(buyer2.ctx,{record_id:pub.id,expected_version:1,decision:'APPROVED',reason:'self',operation_key:key()}),{code:'SELF_REVIEW_FORBIDDEN'});
+ await assert.rejects(stock.reviewSalesPublication(reviewer.ctx,{record_id:pub.id,expected_version:2,decision:'APPROVED',reason:'stale',operation_key:key()}),{code:'VERSION_CONFLICT'});
+ pub=await stock.reviewSalesPublication(reviewer.ctx,{record_id:pub.id,expected_version:1,decision:'REJECTED',reason:'not approved',operation_key:key()});assert.equal(pub.current_status,'REJECTED');
+ });
+ await t.test('rejected listing resubmits a separate version with replay and review protection',async()=>{
+ let old=await stock.create(seller.ctx,{...S.listingInput,operation_key:key()});old=await stock.review(reviewer.ctx,{record_id:old.id,expected_version:1,channel:'CONTENT',decision:'REJECTED',reason:'revise description',verification:null,operation_key:key()});
+ const input={...S.listingInput,record_id:old.id,expected_version:old.object_version,description:'revised synthetic description',operation_key:key()};let next=await stock.create(seller.ctx,input);
+ assert.notEqual(next.id,old.id);assert.equal((await stock.create(seller.ctx,input)).id,next.id);assert.equal(next.data.previous_listing_id,old.id);
+ assert.equal((await stock.read(seller.ctx,{party_id:seller.personal_party_id,record_id:old.id})).data.description,old.data.description);
+ await assert.rejects(stock.offer(buyer.ctx,{record_id:next.id}),{code:'STOCK_NOT_LISTED'});
+ const current=await stock.read(seller.ctx,{party_id:seller.personal_party_id,record_id:old.id});await assert.rejects(stock.create(seller.ctx,{...input,expected_version:current.object_version,operation_key:key()}),{code:'STOCK_REVISION_NOT_ALLOWED'});
+ next=await S.reviewListing(next,'RIGHTS');next=await S.reviewListing(next,'CONTENT');assert.equal(next.current_status,'LISTED');
+ });
+ await t.test('replacement publication leaves bought file and licence intact and prevents old reactivation',async()=>{
+ let old=await S.listing();const o=await S.checkout(old);await S.payment(o);const before=await purchased(o);
+ let next=await stock.create(seller.ctx,{...S.listingInput,record_id:old.id,expected_version:old.object_version,description:'replacement version',operation_key:key()});
+ assert.equal((await stock.offer(buyer.ctx,{record_id:old.id})).id,old.id);
+ next=await S.reviewListing(next,'RIGHTS');next=await S.reviewListing(next,'CONTENT');
+ await assert.rejects(stock.offer(buyer.ctx,{record_id:old.id}),{code:'STOCK_NOT_LISTED'});
+ assert.equal((await call('GET','/stock/purchases/'+o.id+'/content')).status,200);assert.equal((await purchased(o)).contract_sha256,before.contract_sha256);
+ old=await stock.read(seller.ctx,{party_id:seller.personal_party_id,record_id:old.id});await assert.rejects(stock.status(reviewer.ctx,{record_id:old.id,party_id:null,expected_version:old.object_version,action:'REVIEW_AGAIN',reason:'old',operation_key:key()}),{code:'STOCK_REVISION_NOT_ALLOWED'});
+ });
+ await t.test('publication routes require operator rights, independent review and exact version',async()=>{
+ const body={seller_party_id:seller.personal_party_id,spec_id:S.spec.id,rule_id:S.ruleId,title:'Synthetic routed publication',terms:'Only for isolated test'};
+ bad(await call('POST','/stock/sales-publications',seller,body,null,headers()),'STOCK_REVIEW_FORBIDDEN');
+ let pub=ok(await call('POST','/stock/sales-publications',buyer2,body,null,headers()));
+ bad(await call('POST','/stock/sales-publications/'+pub.id+'/reviews',buyer2,{decision:'APPROVED',reason:'self'},null,headers(pub)),'SELF_REVIEW_FORBIDDEN');
+ pub=ok(await call('POST','/stock/sales-publications/'+pub.id+'/reviews',reviewer,{decision:'APPROVED',reason:'independent'},null,headers(pub)));assert.equal(pub.current_status,'PUBLISHED');
+ ok(await call('GET','/stock/sales-publications',reviewer,undefined,null));
+ const choices=ok(await call('GET','/stock/sales-publication-sources?kind=SPEC',reviewer,undefined,null));assert(choices.items.some(x=>x.id===S.spec.id&&x.seller_party_id===seller.personal_party_id));
+ ok(await call('GET','/stock/sales-publication-sources?kind=SPEC&seller_party_id='+seller.personal_party_id,reviewer,undefined,null));
+ bad(await call('GET','/stock/sales-publication-sources?kind=RULE',reviewer,undefined,null),'GOVERNANCE_FORBIDDEN');
+ await require('../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:reviewer.account_id,action:'READ_RULE',enabled:true,expected_version:0,expires_at:null,authority_ref:'synthetic:source',reason:'test only'});
+ const rules=ok(await call('GET','/stock/sales-publication-sources?kind=RULE',reviewer,undefined,null));assert(rules.items.some(x=>x.id===S.ruleId));
+ const explicit=await stock.create(seller.ctx,{...S.listingInput,sales_publication_id:pub.id,operation_key:key()});assert.equal(explicit.data.sales_publication_id,pub.id);
+ pub=ok(await call('POST','/stock/sales-publications/'+pub.id+'/reviews',reviewer,{decision:'WITHDRAWN',reason:'stop'},null,headers(pub)));
+ await assert.rejects(stock.create(seller.ctx,{...S.listingInput,sales_publication_id:pub.id,operation_key:key()}),{code:'STOCK_SALES_RULE_NOT_PUBLISHED'});assert.equal(pub.current_status,'WITHDRAWN');
+ });
+ await t.test('two rejected revisions and later replacements keep one active sale and original purchases',async()=>{
+ let first=await S.listing(),old=first;const order=await S.checkout(first);await S.payment(order);
+ for(let n=0;n<2;n++){
+  let next=await stock.create(seller.ctx,{...S.listingInput,record_id:old.id,expected_version:old.object_version,description:'failed revision '+n,operation_key:key()});
+  next=await stock.review(reviewer.ctx,{record_id:next.id,expected_version:1,channel:'CONTENT',decision:'REJECTED',reason:'needs work',verification:null,operation_key:key()});old=next;
+ }
+ const {party_id,...input}=S.listingInput;
+ let next=ok(await call('POST','/stock/listings/'+old.id+'/revisions',seller,{...input,description:'fixed finally'},party_id,headers(old)));
+ next=await S.reviewListing(next,'RIGHTS');next=await S.reviewListing(next,'CONTENT');await assert.rejects(stock.offer(buyer.ctx,{record_id:first.id}),{code:'STOCK_NOT_LISTED'});
+ let again=await stock.create(seller.ctx,{...S.listingInput,record_id:next.id,expected_version:next.object_version,operation_key:key()});again=await S.reviewListing(again,'RIGHTS');again=await S.reviewListing(again,'CONTENT');assert.equal(again.current_status,'LISTED');
+ assert.equal((await call('GET','/stock/purchases/'+order.id+'/content')).status,200);
+ });
+ await t.test('stopped sales publication blocks new listings and checkout but preserves old purchase',async()=>{
+ const l=await S.listing(),o=await S.checkout(l);await S.payment(o);
+ await stock.reviewSalesPublication(reviewer.ctx,{record_id:S.publication.id,expected_version:S.publication.object_version,decision:'WITHDRAWN',reason:'withdraw test',operation_key:key()});
+ await assert.rejects(stock.create(seller.ctx,{...S.listingInput,operation_key:key()}),{code:'STOCK_SALES_RULE_NOT_PUBLISHED'});
+ await assert.rejects(S.checkout(l,buyer2),{code:'STOCK_SALES_RULE_NOT_PUBLISHED'});assert.equal((await call('GET','/stock/purchases/'+o.id+'/content')).status,200);
+ await S.publishSales(seller.personal_party_id,S.spec.id);
+ });
  await t.test('new consent withdrawal hides catalog and stops another download without rewriting sold history',async()=>{const listing=await S.listing(),paid=await S.checkout(listing);await S.payment(paid);assert.equal((await call('GET','/stock/purchases/'+paid.id+'/content')).status,200);const before=await purchased(paid);await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'stop new use',operation_key:key()});assert.equal(ok(await call('GET','/stock/catalog',buyer,undefined,null)).items.length,0);assert.equal((await purchased(order)).data.license.duration,'PERPETUAL');bad(await call('GET','/stock/purchases/'+paid.id+'/content'),'STOCK_SALE_CONSENT_REQUIRED');const after=await purchased(paid);assert.equal(after.contract_sha256,before.contract_sha256);assert.equal(after.data.status,'ACTIVE');});
+ await t.test('historical unpaid order retains original admission policy without admitting new purchases',async()=>{
+  const S=await require('./helpers/stock-seed.cjs').seedStock(db,{ruleKey:'stock.legacy.synthetic'}),{buyer,buyer2,trade}=S;
+  const listing=await S.listing(),old=await S.checkout(listing,buyer2);
+  // Simulate a persisted pre-cutover purchase. Never mutate production or claim migration ran.
+  const row=(await db.execute('SELECT data_json FROM stock_purchases WHERE order_id=?',[old.id]))[0][0];const data=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;delete data.seller_admission_policy;
+  await db.execute('UPDATE stock_purchases SET data_json=?,data_sha256=? WHERE order_id=?',[JSON.stringify(data),digest(data),old.id]);
+  await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[S.talentId]);
+  const before=old.data.contract.content_sha256;await S.payment(old,buyer2);assert.equal((await trade.read(buyer2.ctx,{record_id:old.id,party_id:buyer2.personal_party_id})).data.contract.content_sha256,before);
+  await assert.rejects(S.checkout(listing,buyer),{code:'STOCK_HALO_REVIEW_REQUIRED'});
+  await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);
+ });
  const out=process.env.JX_STOCK_HTTP_FIXTURES||path.resolve(__dirname,'../../../..','.local/stock-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

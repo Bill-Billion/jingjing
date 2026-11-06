@@ -1,3 +1,37 @@
+当前候选0.31.22-rc.1：六项合同流程，33项新增操作，迁移0201。既有订单保持原快照；新规则/监护内容有显式开关。接口可在隔离环境办理，新增页面和完整验收尚未完成；共享规则待另一方实际审阅。接法见[六项交接](../docs/collaboration/client-complete-20261028/SIX_CONTRACT_HANDOFF_20261102.md)，验证及上传见[本轮记录](../docs/tasks/records/CORE-six-contract-tasks-20261102.md)。
+
+以下为历史版本记录。
+
+2026-11-02 0.31.20-rc.1：定制版权二选一、样片人格权/版权区分、IP买断/分红采购、期限与收益证据；迁移0193。[前端接法](../docs/collaboration/client-complete-20261028/COPYRIGHT_CONTRACT_HANDOFF_20261102.md)。新版权规则显式切换，原单不改；NOT_TRANSFERRED不代表资金到账。
+
+2026-11-02 0.31.18-rc.1：补新版分类认证材料、原申请补件/撤回、新审核费不退、免费基础创建/永久免费托管接口。新增ARTIST_CONTRACT_POLICY显式切换，新旧订单分开，数据库仍0192；页面和真实服务另验收。
+
+2026-11-02 0.31.17-rc.1补现货资格缺项查询、有效人工认证门槛、逐人核验和历史购买兼容。新客户端资格参数不能降级服务器要求；页面和正式服务另验收。
+
+0.31.16-rc.1新增工作日日历与验收依据，旧小时条款保持；迁移仍0192。详见[合并接法](../docs/collaboration/client-complete-20261028/CONTRACT_CALENDAR_HANDOFF_20261102.md)。新页面必须支持acceptance_hours=null，不可显示0小时。
+
+0.31.15-rc.1新增SCRIPT_BEFORE_INTERIM规格及CUSTOMIZATION_SCRIPT_CONFIRMED付款节点，旧节点含义不变；数据库0192。[接法与发布限制](../docs/collaboration/client-complete-20261028/PAYMENT_CONTRACT_HANDOFF_20261102.md)。
+
+0.31.14-rc.1新增本人身份及开票原操作只读查询，旧接口兼容；迁移0192不变。见[接法](../docs/collaboration/client-complete-20261028/RECOVERY_AND_CONTRACT_PLAN_20261102.md)。
+
+2026-11-02候选0.31.13-rc.1：Invoice新增allowed_actions，按实时岗位/状态/录入者返回，服务端写入仍独立核权，数据库仍0192。新合同对付款/准入/期限的改变尚未反映为已交付接口；见[需求变更与依赖](../docs/requirements/CONTRACT_CHANGES_20261102.md)。
+
+当前候选0.31.9-rc.1：正式反馈／举报与未读通知14项新接口，迁移到0181。旧通知列表保留原域，新页面用feed和快照。见[本批接法](../docs/collaboration/client-complete-20261028/FRONTEND_SUPPORT_MESSAGES_HANDOFF.md)；页面和整组验收未完成，上传事实见CURRENT。
+
+当前候选0.31.8-rc.1：新增本人收藏、主动开启浏览记录、清理和失效提示9项接口；迁移0171—0173。旧接口兼容，前端接法见[收藏交接](../docs/collaboration/client-complete-20261028/FRONTEND_COLLECTIONS_HANDOFF.md)。页面与完整业务验收尚未完成，实际上传状态见CURRENT。以下版本按历史保留。
+
+当前候选0.31.7-rc.1：新增统一六城快捷目录及四类公开关键词搜索，两个只读入口；原接口兼容，迁移仍0170。前端接法见[城市与搜索交接](../docs/collaboration/client-complete-20261028/FRONTEND_SEARCH_HANDOFF.md)。前一批机构资料、精选与机构通告分页见[公开目录交接](../docs/collaboration/client-complete-20261028/FRONTEND_DIRECTORY_HANDOFF.md)。本批接口已隔离验证，页面接入和整体业务验收仍待完成。
+
+当前候选0.31.5-rc.1：现货真实封面与完整/预览时长，新增2个读取接口，无新迁移（仍0167）。原接口格式不变；处理工具未配置则明确不可用。详见CHANGELOG；本批页面接线与交付状态以当前进度为准。
+
+当前接口候选0.31.4-rc.1：故事上传中断原请求恢复、可选历史保留原因、受审主肖像选择与公开媒体分类；默认附件响应兼容0.31.3前端。沿用迁移0167。验证和启用状态见本轮记录。
+
+当前接口候选0.31.3-rc.1：新增私人故事附件与首次共创建房选择。原文字答案兼容，建房前置校验收紧；迁移0167、接线和验证见CHANGELOG。前端新控件、实际审阅和正式启用另记。
+
+当前候选0.31.0-rc.1：首次上架、机构逐人授权和退回重提，新增6项操作与迁移0166；与页面成套获取。兼容、权限和版本保护见[变更说明](CHANGELOG.md)，测试与上传事实见[本批记录](../docs/tasks/records/CORE-client-complete-A-20261028.md)。以下按原日期保留。
+
+当前候选0.30.2-rc.1：首次机构投稿、新公开邀约、独立公开详情与可读展示名更正。旧接口保留，无数据库迁移。接法、兼容和本机结果见 [变更说明](CHANGELOG.md) 与 [完整计划](../docs/testing/FULL_BUSINESS_CLOSURE_20261028.md)。已集中上传PR39（https://github.com/Bill-Billion/jingjing/pull/39）；实际审阅、合入和正式启用仍未完成。以下记录按原日期保留。
+
 当前个人信息执行接口候选为0.28.0-rc.1：新增本人模型列表、授权撤回、删除申请与动作进度4项，原接口保持兼容。只覆盖已登记制作模型，不代表整体注销完成；详见[接法](../docs/collaboration/V5_PRIVACY_HANDOFF.md)。
 
 以下为历史批次记录；当前数量和状态以上方最新候选及当前进度为准。

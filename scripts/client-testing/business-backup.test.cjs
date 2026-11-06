@@ -1,0 +1,8 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const {validatePayload,seal,unseal,option}=require('./business-backup.cjs');
+const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+function payload(){const database='jx_test_story_123_aabbccddeeff',sql='CREATE TABLE sample(id INT);';return {format:1,synthetic_only:true,database,manifest:{format:1,synthetic_only:true,database,database_env:{NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:database},environment_id:'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',secret:'s'.repeat(44),access:{synthetic_only:true,accounts:{buyer:{}}},rules:[{method:'GET',pattern:'^/api/v1/me$'}]},sql,sql_sha256:hash(sql),assets:[{name:'a'.repeat(64)+'.bin',data:Buffer.from('private-video').toString('base64'),sha256:hash('private-video')}]};}
+test('备份包含私有文件和业务SQL；加密且篡改或错误密钥拒绝',()=>{const p=payload(),key=crypto.randomBytes(32),b=seal(p,key);assert.deepEqual(unseal(b,key),p);assert(!b.includes(Buffer.from('private-video')));assert.throws(()=>unseal(b,crypto.randomBytes(32)));const damaged=Buffer.from(b);damaged[40]^=1;assert.throws(()=>unseal(damaged,key));});
+test('恢复拒绝正式库、路径穿越、重复附件、SQL或附件损坏',()=>{for(const patch of [{database:'production'},{synthetic_only:false},{sql:'changed'},{assets:[{...payload().assets[0],name:'../outside'}]},{assets:[...payload().assets,...payload().assets]},{assets:[{...payload().assets[0],data:'AAAA'}]}])assert.throws(()=>validatePayload({...payload(),...patch}));});
+test('数据库参数拒绝换行注入，正确转义引号和反斜杠',()=>{assert.throws(()=>option('password\nuser=root'));assert.throws(()=>option('abc\0'));assert.equal(option('a"b\\c'),'"a\\"b\\\\c"');});

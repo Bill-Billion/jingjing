@@ -1,0 +1,1739 @@
+{
+  "result": "PASS",
+  "database": "jx_test_co_modern_71ada4a82684a7ce",
+  "checks": [
+    {
+      "id": "CO-MODERN-01",
+      "name": "one shared order freezes new 30/40/30, reviewed calendar, copyright and room promise",
+      "result": "PASS",
+      "records": {
+        "room_id": "0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+        "order_id": "859be2a7-876a-4c23-ab59-44c4cad761f4",
+        "installments": [
+          3000,
+          4000,
+          3000
+        ]
+      }
+    },
+    {
+      "id": "CO-MODERN-02",
+      "name": "twenty private adults claim invitations; claiming alone adds no participants or personal orders",
+      "result": "PASS",
+      "records": {
+        "room_id": "0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+        "claimed": 20,
+        "joined": 0
+      }
+    },
+    {
+      "id": "CO-MODERN-03",
+      "name": "each person confirms materials separately; unpaid participants do not qualify and retry does not double count",
+      "result": "PASS",
+      "records": {
+        "room_id": "0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+        "joined": 20,
+        "eligible": 0,
+        "member_ids": [
+          "24d258fa-0088-462c-bbed-8a68e5258824",
+          "7af80e22-28fb-422c-8d4f-b4fcc077f679",
+          "463a83a2-e102-42b3-9f9a-8dd5f8df0897",
+          "b1721a2c-c84a-45cc-a2f4-029d021da58a",
+          "5add268e-3c3d-4d1b-95ac-a1c1492ca916",
+          "6e59e00d-15d0-4be6-8eb5-ef86390f5ab7",
+          "20c3b49c-7d9e-4f77-a096-3150864f11b1",
+          "77a7c655-3561-4ff1-a72c-245d07d6de2b",
+          "bb485d83-c871-4953-aece-aee6cac69479",
+          "15cd9891-158f-49ee-9e0e-1778a98f69ab",
+          "9f5af009-97e9-4ec2-9dcc-7c6793f0869b",
+          "6bff3cb7-1e0b-4672-abcf-9a7701b5fbc0",
+          "e2fa6b53-58aa-4a11-8c90-67ad84c51b41",
+          "54471ddd-f5ed-4f39-af67-9172ad90a85e",
+          "a435c487-a191-44fc-b97d-e8c773fd68b7",
+          "26a10d47-d92d-4784-93dc-20ec74b67980",
+          "c56051ce-fd9b-4de3-bfc3-7c8d925e0391",
+          "30e1a71b-0ab1-4269-9006-318dee032b5a",
+          "326d555c-30c3-424d-a2e2-57e822fc6fd1",
+          "6e45032a-08da-4b87-8b22-458d7a83d5b2"
+        ]
+      }
+    },
+    {
+      "id": "CO-MODERN-04",
+      "name": "first payment qualifies twenty people; cutoff creates one noncash benefit and one original order",
+      "result": "PASS",
+      "records": {
+        "room_id": "0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+        "order_id": "859be2a7-876a-4c23-ab59-44c4cad761f4",
+        "benefit_id": "26b8b442-3ec2-4121-9fc8-9300f74f57ec",
+        "eligible_at_cutoff": 20
+      }
+    },
+    {
+      "id": "CO-MODERN-05",
+      "name": "independently reviewed project keeps twenty separate authorizations; host cannot read other peoples private materials",
+      "result": "PASS",
+      "records": {
+        "room_id": "0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+        "project_id": "92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+        "material_count": 20
+      }
+    },
+    {
+      "id": "CO-MODERN-06",
+      "name": "new contract collects 40 percent after script acceptance, then samples and final require separate reviews",
+      "result": "PASS",
+      "records": {
+        "order_id": "859be2a7-876a-4c23-ab59-44c4cad761f4",
+        "script_version_id": "9dde9434-fa9e-4ec8-a09e-15b3b225c3aa",
+        "final_version_id": "769327c1-4827-4a85-8260-13cf251b5b34",
+        "interim_minor": 4000
+      }
+    },
+    {
+      "id": "CO-MODERN-07",
+      "name": "personal clip remains unavailable until final acceptance and remaining 30 percent; other people cannot download",
+      "result": "PASS",
+      "records": {
+        "order_id": "859be2a7-876a-4c23-ab59-44c4cad761f4",
+        "snippet_id": "cc52ecde-7af4-412f-85c4-cee0729723f9",
+        "content_sha256": "a1680845c98cb2b0f41fec4b4cdaee17d77131b4bc678d8a0a99a02551709697",
+        "final_payment_minor": 3000
+      }
+    },
+    {
+      "id": "CO-MODERN-08",
+      "name": "withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions",
+      "result": "PASS",
+      "records": {
+        "room_id": "0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+        "project_id": "92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+        "original_cutoff": 20,
+        "current_production_members": 19,
+        "received_minor": 10000
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules/37ebfed0-449d-4023-9a68-c25614110fd0/review",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/quotes",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/records/09c9b9a1-f8d0-4249-ad0b-ff87cee09ea5/reviews",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/quotes/09c9b9a1-f8d0-4249-ad0b-ff87cee09ea5/acceptance",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "8bc1afeb-d4e0-432e-bc5d-bb2a1df75e49",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "8bc1afeb-d4e0-432e-bc5d-bb2a1df75e49",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "d96a62cf-3874-4942-b6cf-0677cd4e83c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "d96a62cf-3874-4942-b6cf-0677cd4e83c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "a43b9cc0-c0cc-4221-9b56-d055434bd4c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "a43b9cc0-c0cc-4221-9b56-d055434bd4c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "fa51db75-fa62-43de-ae51-dd85bfd0aef4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "fa51db75-fa62-43de-ae51-dd85bfd0aef4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "7b981744-3bfe-4940-b1a0-8bea42c37731",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "7b981744-3bfe-4940-b1a0-8bea42c37731",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "f4eb02d9-e758-4938-be06-1a57cd6cc505",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "f4eb02d9-e758-4938-be06-1a57cd6cc505",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "30c65ac4-7db7-48c4-a4f5-236ceb79e3ea",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "30c65ac4-7db7-48c4-a4f5-236ceb79e3ea",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "ee52b019-e6e3-4eb4-9ad1-b3bc57ebab57",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "ee52b019-e6e3-4eb4-9ad1-b3bc57ebab57",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "22ab17f4-dd1c-4fcb-b823-9fa6853e4117",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "22ab17f4-dd1c-4fcb-b823-9fa6853e4117",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "bb8def18-8ca1-4b0a-9a4a-efd5b4c11516",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "bb8def18-8ca1-4b0a-9a4a-efd5b4c11516",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "874c9bef-e11d-4867-b439-d44bcdfa5005",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "874c9bef-e11d-4867-b439-d44bcdfa5005",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "3748436a-d47a-4c2c-a2e7-0955d8c19917",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "3748436a-d47a-4c2c-a2e7-0955d8c19917",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "7fc440c4-3714-49cb-86c1-116564dc7ba9",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "7fc440c4-3714-49cb-86c1-116564dc7ba9",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "fc178c0f-dfec-421f-a887-a238612f1ab2",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "fc178c0f-dfec-421f-a887-a238612f1ab2",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "b6d9b7c9-f177-4688-a291-1e824c045b23",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "b6d9b7c9-f177-4688-a291-1e824c045b23",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "41182c0b-bde7-4910-804c-459ae91f25e4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "41182c0b-bde7-4910-804c-459ae91f25e4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "8167368a-c699-4f96-b5b3-f6c0d9308041",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "8167368a-c699-4f96-b5b3-f6c0d9308041",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "bc5a4d36-8c77-43d8-9053-33ed87b62c0b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "bc5a4d36-8c77-43d8-9053-33ed87b62c0b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/invite-links",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "d3b2fe82-9bc7-4eaf-b876-c1e12d88241b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "actor": "d3b2fe82-9bc7-4eaf-b876-c1e12d88241b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "da617ea5-2e3e-40ee-a58b-d87ebf243c42",
+      "status": 404,
+      "error": "COCREATION_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 400,
+      "error": "COCREATION_PARTICIPATION_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "8bc1afeb-d4e0-432e-bc5d-bb2a1df75e49",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "8bc1afeb-d4e0-432e-bc5d-bb2a1df75e49",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d96a62cf-3874-4942-b6cf-0677cd4e83c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d96a62cf-3874-4942-b6cf-0677cd4e83c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "a43b9cc0-c0cc-4221-9b56-d055434bd4c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "a43b9cc0-c0cc-4221-9b56-d055434bd4c6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "fa51db75-fa62-43de-ae51-dd85bfd0aef4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "fa51db75-fa62-43de-ae51-dd85bfd0aef4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "7b981744-3bfe-4940-b1a0-8bea42c37731",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "7b981744-3bfe-4940-b1a0-8bea42c37731",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "f4eb02d9-e758-4938-be06-1a57cd6cc505",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "f4eb02d9-e758-4938-be06-1a57cd6cc505",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "30c65ac4-7db7-48c4-a4f5-236ceb79e3ea",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "30c65ac4-7db7-48c4-a4f5-236ceb79e3ea",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "ee52b019-e6e3-4eb4-9ad1-b3bc57ebab57",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "ee52b019-e6e3-4eb4-9ad1-b3bc57ebab57",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "22ab17f4-dd1c-4fcb-b823-9fa6853e4117",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "22ab17f4-dd1c-4fcb-b823-9fa6853e4117",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "bb8def18-8ca1-4b0a-9a4a-efd5b4c11516",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "bb8def18-8ca1-4b0a-9a4a-efd5b4c11516",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "874c9bef-e11d-4867-b439-d44bcdfa5005",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "874c9bef-e11d-4867-b439-d44bcdfa5005",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "3748436a-d47a-4c2c-a2e7-0955d8c19917",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "3748436a-d47a-4c2c-a2e7-0955d8c19917",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "7fc440c4-3714-49cb-86c1-116564dc7ba9",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "7fc440c4-3714-49cb-86c1-116564dc7ba9",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "fc178c0f-dfec-421f-a887-a238612f1ab2",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "fc178c0f-dfec-421f-a887-a238612f1ab2",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "b6d9b7c9-f177-4688-a291-1e824c045b23",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "b6d9b7c9-f177-4688-a291-1e824c045b23",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "41182c0b-bde7-4910-804c-459ae91f25e4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "41182c0b-bde7-4910-804c-459ae91f25e4",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "8167368a-c699-4f96-b5b3-f6c0d9308041",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "8167368a-c699-4f96-b5b3-f6c0d9308041",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "bc5a4d36-8c77-43d8-9053-33ed87b62c0b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "bc5a4d36-8c77-43d8-9053-33ed87b62c0b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d3b2fe82-9bc7-4eaf-b876-c1e12d88241b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/members",
+      "actor": "d3b2fe82-9bc7-4eaf-b876-c1e12d88241b",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/members/24d258fa-0088-462c-bbed-8a68e5258824",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 404,
+      "error": "ARTIST_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/close",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 409,
+      "error": "COCREATION_CUTOFF_NOT_DUE"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/close",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/close",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/benefits",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/reviews",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/start",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/materials",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/materials",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/materials",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 403,
+      "error": "COCREATION_PRODUCER_FORBIDDEN"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/versions",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/9dde9434-fa9e-4ec8-a09e-15b3b225c3aa/reviews",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/9dde9434-fa9e-4ec8-a09e-15b3b225c3aa/content",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/versions/9dde9434-fa9e-4ec8-a09e-15b3b225c3aa/feedback",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/versions",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/174844ae-29f0-467e-8342-bf1cfb90de3e/reviews",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/174844ae-29f0-467e-8342-bf1cfb90de3e/content",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/versions/174844ae-29f0-467e-8342-bf1cfb90de3e/feedback",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/versions",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/eb33885f-84ef-4c9d-a505-48a2ba22deaf/reviews",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/eb33885f-84ef-4c9d-a505-48a2ba22deaf/content",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/versions/eb33885f-84ef-4c9d-a505-48a2ba22deaf/feedback",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/versions",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/records/769327c1-4827-4a85-8260-13cf251b5b34/reviews",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/snippets",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/review-file",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/review",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 409,
+      "error": "COCREATION_SNIPPET_NOT_READY"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/769327c1-4827-4a85-8260-13cf251b5b34/content",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/versions/769327c1-4827-4a85-8260-13cf251b5b34/feedback",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 409,
+      "error": "COCREATION_SNIPPET_NOT_READY"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "8bc1afeb-d4e0-432e-bc5d-bb2a1df75e49",
+      "status": 404,
+      "error": "COCREATION_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 404,
+      "error": "COCREATION_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/versions/769327c1-4827-4a85-8260-13cf251b5b34/content",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 404,
+      "error": "PRODUCTION_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/members/24d258fa-0088-462c-bbed-8a68e5258824/withdraw",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 409,
+      "error": "COCREATION_PARTICIPATION_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/production/projects/92c1308b-0bc3-42e0-855a-a58a94e0b7cf/files",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 409,
+      "error": "CUSTOMIZATION_PAUSED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/cases",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/cases/dcc483de-401b-4c4a-8007-fd62a7047d25/review",
+      "actor": "ec7c7cfa-6ae6-44f4-aefa-70ffc6730391",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/production/records/92c1308b-0bc3-42e0-855a-a58a94e0b7cf",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/snippets/cc52ecde-7af4-412f-85c4-cee0729723f9/file",
+      "actor": "d99efb16-4706-4691-89dd-8f746c61674c",
+      "status": 409,
+      "error": "COCREATION_PARTICIPATION_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/0e7006d4-13d3-45ec-a8bd-5a1cb5ea41ec/materials",
+      "actor": "96c7be1d-a80f-48eb-bfe1-d4fdaedce10c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/859be2a7-876a-4c23-ab59-44c4cad761f4",
+      "actor": "2e3f2f0b-6e47-4016-a5d7-a6962b2ce198",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "cleanup": {
+    "server_stopped": true,
+    "database_removed": true
+  },
+  "limits": [
+    "API composition only; no new invitation UI or native App",
+    "Identity/materials preseeded; provider payment receipts simulated through repository, not real money",
+    "Media protocol bytes only; not playable video quality or markings verification",
+    "Only isolated connection clock advanced to cutoff, no business row status edits"
+  ]
+}

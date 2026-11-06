@@ -36,3 +36,14 @@ test('finance uses allocation without misrepresenting fractional supply shares a
  assert.throws(()=>P.rules({...r,lines:[{...r.lines[0],shares:[{party_id:platform,role:'PLATFORM',bps:10000}]}]}));
  assert.throws(()=>P.rules({...r,lines:[{...r.lines[0],deductions:[{category:'TAX',party_id:id(),amount_minor:5,basis:'synthetic',refund_behavior:'PROPORTIONAL'}]}]}));
 });
+
+test('contract cutover validates rates without rewriting historical allocations',()=>{
+ const C=require('../src/modules/settlement/contract-policy');
+ assert.throws(()=>C.configuration('typo'),{code:'INVALID_MARKETPLACE_CONTRACT_POLICY'});
+ for(const type of ['STOCK_VIDEO','COMMERCIAL','AUDITION']){
+  const a=allocation(type,0,false);assert.equal(C.rule({allocation:a},type).allocation,a);
+  assert.throws(()=>C.rule({allocation:{...a,platform_bps:1500}},type),{code:'MARKETPLACE_CONTRACT_RATE_MISMATCH'});
+  assert.equal(M.split(10000,{...a,platform_bps:1500}).entries[0].amount_minor,1500);
+ }
+ assert.throws(()=>C.commercial({commercial:{commission:{platform_bps:2200,mcn_bps:0}}},C.VERSION),{code:'COMMERCIAL_CONTRACT_OFFER_REQUIRED'});
+});

@@ -1,13 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/rest_reminder.dart';
 import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../trade/trade_widgets.dart';
 import '../engagement/community_support.dart';
+import '../customization/private_draft_guard.dart';
+import 'closure_reference.dart';
 
 const privacyTypes = {
   'QUERY': '查询本人资料',
@@ -35,6 +39,38 @@ const privacyActions = {
   'RELEASE_CONTENT': '解除一项内容限制'
 };
 
+String privacyStatus(Object? value) =>
+    const {
+      'OPEN': '待受理',
+      'RECEIVED': '已收到申请',
+      'PROCESSING': '工作人员处理中',
+      'AWAITING_REVIEW': '答复待独立复核',
+      'RESPONDED': '已有正式答复',
+      'FOLLOW_UP': '仍有后续事项',
+      'REOPENED': '异议已收到，待重新处理',
+      'PROPOSED': '处理方案待独立审核',
+      'APPROVED': '方案已审核，待本人核对确认',
+      'REJECTED': '方案未通过审核',
+      'QUEUED': '处理已登记，等待执行',
+      'EXECUTED': '本项已执行，核对下方结果',
+      'RUNNING': '正在执行',
+      'LEASED': '正在执行',
+      'RETRY_WAIT': '等待服务重试',
+      'RETRY': '等待服务重试',
+      'SUCCEEDED': '本项处理已核实',
+      'FAILED': '本项处理失败，待工作人员核对',
+      'DEAD': '本项处理失败，待工作人员核对',
+    }[value] ??
+    '状态待核对';
+
+String privacyTargetLabel(Object? action) => switch (action) {
+      'PROFILE_CORRECTION' => '本人账号的展示名称',
+      'ACCOUNT_CLOSURE' => '本人账号的登录与成员访问',
+      'FILE_ERASURE' => '一份原始素材（文件名称与保留影响待核对）',
+      'RESTRICT_CONTENT' || 'RELEASE_CONTENT' => '一项作品内容（作品名称与限制范围待核对）',
+      _ => '具体对象待核对',
+    };
+
 class PrivacyPage extends StatelessWidget {
   const PrivacyPage({super.key, this.view = 'requests', this.recordId});
   final String view;
@@ -59,11 +95,32 @@ class _Privacy extends StatefulWidget {
 }
 
 class _PrivacyState extends CommunityPageState<_Privacy> {
+  final draftGuard = GlobalKey<PrivateDraftGuardState>();
+  bool initializedDraft = false;
+  final previousCursors = <String?>[];
   @override
   AccountSession get session => widget.session;
   @override
   String get domain => 'privacy';
-  late final details = field(), why = field(), minutes = field();
+  @override
+  bool get enabled =>
+      super.enabled &&
+      !checking &&
+      (widget.view != 'preferences' || loadedPreferences);
+  late final details = field(),
+      why = field(),
+      minutes = field(),
+      fileReason = field(),
+      planReason = field(),
+      correctionName = field(),
+      quietStart = field(),
+      quietEnd = field();
+  String? selectedFile, selectedPolicy, selectedAccountPolicy;
+  List<Map<String, dynamic>> fileTargets = [], filePolicies = [];
+  List<Map<String, dynamic>> accountPolicies = [];
+  List<ClosureReference> closureReferences = [];
+  String? accountPolicyError;
+  bool closureReferenceUnavailable = false;
   String type = 'QUERY', copyCategory = 'PROFILE';
   final scopes = <String>{};
   bool personalization = false,
@@ -71,6 +128,11 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       loadedPreferences = false,
       agreed = false;
   int preferenceVersion = 0;
+  bool pushEnabled = false,
+      nightEnabled = false,
+      quietEnabled = false,
+      notificationSupported = false;
+  Map<String, dynamic>? remotePreferences;
   String? cursor, nextCursor, dataCursor, nextDataCursor;
   List<Map<String, dynamic>> rows = [],
       history = [],
@@ -99,6 +161,15 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     rows = [];
     history = [];
     executions = [];
+    fileTargets = [];
+    filePolicies = [];
+    accountPolicies = [];
+    closureReferences = [];
+    selectedAccountPolicy = null;
+    accountPolicyError = null;
+    closureReferenceUnavailable = false;
+    selectedFile = null;
+    selectedPolicy = null;
     models = [];
     creations = [];
     actions = [];
@@ -108,6 +179,15 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     scopes.clear();
     personalization = false;
     marketing = false;
+    loadedPreferences = false;
+    preferenceVersion = 0;
+    remotePreferences = null;
+    pushEnabled = false;
+    nightEnabled = false;
+    quietEnabled = false;
+    notificationSupported = false;
+    quietStart.clear();
+    quietEnd.clear();
     agreed = false;
   }
 
@@ -115,6 +195,64 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   void fail(Object e) {
     super.fail(e);
     if (e is AccountError && e.status == 412) agreed = false;
+    if (e is AccountError &&
+        ['PRIVACY_EXECUTION_POLICY_REQUIRED', 'PRIVACY_POLICY_CHANGED']
+            .contains(e.code)) {
+      selectedAccountPolicy = null;
+      accountPolicies = [];
+      accountPolicyError = '处理依据已变化，请重新读取并选择；已填内容保留。';
+    }
+  }
+
+  String? accountAction(Map<String, dynamic> q) {
+    final scopes = q['scopes'] as List;
+    if (q['type'] == 'CLOSE_ACCOUNT' && scopes.contains('ALL')) {
+      return 'ACCOUNT_CLOSURE';
+    }
+    if (q['type'] == 'CORRECT' &&
+        (scopes.contains('PROFILE') || scopes.contains('ALL'))) {
+      return 'PROFILE_CORRECTION';
+    }
+    return null;
+  }
+
+  Future<List<Map<String, dynamic>>> readAccountPolicies(
+      String requestId, String action) async {
+    final rows = <Map<String, dynamic>>[], seen = <String>{}, ids = <String>{};
+    String? cursor;
+    var pages = 0;
+    do {
+      if (++pages > 100) {
+        throw const AccountError(503, 'INVALID_COMMUNITY_RESPONSE');
+      }
+      final p = await api.read('requests/$requestId/execution-policy-options',
+          account: true,
+          query: {
+            'action': action,
+            'limit': 50,
+            if (cursor != null) 'cursor': cursor
+          });
+      communityRequire(p['request_id'] == requestId && p['action'] == action);
+      for (final item in communityItems(p)) {
+        communityRequire(communityId(item['id']) &&
+            ids.add(item['id']) &&
+            item['version'] is String &&
+            item['basis'] is String &&
+            (item['basis'] as String).trim().isNotEmpty &&
+            item['contact_reference'] is String &&
+            (item['contact_reference'] as String).trim().isNotEmpty &&
+            (item['retention_rule_id'] == null ||
+                communityId(item['retention_rule_id'])));
+        rows.add(item);
+      }
+      final next = p['next_cursor'];
+      communityRequire(next == null ||
+          communityId(next) &&
+              seen.add(next) &&
+              (cursor == null || (next as String).compareTo(cursor) > 0));
+      cursor = next;
+    } while (cursor != null);
+    return rows;
   }
 
   Map<String, dynamic> validateRequest(Map<String, dynamic> r, {String? id}) {
@@ -137,6 +275,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   @override
   Future<void> load() async {
     final t = ++ticket;
+    final hadDraft = draftGuard.currentState?.dirty ?? false;
     setState(() {
       checking = true;
       error = null;
@@ -148,10 +287,17 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           ex = [],
           m = [],
           c = [],
-          a = [];
+          a = [],
+          files = [],
+          policies = [],
+          accountRules = [];
+      List<ClosureReference> closureRefs = [];
+      String? accountRuleError;
+      var closureStorageFailed = false;
       String? next;
       if (widget.view == 'preferences') {
         final p = await api.read('preferences');
+        if (!mounted || t != ticket) return;
         communityRequire(p['object_version'] is int &&
             p['object_version'] >= 0 &&
             p['personalization'] is bool &&
@@ -160,10 +306,32 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             p['rest_reminder_minutes'] >= 0 &&
             p['rest_reminder_minutes'] <= 240);
         preferenceVersion = p['object_version'];
+        remotePreferences = p;
+        notificationSupported = p['push_enabled'] is bool &&
+            p['night_reminder_enabled'] is bool &&
+            p['quiet_hours'] is Map;
+        if (notificationSupported) {
+          final q = p['quiet_hours'];
+          communityRequire(q['enabled'] is bool &&
+              q['start_minute'] is int &&
+              q['end_minute'] is int &&
+              q['start_minute'] >= 0 &&
+              q['start_minute'] < 1440 &&
+              q['end_minute'] >= 0 &&
+              q['end_minute'] < 1440 &&
+              q['start_minute'] != q['end_minute']);
+        }
         if (!loadedPreferences) {
           personalization = p['personalization'];
           marketing = p['marketing'];
           minutes.text = '${p['rest_reminder_minutes']}';
+          if (notificationSupported) {
+            pushEnabled = p['push_enabled'];
+            nightEnabled = p['night_reminder_enabled'];
+            quietEnabled = p['quiet_hours']['enabled'];
+            quietStart.text = '${p['quiet_hours']['start_minute']}';
+            quietEnd.text = '${p['quiet_hours']['end_minute']}';
+          }
           loadedPreferences = true;
         }
       } else if (widget.view == 'request') {
@@ -175,6 +343,26 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         h = communityRows((await api.read('$base/history'))['responses']);
         ex = await allRows('$base/executions');
         final q = communityMap(r['request']);
+        final action = accountAction(q);
+        if (action != null) {
+          try {
+            accountRules = await readAccountPolicies(r['id'], action);
+          } on AccountError catch (e) {
+            if ([401, 403, 404].contains(e.status) ||
+                e.code == 'CONTEXT_CHANGED') {
+              rethrow;
+            }
+            accountRuleError = '适用处理依据读取失败，请重新读取；原申请和填写内容保留。';
+          }
+        }
+        if (action == 'ACCOUNT_CLOSURE') {
+          try {
+            closureRefs =
+                await ClosureReferenceStore.read(accountId: r['account_id']);
+          } catch (_) {
+            closureStorageFailed = true;
+          }
+        }
         final allowed = [
           'PROFILE',
           'ARTIST_MATERIALS',
@@ -188,6 +376,26 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             .toList();
         if (allowed.isNotEmpty && !allowed.contains(copyCategory)) {
           copyCategory = allowed.first;
+        }
+        if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
+            (q['scopes'] as List)
+                .any((v) => ['ALL', 'ARTIST_MATERIALS'].contains(v))) {
+          files = await allRows('$base/file-options', query: {'kind': 'FILE'});
+          policies =
+              await allRows('$base/file-options', query: {'kind': 'POLICY'});
+          for (final f in files) {
+            communityRequire(communityId(f['id']) &&
+                f['label'] is String &&
+                f['media_type'] is String &&
+                f['byte_size'] is int &&
+                f['explanation'] is String &&
+                f['dependencies'] is List);
+          }
+          for (final p in policies) {
+            communityRequire(communityId(p['id']) &&
+                p['basis'] is String &&
+                p['contact_reference'] is String);
+          }
         }
         if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
             (q['scopes'] as List).any((v) =>
@@ -209,11 +417,41 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           rows = list;
           history = h;
           executions = ex;
+          fileTargets = files;
+          filePolicies = policies;
+          accountPolicies = accountRules;
+          accountPolicyError = accountRuleError;
+          closureReferences = closureRefs;
+          closureReferenceUnavailable = closureStorageFailed;
+          if (!accountRules.any((p) => p['id'] == selectedAccountPolicy)) {
+            selectedAccountPolicy = null;
+          }
+          // Never offer the generic retry for a possibly completed closure.
+          if ((closureStorageFailed ||
+                  closureRefs.any((v) => v.requestId == r?['id'])) &&
+              recoverySuffix?.contains('/executions/') == true &&
+              recoverySuffix?.endsWith('/execute') == true) {
+            recovery = null;
+            recoverySuffix = null;
+            reconciled = false;
+          }
+          if (!files.any((f) => f['id'] == selectedFile)) selectedFile = null;
+          if (!policies.any((p) => p['id'] == selectedPolicy)) {
+            selectedPolicy = null;
+          }
           models = m;
           creations = c;
           actions = a;
           nextCursor = next;
         });
+        if (!initializedDraft) {
+          initializedDraft = true;
+          if (!hadDraft) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              draftGuard.currentState?.markSaved();
+            });
+          }
+        }
       }
     } catch (e) {
       if (mounted && t == ticket) setState(() => fail(e));
@@ -255,12 +493,20 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> allRows(String suffix) async {
+  @override
+  Future<void> recovered(Map<String, dynamic> value) async {
+    if (value.containsKey('personalization')) loadedPreferences = false;
+    await super.recovered(value);
+    if (mounted) draftGuard.currentState?.markSaved();
+  }
+
+  Future<List<Map<String, dynamic>>> allRows(String suffix,
+      {Map<String, dynamic> query = const {}}) async {
     final rows = <Map<String, dynamic>>[], seen = <String>{};
     String? cursor;
     do {
       final p = await api.read(suffix,
-          query: {'limit': 50, if (cursor != null) 'cursor': cursor});
+          query: {...query, 'limit': 50, if (cursor != null) 'cursor': cursor});
       rows.addAll(communityItems(p));
       cursor = p['next_cursor'];
       communityRequire(
@@ -275,6 +521,27 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     } catch (e) {
       if (mounted) setState(() => fail(e));
     }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> act(String suffix, Map<String, dynamic> body,
+      {int? version,
+      bool account = false,
+      String method = 'POST',
+      bool reload = true,
+      FutureOr<void> Function(Map<String, dynamic>)? validate}) async {
+    final out = await super.act(suffix, body,
+        version: version,
+        account: account,
+        method: method,
+        reload: reload,
+        validate: validate);
+    if (out != null && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        draftGuard.currentState?.markSaved();
+      });
+    }
+    return out;
   }
 
   Future<bool> confirm(String title, String body) async =>
@@ -309,7 +576,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         for (final r in rows)
           communitySection(
               privacyTypes[communityMap(r['request'])['type']] ?? '本人申请', [
-            communityFact('当前进展', communityState(r['current_status'])),
+            communityFact('当前进展', privacyStatus(r['current_status'])),
             communityFact('答复目标日期', r['response_due_on']),
             communityFact(
                 '日期依据',
@@ -319,12 +586,25 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             tradeButton('查看答复和实际处理', () => open('request', r['id']),
                 outline: true)
           ]),
+        if (previousCursors.isNotEmpty)
+          tradeButton(
+              '返回上一页申请',
+              enabled && !checking
+                  ? () {
+                      setState(() => cursor = previousCursors.removeLast());
+                      load();
+                    }
+                  : null,
+              outline: true),
         if (nextCursor != null)
           tradeButton(
               '读取下一页申请',
-              enabled
+              enabled && !checking
                   ? () {
-                      setState(() => cursor = nextCursor);
+                      setState(() {
+                        previousCursors.add(cursor);
+                        cursor = nextCursor;
+                      });
                       load();
                     }
                   : null,
@@ -353,7 +633,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                         v == true ? scopes.add(x.key) : scopes.remove(x.key))
                     : null)
         ]),
-        communityField(details, '具体说明', lines: 5),
+        communityField(details, '具体说明', lines: 5, enabled: enabled),
         appNotice('提交申请只表示平台收到你的诉求。删除、注销、投诉限制、返款等实际结果会分别记录，不会因此自动完成。'),
         tradeButton(
             '提交本次申请',
@@ -398,6 +678,66 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         ),
       );
 
+  Future<void> savePreferences({bool unsubscribe = false}) async {
+    final n = int.tryParse(minutes.text);
+    if (!unsubscribe && (n == null || n != 0 && (n < 15 || n > 240))) {
+      throw const AccountError(400, '请选择0，或15—240分钟的提醒间隔');
+    }
+    final start = int.tryParse(quietStart.text),
+        end = int.tryParse(quietEnd.text);
+    if (!unsubscribe &&
+        notificationSupported &&
+        (start == null ||
+            end == null ||
+            start < 0 ||
+            start > 1439 ||
+            end < 0 ||
+            end > 1439 ||
+            start == end)) {
+      throw const AccountError(400, '夜间时段须为0—1439分钟，且起止不同');
+    }
+    final body = unsubscribe
+        ? <String, dynamic>{
+            for (final k in [
+              'personalization',
+              'marketing',
+              'rest_reminder_minutes',
+              'push_enabled',
+              'night_reminder_enabled',
+              'quiet_hours'
+            ])
+              if (remotePreferences!.containsKey(k)) k: remotePreferences![k],
+            'marketing': false
+          }
+        : <String, dynamic>{
+            'personalization': personalization,
+            'marketing': marketing,
+            'rest_reminder_minutes': n,
+            if (notificationSupported) ...{
+              'push_enabled': pushEnabled,
+              'night_reminder_enabled': nightEnabled,
+              'quiet_hours': {
+                'enabled': quietEnabled,
+                'start_minute': start,
+                'end_minute': end
+              }
+            }
+          };
+    final r = await act('preferences', body,
+        version: preferenceVersion,
+        method: 'PATCH',
+        account: true,
+        reload: false,
+        validate: (r) => communityRequire(r['object_version'] is int &&
+            r['personalization'] == body['personalization'] &&
+            r['marketing'] == body['marketing'] &&
+            r['rest_reminder_minutes'] == body['rest_reminder_minutes']));
+    if (r != null && mounted) {
+      loadedPreferences = false;
+      await load();
+    }
+  }
+
   List<Widget> preferenceView() => [
         communityHeading('资料与设置', '个性化与营销初始关闭，选择会保存为本人账号偏好。',
             eyebrow: '你的资料与使用偏好'),
@@ -407,33 +747,34 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             enabled ? (v) => setState(() => personalization = v) : null),
         _preferenceSwitch('营销消息提醒', '营销偏好不代替必要业务记录与业务通知', marketing,
             enabled ? (v) => setState(() => marketing = v) : null),
-        communityField(minutes, '休息提醒间隔（分钟）', keyboard: TextInputType.number),
+        communityField(minutes, '休息提醒间隔（分钟）',
+            keyboard: TextInputType.number, enabled: enabled),
         const Text('0为关闭；开启时15—240分钟。'),
+        const RestUsageSummary(),
+        if (notificationSupported) ...[
+          _preferenceSwitch(
+              '系统推送开关',
+              '供应商尚未接通，设置不代表已送达手机；必要站内通知保留',
+              pushEnabled,
+              enabled ? (v) => setState(() => pushEnabled = v) : null),
+          _preferenceSwitch('夜间休息提醒', '使用下面的北京时间时段，独立于推送免打扰', nightEnabled,
+              enabled ? (v) => setState(() => nightEnabled = v) : null),
+          _preferenceSwitch('夜间推送免打扰', '此时段暂停非必要推送，不隐藏站内业务通知', quietEnabled,
+              enabled ? (v) => setState(() => quietEnabled = v) : null),
+          communityField(quietStart, '夜间开始：距北京时间零点分钟数',
+              keyboard: TextInputType.number, enabled: enabled),
+          communityField(quietEnd, '夜间结束：距北京时间零点分钟数',
+              keyboard: TextInputType.number, enabled: enabled),
+          const Text('0—1439，起止不能相同。跨午夜可设置开始大于结束。'),
+        ],
         tradeButton(
-            '保存本次偏好',
-            enabled
-                ? () => submit(() async {
-                      final n = int.tryParse(minutes.text);
-                      if (n == null || n != 0 && (n < 15 || n > 240)) {
-                        throw const AccountError(400, '请选择0，或15—240分钟的提醒间隔');
-                      }
-                      await act(
-                          'preferences',
-                          {
-                            'personalization': personalization,
-                            'marketing': marketing,
-                            'rest_reminder_minutes': n
-                          },
-                          version: preferenceVersion,
-                          method: 'PATCH',
-                          account: true,
-                          validate: (r) => communityRequire(
-                              r['object_version'] is int &&
-                                  r['personalization'] == personalization &&
-                                  r['marketing'] == marketing &&
-                                  r['rest_reminder_minutes'] == n));
-                    })
-                : null),
+            '保存本次偏好', enabled ? () => submit(() => savePreferences()) : null),
+        if (remotePreferences?['marketing'] == true)
+          tradeButton(
+              '关闭营销通知',
+              enabled
+                  ? () => submit(() => savePreferences(unsubscribe: true))
+                  : null),
         appNotice('保存偏好不等于已经启用画像推荐或系统营销推送。业务办理结果通知仍会按实际规则送达。')
       ];
   List<Widget> responseFacts(Map<String, dynamic> result) => [
@@ -470,6 +811,207 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                   : null,
               outline: true)
       ];
+
+  Future<void> proposeAccountPlan(Map<String, dynamic> r, String action) async {
+    if (!enabled || selectedAccountPolicy == null) return;
+    final selected =
+        accountPolicies.where((p) => p['id'] == selectedAccountPolicy).single;
+    final reason = communityRequired(planReason.text, '处理原因', max: 1000);
+    final name = action == 'PROFILE_CORRECTION'
+        ? communityRequired(correctionName.text, '本人展示名', max: 80)
+        : null;
+    final accountId = r['account_id'];
+    communityRequire(
+        communityId(accountId) && accountId == session.account?['id']);
+    final epoch = session.epoch, requestId = r['id'] as String;
+    setState(() {
+      checking = true;
+      accountPolicyError = null;
+    });
+    try {
+      final latest = await readAccountPolicies(requestId, action);
+      if (!mounted || epoch != session.epoch || request?['id'] != requestId) {
+        return;
+      }
+      final matches = latest.where((p) => p['id'] == selected['id']).toList();
+      if (matches.length != 1 || !mapEquals(matches.single, selected)) {
+        setState(() {
+          accountPolicies = latest;
+          selectedAccountPolicy = null;
+          accountPolicyError = '处理依据已变化，请重新选择；已填内容保留。';
+        });
+        return;
+      }
+      setState(() => checking = false);
+      await act(
+          'requests/$requestId/executions',
+          {
+            'action': action,
+            'target_id': accountId,
+            'policy_rule_id': selected['id'],
+            'details': {
+              'reason': reason,
+              if (name != null) 'display_name': name
+            }
+          },
+          version: r['object_version'],
+          account: true);
+    } finally {
+      if (mounted) setState(() => checking = false);
+    }
+  }
+
+  Future<void> executeClosure(
+      Map<String, dynamic> r, Map<String, dynamic> x) async {
+    if (!enabled) return;
+    final accountId = r['account_id'], requestId = r['id'];
+    communityRequire(communityId(accountId) &&
+        accountId == session.account?['id'] &&
+        communityId(requestId) &&
+        communityId(x['id']) &&
+        x['request_id'] == requestId &&
+        x['target_id'] == accountId &&
+        x['action'] == 'ACCOUNT_CLOSURE' &&
+        x['object_version'] is int &&
+        (x['object_version'] as int) > 0);
+    final epoch = session.epoch, navigator = Navigator.of(context);
+    var saved = false, dispatched = false;
+    setState(() {
+      busy = true;
+      error = null;
+      notice = null;
+    });
+    try {
+      await ClosureReferenceStore.begin(accountId, requestId);
+      saved = true;
+      if (!mounted ||
+          session.epoch != epoch ||
+          session.account?['id'] != accountId) {
+        await ClosureReferenceStore.finish(accountId, requestId,
+            confirmed: false);
+        return;
+      }
+      setState(() => closureReferences = [
+            ...closureReferences,
+            ClosureReference(accountId, requestId, false)
+          ]);
+      dispatched = true;
+      await api.write('requests/$requestId/executions/${x['id']}/execute',
+          {'confirmed': true}, account: true, version: x['object_version'],
+          validate: (value) {
+        validateResult(value);
+        communityRequire(value['request_id'] == requestId &&
+            value['action'] == 'ACCOUNT_CLOSURE' &&
+            value['current_status'] == 'EXECUTED' &&
+            value['result'] is Map &&
+            communityMap(value['result'])['effect'] == 'ACCOUNT_ACCESS_CLOSED');
+      });
+      // If updating local metadata fails, retain the conservative unknown state.
+      try {
+        await ClosureReferenceStore.finish(accountId, requestId,
+            confirmed: true);
+      } catch (_) {}
+      if (session.epoch == epoch && session.isLoggedIn) await session.logout();
+      if (navigator.mounted) {
+        navigator.pushNamedAndRemoveUntil('/account', (_) => false);
+      }
+    } catch (e) {
+      final definite = !dispatched ||
+          e is AccountError &&
+              !e.uncertain &&
+              e.status >= 400 &&
+              e.status < 500 &&
+              e.status != 401;
+      if (saved && definite) {
+        try {
+          await ClosureReferenceStore.finish(accountId, requestId,
+              confirmed: false);
+          if (mounted) {
+            closureReferences.removeWhere((v) => v.requestId == requestId);
+          }
+        } catch (_) {
+          // A damaged local reference must continue to block a new request.
+          if (mounted) closureReferenceUnavailable = true;
+        }
+      }
+      if (mounted) {
+        final unknown = '注销结果尚未确认，请保留申请编号 $requestId 联系工作人员核对；不要重复提交。';
+        setState(() {
+          if (definite && !closureReferenceUnavailable) {
+            fail(e);
+          } else {
+            error = unknown;
+          }
+        });
+        if (!definite || closureReferenceUnavailable) {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
+              content: Text(unknown), duration: const Duration(seconds: 8)));
+        }
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  List<Widget> accountPlanSection(Map<String, dynamic> r, String action) {
+    final active = executions.any((x) =>
+        x['action'] == action &&
+        ['PROPOSED', 'APPROVED', 'QUEUED', 'EXECUTED']
+            .contains(x['current_status']));
+    return [
+      communitySection(
+          action == 'ACCOUNT_CLOSURE' ? '提出本人注销方案' : '提出本人展示名更正方案', [
+        if (active)
+          appNotice('本申请已有该处理事项，请先核对下方方案与实际结果。')
+        else if (accountPolicyError != null)
+          appNotice(accountPolicyError!)
+        else if (accountPolicies.isEmpty)
+          appNotice('当前没有适用且已审核的处理依据；原申请仍保留。')
+        else ...[
+          DropdownButtonFormField<String>(
+              key: const ValueKey('privacy-account-policy'),
+              initialValue: selectedAccountPolicy,
+              isExpanded: true,
+              decoration: const InputDecoration(labelText: '本次处理依据'),
+              items: accountPolicies
+                  .map((p) => DropdownMenuItem<String>(
+                      value: p['id'],
+                      child: Text('${p['version']} · ${p['basis']}',
+                          maxLines: 2, overflow: TextOverflow.ellipsis)))
+                  .toList(),
+              onChanged: enabled
+                  ? (v) => setState(() => selectedAccountPolicy = v)
+                  : null),
+          for (final p in accountPolicies
+              .where((p) => p['id'] == selectedAccountPolicy)) ...[
+            communityFact('处理依据', p['basis']),
+            communityFact('处理联系渠道', p['contact_reference'])
+          ],
+          if (action == 'PROFILE_CORRECTION')
+            TextField(
+                key: const ValueKey('privacy-display-name'),
+                controller: correctionName,
+                enabled: enabled,
+                maxLength: 80,
+                decoration: const InputDecoration(labelText: '更正后的本人展示名')),
+          TextField(
+              key: const ValueKey('privacy-plan-reason'),
+              controller: planReason,
+              enabled: enabled,
+              maxLength: 1000,
+              maxLines: 2,
+              decoration: const InputDecoration(labelText: '提出方案的原因')),
+          tradeButton(
+              action == 'ACCOUNT_CLOSURE' ? '提交本人的注销方案' : '提交本人的更正方案',
+              enabled && selectedAccountPolicy != null
+                  ? () => submit(() => proposeAccountPlan(r, action))
+                  : null),
+        ],
+        appNotice('提交方案后仍须另一位工作人员审核，实际执行与资料留存分别核对。'),
+      ])
+    ];
+  }
+
   List<Widget> requestView() {
     final r = request;
     if (r == null) return [];
@@ -478,22 +1020,49 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     return [
       communityHeading(
           privacyTypes[q['type']] ?? '本人申请', '明确这一份申请涉及的资料、答复和剩余事项。'),
+      if (closureReferenceUnavailable)
+        appNotice('本机申请编号无法安全保存或读取，暂不能提交注销；请联系工作人员。'),
+      for (final ref in closureReferences
+          .where((v) => v.requestId == r['id'] || !v.confirmed))
+        appNotice(ref.confirmed
+            ? '账号访问已关闭；申请编号 ${ref.requestId}。资料和备份处理仍需分别核对。'
+            : '注销结果尚未确认，请凭申请编号 ${ref.requestId} 联系工作人员核对；不要重复提交。'),
       menu(),
       const SizedBox(height: 20),
-      communityFact('进展', communityState(r['current_status'])),
+      communityFact('进展', privacyStatus(r['current_status'])),
       communityFact('申请范围',
           (q['scopes'] as List).map((s) => privacyScopes[s] ?? s).join('、')),
       communityFact('原申请说明', q['details']),
+      if (q['type'] == 'CLOSE_ACCOUNT')
+        tradeButton(
+            '核对回复与核验后执行期限',
+            enabled
+                ? () => Navigator.pushNamed(
+                    context, '/contract-six/closure?id=${r['id']}')
+                : null,
+            outline: true),
       communityFact('答复目标日期', r['response_due_on']),
       if (r['deadline_basis'] != 'REVIEWED_CALENDAR')
         appNotice('该日期按普通工作日估算，仍需人工核对工作日历，不作为已确认的法定期限。'),
       if (result.isNotEmpty) communitySection('当前审核答复', responseFacts(result)),
+      if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']))
+        communitySection('下一步核对', [
+          const Text('先看正式答复中的保留原因，再逐项核对处理方案和实际结果。'),
+          if (executions.isEmpty)
+            appNotice('尚无具体处理方案。收到申请或审核答复不表示资料已删除。')
+          else if (executions.any((x) => x['current_status'] == 'APPROVED'))
+            appNotice('有已审核方案待确认。仅在处理对象与影响已明确展示时，才可由本人确认。')
+          else if (executions.any((x) => x['current_status'] == 'QUEUED'))
+            appNotice('已有处理进入执行队列。可以重新读取进度，服务返回结果后再核对。')
+          else
+            appNotice('各项记录分别说明当前结果；本申请整体完成仍需核对剩余资料、版本和备份。'),
+        ]),
       for (final h in history)
         ExpansionTile(
             title: Text('历史正式答复 · 版本${h['object_version']}'),
             children: responseFacts(communityMap(h['result']))),
       communitySection('提出异议或补充情况', [
-        communityField(why, '需要重新处理的原因', lines: 3),
+        communityField(why, '需要重新处理的原因', lines: 3, enabled: enabled),
         tradeButton(
             '提交本次异议',
             enabled
@@ -506,45 +1075,100 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             outline: true)
       ]),
       if (['QUERY', 'COPY'].contains(q['type'])) ...copySection(q),
+      if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
+          (q['scopes'] as List)
+              .any((v) => ['ALL', 'ARTIST_MATERIALS'].contains(v)))
+        ...fileSection(r),
+      if (accountAction(q) case final String action)
+        ...accountPlanSection(r, action),
       communitySection('具体处理方案与执行结果', [
         if (executions.isEmpty)
           const Text('尚无已登记的具体执行方案。可补充申请说明，由工作人员核对适用依据和下一步。'),
         for (final x in executions)
           communitySection(
               privacyActions[x['action']] ?? communityText(x['action']), [
-            communityFact('执行进展', communityState(x['current_status'])),
-            communityFact('处理对象', communityShort(x['target_id'])),
+            communityFact('执行进展', privacyStatus(x['current_status'])),
+            communityFact(
+                '处理对象',
+                x['target_summary'] is Map
+                    ? communityMap(x['target_summary'])['label']
+                    : privacyTargetLabel(x['action'])),
+            if (x['target_summary'] is Map)
+              ...fileFacts(communityMap(x['target_summary'])),
+            if (x['action'] == 'PROFILE_CORRECTION' &&
+                x['proposed_change'] is Map)
+              communityFact(
+                  '确认后将改为', communityMap(x['proposed_change'])['display_name']),
             if (x['job_status'] != null)
-              communityFact('后台任务', communityState(x['job_status'])),
+              communityFact('处理服务', privacyStatus(x['job_status'])),
             if (x['result'] != null)
               ...executionResult(communityMap(x['result'])),
             if (x['current_status'] == 'APPROVED' &&
                 x['action'] == 'ACCOUNT_CLOSURE')
               tradeButton(
                   '本人确认注销访问',
-                  enabled
+                  enabled &&
+                          !closureReferenceUnavailable &&
+                          !closureReferences.any(
+                              (v) => v.requestId == r['id'] || !v.confirmed)
                       ? () => submit(() async {
                             if (await confirm('确认注销当前账号访问',
                                 '注销会撤销本人的登录与成员访问。历史合同、钱账和依法保留资料不等于已经删除；请保留本申请编号 ${r['id']}。')) {
-                              final out = await act(
-                                  'requests/${r['id']}/executions/${x['id']}/execute',
-                                  {'confirmed': true},
-                                  version: x['object_version'],
-                                  account: true,
-                                  reload: false);
-                              if (out != null) {
-                                await session.logout();
-                                if (mounted) {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      context, '/account', (_) => false);
-                                }
-                              }
+                              await executeClosure(r, x);
                             }
                           })
                       : null,
                   outline: true),
             if (x['current_status'] == 'APPROVED' &&
-                x['action'] != 'ACCOUNT_CLOSURE')
+                x['action'] == 'PROFILE_CORRECTION' &&
+                x['proposed_change'] is Map &&
+                communityMap(x['proposed_change'])['display_name'] is String)
+              tradeButton(
+                  '本人确认更正展示名',
+                  enabled
+                      ? () => submit(() async {
+                            final name = communityMap(
+                                x['proposed_change'])['display_name'];
+                            if (await confirm(
+                                '确认更正展示名', '本次将账号展示名改为：$name。历史合同和订单保持原记录。')) {
+                              await act(
+                                  'requests/${r['id']}/executions/${x['id']}/execute',
+                                  {'confirmed': true},
+                                  version: x['object_version'],
+                                  account: true);
+                            }
+                          })
+                      : null,
+                  outline: true),
+            if (x['current_status'] == 'APPROVED' &&
+                x['action'] == 'FILE_ERASURE' &&
+                x['target_summary'] is Map)
+              tradeButton(
+                  '本人确认删除这份原始素材',
+                  enabled
+                      ? () => submit(() async {
+                            final f = communityMap(x['target_summary']);
+                            communityRequire(f['id'] == x['target_id'] &&
+                                f['label'] is String &&
+                                f['byte_size'] is int);
+                            if (await confirm('确认删除这份原始素材',
+                                '${f['label']}，${f['media_type']}，${f['byte_size']} 字节。只处理这份当前文件；模型、历史合同和备份分别核对。')) {
+                              await act(
+                                  'requests/${r['id']}/executions/${x['id']}/execute',
+                                  {'confirmed': true},
+                                  version: x['object_version']);
+                            }
+                          })
+                      : null,
+                  outline: true),
+            if (x['current_status'] == 'APPROVED' &&
+                x['action'] != 'ACCOUNT_CLOSURE' &&
+                !(x['action'] == 'FILE_ERASURE' &&
+                    x['target_summary'] is Map) &&
+                !(x['action'] == 'PROFILE_CORRECTION' &&
+                    x['proposed_change'] is Map &&
+                    communityMap(x['proposed_change'])['display_name']
+                        is String))
               appNotice('请先核对完整方案内容和具体资料，再由本人确认。当前返回未提供完整变更内容，暂不开放盲目执行。'),
             communityRecordId(x)
           ]),
@@ -557,6 +1181,83 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
       communityRecordId(r)
     ];
   }
+
+  List<Widget> fileFacts(Map<String, dynamic> f) => [
+        communityFact('文件类型与大小', '${f['media_type']} · ${f['byte_size']} 字节'),
+        communityFact('上传时间', communityDate(f['created_at'])),
+        appNotice(communityText(f['explanation'])),
+        for (final d in communityRows(f['dependencies']))
+          communityFact('需复核事项', d['message']),
+      ];
+  List<Widget> fileSection(Map<String, dynamic> r) => [
+        communitySection('先核对要删除的原始素材', [
+          if (fileTargets.isEmpty)
+            appNotice('本申请范围内没有本人原始素材；作品、合同、模型和备份按各自处理记录核对。'),
+          for (final f in fileTargets)
+            communitySection(communityText(f['label']), [
+              ...fileFacts(f),
+              if (f['current_status'] == 'READY')
+                tradeButton(
+                    '保存这份文件核对内容',
+                    enabled
+                        ? () => savePrivate(
+                            'requests/${r['id']}/files/${f['id']}/content',
+                            'personal-material.${f['media_type'] == 'image/jpeg' ? 'jpg' : f['media_type'] == 'image/png' ? 'png' : f['media_type'] == 'video/mp4' ? 'mp4' : 'bin'}',
+                            hash: f['content_sha256'])
+                        : null,
+                    outline: true),
+              if (f['disposition'] == 'READY_FOR_REVIEW')
+                CheckboxListTile(
+                    title: const Text('选择这份素材申请删除'),
+                    value: selectedFile == f['id'],
+                    onChanged: enabled
+                        ? (v) => setState(
+                            () => selectedFile = v == true ? f['id'] : null)
+                        : null),
+            ]),
+          if (filePolicies.isEmpty)
+            appNotice('当前没有经审核的资料处理依据，不能直接执行删除。已提交的申请仍由工作人员受理，请在原申请补充需要处理的文件。'),
+          if (filePolicies.isNotEmpty) ...[
+            DropdownButtonFormField<String>(
+                initialValue: selectedPolicy,
+                isExpanded: true,
+                decoration: const InputDecoration(labelText: '本次处理依据'),
+                items: filePolicies
+                    .map((p) => DropdownMenuItem<String>(
+                        value: p['id'],
+                        child: Text('${p['version']} · ${p['basis']}',
+                            maxLines: 2, overflow: TextOverflow.ellipsis)))
+                    .toList(),
+                onChanged:
+                    enabled ? (v) => setState(() => selectedPolicy = v) : null),
+            for (final p
+                in filePolicies.where((p) => p['id'] == selectedPolicy)) ...[
+              communityFact('处理依据', p['basis']),
+              communityFact('处理联系渠道', p['contact_reference'])
+            ],
+            communityField(fileReason, '删除这份素材的原因', lines: 2),
+            tradeButton(
+                '提交这份素材的删除方案',
+                enabled && selectedFile != null && selectedPolicy != null
+                    ? () => submit(() async {
+                          await act(
+                              'requests/${r['id']}/executions',
+                              {
+                                'action': 'FILE_ERASURE',
+                                'target_id': selectedFile,
+                                'policy_rule_id': selectedPolicy,
+                                'details': {
+                                  'reason':
+                                      communityRequired(fileReason.text, '删除原因')
+                                }
+                              },
+                              version: r['object_version']);
+                        })
+                    : null),
+          ],
+          appNotice('提交方案后仍须独立审核，再由本人核对并确认。执行中和存储方回执分别显示，不把提交成功写成已删除。'),
+        ])
+      ];
 
   List<Widget> executionResult(Map<String, dynamic> d) => [
         communityFact(
@@ -589,7 +1290,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             communitySection('本人模型 ${communityShort(x['asset_id'])}', [
               communityFact('模型进展', communityState(x['asset_status'])),
               communityFact('所用授权', communityState(x['consent_status'])),
-              communityField(why, '撤回授权的明确原因', lines: 2),
+              communityField(why, '撤回授权的明确原因', lines: 2, enabled: enabled),
               tradeButton(
                   '撤回这份本人授权',
                   enabled && x['consent_status'] != 'WITHDRAWN'
@@ -764,18 +1465,34 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
   }
 
   @override
-  Widget build(BuildContext context) => tradeScaffold(
-      context,
-      '隐私与个人信息',
-      [
-        ...feedback,
-        ...switch (widget.view) {
-          'new' || 'correction' || 'complaint' => newView(),
-          'preferences' => preferenceView(),
-          'request' => requestView(),
-          _ => listView()
-        },
-        tradeButton('重新读取当前记录', busy ? null : load, outline: true)
-      ],
-      locked: recovery != null);
+  Widget build(BuildContext context) => PrivateDraftGuard(
+      key: draftGuard,
+      session: session,
+      controllers: controllers,
+      value: () => [
+            type,
+            scopes.toList()..sort(),
+            personalization,
+            marketing,
+            agreed,
+            selectedFile,
+            selectedPolicy,
+            selectedAccountPolicy
+          ],
+      locked: busy || recovery != null,
+      child: tradeScaffold(
+          context,
+          '隐私与个人信息',
+          [
+            ...feedback,
+            ...switch (widget.view) {
+              'new' || 'correction' || 'complaint' => newView(),
+              'preferences' => preferenceView(),
+              'request' => requestView(),
+              _ => listView()
+            },
+            tradeButton('重新读取当前记录', busy || checking ? null : load,
+                outline: true)
+          ],
+          onBack: () => draftGuard.currentState?.back()));
 }

@@ -2,6 +2,44 @@
   "description": "Negative protocol payloads. These are schema tests, not runtime authorization or Provider tests.",
   "cases": [
     {
+      "name": "redemption evidence option has a supported purpose",
+      "fixture": "RedemptionDeliveryEvidenceOptionsResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "purpose"
+      ],
+      "replace_with": "UNRELATED"
+    },
+    {
+      "name": "redemption evidence option requires a submission reference",
+      "fixture": "RedemptionDeliveryEvidenceOptionsResponse",
+      "remove_path": [
+        "data",
+        "items",
+        0,
+        "submission_id"
+      ]
+    },
+    {
+      "name": "empty audition dispute evidence rejected",
+      "schema": "AuditionDisputeEvidenceRequest",
+      "value": {
+        "evidence_asset_ids": []
+      }
+    },
+    {
+      "name": "duplicate audition dispute evidence rejected",
+      "schema": "AuditionDisputeEvidenceRequest",
+      "value": {
+        "evidence_asset_ids": [
+          "00000000-0000-4000-8000-000000000001",
+          "00000000-0000-4000-8000-000000000001"
+        ]
+      }
+    },
+    {
       "name": "fractional minor units rejected",
       "schema": "Money",
       "value": {
@@ -1439,6 +1477,1817 @@
         "outcome": "ROLE_GUARANTEED",
         "evidence_asset_id": "00000000-0000-4000-8000-000000000001",
         "reason": "synthetic"
+      }
+    },
+    {
+      "name": "attachment cannot expose object key",
+      "fixture": "CustomizationAttachmentResponse",
+      "mutate_path": [
+        "data",
+        "object_key"
+      ],
+      "replace_with": "private/forbidden"
+    },
+    {
+      "name": "attachment state cannot claim deletion",
+      "fixture": "CustomizationAttachmentResponse",
+      "mutate_path": [
+        "data",
+        "current_status"
+      ],
+      "replace_with": "DELETED"
+    },
+    {
+      "name": "attachment size is bounded",
+      "fixture": "CustomizationAttachmentResponse",
+      "mutate_path": [
+        "data",
+        "byte_size"
+      ],
+      "replace_with": 8388609
+    },
+    {
+      "name": "creation choices have no private contacts",
+      "fixture": "CocreationCreationOptionsResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "private_phone"
+      ],
+      "replace_with": "synthetic"
+    },
+    {
+      "name": "artist media has no private object key",
+      "fixture": "ArtistPublicMediaResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "object_key"
+      ],
+      "replace_with": "private/forbidden"
+    },
+    {
+      "name": "artist media has no unsupported kind",
+      "fixture": "ArtistPublicMediaResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "media_kind"
+      ],
+      "replace_with": "PUBLIC_URL"
+    },
+    {
+      "name": "story retention does not claim legal deadline",
+      "fixture": "CustomizationAttachmentPageResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "retention_reason"
+      ],
+      "replace_with": "FOREVER"
+    },
+    {
+      "name": "stock media rejects zero duration",
+      "schema": "StockPublicMedia",
+      "value": {
+        "listing_id": "dafb81f7-6ae8-45bd-97b7-ed579738da1d",
+        "listing_version": 3,
+        "source_sha256": "588de2f4055653c5bc46a50d3fb1088cd70f1f1aebc07d0e06905f60c8c03949",
+        "preview_sha256": "ba92fe96680ab232e147e41658819f3317d87c7d2b66b51384533d6988d8f041",
+        "duration_ms": 0,
+        "preview_duration_ms": 1000,
+        "preview_width": 320,
+        "preview_height": 180,
+        "cover": {
+          "media_type": "image/jpeg",
+          "byte_size": 583,
+          "content_sha256": "e500207abbd84648c78ce809c35afb4b07401bb81e60188ffc8abf6c8fca24f1",
+          "width": 320,
+          "height": 180,
+          "frame_ms": 0,
+          "source": "REVIEWED_PREVIEW"
+        }
+      }
+    },
+    {
+      "name": "stock media rejects invented cover source",
+      "schema": "StockPublicMedia",
+      "value": {
+        "listing_id": "dafb81f7-6ae8-45bd-97b7-ed579738da1d",
+        "listing_version": 3,
+        "source_sha256": "588de2f4055653c5bc46a50d3fb1088cd70f1f1aebc07d0e06905f60c8c03949",
+        "preview_sha256": "ba92fe96680ab232e147e41658819f3317d87c7d2b66b51384533d6988d8f041",
+        "duration_ms": 2000,
+        "preview_duration_ms": 1000,
+        "preview_width": 320,
+        "preview_height": 180,
+        "cover": {
+          "media_type": "image/jpeg",
+          "byte_size": 583,
+          "content_sha256": "e500207abbd84648c78ce809c35afb4b07401bb81e60188ffc8abf6c8fca24f1",
+          "width": 320,
+          "height": 180,
+          "frame_ms": 0,
+          "source": "FULL_VIDEO"
+        }
+      }
+    },
+    {
+      "name": "stock media rejects storage key leaked",
+      "schema": "StockPublicMedia",
+      "value": {
+        "listing_id": "dafb81f7-6ae8-45bd-97b7-ed579738da1d",
+        "listing_version": 3,
+        "source_sha256": "588de2f4055653c5bc46a50d3fb1088cd70f1f1aebc07d0e06905f60c8c03949",
+        "preview_sha256": "ba92fe96680ab232e147e41658819f3317d87c7d2b66b51384533d6988d8f041",
+        "duration_ms": 2000,
+        "preview_duration_ms": 1000,
+        "preview_width": 320,
+        "preview_height": 180,
+        "cover": {
+          "media_type": "image/jpeg",
+          "byte_size": 583,
+          "content_sha256": "e500207abbd84648c78ce809c35afb4b07401bb81e60188ffc8abf6c8fca24f1",
+          "width": 320,
+          "height": 180,
+          "frame_ms": 0,
+          "source": "REVIEWED_PREVIEW"
+        },
+        "object_key": "private/file"
+      }
+    },
+    {
+      "name": "stock media rejects cover too large",
+      "schema": "StockPublicMedia",
+      "value": {
+        "listing_id": "dafb81f7-6ae8-45bd-97b7-ed579738da1d",
+        "listing_version": 3,
+        "source_sha256": "588de2f4055653c5bc46a50d3fb1088cd70f1f1aebc07d0e06905f60c8c03949",
+        "preview_sha256": "ba92fe96680ab232e147e41658819f3317d87c7d2b66b51384533d6988d8f041",
+        "duration_ms": 2000,
+        "preview_duration_ms": 1000,
+        "preview_width": 320,
+        "preview_height": 180,
+        "cover": {
+          "media_type": "image/jpeg",
+          "byte_size": 583,
+          "content_sha256": "e500207abbd84648c78ce809c35afb4b07401bb81e60188ffc8abf6c8fca24f1",
+          "width": 4096,
+          "height": 180,
+          "frame_ms": 0,
+          "source": "REVIEWED_PREVIEW"
+        }
+      }
+    },
+    {
+      "name": "directory rejects private fields",
+      "schema": "DirectoryProfileRequest",
+      "value": {
+        "profile": {
+          "display_name": "合成机构",
+          "introduction": "合成影片制作机构",
+          "city": "北京市",
+          "capabilities": [
+            "PRODUCER"
+          ],
+          "cover_asset_id": "f15c75a0-4719-4bd1-96dd-6e2eed541405",
+          "evidence_asset_ids": [
+            "81bed42d-cff0-4195-9999-961585681b83"
+          ],
+          "valid_from": "2020-01-01T00:00:00.000Z",
+          "valid_until": "2099-01-01T00:00:00.000Z",
+          "phone": "private"
+        }
+      }
+    },
+    {
+      "name": "directory rejects duplicate capability",
+      "schema": "DirectoryProfileRequest",
+      "value": {
+        "profile": {
+          "display_name": "合成机构",
+          "introduction": "合成影片制作机构",
+          "city": "北京市",
+          "capabilities": [
+            "MCN",
+            "MCN"
+          ],
+          "cover_asset_id": "f15c75a0-4719-4bd1-96dd-6e2eed541405",
+          "evidence_asset_ids": [
+            "81bed42d-cff0-4195-9999-961585681b83"
+          ],
+          "valid_from": "2020-01-01T00:00:00.000Z",
+          "valid_until": "2099-01-01T00:00:00.000Z"
+        }
+      }
+    },
+    {
+      "name": "directory requires all independent approval checks",
+      "schema": "DirectoryReviewRequest",
+      "value": {
+        "decision": "APPROVE",
+        "reason": "test",
+        "checks": {}
+      }
+    },
+    {
+      "name": "directory does not accept self-declared star badge",
+      "schema": "DirectoryFeatureRequest",
+      "value": {
+        "feature": {
+          "listing_id": "eaafc866-4c54-418c-b8cf-192eb99e87aa",
+          "recommendation": "test",
+          "sort_order": 0,
+          "valid_from": "2020-01-01T00:00:00.000Z",
+          "valid_until": "2099-01-01T00:00:00.000Z",
+          "star": true
+        }
+      }
+    },
+    {
+      "name": "private stories cannot be personal collection targets",
+      "schema": "CollectionVisitRequest",
+      "value": {
+        "kind": "STORY",
+        "target_id": "00000000-0000-0000-0000-000000000001"
+      }
+    },
+    {
+      "name": "collection cannot choose another account",
+      "schema": "CollectionPreferencesRequest",
+      "value": {
+        "history_enabled": true,
+        "account_id": "00000000-0000-0000-0000-000000000001"
+      }
+    },
+    {
+      "name": "unavailable collection cannot leak old title",
+      "schema": "CollectionEntry",
+      "value": {
+        "kind": "ARTIST",
+        "target_id": "00000000-0000-0000-0000-000000000001",
+        "recorded_at": "2026-10-30T00:00:00.000Z",
+        "availability": "UNAVAILABLE",
+        "title": "old private title",
+        "city": null
+      }
+    },
+    {
+      "name": "support cannot invent an immediate ruling",
+      "schema": "SupportActionRequest",
+      "value": {
+        "action": "AUTO_PUNISH",
+        "text": "synthetic",
+        "asset_ids": []
+      }
+    },
+    {
+      "name": "support cannot accept arbitrary private source domains",
+      "schema": "SupportTarget",
+      "value": {
+        "domain": "DATABASE",
+        "record_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    {
+      "name": "read all requires an explicit snapshot and channel",
+      "schema": "NotificationReadAllRequest",
+      "value": {
+        "channel": null
+      }
+    },
+    {
+      "name": "read all cannot accept unrelated identity selectors",
+      "schema": "NotificationReadAllRequest",
+      "value": {
+        "snapshot_id": "00000000-0000-4000-8000-000000000001",
+        "channel": null,
+        "account_id": "spoof"
+      }
+    },
+    {
+      "name": "Invoice applicant cannot approve a request",
+      "schema": "InvoiceApplicantAction",
+      "value": {
+        "action": "APPROVE",
+        "text": "synthetic"
+      }
+    },
+    {
+      "name": "Invoice document rejects an injected issuer",
+      "schema": "InvoiceRecordDocument",
+      "value": {
+        "amount_minor": 100,
+        "reference": "synthetic",
+        "issued_at": "2026-01-01T00:00:00.000Z",
+        "asset_id": null,
+        "header": {
+          "kind": "PERSON",
+          "title": "Synthetic",
+          "tax_id": null
+        },
+        "issuer": {
+          "approved": true
+        }
+      }
+    },
+    {
+      "name": "phone change rejects delegated account",
+      "schema": "PhoneChangeCreateRequest",
+      "value": {
+        "old_phone": "13900005001",
+        "new_phone": "13900005002",
+        "account_id": "other"
+      }
+    },
+    {
+      "name": "phone change proof must be six numeric digits",
+      "schema": "PhoneChangeVerifyRequest",
+      "value": {
+        "side": "NEW",
+        "challenge_id": "00000000-0000-4000-8000-000000000001",
+        "code": "123"
+      }
+    },
+    {
+      "name": "recorded invoice command requires actual current invoice",
+      "schema": "InvoiceCommandResult",
+      "value": {
+        "operation": "CREATE",
+        "current_status": "RECORDED",
+        "invoice": null
+      }
+    },
+    {
+      "name": "unrecorded command cannot contain private invoice",
+      "schema": "InvoiceCommandResult",
+      "value": {
+        "operation": "ACTION",
+        "current_status": "NOT_RECORDED",
+        "invoice": {
+          "id": "70ba551c-0cd2-40f2-8248-d0cf9422a97b",
+          "order_id": "c91e009a-6163-48bb-9e73-55a3f16ba6ed",
+          "buyer_party_id": "b191843e-a736-4317-ac55-6e0075a16ed3",
+          "issuer_party_id": "498a5045-0987-4b47-ac59-5619f6c028d5",
+          "environment": "SANDBOX",
+          "currency": "CNY",
+          "requested_minor": 100,
+          "occupied_minor": 100,
+          "current_status": "REQUESTED",
+          "object_version": 1,
+          "header": {
+            "kind": "PERSON",
+            "title": "Synthetic buyer",
+            "tax_id": null
+          },
+          "issued_document_id": null,
+          "pending_document_id": null,
+          "requires_correction": false,
+          "available_for_this_request_minor": 100,
+          "created_at": "2026-10-30T08:41:24.564Z",
+          "updated_at": "2026-10-30T08:41:24.564Z"
+        }
+      }
+    },
+    {
+      "name": "hours cannot coexist with working days",
+      "schema": "CustomizationDeliveryTerms",
+      "value": {
+        "version": "synthetic-contract-new",
+        "source_ref": "synthetic:contract13",
+        "preview_payment_order": "SCRIPT_BEFORE_INTERIM",
+        "acceptance_hours": 120,
+        "acceptance_working_days": 5,
+        "acceptance_calendar": {
+          "version": "synthetic-calendar-schema",
+          "source_ref": "synthetic:format-only",
+          "timezone": "Asia/Shanghai",
+          "valid_from": "2026-01-01",
+          "valid_until": "2026-12-31",
+          "non_working_dates": [
+            "2026-01-01",
+            "2026-01-02",
+            "2026-01-03",
+            "2026-02-15",
+            "2026-02-16",
+            "2026-02-17",
+            "2026-02-18",
+            "2026-02-19",
+            "2026-02-20",
+            "2026-02-21",
+            "2026-02-22",
+            "2026-02-23",
+            "2026-04-04",
+            "2026-04-05",
+            "2026-04-06",
+            "2026-05-01",
+            "2026-05-02",
+            "2026-05-03",
+            "2026-05-04",
+            "2026-05-05",
+            "2026-06-19",
+            "2026-06-20",
+            "2026-06-21",
+            "2026-09-25",
+            "2026-09-26",
+            "2026-09-27",
+            "2026-10-01",
+            "2026-10-02",
+            "2026-10-03",
+            "2026-10-04",
+            "2026-10-05",
+            "2026-10-06",
+            "2026-10-07"
+          ],
+          "working_dates": [
+            "2026-01-04",
+            "2026-02-14",
+            "2026-02-28",
+            "2026-05-09",
+            "2026-09-20",
+            "2026-10-10"
+          ]
+        },
+        "cancellation_terms": "synthetic format example, not production contract"
+      }
+    },
+    {
+      "name": "working days require calendar",
+      "schema": "CustomizationDeliveryTerms",
+      "value": {
+        "version": "synthetic-contract-new",
+        "source_ref": "synthetic:contract13",
+        "preview_payment_order": "SCRIPT_BEFORE_INTERIM",
+        "acceptance_hours": null,
+        "acceptance_working_days": 5,
+        "cancellation_terms": "synthetic format example, not production contract"
+      }
+    },
+    {
+      "name": "calendar cannot silently use old preview policy",
+      "schema": "CustomizationDeliveryTerms",
+      "value": {
+        "version": "synthetic-contract-new",
+        "source_ref": "synthetic:contract13",
+        "preview_payment_order": "PREVIEW_BEFORE_INTERIM",
+        "acceptance_hours": null,
+        "acceptance_working_days": 5,
+        "acceptance_calendar": {
+          "version": "synthetic-calendar-schema",
+          "source_ref": "synthetic:format-only",
+          "timezone": "Asia/Shanghai",
+          "valid_from": "2026-01-01",
+          "valid_until": "2026-12-31",
+          "non_working_dates": [
+            "2026-01-01",
+            "2026-01-02",
+            "2026-01-03",
+            "2026-02-15",
+            "2026-02-16",
+            "2026-02-17",
+            "2026-02-18",
+            "2026-02-19",
+            "2026-02-20",
+            "2026-02-21",
+            "2026-02-22",
+            "2026-02-23",
+            "2026-04-04",
+            "2026-04-05",
+            "2026-04-06",
+            "2026-05-01",
+            "2026-05-02",
+            "2026-05-03",
+            "2026-05-04",
+            "2026-05-05",
+            "2026-06-19",
+            "2026-06-20",
+            "2026-06-21",
+            "2026-09-25",
+            "2026-09-26",
+            "2026-09-27",
+            "2026-10-01",
+            "2026-10-02",
+            "2026-10-03",
+            "2026-10-04",
+            "2026-10-05",
+            "2026-10-06",
+            "2026-10-07"
+          ],
+          "working_dates": [
+            "2026-01-04",
+            "2026-02-14",
+            "2026-02-28",
+            "2026-05-09",
+            "2026-09-20",
+            "2026-10-10"
+          ]
+        },
+        "cancellation_terms": "synthetic format example, not production contract"
+      }
+    },
+    {
+      "name": "calendar without working days rejected",
+      "schema": "CustomizationDeliveryTerms",
+      "value": {
+        "version": "synthetic-contract-new",
+        "source_ref": "synthetic:contract13",
+        "preview_payment_order": "SCRIPT_BEFORE_INTERIM",
+        "acceptance_hours": null,
+        "acceptance_calendar": {
+          "version": "synthetic-calendar-schema",
+          "source_ref": "synthetic:format-only",
+          "timezone": "Asia/Shanghai",
+          "valid_from": "2026-01-01",
+          "valid_until": "2026-12-31",
+          "non_working_dates": [
+            "2026-01-01",
+            "2026-01-02",
+            "2026-01-03",
+            "2026-02-15",
+            "2026-02-16",
+            "2026-02-17",
+            "2026-02-18",
+            "2026-02-19",
+            "2026-02-20",
+            "2026-02-21",
+            "2026-02-22",
+            "2026-02-23",
+            "2026-04-04",
+            "2026-04-05",
+            "2026-04-06",
+            "2026-05-01",
+            "2026-05-02",
+            "2026-05-03",
+            "2026-05-04",
+            "2026-05-05",
+            "2026-06-19",
+            "2026-06-20",
+            "2026-06-21",
+            "2026-09-25",
+            "2026-09-26",
+            "2026-09-27",
+            "2026-10-01",
+            "2026-10-02",
+            "2026-10-03",
+            "2026-10-04",
+            "2026-10-05",
+            "2026-10-06",
+            "2026-10-07"
+          ],
+          "working_dates": [
+            "2026-01-04",
+            "2026-02-14",
+            "2026-02-28",
+            "2026-05-09",
+            "2026-09-20",
+            "2026-10-10"
+          ]
+        },
+        "cancellation_terms": "synthetic format example, not production contract"
+      }
+    },
+    {
+      "name": "Reject personal new 48 hours invalid acceptance_hours",
+      "schema": "StockSpecification",
+      "value": {
+        "version": "synthetic-contract-regression",
+        "stock_license": {
+          "scope": "PERSONAL_NONCOMMERCIAL",
+          "exclusive": false,
+          "territory": "WORLDWIDE",
+          "duration": "PERPETUAL",
+          "personal_social_sharing": true,
+          "acceptance_hours": 72,
+          "aftercare_terms": "Synthetic historic order terms",
+          "acceptance_policy": "CONTRACT_20261029"
+        },
+        "terms": "Synthetic schema fixture, not commercial terms"
+      }
+    },
+    {
+      "name": "Reject personal new 48 hours invalid acceptance_policy",
+      "schema": "StockSpecification",
+      "value": {
+        "version": "synthetic-contract-regression",
+        "stock_license": {
+          "scope": "PERSONAL_NONCOMMERCIAL",
+          "exclusive": false,
+          "territory": "WORLDWIDE",
+          "duration": "PERPETUAL",
+          "personal_social_sharing": true,
+          "acceptance_hours": 48,
+          "aftercare_terms": "Synthetic historic order terms",
+          "acceptance_policy": "UNKNOWN"
+        },
+        "terms": "Synthetic schema fixture, not commercial terms"
+      }
+    },
+    {
+      "name": "Reject commercial new 48 hours invalid acceptance_hours",
+      "schema": "StockSpecification",
+      "value": {
+        "version": "synthetic-contract-regression",
+        "stock_license": {
+          "scope": "COMMERCIAL_LIMITED",
+          "exclusive": false,
+          "territory": "WORLDWIDE",
+          "duration": "FIXED_TERM",
+          "personal_social_sharing": false,
+          "acceptance_hours": 72,
+          "aftercare_terms": "Synthetic historic order terms",
+          "commercial_uses": [
+            "CORPORATE_DISPLAY"
+          ],
+          "valid_from": "2026-01-01T00:00:00Z",
+          "valid_until": "2027-01-01T00:00:00Z",
+          "acceptance_policy": "CONTRACT_20261029"
+        },
+        "terms": "Synthetic schema fixture, not commercial terms"
+      }
+    },
+    {
+      "name": "Reject commercial new 48 hours invalid acceptance_policy",
+      "schema": "StockSpecification",
+      "value": {
+        "version": "synthetic-contract-regression",
+        "stock_license": {
+          "scope": "COMMERCIAL_LIMITED",
+          "exclusive": false,
+          "territory": "WORLDWIDE",
+          "duration": "FIXED_TERM",
+          "personal_social_sharing": false,
+          "acceptance_hours": 48,
+          "aftercare_terms": "Synthetic historic order terms",
+          "commercial_uses": [
+            "CORPORATE_DISPLAY"
+          ],
+          "valid_from": "2026-01-01T00:00:00Z",
+          "valid_until": "2027-01-01T00:00:00Z",
+          "acceptance_policy": "UNKNOWN"
+        },
+        "terms": "Synthetic schema fixture, not commercial terms"
+      }
+    },
+    {
+      "name": "NoticeCaseQuoteOptionsResponse rejects unrelated private fields",
+      "schema": "NoticeCaseQuoteOptionsResponse",
+      "value": {
+        "meta": {
+          "request_id": "07ada625-a45b-44e4-b26c-920d8001962f",
+          "actor": {
+            "account_id": "dca9d322-82a7-44c5-a4ee-4fa61f350fef"
+          },
+          "acting_party": "0af1c703-629c-48aa-a78f-1f6bad7439c6"
+        },
+        "data": {
+          "case_id": "00000000-0000-4000-8000-000000000001",
+          "submission_id": "00000000-0000-4000-8000-000000000001",
+          "items": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "object_version": 1,
+              "current_status": "APPROVED",
+              "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "total_minor": 10000,
+              "currency": "CNY",
+              "expires_at": "2026-11-05T12:00:00Z",
+              "title": "合成商单报价",
+              "private_terms": "not-public"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "GigRelationOptionsResponse rejects unrelated private fields",
+      "schema": "GigRelationOptionsResponse",
+      "value": {
+        "meta": {
+          "request_id": "07ada625-a45b-44e4-b26c-920d8001962f",
+          "actor": {
+            "account_id": "dca9d322-82a7-44c5-a4ee-4fa61f350fef"
+          },
+          "acting_party": "0af1c703-629c-48aa-a78f-1f6bad7439c6"
+        },
+        "data": {
+          "party_id": "00000000-0000-4000-8000-000000000001",
+          "items": [
+            {
+              "listing_id": "00000000-0000-4000-8000-000000000001",
+              "person_id": "00000000-0000-4000-8000-000000000001",
+              "avatar_id": "00000000-0000-4000-8000-000000000001",
+              "artist_party_id": "00000000-0000-4000-8000-000000000001",
+              "display_name": "合成艺人",
+              "city": "苏州",
+              "phone": "synthetic-hidden"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "ArtistDelegationOptionsResponse rejects unrelated private fields",
+      "schema": "ArtistDelegationOptionsResponse",
+      "value": {
+        "meta": {
+          "request_id": "07ada625-a45b-44e4-b26c-920d8001962f",
+          "actor": {
+            "account_id": "dca9d322-82a7-44c5-a4ee-4fa61f350fef"
+          },
+          "acting_party": "0af1c703-629c-48aa-a78f-1f6bad7439c6"
+        },
+        "data": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "kind": "RELATION",
+          "items": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "organization_party_id": "00000000-0000-4000-8000-000000000001",
+              "display_name": "合成机构",
+              "valid_from": "2026-11-01T00:00:00Z",
+              "valid_until": "2027-11-01T00:00:00Z",
+              "bearer_token": "synthetic-not-allowed"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "name": "copy must not claim entire request complete",
+      "fixture": "PrivacyCopyOptionsResponse",
+      "mutate_path": [
+        "data",
+        "request_completion"
+      ],
+      "replace_with": "COMPLETED"
+    },
+    {
+      "name": "copy category requires remaining scope explanation",
+      "fixture": "PrivacyCopyOptionsResponse",
+      "remove_path": [
+        "data",
+        "categories",
+        0,
+        "remaining"
+      ]
+    },
+    {
+      "name": "Personal copy cannot expose staff identifiers",
+      "schema": "PrivacyStoryCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "6de51b44-747d-4082-9db5-52e84075bde7",
+          "actor": {
+            "account_id": "6355c629-2888-4793-8c61-679ef682ce84"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "story_id": "308460f1-c2ff-4a9b-bff5-108f39013d2b",
+          "section": "SUBMISSIONS",
+          "items": [
+            {
+              "id": "d365a40e-640e-4c10-ad29-88eac3f3cc55",
+              "submission_number": 1,
+              "template_version_id": "920a6ba3-e235-4665-bb8e-a7c8569fc673",
+              "content_sha256": "954d52464d9d7db596447958514a74e02470110eb82ddc48ddfd3b98b731302e",
+              "submitted_at": "2026-11-06T02:24:22.381Z",
+              "answers": {
+                "story": "Formal one",
+                "attachment": "6dd9e896-e57c-4714-b061-deb96419339b"
+              },
+              "template_snapshot": {
+                "title": "Synthetic story",
+                "fields": [
+                  {
+                    "key": "story",
+                    "type": "TEXT",
+                    "label": "Story",
+                    "required": true,
+                    "max_length": 1000
+                  },
+                  {
+                    "key": "attachment",
+                    "type": "PRIVATE_ATTACHMENT",
+                    "label": "Private attachment",
+                    "required": false
+                  }
+                ],
+                "description": "Isolated only"
+              },
+              "submitted_by": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_STORY_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Story section must match returned item type",
+      "schema": "PrivacyStoryCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "6de51b44-747d-4082-9db5-52e84075bde7",
+          "actor": {
+            "account_id": "6355c629-2888-4793-8c61-679ef682ce84"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "story_id": "308460f1-c2ff-4a9b-bff5-108f39013d2b",
+          "section": "ATTACHMENTS",
+          "items": [
+            {
+              "id": "d365a40e-640e-4c10-ad29-88eac3f3cc55",
+              "submission_number": 1,
+              "template_version_id": "920a6ba3-e235-4665-bb8e-a7c8569fc673",
+              "content_sha256": "954d52464d9d7db596447958514a74e02470110eb82ddc48ddfd3b98b731302e",
+              "submitted_at": "2026-11-06T02:24:22.381Z",
+              "answers": {
+                "story": "Formal one",
+                "attachment": "6dd9e896-e57c-4714-b061-deb96419339b"
+              },
+              "template_snapshot": {
+                "title": "Synthetic story",
+                "fields": [
+                  {
+                    "key": "story",
+                    "type": "TEXT",
+                    "label": "Story",
+                    "required": true,
+                    "max_length": 1000
+                  },
+                  {
+                    "key": "attachment",
+                    "type": "PRIVATE_ATTACHMENT",
+                    "label": "Private attachment",
+                    "required": false
+                  }
+                ],
+                "description": "Isolated only"
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_STORY_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "trade copy cannot claim request completion",
+      "fixture": "PrivacyTransactionCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "request_completion"
+      ],
+      "replace_with": "COMPLETED"
+    },
+    {
+      "name": "trade order section cannot carry payment records",
+      "fixture": "PrivacyTransactionCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "section"
+      ],
+      "replace_with": "PAYMENTS"
+    },
+    {
+      "name": "trade copy cannot claim complete financial coverage",
+      "fixture": "PrivacyTransactionCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "coverage"
+      ],
+      "replace_with": "ALL_FINANCES"
+    },
+    {
+      "name": "account copy cannot claim completion",
+      "fixture": "PrivacyAccountCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "request_completion"
+      ],
+      "replace_with": "COMPLETED"
+    },
+    {
+      "name": "batch is not approval",
+      "fixture": "OrganizationBatchResponse",
+      "mutate_path": [
+        "data",
+        "meaning"
+      ],
+      "replace_with": "APPROVED"
+    },
+    {
+      "name": "recommendations never change prices",
+      "fixture": "DiscoveryRecommendationsResponse",
+      "mutate_path": [
+        "data",
+        "price_personalized"
+      ],
+      "replace_with": true
+    },
+    {
+      "name": "Reject internal evidence in LICENSE_AGREEMENTS",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "1dbb1ffe-bb27-412a-b0f6-772bc1863c3c",
+          "actor": {
+            "account_id": "564e3a14-ea1f-4d36-83d3-2aaca35e0a04"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "LICENSE_AGREEMENTS",
+          "items": [
+            {
+              "id": "936a9a9d-4f16-4cc2-9f84-01a70c5b2871",
+              "kind": "RESERVATION",
+              "owner_party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "counterparty_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "project_id": null,
+              "current_status": "CANCELLED",
+              "object_version": 1,
+              "source_content_sha256": "8f621ce04391f4ab4282507ff8d971fc8f2e651f81234341da9f43c189c01cb6",
+              "copy_sha256": "dd752f0f227912ceff15a316eda9309e4c165356193787167ebbc343b6321259",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "reservation_id": "a5d8f88c-3030-4199-a065-3422a978af56",
+                "product_id": "cb26fb8e-4278-49e4-8345-59eac36b056d",
+                "product_version": 1,
+                "work_version_id": "d8c7e2ab-a2f4-45eb-8998-205949c779ba",
+                "terms": {
+                  "rights": [
+                    "PRODUCE"
+                  ],
+                  "purposes": [
+                    "PRIVATE"
+                  ],
+                  "exclusive": false,
+                  "languages": [
+                    "zh"
+                  ],
+                  "terms_text": "old negotiated terms",
+                  "valid_from": "2025-01-01T00:00:00.000Z",
+                  "territories": [
+                    "CN"
+                  ],
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "episode_limit": 1,
+                  "project_limit": 1,
+                  "development_until": "2029-01-01T00:00:00.000Z"
+                },
+                "price": {
+                  "currency": "CNY",
+                  "amount_minor": 100
+                },
+                "payment_due_minor": 100,
+                "party_ids": [
+                  "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e"
+                ],
+                "rule_contents": [
+                  {
+                    "id": "3689bb18-d4ab-4a73-85e1-4a31805b94f1",
+                    "terms": {
+                      "text": "original historical rule"
+                    },
+                    "version": "1",
+                    "rule_key": "copy-fixture",
+                    "content_sha256": "2f2acc296fb400627f4dd6cf7fc93a2f9959ed2e297649eb628d806517849964",
+                    "format_version": "rule-content-v1"
+                  }
+                ],
+                "contract_version_id": "33e81e1e-986e-4111-887d-fb0dea7e0883",
+                "created_at": "2026-01-01T00:00:00.000Z",
+                "private_evidence": "must not escape"
+              }
+            },
+            {
+              "id": "c0caafbd-639c-4b41-822b-12142e28938a",
+              "kind": "GRANT",
+              "owner_party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "counterparty_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "project_id": null,
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "source_content_sha256": "51ada0fdd119bdba8c9519f39f742b69ed7594312811e749bb458438486cedaf",
+              "copy_sha256": "17f4e25f27af4dc5917b0b6cc466035b0b498a4c0b4e0fca140616310c50199d",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "reservation_id": "a5d8f88c-3030-4199-a065-3422a978af56",
+                "product_id": "cb26fb8e-4278-49e4-8345-59eac36b056d",
+                "product_version": 1,
+                "work_version_id": "d8c7e2ab-a2f4-45eb-8998-205949c779ba",
+                "terms": {
+                  "rights": [
+                    "PRODUCE"
+                  ],
+                  "purposes": [
+                    "PRIVATE"
+                  ],
+                  "exclusive": false,
+                  "languages": [
+                    "zh"
+                  ],
+                  "terms_text": "old negotiated terms",
+                  "valid_from": "2025-01-01T00:00:00.000Z",
+                  "territories": [
+                    "CN"
+                  ],
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "episode_limit": 1,
+                  "project_limit": 1,
+                  "development_until": "2029-01-01T00:00:00.000Z"
+                },
+                "price": {
+                  "currency": "CNY",
+                  "amount_minor": 100
+                },
+                "payment_due_minor": 100,
+                "procurement": {
+                  "version": "CONTRACT_20261029",
+                  "mode": "REVENUE_SHARE",
+                  "buyer_party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "upfront_minor": 0,
+                  "royalty_bps": 800,
+                  "sublicensing_allowed": true,
+                  "attribution_terms": "retain attribution",
+                  "settlement_annex": {
+                    "cycle": "MONTHLY",
+                    "terms_text": "agreed accounting",
+                    "net_basis": "ALL_RELEASE_AND_DERIVATIVE_INCOME_LESS_PLATFORM_TAX_DISTRIBUTION_PRODUCTION"
+                  }
+                },
+                "party_ids": [
+                  "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e"
+                ],
+                "rule_contents": [
+                  {
+                    "id": "3689bb18-d4ab-4a73-85e1-4a31805b94f1",
+                    "terms": {
+                      "text": "original historical rule"
+                    },
+                    "version": "1",
+                    "rule_key": "copy-fixture",
+                    "content_sha256": "2f2acc296fb400627f4dd6cf7fc93a2f9959ed2e297649eb628d806517849964",
+                    "format_version": "rule-content-v1"
+                  }
+                ],
+                "contract_version_id": "52f7ceb3-0941-4c29-ad98-987f17bbf2c2",
+                "created_at": "2026-01-01T00:00:00.000Z"
+              }
+            },
+            {
+              "id": "f13efe62-4964-4871-9966-c5df9186b1a2",
+              "kind": "GRANT",
+              "owner_party_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "counterparty_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "project_id": null,
+              "current_status": "SUSPENDED",
+              "object_version": 1,
+              "source_content_sha256": "8f621ce04391f4ab4282507ff8d971fc8f2e651f81234341da9f43c189c01cb6",
+              "copy_sha256": "dd752f0f227912ceff15a316eda9309e4c165356193787167ebbc343b6321259",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "reservation_id": "a5d8f88c-3030-4199-a065-3422a978af56",
+                "product_id": "cb26fb8e-4278-49e4-8345-59eac36b056d",
+                "product_version": 1,
+                "work_version_id": "d8c7e2ab-a2f4-45eb-8998-205949c779ba",
+                "terms": {
+                  "rights": [
+                    "PRODUCE"
+                  ],
+                  "purposes": [
+                    "PRIVATE"
+                  ],
+                  "exclusive": false,
+                  "languages": [
+                    "zh"
+                  ],
+                  "terms_text": "old negotiated terms",
+                  "valid_from": "2025-01-01T00:00:00.000Z",
+                  "territories": [
+                    "CN"
+                  ],
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "episode_limit": 1,
+                  "project_limit": 1,
+                  "development_until": "2029-01-01T00:00:00.000Z"
+                },
+                "price": {
+                  "currency": "CNY",
+                  "amount_minor": 100
+                },
+                "payment_due_minor": 100,
+                "party_ids": [
+                  "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e"
+                ],
+                "rule_contents": [
+                  {
+                    "id": "3689bb18-d4ab-4a73-85e1-4a31805b94f1",
+                    "terms": {
+                      "text": "original historical rule"
+                    },
+                    "version": "1",
+                    "rule_key": "copy-fixture",
+                    "content_sha256": "2f2acc296fb400627f4dd6cf7fc93a2f9959ed2e297649eb628d806517849964",
+                    "format_version": "rule-content-v1"
+                  }
+                ],
+                "contract_version_id": "33e81e1e-986e-4111-887d-fb0dea7e0883",
+                "created_at": "2026-01-01T00:00:00.000Z"
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Reject internal evidence in PARTICIPATION_AGREEMENTS",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "ba755b1a-846e-4d6d-995e-5fe981d7b268",
+          "actor": {
+            "account_id": "564e3a14-ea1f-4d36-83d3-2aaca35e0a04"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PARTICIPATION_AGREEMENTS",
+          "items": [
+            {
+              "id": "57416b40-087e-46e2-8bb0-3f5623ec23c6",
+              "kind": "PARTICIPATION",
+              "owner_party_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "counterparty_id": null,
+              "project_id": "dd85a7e8-d11c-45ed-a1ec-d1211b43ce83",
+              "current_status": "SUPERSEDED",
+              "object_version": 1,
+              "source_content_sha256": "c04fc4a02554a26f03ff67e2673f529b038aff131181626f4cac7540681fb7cf",
+              "copy_sha256": "b2a1a835ea8a06df95ff9a4135c68dcb5789c9f6ceab5beacafc3889a34a0256",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "candidate_id": "aeebbd02-27f8-463a-8d11-1ef863e7edb7",
+                "role_id": "63e426f5-0a01-4046-aa47-7f42695eb7fc",
+                "avatar_id": "9e3eb946-4e1b-4059-9432-840b4ffb9376",
+                "consent_id": "41166494-327d-4ee8-8b6c-b3de84ed9c16",
+                "cast": {
+                  "person_id": "35280f93-3082-4cb0-9122-5490e818cf2b",
+                  "look_version_id": "a61e867d-4f08-4432-8719-d26f754cb4c0",
+                  "voice_version_id": null
+                },
+                "terms": {
+                  "mode": "FIXED_FEE",
+                  "usage": "EXISTING_MATERIAL",
+                  "revenue": null,
+                  "language": "zh",
+                  "exclusive": false,
+                  "territory": "CN",
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "installments": [
+                    {
+                      "key": "first",
+                      "milestone": "confirmed",
+                      "amount_minor": 100
+                    }
+                  ],
+                  "permitted_uses": "synthetic",
+                  "prohibited_uses": "synthetic",
+                  "cancellation_terms": "review",
+                  "start_payment_keys": [
+                    "first"
+                  ]
+                },
+                "fee_minor": 100,
+                "order_id": null,
+                "parties": [
+                  {
+                    "party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                    "responsibility": "confirm",
+                    "after_party_ids": []
+                  }
+                ],
+                "private_evidence": "must not escape"
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Reject internal evidence in AGENCY_AGREEMENTS",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "b5831cc8-84d3-45ff-9a43-d02ad3697e91",
+          "actor": {
+            "account_id": "564e3a14-ea1f-4d36-83d3-2aaca35e0a04"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "AGENCY_AGREEMENTS",
+          "items": [
+            {
+              "id": "bd0638f8-6a23-45f2-babd-e5af8681c338",
+              "kind": "RELATION",
+              "owner_party_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "counterparty_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "project_id": null,
+              "current_status": "ENDED",
+              "object_version": 1,
+              "source_content_sha256": "bbf68a6617776ebb927e9fbb0c28e9f787a5e53f4e4a7cb3826192f2d9b7229f",
+              "copy_sha256": "6e6b1b848663a8126d8da24b1c71aaed8ace74b198fc88bedea3b9c003955ac0",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "scope": "COMMERCIAL",
+                "valid_from": "2025-01-01T00:00:00.000Z",
+                "valid_until": "2030-01-01T00:00:00.000Z",
+                "exclusive": false,
+                "terms": "original commission",
+                "commission": {
+                  "mcn_bps": 0,
+                  "platform_bps": 2200
+                },
+                "ended_reason": "terminated",
+                "private_evidence": "must not escape"
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Agreement copy cannot claim a signed original",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "1dbb1ffe-bb27-412a-b0f6-772bc1863c3c",
+          "actor": {
+            "account_id": "564e3a14-ea1f-4d36-83d3-2aaca35e0a04"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "LICENSE_AGREEMENTS",
+          "items": [
+            {
+              "id": "936a9a9d-4f16-4cc2-9f84-01a70c5b2871",
+              "kind": "RESERVATION",
+              "owner_party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "counterparty_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "project_id": null,
+              "current_status": "CANCELLED",
+              "object_version": 1,
+              "source_content_sha256": "8f621ce04391f4ab4282507ff8d971fc8f2e651f81234341da9f43c189c01cb6",
+              "copy_sha256": "dd752f0f227912ceff15a316eda9309e4c165356193787167ebbc343b6321259",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "SIGNED",
+              "terms": {
+                "reservation_id": "a5d8f88c-3030-4199-a065-3422a978af56",
+                "product_id": "cb26fb8e-4278-49e4-8345-59eac36b056d",
+                "product_version": 1,
+                "work_version_id": "d8c7e2ab-a2f4-45eb-8998-205949c779ba",
+                "terms": {
+                  "rights": [
+                    "PRODUCE"
+                  ],
+                  "purposes": [
+                    "PRIVATE"
+                  ],
+                  "exclusive": false,
+                  "languages": [
+                    "zh"
+                  ],
+                  "terms_text": "old negotiated terms",
+                  "valid_from": "2025-01-01T00:00:00.000Z",
+                  "territories": [
+                    "CN"
+                  ],
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "episode_limit": 1,
+                  "project_limit": 1,
+                  "development_until": "2029-01-01T00:00:00.000Z"
+                },
+                "price": {
+                  "currency": "CNY",
+                  "amount_minor": 100
+                },
+                "payment_due_minor": 100,
+                "party_ids": [
+                  "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e"
+                ],
+                "rule_contents": [
+                  {
+                    "id": "3689bb18-d4ab-4a73-85e1-4a31805b94f1",
+                    "terms": {
+                      "text": "original historical rule"
+                    },
+                    "version": "1",
+                    "rule_key": "copy-fixture",
+                    "content_sha256": "2f2acc296fb400627f4dd6cf7fc93a2f9959ed2e297649eb628d806517849964",
+                    "format_version": "rule-content-v1"
+                  }
+                ],
+                "contract_version_id": "33e81e1e-986e-4111-887d-fb0dea7e0883",
+                "created_at": "2026-01-01T00:00:00.000Z"
+              }
+            },
+            {
+              "id": "c0caafbd-639c-4b41-822b-12142e28938a",
+              "kind": "GRANT",
+              "owner_party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "counterparty_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "project_id": null,
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "source_content_sha256": "51ada0fdd119bdba8c9519f39f742b69ed7594312811e749bb458438486cedaf",
+              "copy_sha256": "17f4e25f27af4dc5917b0b6cc466035b0b498a4c0b4e0fca140616310c50199d",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "reservation_id": "a5d8f88c-3030-4199-a065-3422a978af56",
+                "product_id": "cb26fb8e-4278-49e4-8345-59eac36b056d",
+                "product_version": 1,
+                "work_version_id": "d8c7e2ab-a2f4-45eb-8998-205949c779ba",
+                "terms": {
+                  "rights": [
+                    "PRODUCE"
+                  ],
+                  "purposes": [
+                    "PRIVATE"
+                  ],
+                  "exclusive": false,
+                  "languages": [
+                    "zh"
+                  ],
+                  "terms_text": "old negotiated terms",
+                  "valid_from": "2025-01-01T00:00:00.000Z",
+                  "territories": [
+                    "CN"
+                  ],
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "episode_limit": 1,
+                  "project_limit": 1,
+                  "development_until": "2029-01-01T00:00:00.000Z"
+                },
+                "price": {
+                  "currency": "CNY",
+                  "amount_minor": 100
+                },
+                "payment_due_minor": 100,
+                "procurement": {
+                  "version": "CONTRACT_20261029",
+                  "mode": "REVENUE_SHARE",
+                  "buyer_party_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "upfront_minor": 0,
+                  "royalty_bps": 800,
+                  "sublicensing_allowed": true,
+                  "attribution_terms": "retain attribution",
+                  "settlement_annex": {
+                    "cycle": "MONTHLY",
+                    "terms_text": "agreed accounting",
+                    "net_basis": "ALL_RELEASE_AND_DERIVATIVE_INCOME_LESS_PLATFORM_TAX_DISTRIBUTION_PRODUCTION"
+                  }
+                },
+                "party_ids": [
+                  "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e"
+                ],
+                "rule_contents": [
+                  {
+                    "id": "3689bb18-d4ab-4a73-85e1-4a31805b94f1",
+                    "terms": {
+                      "text": "original historical rule"
+                    },
+                    "version": "1",
+                    "rule_key": "copy-fixture",
+                    "content_sha256": "2f2acc296fb400627f4dd6cf7fc93a2f9959ed2e297649eb628d806517849964",
+                    "format_version": "rule-content-v1"
+                  }
+                ],
+                "contract_version_id": "52f7ceb3-0941-4c29-ad98-987f17bbf2c2",
+                "created_at": "2026-01-01T00:00:00.000Z"
+              }
+            },
+            {
+              "id": "f13efe62-4964-4871-9966-c5df9186b1a2",
+              "kind": "GRANT",
+              "owner_party_id": "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e",
+              "counterparty_id": "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+              "project_id": null,
+              "current_status": "SUSPENDED",
+              "object_version": 1,
+              "source_content_sha256": "8f621ce04391f4ab4282507ff8d971fc8f2e651f81234341da9f43c189c01cb6",
+              "copy_sha256": "dd752f0f227912ceff15a316eda9309e4c165356193787167ebbc343b6321259",
+              "copy_kind": "REDACTED_AGREEMENT_COPY",
+              "signature_evidence": "NOT_INCLUDED",
+              "terms": {
+                "reservation_id": "a5d8f88c-3030-4199-a065-3422a978af56",
+                "product_id": "cb26fb8e-4278-49e4-8345-59eac36b056d",
+                "product_version": 1,
+                "work_version_id": "d8c7e2ab-a2f4-45eb-8998-205949c779ba",
+                "terms": {
+                  "rights": [
+                    "PRODUCE"
+                  ],
+                  "purposes": [
+                    "PRIVATE"
+                  ],
+                  "exclusive": false,
+                  "languages": [
+                    "zh"
+                  ],
+                  "terms_text": "old negotiated terms",
+                  "valid_from": "2025-01-01T00:00:00.000Z",
+                  "territories": [
+                    "CN"
+                  ],
+                  "valid_until": "2030-01-01T00:00:00.000Z",
+                  "episode_limit": 1,
+                  "project_limit": 1,
+                  "development_until": "2029-01-01T00:00:00.000Z"
+                },
+                "price": {
+                  "currency": "CNY",
+                  "amount_minor": 100
+                },
+                "payment_due_minor": 100,
+                "party_ids": [
+                  "ceeb0c4d-071e-40b5-90d2-77e5c422b2b2",
+                  "762f3729-ec92-4a3e-b1e4-c4ad1ad3c45e"
+                ],
+                "rule_contents": [
+                  {
+                    "id": "3689bb18-d4ab-4a73-85e1-4a31805b94f1",
+                    "terms": {
+                      "text": "original historical rule"
+                    },
+                    "version": "1",
+                    "rule_key": "copy-fixture",
+                    "content_sha256": "2f2acc296fb400627f4dd6cf7fc93a2f9959ed2e297649eb628d806517849964",
+                    "format_version": "rule-content-v1"
+                  }
+                ],
+                "contract_version_id": "33e81e1e-986e-4111-887d-fb0dea7e0883",
+                "created_at": "2026-01-01T00:00:00.000Z"
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Security copy rejects token_hash",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "5b3316c7-3e51-4d86-9009-28554835f277",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "SESSION_RECORDS",
+          "items": [
+            {
+              "copy_ref": "2775fa8e7dcc444829d5fc1a373ab3ca87f708ad24513fd791f56d2a54f943e2",
+              "authenticated_at": "2026-11-06T09:15:58.882Z",
+              "expires_at": "2026-11-06T09:26:03.882Z",
+              "revoked": false,
+              "current_status": "ACTIVE",
+              "token_hash": "secret-not-allowed"
+            },
+            {
+              "copy_ref": "8187c4952ac91c92c96465c0feaf3b1db09986c4f2d54c7afb6080ab72467be5",
+              "authenticated_at": null,
+              "expires_at": "2026-11-06T10:16:02.314Z",
+              "revoked": false,
+              "current_status": "ACTIVE"
+            },
+            {
+              "copy_ref": "97396640186f7d19c2297922449ad6e18f67eae53ce698834ecb837781659f3e",
+              "authenticated_at": "2026-11-06T09:15:53.882Z",
+              "expires_at": "2026-11-06T09:24:23.882Z",
+              "revoked": true,
+              "current_status": "REVOKED"
+            },
+            {
+              "copy_ref": "c958b46b0a88ff28dbcf2209b4b40ca801622426c8d6f3232a80cee62082a397",
+              "authenticated_at": "2026-11-06T09:15:03.882Z",
+              "expires_at": "2026-11-06T09:16:02.882Z",
+              "revoked": false,
+              "current_status": "EXPIRED"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": false,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Security copy rejects encrypted_phones",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "696c47ef-e169-4123-81cb-1d50a6cc6b2e",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PHONE_CHANGES",
+          "items": [
+            {
+              "id": "5adfe203-10ea-4594-8e53-3cd82f081390",
+              "old_phone_mask": "139****9801",
+              "new_phone_mask": "138****1234",
+              "current_status": "EXPIRED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.956Z",
+              "updated_at": "2026-11-06T09:16:03.956Z",
+              "encrypted_phones": "secret-not-allowed"
+            },
+            {
+              "id": "5e5d3578-21a3-4c97-ae83-96240b1e2745",
+              "old_phone_mask": "139****9801",
+              "new_phone_mask": "138****1234",
+              "current_status": "COMPLETED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.945Z",
+              "updated_at": "2026-11-06T09:16:03.945Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": false,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Security copy rejects old_phone_mask",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "696c47ef-e169-4123-81cb-1d50a6cc6b2e",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PHONE_CHANGES",
+          "items": [
+            {
+              "id": "5adfe203-10ea-4594-8e53-3cd82f081390",
+              "old_phone_mask": "13900009801",
+              "new_phone_mask": "138****1234",
+              "current_status": "EXPIRED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.956Z",
+              "updated_at": "2026-11-06T09:16:03.956Z"
+            },
+            {
+              "id": "5e5d3578-21a3-4c97-ae83-96240b1e2745",
+              "old_phone_mask": "139****9801",
+              "new_phone_mask": "138****1234",
+              "current_status": "COMPLETED",
+              "object_version": 1,
+              "expires_at": "2026-11-06T09:21:03.882Z",
+              "created_at": "2026-11-06T09:16:03.945Z",
+              "updated_at": "2026-11-06T09:16:03.945Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": false,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Security copy must not claim complete history",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "5b3316c7-3e51-4d86-9009-28554835f277",
+          "actor": {
+            "account_id": "1852e5c6-787b-49d9-9cc5-dfb76db5bb52"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "SESSION_RECORDS",
+          "items": [
+            {
+              "copy_ref": "2775fa8e7dcc444829d5fc1a373ab3ca87f708ad24513fd791f56d2a54f943e2",
+              "authenticated_at": "2026-11-06T09:15:58.882Z",
+              "expires_at": "2026-11-06T09:26:03.882Z",
+              "revoked": false,
+              "current_status": "ACTIVE"
+            },
+            {
+              "copy_ref": "8187c4952ac91c92c96465c0feaf3b1db09986c4f2d54c7afb6080ab72467be5",
+              "authenticated_at": null,
+              "expires_at": "2026-11-06T10:16:02.314Z",
+              "revoked": false,
+              "current_status": "ACTIVE"
+            },
+            {
+              "copy_ref": "97396640186f7d19c2297922449ad6e18f67eae53ce698834ecb837781659f3e",
+              "authenticated_at": "2026-11-06T09:15:53.882Z",
+              "expires_at": "2026-11-06T09:24:23.882Z",
+              "revoked": true,
+              "current_status": "REVOKED"
+            },
+            {
+              "copy_ref": "c958b46b0a88ff28dbcf2209b4b40ca801622426c8d6f3232a80cee62082a397",
+              "authenticated_at": "2026-11-06T09:15:03.882Z",
+              "expires_at": "2026-11-06T09:16:02.882Z",
+              "revoked": false,
+              "current_status": "EXPIRED"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "history_complete": true,
+          "credential_material": "EXCLUDED"
+        }
+      }
+    },
+    {
+      "name": "Contract ranking rejects weights",
+      "schema": "EngagementRule",
+      "value": {
+        "version": "synthetic-contract-20261029",
+        "terms": "Isolated fixture, not approved production rules",
+        "gp": {
+          "STOCK": 1,
+          "AUDITION": 3,
+          "CUSTOMIZATION": 5,
+          "COMMERCIAL": 5,
+          "five_star": 1,
+          "media": 2,
+          "repeat": 2,
+          "refund_penalty": 5
+        },
+        "thresholds": [
+          0,
+          30,
+          120,
+          400,
+          1000
+        ],
+        "retention_days": 90,
+        "retention_bps": 5000,
+        "rank": {
+          "window_days": 30,
+          "popularity_days": 7,
+          "newcomer_days": 30,
+          "cold_start_days": 7,
+          "review_min": 10,
+          "repeat_buyers_min": 20,
+          "bayes_n": 10,
+          "bayes_mean": 4,
+          "weights": [
+            0,
+            0,
+            0,
+            0,
+            10000
+          ],
+          "halo_bps": [
+            0,
+            10000,
+            13000,
+            16000
+          ]
+        },
+        "starlight": null,
+        "risk_first_penalty": 25,
+        "aftercare_days": {
+          "STOCK": 7,
+          "AUDITION": 7,
+          "CUSTOMIZATION": 7,
+          "COMMERCIAL": 7
+        },
+        "referral_bps": {
+          "STOCK": 500,
+          "AUDITION": 500,
+          "CUSTOMIZATION": 500,
+          "COMMERCIAL": 500
+        },
+        "ranking_contract_policy": "CONTRACT_20261029"
+      }
+    },
+    {
+      "name": "Contract ranking rejects halo_bps",
+      "schema": "EngagementRule",
+      "value": {
+        "version": "synthetic-contract-20261029",
+        "terms": "Isolated fixture, not approved production rules",
+        "gp": {
+          "STOCK": 1,
+          "AUDITION": 3,
+          "CUSTOMIZATION": 5,
+          "COMMERCIAL": 5,
+          "five_star": 1,
+          "media": 2,
+          "repeat": 2,
+          "refund_penalty": 5
+        },
+        "thresholds": [
+          0,
+          30,
+          120,
+          400,
+          1000
+        ],
+        "retention_days": 90,
+        "retention_bps": 5000,
+        "rank": {
+          "window_days": 30,
+          "popularity_days": 7,
+          "newcomer_days": 30,
+          "cold_start_days": 7,
+          "review_min": 10,
+          "repeat_buyers_min": 20,
+          "bayes_n": 10,
+          "bayes_mean": 4,
+          "weights": [
+            3000,
+            2500,
+            2000,
+            1000,
+            1500
+          ],
+          "halo_bps": [
+            0,
+            10000,
+            11500,
+            13000
+          ]
+        },
+        "starlight": null,
+        "risk_first_penalty": 25,
+        "aftercare_days": {
+          "STOCK": 7,
+          "AUDITION": 7,
+          "CUSTOMIZATION": 7,
+          "COMMERCIAL": 7
+        },
+        "referral_bps": {
+          "STOCK": 500,
+          "AUDITION": 500,
+          "CUSTOMIZATION": 500,
+          "COMMERCIAL": 500
+        },
+        "ranking_contract_policy": "CONTRACT_20261029"
       }
     }
   ]

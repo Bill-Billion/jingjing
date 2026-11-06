@@ -1,0 +1,70 @@
+{"request_id":"a6efaeba-a2d6-40b7-b64f-b290c2c6b2c9","provider_code":"volcengine","capability_code":"login_sms","time":"2026-11-04T10:45:50.273Z","level":"info","event":"provider_call_started"}
+{"request_id":"a6efaeba-a2d6-40b7-b64f-b290c2c6b2c9","provider_code":"volcengine","capability_code":"login_sms","provider_request_id":"browser-synthetic-request","time":"2026-11-04T10:45:50.285Z","level":"info","event":"provider_call_returned"}
+{"request_id":"711a0f3c-0901-44a0-a056-035d6cce82e6","provider_code":"volcengine","capability_code":"login_sms","time":"2026-11-04T10:45:50.312Z","level":"info","event":"provider_call_started"}
+{"request_id":"711a0f3c-0901-44a0-a056-035d6cce82e6","provider_code":"volcengine","capability_code":"login_sms","provider_request_id":"browser-synthetic-request","time":"2026-11-04T10:45:50.313Z","level":"info","event":"provider_call_returned"}
+Isolated PR #11 API: http://127.0.0.1:3228. Synthetic SMS only. Private test state: /Users/yanghaoran/Documents/Codex/2026-11-02/task/jingjing-investigation/pr39-abc-20261104/.local/tonight-login-20261104/state-23456.json
+00:00 +0: loading /Users/yanghaoran/Documents/Codex/2026-11-02/task/jingjing-investigation/pr39-abc-20261104/晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/integration_test/tonight_login_native_local_test.dart
+Running Gradle task 'assembleDebug'...
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): file_picker, fluttertoast, share_plus
+Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
+
+Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
+If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing
+an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
+
+If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+Running Gradle task 'assembleDebug'...                             19.4s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+Installing build/app/outputs/flutter-apk/app-debug.apk...        1,388ms
+00:00 +0: Android 模拟短信登录回原充值页，失效后明示且不自动写入
+SYNTHETIC_CHALLENGE_PHONE first
+NATIVE_HTTP POST /api/v1/auth/sms-challenges 503 SMS_NOT_READY
+SYNTHETIC_CHALLENGE_PHONE first
+NATIVE_HTTP POST /api/v1/auth/sms-challenges 503 SMS_CHALLENGE_UNAVAILABLE
+SYNTHETIC_CHALLENGE_PHONE first
+NATIVE_HTTP POST /api/v1/auth/sms-challenges 429 RATE_LIMITED
+SYNTHETIC_CHALLENGE_PHONE second
+{"request_id":"676cfa7d-b816-4b06-8a0b-2d9f2d5c5e7e","provider_code":"volcengine","capability_code":"login_sms","time":"2026-11-04T10:46:22.063Z","level":"info","event":"provider_call_started"}
+{"request_id":"676cfa7d-b816-4b06-8a0b-2d9f2d5c5e7e","provider_code":"volcengine","capability_code":"login_sms","provider_request_id":"browser-synthetic-request","time":"2026-11-04T10:46:22.067Z","level":"info","event":"provider_call_returned"}
+NATIVE_HTTP POST /api/v1/auth/sms-challenges 200 null
+NATIVE_HTTP POST /api/v1/auth/sessions 200 null
+NATIVE_HTTP GET /api/v1/me/parties 200 null
+NATIVE_HTTP GET /api/v1/wallet/summary 404 WALLET_NOT_FOUND
+NATIVE_LOGIN_RETURNED_WITHOUT_BUSINESS_WRITE
+NATIVE_HTTP GET /api/v1/wallet/summary 401 AUTHENTICATION_REQUIRED
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "登录状态已过期": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///Users/yanghaoran/Documents/Codex/2026-11-02/task/jingjing-investigation/pr39-abc-20261104/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_jingjingshangri_app/integration_test/tonight_login_native_local_test.dart:161:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///Users/yanghaoran/Documents/Codex/2026-11-02/task/jingjing-investigation/pr39-abc-20261104/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_jingjingshangri_app/integration_test/tonight_login_native_local_test.dart line 161
+The test description was:
+  Android 模拟短信登录回原充值页，失效后明示且不自动写入
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:09 +0 -1: Android 模拟短信登录回原充值页，失效后明示且不自动写入 [E]
+  Test failed. See exception logs above.
+  The test description was: Android 模拟短信登录回原充值页，失效后明示且不自动写入
+
+00:09 +0 -1: (tearDownAll)
+00:10 +0 -1: Some tests failed.
+
+Failing tests:
+  /Users/yanghaoran/Documents/Codex/2026-11-02/task/jingjing-investigation/pr39-abc-20261104/晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/integration_test/tonight_login_native_local_test.dart: Android 模拟短信登录回原充值页，失效后明示且不自动写入
+AssertionError [ERR_ASSERTION]: native login test failed
+
+1 !== 0
+
+    at file:///Users/yanghaoran/Documents/Codex/2026-11-02/task/jingjing-investigation/pr39-abc-20261104/scripts/tonight-login-native-check.mjs:48:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

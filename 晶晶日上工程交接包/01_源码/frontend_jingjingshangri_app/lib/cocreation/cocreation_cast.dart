@@ -111,6 +111,7 @@ class CocreationCastInput {
       voice,
       consents;
   String usage = 'EXISTING_MATERIAL';
+  bool personAvatarVerified = false;
   Map<String, dynamic> value() {
     final ids = communityIds(consents.text, '脸声用途同意');
     if (ids.length > 2) throw const AccountError(400, '每次最多选择两份脸声用途同意');
@@ -131,9 +132,15 @@ class CocreationCastInput {
   }
 
   Widget chooser(AccountSession session,
-          {required bool enabled, required VoidCallback changed}) =>
+          {required bool enabled,
+          required VoidCallback changed,
+          bool personAndAvatarOnly = false}) =>
       CocreationCastChooser(
-          session: session, input: this, enabled: enabled, onChanged: changed);
+          session: session,
+          input: this,
+          enabled: enabled,
+          onChanged: changed,
+          personAndAvatarOnly: personAndAvatarOnly);
 }
 
 class CocreationCastChooser extends StatefulWidget {
@@ -142,10 +149,12 @@ class CocreationCastChooser extends StatefulWidget {
       required this.session,
       required this.input,
       required this.enabled,
-      required this.onChanged});
+      required this.onChanged,
+      this.personAndAvatarOnly = false});
   final AccountSession session;
   final CocreationCastInput input;
   final bool enabled;
+  final bool personAndAvatarOnly;
   final VoidCallback onChanged;
   @override
   State<CocreationCastChooser> createState() => _CocreationCastChooserState();
@@ -174,6 +183,7 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
 
   Future<void> load({String? personId}) async {
     final t = ++ticket, e = widget.session.epoch, p = widget.session.partyId;
+    input.personAvatarVerified = false;
     setState(() {
       busy = true;
       error = null;
@@ -195,10 +205,12 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
       List<Map<String, dynamic>> ss = [];
       if (all.any((x) => x.id == selected)) {
         d = await api.person(selected);
-        for (final kind in ['LOOK', 'VOICE', 'CONSENT']) {
-          rs.addAll(await api.allRecords(selected, kind));
+        if (!widget.personAndAvatarOnly) {
+          for (final kind in ['LOOK', 'VOICE', 'CONSENT']) {
+            rs.addAll(await api.allRecords(selected, kind));
+          }
+          ss = await cocreationSupplyConsents(widget.session);
         }
-        ss = await cocreationSupplyConsents(widget.session);
       }
       if (!mounted ||
           t != ticket ||
@@ -212,6 +224,8 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
         records = rs;
         supply = ss;
       });
+      input.personAvatarVerified =
+          d != null && d.avatars.any((a) => a.id == input.avatar.text);
       if (d == null) {
         input.person.clear();
         input.avatar.clear();
@@ -230,6 +244,14 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
           supply = [];
           error = communityError(e);
         });
+        input.person.clear();
+        input.avatar.clear();
+        input.look.clear();
+        input.voice.clear();
+        input.supplyConsent.clear();
+        input.consents.clear();
+        input.personAvatarVerified = false;
+        widget.onChanged();
       }
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
@@ -238,6 +260,10 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
 
   void choose(TextEditingController c, String? value) {
     c.text = value ?? '';
+    if (identical(c, input.avatar)) {
+      input.personAvatarVerified =
+          person?.avatars.any((a) => a.id == c.text) == true;
+    }
     widget.onChanged();
     setState(() {});
   }
@@ -274,10 +300,12 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
               ? (v) {
                   input.person.text = v ?? '';
                   input.avatar.clear();
+                  input.personAvatarVerified = false;
                   input.look.clear();
                   input.voice.clear();
                   input.supplyConsent.clear();
                   input.consents.clear();
+                  widget.onChanged();
                   load(personId: v);
                 }
               : null),
@@ -294,65 +322,74 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
                   choose(input.avatar, v);
                 }
               : null),
-      for (final kind in ['LOOK', 'VOICE'])
+      if (!widget.personAndAvatarOnly) ...[
+        for (final kind in ['LOOK', 'VOICE'])
+          communitySelect(
+              kind == 'LOOK' ? '已登记造型版本' : '声音版本（可不使用）',
+              kind == 'LOOK' ? input.look.text : input.voice.text,
+              [
+                if (kind == 'VOICE') ('', '不使用声音'),
+                for (final r in records.where((x) =>
+                    x.kind == kind &&
+                    x.avatarId == avatar &&
+                    x.status == 'RECORDED'))
+                  (r.id, '${r.data['display_name']} · 第${r.data['revision']}版')
+              ],
+              enabled
+                  ? (v) => choose(kind == 'LOOK' ? input.look : input.voice, v)
+                  : null),
         communitySelect(
-            kind == 'LOOK' ? '已登记造型版本' : '声音版本（可不使用）',
-            kind == 'LOOK' ? input.look.text : input.voice.text,
+            '已审核的作品使用授权',
+            input.supplyConsent.text,
             [
-              if (kind == 'VOICE') ('', '不使用声音'),
-              for (final r in records.where((x) =>
-                  x.kind == kind &&
-                  x.avatarId == avatar &&
-                  x.status == 'RECORDED'))
-                (r.id, '${r.data['display_name']} · 第${r.data['revision']}版')
+              for (final r in supplyChoices)
+                (
+                  r['id'] as String,
+                  '${communityMaybeMap(communityMaybeMap(r['data'])['consent'])['terms']} · 版本${r['object_version']}'
+                )
             ],
-            enabled
-                ? (v) => choose(kind == 'LOOK' ? input.look : input.voice, v)
-                : null),
-      communitySelect(
-          '已审核的作品使用授权',
-          input.supplyConsent.text,
-          [
-            for (final r in supplyChoices)
-              (
-                r['id'] as String,
-                '${communityMaybeMap(communityMaybeMap(r['data'])['consent'])['terms']} · 版本${r['object_version']}'
-              )
-          ],
-          enabled ? (v) => choose(input.supplyConsent, v) : null),
-      const Text('逐项选择本次使用的脸声同意，最多两份。'),
-      for (final r in approved)
-        communityCheck(
-            '${(r.data['features'] as List).map((x) => artistFeatures[x] ?? x).join(' / ')} · ${(r.data['purposes'] as List).map((x) => artistPurposes[x] ?? x).join('、')} · 有效至${communityDate(r.data['valid_until'])}',
-            input.consents.text.split('\n').contains(r.id),
+            enabled ? (v) => choose(input.supplyConsent, v) : null),
+        const Text('逐项选择本次使用的脸声同意，最多两份。'),
+        for (final r in approved)
+          communityCheck(
+              '${(r.data['features'] as List).map((x) => artistFeatures[x] ?? x).join(' / ')} · ${(r.data['purposes'] as List).map((x) => artistPurposes[x] ?? x).join('、')} · 有效至${communityDate(r.data['valid_until'])}',
+              input.consents.text.split('\n').contains(r.id),
+              enabled
+                  ? (v) {
+                      final ids = input.consents.text
+                          .split('\n')
+                          .where((x) => x.isNotEmpty)
+                          .toSet();
+                      if (v == true) {
+                        if (ids.length >= 2) return;
+                        ids.add(r.id);
+                      } else {
+                        ids.remove(r.id);
+                      }
+                      choose(input.consents, ids.join('\n'));
+                    }
+                  : null),
+        communitySelect(
+            '本次素材用途',
+            input.usage,
+            [('EXISTING_MATERIAL', '使用已有素材'), ('NEW_GENERATION', '生成新的表演')],
             enabled
                 ? (v) {
-                    final ids = input.consents.text
-                        .split('\n')
-                        .where((x) => x.isNotEmpty)
-                        .toSet();
-                    if (v == true) {
-                      if (ids.length >= 2) return;
-                      ids.add(r.id);
-                    } else {
-                      ids.remove(r.id);
-                    }
-                    choose(input.consents, ids.join('\n'));
+                    input.usage = v!;
+                    widget.onChanged();
+                    setState(() {});
                   }
                 : null),
-      communitySelect(
-          '本次素材用途',
-          input.usage,
-          [('EXISTING_MATERIAL', '使用已有素材'), ('NEW_GENERATION', '生成新的表演')],
-          enabled
-              ? (v) {
-                  input.usage = v!;
-                  widget.onChanged();
-                  setState(() {});
-                }
-              : null),
+      ],
       TextButton(
-          onPressed: enabled ? load : null, child: const Text('重新核对本人资料与授权'))
+          onPressed: enabled
+              ? () {
+                  input.personAvatarVerified = false;
+                  widget.onChanged();
+                  load();
+                }
+              : null,
+          child: const Text('重新核对本人资料与授权'))
     ]);
   }
 }

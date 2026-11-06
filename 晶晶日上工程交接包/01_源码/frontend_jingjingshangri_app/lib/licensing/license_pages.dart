@@ -1,3 +1,6 @@
+import 'procurement_widgets.dart';
+import 'procurement_form.dart';
+import 'procurement_models.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -384,6 +387,11 @@ class _LicenseDetailState extends State<_LicenseDetail> {
                 ? v.parent == r.id
                 : v.data['project_id'] == r.id));
       }
+      if (r.kind == 'GRANT' && r.data['procurement'] != null) {
+        for (final k in ['PROCUREMENT_EVENT', 'ROYALTY_STATEMENT']) {
+          related.addAll((await _api.all(k)).where((v) => v.parent == r.id));
+        }
+      }
       if (!mounted || ticket != _ticket) return;
       setState(() {
         _record = r;
@@ -645,16 +653,31 @@ class _LicenseDetailState extends State<_LicenseDetail> {
               r.kind == 'GRANT'
                   ? licenseGrantTerms(r.terms!)
                   : licenseTermsView(r.terms!),
+            if (d['procurement'] != null ||
+                ['PROCUREMENT_EVENT', 'ROYALTY_STATEMENT'].contains(r.kind))
+              ProcurementFacts(record: r, session: widget.session),
+            if (r.kind == 'GRANT' &&
+                d['procurement'] != null &&
+                r.status == 'ACTIVE')
+              FilledButton(
+                  onPressed: _busy
+                      ? null
+                      : () async {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>
+                                      ProcurementForm(grantId: r.id)));
+                          if (mounted) _read();
+                        },
+                  child: const Text('办理开发、上线、撤回或收益账单')),
             if (d['contract'] != null)
               _contract(Map<String, dynamic>.from(d['contract'])),
             if (r.kind == 'PRODUCT') ...[
               if (r.owner == widget.session.partyId)
                 supplyNote('这份商品属于当前身份，不能向自己预留。'),
-              if (!DateTime.now().toUtc().isBefore(
-                      DateTime.parse(d['terms']['development_until'])) ||
-                  !DateTime.now()
-                      .toUtc()
-                      .isBefore(DateTime.parse(d['terms']['valid_until'])))
+              if (!beforeLicenseEnd(d['terms']['development_until']) ||
+                  !beforeLicenseEnd(d['terms']['valid_until']))
                 supplyNote('商品已过可开发期限，当前不能预留。'),
               if (r.status != 'LISTED') supplyNote('商品当前未上架，不能预留。'),
               if (_api.pending('/api/v1/licensing/reservations') != null &&
@@ -669,20 +692,18 @@ class _LicenseDetailState extends State<_LicenseDetail> {
               ],
               FilledButton(
                   onPressed: _busy ||
-                          (_api.pending('/api/v1/licensing/reservations') != null &&
-                              _api.pending('/api/v1/licensing/reservations')!['body']
-                                      ['product_id'] !=
+                          (_api.pending('/api/v1/licensing/reservations') !=
+                                  null &&
+                              _api.pending('/api/v1/licensing/reservations')![
+                                      'body']['product_id'] !=
                                   r.id) ||
                           r.owner == widget.session.partyId ||
                           r.status != 'LISTED' ||
-                          !DateTime.now().toUtc().isBefore(DateTime.parse(
-                              d['terms']['development_until'])) ||
-                          !DateTime.now().toUtc().isBefore(
-                              DateTime.parse(d['terms']['valid_until']))
+                          !beforeLicenseEnd(d['terms']['development_until']) ||
+                          !beforeLicenseEnd(d['terms']['valid_until'])
                       ? null
-                      : () => _operate(
-                          '/api/v1/licensing/reservations', {'product_id': r.id},
-                          kind: 'RESERVATION'),
+                      : () => _operate('/api/v1/licensing/reservations',
+                          {'product_id': r.id}, kind: 'RESERVATION'),
                   child: Text(
                       _api.pending('/api/v1/licensing/reservations') == null
                           ? '预留这份许可'

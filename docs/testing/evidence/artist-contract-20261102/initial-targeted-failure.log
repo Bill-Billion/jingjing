@@ -1,0 +1,97 @@
+TAP version 13
+# Subtest: new artist contract, classified review and free services in isolated MySQL
+    # Subtest: cutover exposes free options, filters old offers and blocks old new purchases
+    ok 1 - cutover exposes free options, filters old offers and blocks old new purchases
+      ---
+      duration_ms: 30.0926
+      type: 'test'
+      ...
+    # Subtest: pending historical creation is not silently replaced and can finish its original payment
+    ok 2 - pending historical creation is not silently replaced and can finish its original payment
+      ---
+      duration_ms: 52.653
+      type: 'test'
+      ...
+    # Subtest: free hosting is perpetual and deduplicates simultaneous requests without money records
+    ok 3 - free hosting is perpetual and deduplicates simultaneous requests without money records
+      ---
+      duration_ms: 44.5923
+      type: 'test'
+      ...
+    # Subtest: free creation failure records no refund, requires independent operator and is retryable
+    not ok 4 - free creation failure records no refund, requires independent operator and is retryable
+      ---
+      duration_ms: 27.7667
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-contract.integration.test.cjs:81:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":403,"error":{"code":"ARTIST_REVIEW_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        + actual - expected
+
+        + 'ARTIST_REVIEW_FORBIDDEN'
+        - 'OPERATOR_ACCESS_REQUIRED'
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'OPERATOR_ACCESS_REQUIRED'
+      actual: 'ARTIST_REVIEW_FORBIDDEN'
+      operator: 'strictEqual'
+      stack: |-
+        bad (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\artists-contract.integration.test.cjs:22:105)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\artists-contract.integration.test.cjs:83:3)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\artists-contract.integration.test.cjs:81:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: free archive needs owned files and both face and voice; never enables a provider model
+    ok 5 - free archive needs owned files and both face and voice; never enables a provider model
+      ---
+      duration_ms: 93.5575
+      type: 'test'
+      ...
+    # Subtest: new certification refuses missing categories, wrong files and another owner assets
+    ok 6 - new certification refuses missing categories, wrong files and another owner assets
+      ---
+      duration_ms: 89.4078
+      type: 'test'
+      ...
+    # Subtest: supplement replaces classified snapshot, preserves original evidence and consumes one fee
+    ok 7 - supplement replaces classified snapshot, preserves original evidence and consumes one fee
+      ---
+      duration_ms: 66.6248
+      type: 'test'
+      ...
+    # Subtest: new fee cannot be refunded; previous contract remains refundable
+    ok 8 - new fee cannot be refunded; previous contract remains refundable
+      ---
+      duration_ms: 21.5093
+      type: 'test'
+      ...
+    # Subtest: withdrawing a new application consumes its review, keeps evidence and grants no certification
+    ok 9 - withdrawing a new application consumes its review, keeps evidence and grants no certification
+      ---
+      duration_ms: 130.1429
+      type: 'test'
+      ...
+    1..9
+not ok 1 - new artist contract, classified review and free services in isolated MySQL
+  ---
+  duration_ms: 7727.901
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-contract.integration.test.cjs:8:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 8
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8135.8242

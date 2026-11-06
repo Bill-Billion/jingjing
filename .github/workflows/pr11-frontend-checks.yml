@@ -8,6 +8,13 @@ on:
       - '晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/**'
       - '.github/workflows/pr11-frontend-checks.yml'
       - 'scripts/run-ui-browser-check.cjs'
+      - 'scripts/pr39-recovery-browser-check.mjs'
+      - 'scripts/pr39-manual-video-browser-check.mjs'
+      - 'scripts/pr39-stock-eligibility-browser-check.mjs'
+      - 'scripts/pr39-artist-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-sandbox.cjs'
+      - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
@@ -48,6 +55,13 @@ on:
       - '晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/**'
       - '.github/workflows/pr11-frontend-checks.yml'
       - 'scripts/run-ui-browser-check.cjs'
+      - 'scripts/pr39-recovery-browser-check.mjs'
+      - 'scripts/pr39-manual-video-browser-check.mjs'
+      - 'scripts/pr39-stock-eligibility-browser-check.mjs'
+      - 'scripts/pr39-artist-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-contract-browser-check.mjs'
+      - 'scripts/pr39-commercial-sandbox.cjs'
+      - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
@@ -219,7 +233,7 @@ jobs:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
           PR19_WEB_URL: http://127.0.0.1:5209
           VITE_BACKEND_ORIGIN: http://127.0.0.1:3342
-        run: node scripts/run-ui-browser-check.cjs 19
+        run: node scripts/run-ui-browser-check.cjs 19 --built
       - name: 用真实通知、留言、审计和报表接口检查网页
         working-directory: ${{ github.workspace }}
         shell: bash
@@ -227,7 +241,54 @@ jobs:
           JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
           PR20_WEB_URL: http://127.0.0.1:5211
           VITE_BACKEND_ORIGIN: http://127.0.0.1:3362
-        run: node scripts/run-ui-browser-check.cjs 20
+        run: node scripts/run-ui-browser-check.cjs 20 --built
+      - name: 开票结果丢失、刷新与独立核准回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: node scripts/pr39-recovery-browser-check.mjs
+      - name: 人工视频同单客户与运营办理回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: node scripts/pr39-manual-video-browser-check.mjs
+      - name: 现货准入、原单与免费认证页面回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: |
+          node scripts/pr39-stock-eligibility-browser-check.mjs
+          node scripts/pr39-artist-contract-browser-check.mjs
+      - name: 人工视频券后分期及独立取消退款回归
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+          JX_PR39_COUPON_TEST: '1'
+        run: node scripts/pr39-manual-video-browser-check.mjs
+      - name: 新商单供给分成与原订单规则网页闭环
+        working-directory: ${{ github.workspace }}
+        env:
+          JX_MYSQL_TEST_ENV_FILE: ${{ github.workspace }}/.local/ci-mysql/test-env.json
+        run: node scripts/pr39-commercial-contract-browser-check.mjs
+      - name: 保存开票恢复和人工视频模拟证据
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: invoice-recovery-browser
+          path: |
+            .local/mac-mini-recovery-browser/results.json
+            .local/mac-mini-recovery-browser/*.png
+            .local/pr39-manual-video-browser/results.json
+            .local/pr39-manual-video-browser/*.png
+            .local/pr39-stock-eligibility-browser/results.json
+            .local/pr39-stock-eligibility-browser/*.png
+            .local/pr39-artist-contract-browser/results.json
+            .local/pr39-artist-contract-browser/*.png
+            .local/pr39-coupon-browser/results.json
+            .local/pr39-coupon-browser/*.png
+            .local/pr39-commercial-contract-browser/results.json
+            .local/pr39-commercial-contract-browser/*/*.png
+          if-no-files-found: ignore
       - name: 清理本次测试数据库
         if: always()
         working-directory: ${{ github.workspace }}
@@ -252,7 +313,7 @@ jobs:
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
           flutter/bin/flutter config --no-analytics
       - run: flutter pub get --enforce-lockfile
-      - run: dart analyze lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/customization lib/artists lib/discovery lib/support lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists lib/stock lib/notices lib/auditions lib/wallet lib/engagement lib/cocreation lib/redemption lib/privacy test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/catalog_editorial_restore_test.dart lib/plaza test/plaza test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart
-      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/plaza test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart test/interaction_flows_test.dart test/widget_test.dart test/catalog_editorial_restore_test.dart
+      - run: dart analyze lib/contract_six lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/customization lib/artists lib/discovery lib/support lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists lib/stock lib/notices lib/auditions lib/wallet lib/engagement lib/cocreation lib/redemption lib/privacy test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/catalog_editorial_restore_test.dart lib/plaza test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart
+      - run: flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart test/interaction_flows_test.dart test/widget_test.dart test/catalog_editorial_restore_test.dart
       - name: 检查完整 App 可以生成网页发布文件
         run: flutter build web --no-pub

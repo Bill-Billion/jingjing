@@ -1,0 +1,101 @@
+TAP version 13
+# Subtest: collection settings are explicit bounded values, invalid configuration fails
+ok 1 - collection settings are explicit bounded values, invalid configuration fails
+  ---
+  duration_ms: 1.3741
+  type: 'test'
+  ...
+# Subtest: collection targets and pagination reject private types or malformed inputs
+ok 2 - collection targets and pagination reject private types or malformed inputs
+  ---
+  duration_ms: 0.6782
+  type: 'test'
+  ...
+# Subtest: collection cursors bind account, type, filter and history version
+ok 3 - collection cursors bind account, type, filter and history version
+  ---
+  duration_ms: 1.0001
+  type: 'test'
+  ...
+# Subtest: personal collections, privacy preferences and retention through actual HTTP
+    # Subtest: history is off by default; reads are personal and reject acting identities
+    ok 1 - history is off by default; reads are personal and reject acting identities
+      ---
+      duration_ms: 105.4635
+      type: 'test'
+      ...
+    # Subtest: same favourite is unique, own-account only, and old replay cannot undo removal
+    ok 2 - same favourite is unique, own-account only, and old replay cannot undo removal
+      ---
+      duration_ms: 116.0504
+      type: 'test'
+      ...
+    # Subtest: explicit opt in, replayable visits and no automatic browsing from GET
+    ok 3 - explicit opt in, replayable visits and no automatic browsing from GET
+      ---
+      duration_ms: 76.566
+      type: 'test'
+      ...
+    # Subtest: single delete and clear invalidate queued visits and cannot resurrect deleted data
+    ok 4 - single delete and clear invalidate queued visits and cannot resurrect deleted data
+      ---
+      duration_ms: 69.6523
+      type: 'test'
+      ...
+    # Subtest: bounded recent history, signed pagination and clear protect cursor scope
+    ok 5 - bounded recent history, signed pagination and clear protect cursor scope
+      ---
+      duration_ms: 146.8404
+      type: 'test'
+      ...
+    # Subtest: disabling clears history; stale opt-in or visits cannot silently restore it
+    ok 6 - disabling clears history; stale opt-in or visits cannot silently restore it
+      ---
+      duration_ms: 54.9773
+      type: 'test'
+      ...
+    # Subtest: expiry removes stored rows, private content is not copied into collection/command tables
+    ok 7 - expiry removes stored rows, private content is not copied into collection/command tables
+      ---
+      duration_ms: 50.6068
+      type: 'test'
+      ...
+    # Subtest: concurrent saves deduplicate and concurrent preference changes honor version
+    ok 8 - concurrent saves deduplicate and concurrent preference changes honor version
+      ---
+      duration_ms: 120.53
+      type: 'test'
+      ...
+    # Subtest: withdrawn or blocked sources remain removable without old titles or private fields
+    ok 9 - withdrawn or blocked sources remain removable without old titles or private fields
+      ---
+      duration_ms: 65.3196
+      type: 'test'
+      ...
+    # Subtest: retention job checks its lease, physically purges inactive users and reschedules
+    ok 10 - retention job checks its lease, physically purges inactive users and reschedules
+      ---
+      duration_ms: 71.4028
+      type: 'test'
+      ...
+    1..10
+ok 4 - personal collections, privacy preferences and retention through actual HTTP
+  ---
+  duration_ms: 18450.4185
+  type: 'test'
+  ...
+# Subtest: stock favorites reuse actual publication and rights checks
+ok 5 - stock favorites reuse actual publication and rights checks
+  ---
+  duration_ms: 17881.1174
+  type: 'test'
+  ...
+1..5
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36519.7095

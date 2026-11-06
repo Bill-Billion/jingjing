@@ -22,3 +22,9 @@ test('an earlier qualifying prize leaves tenth unchanged; exact random boundarie
 test('incorrect sum, duplicate prize, disabled final interview, missing guarantee and fractional price reject',()=>{
  for(const mutation of [r=>r.prizes[0].weight++,r=>r.prizes[1].key=r.prizes[0].key,r=>r.prizes[0].kind='INTERVIEW_FINAL',r=>r.prizes.forEach(p=>p.kind='NONE'),r=>r.single_points=300.1]){const r=structuredClone(rule);mutation(r);assert.throws(()=>P.pool(r));}
 });
+
+test('contract publication has a full seven-day waiting period and cannot outlive the pool',()=>{
+ const P=require('../src/modules/redemption/lottery-policy');const at='2026-11-03T00:00:00.000Z';
+ assert.equal(P.publicationNotice(at,'2027-01-01T00:00:00.000Z').opens_at,'2026-11-10T00:00:00.000Z');
+ assert.throws(()=>P.publicationNotice(at,'2026-11-10T00:00:00.000Z'),{code:'LOTTERY_NOTICE_EXCEEDS_PERIOD'});
+});

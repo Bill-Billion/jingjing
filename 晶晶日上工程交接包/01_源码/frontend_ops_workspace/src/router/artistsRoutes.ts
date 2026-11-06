@@ -4,6 +4,7 @@ const route = (path:string,name:string,artistsView:string,title:string):RouteRec
 export const artistsRoutes:RouteRecordRaw[] = [
  route('/artists/people','artists-people','people','真人与数字人'),
  route('/artists/people/new','artists-new-person','person-new','建立本人档案'),
+ route('/artists/catalog/:listingId','artists-public-detail','catalog','公开艺人详情'),
  route('/artists/catalog','artists-catalog','catalog','已批准艺人目录'),
  route('/artists/services','artists-services','services','创建与托管服务'),
  route('/artists/people/:personId/:action(avatars|identity|consents|delegations|variants|halos|listings|services)/new','artists-new-record','new','办理真人与数字人事项'),

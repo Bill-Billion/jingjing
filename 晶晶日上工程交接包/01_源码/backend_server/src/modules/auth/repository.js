@@ -30,7 +30,8 @@ function createAuthRepository(db,{secret,sms,settings={}}) {
   if(row.current_status!=='ACTIVE'&&!(allowInactiveStatus===true&&['SUSPENDED','DELETION_PENDING'].includes(row.current_status)))throw error('ACCOUNT_NOT_ACTIVE',403);
   return {...row,token_hash:tokenHash};
  }
- return Object.freeze({secure,
+ const phoneChanges=require('./phone-change').createPhoneChanges(db,{secure,cfg,sms,rate,resolve});
+ return Object.freeze({secure,phoneChanges,
   async challenge(input,key,ip) {
    shape(input,['phone','purpose']);phone(input.phone);if(input.purpose!=='LOGIN')throw error('INVALID_INPUT',400);ref(key);
    await rate(['sms-ip',ip],cfg.ipSendsPerHour,3600000);
@@ -83,14 +84,14 @@ function createAuthRepository(db,{secret,sms,settings={}}) {
     if(who.account_id) {account=await one(tx,'SELECT * FROM identity_accounts WHERE id=? FOR UPDATE',[who.account_id]);if(!account||account.current_status!=='ACTIVE')return {failure:'INVALID_CREDENTIALS'};}
     else {
      const accountId=randomUUID(),partyId=randomUUID();
-     await tx.execute('INSERT INTO identity_accounts(id,subject_ref,display_name) VALUES (?,?,?)',[accountId,'phone:'+ph,'新用户']);
+     await tx.execute('INSERT INTO identity_accounts(id,subject_ref,display_name) VALUES (?,?,?)',[accountId,'account:'+accountId,'新用户']);
      await tx.execute("INSERT INTO parties(id,kind,display_name,personal_account_id,created_by) VALUES (?,'PERSON',?,?,?)",[partyId,'新用户',accountId,accountId]);
      await tx.execute("INSERT INTO party_memberships(id,party_id,account_id,role_code,current_status) VALUES (?,?,?,'OWNER','ACTIVE')",[randomUUID(),partyId,accountId]);
      await tx.execute('INSERT INTO party_audit_events(id,party_id,actor_account_id,event_code,object_id,object_version,request_id) VALUES (?,?,?,?,?,1,?)',[randomUUID(),partyId,accountId,'PERSON_REGISTERED',partyId,input.challenge_id]);
      await tx.execute('UPDATE auth_subjects SET account_id=? WHERE phone_hash=?',[accountId,ph]);account={id:accountId};
     }
     const token=randomBytes(32).toString('base64url'),th=secure.digest('token',token),expires=now+cfg.sessionMs;
-    await tx.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,?)',[th,account.id,expires]);
+    await tx.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms,authenticated_ms) VALUES (?,?,?,?)',[th,account.id,expires,now]);
     await tx.execute('INSERT INTO auth_login_results(key_hash,fingerprint,token_hash,encrypted_token,expires_ms) VALUES (?,?,?,?,?)',[kh,fp,th,secure.seal(token,kh),expires]);
     await tx.execute("UPDATE auth_challenges SET current_status='CONSUMED' WHERE id=?",[c.id]);
     return {token};
@@ -101,7 +102,7 @@ function createAuthRepository(db,{secret,sms,settings={}}) {
   resolve,
   accountData,
   async revoke(token){const a=await resolve(token,{allowRevoked:true});await db.execute('UPDATE auth_sessions SET revoked=TRUE WHERE token_hash=?',[a.token_hash]);return {current_status:'REVOKED'};},
-  async cleanup(){const now=await timestamp(db);return db.withTransaction(async tx=>{
+  async cleanup(){await phoneChanges.cleanup();const now=await timestamp(db);return db.withTransaction(async tx=>{
    await tx.execute('DELETE r FROM auth_login_results r JOIN auth_sessions s ON s.token_hash=r.token_hash WHERE r.expires_ms<=? OR s.expires_ms<=?',[now,now]);
    await tx.execute('DELETE FROM auth_sessions WHERE expires_ms<=?',[now]);
    await tx.execute('DELETE FROM auth_challenges WHERE expires_ms<?',[now-86400000]);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../support/collections.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
@@ -19,15 +20,17 @@ class NoticesPage extends StatelessWidget {
       this.mode = 'catalog',
       this.id,
       this.kind,
+      this.listingId,
       this.embedded = false,
       this.initialCity = ''});
   final String mode;
-  final String? id, kind;
+  final String? id, kind, listingId;
   final bool embedded;
   final String initialCity;
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'notices',
+      stateKey: mode == 'catalog' ? '/notices/catalog' : null,
       embedded: embedded,
       route: Uri(path: '/notices/$mode', queryParameters: {
         if (mode == 'records' && kind != null) 'kind': kind!,
@@ -35,12 +38,17 @@ class NoticesPage extends StatelessWidget {
         if (['public', 'submit'].contains(mode) && id != null) 'noticeId': id!,
         if (mode == 'record' && id != null) 'recordId': id!,
         if (mode == 'submit' && kind != null) 'kind': kind!,
+        if (mode == 'submit' && listingId != null) 'listingId': listingId!,
       }).toString(),
       account: ['catalog', 'public'].contains(mode),
       showExpired: ['catalog', 'records'].contains(mode),
       expiredLabel: mode == 'records' ? '我的通告与投稿' : '通告现场',
       builder: (s) => mode == 'submit'
-          ? NoticesSubmission(session: s, noticeId: id, kind: kind ?? 'PROFILE')
+          ? NoticesSubmission(
+              session: s,
+              noticeId: id,
+              listingId: listingId,
+              kind: kind ?? 'PROFILE')
           : _NoticeScreen(
               session: s,
               mode: mode,
@@ -79,6 +87,12 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   String? cursor, error, type, ruleId;
   String recordKind = 'SUBMISSION';
   bool busy = false, loadFailed = false, hasRead = false, changedKind = false;
+  bool independentCity = false;
+  String queryCity = '';
+  String? queryType, queryAt;
+  final ruleField = GlobalKey<FormFieldState<String>>(),
+      typeField = GlobalKey<FormFieldState<String>>();
+  var noticeForm = GlobalKey<V5FormState>();
   int ticket = 0;
   @override
   void initState() {
@@ -87,6 +101,31 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     recordKind = widget.kind ?? 'SUBMISSION';
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _NoticeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = widget.initialCity.trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = widget.initialCity.trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -106,6 +145,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
       error = null;
       loadFailed = false;
       if (!more) {
+        queryCity = city.text.trim();
         publicRows.clear();
         rows.clear();
         publicNotice = null;
@@ -116,11 +156,17 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     try {
       switch (widget.mode) {
         case 'catalog':
+          if (!more) {
+            queryType = type;
+            queryAt = at.text.trim().isEmpty ? null : v5InputDate(at.text);
+          }
           final r = await api.catalog(
               cursor: more ? cursor : null,
-              type: type,
-              city: city.text.trim(),
-              at: at.text.trim().isEmpty ? null : v5InputDate(at.text));
+              type: queryType,
+              city: queryCity,
+              at: queryAt);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           publicRows.addAll(r.items);
           cursor = r.cursor;
         case 'public':
@@ -161,11 +207,18 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   }
 
   Future<void> chooseRule(String id) async {
+    if (id == ruleId) return;
+    if (!await canReplaceNoticeForm()) {
+      ruleField.currentState?.didChange(ruleId);
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       busy = true;
       error = null;
       ruleId = id;
       eligibility = null;
+      noticeForm = GlobalKey<V5FormState>();
     });
     try {
       final e = await api.eligibility(id);
@@ -175,6 +228,28 @@ class _NoticeScreenState extends State<_NoticeScreen> {
     } finally {
       if (mounted) setState(() => busy = false);
     }
+  }
+
+  Future<bool> canReplaceNoticeForm() async {
+    if (api.writes > 0 || api.pending('/announcements') != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+      return false;
+    }
+    return await noticeForm.currentState?.confirmDiscardChanges() ?? true;
+  }
+
+  Future<void> chooseType(String? next) async {
+    if (next == type) return;
+    if (!await canReplaceNoticeForm()) {
+      typeField.currentState?.didChange(type);
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      type = next;
+      noticeForm = GlobalKey<V5FormState>();
+    });
   }
 
   void go(String route) => Navigator.pushNamed(context, route);
@@ -333,8 +408,10 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     child: Text(e.value)),
             ]),
             const SizedBox(height: 20),
+            cityScope(),
             TextField(
                 controller: city,
+                onChanged: (_) => setState(() => independentCity = true),
                 decoration: const InputDecoration(labelText: '城市（可留空）')),
             v5DateField(context,
                 label: '指定有效时间（可留空）',
@@ -359,6 +436,11 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                 outline: true),
           ],
           if (n != null) ...[
+            CollectionDetailActions(
+                key: ValueKey('notice-save:${n.id}'),
+                session: widget.session,
+                kind: 'NOTICE',
+                targetId: n.id),
             Text('${noticeTypes[n.notice['type']]} / ${n.notice['city']}',
                 style:
                     const TextStyle(fontSize: 12, color: AccountTheme.accent)),
@@ -383,6 +465,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           if (widget.mode == 'new') ...[
             appNotice('发布资格由服务器按可信事实和当前规则计算；普通实名不能替代星探或机构资质。官方事项请由有权运营在网页办理。'),
             DropdownButtonFormField<String>(
+                key: ruleField,
                 initialValue: ruleId,
                 isExpanded: true,
                 decoration: const InputDecoration(labelText: '选择已生效发布规则'),
@@ -416,6 +499,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
             ],
             if (eligibility != null) ...[
               DropdownButtonFormField<String>(
+                  key: typeField,
                   initialValue:
                       eligibility!.canPublish(type ?? '') ? type : null,
                   isExpanded: true,
@@ -425,7 +509,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                       .map((x) => DropdownMenuItem<String>(
                           value: x, child: Text(noticeTypes[x]!)))
                       .toList(),
-                  onChanged: busy ? null : (v) => setState(() => type = v)),
+                  onChanged: busy ? null : chooseType),
               if (type != null && eligibility!.canPublish(type!))
                 _noticeForm(type!)
             ],
@@ -526,7 +610,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   }
 
   Widget _noticeForm(String type) => V5Form(
-      key: ValueKey('$ruleId:$type'),
+      key: noticeForm,
       api: api,
       title: '按类型填写',
       action: '提交正式通告审核',

@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import '../account/account_api.dart';
 
 const artistKinds = {
@@ -16,7 +17,8 @@ const artistPurposes = {
   'PRIVATE_ARCHIVE': '仅私人档案',
   'PUBLIC_DISPLAY': '公开展示',
   'PROJECT_PRODUCTION': '具体项目制作',
-  'STOCK_LICENSE': '现货许可',
+  'STOCK_LICENSE': '个人现货许可',
+  'STOCK_COMMERCIAL': '独立商用现货许可',
   'NEW_GENERATION': '重新生成',
   'COOPERATION_SUBMISSION': '合作投稿',
   'AUDITION_SAMPLES': '试镜取样',
@@ -51,6 +53,7 @@ const artistStatuses = {
   'CANCELLED': '已取消',
   'REFUND_REQUIRED': '待办理退款',
   'REFUNDED': '退款已核实',
+  'FAILED': '免费服务未交付',
 };
 const artistServiceKinds = {
   'AVATAR_CREATION': '首次创建服务',
@@ -68,6 +71,74 @@ const artistMedia = {
   'txt': 'text/plain',
 };
 const maxArtistBytes = 8 * 1024 * 1024;
+
+class ArtistPublicMediaItem {
+  ArtistPublicMediaItem._(this.id, this.type, this.kind, this.size, this.hash);
+  final String id, type, kind, hash;
+  final int size;
+  String get label => const {
+        'IMAGE': '图片',
+        'AUDIO': '声音',
+        'VIDEO': '视频',
+        'DOCUMENT': '文档'
+      }[kind]!;
+  String get extension =>
+      artistMedia.entries.firstWhere((e) => e.value == type).key;
+
+  static ArtistPublicMediaItem parse(dynamic value) {
+    final d = artistMap(value);
+    artistRequire(d.length == 5 &&
+        artistId(d['asset_id']) &&
+        d['byte_size'] is int &&
+        d['byte_size'] > 0 &&
+        d['byte_size'] <= maxArtistBytes &&
+        artistHash(d['content_sha256']) &&
+        const {
+              'image/jpeg': 'IMAGE',
+              'image/png': 'IMAGE',
+              'audio/mpeg': 'AUDIO',
+              'audio/wav': 'AUDIO',
+              'video/mp4': 'VIDEO',
+              'application/pdf': 'DOCUMENT',
+              'text/plain': 'DOCUMENT'
+            }[d['media_type']] ==
+            d['media_kind'] &&
+        d['media_kind'] != null);
+    return ArtistPublicMediaItem._(d['asset_id'], d['media_type'],
+        d['media_kind'], d['byte_size'], d['content_sha256']);
+  }
+}
+
+class ArtistPublicMedia {
+  ArtistPublicMedia._(this.listingId, this.primaryId, this.items);
+  final String listingId;
+  final String? primaryId;
+  final List<ArtistPublicMediaItem> items;
+  ArtistPublicMediaItem? get portrait =>
+      items.where((item) => item.id == primaryId).firstOrNull;
+
+  static ArtistPublicMedia parse(dynamic value, String listingId,
+      {List<String>? previewIds}) {
+    final d = artistMap(value);
+    artistRequire(d.length == 3 &&
+        d['listing_id'] == listingId &&
+        d.containsKey('primary_portrait_asset_id'));
+    final items =
+        artistList(d['items']).map(ArtistPublicMediaItem.parse).toList();
+    final ids = items.map((item) => item.id).toSet();
+    final primary = d['primary_portrait_asset_id'];
+    artistRequire(items.length <= 6 &&
+        ids.length == items.length &&
+        (primary == null ||
+            artistId(primary) &&
+                items.any(
+                    (item) => item.id == primary && item.kind == 'IMAGE')) &&
+        (previewIds == null ||
+            ids.length == previewIds.length && ids.containsAll(previewIds)));
+    return ArtistPublicMedia._(listingId, primary, List.unmodifiable(items));
+  }
+}
+
 void artistRequire(bool value) {
   if (!value) {
     throw const AccountError(502, 'INVALID_ARTIST_RESPONSE', uncertain: true);
@@ -201,7 +272,7 @@ const _recordStates = {
   'DELEGATION': ['ACTIVE', 'WITHDRAWN'],
   'LOOK': ['RECORDED'],
   'VOICE': ['RECORDED'],
-  'HALO': ['SUBMITTED', 'APPROVED', 'REJECTED', 'NEEDS_MATERIAL'],
+  'HALO': ['SUBMITTED', 'APPROVED', 'REJECTED', 'NEEDS_MATERIAL', 'WITHDRAWN'],
   'APPEAL': ['SUBMITTED', 'APPROVED', 'REJECTED', 'NEEDS_MATERIAL'],
   'LISTING': [
     'SUBMITTED',
@@ -216,7 +287,8 @@ const _recordStates = {
     'DELIVERED',
     'CANCELLED',
     'REFUND_REQUIRED',
-    'REFUNDED'
+    'REFUNDED',
+    'FAILED'
   ],
 };
 
@@ -237,7 +309,11 @@ class ArtistRecord {
       ['HALO', 'LISTING'].contains(kind) && status == 'REJECTED';
   bool get canWithdraw =>
       ['CONSENT', 'DELEGATION', 'LISTING'].contains(kind) &&
-      status != 'WITHDRAWN';
+          status != 'WITHDRAWN' ||
+      kind == 'HALO' &&
+          data['rule_version'] == 'CONTRACT_20261029' &&
+          ['SUBMITTED', 'NEEDS_MATERIAL'].contains(status);
+  bool get freeService => kind == 'SERVICE' && artistFreeService(data);
   static ArtistRecord parse(dynamic v, String personId,
       {String? id, String? kind}) {
     final d = artistMap(v), body = artistMap(d['data']);
@@ -263,8 +339,13 @@ class ArtistRecord {
           body['terms'] is String);
       artistRequire(artistStrings(body['features'], max: 2).isNotEmpty &&
           (body['features'] as List).every(artistFeatures.containsKey));
-      artistRequire(artistStrings(body['purposes'], max: 4).isNotEmpty &&
+      artistRequire(artistStrings(body['purposes'], max: 9).isNotEmpty &&
           (body['purposes'] as List).every(artistPurposes.containsKey));
+      artistRequire((body['purposes'] as List).contains('STOCK_COMMERCIAL')
+          ? rightsList(
+              body['stock_commercial_uses'], commercialUses.containsKey,
+              max: 3)
+          : !body.containsKey('stock_commercial_uses'));
       artistStrings(body['territories'], max: 30);
     }
     if (d['kind'] == 'DELEGATION') {
@@ -289,14 +370,33 @@ class ArtistRecord {
     if (d['kind'] == 'HALO') {
       artistRequire([1, 2, 3].contains(body['level']) &&
           body['ownership_promise'] == true);
+      if (body['certification_materials'] != null) {
+        artistCertificationMaterials(body['certification_materials']);
+      }
+      artistRequire(body['rule_version'] != 'CONTRACT_20261029' ||
+          body['level'] == 2 && body['certification_materials'] != null);
+      artistRequire(d['current_status'] != 'WITHDRAWN' ||
+          body['rule_version'] == 'CONTRACT_20261029');
+      for (final item in body['supplements'] ?? []) {
+        for (final key in [
+          'certification_materials',
+          'previous_certification_materials'
+        ]) {
+          if (item[key] != null) artistCertificationMaterials(item[key]);
+        }
+      }
     }
     if (d['kind'] == 'SERVICE') {
       artistServiceSpec(body['specification']);
+      final free = artistFreeService(body);
       artistRequire(artistServiceKinds.containsKey(body['kind']) &&
           body['specification']['service']['kind'] == body['kind'] &&
-          artistId(body['spec_id']) &&
+          (free
+              ? body['spec_id'] == null
+              : artistId(body['spec_id']) &&
+                  body['payment_requirement'] == null) &&
           body['price_minor'] is int &&
-          body['price_minor'] > 0 &&
+          body['price_minor'] >= (free ? 0 : 1) &&
           body['currency'] == 'CNY' &&
           body['renewal_reminder'] is bool &&
           body['auto_debit_enabled'] == false &&
@@ -305,6 +405,28 @@ class ArtistRecord {
       artistRequire(body['kind'] == 'HALO_REVIEW'
           ? d['avatar_id'] == null && body['renewal_reminder'] == false
           : artistId(d['avatar_id']));
+      if (free) {
+        artistRequire(body['renewal_reminder'] == false &&
+            body['refund'] == null &&
+            d['order'] == null &&
+            !['REQUESTED', 'REFUND_REQUIRED', 'REFUNDED']
+                .contains(d['current_status']));
+        if (body['hosting_period'] != null) {
+          final h = artistMap(body['hosting_period']);
+          artistRequire(body['kind'] == 'AVATAR_HOSTING' &&
+              artistDate(h['valid_from']) &&
+              h['valid_until'] == null &&
+              h['perpetual'] == true);
+        }
+      } else {
+        artistRequire(d['current_status'] != 'FAILED');
+        if (body['hosting_period'] != null) {
+          final h = artistMap(body['hosting_period']);
+          artistRequire(artistDate(h['valid_from']) &&
+              artistDate(h['valid_until']) &&
+              h['perpetual'] != true);
+        }
+      }
       if (d.containsKey('order') && d['order'] != null) {
         final order = artistMap(d['order']),
             financial = artistMap(order['financial']);
@@ -325,21 +447,47 @@ class ArtistRecord {
           (body['voice_version_id'] == null ||
               artistId(body['voice_version_id'])));
       artistStrings(body['tags'], max: 15);
-      artistStrings(body['preview_asset_ids'], ids: true, max: 6);
+      final previews =
+          artistStrings(body['preview_asset_ids'], ids: true, max: 6);
+      artistRequire(body['primary_portrait_asset_id'] == null ||
+          artistId(body['primary_portrait_asset_id']) &&
+              previews.contains(body['primary_portrait_asset_id']));
     }
     return ArtistRecord._(d);
   }
 }
 
+bool artistFreeService(Map<String, dynamic> d) =>
+    d['payment_requirement'] == 'NONE' &&
+    d['price_minor'] == 0 &&
+    d['spec_id'] == null &&
+    d['specification']?['service']?['rule_version'] == 'CONTRACT_20261029' &&
+    d['specification']?['service']?['failure_policy'] == 'NO_CASH_REFUND' &&
+    ['AVATAR_CREATION', 'AVATAR_HOSTING'].contains(d['kind']);
+void artistCertificationMaterials(dynamic value) {
+  final d = artistMap(value);
+  artistRequire(d.length == 5 && artistId(d['model_card_asset_id']));
+  for (final k in ['lifestyle_asset_ids', 'full_body_asset_ids']) {
+    artistRequire(artistStrings(d[k], ids: true, max: 10).isNotEmpty);
+  }
+  for (final k in ['personal_introduction', 'resume']) {
+    artistRequire(d[k] is String &&
+        d[k].trim().isNotEmpty &&
+        d[k].runes.length <= (k == 'resume' ? 8000 : 2000));
+  }
+}
+
 void artistServiceSpec(dynamic value) {
   final d = artistMap(value), s = artistMap(d['service']);
+  final free = s['rule_version'] == 'CONTRACT_20261029' &&
+      s['failure_policy'] == 'NO_CASH_REFUND';
   artistRequire(d['version'] is String &&
       d['service_tier'] is String &&
       d['terms'] is String &&
       artistServiceKinds.containsKey(s['kind']) &&
       {
-            'AVATAR_CREATION': 'PERSON_FIRST',
-            'AVATAR_HOSTING': 'AVATAR_MONTH',
+            'AVATAR_CREATION': free ? 'AVATAR' : 'PERSON_FIRST',
+            'AVATAR_HOSTING': free ? 'AVATAR_PERPETUAL' : 'AVATAR_MONTH',
             'HALO_REVIEW': 'HALO_APPLICATION'
           }[s['kind']] ==
           s['unit'] &&
@@ -348,13 +496,18 @@ void artistServiceSpec(dynamic value) {
       s['retry_limit'] <= 100 &&
       s['rule_version'] is String &&
       s['source_ref'] is String &&
-      s['failure_policy'] == 'REFUND_UNDELIVERED');
-  artistRequire(s['kind'] == 'AVATAR_HOSTING'
+      (s['failure_policy'] == 'REFUND_UNDELIVERED' ||
+          s['rule_version'] == 'CONTRACT_20261029' &&
+              (s['kind'] == 'HALO_REVIEW'
+                  ? s['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE'
+                  : free)));
+  artistRequire(s['kind'] == 'AVATAR_HOSTING' && !free
       ? s['hosting_months'] is int && s['hosting_months'] >= 1
       : s['hosting_months'] == null);
   artistRequire(s['kind'] == 'HALO_REVIEW'
       ? [2, 3].contains(s['halo_level'])
       : s['halo_level'] == null);
+  if (free) artistRequire(s['retry_limit'] == 0);
   artistRequire(artistStrings(d['deliverables'], max: 30).isNotEmpty);
 }
 
@@ -362,6 +515,8 @@ class ArtistServices {
   ArtistServices(this.raw, this.offers);
   final Map<String, dynamic> raw;
   final List<Map<String, dynamic>> offers;
+  List<Map<String, dynamic>> get freeOffers =>
+      List<Map<String, dynamic>>.from(raw['offers']['free_services'] ?? []);
   static ArtistServices parse(dynamic v) {
     final d = artistMap(v);
     for (final key in ['identity', 'long_lived_model']) {
@@ -386,6 +541,24 @@ class ArtistServices {
               r['specification']['service']['kind']);
     }
     artistRequire(rows.map((x) => x['spec_id']).toSet().length == rows.length);
+    artistRequire(offers['contract_policy'] == null ||
+        ['LEGACY_COMPATIBLE', 'CONTRACT_20261029']
+            .contains(offers['contract_policy']));
+    final freeOffers = artistList(offers['free_services'] ?? []);
+    final kinds = <String>{};
+    for (final value in freeOffers) {
+      final r = artistMap(value);
+      artistServiceSpec(r['specification']);
+      artistRequire(offers['current_status'] == 'CONFIGURED' &&
+          offers['contract_policy'] == 'CONTRACT_20261029' &&
+          r['payment_requirement'] == 'NONE' &&
+          r['price_minor'] == 0 &&
+          r['currency'] == 'CNY' &&
+          ['AVATAR_CREATION', 'AVATAR_HOSTING'].contains(r['kind']) &&
+          r['specification']['service']['kind'] == r['kind'] &&
+          r['specification']['service']['failure_policy'] == 'NO_CASH_REFUND' &&
+          kinds.add(r['kind']));
+    }
     return ArtistServices(d, rows);
   }
 }
@@ -399,6 +572,20 @@ class ArtistPage<T> {
 String artistError(AccountError e, {bool writing = false}) => switch (e.code) {
       'CONTEXT_CHANGED' => '办事身份已变化，请重新打开本页。',
       'MINOR_OPERATION_RESTRICTED' => '儿童实际处理暂未开放，请勿上传儿童素材。',
+      'ARTIST_CONTRACT_NOT_ENABLED' => '新版服务尚未统一启用，请稍后重试，不改购旧收费服务。',
+      'ARTIST_CONTRACT_VERSION_MISMATCH' => '服务规则版本已变化，请重新读取目录。',
+      'ARTIST_SERVICE_IS_FREE' => '此项现为免费服务，请刷新目录并选择免费申请。',
+      'ARTIST_CONTRACT_SPEC_REQUIRED' => '这份旧审核规格不适用于新版申请，请核对已审核的新规格。',
+      'HALO_CLASSIFIED_MATERIALS_REQUIRED' => '请分别补齐模卡、生活照、全身照、个人简介和文字简历。',
+      'HALO_MATERIAL_MEDIA_TYPE_INVALID' =>
+        '请核对模卡和照片格式；模卡接受PNG、JPEG或PDF，照片接受PNG或JPEG。',
+      'PRIVATE_MATERIAL_NOT_READY' => '文件不可用或不属于本人，请核对原上传记录。',
+      'HALO_REVIEW_FEE_NON_REFUNDABLE' => '这笔新版人工审核费不支持常规退款；有异议可联系平台反馈。',
+      'ARTIST_EXISTING_SERVICE_REQUIRES_RESOLUTION' =>
+        '此数字人已有待履行的历史创建服务，请先在服务记录中处理原单。',
+      'FREE_HOSTING_RENEWAL_NOT_REQUIRED' => '此项托管永久免费，无需续费或续费提醒。',
+      'FREE_ARCHIVE_FACE_VOICE_REQUIRED' => '请先补齐本数字人的形象和声音档案，再登记交付。',
+      'FREE_ARCHIVE_MEDIA_TYPE_REQUIRED' => '请核对基础档案包含形象图片和声音文件。',
       'HALO_VERIFIED_METRICS_NOT_AVAILABLE' => 'L3所需真实业务事实尚未具备，当前不能申请。',
       'ARTIST_IDENTITY_REQUIRED' || 'ARTIST_AGE_REQUIRED' => '请先完成有效的成人实名核验。',
       'ARTIST_PERSONAL_CONFIRMATION_REQUIRED' => '这一步需要真人本人在个人身份下办理。',

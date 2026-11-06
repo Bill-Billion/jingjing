@@ -1,3 +1,4 @@
+import '../contract_six/contract_six_models.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,11 +27,45 @@ class AuditionsPage extends StatelessWidget {
   final String? id, action, invitationId;
   final bool embedded;
   final String initialCity;
+
+  String get returnRoute {
+    final query = {
+      if (['book', 'offer'].contains(mode) && v5Id(id)) 'offerId': id!,
+      if (['booking', 'messages', 'action'].contains(mode) && v5Id(id))
+        'bookingId': id!,
+      if (['catalog', 'book'].contains(mode) && v5Id(invitationId))
+        'invitationId': invitationId!,
+      if (mode == 'catalog' && initialCity.trim().isNotEmpty)
+        'city': initialCity.trim(),
+      if (mode == 'action' &&
+          const [
+            'decision',
+            'travel',
+            'delivery',
+            'cancel',
+            'dispute-evidence',
+            'reschedule',
+            'reschedule-response',
+            'contact',
+            'support',
+            'supplements',
+            'baseplate'
+          ].contains(action))
+        'action': action!,
+    };
+    return Uri(
+            path: '/auditions/$mode',
+            queryParameters: query.isEmpty ? null : query)
+        .toString();
+  }
+
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'auditions',
       embedded: embedded,
-      route: '/auditions/$mode',
+      route: returnRoute,
+      stateKey:
+          mode == 'catalog' ? '/auditions/catalog:${invitationId ?? ''}' : null,
       account: mode == 'catalog',
       builder: (s) => mode == 'action'
           ? AuditionActionPage(session: s, id: id ?? '', action: action ?? '')
@@ -85,6 +120,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   Map<String, dynamic>? contacts, itinerary;
   String? cursor, messageCursor, error, notice;
   bool busy = false;
+  bool independentCity = false;
+  String queryCity = '';
   int ticket = 0, messageForm = 0;
   @override
   void initState() {
@@ -92,6 +129,32 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
     city.text = widget.initialCity;
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _AuditionsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        widget.invitationId == null &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = widget.initialCity.trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = widget.initialCity.trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -131,6 +194,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       busy = true;
       error = null;
       if (!more) {
+        queryCity = city.text.trim();
         offers.clear();
         records.clear();
         cursor = null;
@@ -143,8 +207,10 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         case 'catalog':
           final r = await api.catalog(
               cursor: more ? cursor : null,
-              city: city.text.trim(),
+              city: queryCity,
               invitationId: widget.invitationId);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'book':
@@ -298,10 +364,12 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 ? '只展示当前可公开预约的已审方案；价格可由艺人选择不公开。'
                 : '这里只读取本次已接受定向邀约匹配的真实方案。'),
             if (widget.invitationId == null) ...[
+              cityScope(),
               TextField(
                   controller: city,
+                  onChanged: (_) => setState(() => independentCity = true),
                   decoration: const InputDecoration(labelText: '城市筛选')),
-              tradeButton('按城市查找', busy ? null : () => load(), outline: true)
+              tradeButton('按城市查找', busy ? null : () => load(), outline: true),
             ],
             for (final x in offers)
               Container(
@@ -391,7 +459,9 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
               tradeFact('原规则', r.data['rules']['terms']),
               tradeFact('取样约定',
                   '${r.data['rules']['photo_count']}照 / ${r.data['rules']['video_count']}视频'),
-              tradeFact('明确收讫后的期限', '${r.data['rules']['acceptance_hours']} 小时')
+              tradeFact(
+                  acceptanceOrigin(v5Map(r.data['rules']), audition: true),
+                  '${r.data['rules']['acceptance_hours']} 小时')
             ]),
             if (r.status == 'PUBLISHED')
               V5Form(
@@ -524,7 +594,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         tradeFact('本单含交通一口价', v5Money(d['offer']['unit_minor'])),
         tradeFact('取样约定',
             '${d['rules']['photo_count']} 照 / ${d['rules']['video_count']} 视频'),
-        tradeFact('收讫后期限', '${d['rules']['acceptance_hours']} 小时'),
+        tradeFact(acceptanceOrigin(v5Map(d['rules']), audition: true),
+            '${d['rules']['acceptance_hours']} 小时'),
         SelectableText(d['rules']['terms'])
       ]),
       appNotice('试镜完成不授予买家出演、发行或重新生成权。付款、接受、联系方式与取样许可分别核对。'),
@@ -591,20 +662,40 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                   '$id.${(d['delivery']['photos'] as List).contains(id) ? 'jpg' : 'mp4'}',
               load: () => api.material(r, id),
               onOpened: () async {
+                final epoch = widget.session.epoch,
+                    party = widget.session.partyId;
                 final fresh = await api.record(r.id);
-                if (mounted) {
-                  setState(() {
-                    setRecord(fresh);
-                    if (fresh.mediaIds.contains(id)) opened.add(id);
-                  });
+                if (!mounted ||
+                    widget.session.epoch != epoch ||
+                    widget.session.partyId != party ||
+                    record?.id != r.id) {
+                  return;
                 }
+                setState(() {
+                  // Concurrent media reads may finish out of order. Never replace
+                  // a newer record with an older response.
+                  if (fresh.version >= record!.version) setRecord(fresh);
+                  final current = record!;
+                  if (current.status == 'DELIVERED' &&
+                      current.data['delivery_review']?['decision'] ==
+                          'APPROVE' &&
+                      jsonEncode(current.data['delivery']) ==
+                          jsonEncode(d['delivery']) &&
+                      current.mediaIds.contains(id)) {
+                    opened.add(id);
+                  }
+                });
               }),
         if (isBuyer && r.status == 'DELIVERED') ...[
-          appNotice('须逐项成功查看或保存本次全部取样，再明确收讫；上传或付款时间不能启动验收计时。'),
+          appNotice(d['rules']['acceptance_policy'] == 'CONTRACT_20261029'
+              ? '本单从交付审核通过起计48小时；文件不可用或争议时不能自动完成。本人收讫仍须实际取得全部取样，不会重置服务器期限。'
+              : '须逐项成功查看或保存本次全部取样，再明确收讫；上传或付款时间不能启动验收计时。'),
           _receiptForm(r, 'receipt', allOpened, '明确确认本次全部取样已收到'),
           _receiptForm(r, 'confirm', allOpened, '明确确认本次试镜履约完成'),
         ],
       ],
+      if (d['acceptance_started_at'] != null)
+        tradeFact('服务器记录的实际起点', tradeDate(d['acceptance_started_at'])),
       if (d['deadline_at'] != null)
         tradeFact('服务器记录的截止时间', tradeDate(d['deadline_at'])),
       if (d['acceptance_method'] == 'AGREED_TIMEOUT')
@@ -645,7 +736,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             d['reschedule']['other_confirmed'] != true)
           tradeButton('回复本次改期', () => action(r, 'reschedule-response'))
       ],
-      if (![
+      if (d['dispute'] == null && ![
             'CANCELLED',
             'REJECTED',
             'REFUND_REQUIRED',
@@ -657,7 +748,9 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       if (d['dispute'] != null)
         tradeSection('争议待独立处理', [
           Text(d['dispute']['reason']),
-          appNotice('已暂停会话与约定计时。客服独立核定退付，安全离场不自动处罚。')
+          appNotice('已暂停会话与约定计时。客服独立核定退付，安全离场不自动处罚。'),
+          if ([r.raw['owner_party_id'], r.raw['counterparty_id'], d['dispute']['owner_party_id']].contains(widget.session.partyId))
+            tradeButton('为本次争议补交私有依据', () => action(r, 'dispute-evidence'), outline: true)
         ]),
       for (final c in v5Rows(d['cases']))
         tradeSection('原单处理记录', [
@@ -737,7 +830,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   Widget _receiptForm(
           AuditionRecord r, String action, bool canSubmit, String title) =>
       V5Form(
-          key: ValueKey('$action:${r.id}'),
+          key: ValueKey('$action:${r.id}:${r.version}'),
           api: api,
           title: title,
           action: title,

@@ -832,8 +832,8 @@ class _VersionReviewState extends State<_VersionReview> {
     if (!await tradeConfirm(
         context, original == null ? '明确确认收到本次正式交付' : '恢复原收讫请求', [
       tradeFact('具体版本', productionVersionTitle(v)),
-      tradeFact('原约定查看期限', '${f.terms['acceptance_hours']} 小时'),
-      const Text('已成功打开当前文件并确认通知已读。本次确认后服务器开始计算原约定期限；不表示已验收，也不表示已付款。'),
+      tradeFact('原约定查看期限', customizationAcceptanceLabel(f.terms)),
+      const Text('已成功打开当前文件并确认通知已读。最终成片按本单约定计时，其余阶段仍须明确确认；收到不表示已验收，也不表示已付款。'),
     ])) {
       return;
     }
@@ -875,11 +875,10 @@ class _VersionReviewState extends State<_VersionReview> {
                 ? '尚未记录本次成功读取'
                 : tradeDate(r['view_observed_at'])),
         tradeFact('本次收讫',
-            r['started_at'] == null ? '尚未开始计时' : tradeDate(r['started_at'])),
-        if (r['deadline_at'] != null)
-          tradeFact('服务器给出的截止时间', tradeDate(r['deadline_at'])),
+            r['notified_at'] == null ? '尚待确认收到' : tradeDate(r['notified_at'])),
+        tradeFact('服务器给出的截止时间', customizationDeadlineLabel(r)),
         appNotice('读取失败或视频无法播放不算已查看。通知已读与明确收讫分别办理；超期按原约定处理，不冒称本人确认。'),
-        if (r['started_at'] == null && canDecide) ...[
+        if (r['notified_at'] == null && canDecide) ...[
           tradeButton(
               notificationRead ? '本次交付通知已读' : '确认本次交付通知已读',
               locked || reading || !opened || notificationRead
@@ -1329,7 +1328,8 @@ class _PrivateWorkState extends State<_PrivateWork> {
       version!.current(project!) &&
       version!.accepted(project!) &&
       version!.status == 'APPROVED' &&
-      order?.status == 'PAID' &&
+      (order?.status == 'PAID' ||
+          order?.status == 'REWARD_FUNDED' && order?.amount == 0) &&
       order!.data['financial']['refunded_minor'] == 0 &&
       (fulfillment == null ||
           ['STARTED', 'DELIVERED'].contains(fulfillment!.state));

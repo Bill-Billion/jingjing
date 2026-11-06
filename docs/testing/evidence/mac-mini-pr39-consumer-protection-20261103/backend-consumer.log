@@ -1,0 +1,357 @@
+TAP version 13
+# Subtest: cash and lottery rules use reviewed thresholds, Beijing time and separate units
+ok 1 - cash and lottery rules use reviewed thresholds, Beijing time and separate units
+  ---
+  duration_ms: 1.719458
+  type: 'test'
+  ...
+# Subtest: quiet hours cross midnight, explicit opt-in and daily marketing restraint
+ok 2 - quiet hours cross midnight, explicit opt-in and daily marketing restraint
+  ---
+  duration_ms: 11.079834
+  type: 'test'
+  ...
+# Subtest: reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+    # Subtest: no policy is explicitly unconfigured; self-review and foreign identities denied
+    ok 1 - no policy is explicitly unconfigured; self-review and foreign identities denied
+      ---
+      duration_ms: 198.927125
+      type: 'test'
+      ...
+    # Subtest: second real payment requires reviewed message; denial rolls back payment and operation key
+    ok 2 - second real payment requires reviewed message; denial rolls back payment and operation key
+      ---
+      duration_ms: 298.235
+      type: 'test'
+      ...
+    # Subtest: two confirmed operations cannot reuse a stale activity snapshot concurrently
+    ok 3 - two confirmed operations cannot reuse a stale activity snapshot concurrently
+      ---
+      duration_ms: 121.046625
+      type: 'test'
+      ...
+    # Subtest: policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+    ok 4 - policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+      ---
+      duration_ms: 177.568375
+      type: 'test'
+      ...
+    # Subtest: prepared payment can recover by record id after policy changed, without a second payment
+    ok 5 - prepared payment can recover by record id after policy changed, without a second payment
+      ---
+      duration_ms: 126.892458
+      type: 'test'
+      ...
+    # Subtest: late verified payment and approved refund remain executable after consumer rule changes
+    ok 6 - late verified payment and approved refund remain executable after consumer rule changes
+      ---
+      duration_ms: 74.769584
+      type: 'test'
+      ...
+    # Subtest: recharge guard rolls back cash attempt, original request resumes after confirmation
+    ok 7 - recharge guard rolls back cash attempt, original request resumes after confirmation
+      ---
+      duration_ms: 29.760584
+      type: 'test'
+      ...
+    # Subtest: preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+    ok 8 - preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+      ---
+      duration_ms: 28.777584
+      type: 'test'
+      ...
+    # Subtest: unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+    ok 9 - unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+      ---
+      duration_ms: 12.865583
+      type: 'test'
+      ...
+    # Subtest: queue respects current quiet hours and does not revive a deferred item after opt-out
+    ok 10 - queue respects current quiet hours and does not revive a deferred item after opt-out
+      ---
+      duration_ms: 15.218875
+      type: 'test'
+      ...
+    # Subtest: concurrent workers send once; marketing daily restraint also serializes separate messages
+    ok 11 - concurrent workers send once; marketing daily restraint also serializes separate messages
+      ---
+      duration_ms: 16.853459
+      type: 'test'
+      ...
+    # Subtest: business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+    ok 12 - business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+      ---
+      duration_ms: 107.890458
+      type: 'test'
+      ...
+    # Subtest: unknown push response is queried using original key, never automatically resent
+    ok 13 - unknown push response is queried using original key, never automatically resent
+      ---
+      duration_ms: 12.874542
+      type: 'test'
+      ...
+    # Subtest: late unknown send result returns the accepted status already established by reconciliation
+    ok 14 - late unknown send result returns the accepted status already established by reconciliation
+      ---
+      duration_ms: 9.765292
+      type: 'test'
+      ...
+    1..14
+ok 3 - reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+  ---
+  duration_ms: 5093.6095
+  type: 'test'
+  ...
+# Subtest: contract candidate preserves all stated probabilities and requires explicit cost basis
+ok 4 - contract candidate preserves all stated probabilities and requires explicit cost basis
+  ---
+  duration_ms: 3.313042
+  type: 'test'
+  ...
+# Subtest: binding rejects substituted coupon faces and no-price free film, retains legacy snapshots
+ok 5 - binding rejects substituted coupon faces and no-price free film, retains legacy snapshots
+  ---
+  duration_ms: 0.353125
+  type: 'test'
+  ...
+# Subtest: coupon checkout preserves original promises and real payment facts
+    # Subtest: one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+    ok 1 - one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+      ---
+      duration_ms: 392.863792
+      type: 'test'
+      ...
+    # Subtest: new 30/40/30 coupon quote and contract preserve net amounts and script milestone
+    ok 2 - new 30/40/30 coupon quote and contract preserve net amounts and script milestone
+      ---
+      duration_ms: 159.567166
+      type: 'test'
+      ...
+    # Subtest: unaccepted hold can be released, stale preview and unauthorized access rejected
+    ok 3 - unaccepted hold can be released, stale preview and unauthorized access rejected
+      ---
+      duration_ms: 101.761292
+      type: 'test'
+      ...
+    # Subtest: unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher
+    ok 4 - unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher
+      ---
+      duration_ms: 215.023834
+      type: 'test'
+      ...
+    # Subtest: full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+    ok 5 - full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+      ---
+      duration_ms: 746.4715
+      type: 'test'
+      ...
+    # Subtest: co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+    ok 6 - co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+      ---
+      duration_ms: 239.636375
+      type: 'test'
+      ...
+    1..6
+ok 6 - coupon checkout preserves original promises and real payment facts
+  ---
+  duration_ms: 5459.237334
+  type: 'test'
+  ...
+# Subtest: lottery actual HTTP: immutable odds, independent review, stock and atomic points
+    # Subtest: creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+    ok 1 - creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+      ---
+      duration_ms: 284.0885
+      type: 'test'
+      ...
+    # Subtest: newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+    ok 2 - newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+      ---
+      duration_ms: 50.302375
+      type: 'test'
+      ...
+    # Subtest: reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+    ok 3 - reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+      ---
+      duration_ms: 47.66675
+      type: 'test'
+      ...
+    # Subtest: retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+    ok 4 - retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+      ---
+      duration_ms: 88.79775
+      type: 'test'
+      ...
+    # Subtest: insufficient points rolls back draw, stock and command; retired version preserves old results
+    ok 5 - insufficient points rolls back draw, stock and command; retired version preserves old results
+      ---
+      duration_ms: 187.988875
+      type: 'test'
+      ...
+    # Subtest: ten guarantee survives mostly no-win pool and records actual conditional draws
+    ok 6 - ten guarantee survives mostly no-win pool and records actual conditional draws
+      ---
+      duration_ms: 105.34475
+      type: 'test'
+      ...
+    # Subtest: new-contract pool cannot draw before a consumer policy is independently reviewed
+    ok 7 - new-contract pool cannot draw before a consumer policy is independently reviewed
+      ---
+      duration_ms: 86.9195
+      type: 'test'
+      ...
+    # Subtest: rational confirmation and participation limits precede point deduction; recovery returns original winners
+    ok 8 - rational confirmation and participation limits precede point deduction; recovery returns original winners
+      ---
+      duration_ms: 196.967583
+      type: 'test'
+      ...
+    1..8
+ok 7 - lottery actual HTTP: immutable odds, independent review, stock and atomic points
+  ---
+  duration_ms: 5059.473834
+  type: 'test'
+  ...
+# Subtest: fixed redemption through actual HTTP and isolated MySQL transactions
+    # Subtest: independent stock approval, private evidence and unauthorized queue rejected
+    ok 1 - independent stock approval, private evidence and unauthorized queue rejected
+      ---
+      duration_ms: 150.378416
+      type: 'test'
+      ...
+    # Subtest: repeated exchange spends once; changed key payload rejected; another user cannot read
+    ok 2 - repeated exchange spends once; changed key payload rejected; another user cannot read
+      ---
+      duration_ms: 65.515833
+      type: 'test'
+      ...
+    # Subtest: last inventory races: exactly one grant, one debit, no overselling
+    ok 3 - last inventory races: exactly one grant, one debit, no overselling
+      ---
+      duration_ms: 73.862708
+      type: 'test'
+      ...
+    # Subtest: insufficient balance and underage gate roll back grant and stock together
+    ok 4 - insufficient balance and underage gate roll back grant and stock together
+      ---
+      duration_ms: 39.521458
+      type: 'test'
+      ...
+    # Subtest: retired inventory prevents new exchange but preserves prior entitlement
+    ok 5 - retired inventory prevents new exchange but preserves prior entitlement
+      ---
+      duration_ms: 22.882791
+      type: 'test'
+      ...
+    # Subtest: service failure refund returns original points exactly once
+    ok 6 - service failure refund returns original points exactly once
+      ---
+      duration_ms: 38.380208
+      type: 'test'
+      ...
+    # Subtest: exposure binds real public artist, independently schedules and requires holder confirmation
+    ok 7 - exposure binds real public artist, independently schedules and requires holder confirmation
+      ---
+      duration_ms: 157.009291
+      type: 'test'
+      ...
+    # Subtest: fulfilled exposure records proof and cannot be redeemed twice
+    ok 8 - fulfilled exposure records proof and cannot be redeemed twice
+      ---
+      duration_ms: 25.289791
+      type: 'test'
+      ...
+    # Subtest: verified production credit gets correct price; unrelated existing stock video cannot authorize template
+    ok 9 - verified production credit gets correct price; unrelated existing stock video cannot authorize template
+      ---
+      duration_ms: 63.273084
+      type: 'test'
+      ...
+    # Subtest: interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+    ok 10 - interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+      ---
+      duration_ms: 231.948
+      type: 'test'
+      ...
+    # Subtest: points pending reversal blocks new exchange; remedy clears original debt before any available balance
+    ok 11 - points pending reversal blocks new exchange; remedy clears original debt before any available balance
+      ---
+      duration_ms: 63.967625
+      type: 'test'
+      ...
+    # Subtest: returning expired original points does not mint a fresh year of validity
+    ok 12 - returning expired original points does not mint a fresh year of validity
+      ---
+      duration_ms: 56.986083
+      type: 'test'
+      ...
+    1..12
+ok 8 - fixed redemption through actual HTTP and isolated MySQL transactions
+  ---
+  duration_ms: 5049.007791
+  type: 'test'
+  ...
+# Subtest: personal usage reminders work across devices without tracking background time
+    # Subtest: disabled default never creates tracking state; input cannot claim elapsed time
+    ok 1 - disabled default never creates tracking state; input cannot claim elapsed time
+      ---
+      duration_ms: 128.550375
+      type: 'test'
+      ...
+    # Subtest: only account owner can access; institution header cannot select another person
+    ok 2 - only account owner can access; institution header cannot select another person
+      ---
+      duration_ms: 54.174958
+      type: 'test'
+      ...
+    # Subtest: two concurrent devices count one interval and produce rest reminder
+    ok 3 - two concurrent devices count one interval and produce rest reminder
+      ---
+      duration_ms: 37.917208
+      type: 'test'
+      ...
+    # Subtest: acknowledgement is versioned and retryable, does not reset daily total
+    ok 4 - acknowledgement is versioned and retryable, does not reset daily total
+      ---
+      duration_ms: 41.822
+      type: 'test'
+      ...
+    # Subtest: background gaps add no time and clear a stale reminder
+    ok 5 - background gaps add no time and clear a stale reminder
+      ---
+      duration_ms: 18.225375
+      type: 'test'
+      ...
+    # Subtest: preference change and disable reset state atomically; stale acknowledgement cannot revive it
+    ok 6 - preference change and disable reset state atomically; stale acknowledgement cannot revive it
+      ---
+      duration_ms: 39.578209
+      type: 'test'
+      ...
+    # Subtest: failed statistics reset rolls preference update back
+    ok 7 - failed statistics reset rolls preference update back
+      ---
+      duration_ms: 26.027375
+      type: 'test'
+      ...
+    # Subtest: tampering and suspended accounts fail closed, even on replay
+    ok 8 - tampering and suspended accounts fail closed, even on replay
+      ---
+      duration_ms: 13.516292
+      type: 'test'
+      ...
+    1..8
+ok 9 - personal usage reminders work across devices without tracking background time
+  ---
+  duration_ms: 4541.369291
+  type: 'test'
+  ...
+1..9
+# tests 57
+# suites 0
+# pass 57
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5624.290375
