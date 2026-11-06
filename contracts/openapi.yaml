@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.37-rc.1
+  version: 0.31.38-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33069,6 +33069,81 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_SELF
       description: 仅本人个人故事；机构员工即使创建机构故事也不能从本人副本导出。SUBMISSIONS按提交次序、SUPPLEMENTS按补件次序分页，ATTACHMENTS按ID分页。游标必须来自同故事同section，草稿与正式版分开，不返回运营账号或存储键，也不自动结案。
+  /api/v1/privacy/requests/{request_id}/transaction-data:
+    get:
+      operationId: getPrivacyTransactionCopy
+      summary: 本人按申请复制订单、钱账与脱敏合同条款
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: section
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ORDERS
+          - SUMMARY
+          - PAYMENTS
+          - REFUNDS
+          - JOURNAL
+          - CONTRACT
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - in: query
+        name: order_id
+        description: ORDERS不得提供；其他section必填。
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyTransactionCopyPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_SELF
+      description: ORDERS列本人个人买卖订单；其余section必填order_id。机构订单不能凭经办人身份导出。CONTRACT须申请CONTRACTS，钱账须TRANSACTIONS；ALL均可。游标必须来自同订单同section。合同去除已知内部审核字段并给出独立副本摘要，原条款不改；NOT_SIGNED不是已签约，SANDBOX不是实款，读取不自动结案。钱包、清分与其他业务协议不在此接口范围。
 components:
   securitySchemes:
     bearerAuth:
@@ -69125,6 +69200,479 @@ components:
                 items:
                   items:
                     $ref: '#/components/schemas/CustomizationAttachment'
+      required:
+      - meta
+      - data
+    PrivacyTransactionOrder:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          type: string
+        object_version:
+          type: integer
+          minimum: 1
+        buyer_party_id:
+          type: string
+          format: uuid
+        merchant_party_id:
+          type: string
+          format: uuid
+        roles:
+          type: array
+          items:
+            enum:
+            - BUYER
+            - MERCHANT
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+        currency:
+          const: CNY
+        total_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required:
+      - id
+      - current_status
+      - object_version
+      - buyer_party_id
+      - merchant_party_id
+      - roles
+      - currency
+      - total_minor
+    PrivacyTransactionSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          type: string
+        object_version:
+          type: integer
+          minimum: 1
+        buyer_party_id:
+          type: string
+          format: uuid
+        merchant_party_id:
+          type: string
+          format: uuid
+        roles:
+          type: array
+          items:
+            enum:
+            - BUYER
+            - MERCHANT
+          minItems: 1
+          maxItems: 2
+          uniqueItems: true
+        currency:
+          const: CNY
+        total_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        financial:
+          type: object
+          additionalProperties: false
+          properties:
+            received_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            refunded_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+            net_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+          required:
+          - received_minor
+          - refunded_minor
+          - net_minor
+        installments:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                type: string
+              trigger:
+                type: string
+              allocations:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    line_id:
+                      type: string
+                    amount_minor:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                  required:
+                  - line_id
+                  - amount_minor
+            required:
+            - key
+            - trigger
+            - allocations
+      required:
+      - id
+      - current_status
+      - object_version
+      - buyer_party_id
+      - merchant_party_id
+      - roles
+      - currency
+      - total_minor
+      - financial
+      - installments
+    PrivacyTransactionPayment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        parent_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        kind:
+          enum:
+          - PAYMENT
+          - REFUND
+        current_status:
+          type: string
+        object_version:
+          type: integer
+          minimum: 1
+        provider:
+          type: string
+        environment:
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        currency:
+          const: CNY
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        installment_key:
+          type:
+          - string
+          - 'null'
+        allocations:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              line_id:
+                type: string
+              amount_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+            required:
+            - line_id
+            - amount_minor
+        reason:
+          type:
+          - string
+          - 'null'
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - order_id
+      - parent_id
+      - kind
+      - current_status
+      - object_version
+      - provider
+      - environment
+      - currency
+      - amount_minor
+      - installment_key
+      - allocations
+      - reason
+      - created_at
+    PrivacyTransactionJournal:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        source_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        direction:
+          enum:
+          - RECEIPT
+          - REFUND
+        currency:
+          const: CNY
+        amount_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        environment:
+          enum:
+          - SANDBOX
+          - PRODUCTION
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - source_id
+      - order_id
+      - direction
+      - currency
+      - amount_minor
+      - environment
+      - created_at
+    PrivacyTransactionContractTerms:
+      type: object
+      additionalProperties: false
+      required:
+      - format_version
+      - id
+      - contract_version_id
+      - party_ids
+      - created_at
+      - rule_contents
+      - commitments
+      - object_version
+      - current_status
+      - signing_method
+      properties:
+        format_version:
+          const: contract-content-v1
+        id:
+          $ref: '#/components/schemas/Id'
+        contract_version_id:
+          $ref: '#/components/schemas/Id'
+        party_ids:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Id'
+        created_at:
+          type: string
+          format: date-time
+        rule_contents:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/RuleContent'
+        commitments:
+          type: object
+          minProperties: 1
+          additionalProperties: true
+        object_version:
+          const: 1
+        current_status:
+          const: SEALED
+        signing_method:
+          const: NOT_SIGNED
+      description: 原封存内容去除content_sha256和已知quote审核字段。仅此副本，不能交给原封存内容校验器或当作签署文件。
+    PrivacyTransactionContract:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        source_contract_id:
+          type: string
+          format: uuid
+        contract_version_id:
+          $ref: '#/components/schemas/Id'
+        source_content_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        copy_sha256:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        copy_kind:
+          const: REDACTED_CONTRACT_COPY
+        redacted_paths:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        signing_method:
+          const: NOT_SIGNED
+        terms:
+          $ref: '#/components/schemas/PrivacyTransactionContractTerms'
+      required:
+      - id
+      - source_contract_id
+      - contract_version_id
+      - source_content_sha256
+      - copy_sha256
+      - copy_kind
+      - redacted_paths
+      - signing_method
+      - terms
+    PrivacyTransactionCopyPageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            section:
+              enum:
+              - ORDERS
+              - SUMMARY
+              - PAYMENTS
+              - REFUNDS
+              - JOURNAL
+              - CONTRACT
+            order_id:
+              type:
+              - string
+              - 'null'
+              format: uuid
+            items:
+              type: array
+              items:
+                type: object
+              maxItems: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
+            coverage:
+              const: OWN_TRADE_RECORDS_ONLY
+            request_completion:
+              const: NOT_CONFIRMED
+          required:
+          - section
+          - order_id
+          - items
+          - next_cursor
+          - coverage
+          - request_completion
+          allOf:
+          - if:
+              properties:
+                section:
+                  const: ORDERS
+            then:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/PrivacyTransactionOrder'
+                order_id:
+                  type: 'null'
+          - if:
+              properties:
+                section:
+                  const: SUMMARY
+            then:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/PrivacyTransactionSummary'
+                  minItems: 1
+                  maxItems: 1
+                order_id:
+                  type: string
+                  format: uuid
+                next_cursor:
+                  type: 'null'
+          - if:
+              properties:
+                section:
+                  const: PAYMENTS
+            then:
+              properties:
+                items:
+                  items:
+                    allOf:
+                    - $ref: '#/components/schemas/PrivacyTransactionPayment'
+                    - properties:
+                        kind:
+                          const: PAYMENT
+                order_id:
+                  type: string
+                  format: uuid
+          - if:
+              properties:
+                section:
+                  const: REFUNDS
+            then:
+              properties:
+                items:
+                  items:
+                    allOf:
+                    - $ref: '#/components/schemas/PrivacyTransactionPayment'
+                    - properties:
+                        kind:
+                          const: REFUND
+                order_id:
+                  type: string
+                  format: uuid
+          - if:
+              properties:
+                section:
+                  const: JOURNAL
+            then:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/PrivacyTransactionJournal'
+                order_id:
+                  type: string
+                  format: uuid
+          - if:
+              properties:
+                section:
+                  const: CONTRACT
+            then:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/PrivacyTransactionContract'
+                  minItems: 1
+                  maxItems: 1
+                order_id:
+                  type: string
+                  format: uuid
+                next_cursor:
+                  type: 'null'
       required:
       - meta
       - data

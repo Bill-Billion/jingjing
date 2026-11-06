@@ -7388,8 +7388,323 @@
           "request_completion": "NOT_CONFIRMED"
         }
       }
+    },
+    {
+      "name": "Personal trade copy ORDERS",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "c61abc5c-ecec-4610-950f-2b555a211b85",
+          "actor": {
+            "account_id": "211b056e-3d97-4f53-9435-368d66c29782"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "ORDERS",
+          "order_id": null,
+          "items": [
+            {
+              "id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+              "current_status": "PARTIALLY_REFUNDED",
+              "object_version": 3,
+              "buyer_party_id": "3a19a87e-a769-4f0c-8843-c16f2c62be56",
+              "merchant_party_id": "c1bf9352-353b-43a1-a5bf-657cf7293c68",
+              "roles": [
+                "BUYER"
+              ],
+              "currency": "CNY",
+              "total_minor": 10000
+            }
+          ],
+          "next_cursor": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Personal trade copy SUMMARY",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "13463500-a32a-44d9-98a4-3232ffb4b4fe",
+          "actor": {
+            "account_id": "211b056e-3d97-4f53-9435-368d66c29782"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "SUMMARY",
+          "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+          "items": [
+            {
+              "id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+              "current_status": "PARTIALLY_REFUNDED",
+              "object_version": 3,
+              "buyer_party_id": "3a19a87e-a769-4f0c-8843-c16f2c62be56",
+              "merchant_party_id": "c1bf9352-353b-43a1-a5bf-657cf7293c68",
+              "roles": [
+                "BUYER"
+              ],
+              "currency": "CNY",
+              "total_minor": 10000,
+              "financial": {
+                "received_minor": 10000,
+                "refunded_minor": 2500,
+                "net_minor": 7500
+              },
+              "installments": [
+                {
+                  "key": "first",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "film",
+                      "amount_minor": 10000
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Personal trade copy PAYMENTS",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "a386974f-18a2-43ac-84e4-2d518323be9b",
+          "actor": {
+            "account_id": "211b056e-3d97-4f53-9435-368d66c29782"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PAYMENTS",
+          "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+          "items": [
+            {
+              "id": "f2e33ee3-ed84-47bb-973e-2a91ff9a59ea",
+              "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+              "parent_id": null,
+              "kind": "PAYMENT",
+              "current_status": "SUCCEEDED",
+              "object_version": 2,
+              "provider": "ALIPAY",
+              "environment": "SANDBOX",
+              "currency": "CNY",
+              "amount_minor": 10000,
+              "installment_key": "first",
+              "allocations": [
+                {
+                  "line_id": "film",
+                  "amount_minor": 10000
+                }
+              ],
+              "reason": null,
+              "created_at": "2026-11-06T03:32:14.445Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Personal trade copy REFUNDS",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "9d2fe7aa-0a5d-4ad6-adc3-58c66b437d1f",
+          "actor": {
+            "account_id": "211b056e-3d97-4f53-9435-368d66c29782"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "REFUNDS",
+          "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+          "items": [
+            {
+              "id": "ea01cbae-fb31-4fd7-ad7b-f8d29f21b5df",
+              "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+              "parent_id": "f2e33ee3-ed84-47bb-973e-2a91ff9a59ea",
+              "kind": "REFUND",
+              "current_status": "SUCCEEDED",
+              "object_version": 4,
+              "provider": "ALIPAY",
+              "environment": "SANDBOX",
+              "currency": "CNY",
+              "amount_minor": 2500,
+              "installment_key": null,
+              "allocations": [
+                {
+                  "line_id": "film",
+                  "amount_minor": 2500
+                }
+              ],
+              "reason": "Synthetic partial refund",
+              "created_at": "2026-11-06T03:32:14.642Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Personal trade copy JOURNAL",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "e482954c-d949-441c-af83-9934a4643da4",
+          "actor": {
+            "account_id": "211b056e-3d97-4f53-9435-368d66c29782"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "JOURNAL",
+          "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+          "items": [
+            {
+              "id": "06fa0f27-7eab-40c3-ac81-e5634e9cb125",
+              "source_id": "f2e33ee3-ed84-47bb-973e-2a91ff9a59ea",
+              "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+              "direction": "RECEIPT",
+              "currency": "CNY",
+              "amount_minor": 10000,
+              "environment": "SANDBOX",
+              "created_at": "2026-11-06T03:32:14.568Z"
+            }
+          ],
+          "next_cursor": "06fa0f27-7eab-40c3-ac81-e5634e9cb125",
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "Personal trade copy CONTRACT",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "8736d084-575b-4dd8-a52a-ddc4166b4f10",
+          "actor": {
+            "account_id": "211b056e-3d97-4f53-9435-368d66c29782"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "CONTRACT",
+          "order_id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+          "items": [
+            {
+              "id": "59f88d58-5b1a-4c87-9fa9-d76ac76b6a90",
+              "source_contract_id": "56e7b07d-c257-4149-905e-28914ea3026b",
+              "contract_version_id": "ec207b0b-1ffa-4332-be62-8976159a898f",
+              "source_content_sha256": "0dd1dd873150a412f6f64d9c4842df2d6d546ee46402ab7b6be81f14ccc97ef4",
+              "copy_sha256": "d7f7c8f39b8b8bc33b5b5960ba092392ad4494e26862c2012d7e9980e471d208",
+              "copy_kind": "REDACTED_CONTRACT_COPY",
+              "redacted_paths": [
+                "commitments.quote.review",
+                "commitments.quote.lines[0].review"
+              ],
+              "signing_method": "NOT_SIGNED",
+              "terms": {
+                "commitments": {
+                  "quote": {
+                    "channel": "ALIPAY",
+                    "currency": "CNY",
+                    "expires_at": "2099-01-01T00:00:00.000Z",
+                    "installments": [
+                      {
+                        "allocations": [
+                          {
+                            "amount_minor": 10000,
+                            "line_id": "film"
+                          }
+                        ],
+                        "apple_product_id": null,
+                        "key": "first",
+                        "trigger": "ORDER_ACCEPTED"
+                      }
+                    ],
+                    "license_reservation_id": null,
+                    "lines": [
+                      {
+                        "currency": "CNY",
+                        "line_id": "film",
+                        "line_kind": "PRODUCTION",
+                        "provider_party_id": "c1bf9352-353b-43a1-a5bf-657cf7293c68",
+                        "quantity": 1,
+                        "spec_id": "aec1d496-be6c-4cc7-b087-471943705c62",
+                        "spec_version": 2,
+                        "specification": {
+                          "deliverables": [
+                            "synthetic film"
+                          ],
+                          "final_seconds": 90,
+                          "revision_limit": 1,
+                          "sample_seconds": 20,
+                          "service_tier": "Synthetic",
+                          "terms": "Synthetic only",
+                          "version": "1"
+                        },
+                        "title": "Synthetic personal supplier",
+                        "total_minor": 10000,
+                        "unit_minor": 10000
+                      }
+                    ],
+                    "payment_window_minutes": 30,
+                    "rule_id": "8d07832f-4a3e-4e73-b6ac-2765fc72da32",
+                    "total_minor": 10000,
+                    "transaction_model": "DIRECT_SUPPLIER"
+                  },
+                  "quote_id": "0bcc04f3-f53e-4c78-b2b5-d08a26549d08",
+                  "quote_sha256": "889cc93d258ecf4b6edcaec36f15be827ea6e59222f47b6c58ed6dda6d5346f1"
+                },
+                "contract_version_id": "ec207b0b-1ffa-4332-be62-8976159a898f",
+                "created_at": "2026-11-06T03:32:14.188Z",
+                "current_status": "SEALED",
+                "format_version": "contract-content-v1",
+                "id": "56e7b07d-c257-4149-905e-28914ea3026b",
+                "object_version": 1,
+                "party_ids": [
+                  "3a19a87e-a769-4f0c-8843-c16f2c62be56",
+                  "c1bf9352-353b-43a1-a5bf-657cf7293c68"
+                ],
+                "rule_contents": [
+                  {
+                    "content_sha256": "9e41d365f8499a26bdb1249f09923d3b30a240fa276653e5dafae3fd3a2133b9",
+                    "format_version": "rule-content-v1",
+                    "id": "8d07832f-4a3e-4e73-b6ac-2765fc72da32",
+                    "rule_key": "copy.synthetic",
+                    "terms": {
+                      "explicit": "Synthetic historical promise"
+                    },
+                    "version": "1"
+                  }
+                ],
+                "signing_method": "NOT_SIGNED"
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
     }
   ],
-  "contract_version": "0.31.37-rc.1",
-  "version": "0.31.37-rc.1"
+  "contract_version": "0.31.38-rc.1",
+  "version": "0.31.38-rc.1"
 }

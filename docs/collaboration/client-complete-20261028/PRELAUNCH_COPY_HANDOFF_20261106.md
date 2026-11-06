@@ -1,6 +1,6 @@
 # 前端接续：本人资料副本的范围、授权/模型和文件
 
-接口0.31.37-rc.1，数据库0209，无新增迁移。后端chengcongcong222已实现并本机隔离验证；Bill-Billion本批尚未确认认领。原申请、处理、下载页面已有，不重新派为未开发。
+接口0.31.38-rc.1，数据库0209，无新增迁移。后端chengcongcong222已实现并本机隔离验证；Bill-Billion本批尚未确认认领。原申请、处理、下载页面已有，不重新派为未开发。
 
 ## 三项本批工作
 
@@ -27,3 +27,24 @@
 - `copy-options`现在PRIVATE_STORY的file_copy_supported为true，remaining说明历史和草稿可从此处取得。旧数据列表仍只提供当前文字，保持兼容；完整个人副本仍不自动结案。
 
 同一故事验收：首次正式提交旧文件 → 补件换新文件仅保存 → 本人看得到补件草稿，运营只能看旧正式版 → 正式重提 → 复制两版答案和各自文件，校验字节 → 再开补件，确认新草稿仍单列。另查机构创建的故事不能走本人副本、跨故事游标拒绝、切身份/断网恢复不串资料。证据见[故事副本报告](../../reviews/prelaunch-story-copy-20261106/REPORT.md)。
+
+## 接续：本人订单、钱账与合同副本（0.31.38增量）
+
+后端已实现并通过隐私93项/交易31项回归及41份HTTP响应校验。本批列入同一副本页，尚未确认Bill-Billion认领，不另做订单付款流程。账号会话、不带X-Acting-Party；仅本人QUERY/COPY，读取不结案。迁移仍0209，无新依赖。
+
+`GET /api/v1/privacy/requests/{request_id}/transaction-data?section=ORDERS&limit=20`列个人买方/供给方订单。TRANSACTIONS、CONTRACTS或ALL申请可列；保存每页next_cursor。机构经办单不混入。原data交易分类仍是旧买方索引，保持兼容。
+
+选定订单后传`order_id`，section分别为SUMMARY、PAYMENTS、REFUNDS、JOURNAL、CONTRACT。每个订单和section单独保存游标；SUMMARY/CONTRACT没有分页。钱账需TRANSACTIONS/ALL，合同需CONTRACTS/ALL；不能因为列表可见就猜后续权限。
+
+|内容|页面应怎样说明|
+|---|---|
+|SUMMARY|订单原价、当前状态、分期约定；financial的累计收款、累计退款和净收分别显示，金额单位分|
+|PAYMENTS/REFUNDS|每笔状态、金额、对应分期/分项、渠道与测试/正式环境；UNKNOWN写结果待确认，REQUESTED写申请中，不算已付款/已退款|
+|JOURNAL|已经确认的收款/退款事实，保留source_id便于关联；不把净额作为每笔实收，不展示不存在的银行凭证|
+|CONTRACT|标题“订单条款副本”，说明已去内部审核字段；copy_sha256只对应terms，source_content_sha256只用于原件关联，二者不能互换；NOT_SIGNED写未签署，不能写已签约|
+
+合同terms保留原规则与当时报价，不按当前商品价格或新30/40/30重新计算旧单。copy_kind为REDACTED_CONTRACT_COPY，redacted_paths说明具体去除路径。COPY只是申请类型，不是已完成；coverage为OWN_TRADE_RECORDS_ONLY，钱包/清分和其他协议不在本次结果里，remaining须保留。
+
+同记录验收：本人两笔订单→逐页重开→一笔模拟付款100元→部分退款25元→核收100/退25/净75→保存条款副本核摘要；另一笔未知付款不能出现收款流水；新增退款申请不能增加已退金额。再验个人供给方、机构经办单、切账号、申请范围不符、跨订单游标、断网恢复和停用账号。不得自动转机构请求、重放付款或将403/503显示为空清单。
+
+[实际HTTP及测试证据](../../reviews/prelaunch-transaction-copy-20261106/REPORT.md)。本批原生/网页未新跑，发布≠认领≠交付≠复验；队友拿到后独立接入，后端继续钱包及其他范围，不互相等待。

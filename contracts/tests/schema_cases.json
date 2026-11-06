@@ -2342,6 +2342,33 @@
           "request_completion": "NOT_CONFIRMED"
         }
       }
+    },
+    {
+      "name": "trade copy cannot claim request completion",
+      "fixture": "PrivacyTransactionCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "request_completion"
+      ],
+      "replace_with": "COMPLETED"
+    },
+    {
+      "name": "trade order section cannot carry payment records",
+      "fixture": "PrivacyTransactionCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "section"
+      ],
+      "replace_with": "PAYMENTS"
+    },
+    {
+      "name": "trade copy cannot claim complete financial coverage",
+      "fixture": "PrivacyTransactionCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "coverage"
+      ],
+      "replace_with": "ALL_FINANCES"
     }
   ]
 }
