@@ -2,9 +2,9 @@
 const {digest}=require('../governance/content'),{error}=require('../party/policy');
 const categories=['PROFILE','ARTIST_MATERIALS','PRIVATE_STORY','TRANSACTIONS','CONTENT','CONTRACTS','DIGITAL_MODELS'];
 const coverage={PROFILE:'ACCOUNT_PROFILE_ONLY',ARTIST_MATERIALS:'OWN_MATERIAL_METADATA_ONLY',PRIVATE_STORY:'OWN_CURRENT_STORY_TEXT_ONLY',TRANSACTIONS:'OWN_BUYER_ORDER_INDEX_ONLY',CONTENT:'OWN_CONTENT_METADATA_ONLY',CONTRACTS:'OWN_AUTHORIZATION_RECORDS_ONLY',DIGITAL_MODELS:'OWN_PRODUCTION_MODEL_RECORDS_ONLY'};
-const remaining={PROFILE:'实名认证原件、登录记录等须按申请另行整理。',ARTIST_MATERIALS:'可复制本人持有且可访问的原始素材；授权证据、其他人上传和历史衍生材料须另行核对。',PRIVATE_STORY:'当前草稿文字；历史正式版本和附件须另行整理。',TRANSACTIONS:'本人买方订单索引；完整钱账、退款、供给方收入及合同须另行整理。',CONTENT:'本人持有的作品原件；他人交付作品继续按原订单许可访问。',CONTRACTS:'本人新旧形象授权记录；采购、参演、机构和交易合同须在原业务或经审核答复中提供。',DIGITAL_MODELS:'本人授权关联的制作模型记录；不包含供应商密钥、训练原件或可携带模型文件，具体可携带范围须另行核对。'};
+const remaining={PROFILE:'实名认证原件、登录记录等须按申请另行整理。',ARTIST_MATERIALS:'可复制本人持有且可访问的原始素材；授权证据、其他人上传和历史衍生材料须另行核对。',PRIVATE_STORY:'当前文字可复制；历史正式版本、补件记录与未提交补件草稿可从故事副本入口逐页读取，本人可访问附件可复制；机构故事与交易钱账、其他合同不在此范围。',TRANSACTIONS:'本人买方订单索引；完整钱账、退款、供给方收入及合同须另行整理。',CONTENT:'本人持有的作品原件；他人交付作品继续按原订单许可访问。',CONTRACTS:'本人新旧形象授权记录；采购、参演、机构和交易合同须在原业务或经审核答复中提供。',DIGITAL_MODELS:'本人授权关联的制作模型记录；不包含供应商密钥、训练原件或可携带模型文件，具体可携带范围须另行核对。'};
 function scope(request,category){if(!categories.includes(category)||!request.scopes.some(s=>s==='ALL'||s===category))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);}
-function copyOptions(request){return {categories:categories.filter(c=>request.scopes.includes('ALL')||request.scopes.includes(c)).map(category=>({category,coverage:coverage[category],remaining:remaining[category],file_copy_supported:['ARTIST_MATERIALS','CONTENT'].includes(category)})),request_completion:'NOT_CONFIRMED'};}
+function copyOptions(request){return {categories:categories.filter(c=>request.scopes.includes('ALL')||request.scopes.includes(c)).map(category=>({category,coverage:coverage[category],remaining:remaining[category],file_copy_supported:['ARTIST_MATERIALS','CONTENT','PRIVATE_STORY'].includes(category)})),request_completion:'NOT_CONFIRMED'};}
 const consentFields=['features','purposes','grantee_party_id','subject_party_id','territories','valid_from','valid_until','terms','stock_commercial_uses'];
 const consentData=value=>Object.fromEntries(consentFields.filter(k=>Object.hasOwn(value,k)).map(k=>[k,value[k]]));
 async function authorizationRecords(tx,account,after,limit){
@@ -22,6 +22,7 @@ async function authorizationRecords(tx,account,after,limit){
  return items;
 }
 async function copyFile(tx,account,request,{category,asset_id}){
+ if(category==='PRIVATE_STORY'){scope(request,category);return require('./story-copy').file(tx,account,asset_id);}
  scope(request,category);if(!['ARTIST_MATERIALS','CONTENT'].includes(category))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
  const [[asset]]=await tx.execute("SELECT s.* FROM supply_assets s JOIN parties p ON p.id=s.owner_party_id WHERE s.id=? AND p.kind='PERSON' AND p.personal_account_id=? AND s.purpose=? FOR SHARE",[asset_id,account,category==='CONTENT'?'WORK_CONTENT':'AVATAR_MATERIAL']);
  if(!asset)throw error('PRIVACY_TARGET_NOT_FOUND',404);if(asset.current_status!=='READY')throw error('PRIVATE_MATERIAL_NOT_READY',409);return asset;
@@ -49,4 +50,5 @@ async function exportPersonalCopy(tx,a,request,i){
  }
  return {category:i.category,items:rows.slice(0,i.limit),next_cursor:rows.length>i.limit?rows[i.limit-1].id:null,coverage};
 }
-module.exports={exportPersonalCopy,copyOptions,copyFile};
+async function storyCopy(tx,account,request,input){scope(request,'PRIVATE_STORY');return require('./story-copy').page(tx,account,input);}
+module.exports={exportPersonalCopy,copyOptions,copyFile,storyCopy};

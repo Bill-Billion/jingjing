@@ -244,6 +244,14 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
    if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
    return require('./personal-copy').copyOptions(spec);
   });},
+  async storyCopy(ctx,i){
+   if(i.after)id(i.after);id(i.story_id);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
+   return db.withTransaction(async tx=>{
+    const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
+    if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+    return require('./personal-copy').storyCopy(tx,a.id,spec,i);
+   });
+  },
   async copyFile(ctx,i){return db.withTransaction(async tx=>{
    id(i.asset_id);const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
    if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);

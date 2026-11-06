@@ -8,7 +8,7 @@ const S=require('./supplement-policy');
 const one=async(tx,sql,args=[])=>(await tx.execute(sql,args))[0][0];
 const parse=value=>typeof value==='string'?JSON.parse(value):value;
 const sha=text=>createHash('sha256').update(text,'utf8').digest('hex');
-const instant=value=>value===null?null:new Date(value.replace(' ','T')+'Z').toISOString();
+const {submissionHash,instant}=require('./submission-hash');
 const stored=(value,expected)=>{const body=parse(value);if(digest(body)!==expected)throw error('STORED_CONTENT_MISMATCH',503);return body;};
 
 function createCustomizationRepository(db,{resolvePrincipal=async()=>null,copyrightContractPolicy='LEGACY_COMPATIBLE'}={}){
@@ -44,7 +44,6 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null,copyri
   return r.current_status==='DRAFT'?['READ','SAVE','SUBMIT']:['READ'];
  }
  function summary(r,operations=false){return {id:r.id,party_id:r.party_id,template_version_id:r.template_version_id,category_title:r.category_title,current_status:r.current_status,object_version:r.object_version,submitted_at:instant(r.submitted_at),intake_at:instant(r.intake_at),allowed_actions:actions(r,operations)};}
- function submissionHash(s){return digest({format:'customization-submission-v1',id:s.id,request_id:s.request_id,template_version_id:s.template_version_id,template_sha256:s.template_sha256,answers_sha256:s.answers_sha256,submitted_by:s.submitted_by,submitted_at:instant(s.submitted_at)});}
  async function detail(tx,r,operations=false){
   const template=stored(r.template_snapshot_json,r.template_sha256);
   let answers,submission=null;
