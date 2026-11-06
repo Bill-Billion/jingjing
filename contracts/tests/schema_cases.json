@@ -2369,6 +2369,33 @@
         "coverage"
       ],
       "replace_with": "ALL_FINANCES"
+    },
+    {
+      "name": "account copy cannot claim completion",
+      "fixture": "PrivacyAccountCopyPageResponse",
+      "mutate_path": [
+        "data",
+        "request_completion"
+      ],
+      "replace_with": "COMPLETED"
+    },
+    {
+      "name": "batch is not approval",
+      "fixture": "OrganizationBatchResponse",
+      "mutate_path": [
+        "data",
+        "meaning"
+      ],
+      "replace_with": "APPROVED"
+    },
+    {
+      "name": "recommendations never change prices",
+      "fixture": "DiscoveryRecommendationsResponse",
+      "mutate_path": [
+        "data",
+        "price_personalized"
+      ],
+      "replace_with": true
     }
   ]
 }

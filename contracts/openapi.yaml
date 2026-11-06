@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.38-rc.1
+  version: 0.31.39-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33144,6 +33144,241 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_SELF
       description: ORDERS列本人个人买卖订单；其余section必填order_id。机构订单不能凭经办人身份导出。CONTRACT须申请CONTRACTS，钱账须TRANSACTIONS；ALL均可。游标必须来自同订单同section。合同去除已知内部审核字段并给出独立副本摘要，原条款不改；NOT_SIGNED不是已签约，SANDBOX不是实款，读取不自动结案。钱包、清分与其他业务协议不在此接口范围。
+  /api/v1/privacy/requests/{request_id}/account-data:
+    get:
+      operationId: getPrivacyAccountCopy
+      summary: 本人复制账户、钱包与清分记录
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: section
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ACCOUNT
+          - PREFERENCES
+          - ARTISTS
+          - WALLET
+          - FINANCE
+          - FINANCE_AGREEMENTS
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 36
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyAccountCopyPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_SELF
+      description: ACCOUNT/PREFERENCES/ARTISTS需要PROFILE，WALLET/FINANCE需要TRANSACTIONS，FINANCE_AGREEMENTS需要CONTRACTS；ALL兼容。仅本人个人身份资料，机构经办权限不能扩大范围。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。未覆盖的其他合同须继续办理，读取不自动结案。
+  /api/v1/engagement/mcn/batches:
+    post:
+      operationId: submitOrganizationBatch
+      summary: 机构逐项批量提交、调价送审或分派
+      description: 最多20项，同一请求键绑定原始内容，失败项可原键重试；逐项权限与业务事务不放宽。成功表示提交成功，不表示已审核/已上架。UNAVAILABLE表示当前无权查看，不能推断历史执行失败；RETRY_REQUIRED先查原批次。PRICE_REVISION只创建待审新版规格，审核及更新上架另走原流程。仅创建者可恢复，始终重查机构成员和艺人授权。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationBatchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationBatchRequest'
+  /api/v1/engagement/mcn/batches/{batch_id}:
+    get:
+      operationId: getOrganizationBatch
+      summary: 查询本人发起的机构批量结果
+      description: 最多20项，同一请求键绑定原始内容，失败项可原键重试；逐项权限与业务事务不放宽。成功表示提交成功，不表示已审核/已上架。UNAVAILABLE表示当前无权查看，不能推断历史执行失败；RETRY_REQUIRED先查原批次。PRICE_REVISION只创建待审新版规格，审核及更新上架另走原流程。仅创建者可恢复，始终重查机构成员和艺人授权。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: batch_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationBatchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/discovery/recommendations:
+    get:
+      operationId: getDiscoveryRecommendations
+      summary: 按本人自选推荐偏好排列公共内容
+      description: 默认关闭；开启后使用有效浏览、已收款未全退的现货消费所在城市，消费城市优先于浏览城市，再按公共目录次序。只读取当前可见的公共资料，不改变售价。最多扫描500条，截断明确返回；查找全部内容继续用search。偏好或候选变化时旧游标返回409，重新首屏。不代表语义匹配、职业适配率或榜单计算。
+      tags:
+      - discovery
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ARTIST
+          - STOCK
+          - AUDITION
+          - NOTICE
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 800
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 当前账号可见的公开结果。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryRecommendationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -69673,6 +69908,1323 @@ components:
                   format: uuid
                 next_cursor:
                   type: 'null'
+      required:
+      - meta
+      - data
+    PrivacyAccountCopyPageResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: ACCOUNT
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    display_name:
+                      type: string
+                    current_status:
+                      type: string
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    created_at:
+                      type: string
+                      format: date-time
+                  required:
+                  - id
+                  - display_name
+                  - current_status
+                  - object_version
+                  - created_at
+                maxItems: 1
+              next_cursor:
+                type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PREFERENCES
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    object_version:
+                      type: integer
+                      minimum: 0
+                    personalization:
+                      type: boolean
+                    marketing:
+                      type: boolean
+                    rest_reminder_minutes:
+                      type: integer
+                      anyOf:
+                      - const: 0
+                      - minimum: 15
+                        maximum: 240
+                    push_enabled:
+                      type: boolean
+                    night_reminder_enabled:
+                      type: boolean
+                    quiet_hours:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        enabled:
+                          type: boolean
+                        start_minute:
+                          type: integer
+                          minimum: 0
+                          maximum: 1439
+                        end_minute:
+                          type: integer
+                          minimum: 0
+                          maximum: 1439
+                      required:
+                      - enabled
+                      - start_minute
+                      - end_minute
+                    id:
+                      type: string
+                      format: uuid
+                  required:
+                  - object_version
+                  - personalization
+                  - marketing
+                  - rest_reminder_minutes
+                  - id
+                maxItems: 1
+              next_cursor:
+                type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: ARTISTS
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistPerson'
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: WALLET
+              items:
+                type: array
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: ACCOUNT
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          rule_id:
+                            type: string
+                            format: uuid
+                          rule_sha256:
+                            type: string
+                            pattern: ^[0-9a-f]{64}$
+                          rule:
+                            type: object
+                          opened_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: RECHARGE
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          amount_minor:
+                            type: integer
+                          refunded_minor:
+                            type: integer
+                          currency:
+                            type: string
+                          created_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          occurred_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: CASH_RECEIPT
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          amount_minor:
+                            type: integer
+                          occurred_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: CASH_SPEND
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          order_id:
+                            type: string
+                            format: uuid
+                          payment_id:
+                            type: string
+                            format: uuid
+                          currency:
+                            type: string
+                          amount_minor:
+                            type: integer
+                          allocations:
+                            type: array
+                            items:
+                              type: object
+                          refund_ids:
+                            type: array
+                            items:
+                              type: string
+                              format: uuid
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: CASH_REFUND
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          payment_id:
+                            type: string
+                            format: uuid
+                          refund_id:
+                            type: string
+                            format: uuid
+                          amount_minor:
+                            type: integer
+                          currency:
+                            type: string
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: EARNING
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          order_id:
+                            type: string
+                            format: uuid
+                          category:
+                            type: string
+                          rule_id:
+                            type: string
+                            format: uuid
+                          rule:
+                            type: object
+                          source_kind:
+                            type: string
+                          paid_minor:
+                            type: integer
+                          refunded_minor:
+                            type: integer
+                          points:
+                            type: integer
+                          reversed:
+                            type: integer
+                          growth_reversed:
+                            type: integer
+                          spent:
+                            type: integer
+                          expired:
+                            type: integer
+                          expires_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          issued_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          available_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          pending_shortfall:
+                            type: integer
+                          debt_offset:
+                            type: integer
+                          debt_settled:
+                            type: integer
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: POINT_HOLD
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          purpose:
+                            type: string
+                          reference:
+                            type: string
+                          points:
+                            type: integer
+                          allocations:
+                            type: array
+                            items:
+                              type: object
+                          reason:
+                            type: string
+                          expires_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: CASH_RECONCILIATION
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          statement_id:
+                            type: string
+                            format: uuid
+                          observed_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          occurred_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          local_available_minor:
+                            type: integer
+                          provider_available_minor:
+                            type: integer
+                          meaning:
+                            type: string
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: LEVEL_REVIEW
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          valid_from:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          valid_until:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          terms:
+                            type: string
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: FINANCE
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]{0,19}$
+                    agreement_id:
+                      type: string
+                      format: uuid
+                    source_id:
+                      type: string
+                      format: uuid
+                    party_id:
+                      type: string
+                      format: uuid
+                    category:
+                      enum:
+                      - ACCRUAL
+                      - ADJUSTMENT
+                      - PAYOUT
+                      - PAYOUT_RETURN
+                    amount_minor:
+                      type: integer
+                    environment:
+                      enum:
+                      - SANDBOX
+                      - PRODUCTION
+                    currency:
+                      const: CNY
+                    created_at:
+                      type: string
+                      format: date-time
+                  required:
+                  - id
+                  - agreement_id
+                  - source_id
+                  - party_id
+                  - category
+                  - amount_minor
+                  - environment
+                  - currency
+                  - created_at
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: FINANCE_AGREEMENTS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    current_status:
+                      type: string
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    source_content_sha256:
+                      type: string
+                      pattern: ^[0-9a-f]{64}$
+                    copy_sha256:
+                      type: string
+                      pattern: ^[0-9a-f]{64}$
+                    copy_kind:
+                      const: REDACTED_AGREEMENT_COPY
+                    terms:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        previous_agreement_id:
+                          anyOf:
+                          - type: string
+                            format: uuid
+                          - type: 'null'
+                        source_type:
+                          enum:
+                          - ORDER
+                          - RELEASE
+                        source_id:
+                          type: string
+                          format: uuid
+                        environment:
+                          enum:
+                          - SANDBOX
+                          - PRODUCTION
+                        currency:
+                          const: CNY
+                        rule_id:
+                          type: string
+                          format: uuid
+                        rule_snapshot:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            terms:
+                              type: object
+                            version:
+                              type: string
+                              maxLength: 8000
+                            rule_key:
+                              type: string
+                              maxLength: 8000
+                            content_sha256:
+                              type: string
+                              pattern: ^[0-9a-f]{64}$
+                            format_version:
+                              type: string
+                              maxLength: 8000
+                          required:
+                          - id
+                          - terms
+                          - version
+                          - rule_key
+                          - content_sha256
+                          - format_version
+                        rules:
+                          $ref: '#/components/schemas/FinanceRules'
+                        parties:
+                          type: array
+                          items:
+                            type: string
+                            format: uuid
+                      required:
+                      - source_type
+                      - source_id
+                      - environment
+                      - currency
+                      - rules
+                      - parties
+                  required:
+                  - id
+                  - current_status
+                  - object_version
+                  - source_content_sha256
+                  - copy_sha256
+                  - copy_kind
+                  - terms
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+      required:
+      - meta
+      - data
+    OrganizationBatchRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$'
+                action:
+                  const: ARTIST_LISTING
+                input:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    person_id:
+                      type: string
+                      format: uuid
+                    avatar_id:
+                      type: string
+                      format: uuid
+                    listing:
+                      $ref: '#/components/schemas/ArtistListingInput'
+                  required:
+                  - person_id
+                  - avatar_id
+                  - listing
+              required:
+              - key
+              - action
+              - input
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$'
+                action:
+                  const: STOCK_LISTING
+                input:
+                  $ref: '#/components/schemas/StockListingRequest'
+              required:
+              - key
+              - action
+              - input
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$'
+                action:
+                  const: PRICE_REVISION
+                input:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    record_id:
+                      type: string
+                      format: uuid
+                    expected_version:
+                      type: integer
+                      minimum: 1
+                    unit_minor:
+                      type: integer
+                      minimum: 1
+                      maximum: 900000000000
+                  required:
+                  - record_id
+                  - expected_version
+                  - unit_minor
+              required:
+              - key
+              - action
+              - input
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$'
+                action:
+                  const: MCN_ASSIGNMENT
+                input:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    booking_id:
+                      type: string
+                      format: uuid
+                    order_id:
+                      type: string
+                      format: uuid
+                    account_id:
+                      type: string
+                      format: uuid
+                  required:
+                  - account_id
+                  oneOf:
+                  - required:
+                    - booking_id
+                    not:
+                      required:
+                      - order_id
+                  - required:
+                    - order_id
+                    not:
+                      required:
+                      - booking_id
+              required:
+              - key
+              - action
+              - input
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$'
+                action:
+                  const: PRODUCTION_ASSIGNMENT
+                input:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    assignee_account_id:
+                      type: string
+                      format: uuid
+                    reason:
+                      type: string
+                      minLength: 1
+                      maxLength: 2000
+                    record_id:
+                      type: string
+                      format: uuid
+                    expected_version:
+                      type: integer
+                      minimum: 1
+                  required:
+                  - assignee_account_id
+                  - reason
+                  - record_id
+                  - expected_version
+              required:
+              - key
+              - action
+              - input
+          minItems: 1
+          maxItems: 20
+      required:
+      - items
+    OrganizationBatchResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              type: string
+              format: uuid
+            party_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  key:
+                    type: string
+                  action:
+                    enum:
+                    - ARTIST_LISTING
+                    - STOCK_LISTING
+                    - PRICE_REVISION
+                    - MCN_ASSIGNMENT
+                    - PRODUCTION_ASSIGNMENT
+                  status:
+                    enum:
+                    - SUCCEEDED
+                    - REJECTED
+                    - RETRY_REQUIRED
+                    - NOT_RUN
+                    - UNAVAILABLE
+                  result_id:
+                    type:
+                    - string
+                    - 'null'
+                    format: uuid
+                  result_status:
+                    type:
+                    - string
+                    - 'null'
+                  error_code:
+                    type:
+                    - string
+                    - 'null'
+                required:
+                - key
+                - action
+                - status
+                - result_id
+                - result_status
+                - error_code
+                allOf:
+                - if:
+                    properties:
+                      status:
+                        const: SUCCEEDED
+                  then:
+                    properties:
+                      result_id:
+                        type: string
+                        format: uuid
+                      result_status:
+                        type: string
+                      error_code:
+                        type: 'null'
+                  else:
+                    properties:
+                      result_id:
+                        type: 'null'
+                      result_status:
+                        type: 'null'
+              minItems: 1
+              maxItems: 20
+            current_status:
+              enum:
+              - COMPLETED
+              - PARTIAL
+            meaning:
+              const: SUBMITTED_NOT_APPROVED
+            retry_uses_original_request:
+              const: true
+          required:
+          - id
+          - party_id
+          - items
+          - current_status
+          - meaning
+          - retry_uses_original_request
+      required:
+      - meta
+      - data
+    DiscoveryRecommendationsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: ARTIST
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/ArtistCatalogueItem'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 1
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: STOCK
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/StockOffer'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 1
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: AUDITION
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/AuditionPublicOffer'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 1
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: NOTICE
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/NoticePublic'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 1
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
       required:
       - meta
       - data

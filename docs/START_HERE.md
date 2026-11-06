@@ -1,6 +1,8 @@
+当前本轮接口0.31.39-rc.1/迁移0211；先读双方CURRENT及PRELAUNCH_INDEPENDENT_HANDOFF_20261106.md。账户副本、五种批量与城市推荐后端已测，页面待接；其他协议/档案、完整匹配、整链及七类真实接入继续，不能宣布全部完成。
+
 # 当前执行入口
 
-2026-11-06先读[上线前开发与逐条验收计划](collaboration/client-complete-20261028/PRELAUNCH_EXECUTION_20261106.md)及双方CURRENT。本批接口0.31.38-rc.1/0209，本人订单/付款退款/流水和脱敏条款副本后端已自验、页面待接；前端旧交付不重派。以下11月4/5日版本和晚间分工保留历史衔接，不当作本次最终提交。
+2026-11-06先读[上线前开发与逐条验收计划](collaboration/client-complete-20261028/PRELAUNCH_EXECUTION_20261106.md)及双方CURRENT。本批接口0.31.39-rc.1/0211，账户/钱包清分副本、机构批量与城市推荐后端已自验、页面待接；前端旧交付不重派。以下11月4/5日版本和晚间分工保留历史衔接，不当作本次最终提交。
 
 2026-11-04晚间先读[双方一次推进的完整计划](collaboration/client-complete-20261028/TONIGHT_EXECUTION_20261104.md)及[交付模板](collaboration/client-complete-20261028/TONIGHT_RESULT_TEMPLATE_20261104.md)。目标今晚内部预验、明天甲方验收；前端六路线、后端六路线及统一环境，原两包认领与新增细化确认分别记录。
 
