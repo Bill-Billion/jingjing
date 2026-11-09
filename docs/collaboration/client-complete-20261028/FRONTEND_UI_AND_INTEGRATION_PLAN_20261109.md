@@ -1,6 +1,6 @@
 # 前端UI改版与功能接续：一份完整工作计划
 
-2026-11-09。用户安排前端短期修改UI，后端并行补功能。后端负责人 chengcongcong222；前端负责人 Bill-Billion。当前接口0.31.43-rc.1，数据库迁移仍0211。原157b47e3等已交付页面保留，不重新派成未开发。UI改版安排来自用户；以下功能增量的认领、交付和复验尚未确认，上传材料不等于已接手。
+2026-11-09。用户安排前端短期修改UI，后端并行补功能。后端负责人 chengcongcong222；前端负责人 Bill-Billion。当前接口0.31.44-rc.1，数据库迁移仍0211。原157b47e3等已交付页面保留，不重新派成未开发。UI改版安排来自用户；以下功能增量的认领、交付和复验尚未确认，上传材料不等于已接手。
 
 ## 怎么协作，避免重复改两遍
 
@@ -47,6 +47,25 @@
 原附件下载继续用 `/api/v1/support/tickets/{ticket_id}/assets/{asset_id}/content` 或 `/api/v1/invoices/requests/{invoice_id}/documents/{document_id}/content`，这些原业务接口需要原个人身份头，不能带机构身份冒领。先核对个人身份；401/403/404明确提示，不更换接口绕过。服务端会重新核权，original_documents_included=false不能显示“原件已导出”。
 
 新增验收：同一反馈及票据在原业务页和副本页对应；个人/机构切换不串资料；已替换票据仍可查、待审不可查；浏览关闭/过期/删除后不复活；失权内容清空原缓存；导出/下载内容与同版记录一致。后端180项受影响回归已通过，前端这批页面认领和验收尚未确认。[证据](../../reviews/privacy-activity-copy-20261109/REPORT.md)
+
+### 续批：本人处理、通知与活动记录（0.31.44）
+
+仍属第一包，不要求另建页面框架。原account-data入口增加下表八分类，均需本人QUERY/COPY申请、PROFILE或ALL范围，不带机构身份头；游标为UUID字符串，每页最多100条。维持request_completion=NOT_CONFIRMED和original_documents_included=false。原路径、旧分类及数据库迁移0211不变。
+
+|分类|页面展示与边界|
+|---|---|
+|PRIVACY_REQUESTS|本人申请文字、范围、时限、当前已审核答复；待审方案不显示；calendar_version为空时不能称已按正式工作日历计算|
+|PRIVACY_RESPONSES|按request_id和object_version展示历次已审核答复、留存说明和剩余事项；不要将旧答复覆盖成最新约定|
+|PRIVACY_EVENTS|本人可见的办理消息与版本，不含工作人员账号|
+|PRIVACY_ACTIONS|撤回授权/模型删除操作及关联结果编号；不能仅凭有一条操作记录就说供应商已删除|
+|PRIVACY_EXECUTIONS|执行状态、目标、规则编号及拟更正的姓名；QUEUED是排队，EXECUTED还需按原办理页核实际结果及剩余事项；内部任务和存储路径不提供|
+|NOTIFICATION_DELIVERIES|个人通知发送状态和模拟标识；PENDING/UNKNOWN/SUPPRESSED不能展示为已收到；不代表站内阅读记录或真实设备推送已开通|
+|GUARDIAN_LINKS|本人参与的监护关系摘要；own_role区分监护人/儿童。儿童侧relationship为null，双方都无对方账号/证明。撤销/过期按原状态显示，不能凭摘要进入儿童档案|
+|ENGAGEMENT_RECORDS|按kind展示十类本人活动记录；数据白名单见接口。机构经办、全局评审、设备标识均排除，不把此列表说成所有活动记录|
+
+已审核历史答复附件现在可沿原 `/api/v1/privacy/requests/{request_id}/evidence/{asset_id}/content` 下载。使用该历史答复所属申请编号，不换成当前导出申请编号；重新登录校验本人，无机构身份头。文件已删除、变更或无权限时明确提示，历史附件存在引用不保证仍可下载。下载字节与原件一致、no-store；不允许公开缓存。
+
+新增验收：先拟答复但未复核时看不到草稿；两次审核答复均保留，两个版本的附件均按原申请下载；切账号/换申请拒绝，删除后拒绝；机构活动不进个人清单；撤销监护仍只能看关系摘要。193项后端回归通过，App/网页和完整监护/活动链尚未验收。[本批证据](../../reviews/privacy-participation-copy-20261109/REPORT.md)
 
 ## 第二包：机构一次办理多项，看得懂每项结果
 

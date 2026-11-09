@@ -3,7 +3,7 @@ const {id,error}=require('../party/policy');
 const {digest}=require('../governance/content');
 const A=require('../artists/context');
 const one=async(tx,q,a)=>(await tx.execute(q,a))[0][0];
-const sections={ACCOUNT:'PROFILE',PREFERENCES:'PROFILE',ARTISTS:'PROFILE',WALLET:'TRANSACTIONS',FINANCE:'TRANSACTIONS',FINANCE_AGREEMENTS:'CONTRACTS',...require('./agreement-copy').sections,...require('./identity-copy').sections,...require('./activity-copy').sections,...require('./security-copy').sections};
+const sections={ACCOUNT:'PROFILE',PREFERENCES:'PROFILE',ARTISTS:'PROFILE',WALLET:'TRANSACTIONS',FINANCE:'TRANSACTIONS',FINANCE_AGREEMENTS:'CONTRACTS',...require('./agreement-copy').sections,...require('./identity-copy').sections,...require('./activity-copy').sections,...require('./participation-copy').sections,...require('./security-copy').sections};
 const pick=(data,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(data,k)).map(k=>[k,data[k]]));
 function checked(r){const d=A.parse(r.data_json);if(digest(d)!==r.data_sha256)throw error('STORED_CONTENT_MISMATCH',503);return d;}
 const walletFields={
@@ -24,6 +24,7 @@ async function page(tx,a,request,{section,after='',limit},env={}){
  if(Object.hasOwn(require('./identity-copy').sections,section))return require('./identity-copy').page(tx,a.id,{section,after,limit});
  if(Object.hasOwn(require('./security-copy').sections,section))return require('./security-copy').page(tx,a.id,{section,after,limit});
  if(Object.hasOwn(require('./activity-copy').sections,section))return require('./activity-copy').page(tx,a.id,{section,after,limit},env);
+ if(Object.hasOwn(require('./participation-copy').sections,section))return require('./participation-copy').page(tx,a.id,{section,after,limit});
  const result=(items,next_cursor=null)=>({section,items,next_cursor,coverage:'OWN_ACCOUNT_RECORDS_ONLY',request_completion:'NOT_CONFIRMED'});
  if(section==='ACCOUNT'||section==='PREFERENCES'){
   if(after)throw error('INVALID_CURSOR',400);

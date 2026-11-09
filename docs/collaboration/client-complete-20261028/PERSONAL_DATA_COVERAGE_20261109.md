@@ -1,24 +1,31 @@
-# 本人资料提供覆盖：已有能力、明确差距与下一步
+# 本人资料提供：实际覆盖和剩余工作
 
-2026-11-09；后端负责人chengcongcong222。依据[28号第一节](../../sources/contracts-20261029/extracted/28.md)：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”
+2026-11-09；后端负责人chengcongcong222。依据[28号第一节](../../sources/contracts-20261029/extracted/28.md)原文：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”当前0.31.44-rc.1/0211。
 
-本表是本轮按可定位代码核对的资料类别，不是全库逐字段审计通过，不将每行当一个原子需求。已能在业务页查看不等于已能完整导出；人工提供需要实际收集/脱敏、独立复核和答复，不能只有“请联系客服”的文字。
+本表是已定位类别，不是全库逐字段审计结论，行数不能当需求完成率。能查看、能复制记录、能下载原件、实际办理完成分别记录。机构经办不等于本人所有，其他人/儿童/供应商资料不能一并直接导出。
 
-|资料类别|已定位的存储/实现|当前提供方式|后端仍须做什么|
+|资料类别|实际存储/实现|目前已经提供|后端仍需核查或补齐|
 |---|---|---|---|
-|账号/偏好/艺人基本档案|identity_accounts、privacy_preferences、artist_people；privacy/account-copy|ACCOUNT/PREFERENCES/ARTISTS已能复制|核对其他实际持有字段和留存依据；不导出凭据|
-|保留的登录与换号|auth_sessions、auth_phone_changes；privacy/security-copy|SESSION_RECORDS/PHONE_CHANGES已补|过期清理意味着不含全部历史，不延长保留，不造记录|
-|实名核验结果【本轮补】|artist_records kind IDENTITY；artists/repository.prepareIdentity/applyIdentity|IDENTITY_CHECKS，核验状态/年龄段/期限；排除session_ref、request_key、issuer、evidence_ref等|这里未保存身份证/人脸原件；供应商原件与保留/复制能力待具体产品核实，不能据此断言系统所有模块都未持有|
-|本人素材/作品|supply_assets、artist_asset_links；privacy/personal-copy|本人持有且可访问素材与作品原件已有|其他授权证据、第三方资料及衍生物逐一核权/脱敏，不能一并直出|
-|私人故事与附件|customization_requests及版本附件；privacy/story-copy|当前、历史正式、补件草稿和附件已有|原机构故事不当个人所有；完整交互仍待页面验收|
-|本人买卖订单及钱账|trade_records/journal、wallet_records、finance_entries/records|交易副本、钱包/清分及相关条款已有|其他细分账目、退款/冻结等逐类核对，不用余额摘要代替全记录|
-|许可/采购/参演/经纪|privacy/agreement-copy对应业务记录|本人当事人脱敏历史协议已有|其他合同及签署原件仍按原业务权限与真实电子签核实；封存不等于已签|
-|数字人/制作模型|production_records DIGITAL_ASSET、相关授权|本人制作模型记录已有|供应商真实长期资产、源文件/可携带与退出删除能力待产品及工程落实|
-|本人反馈、投诉及处理资料|support_tickets/events/asset_refs；support.repository read/history/assetAccess|已补SUPPORT_TICKETS/SUPPORT_MESSAGES：本人个人主体的反馈、投诉与面向本人的消息/附件引用|摘要与消息已可复制；附件按原客服受控接口读取，删除不恢复；其他纠纷域资料继续核对，机构经办不混入本人|
-|开票请求与票据|invoice_requests/events/documents；invoices.repository list/read/documents/documentAccess|已有原业务查看和受控下载；统一副本覆盖未结案|个人订单开票范围与历史更正已测；原件按原开票接口核权，模拟凭证不是真实发票；真实税务资料仍待真实业务验收|
-|收藏与保留的浏览记录|personal_collection_entries/settings；collections.repository|已有本人列表/删除/清空；过期/失权内容按原规则处理|范围、分页、过期/关闭/删除和公开源撤权已测；仅仍留存记录，history_complete=false；不复活已删除浏览记录|
-|其他通知/监护/活动/隐私办理等记录|相关业务模块及privacy_requests/responses/actions/executions|已有分域读取与人工答复基础|逐模块扩展清单，确定本人、监护人、机构和运营的不同范围；本轮未声称全量完成|
+|账户/偏好/艺人基本档案|identity_accounts、privacy_preferences、artist_people|ACCOUNT/PREFERENCES/ARTISTS|其他持有字段和留存依据；不提供凭据|
+|登录与换号|auth_sessions、auth_phone_changes|SESSION_RECORDS/PHONE_CHANGES|只含仍保留记录；不延长期限、不恢复已清理历史|
+|本人实名结果|artist_records IDENTITY|IDENTITY_CHECKS，状态/年龄段/有效期|供应商身份证/人脸原件、实际可携带与删除，须按具体产品核实|
+|素材与作品|supply_assets、artist_asset_links|本人可访问素材/作品原件与记录|其他授权证据、他人资料、衍生材料须核权脱敏|
+|私人故事|customization_requests及版本附件|正式历史、补件草稿、文字和本人附件|原机构故事不当个人所有；新页面完整办理待验|
+|交易与钱账|trade_records/journal、wallet_records、finance_entries/records|本人买卖单、付款退款、流水、钱包和清分相关记录|细分冻结、成长/佣金和其他账务资料逐类核对，不以余额代替全部历史|
+|许可/参演/经纪等协议|privacy/agreement-copy等|本人当事人脱敏历史约定|其他合同和真实签署原件；封存不等于签完|
+|数字人模型|production_records DIGITAL_ASSET|本人关联制作模型记录|真实供应商长期资产、源文件/可携带/退出删除仍待工程与产品落实|
+|反馈和投诉|support_tickets/events/asset_refs|SUPPORT_TICKETS/SUPPORT_MESSAGES及原受控附件下载|其他纠纷域证据继续核对，机构经办不混入本人|
+|开票资料|invoice_requests/events/documents|INVOICE_REQUESTS/HISTORY/DOCUMENTS；历史更正、已签发/已替换票据与原受控下载|真实税务资料另验；待审不提供，模拟凭证不是真实发票|
+|收藏与浏览|personal_collection_entries/settings|FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS；保留、清理和撤权正反例已测|不是完整历史；已删除不恢复、失权内容不返回标题城市|
+|隐私办理|privacy_requests/responses/events/actions/executions|本轮PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS；已审核历史答复原附件已补下载|内部载荷不提供；供应商删除/备份执行证据及其他未覆盖结果需继续实际办理，排队不等于完成|
+|通知|notification_deliveries；ops_reads等|本轮NOTIFICATION_DELIVERIES，个人发送状态、模拟标记|阅读记录和相关消息内容的统一提供待核，设备标识/供应商回执不直出；发送不等于送达|
+|监护|guardian_records、guardian_usage/sessions|本轮GUARDIAN_LINKS，本人关系状态/历史；监护人自己的关系说明|退款/信息申请详情、实际用量及证明需按有效监护关系和儿童权益核权；摘要不代儿童档案或新授权|
+|经营与活动参与|engagement_records等|本轮ENGAGEMENT_RECORDS十类：排名资料、城市偏好、评价、候选报名、投票、申诉、推荐链接/点击、奖励、互动|成长/星光/推荐佣金、抽奖兑换/履约及其他活动继续核对；全局评审底稿和设备哈希不混入本人|
 
-下一批优先由后端继续反馈/投诉、发票及收藏/浏览三项现存资料的范围与导出，然后核其他业务记录；这三项是已定位的继续工作，不是项目仅剩三项。缺口发现继续归原第4/17组，不新建商业范围。前端先接已稳定分类与“尚未完整提供”说明。
+接下来后端按三个可执行包继续，不把本表说成全部需求已核清：
 
-流程补全：分类白名单、脱敏、原始附件权限、分页和不自动办结申请。实际留存期限、处理联系人及供应商资料仍按甲方正式材料，不编造。没有完整提供/执行证据前不得把28号整份要求标验收完成。
+1. 成长/星光/推荐佣金、抽奖兑换与履约资料：查明本人权益、交易和他人供给的边界，复用既有业务规则，补必要记录及历史约定。
+2. 通知阅读和监护详细资料：本人阅读记录与原内容权限分开；有效监护再核儿童范围，不因一条历史关系直接开放其他资料。
+3. 隐私执行、文件与供应商：核现有自动/人工答复是否实际提供所申请内容，明确未持有原件和待供应商提供的部分。真实服务未接通不记完成。
+
+本轮193项相关回归与75份实际HTTP结构校验通过，页面、完整流程和真实接入未因此完成。前端接已有分类和缺项说明，原18组/12路线/151标准保留。正式联系方式、保留依据与外部产品资料仍按甲方交付，不自行编造；当前不重复索要仍申请中的配置。
