@@ -14,9 +14,9 @@
 |本人买卖订单及钱账|trade_records/journal、wallet_records、finance_entries/records|交易副本、钱包/清分及相关条款已有|其他细分账目、退款/冻结等逐类核对，不用余额摘要代替全记录|
 |许可/采购/参演/经纪|privacy/agreement-copy对应业务记录|本人当事人脱敏历史协议已有|其他合同及签署原件仍按原业务权限与真实电子签核实；封存不等于已签|
 |数字人/制作模型|production_records DIGITAL_ASSET、相关授权|本人制作模型记录已有|供应商真实长期资产、源文件/可携带与退出删除能力待产品及工程落实|
-|本人反馈、投诉及处理资料|support_tickets/events/asset_refs；support.repository read/history/assetAccess|业务入口已有本人/身份权限；尚未纳入统一本人副本分类|将本人资料与他方陈述/内部审阅分开，逐项补导出/受控证据或人工答复；不得把机构经办材料混入本人|
-|开票请求与票据|invoice_requests/events/documents；invoices.repository list/read/documents/documentAccess|已有原业务查看和受控下载；统一副本覆盖未结案|核对本人申请与机构发票身份，整理可提供范围、历史更正和下载证据|
-|收藏与保留的浏览记录|personal_collection_entries/settings；collections.repository|已有本人列表/删除/清空；过期/失权内容按原规则处理|统一副本范围、历史记录与公开源撤权后的可提供内容仍待核对，不能复活已删除浏览记录|
+|本人反馈、投诉及处理资料|support_tickets/events/asset_refs；support.repository read/history/assetAccess|已补SUPPORT_TICKETS/SUPPORT_MESSAGES：本人个人主体的反馈、投诉与面向本人的消息/附件引用|摘要与消息已可复制；附件按原客服受控接口读取，删除不恢复；其他纠纷域资料继续核对，机构经办不混入本人|
+|开票请求与票据|invoice_requests/events/documents；invoices.repository list/read/documents/documentAccess|已有原业务查看和受控下载；统一副本覆盖未结案|个人订单开票范围与历史更正已测；原件按原开票接口核权，模拟凭证不是真实发票；真实税务资料仍待真实业务验收|
+|收藏与保留的浏览记录|personal_collection_entries/settings；collections.repository|已有本人列表/删除/清空；过期/失权内容按原规则处理|范围、分页、过期/关闭/删除和公开源撤权已测；仅仍留存记录，history_complete=false；不复活已删除浏览记录|
 |其他通知/监护/活动/隐私办理等记录|相关业务模块及privacy_requests/responses/actions/executions|已有分域读取与人工答复基础|逐模块扩展清单，确定本人、监护人、机构和运营的不同范围；本轮未声称全量完成|
 
 下一批优先由后端继续反馈/投诉、发票及收藏/浏览三项现存资料的范围与导出，然后核其他业务记录；这三项是已定位的继续工作，不是项目仅剩三项。缺口发现继续归原第4/17组，不新建商业范围。前端先接已稳定分类与“尚未完整提供”说明。

@@ -42,7 +42,7 @@ async function closureBlockers(tx,account){
  }
  return [...new Set(blocks)];
 }
-function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor}){
+function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor,env={}}){
  const get=async(tx,key)=>{const r=await one(tx,'SELECT * FROM privacy_executions WHERE id=? FOR UPDATE',[id(key)]);if(!r)throw error('PRIVACY_EXECUTION_NOT_FOUND',404);r.payload=checked(r.payload_json,r.payload_sha256);return r;};
  async function access(tx,ctx,i,{exclusive=false}={}){
   const a=await actor(tx,ctx,exclusive?'FOR UPDATE':'FOR SHARE'),request=await load(tx,i.request_id);
@@ -259,7 +259,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   });},
   async accountCopy(ctx,i){
    if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
-   return db.withTransaction(async tx=>{const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);return require('./account-copy').page(tx,a,spec,i);});
+   return db.withTransaction(async tx=>{const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);return require('./account-copy').page(tx,a,spec,i,env);});
   },
   async transactionCopy(ctx,i){
    if(i.after)id(i.after);if(i.order_id!==undefined)id(i.order_id);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.42-rc.1
+  version: 0.31.43-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33177,6 +33177,14 @@ paths:
           - SESSION_RECORDS
           - PHONE_CHANGES
           - IDENTITY_CHECKS
+          - SUPPORT_TICKETS
+          - SUPPORT_MESSAGES
+          - INVOICE_REQUESTS
+          - INVOICE_HISTORY
+          - INVOICE_DOCUMENTS
+          - FAVORITES
+          - BROWSING_HISTORY
+          - COLLECTION_SETTINGS
       - name: cursor
         in: query
         schema:
@@ -33219,8 +33227,11 @@ paths:
         '428':
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_SELF
-      description: ACCOUNT/PREFERENCES/ARTISTS需要PROFILE；WALLET/FINANCE需要TRANSACTIONS；四类AGREEMENTS需要CONTRACTS。ALL兼容。仅本人个人身份为当事人的记录，机构经办权限不扩大范围。许可复制历史封存约定；协议副本不附签署证据，不凭状态推断已签。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。读取不自动结案。
+      description: 'ACCOUNT/PREFERENCES/ARTISTS需要PROFILE；WALLET/FINANCE需要TRANSACTIONS；四类AGREEMENTS需要CONTRACTS。ALL兼容。仅本人个人身份为当事人的记录，机构经办权限不扩大范围。许可复制历史封存约定；协议副本不附签署证据，不凭状态推断已签。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。读取不自动结案。
         SESSION_RECORDS/PHONE_CHANGES属于PROFILE，仅提供仍保留的会话/换号记录，history_complete=false；会话游标为64位脱敏副本引用，不能用于登录；原游标对应记录已清理时返回400，客户端重新分页。凭据、验证码、完整号码不提供，不延长保留时间。
+
+        SUPPORT_TICKETS/SUPPORT_MESSAGES/FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS属于PROFILE；INVOICE_REQUESTS/INVOICE_HISTORY/INVOICE_DOCUMENTS属于TRANSACTIONS。仅本人个人主体，排除机构经办。消息游标为记录UUID.版本号，收藏浏览为十进制序号；游标记录已清理返回400，重新分页。浏览沿原留存配置清理且history_complete=false；失权公开资料只保留引用，标题城市为null。票据仅ISSUED/SUPERSEDED，脱敏副本不是票据原件；原件按原业务受控下载。所有分类不自动办结申请。'
+
   /api/v1/engagement/mcn/batches:
     post:
       operationId: submitOrganizationBatch
@@ -71548,6 +71559,697 @@ components:
             - request_completion
             - original_documents_included
             - provider_evidence_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: SUPPORT_TICKETS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    current_status:
+                      enum:
+                      - SUBMITTED
+                      - PROCESSING
+                      - NEEDS_INFO
+                      - ANSWERED
+                      - CLOSED
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                    kind:
+                      enum:
+                      - FEEDBACK
+                      - REPORT
+                    title:
+                      type: string
+                      maxLength: 200
+                    party_id:
+                      type: string
+                      format: uuid
+                  required:
+                  - id
+                  - current_status
+                  - object_version
+                  - created_at
+                  - updated_at
+                  - kind
+                  - title
+                  - party_id
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: SUPPORT_MESSAGES
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[0-9a-fA-F-]{36}\.[1-9][0-9]{0,9}$
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    actor_kind:
+                      enum:
+                      - APPLICANT
+                      - SUPPORT
+                    action:
+                      enum:
+                      - SUBMIT
+                      - START
+                      - REQUEST_INFO
+                      - SUPPLEMENT
+                      - ANSWER
+                      - CLOSE
+                      - REOPEN
+                    text:
+                      type: string
+                      maxLength: 4000
+                    created_at:
+                      type: string
+                      format: date-time
+                    asset_ids:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      maxItems: 10
+                    ticket_id:
+                      type: string
+                      format: uuid
+                  required:
+                  - id
+                  - object_version
+                  - actor_kind
+                  - action
+                  - text
+                  - created_at
+                  - asset_ids
+                  - ticket_id
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: INVOICE_REQUESTS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    current_status:
+                      enum:
+                      - REQUESTED
+                      - NEEDS_INFO
+                      - APPROVED
+                      - DOCUMENT_REVIEW
+                      - ISSUED
+                      - CORRECTION_REQUESTED
+                      - REJECTED
+                      - WITHDRAWN
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                    order_id:
+                      type: string
+                      format: uuid
+                    buyer_party_id:
+                      type: string
+                      format: uuid
+                    issuer_party_id:
+                      type: string
+                      format: uuid
+                    environment:
+                      enum:
+                      - SANDBOX
+                      - PRODUCTION
+                    currency:
+                      enum:
+                      - CNY
+                    requested_minor:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    occupied_minor:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    header:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        kind:
+                          enum:
+                          - PERSON
+                          - ORGANIZATION
+                        title:
+                          type: string
+                          maxLength: 200
+                        tax_id:
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - kind
+                      - title
+                      - tax_id
+                    issued_document_id:
+                      type:
+                      - string
+                      - 'null'
+                      format: uuid
+                  required:
+                  - id
+                  - current_status
+                  - object_version
+                  - created_at
+                  - updated_at
+                  - order_id
+                  - buyer_party_id
+                  - issuer_party_id
+                  - environment
+                  - currency
+                  - requested_minor
+                  - occupied_minor
+                  - header
+                  - issued_document_id
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: INVOICE_HISTORY
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[0-9a-fA-F-]{36}\.[1-9][0-9]{0,9}$
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    actor_kind:
+                      enum:
+                      - APPLICANT
+                      - OPERATOR
+                    action:
+                      enum:
+                      - SUBMIT
+                      - SUPPLEMENT
+                      - WITHDRAW
+                      - REQUEST_CORRECTION
+                      - REQUEST_INFO
+                      - APPROVE
+                      - REJECT
+                      - RECORD_DOCUMENT
+                      - VERIFY_DOCUMENT
+                      - REJECT_DOCUMENT
+                    text:
+                      type: string
+                      maxLength: 4000
+                    created_at:
+                      type: string
+                      format: date-time
+                    asset_ids:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                      maxItems: 10
+                    invoice_id:
+                      type: string
+                      format: uuid
+                    header:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        kind:
+                          enum:
+                          - PERSON
+                          - ORGANIZATION
+                        title:
+                          type: string
+                          maxLength: 200
+                        tax_id:
+                          type:
+                          - string
+                          - 'null'
+                      required:
+                      - kind
+                      - title
+                      - tax_id
+                    status:
+                      enum:
+                      - REQUESTED
+                      - NEEDS_INFO
+                      - APPROVED
+                      - DOCUMENT_REVIEW
+                      - ISSUED
+                      - CORRECTION_REQUESTED
+                      - REJECTED
+                      - WITHDRAWN
+                    amount_minor:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                  required:
+                  - id
+                  - object_version
+                  - actor_kind
+                  - action
+                  - text
+                  - created_at
+                  - asset_ids
+                  - invoice_id
+                  - header
+                  - status
+                  - amount_minor
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: INVOICE_DOCUMENTS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    invoice_id:
+                      type: string
+                      format: uuid
+                    current_status:
+                      enum:
+                      - ISSUED
+                      - SUPERSEDED
+                    content:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        invoice_id:
+                          type: string
+                          format: uuid
+                        order_id:
+                          type: string
+                          format: uuid
+                        environment:
+                          enum:
+                          - SANDBOX
+                          - PRODUCTION
+                        simulated:
+                          type: boolean
+                        label:
+                          type: string
+                        amount_minor:
+                          type: integer
+                          minimum: 0
+                          maximum: 900000000000
+                        currency:
+                          enum:
+                          - CNY
+                        reference:
+                          type: string
+                        issued_at:
+                          type: string
+                          format: date-time
+                        replaces_document_id:
+                          type:
+                          - string
+                          - 'null'
+                          format: uuid
+                        header:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            kind:
+                              enum:
+                              - PERSON
+                              - ORGANIZATION
+                            title:
+                              type: string
+                              maxLength: 200
+                            tax_id:
+                              type:
+                              - string
+                              - 'null'
+                          required:
+                          - kind
+                          - title
+                          - tax_id
+                        issuer:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            merchant_party_id:
+                              type: string
+                              format: uuid
+                            name:
+                              type: string
+                            tax_id:
+                              type:
+                              - string
+                              - 'null'
+                            simulated:
+                              type: boolean
+                          required:
+                          - merchant_party_id
+                          - name
+                          - tax_id
+                          - simulated
+                      required:
+                      - invoice_id
+                      - order_id
+                      - environment
+                      - simulated
+                      - label
+                      - amount_minor
+                      - currency
+                      - reference
+                      - issued_at
+                      - replaces_document_id
+                      - header
+                      - issuer
+                    copy_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    attachment_recorded:
+                      type: boolean
+                    created_at:
+                      type: string
+                      format: date-time
+                  required:
+                  - id
+                  - invoice_id
+                  - current_status
+                  - content
+                  - copy_sha256
+                  - attachment_recorded
+                  - created_at
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: FAVORITES
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]{0,19}$
+                    kind:
+                      enum:
+                      - ARTIST
+                      - STOCK
+                      - NOTICE
+                    target_id:
+                      type: string
+                      format: uuid
+                    recorded_at:
+                      type: string
+                      format: date-time
+                    expires_at:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                    availability:
+                      enum:
+                      - AVAILABLE
+                      - UNAVAILABLE
+                    title:
+                      type:
+                      - string
+                      - 'null'
+                    city:
+                      type:
+                      - string
+                      - 'null'
+                  required:
+                  - id
+                  - kind
+                  - target_id
+                  - recorded_at
+                  - expires_at
+                  - availability
+                  - title
+                  - city
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: BROWSING_HISTORY
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]{0,19}$
+                    kind:
+                      enum:
+                      - ARTIST
+                      - STOCK
+                      - NOTICE
+                    target_id:
+                      type: string
+                      format: uuid
+                    recorded_at:
+                      type: string
+                      format: date-time
+                    expires_at:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                    availability:
+                      enum:
+                      - AVAILABLE
+                      - UNAVAILABLE
+                    title:
+                      type:
+                      - string
+                      - 'null'
+                    city:
+                      type:
+                      - string
+                      - 'null'
+                  required:
+                  - id
+                  - kind
+                  - target_id
+                  - recorded_at
+                  - expires_at
+                  - availability
+                  - title
+                  - city
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: COLLECTION_SETTINGS
+              items:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    history_enabled:
+                      type: boolean
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    history_days:
+                      type: integer
+                      minimum: 1
+                      maximum: 365
+                    history_max_entries:
+                      type: integer
+                      minimum: 1
+                      maximum: 1000
+                  required:
+                  - history_enabled
+                  - object_version
+                  - history_days
+                  - history_max_entries
+                maxItems: 100
+              next_cursor:
+                type:
+                - string
+                - 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
       required:
       - meta
       - data
