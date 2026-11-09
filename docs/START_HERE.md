@@ -1,4 +1,4 @@
-当前入口（2026-11-09）：接口0.31.45-rc.1/0211；先读双方CURRENT和[前端接续总计划](collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md)、[资料覆盖清单](collaboration/client-complete-20261028/PERSONAL_DATA_COVERAGE_20261109.md)。本人权益六分类已补；页面、完整资料、12路线和真实启用分开验收。下列旧日期版本保留为历史。
+当前入口（2026-11-09）：接口0.31.46-rc.1/0211；先读双方CURRENT、[前端总计划](collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md)和[资料覆盖](collaboration/client-complete-20261028/PERSONAL_DATA_COVERAGE_20261109.md)。通知已读与监护四分类已补；完整资料、页面和12路线未结案，真实服务不启用。以下旧日期版本为历史。
 
 # 当前执行入口
 

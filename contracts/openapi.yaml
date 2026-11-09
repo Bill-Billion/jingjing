@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.45-rc.1
+  version: 0.31.46-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33199,6 +33199,10 @@ paths:
           - LOTTERY_DRAWS
           - REWARD_FULFILLMENT
           - REWARD_DISCOUNTS
+          - NOTIFICATION_READS
+          - GUARDIAN_USAGE
+          - GUARDIAN_CONTROLS
+          - GUARDIAN_CASES
       - name: cursor
         in: query
         schema:
@@ -74548,6 +74552,696 @@ components:
                     - object_version
                     - parent_id
                     - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: NOTIFICATION_READS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[1-9][0-9]{0,19}$
+                    read_at:
+                      type: string
+                      format: date-time
+                    content_included:
+                      const: false
+                    content_access:
+                      const: RECHECK_ORIGINAL_INBOX
+                  required:
+                  - id
+                  - read_at
+                  - content_included
+                  - content_access
+              next_cursor:
+                anyOf:
+                - type: string
+                  pattern: ^[1-9][0-9]{0,19}$
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: GUARDIAN_USAGE
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: date
+                    local_date:
+                      type: string
+                      format: date
+                    seconds_reserved:
+                      type: integer
+                      minimum: 0
+                    spend_reserved_minor:
+                      type: integer
+                      minimum: 0
+                    measurement:
+                      const: RESERVATIONS_NOT_ACTUAL_USE_OR_PAYMENT
+                    real_minor_transactions_enabled:
+                      const: false
+                    usage_subject:
+                      const: SELF_ONLY
+                  required:
+                  - id
+                  - local_date
+                  - seconds_reserved
+                  - spend_reserved_minor
+                  - measurement
+                  - real_minor_transactions_enabled
+                  - usage_subject
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: date
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: GUARDIAN_CONTROLS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: LINK
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: AVAILABLE
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          age_band:
+                            enum:
+                            - UNDER_14
+                            - AGE_14_17
+                          valid_until:
+                            type: string
+                            format: date-time
+                          controls:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              enabled:
+                                type: boolean
+                              daily_minutes:
+                                type: integer
+                                minimum: 0
+                              single_minor:
+                                type: integer
+                                minimum: 0
+                              daily_minor:
+                                type: integer
+                                minimum: 0
+                            required:
+                            - enabled
+                            - daily_minutes
+                            - single_minor
+                            - daily_minor
+                          rule:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              rule_id:
+                                type: string
+                                format: uuid
+                              version:
+                                type: string
+                              daily_minutes:
+                                type: integer
+                                minimum: 0
+                              rest_minutes:
+                                type: integer
+                                minimum: 0
+                              single_minor:
+                                type: integer
+                                minimum: 0
+                              daily_minor:
+                                type: integer
+                                minimum: 0
+                              night_start:
+                                type: integer
+                                minimum: 0
+                              night_end:
+                                type: integer
+                                minimum: 0
+                              terms:
+                                type: string
+                            required:
+                            - rule_id
+                            - version
+                            - daily_minutes
+                            - rest_minutes
+                            - single_minor
+                            - daily_minor
+                            - night_start
+                            - night_end
+                            - terms
+                          today_usage:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              local_date:
+                                type: string
+                                format: date
+                              seconds_reserved:
+                                type: integer
+                                minimum: 0
+                              spend_reserved_minor:
+                                type: integer
+                                minimum: 0
+                              measurement:
+                                const: RESERVATIONS_NOT_ACTUAL_USE_OR_PAYMENT
+                              real_minor_transactions_enabled:
+                                const: false
+                            required:
+                            - local_date
+                            - seconds_reserved
+                            - spend_reserved_minor
+                            - measurement
+                            - real_minor_transactions_enabled
+                          real_minor_transactions_enabled:
+                            const: false
+                        required:
+                        - age_band
+                        - valid_until
+                        - controls
+                        - rule
+                        - today_usage
+                        - real_minor_transactions_enabled
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: LINK
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: CURRENT_GUARDIAN_ACCESS_REQUIRED
+                      data:
+                        type: 'null'
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: GUARDIAN_CASES
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: INFORMATION
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: AVAILABLE
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          privacy_request_id:
+                            type: string
+                            format: uuid
+                          type:
+                            enum:
+                            - QUERY
+                            - DELETE
+                            - CLOSE_ACCOUNT
+                          request_completion:
+                            type: string
+                          actual_privacy_status:
+                            type: string
+                          response_due_on:
+                            anyOf:
+                            - type: string
+                              format: date
+                            - type: 'null'
+                          history:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                action:
+                                  type: string
+                                at:
+                                  type: string
+                                  format: date-time
+                              required:
+                              - action
+                              - at
+                        required:
+                        - privacy_request_id
+                        - type
+                        - request_completion
+                        - actual_privacy_status
+                        - response_due_on
+                        - history
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: INFORMATION
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: CURRENT_GUARDIAN_ACCESS_REQUIRED
+                      data:
+                        type: 'null'
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: SPEND
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: AVAILABLE
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          amount_minor:
+                            type: integer
+                            minimum: 0
+                          purpose:
+                            type: string
+                          at:
+                            type: string
+                            format: date-time
+                          real_payment_allowed:
+                            const: false
+                          history:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                action:
+                                  type: string
+                                at:
+                                  type: string
+                                  format: date-time
+                              required:
+                              - action
+                              - at
+                        required:
+                        - amount_minor
+                        - purpose
+                        - at
+                        - real_payment_allowed
+                        - history
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: SPEND
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: CURRENT_GUARDIAN_ACCESS_REQUIRED
+                      data:
+                        type: 'null'
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: REFUND
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: AVAILABLE
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          payment_id:
+                            type: string
+                            format: uuid
+                          reason:
+                            type: string
+                          refund_id:
+                            anyOf:
+                            - type: string
+                              format: uuid
+                            - type: 'null'
+                          allocations:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                line_id:
+                                  type: string
+                                amount_minor:
+                                  type: integer
+                                  minimum: 0
+                              required:
+                              - line_id
+                              - amount_minor
+                          actual_refund_status:
+                            type: string
+                          history:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                action:
+                                  type: string
+                                at:
+                                  type: string
+                                  format: date-time
+                              required:
+                              - action
+                              - at
+                        required:
+                        - payment_id
+                        - reason
+                        - refund_id
+                        - allocations
+                        - actual_refund_status
+                        - history
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: REFUND
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      own_role:
+                        enum:
+                        - GUARDIAN
+                        - CHILD
+                      detail_access:
+                        const: CURRENT_GUARDIAN_ACCESS_REQUIRED
+                      data:
+                        type: 'null'
+                    required:
+                    - id
+                    - kind
+                    - parent_id
+                    - current_status
+                    - object_version
+                    - created_at
+                    - own_role
+                    - detail_access
                     - data
               next_cursor:
                 anyOf:

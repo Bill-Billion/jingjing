@@ -1,0 +1,102 @@
+TAP version 13
+# Subtest: notification read and guardian copies through isolated MySQL HTTP
+    # Subtest: actual read receipt is personal only and never carries original private content
+    ok 1 - actual read receipt is personal only and never carries original private content
+      ---
+      duration_ms: 78.1174
+      type: 'test'
+      ...
+    # Subtest: pending guardian relation returns only summary without controls or child information
+    ok 2 - pending guardian relation returns only summary without controls or child information
+      ---
+      duration_ms: 16.5432
+      type: 'test'
+      ...
+    # Subtest: active relation exposes reviewed controls and today only, without proof and counterpart identities
+    ok 3 - active relation exposes reviewed controls and today only, without proof and counterpart identities
+      ---
+      duration_ms: 15.5335
+      type: 'test'
+      ...
+    # Subtest: real guardian request and reviewed refund expose processing facts, never fake execution
+    ok 4 - real guardian request and reviewed refund expose processing facts, never fake execution
+      ---
+      duration_ms: 26.8964
+      type: 'test'
+      ...
+    # Subtest: child copies only own historical usage while guardian cannot bulk export child history
+    ok 5 - child copies only own historical usage while guardian cannot bulk export child history
+      ---
+      duration_ms: 23.6521
+      type: 'test'
+      ...
+    # Subtest: pagination request scope and account switching do not cross authorization
+    ok 6 - pagination request scope and account switching do not cross authorization
+      ---
+      duration_ms: 116.9527
+      type: 'test'
+      ...
+    # Subtest: identity remains valid until its exact same-day expiry
+    not ok 7 - identity remains valid until its exact same-day expiry
+      ---
+      duration_ms: 13.1365
+      type: 'test'
+      location: 'J:\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\privacy-guardian-copy.integration.test.cjs:44:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+
+        + 'CURRENT_GUARDIAN_ACCESS_REQUIRED'
+        - 'AVAILABLE'
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'AVAILABLE'
+      actual: 'CURRENT_GUARDIAN_ACCESS_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-guardian-copy.integration.test.cjs:44:459)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-guardian-copy.integration.test.cjs:44:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired identity, suspended account and revoked relation remove details without hiding history
+    ok 8 - expired identity, suspended account and revoked relation remove details without hiding history
+      ---
+      duration_ms: 59.5516
+      type: 'test'
+      ...
+    # Subtest: read history survives source permission loss without reviving original content
+    ok 9 - read history survives source permission loss without reviving original content
+      ---
+      duration_ms: 8.6443
+      type: 'test'
+      ...
+    # Subtest: corrupt guardian snapshots fail closed
+    ok 10 - corrupt guardian snapshots fail closed
+      ---
+      duration_ms: 13.5596
+      type: 'test'
+      ...
+    1..10
+not ok 1 - notification read and guardian copies through isolated MySQL HTTP
+  ---
+  duration_ms: 7908.5176
+  type: 'test'
+  location: 'J:\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\privacy-guardian-copy.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 11
+# suites 0
+# pass 9
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8092.2781
