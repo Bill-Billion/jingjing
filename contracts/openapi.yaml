@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.41-rc.1
+  version: 0.31.42-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33176,6 +33176,7 @@ paths:
           - AGENCY_AGREEMENTS
           - SESSION_RECORDS
           - PHONE_CHANGES
+          - IDENTITY_CHECKS
       - name: cursor
         in: query
         schema:
@@ -33191,8 +33192,7 @@ paths:
           default: 20
       responses:
         '200':
-          description: Personal request response; read remaining actions and execution
-            status separately.
+          description: Personal request response; read remaining actions and execution status separately.
           headers:
             X-Request-Id:
               $ref: '#/components/headers/RequestId'
@@ -33384,6 +33384,177 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/discovery/matches:
+    get:
+      operationId: getDiscoveryMatches
+      summary: 按明确用途、预算和公开条件筛选候选
+      description: 明确选择的条件筛选，不读取个人浏览/交易历史，不调整价格。复用公开目录权限及到期检查。未知价格不通过预算筛选；筛选结果仅为候选，下单/报名仍须业务权限与许可核验。每次最多扫描10页，空页仍可能有下一页；游标绑定账号和全部条件，改变条件须从首屏开始。
+      tags:
+      - discovery
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ARTIST
+          - STOCK
+          - AUDITION
+          - NOTICE
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 512
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: purpose
+        in: query
+        required: false
+        schema:
+          enum:
+          - PERSONAL_NONCOMMERCIAL
+          - COMMERCIAL_LIMITED
+      - name: commercial_use
+        in: query
+        required: false
+        schema:
+          enum:
+          - BRAND_PROMOTION
+          - COMMERCIAL_ADVERTISING
+          - CORPORATE_DISPLAY
+      - name: max_price_minor
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      - name: min_halo
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 3
+      - name: audition_mode
+        in: query
+        required: false
+        schema:
+          enum:
+          - OFFLINE
+          - ONLINE_MATERIALS
+      - name: notice_type
+        in: query
+        required: false
+        schema:
+          enum:
+          - DRAMA
+          - PERFORMANCE
+          - COMMERCIAL
+          - EVENT
+          - RECRUITMENT
+          - OFFICIAL
+      - name: tag
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 40
+      responses:
+        '200':
+          description: 当前账号可见的公开结果。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryMatchesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/rankings/{record_id}/explanation:
+    get:
+      operationId: getEngagementRankingExplanation
+      summary: 查看该榜单保存的规则和公开计算说明
+      description: 只返回已发布榜单的原规则参数与公开说明，不返回订单、内部审核或供应商资料；旧榜单未记录算法版本时明确为当前公式参考，不能追认历史算法。当前授权仍由榜单内容读取重新核验。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementRankingExplanationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
         '503':
           $ref: '#/components/responses/Unavailable'
 components:
@@ -71309,6 +71480,74 @@ components:
             - request_completion
             - history_complete
             - credential_material
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: IDENTITY_CHECKS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id: &identity09001
+                      type: string
+                      format: uuid
+                    person_id: *identity09001
+                    current_status:
+                      enum:
+                      - PENDING
+                      - UNKNOWN
+                      - VERIFIED
+                      - REJECTED
+                      - DUPLICATE_PERSON
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    age_band:
+                      enum:
+                      - null
+                      - UNKNOWN
+                      - ADULT
+                      - MINOR
+                    valid_until:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                    result_recorded:
+                      type: boolean
+                  required:
+                  - id
+                  - person_id
+                  - current_status
+                  - object_version
+                  - age_band
+                  - valid_until
+                  - result_recorded
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                format: uuid
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+              provider_evidence_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+            - provider_evidence_included
       required:
       - meta
       - data
@@ -71844,6 +72083,614 @@ components:
             - candidate_limit
             - catalog_truncated
             - price_personalized
+      required:
+      - meta
+      - data
+
+    DiscoveryMatchesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: ARTIST
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  min_halo:
+                    type: integer
+                    minimum: 0
+                    maximum: 3
+                  tag:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                required: []
+              algorithm_version:
+                const: EXPLICIT_BUSINESS_FILTERS_V1
+              personalized:
+                const: false
+              price_personalized:
+                const: false
+              requires_business_validation:
+                const: true
+              principle:
+                const: EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/ArtistCatalogueItem'
+                    reasons:
+                      type: array
+                      minItems: 1
+                      maxItems: 10
+                      uniqueItems: true
+                      items:
+                        enum: &matching09001
+                        - PUBLIC_AVAILABLE
+                        - CITY_MATCH
+                        - TEXT_MATCH
+                        - LICENSE_MATCH
+                        - COMMERCIAL_USE_MATCH
+                        - PUBLIC_PRICE_WITHIN_BUDGET
+                        - HALO_THRESHOLD_MET
+                        - TAG_MATCH
+                        - AUDITION_MODE_MATCH
+                        - NOTICE_TYPE_MATCH
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 512
+              scan_limited:
+                type: boolean
+            required:
+            - kind
+            - city
+            - q
+            - filters
+            - algorithm_version
+            - personalized
+            - price_personalized
+            - requires_business_validation
+            - principle
+            - items
+            - next_cursor
+            - scan_limited
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: STOCK
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  purpose:
+                    enum:
+                    - PERSONAL_NONCOMMERCIAL
+                    - COMMERCIAL_LIMITED
+                  commercial_use:
+                    enum:
+                    - BRAND_PROMOTION
+                    - COMMERCIAL_ADVERTISING
+                    - CORPORATE_DISPLAY
+                  max_price_minor: &matching09002
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                required: []
+              algorithm_version:
+                const: EXPLICIT_BUSINESS_FILTERS_V1
+              personalized:
+                const: false
+              price_personalized:
+                const: false
+              requires_business_validation:
+                const: true
+              principle:
+                const: EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/StockOffer'
+                    reasons:
+                      type: array
+                      minItems: 1
+                      maxItems: 10
+                      uniqueItems: true
+                      items:
+                        enum: *matching09001
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 512
+              scan_limited:
+                type: boolean
+            required:
+            - kind
+            - city
+            - q
+            - filters
+            - algorithm_version
+            - personalized
+            - price_personalized
+            - requires_business_validation
+            - principle
+            - items
+            - next_cursor
+            - scan_limited
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: AUDITION
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  max_price_minor: *matching09002
+                  audition_mode:
+                    enum:
+                    - OFFLINE
+                    - ONLINE_MATERIALS
+                required: []
+              algorithm_version:
+                const: EXPLICIT_BUSINESS_FILTERS_V1
+              personalized:
+                const: false
+              price_personalized:
+                const: false
+              requires_business_validation:
+                const: true
+              principle:
+                const: EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/AuditionPublicOffer'
+                    reasons:
+                      type: array
+                      minItems: 1
+                      maxItems: 10
+                      uniqueItems: true
+                      items:
+                        enum: *matching09001
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 512
+              scan_limited:
+                type: boolean
+            required:
+            - kind
+            - city
+            - q
+            - filters
+            - algorithm_version
+            - personalized
+            - price_personalized
+            - requires_business_validation
+            - principle
+            - items
+            - next_cursor
+            - scan_limited
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: NOTICE
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  notice_type:
+                    enum:
+                    - DRAMA
+                    - PERFORMANCE
+                    - COMMERCIAL
+                    - EVENT
+                    - RECRUITMENT
+                    - OFFICIAL
+                required: []
+              algorithm_version:
+                const: EXPLICIT_BUSINESS_FILTERS_V1
+              personalized:
+                const: false
+              price_personalized:
+                const: false
+              requires_business_validation:
+                const: true
+              principle:
+                const: EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/NoticePublic'
+                    reasons:
+                      type: array
+                      minItems: 1
+                      maxItems: 10
+                      uniqueItems: true
+                      items:
+                        enum: *matching09001
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 512
+              scan_limited:
+                type: boolean
+            required:
+            - kind
+            - city
+            - q
+            - filters
+            - algorithm_version
+            - personalized
+            - price_personalized
+            - requires_business_validation
+            - principle
+            - items
+            - next_cursor
+            - scan_limited
+      required:
+      - meta
+      - data
+    EngagementRankingExplanationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            snapshot_id: &matching09003
+              type: string
+              format: uuid
+            rule_id: *matching09003
+            rule_version:
+              type: string
+              minLength: 1
+              maxLength: 200
+            rule_object_version:
+              type: integer
+              minimum: 1
+            contract_policy:
+              enum:
+              - CONTRACT_20261029
+              - LEGACY_UNMARKED
+            calculation_version:
+              enum:
+              - ENGAGEMENT_SCORING_V1
+              - LEGACY_UNVERSIONED
+            formula_scope:
+              enum:
+              - RECORDED_VERSION
+              - CURRENT_FORMULA_REFERENCE_ONLY
+            personalized:
+              const: false
+            paid_advertising:
+              const: false
+            rank_parameters:
+              type: object
+              additionalProperties: false
+              properties:
+                window_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                popularity_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                newcomer_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                cold_start_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                review_min:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                repeat_buyers_min:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                bayes_n:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                bayes_mean:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                weights:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  minItems: 5
+                  maxItems: 5
+                halo_bps:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  minItems: 4
+                  maxItems: 4
+              required:
+              - window_days
+              - popularity_days
+              - newcomer_days
+              - cold_start_days
+              - review_min
+              - repeat_buyers_min
+              - bayes_n
+              - bayes_mean
+              - weights
+              - halo_bps
+            growth_parameters:
+              type: object
+              additionalProperties: false
+              properties:
+                gp:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    STOCK:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    AUDITION:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    CUSTOMIZATION:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    COMMERCIAL:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    five_star:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    media:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    repeat:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                    refund_penalty:
+                      type: integer
+                      minimum: 0
+                      maximum: 900000000000
+                  required:
+                  - STOCK
+                  - AUDITION
+                  - CUSTOMIZATION
+                  - COMMERCIAL
+                  - five_star
+                  - media
+                  - repeat
+                  - refund_penalty
+                thresholds:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  minItems: 5
+                  maxItems: 5
+                retention_days:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+                retention_bps:
+                  type: integer
+                  minimum: 0
+                  maximum: 900000000000
+              required:
+              - gp
+              - thresholds
+              - retention_days
+              - retention_bps
+            components:
+              type: array
+              minItems: 5
+              maxItems: 5
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  key:
+                    enum:
+                    - NET_SALES
+                    - BAYESIAN_REVIEWS
+                    - REPEAT_BUYERS
+                    - VALID_ACTIVITY
+                    - COMPLIANCE
+                  weight_bps:
+                    type: integer
+                    minimum: 0
+                    maximum: 10000
+                required:
+                - key
+                - weight_bps
+            formulas:
+              type: object
+              additionalProperties: false
+              properties:
+                sales:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                reviews:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                repeat:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                popularity:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                levels:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                newcomers:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                composite:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+              required:
+              - sales
+              - reviews
+              - repeat
+              - popularity
+              - levels
+              - newcomers
+              - composite
+            risk_policy:
+              type: object
+              additionalProperties: false
+              properties:
+                first_penalty:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                penalty_days:
+                  const: 30
+                exclude_at_risk_count:
+                  const: 2
+              required:
+              - first_penalty
+              - penalty_days
+              - exclude_at_risk_count
+            tie_break:
+              const: PERSON_ID_ASC
+            visibility:
+              const: RECHECK_CURRENT_AUTHORIZATION_WITHOUT_RESCORED_HISTORY
+            participation_control:
+              const: OWN_RANK_PROFILE_OPT_IN
+            eligibility:
+              const: ADULT_ACTIVE_ACCOUNT_L1_PLUS_PUBLIC_DISPLAY_CONSENT_AND_OPT_IN
+            limitations:
+              const:
+              - NOT_A_PROFESSIONAL_QUALIFICATION
+              - NO_PRIVATE_ORDERS_OR_REVIEW_EVIDENCE
+              - LEGACY_FORMULA_NOT_RETROACTIVELY_CERTIFIED
+          required:
+          - snapshot_id
+          - rule_id
+          - rule_version
+          - rule_object_version
+          - contract_policy
+          - calculation_version
+          - formula_scope
+          - personalized
+          - paid_advertising
+          - rank_parameters
+          - growth_parameters
+          - components
+          - formulas
+          - risk_policy
+          - tie_break
+          - visibility
+          - participation_control
+          - eligibility
+          - limitations
       required:
       - meta
       - data

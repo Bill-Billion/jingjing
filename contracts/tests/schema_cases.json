@@ -3289,6 +3289,299 @@
         },
         "ranking_contract_policy": "CONTRACT_20261029"
       }
+    },
+    {
+      "name": "20261109 reject personalized",
+      "schema": "DiscoveryMatchesResponse",
+      "value": {
+        "meta": {
+          "request_id": "8f1999fb-a38d-4ec4-ab4d-567116138fee",
+          "actor": {
+            "account_id": "2c06ce1a-146b-4906-bf38-a9c751dd3887"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "kind": "ARTIST",
+          "city": "synthetic-city",
+          "q": null,
+          "filters": {
+            "min_halo": 1,
+            "tag": "synthetic"
+          },
+          "algorithm_version": "EXPLICIT_BUSINESS_FILTERS_V1",
+          "personalized": true,
+          "price_personalized": false,
+          "requires_business_validation": true,
+          "principle": "EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER",
+          "items": [
+            {
+              "item": {
+                "listing_id": "3a8ef1f6-f0aa-4433-871f-9544964174f3",
+                "person_id": "06ef8b2b-61e7-494f-9fd3-cde019158ef7",
+                "avatar_id": "fd5afd2a-5409-4993-8fc1-607d823ca3fb",
+                "display_name": "synthetic public artist",
+                "city": "synthetic-city",
+                "introduction": "synthetic public invitation fixture",
+                "tags": [
+                  "synthetic"
+                ],
+                "audition_public": false,
+                "preview_asset_ids": [
+                  "b16ddea2-87fa-4765-935f-3a7a999d68dc"
+                ],
+                "halo_level": 1
+              },
+              "reasons": [
+                "PUBLIC_AVAILABLE",
+                "CITY_MATCH",
+                "HALO_THRESHOLD_MET",
+                "TAG_MATCH"
+              ]
+            }
+          ],
+          "next_cursor": null,
+          "scan_limited": false
+        }
+      }
+    },
+    {
+      "name": "20261109 reject requires_business_validation",
+      "schema": "DiscoveryMatchesResponse",
+      "value": {
+        "meta": {
+          "request_id": "8f1999fb-a38d-4ec4-ab4d-567116138fee",
+          "actor": {
+            "account_id": "2c06ce1a-146b-4906-bf38-a9c751dd3887"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "kind": "ARTIST",
+          "city": "synthetic-city",
+          "q": null,
+          "filters": {
+            "min_halo": 1,
+            "tag": "synthetic"
+          },
+          "algorithm_version": "EXPLICIT_BUSINESS_FILTERS_V1",
+          "personalized": false,
+          "price_personalized": false,
+          "requires_business_validation": false,
+          "principle": "EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER",
+          "items": [
+            {
+              "item": {
+                "listing_id": "3a8ef1f6-f0aa-4433-871f-9544964174f3",
+                "person_id": "06ef8b2b-61e7-494f-9fd3-cde019158ef7",
+                "avatar_id": "fd5afd2a-5409-4993-8fc1-607d823ca3fb",
+                "display_name": "synthetic public artist",
+                "city": "synthetic-city",
+                "introduction": "synthetic public invitation fixture",
+                "tags": [
+                  "synthetic"
+                ],
+                "audition_public": false,
+                "preview_asset_ids": [
+                  "b16ddea2-87fa-4765-935f-3a7a999d68dc"
+                ],
+                "halo_level": 1
+              },
+              "reasons": [
+                "PUBLIC_AVAILABLE",
+                "CITY_MATCH",
+                "HALO_THRESHOLD_MET",
+                "TAG_MATCH"
+              ]
+            }
+          ],
+          "next_cursor": null,
+          "scan_limited": false
+        }
+      }
+    },
+    {
+      "name": "20261109 reject evidence",
+      "schema": "EngagementRankingExplanationResponse",
+      "value": {
+        "meta": {
+          "request_id": "c50855b7-f99e-4fc3-b6be-e907f0ab2423",
+          "actor": {
+            "account_id": "dacafef4-2e7b-49e2-b9c7-7f87fdef55b0"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "snapshot_id": "73b08ba4-1029-408f-9e54-40b9bad88a08",
+          "rule_id": "cd5eb64d-69ac-4996-8bbd-ef433d9070d3",
+          "rule_version": "synthetic-r9",
+          "rule_object_version": 2,
+          "contract_policy": "CONTRACT_20261029",
+          "calculation_version": "ENGAGEMENT_SCORING_V1",
+          "formula_scope": "RECORDED_VERSION",
+          "personalized": false,
+          "paid_advertising": false,
+          "rank_parameters": {
+            "bayes_n": 10,
+            "weights": [
+              3000,
+              2500,
+              2000,
+              1000,
+              1500
+            ],
+            "halo_bps": [
+              0,
+              10000,
+              13000,
+              16000
+            ],
+            "bayes_mean": 4,
+            "review_min": 10,
+            "window_days": 30,
+            "newcomer_days": 30,
+            "cold_start_days": 7,
+            "popularity_days": 7,
+            "repeat_buyers_min": 20
+          },
+          "growth_parameters": {
+            "gp": {
+              "STOCK": 1,
+              "media": 2,
+              "repeat": 2,
+              "AUDITION": 3,
+              "five_star": 1,
+              "COMMERCIAL": 5,
+              "CUSTOMIZATION": 5,
+              "refund_penalty": 5
+            },
+            "thresholds": [
+              0,
+              30,
+              120,
+              400,
+              1000
+            ],
+            "retention_days": 90,
+            "retention_bps": 5000
+          },
+          "components": [
+            {
+              "key": "NET_SALES",
+              "weight_bps": 3000
+            },
+            {
+              "key": "BAYESIAN_REVIEWS",
+              "weight_bps": 2500
+            },
+            {
+              "key": "REPEAT_BUYERS",
+              "weight_bps": 2000
+            },
+            {
+              "key": "VALID_ACTIVITY",
+              "weight_bps": 1000
+            },
+            {
+              "key": "COMPLIANCE",
+              "weight_bps": 1500
+            }
+          ],
+          "formulas": {
+            "sales": "成交榜按统计期有效净成交金额排序；冷启动天数内不入成交榜。",
+            "reviews": "好评榜按(先验样本数×先验均分＋有效评分总和)/(先验样本数＋评价数)排序；须满足最少评价数。",
+            "repeat": "复购榜按复购买家数/有效买家数排序；须满足最少买家数。",
+            "popularity": "人气榜按有效浏览1分、试听3分、收藏5分累计；同日同账号或同安装标识去重，设备真实性另核。",
+            "levels": "等级榜按累计成长值排序；成交基础值、五星/带图/复购奖励及退款扣分按本规则，最低为0。",
+            "newcomers": "新秀榜限定注册天数，按成交归一分40%＋评价分40%＋活跃归一分20%排序。",
+            "composite": "成交和活跃按本次合格候选最大值归一为100分；好评分/5×100，复购率×100，合规为max(0,100-处罚分)。五项按权重加总，再乘等级曝光系数。"
+          },
+          "risk_policy": {
+            "first_penalty": 25,
+            "penalty_days": 30,
+            "exclude_at_risk_count": 2
+          },
+          "tie_break": "PERSON_ID_ASC",
+          "visibility": "RECHECK_CURRENT_AUTHORIZATION_WITHOUT_RESCORED_HISTORY",
+          "participation_control": "OWN_RANK_PROFILE_OPT_IN",
+          "eligibility": "ADULT_ACTIVE_ACCOUNT_L1_PLUS_PUBLIC_DISPLAY_CONSENT_AND_OPT_IN",
+          "limitations": [
+            "NOT_A_PROFESSIONAL_QUALIFICATION",
+            "NO_PRIVATE_ORDERS_OR_REVIEW_EVIDENCE",
+            "LEGACY_FORMULA_NOT_RETROACTIVELY_CERTIFIED"
+          ],
+          "evidence": {
+            "orders": [
+              "private"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "20261109 reject original_documents_included",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "c2411a61-a510-40be-88a9-2bad1342dc83",
+          "actor": {
+            "account_id": "ce56d231-1b10-467a-96ad-09b690d21599"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "IDENTITY_CHECKS",
+          "items": [
+            {
+              "id": "15a1020b-13a7-472b-a0b7-6fda6a47ed2f",
+              "person_id": "06ef8b2b-61e7-494f-9fd3-cde019158ef7",
+              "current_status": "VERIFIED",
+              "object_version": 2,
+              "age_band": "ADULT",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "result_recorded": true
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "original_documents_included": true,
+          "provider_evidence_included": false
+        }
+      }
+    },
+    {
+      "name": "20261109 reject provider reference in identity copy",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "c2411a61-a510-40be-88a9-2bad1342dc83",
+          "actor": {
+            "account_id": "ce56d231-1b10-467a-96ad-09b690d21599"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "IDENTITY_CHECKS",
+          "items": [
+            {
+              "id": "15a1020b-13a7-472b-a0b7-6fda6a47ed2f",
+              "person_id": "06ef8b2b-61e7-494f-9fd3-cde019158ef7",
+              "current_status": "VERIFIED",
+              "object_version": 2,
+              "age_band": "ADULT",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "result_recorded": true,
+              "session_ref": "hidden-provider-reference"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "original_documents_included": false,
+          "provider_evidence_included": false
+        }
+      }
     }
   ]
 }

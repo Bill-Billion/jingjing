@@ -1,0 +1,20 @@
+"use strict";
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path');
+const {randomUUID:key,randomBytes}=require('node:crypto'),mysql=require('mysql2/promise');
+const {openDatabase}=require('../src/infrastructure/database'),{migrate}=require('../src/infrastructure/database/migrator');
+async function run(kind,seed,scenario){
+ const env=JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));for(const [k,v]of Object.entries({NODE_ENV:'test',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
+ const name=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`,control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});let db,server;const cases=[];
+ try{await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);const S=await seed(db);server=require('../src/http/account-api').createAccountApi({db,secret:S.secret}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ async function get(query={}){const r=await fetch('http://127.0.0.1:'+server.address().port+'/api/v1/discovery/matches?'+new URLSearchParams({kind,...query}),{headers:{Authorization:'Bearer '+S.buyer.token}}),value=await r.json();cases.push({method:'GET',path:'/api/v1/discovery/matches',schema:r.status===200?'DiscoveryMatchesResponse':'ErrorResponse',value});assert.equal(r.status,200,JSON.stringify(value));return value.data;}
+ await scenario(S,get);const out=path.resolve(__dirname,'../../../..','.local/prelaunch-independent-20261109/matches-'+kind+'.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases},null,2));
+ }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
+}
+test('actual stock catalogue matches budget but cannot grant commercial rights to a personal license',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},()=>run('STOCK',require('./helpers/stock-seed.cjs').seedStock,async(S,get)=>{
+ const listing=await S.listing();let p=await get({purpose:'PERSONAL_NONCOMMERCIAL',max_price_minor:100});assert.equal(p.items.length,1);assert.equal(p.items[0].item.id,listing.id);assert.equal(p.items[0].item.unit_minor,100);assert.equal((await get({purpose:'COMMERCIAL_LIMITED',commercial_use:'BRAND_PROMOTION'})).items.length,0);assert.equal((await get({max_price_minor:99})).items.length,0);assert.equal((await get({city:'no-such-city'})).items.length,0);
+}));
+test('actual audition catalogue removes private prices from budget matches and closed booking from results',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},()=>run('AUDITION',require('./helpers/auditions-seed.cjs').seedAuditions,async(S,get)=>{
+ let r=await S.auditions.createOffer(S.seller.ctx,{party_id:S.seller.personal_party_id,offer:S.offer,operation_key:key()});r=await S.auditions.reviewOffer(S.reviewer.ctx,{record_id:r.id,expected_version:r.object_version,decision:'APPROVE',reason:'synthetic reviewed catalogue',operation_key:key()});const q={audition_mode:S.offer.mode,max_price_minor:S.offer.unit_minor};assert.equal((await get(q)).items.length,1);assert.equal((await get({audition_mode:S.offer.mode==='OFFLINE'?'ONLINE_MATERIALS':'OFFLINE'})).items.length,0);
+ r=await S.auditions.offerStatus(S.seller.ctx,{party_id:S.seller.personal_party_id,record_id:r.id,expected_version:r.object_version,public_booking:true,public_price:false,operation_key:key()});assert.equal((await get(q)).items.length,0);assert.equal((await get()).items[0].item.unit_minor,null);
+ await S.auditions.offerStatus(S.seller.ctx,{party_id:S.seller.personal_party_id,record_id:r.id,expected_version:r.object_version,public_booking:false,public_price:false,operation_key:key()});assert.equal((await get()).items.length,0);
+}));
