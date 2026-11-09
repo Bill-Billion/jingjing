@@ -7365,6 +7365,39 @@
       "implementation": "IMPLEMENTED_ISOLATED_TESTS",
       "production_enabled": false,
       "next_step": "阶段集中交付，前端原第一包补错误提示和旧待审恢复；后端继续剩余资料、匹配用途和六路线。"
+    },
+    {
+      "id": "CORE-CONTRACT-BATCH-20261109",
+      "title": "修复完整接口检查超时并保留所有验证",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/reviews/contract-batch-20261109/REPORT.md",
+        "docs/tasks/records/CORE-contract-batch-20261109.md",
+        "scripts/runtime-contract-manifest.json"
+      ],
+      "acceptance": "原66项输入与报告保留，单文件/批量判定一致；缺件/坏响应/公共失败不得通过，新远端完整结果另核。",
+      "shared_boundaries": [
+        "OpenAPI"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS_WITH_LIMITS",
+      "evidence": [
+        "docs/reviews/contract-batch-20261109/REPORT.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-09",
+      "implementation": "IMPLEMENTED_LOCAL_CHECKER_TESTS",
+      "production_enabled": false,
+      "next_step": "集中原PR39交付并核新远端完整检查；继续资料/匹配缺口及双方各六路线，前端无新页面任务。"
     }
   ],
   "delivery_policy": {
@@ -14223,7 +14256,7 @@
     "current_step": "PERSONAL_DATA_COVERAGE_AND_UI_INTEGRATION",
     "kunshan_materials": "USER_CONFIRMED_STILL_APPLYING",
     "last_verified_remote": "c9b475b5388677f891db3b76a14cd60b9d2697bb",
-    "last_verified_remote_checks": "THREE_WORKFLOWS_IN_PROGRESS",
+    "last_verified_remote_checks": "APP_TOOLS_SUCCESS_BACKEND_TIMEOUT_35_MINUTES",
     "new_frontend_claim": "NOT_CONFIRMED",
     "formal_closed_groups": 0,
     "formal_not_run": 151,
@@ -14392,8 +14425,27 @@
       "report": "docs/reviews/privacy-response-delivery-20261109/REPORT.md",
       "commit": "c9b475b5388677f891db3b76a14cd60b9d2697bb",
       "pr": 39,
-      "remote_checks": "THREE_WORKFLOWS_IN_PROGRESS",
-      "receipt": "LOCAL_ONLY_UNTIL_NEXT_STAGE"
+      "remote_checks": "APP_TOOLS_SUCCESS_BACKEND_TIMEOUT_35_MINUTES",
+      "receipt": "INCLUDED_IN_NEXT_STAGE",
+      "checks_observed": {
+        "app_web": "SUCCESS",
+        "client_tools": "SUCCESS",
+        "backend": "CANCELLED_TIMEOUT_35_MINUTES"
+      }
+    },
+    "contract_batch_20261109": {
+      "contract": "0.31.47-rc.1",
+      "migration": "0211",
+      "backend": "IMPLEMENTED_LOCAL_CHECKER_TESTS",
+      "checker_tests": 7,
+      "runtime_files": 66,
+      "previously_captured_responses": 4773,
+      "business_tests_this_batch": "NOT_RUN_NO_BUSINESS_CHANGE",
+      "frontend_change_required": false,
+      "pushed": false,
+      "merged": false,
+      "deployed": false,
+      "report": "docs/reviews/contract-batch-20261109/REPORT.md"
     }
   }
 }

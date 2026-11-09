@@ -174,3 +174,7 @@ items沿`{item:原公开对象,reasons:原因数组}`；PUBLIC_AVAILABLE为“�
 - 同版验收：提交COPY→运营上传→拟答复→另一人员审核→本人下载内容一致；补件保持FOLLOW_UP→第二次答复→旧新附件均可查；再测缺件、换件、受限、断网原请求恢复、切账号和机构、旧无快照待审驳回重提。保存同组申请/附件/版本编号和预期、实际结果。
 
 后端复跑：`node scripts/test-mysql.js privacy-response-delivery privacy privacy-participation-copy`，只用独立JX_MYSQL_TEST_ENV_FILE。证据见[本批报告](../../reviews/privacy-response-delivery-20261109/REPORT.md)。不更新人工3490、真实供应商或公网。
+
+### 工程同步：完整接口检查改为批量（2026-11-09）
+
+本批无新页面功能、无接口/数据库版本变化，不新增第四包。c9b475b5服务器自动检查因35分钟超时取消，非新提交替代；原66份响应检查已改为批量加载公共协议并逐份生成报告，原输入/报告名称保留。新增HTTP验收文件时更新`scripts/runtime-contract-manifest.json`，不再向工作流复制完整校验命令；缺文件必须修复产生步骤，不能跳过。后端负责本批修复及新远端结果，Bill-Billion继续原UI/三包/六路线，认领以实际回复为准。个人会话记录等原缺口仍待后端下一阶段开发。

@@ -42,6 +42,8 @@ jobs:
         run: |
           python3 -m venv .local/contract-venv
           .local/contract-venv/bin/python -m pip install -r contracts/requirements-lock.txt
+      - name: 检查批量校验不会漏文件或误报通过
+        run: .local/contract-venv/bin/python scripts/validate_contract_batch_test.py
       - name: 检查接口格式和示例（不调用服务器）
         run: .local/contract-venv/bin/python scripts/validate_contract.py
   backend:
@@ -105,72 +107,7 @@ jobs:
         run: |
           python3 -m venv .local/contract-venv
           .local/contract-venv/bin/python -m pip install -r contracts/requirements-lock.txt
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/account-api-http-fixtures.json --report .local/ci-evidence/runtime-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/contract-six-http-fixtures.json --report .local/ci-evidence/contract-six-runtime.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/daily-reconciliation-http-fixtures.json --report .local/ci-evidence/daily-reconciliation-runtime.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/consumer-controls-http-fixtures.json --report .local/ci-evidence/consumer-controls-runtime.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/stock-http-fixtures.json --report .local/ci-evidence/stock-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/notices-http-fixtures.json --report .local/ci-evidence/notices-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/auditions-http-fixtures.json --report .local/ci-evidence/auditions-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/wallet-http-fixtures.json --report .local/ci-evidence/wallet-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/engagement-http-fixtures.json --report .local/ci-evidence/engagement-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/artists-http-fixtures.json --report .local/ci-evidence/artists-runtime-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/artist-contract-http-fixtures.json --report .local/ci-evidence/artist-contract-runtime.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/customization-delivery-http-fixtures.json --report .local/ci-evidence/customization-delivery-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/customization-http-fixtures.json --report .local/ci-evidence/customization-runtime-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/customization-quote-http-fixtures.json --report .local/ci-evidence/customization-quote-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/marketplace-http-fixtures.json --report .local/ci-evidence/marketplace-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-http-fixtures.json --report .local/ci-evidence/governance-runtime-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/governance-service-http-fixtures.json --report .local/ci-evidence/governance-service-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/supply-http-fixtures.json --report .local/ci-evidence/supply-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/licensing-http-fixtures.json --report .local/ci-evidence/licensing-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/manual-sample-copyright-http-fixtures.json --report .local/ci-evidence/manual-sample-copyright-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/copyright-http-fixtures.json --report .local/ci-evidence/copyright-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/ip-procurement-http-fixtures.json --report .local/ci-evidence/ip-procurement-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/trade-http-fixtures.json --report .local/ci-evidence/trade-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/production-http-fixtures.json --report .local/ci-evidence/production-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/projects-http-fixtures.json --report .local/ci-evidence/projects-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/gigs-http-fixtures.json --report .local/ci-evidence/gigs-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/gigs-contract-http-fixtures.json --report .local/ci-evidence/gigs-new-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/marketplace-contract-http-fixtures.json --report .local/ci-evidence/stock-new-commission-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/finance-http-fixtures.json --report .local/ci-evidence/finance-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/operations-http-fixtures.json --report .local/ci-evidence/operations-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/cocreation-http-fixtures.json --report .local/ci-evidence/cocreation-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/participation-http-fixtures.json --report .local/ci-evidence/participation-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-http-fixtures.json --report .local/ci-evidence/redemption-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-delivery-evidence-http.json --report .local/ci-evidence/redemption-delivery-evidence-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-checkout-http-fixtures.json --report .local/ci-evidence/redemption-checkout-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/redemption-lottery-http-fixtures.json --report .local/ci-evidence/redemption-lottery-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/manual-sample-legacy-http-fixtures.json --report .local/ci-evidence/manual-sample-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/script-intake-http-fixtures.json --report .local/ci-evidence/script-intake-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/project-income-http-fixtures.json --report .local/ci-evidence/project-income-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/participation-amendment-http-fixtures.json --report .local/ci-evidence/participation-amendment-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/fixed-income-release-http-fixtures.json --report .local/ci-evidence/fixed-income-release-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/consumer-risk-http-fixtures.json --report .local/ci-evidence/consumer-risk-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/usage-http-fixtures.json --report .local/ci-evidence/usage-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-http-fixtures.json --report .local/ci-evidence/privacy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-20261106/privacy-copy-http.json --report .local/ci-evidence/privacy-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-story-copy-20261106/http.json --report .local/ci-evidence/privacy-story-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-transaction-copy-20261106/http.json --report .local/ci-evidence/privacy-transaction-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261106/recommendations.json --report .local/ci-evidence/prelaunch-recommendations-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261106/organization-merchandise-batch.json --report .local/ci-evidence/prelaunch-organization-merchandise-batch-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261106/organization-batch.json --report .local/ci-evidence/prelaunch-organization-batch-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261106/privacy-account-copy.json --report .local/ci-evidence/prelaunch-privacy-account-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-agreement-copy-20261106/http.json --report .local/ci-evidence/privacy-agreement-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-participation-copy-20261109/http.json --report .local/ci-evidence/privacy-participation-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-benefit-copy-20261109/http.json --report .local/ci-evidence/privacy-benefit-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-guardian-copy-20261109/http.json --report .local/ci-evidence/privacy-guardian-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-response-delivery-20261109/http.json --report .local/ci-evidence/privacy-response-delivery-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-activity-copy-20261109/http.json --report .local/ci-evidence/privacy-activity-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261109/http.json --report .local/ci-evidence/prelaunch-independent-20261109-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261109/matches-STOCK.json --report .local/ci-evidence/prelaunch-matches-STOCK.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-independent-20261109/matches-AUDITION.json --report .local/ci-evidence/prelaunch-matches-AUDITION.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-security-copy-20261106/http.json --report .local/ci-evidence/privacy-security-copy-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/prelaunch-security-copy-20261106/ranking-http.json --report .local/ci-evidence/ranking-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/privacy-actions-http-fixtures.json --report .local/ci-evidence/privacy-actions-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-privacy-http.json --report .local/ci-evidence/privacy-execution-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/seven-media-http.json --report .local/ci-evidence/media-contract.json
-          .local/contract-venv/bin/python scripts/validate_contract.py --runtime-fixtures .local/discovery-http-fixtures.json --report .local/ci-evidence/discovery-contract.json
+          .local/contract-venv/bin/python scripts/validate_contract_batch.py --manifest scripts/runtime-contract-manifest.json --report .local/ci-evidence/runtime-contract-batch.json
       - name: 关闭并移除本次测试数据库
         if: always()
         run: node scripts/ci-mysql.cjs stop

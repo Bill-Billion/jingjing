@@ -1,3 +1,5 @@
+2026-11-09工程检查批：client-testing仍0.31.47-rc.1/0211；c9b475b5服务器因35分钟超时取消（非新提交替代），已改66项接口响应批量验证；7项校验器检查及4773份历史合成响应通过。先读双方CURRENT及contract-batch报告；新HTTP文件入scripts/runtime-contract-manifest.json，不减少检查。未新增使用记录功能，原本人资料/匹配与六路线继续；无新前端页面任务，真实服务/公网不启用。
+
 2026-11-09资料实际交付批：client-testing接口0.31.47-rc.1/0211；已补答复实际文件校验与提交摘要，缺件/变件/受限不发布，旧待审驳回重提、历史不改。137回归及61HTTP通过。先读双方CURRENT和前端总计划；继续剩余会话/消息、供应商原件执行、匹配与六路线；前端新三包认领未确认。提交/远端检查单列，真实服务/公网不启用。
 
 当前入口（2026-11-09）：接口0.31.46-rc.1/0211；先读双方CURRENT、[前端总计划](collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md)和[资料覆盖](collaboration/client-complete-20261028/PERSONAL_DATA_COVERAGE_20261109.md)。通知已读与监护四分类已补；完整资料、页面和12路线未结案，真实服务不启用。以下旧日期版本为历史。

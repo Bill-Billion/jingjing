@@ -69,22 +69,28 @@ def validate(runtime_fixtures=None):
     negatives = json.loads((ROOT/'contracts/tests/schema_cases.json').read_text(encoding='utf-8'))['cases']
     negatives += json.loads((ROOT/'contracts/tests/account_permission_cases.json').read_text(encoding='utf-8'))['cases']
     failures, checks = [], []
-    runtime_cases = []
-    if runtime_fixtures:
-        runtime_data=json.loads(runtime_fixtures.read_text(encoding='utf-8'))
-        if runtime_data.get('synthetic_only') is not True or not runtime_data.get('cases'):
-            raise ValueError('Runtime fixtures must contain explicitly synthetic cases')
-        runtime_cases=runtime_data['cases']
+    runtime_cases, runtime_sources, runtime_reports = [], [], []
+    inputs = runtime_fixtures if isinstance(runtime_fixtures, list) else ([runtime_fixtures] if runtime_fixtures else [])
+    for source in inputs:
+        raw = source.read_bytes()
+        runtime_data = json.loads(raw.decode('utf-8'))
+        if runtime_data.get('synthetic_only') is not True or not isinstance(runtime_data.get('cases'), list) or not runtime_data['cases']:
+            raise ValueError('Runtime fixtures must contain explicitly synthetic cases: ' + str(source))
+        runtime_sources.append((source, hashlib.sha256(raw).hexdigest(), runtime_data['cases']))
+        runtime_cases.extend(runtime_data['cases'])
 
     def check(condition, name):
         checks.append(name)
         if not condition:
             failures.append(name)
 
+    validators = {}
     def valid(schema, value):
-        root = {'$schema':'https://json-schema.org/draft/2020-12/schema',
-                '$ref':'#/components/schemas/'+schema,'components':spec['components']}
-        return Draft202012Validator(root, format_checker=FormatChecker()).is_valid(value)
+        if schema not in validators:
+            root = {'$schema':'https://json-schema.org/draft/2020-12/schema',
+                    '$ref':'#/components/schemas/'+schema,'components':spec['components']}
+            validators[schema] = Draft202012Validator(root, format_checker=FormatChecker())
+        return validators[schema].is_valid(value)
 
     check(fixtures['synthetic_only'] is True, 'Examples explicitly synthetic')
     fixture_map = {x['schema']:x for x in fixtures['cases']}
@@ -106,20 +112,31 @@ def validate(runtime_fixtures=None):
             schema, value = x['schema'], x['value']
         check(not valid(schema, value), 'Rejected example: '+x['name'])
 
-    for x in runtime_cases:
-        schema = x['schema']
-        if 'method' in x and 'path' in x:
-            matches = [item[x['method'].lower()] for route, item in spec['paths'].items()
-                       if x['method'].lower() in item and re.fullmatch(re.sub(r'\{[^}]+\}', '[^/]+', route), x['path'])]
-            # OpenAPI concrete paths take precedence over templated paths (/current vs /{id}).
-            exact = spec['paths'].get(x['path'], {}).get(x['method'].lower())
-            if exact is not None:
-                matches = [exact]
-            check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
-            if len(matches) == 1 and schema != 'ErrorResponse':
-                schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
-        check(valid(schema,x['value']), 'Actual HTTP response: '+schema)
-
+    # Compile route patterns once; preserve concrete-path precedence and ambiguity rejection.
+    routes = {}
+    for route, item in spec['paths'].items():
+        pattern = re.compile(re.sub(r'\{[^}]+\}', '[^/]+', route))
+        for method, operation in item.items():
+            if method in {'get','post','patch','put','delete','head','options','trace'}:
+                routes.setdefault(method, []).append((pattern, operation))
+    runtime_failure_start, runtime_check_start = len(failures), len(checks)
+    for source, sha, cases in runtime_sources:
+        failure_start, check_start = len(failures), len(checks)
+        for x in cases:
+            schema = x['schema']
+            if 'method' in x and 'path' in x:
+                method = x['method'].lower()
+                matches = [op for pattern, op in routes.get(method, []) if pattern.fullmatch(x['path'])]
+                exact = spec['paths'].get(x['path'], {}).get(method)
+                if exact is not None:
+                    matches = [exact]
+                check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
+                if len(matches) == 1 and schema != 'ErrorResponse':
+                    schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
+            check(valid(schema,x['value']), 'Actual HTTP response: '+schema)
+        runtime_reports.append({'fixtures':str(source), 'sha256':sha, 'runtime_response_cases':len(cases),
+                                'checks':len(checks)-check_start, 'failures':failures[failure_start:]})
+    runtime_failure_end, runtime_check_end = len(failures), len(checks)
 
     # Candidate protocol invariants. These are not server behavioral tests.
     implemented_ids=set(json.loads((ROOT/'contracts/implementation.json').read_text(encoding='utf-8'))['isolated_tested_operations'])
@@ -257,6 +274,10 @@ def validate(runtime_fixtures=None):
               'tools':{p:version(p) for p in ['openapi-spec-validator','jsonschema','PyYAML']},
               'network_during_validation':'DISABLED','runtime_tests':'NOT_RUN',
               'limits':'Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified.'}
+    if isinstance(runtime_fixtures, list):
+        report['runtime_files'] = runtime_reports
+        report['common_checks'] = len(checks) - (runtime_check_end-runtime_check_start)
+        report['common_failures'] = failures[:runtime_failure_start] + failures[runtime_failure_end:]
     return report
 
 
