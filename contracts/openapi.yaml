@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.46-rc.1
+  version: 0.31.47-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -35630,6 +35630,74 @@ components:
       - basis
       - policy_rule_id
       - review_on
+    PrivacyResponseDraft:
+      type: object
+      additionalProperties: false
+      properties:
+        response:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        outcome:
+          enum:
+          - INFORMATION_PROVIDED
+          - CORRECTION_RECORDED
+          - DELETION_REQUESTED
+          - RETENTION_EXPLAINED
+          - ACCOUNT_CLOSURE_REQUESTED
+          - COMPLAINT_RESPONSE
+        evidence_asset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+          minItems: 1
+          uniqueItems: true
+        retentions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrivacyRetention'
+          maxItems: 30
+        remaining_actions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 1000
+          maxItems: 30
+        files:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              content_sha256:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              byte_size:
+                type: integer
+                minimum: 1
+              media_type:
+                type: string
+                minLength: 1
+                maxLength: 100
+            required:
+            - id
+            - content_sha256
+            - byte_size
+            - media_type
+          maxItems: 20
+      required:
+      - response
+      - outcome
+      - evidence_asset_ids
+      - retentions
+      - remaining_actions
+      description: 服务端生成的待审附件摘要；旧待审缺少files须驳回重提后才能批准，客户端不能提交files。
     PrivacyResponseProposal:
       type: object
       additionalProperties: false
@@ -35805,7 +35873,7 @@ components:
           - type: 'null'
         proposal:
           anyOf:
-          - $ref: '#/components/schemas/PrivacyResponseProposal'
+          - $ref: '#/components/schemas/PrivacyResponseDraft'
           - type: 'null'
         proposal_sha256:
           anyOf:

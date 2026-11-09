@@ -1,6 +1,6 @@
 # 前端UI改版与功能接续：一份完整工作计划
 
-2026-11-09。用户安排前端短期修改UI，后端并行补功能。后端负责人 chengcongcong222；前端负责人 Bill-Billion。当前接口0.31.46-rc.1，数据库迁移仍0211。原157b47e3等已交付页面保留，不重新派成未开发。UI改版安排来自用户；以下功能增量的认领、交付和复验尚未确认，上传材料不等于已接手。
+2026-11-09。用户安排前端短期修改UI，后端并行补功能。后端负责人 chengcongcong222；前端负责人 Bill-Billion。当前接口0.31.47-rc.1，数据库迁移仍0211。原157b47e3等已交付页面保留，不重新派成未开发。UI改版安排来自用户；以下功能增量的认领、交付和复验尚未确认，上传材料不等于已接手。
 
 ## 怎么协作，避免重复改两遍
 
@@ -162,3 +162,15 @@ items沿`{item:原公开对象,reasons:原因数组}`；PUBLIC_AVAILABLE为“�
 [本轮证据](../../reviews/prelaunch-independent-20261109/REPORT.md) · [全局18组](PRODUCT_STATUS.md) · [剩余工作](REMAINING_COUNTS_20261106.md)
 
 本阶段业务提交6ab0512240ffbaab1215651bb9d64c07fb29c6df已集中上传原PR39，PR头已核实。服务器、App/网页和甲方测试工具三组远端检查已启动，尚待最终结果；本回执随阶段同步，准确最新结果以PR头为准。前批e415f423三组成功不代替本批结果。前端总计划已发布，原三包认领/交付/复验未确认；未合入integration或部署。
+
+### 续批：答复附件必须实际可交付（0.31.47）
+
+仍归原第一包，由Bill-Billion接App、本人网页及运营网页，不新增第四包；认领/交付/复验未确认。原请求路径、提交字段和迁移0211不变。后端已实测137项相关回归、61份实际HTTP；不等于页面已验。
+
+- 待审proposal增加服务端生成的files摘要（id/content_sha256/byte_size/media_type），proposal_sha256已包含该摘要；审核仍原样传最新摘要，客户端不计算或回填files到提交请求。旧待审可能无files，不影响读取或驳回。
+- PRIVACY_EVIDENCE_CHANGED（409）表示原附件已变化，或旧待审缺少文件快照：保留申请和草稿，提示工作人员驳回、核对附件后重新提交，不能不断沿旧版本批准。PRIVACY_EVIDENCE_NOT_READY（409）提示附件未就绪；CONTENT_RESTRICTED（409）明确不可使用受限附件，不能绕过。503按现有SERVICE_UNAVAILABLE展示暂未能验证文件，不当成功。
+- 缺件恢复到同一内容后可沿原请求键重试；需要换附件时先驳回回到处理中，再上传新文件并重新提交。不要自动生成另一份用户申请，不自动复用旧审核结论。
+- 本人页继续显示remaining_actions及FOLLOW_UP；RESPONDED是审核答复，不代表删除/注销已执行或所有原始资料必然齐全。历史答复及附件继续单独展示，下载每次核权。
+- 同版验收：提交COPY→运营上传→拟答复→另一人员审核→本人下载内容一致；补件保持FOLLOW_UP→第二次答复→旧新附件均可查；再测缺件、换件、受限、断网原请求恢复、切账号和机构、旧无快照待审驳回重提。保存同组申请/附件/版本编号和预期、实际结果。
+
+后端复跑：`node scripts/test-mysql.js privacy-response-delivery privacy privacy-participation-copy`，只用独立JX_MYSQL_TEST_ENV_FILE。证据见[本批报告](../../reviews/privacy-response-delivery-20261109/REPORT.md)。不更新人工3490、真实供应商或公网。

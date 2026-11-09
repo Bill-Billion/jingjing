@@ -4627,6 +4627,46 @@
           "original_documents_included": false
         }
       }
+    },
+    {
+      "name": "privacy submitted file snapshot requires content checksum",
+      "fixture": "PrivacyResponseDraft",
+      "remove_path": [
+        "files",
+        0,
+        "content_sha256"
+      ]
+    },
+    {
+      "name": "privacy submitted snapshot does not expose storage object key",
+      "fixture": "PrivacyResponseDraft",
+      "mutate_path": [
+        "files",
+        0,
+        "object_key"
+      ],
+      "replace_with": "private/key"
+    },
+    {
+      "name": "client cannot supply a server generated privacy evidence snapshot",
+      "schema": "PrivacyResponseProposal",
+      "value": {
+        "files": [
+          {
+            "id": "1004e2ef-b8ec-4861-b7bf-ded1f1d31c08",
+            "byte_size": 31,
+            "media_type": "text/plain",
+            "content_sha256": "de39c3e4c552a98524b8f5d4a2d12c949906c0512eeedef74fe5e8c7814e997c"
+          }
+        ],
+        "outcome": "INFORMATION_PROVIDED",
+        "response": "Synthetic personal copy; verify remaining items separately",
+        "retentions": [],
+        "remaining_actions": [],
+        "evidence_asset_ids": [
+          "1004e2ef-b8ec-4861-b7bf-ded1f1d31c08"
+        ]
+      }
     }
   ]
 }
