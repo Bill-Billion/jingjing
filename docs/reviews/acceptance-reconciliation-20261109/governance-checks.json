@@ -1,0 +1,73 @@
+[
+  {
+    "command": [
+      "python",
+      "scripts/collaboration_check.py"
+    ],
+    "exit_code": 0,
+    "stdout": "{\r\n  \"result\": \"PASS\",\r\n  \"original_files\": 94,\r\n  \"requirements\": 60,\r\n  \"in_scope\": 59,\r\n  \"tasks\": 130,\r\n  \"current_doc_links\": 2124,\r\n  \"application_tests\": \"NOT_RUN\",\r\n  \"errors\": []\r\n}\r\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "scripts/full_business_check.py"
+    ],
+    "exit_code": 0,
+    "stdout": "{\r\n  \"registration\": \"PASS\",\r\n  \"readiness_checked\": false,\r\n  \"client_test_version_ready\": false,\r\n  \"source_items\": 133,\r\n  \"supplemental_items\": 18,\r\n  \"acceptance_counts\": {\r\n    \"NOT_RUN\": 66,\r\n    \"PARTIAL\": 80,\r\n    \"PASS\": 5\r\n  },\r\n  \"product_tests\": \"NOT_RUN_BY_THIS_CHECK\",\r\n  \"errors\": []\r\n}\r\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "scripts/acceptance_progress.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "Acceptance progress matches all 151 entries.\r\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "scripts/audit_requirement_trace.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "{\r\n  \"result\": \"PASS\",\r\n  \"meaning\": \"Reference integrity only; not a statement that all requirements are implemented, reconciled or accepted.\",\r\n  \"counts\": {\r\n    \"legacy_ids\": 60,\r\n    \"prototype_topics\": 40,\r\n    \"source_features\": 121,\r\n    \"source_acceptance\": 133,\r\n    \"supplemental_acceptance\": 18,\r\n    \"latest_contract_documents\": 39,\r\n    \"source_passages_not_atomic_requirements\": 1600\r\n  },\r\n  \"failures\": []\r\n}\r\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "full_business_check_test.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "........................\r\n----------------------------------------------------------------------\r\nRan 24 tests in 3.604s\r\n\r\nOK\r\n"
+  },
+  {
+    "command": [
+      "python",
+      "scripts/full_business_check.py",
+      "--require-ready",
+      "--candidate",
+      "ec74199b2ac6a78643969ce1eb217d1c19bbdfee"
+    ],
+    "expected": "reject incomplete candidate",
+    "exit_code": 1,
+    "error_count": 300,
+    "errors_sample": [
+      "freeze requires full candidate code SHA",
+      "freeze candidate must be explicitly supplied and match the release record",
+      "freeze missing dataset_id",
+      "freeze needs both actual App and Web build files"
+    ]
+  }
+]

@@ -19,6 +19,8 @@ class AcceptanceGateTest(unittest.TestCase):
         self.source = read(ROOT, SOURCE)
         # Synthetic fixtures supply explicit local decision records, not real approvals.
         for item in self.data['items'] + self.data['supplemental_items']:
+            item.update(status='NOT_RUN', evidence=[])
+            item.pop('partial_evidence', None)
             for ref in item.get('decision_refs', []):
                 path = self.root / ref.split('#')[0]
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -68,6 +70,38 @@ class AcceptanceGateTest(unittest.TestCase):
     def test_pending_registration_is_not_ready(self):
         self.assertEqual(self.errors(), [])
         self.assertTrue(self.errors(ready=True))
+
+    def partial_fixture(self):
+        item = self.data['items'][0]
+        item.update(status='PARTIAL', partial_evidence=[{'artifact': self.raw, 'checks': ['local-check'], 'scope': 'Synthetic API-only evidence, not full acceptance'}])
+        return item
+
+    def test_partial_is_visible_but_not_ready(self):
+        self.partial_fixture()
+        self.assertEqual(self.errors(), [])
+        self.assertTrue(any('acceptance still PARTIAL' in e for e in self.errors(ready=True)))
+
+    def test_partial_requires_actual_artifact_and_scope(self):
+        item = self.partial_fixture()
+        item['partial_evidence'][0]['artifact'] = {'path': 'missing.txt', 'sha256': 'a' * 64}
+        item['partial_evidence'][0]['scope'] = ''
+        self.assertTrue(any('missing/outside' in e for e in self.errors()))
+        self.assertTrue(any('partial scope' in e for e in self.errors()))
+
+    def test_changed_partial_artifact_is_rejected(self):
+        self.partial_fixture()
+        (self.root / 'raw.txt').write_text('tampered')
+        self.assertTrue(any('artifact changed' in e for e in self.errors()))
+
+    def test_partial_without_references_is_rejected(self):
+        item = self.partial_fixture()
+        item['partial_evidence'] = []
+        self.assertTrue(any('PARTIAL needs' in e for e in self.errors()))
+
+    def test_partial_cannot_be_promoted_without_full_report(self):
+        item = self.partial_fixture()
+        item['status'] = 'PASS'
+        self.assertTrue(any('PASS needs' in e for e in self.errors()))
 
     def test_complete_synthetic_candidate_can_pass(self):
         self.complete_fixture()

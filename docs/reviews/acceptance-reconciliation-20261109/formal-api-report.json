@@ -1,0 +1,153 @@
+{
+  "result": "PASS",
+  "code_sha": "ec74199b2ac6a78643969ce1eb217d1c19bbdfee",
+  "environment": "isolated",
+  "dataset_id": "acceptance-reconciliation-20261109-random-per-suite",
+  "contract_version": "0.31.48-rc.1",
+  "rules_version": "TEST-20261028-2",
+  "summary": {
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "acceptance_id": "ACC-DEL-11.01",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "three structured artist submission kinds and buyer intent retain concrete person/avatar",
+        "duplicate interest creates one case; no order or chat created"
+      ],
+      "assertion_review": "三种意向经结构化提交及审核，感兴趣仅建客服工单；通用评论接口拒绝建立自由聊天。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-11.01",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "pending submissions hidden from recipient; outsider and generic comments cannot bypass"
+      ],
+      "assertion_review": "三种意向经结构化提交及审核，感兴趣仅建客服工单；通用评论接口拒绝建立自由聊天。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-11.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "three structured artist submission kinds and buyer intent retain concrete person/avatar",
+        "MCN may submit only for the specifically delegated person; withdrawal removes access"
+      ],
+      "assertion_review": "PROFILE/ROLE/CREATE_DRAMA分别投递，关联具体真人和形象；缺逐人授权、失效授权及无权材料均拒绝。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-11.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "MCN may submit only for the specifically delegated person; withdrawal removes access",
+        "a child or revoked consent cannot be submitted or read as a valid adult artist",
+        "private submission file checks ownership, recipient consent and stored bytes"
+      ],
+      "assertion_review": "PROFILE/ROLE/CREATE_DRAMA分别投递，关联具体真人和形象；缺逐人授权、失效授权及无权材料均拒绝。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-14.01",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "empty configuration exposes no fabricated categories; only a publisher can publish immutable template versions"
+      ],
+      "assertion_review": "API返回不同品类各自字段结构；必填文字清空后保持空值并拒绝提交，材料缺失及伪造字段拒绝。按原登记api范围验收，App/网页显示仍属TASK-15及完整路线。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-14.01",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "an incomplete draft is private and can be restored, deliberately emptied and saved without old-value substitution",
+        "required attachments reject missing files, public URLs and identifiers without an owned ready upload",
+        "client-supplied state, authority and undeclared fields never become accepted story answers"
+      ],
+      "assertion_review": "API返回不同品类各自字段结构；必填文字清空后保持空值并拒绝提交，材料缺失及伪造字段拒绝。按原登记api范围验收，App/网页显示仍属TASK-15及完整路线。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-14.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "an incomplete draft is private and can be restored, deliberately emptied and saved without old-value substitution",
+        "submit creates one immutable version and exposes that exact text to the intake operator",
+        "supplement draft edits and responses are private and do not overwrite the submitted story",
+        "resubmission freezes a new version, preserves the first, and returns to operations without marking the material approved",
+        "multiple supplement rounds retain all published versions and private history stays scoped to the request"
+      ],
+      "assertion_review": "同一请求GET重开和清空保存、正式版本、补件私稿和重提版本分开；新模板不改旧快照、正式稿禁止覆盖且他人不可读。这里验收接口恢复，不代替浏览器刷新或App重启。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-14.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "publishing a newer category does not silently migrate existing drafts or their questions",
+        "submit creates one immutable version and exposes that exact text to the intake operator",
+        "institution membership does not expose another member's private story, even to the institution owner"
+      ],
+      "assertion_review": "同一请求GET重开和清空保存、正式版本、补件私稿和重提版本分开；新模板不改旧快照、正式稿禁止覆盖且他人不可读。这里验收接口恢复，不代替浏览器刷新或App重启。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-25.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "mixed results commit independently and rejected result survives reopen",
+        "artist and stock submission retain original independent-review state",
+        "price change creates a reviewable new specification without changing listing or old price",
+        "MCN assignment reuses booking and current artist delegation"
+      ],
+      "assertion_review": "机构资料与现货审核、价格新版本、制作订单分派及MCN预约分派通过；混合批次逐项成功或拒绝、撤权隐藏回执、原请求恢复不重复执行。页面接入另列，不将接口通过写成前端完成。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-25.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "mixed results commit independently and rejected result survives reopen",
+        "foreign accounts, personal identities, invalid batches and revoked membership",
+        "revoked artist authorization hides receipts and prevents replay",
+        "same request and lost receipt replay do not repeat assignment; changed payload rejected"
+      ],
+      "assertion_review": "机构资料与现货审核、价格新版本、制作订单分派及MCN预约分派通过；混合批次逐项成功或拒绝、撤权隐藏回执、原请求恢复不重复执行。页面接入另列，不将接口通过写成前端完成。"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/reviews/acceptance-reconciliation-20261109/backend.junit.xml",
+      "sha256": "d96ae975bf8374dd3f6c1f2ded016dc5634b8cb31a09bda2e45a036b68880bc6"
+    },
+    {
+      "path": "docs/reviews/acceptance-reconciliation-20261109/backend.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reviews/acceptance-reconciliation-20261109/run.json",
+      "sha256": "89a47f3e403eae93223dea7b349a3b38568546823cf5a51403a5e68634f054da"
+    }
+  ],
+  "test_execution": {
+    "leaf_cases": 68,
+    "failures": 0,
+    "skips": 0
+  },
+  "limits": "五条仅按原登记api范围完成；没有替代App、网页、12整链、独立审阅或真实供应商启用。业务运行代码与测试均为所列SHA；本轮另修改验收校验器，不影响被测业务。"
+}

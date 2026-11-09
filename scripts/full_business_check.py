@@ -127,7 +127,7 @@ def validate(root, data, board, source, require_ready=False, candidate=None):
         for ref in item.get('decision_refs', []):
             local_file(ref, label + ' decision')
         status = item.get('status')
-        check(status in ('NOT_RUN', 'BLOCKED', 'PASS', 'NOT_APPLICABLE'), label + ': unknown acceptance status')
+        check(status in ('NOT_RUN', 'PARTIAL', 'BLOCKED', 'PASS', 'NOT_APPLICABLE'), label + ': unknown acceptance status')
         # The old boolean was not consumed anywhere and must not reintroduce a second truth.
         check('full_flow_pass' not in item, label + ': use status, not the old full_flow_pass flag')
         cases, surfaces = set(item.get('required_cases', [])), set(item.get('required_surfaces', []))
@@ -148,6 +148,18 @@ def validate(root, data, board, source, require_ready=False, candidate=None):
         if status == 'NOT_APPLICABLE':
             check(item.get('boundary', {}).get('kind') == 'SUPERSEDED', label + ': missing implementation/provider access is not an applicability waiver')
             review(item.get('boundary'), label + ' scope decision')
+        if status == 'PARTIAL':
+            partial = item.get('partial_evidence')
+            check(isinstance(partial, list) and bool(partial), label + ': PARTIAL needs linked partial evidence')
+            for entry in partial if isinstance(partial, list) else []:
+                if not isinstance(entry, dict):
+                    check(False, label + ': malformed partial evidence')
+                    continue
+                artifact(entry.get('artifact'), label + ' partial evidence')
+                check(isinstance(entry.get('scope'), str) and bool(entry['scope'].strip()), label + ': partial scope required')
+                checks = entry.get('checks')
+                check(isinstance(checks, list) and bool(checks) and all(isinstance(c, str) and c.strip() for c in checks), label + ': partial check references required')
+            check(not item.get('evidence'), label + ': partial references are not formal PASS reports')
         if status != 'PASS':
             continue
         check(bool(item.get('evidence')), label + ': PASS needs actual run reports')
