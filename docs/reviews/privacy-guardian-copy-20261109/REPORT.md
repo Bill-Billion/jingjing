@@ -28,3 +28,7 @@
 复跑：后端配置隔离JX_MYSQL_TEST_ENV_FILE后执行 `node scripts/test-mysql.js privacy-guardian-copy privacy-participation-copy contract-six support`；根目录执行 `python scripts/validate_contract.py --runtime-fixtures docs/reviews/privacy-guardian-copy-20261109/http.json --report docs/reviews/privacy-guardian-copy-20261109/contract.json`。
 
 沿原PR39阶段集中交付，提交和远端检查另记；未合并、部署或更新人工3490/离线APK，公网不开。
+
+## 阶段交付核验
+
+本阶段交付回执：业务提交2b5fa2230d463e5aec01341d49f6cd98b00a7b54已上传原PR39并核实远端头，PR正文及前端总计划已同步。发布核查时甲方测试工具成功，服务器及App/网页检查仍运行，尚非全部通过。前批d4e5bf55页面/工具成功，服务器被新提交替代取消，不记为通过。新三包前端认领/交付/复验未确认；未合并、部署或更新人工网站。本回执仅本地保存，随下一阶段同步，避免仅为记录而重新启动远端检查。
