@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.47-rc.1
+  version: 0.31.48-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33201,6 +33201,8 @@ paths:
           - REWARD_DISCOUNTS
           - NOTIFICATION_READS
           - GUARDIAN_USAGE
+          - GUARDIAN_SESSIONS
+          - PERSONAL_USAGE_STATE
           - GUARDIAN_CONTROLS
           - GUARDIAN_CASES
       - name: cursor
@@ -74671,6 +74673,131 @@ components:
                 - type: string
                   pattern: ^[1-9][0-9]{0,19}$
                 - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: GUARDIAN_SESSIONS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    slot_until:
+                      type: string
+                      format: date-time
+                    daily_seconds_reserved_at_request:
+                      type: integer
+                      minimum: 0
+                    created_at:
+                      type: string
+                      format: date-time
+                    usage_subject:
+                      const: SELF_ONLY
+                    measurement:
+                      const: CUMULATIVE_RESERVATION_NOT_ACTUAL_USE
+                    record_kind:
+                      const: REQUEST_RECEIPT_NOT_DISTINCT_SESSION
+                    grants_current_access:
+                      const: false
+                    real_minor_transactions_enabled:
+                      const: false
+                  required:
+                  - id
+                  - slot_until
+                  - daily_seconds_reserved_at_request
+                  - created_at
+                  - usage_subject
+                  - measurement
+                  - record_kind
+                  - grants_current_access
+                  - real_minor_transactions_enabled
+              next_cursor:
+                anyOf:
+                - type: string
+                  pattern: ^[a-f0-9]{64}$
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PERSONAL_USAGE_STATE
+              items:
+                type: array
+                maxItems: 1
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    local_date:
+                      type: string
+                      format: date
+                    day_seconds:
+                      type: integer
+                      minimum: 0
+                    reminder_seconds:
+                      type: integer
+                      minimum: 0
+                    last_at:
+                      anyOf:
+                      - type: string
+                        format: date-time
+                      - type: 'null'
+                    measurement:
+                      const: FOREGROUND_HEARTBEAT_ESTIMATE
+                    record_kind:
+                      const: CURRENT_STORED_STATE_NOT_SESSION_HISTORY
+                    timezone:
+                      const: Asia/Shanghai
+                  required:
+                  - id
+                  - object_version
+                  - local_date
+                  - day_seconds
+                  - reminder_seconds
+                  - last_at
+                  - measurement
+                  - record_kind
+                  - timezone
+              next_cursor:
+                type: 'null'
               coverage:
                 const: OWN_ACCOUNT_RECORDS_ONLY
               request_completion:

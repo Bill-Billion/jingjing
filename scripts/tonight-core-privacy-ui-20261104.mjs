@@ -6,7 +6,7 @@ import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {randomBytes,randomUUID,createHash} from 'node:crypto';
 import http from 'node:http';
-const root=process.cwd(),backend=resolve('晶晶日上工程交接包/01_源码/backend_server'),webRoot=resolve('晶晶日上工程交接包/01_源码/frontend_ops_workspace'),out=resolve('docs/testing/evidence/tonight-core-ui-20261104/privacy'),req=createRequire(join(backend,'package.json')),load=p=>req(join(backend,p)),wr=createRequire(join(webRoot,'package.json'));
+const root=process.cwd(),backend=resolve('晶晶日上工程交接包/01_源码/backend_server'),webRoot=resolve('晶晶日上工程交接包/01_源码/frontend_ops_workspace'),out=resolve(process.env.JX_BROWSER_EVIDENCE_DIR||'docs/testing/evidence/tonight-core-ui-20261104/privacy'),req=createRequire(join(backend,'package.json')),load=p=>req(join(backend,p)),wr=createRequire(join(webRoot,'package.json'));
 load('scripts/test-network-guard.cjs');
 const mysql=load('node_modules/mysql2/promise'),{openDatabase}=load('src/infrastructure/database'),{migrate}=load('src/infrastructure/database/migrator'),{createAccountApi}=load('src/http/account-api'),{chromium}=wr('playwright-core'),{createServer}=await import(pathToFileURL(wr.resolve('vite')));const {default:vue}=await import(pathToFileURL(wr.resolve('@vitejs/plugin-vue')));
 const env=JSON.parse(await readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));for(const[k,v]of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);

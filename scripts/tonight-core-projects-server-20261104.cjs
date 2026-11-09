@@ -14,7 +14,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const backend = path.resolve(__dirname, '../晶晶日上工程交接包/01_源码/backend_server');
 const envFile = process.env.JX_MYSQL_TEST_ENV_FILE || '/Users/yanghaoran/Code/jingjing-ux/.local/mysql/runtime/test-env.json';
-const statePath = path.resolve(__dirname, '../.local/tonight-core-ui-20261104/projects-runtime.json');
+const statePath = path.resolve(process.env.PR18_UI_STATE_FILE || path.resolve(__dirname, '../.local/tonight-core-ui-20261104/projects-runtime.json'));
 const apiUrl = 'http://127.0.0.1:5342', controlUrl = 'http://127.0.0.1:5343';
 const schema = `jx_test_${process.pid}_${crypto.randomBytes(6).toString('hex')}`, controlToken = crypto.randomBytes(32).toString('hex');
 const phones = { sponsor: '13900009601', producer: '13900009602', reviewer: '13900009603', channelRegistrar: '13900009604', outsider: '13900009605', member: '13900009606' };

@@ -17,7 +17,7 @@ const env=JSON.parse(await readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'))
 for(const [k,v] of Object.entries({NODE_ENV:'test',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v)
 const copyrightMode=process.env.JX_PR39_COPYRIGHT_MODE||null;assert(copyrightMode===null||['BUYER_OWNERSHIP','PRODUCER_OWNERSHIP_LICENSE'].includes(copyrightMode));
 const couponMode=process.env.JX_PR39_COUPON_TEST==='1',unitMinor=couponMode?50000:10001,originalParts=couponMode?[15000,20000,15000]:[3000,4000,3001],netParts=couponMode?[13500,18000,13500]:originalParts;
-const out=resolve(root,'docs/testing/evidence/tonight-core-ui-20261104/manual-'+(copyrightMode||'default'));await mkdir(out,{recursive:true})
+const out=resolve(root,process.env.JX_BROWSER_EVIDENCE_DIR||'docs/testing/evidence/tonight-core-ui-20261104/manual-'+(copyrightMode||'default'));await mkdir(out,{recursive:true})
 const name='jx_test_manual_ui_'+randomBytes(8).toString('hex'),checks=[],requests=[],errors=[],ids={}
 let control,db,server,browser,web,created=false,completed=false,problem
 const key=randomUUID

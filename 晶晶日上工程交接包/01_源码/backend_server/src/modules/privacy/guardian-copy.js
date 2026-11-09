@@ -1,7 +1,7 @@
 "use strict";
 const A=require('../artists/context'),C=require('../guardians/context'),P=require('../guardians/policy');
 const {id,error}=require('../party/policy'),{digest}=require('../governance/content');
-const sections={NOTIFICATION_READS:'PROFILE',GUARDIAN_CASES:'PROFILE',GUARDIAN_CONTROLS:'PROFILE',GUARDIAN_USAGE:'PROFILE'};
+const sections={NOTIFICATION_READS:'PROFILE',GUARDIAN_CASES:'PROFILE',GUARDIAN_CONTROLS:'PROFILE',GUARDIAN_USAGE:'PROFILE',GUARDIAN_SESSIONS:'PROFILE',PERSONAL_USAGE_STATE:'PROFILE'};
 const pick=(d,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(d,k)).map(k=>[k,d[k]]));
 function checked(r){const d=A.parse(r.data_json);if(digest(d)!==r.data_sha256)throw error('STORED_CONTENT_MISMATCH',503);return {...r,data:d};}
 function integer(v){const n=Number(v);if(!Number.isSafeInteger(n)||n<0)throw error('STORED_CONTENT_MISMATCH',503);return n;}
@@ -31,6 +31,24 @@ async function details(tx,r,link){
 }
 async function page(tx,account,{section,after='',limit}){
  const result=(items,next_cursor)=>({section,items,next_cursor,coverage:'OWN_ACCOUNT_RECORDS_ONLY',request_completion:'NOT_CONFIRMED',original_documents_included:false});
+ if(section==='PERSONAL_USAGE_STATE'){
+  if(after)throw error('INVALID_CURSOR',400);
+  const row=await A.one(tx,'SELECT * FROM privacy_usage_state WHERE account_id=?',[account]);
+  if(!row)return result([],null);
+  const d=checked(row).data;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d.local_date)||!Number.isFinite(Date.parse(d.local_date))||d.last_at!==null&&!Number.isFinite(Date.parse(d.last_at)))throw error('STORED_CONTENT_MISMATCH',503);
+  return result([{id:account,object_version:row.object_version,local_date:d.local_date,day_seconds:integer(d.day_seconds),reminder_seconds:integer(d.reminder_seconds),last_at:d.last_at,measurement:'FOREGROUND_HEARTBEAT_ESTIMATE',record_kind:'CURRENT_STORED_STATE_NOT_SESSION_HISTORY',timezone:'Asia/Shanghai'}],null);
+ }
+ if(section==='GUARDIAN_SESSIONS'){
+  if(after&&!/^[a-f0-9]{64}$/.test(after))throw error('INVALID_CURSOR',400);
+  const q='SELECT s.* FROM guardian_sessions s WHERE s.child_account_id=?';
+  if(after&&!(await tx.execute(q+' AND s.id=?',[account,after]))[0].length)throw error('INVALID_CURSOR',400);
+  const [rows]=await tx.execute(q+' AND s.id>? ORDER BY s.id LIMIT ?',[account,after,limit+1]);
+  return result(rows.slice(0,limit).map(r=>{
+   if(!Number.isFinite(Date.parse(r.slot_until)))throw error('STORED_CONTENT_MISMATCH',503);
+   return {id:r.id,slot_until:r.slot_until,daily_seconds_reserved_at_request:integer(r.seconds_reserved),created_at:A.instant(r.created_at),usage_subject:'SELF_ONLY',measurement:'CUMULATIVE_RESERVATION_NOT_ACTUAL_USE',record_kind:'REQUEST_RECEIPT_NOT_DISTINCT_SESSION',grants_current_access:false,real_minor_transactions_enabled:false};
+  }),rows.length>limit?rows[limit-1].id:null);
+ }
  if(section==='NOTIFICATION_READS'){
   if(after&&!/^[1-9][0-9]{0,19}$/.test(after))throw error('INVALID_CURSOR',400);
   const q="SELECT r.event_id,MIN(r.read_at) AS read_at FROM ops_reads r JOIN parties p ON p.id=r.party_id WHERE r.account_id=? AND p.kind='PERSON' AND p.personal_account_id=?";
