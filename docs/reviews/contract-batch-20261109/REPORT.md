@@ -33,3 +33,7 @@ c9b475b5远端服务器作业[42563400921](https://github.com/Bill-Billion/jingj
 七类真实工程及昆山短信仍待产品接入验证，八个上线包与上述重叠。昆山资料仍申请、OSS上线前最后购买/测试；未启用真实服务、生产或公网，不改人工3490或离线APK。阶段集中原PR39，提交、远端检查和合入分别记录。
 
 复跑：`python scripts/validate_contract_batch_test.py`；生成本机隔离HTTP资料后，`python scripts/validate_contract_batch.py --manifest scripts/runtime-contract-manifest.json --report .local/ci-evidence/runtime-contract-batch.json`。不能用没有原文件的环境跳过清单。
+
+## 阶段交付核验
+
+阶段交付回执：6394c54ae11c5ac1c8c045ad76e9be97bde2d874已上传原PR39并核实远端头，PR仍开放草稿，说明及前端工程接法已更新。发布核查时服务器、App/网页和甲方工具三组均运行中，不能记全部通过。前批c9b475b5页面/工具成功，服务器是35分钟超时取消，原因已有GitHub明确证据。本批无新增页面任务，原三包认领/交付/复验未确认；未合并/部署/更新人工环境。回执本地保存，随下一阶段同步，不为回执中断正在运行的检查。
