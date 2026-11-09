@@ -1,6 +1,4 @@
-当前入口：先看[剩余任务分类](collaboration/client-complete-20261028/REMAINING_COUNTS_20261106.md)和双方CURRENT；0.31.40-rc.1/0211历史协议副本增量按[同版接法](collaboration/client-complete-20261028/PRELAUNCH_AGREEMENT_HANDOFF_20261106.md)接原页面。
-
-当前本轮接口0.31.39-rc.1/迁移0211；先读双方CURRENT及PRELAUNCH_INDEPENDENT_HANDOFF_20261106.md。账户副本、五种批量与城市推荐后端已测，页面待接；其他协议/档案、完整匹配、整链及七类真实接入继续，不能宣布全部完成。
+当前入口（2026-11-09）：接口0.31.45-rc.1/0211；先读双方CURRENT和[前端接续总计划](collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md)、[资料覆盖清单](collaboration/client-complete-20261028/PERSONAL_DATA_COVERAGE_20261109.md)。本人权益六分类已补；页面、完整资料、12路线和真实启用分开验收。下列旧日期版本保留为历史。
 
 # 当前执行入口
 

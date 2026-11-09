@@ -1,6 +1,7 @@
 'use strict';
 // Shared by the focused runner and full CI, so a new suite cannot silently be omitted.
 module.exports=Object.freeze({
+ 'privacy-benefit-copy':['test/privacy-benefit-copy.integration.test.cjs'],
  'privacy-participation-copy':['test/privacy-participation-copy.integration.test.cjs'],
  'privacy-activity-copy':['test/privacy-activity-copy.integration.test.cjs'],
  'prelaunch-match-catalogs':['test/prelaunch-matching-catalogs.integration.test.cjs'],

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.44-rc.1
+  version: 0.31.45-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33193,6 +33193,12 @@ paths:
           - NOTIFICATION_DELIVERIES
           - GUARDIAN_LINKS
           - ENGAGEMENT_RECORDS
+          - GROWTH_RECORDS
+          - REFERRAL_COMMISSIONS
+          - REWARD_GRANTS
+          - LOTTERY_DRAWS
+          - REWARD_FULFILLMENT
+          - REWARD_DISCOUNTS
       - name: cursor
         in: query
         schema:
@@ -71513,10 +71519,12 @@ components:
                   type: object
                   additionalProperties: false
                   properties:
-                    id: &identity09001
+                    id:
                       type: string
                       format: uuid
-                    person_id: *identity09001
+                    person_id:
+                      type: string
+                      format: uuid
                     current_status:
                       enum:
                       - PENDING
@@ -73343,6 +73351,1209 @@ components:
                 - string
                 - 'null'
                 format: uuid
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: GROWTH_RECORDS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: GROWTH_ACCOUNT
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          person_id:
+                            type: string
+                            format: uuid
+                          at:
+                            type: string
+                            format: date-time
+                          growth_points:
+                            type: integer
+                          recent_growth_points:
+                            type: integer
+                          earned_level:
+                            type: integer
+                          level:
+                            type: integer
+                          demoted:
+                            type: boolean
+                          starlight:
+                            anyOf:
+                            - type: integer
+                            - type: 'null'
+                          starlight_configured:
+                            type: boolean
+                          exchange_enabled:
+                            type: boolean
+                          source_order_ids:
+                            type: array
+                            items:
+                              type: string
+                              format: uuid
+                          rule:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                source_content_sha256:
+                                  type: string
+                                  pattern: ^[0-9a-f]{64}$
+                                version:
+                                  type: string
+                                terms:
+                                  type: string
+                                gp:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    STOCK:
+                                      type: integer
+                                    AUDITION:
+                                      type: integer
+                                    CUSTOMIZATION:
+                                      type: integer
+                                    COMMERCIAL:
+                                      type: integer
+                                    five_star:
+                                      type: integer
+                                    media:
+                                      type: integer
+                                    repeat:
+                                      type: integer
+                                    refund_penalty:
+                                      type: integer
+                                  required: []
+                                thresholds:
+                                  type: array
+                                  items:
+                                    type: integer
+                                retention_days:
+                                  type: integer
+                                retention_bps:
+                                  type: integer
+                                starlight:
+                                  anyOf:
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      STOCK:
+                                        type: integer
+                                      AUDITION:
+                                        type: integer
+                                      CUSTOMIZATION:
+                                        type: integer
+                                      COMMERCIAL:
+                                        type: integer
+                                      five_star:
+                                        type: integer
+                                    required: []
+                                  - type: 'null'
+                                aftercare_days:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    STOCK:
+                                      type: integer
+                                    AUDITION:
+                                      type: integer
+                                    CUSTOMIZATION:
+                                      type: integer
+                                    COMMERCIAL:
+                                      type: integer
+                                  required: []
+                                referral_bps:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    STOCK:
+                                      type: integer
+                                    AUDITION:
+                                      type: integer
+                                    CUSTOMIZATION:
+                                      type: integer
+                                    COMMERCIAL:
+                                      type: integer
+                                  required: []
+                              required: []
+                            - type: 'null'
+                          reminders:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                code:
+                                  type: string
+                                reason:
+                                  type: string
+                                from:
+                                  type: integer
+                                to:
+                                  type: integer
+                              required: []
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: STARLIGHT_ENTRY
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          person_id:
+                            type: string
+                            format: uuid
+                          order_id:
+                            type: string
+                            format: uuid
+                          amount:
+                            type: integer
+                          voided:
+                            type: boolean
+                          source:
+                            type: string
+                          exchange_enabled:
+                            type: boolean
+                          rule:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                source_content_sha256:
+                                  type: string
+                                  pattern: ^[0-9a-f]{64}$
+                                version:
+                                  type: string
+                                terms:
+                                  type: string
+                                gp:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    STOCK:
+                                      type: integer
+                                    AUDITION:
+                                      type: integer
+                                    CUSTOMIZATION:
+                                      type: integer
+                                    COMMERCIAL:
+                                      type: integer
+                                    five_star:
+                                      type: integer
+                                    media:
+                                      type: integer
+                                    repeat:
+                                      type: integer
+                                    refund_penalty:
+                                      type: integer
+                                  required: []
+                                thresholds:
+                                  type: array
+                                  items:
+                                    type: integer
+                                retention_days:
+                                  type: integer
+                                retention_bps:
+                                  type: integer
+                                starlight:
+                                  anyOf:
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      STOCK:
+                                        type: integer
+                                      AUDITION:
+                                        type: integer
+                                      CUSTOMIZATION:
+                                        type: integer
+                                      COMMERCIAL:
+                                        type: integer
+                                      five_star:
+                                        type: integer
+                                    required: []
+                                  - type: 'null'
+                                aftercare_days:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    STOCK:
+                                      type: integer
+                                    AUDITION:
+                                      type: integer
+                                    CUSTOMIZATION:
+                                      type: integer
+                                    COMMERCIAL:
+                                      type: integer
+                                  required: []
+                                referral_bps:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    STOCK:
+                                      type: integer
+                                    AUDITION:
+                                      type: integer
+                                    CUSTOMIZATION:
+                                      type: integer
+                                    COMMERCIAL:
+                                      type: integer
+                                  required: []
+                              required: []
+                            - type: 'null'
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: REFERRAL_COMMISSIONS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: REFERRAL_COMMISSION
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          order_id:
+                            type: string
+                            format: uuid
+                          amount_minor:
+                            type: integer
+                          paid_out_minor:
+                            type: integer
+                          delta_minor:
+                            type: integer
+                          meaning:
+                            type: string
+                          as_of:
+                            type: string
+                            format: date-time
+                          attribution:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                version:
+                                  type: string
+                                category:
+                                  type: string
+                                status:
+                                  type: string
+                                clicked_at:
+                                  type: string
+                                  format: date-time
+                                captured_at:
+                                  type: string
+                                  format: date-time
+                                rate_bps:
+                                  anyOf:
+                                  - type: integer
+                                  - type: 'null'
+                                one_level_only:
+                                  type: boolean
+                                free_points_reward_enabled:
+                                  type: boolean
+                                rule:
+                                  anyOf:
+                                  - type: object
+                                    additionalProperties: false
+                                    properties:
+                                      id:
+                                        type: string
+                                        format: uuid
+                                      source_content_sha256:
+                                        type: string
+                                        pattern: ^[0-9a-f]{64}$
+                                      version:
+                                        type: string
+                                      terms:
+                                        type: string
+                                      gp:
+                                        type: object
+                                        additionalProperties: false
+                                        properties:
+                                          STOCK:
+                                            type: integer
+                                          AUDITION:
+                                            type: integer
+                                          CUSTOMIZATION:
+                                            type: integer
+                                          COMMERCIAL:
+                                            type: integer
+                                          five_star:
+                                            type: integer
+                                          media:
+                                            type: integer
+                                          repeat:
+                                            type: integer
+                                          refund_penalty:
+                                            type: integer
+                                        required: []
+                                      thresholds:
+                                        type: array
+                                        items:
+                                          type: integer
+                                      retention_days:
+                                        type: integer
+                                      retention_bps:
+                                        type: integer
+                                      starlight:
+                                        anyOf:
+                                        - type: object
+                                          additionalProperties: false
+                                          properties:
+                                            STOCK:
+                                              type: integer
+                                            AUDITION:
+                                              type: integer
+                                            CUSTOMIZATION:
+                                              type: integer
+                                            COMMERCIAL:
+                                              type: integer
+                                            five_star:
+                                              type: integer
+                                          required: []
+                                        - type: 'null'
+                                      aftercare_days:
+                                        type: object
+                                        additionalProperties: false
+                                        properties:
+                                          STOCK:
+                                            type: integer
+                                          AUDITION:
+                                            type: integer
+                                          CUSTOMIZATION:
+                                            type: integer
+                                          COMMERCIAL:
+                                            type: integer
+                                        required: []
+                                      referral_bps:
+                                        type: object
+                                        additionalProperties: false
+                                        properties:
+                                          STOCK:
+                                            type: integer
+                                          AUDITION:
+                                            type: integer
+                                          CUSTOMIZATION:
+                                            type: integer
+                                          COMMERCIAL:
+                                            type: integer
+                                        required: []
+                                    required: []
+                                  - type: 'null'
+                              required: []
+                            - type: 'null'
+                          environment:
+                            enum:
+                            - null
+                            - SANDBOX
+                            - PRODUCTION
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: REWARD_GRANTS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: GRANT
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          issued_at:
+                            type: string
+                            format: date-time
+                          expires_at:
+                            type: string
+                            format: date-time
+                          used_at:
+                            type: string
+                            format: date-time
+                          hold_id:
+                            anyOf:
+                            - type: string
+                              format: uuid
+                            - type: 'null'
+                          checkout_hold_id:
+                            anyOf:
+                            - type: string
+                              format: uuid
+                            - type: 'null'
+                          used_order_id:
+                            type: string
+                            format: uuid
+                          cocreation_benefit_id:
+                            type: string
+                            format: uuid
+                          extension_used:
+                            type: boolean
+                          performance_rights_granted:
+                            type: boolean
+                          cashable:
+                            type: boolean
+                          transferable:
+                            type: boolean
+                          template:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              version:
+                                type: string
+                              title:
+                                type: string
+                              kind:
+                                type: string
+                              terms:
+                                type: string
+                              service_code:
+                                type: string
+                              valid_days:
+                                type: integer
+                              exchange_points:
+                                anyOf:
+                                - type: integer
+                                - type: 'null'
+                              production:
+                                anyOf:
+                                - type: object
+                                  additionalProperties: false
+                                  properties:
+                                    face_minor:
+                                      type: integer
+                                    minimum_minor:
+                                      type: integer
+                                    spec_ids:
+                                      type: array
+                                      items:
+                                        type: string
+                                        format: uuid
+                                  required: []
+                                - type: 'null'
+                              interview:
+                                anyOf:
+                                - type: object
+                                  additionalProperties: false
+                                  properties:
+                                    channel:
+                                      type: string
+                                    project_ref:
+                                      type: string
+                                    batch_ref:
+                                      type: string
+                                    purpose:
+                                      type: string
+                                    territory:
+                                      type: string
+                                    min_halo:
+                                      type: integer
+                                    extension_days:
+                                      type: integer
+                                    fallback_points:
+                                      type: integer
+                                  required: []
+                                - type: 'null'
+                              exposure:
+                                anyOf:
+                                - type: object
+                                  additionalProperties: false
+                                  properties:
+                                    placement:
+                                      type: string
+                                    duration_days:
+                                      type: integer
+                                    fallback_points:
+                                      type: integer
+                                  required: []
+                                - type: 'null'
+                            required: []
+                          binding:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                person_id:
+                                  type: string
+                                  format: uuid
+                                avatar_id:
+                                  type: string
+                                  format: uuid
+                                profile_id:
+                                  type: string
+                                  format: uuid
+                              required: []
+                            - type: 'null'
+                          delivery:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                schedule_id:
+                                  type: string
+                                  format: uuid
+                                starts_at:
+                                  type: string
+                                  format: date-time
+                                ends_at:
+                                  type: string
+                                  format: date-time
+                                confirmed_at:
+                                  type: string
+                                  format: date-time
+                                completed_at:
+                                  type: string
+                                  format: date-time
+                                reference:
+                                  type: string
+                                outcome:
+                                  type: string
+                                reason:
+                                  type: string
+                              required: []
+                            - type: 'null'
+                          effective_status:
+                            type: string
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: LOTTERY_DRAWS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: DRAW
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          pool_id:
+                            type: string
+                            format: uuid
+                          rules_sha256:
+                            type: string
+                          at:
+                            type: string
+                            format: date-time
+                          count:
+                            type: integer
+                          points:
+                            type: integer
+                          hold_id:
+                            anyOf:
+                            - type: string
+                              format: uuid
+                            - type: 'null'
+                          rules:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                starts_at:
+                                  type: string
+                                  format: date-time
+                                ends_at:
+                                  type: string
+                                  format: date-time
+                                terms:
+                                  type: string
+                                config:
+                                  type: object
+                                  additionalProperties: false
+                                  properties:
+                                    version:
+                                      type: string
+                                    algorithm:
+                                      type: string
+                                    source_profile:
+                                      type: string
+                                    single_points:
+                                      type: integer
+                                    ten_points:
+                                      type: integer
+                                    prizes:
+                                      type: array
+                                      items:
+                                        type: object
+                                        additionalProperties: false
+                                        properties:
+                                          key:
+                                            type: string
+                                          kind:
+                                            type: string
+                                          weight:
+                                            type: integer
+                                        required: []
+                                  required: []
+                                prize_promises:
+                                  type: array
+                                  items:
+                                    type: object
+                                    additionalProperties: false
+                                    properties:
+                                      key:
+                                        type: string
+                                      stock_id:
+                                        type: string
+                                        format: uuid
+                                      template:
+                                        type: object
+                                        additionalProperties: false
+                                        properties:
+                                          version:
+                                            type: string
+                                          title:
+                                            type: string
+                                          kind:
+                                            type: string
+                                          terms:
+                                            type: string
+                                          service_code:
+                                            type: string
+                                          valid_days:
+                                            type: integer
+                                          exchange_points:
+                                            anyOf:
+                                            - type: integer
+                                            - type: 'null'
+                                          production:
+                                            anyOf:
+                                            - type: object
+                                              additionalProperties: false
+                                              properties:
+                                                face_minor:
+                                                  type: integer
+                                                minimum_minor:
+                                                  type: integer
+                                                spec_ids:
+                                                  type: array
+                                                  items:
+                                                    type: string
+                                                    format: uuid
+                                              required: []
+                                            - type: 'null'
+                                          interview:
+                                            anyOf:
+                                            - type: object
+                                              additionalProperties: false
+                                              properties:
+                                                channel:
+                                                  type: string
+                                                project_ref:
+                                                  type: string
+                                                batch_ref:
+                                                  type: string
+                                                purpose:
+                                                  type: string
+                                                territory:
+                                                  type: string
+                                                min_halo:
+                                                  type: integer
+                                                extension_days:
+                                                  type: integer
+                                                fallback_points:
+                                                  type: integer
+                                              required: []
+                                            - type: 'null'
+                                          exposure:
+                                            anyOf:
+                                            - type: object
+                                              additionalProperties: false
+                                              properties:
+                                                placement:
+                                                  type: string
+                                                duration_days:
+                                                  type: integer
+                                                fallback_points:
+                                                  type: integer
+                                              required: []
+                                            - type: 'null'
+                                        required: []
+                                    required: []
+                              required: []
+                            - type: 'null'
+                          results:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              properties:
+                                index:
+                                  type: integer
+                                key:
+                                  type: string
+                                kind:
+                                  type: string
+                                guaranteed_slot:
+                                  type: boolean
+                                grant_id:
+                                  anyOf:
+                                  - type: string
+                                    format: uuid
+                                  - type: 'null'
+                                point_earning_id:
+                                  anyOf:
+                                  - type: string
+                                    format: uuid
+                                  - type: 'null'
+                                point_back:
+                                  type: integer
+                              required: []
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: REWARD_FULFILLMENT
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: SCHEDULE
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          starts_at:
+                            type: string
+                            format: date-time
+                          ends_at:
+                            type: string
+                            format: date-time
+                          reference:
+                            type: string
+                          kind:
+                            type: string
+                          person_id:
+                            type: string
+                            format: uuid
+                          placement:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: REMEDY
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          reason:
+                            type: string
+                          previous_status:
+                            type: string
+                          resolution:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                decision:
+                                  type: string
+                                reason:
+                                  type: string
+                              required: []
+                            - type: 'null'
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: REWARD_DISCOUNTS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  oneOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: COUPON_HOLD
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      parent_id:
+                        anyOf:
+                        - type: string
+                          format: uuid
+                        - type: 'null'
+                      created_at:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          quote_id:
+                            type: string
+                            format: uuid
+                          grant_id:
+                            type: string
+                            format: uuid
+                          expires_at:
+                            type: string
+                            format: date-time
+                          order_id:
+                            anyOf:
+                            - type: string
+                              format: uuid
+                            - type: 'null'
+                          discount:
+                            anyOf:
+                            - type: object
+                              additionalProperties: false
+                              properties:
+                                source_kind:
+                                  type: string
+                                coverage:
+                                  type: string
+                                discount_minor:
+                                  type: integer
+                                original_total_minor:
+                                  type: integer
+                                refund_forfeit:
+                                  type: boolean
+                                cashable:
+                                  type: boolean
+                              required: []
+                            - type: 'null'
+                        required: []
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - parent_id
+                    - created_at
+                    - data
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
               coverage:
                 const: OWN_ACCOUNT_RECORDS_ONLY
               request_completion:
