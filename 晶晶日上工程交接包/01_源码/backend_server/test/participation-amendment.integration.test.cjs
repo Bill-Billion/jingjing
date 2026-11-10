@@ -32,9 +32,9 @@ test('paid participation amendments: reviewed differences, refunds and separate 
  const checkout=(u=buyer,hash=agreement.content_sha256)=>call('/trade/participation-checkout',u,{body:{agreement_id:agreement.id,agreement_sha256:hash,channel:'ALIPAY'},schema:'TradeRecordResponse'});
  await t.test('all named parties confirm same version before a cash order; trial audition grants no rights',async()=>{await assert.rejects(checkout(),{code:'PROJECT_CONFIRMATIONS_REQUIRED'});for(const u of [artist,buyer,producer])await post('/projects/participations/'+agreement.id+'/confirmation',agreement,{content_sha256:agreement.content_sha256,decision:'APPROVED',reason:'synthetic negotiated confirmation'},u);await assert.rejects(checkout(outsider),{code:'PROJECT_PARTY_FORBIDDEN'});await assert.rejects(checkout(buyer,'0'.repeat(64)),{code:'CONFIRMATION_VERSION_MISMATCH'});const raced=await Promise.all([checkout(),checkout()]);assert.equal(raced[0].id,raced[1].id);order=raced[0];assert.equal(order.data.quote.marketplace_finance.allocation.platform_bps,2200);assert.equal(order.data.quote.total_minor,10000);assert.equal((await checkout()).id,order.id);assert.equal((await read(agreement)).content_sha256,agreement.content_sha256);});
  const copyRequests=new Map();
- async function copies(who){
+ async function copies(who,section='PARTICIPATION_AGREEMENTS'){
   if(!copyRequests.has(who.account_id)){const req=await call('/privacy/requests',who,{body:{type:'COPY',scopes:['CONTRACTS'],details:'Synthetic own historical participation copies'},party:false,schema:'PrivacyRequestResponse'});copyRequests.set(who.account_id,req.id);}
-  const items=[];let cursor='';do{const page=await call('/privacy/requests/'+copyRequests.get(who.account_id)+'/account-data?section=PARTICIPATION_AGREEMENTS&limit=1'+(cursor?'&cursor='+cursor:''),who,{party:false,schema:'PrivacyAccountCopyPageResponse'});items.push(...page.items);cursor=page.next_cursor;}while(cursor);return items;
+  const items=[];let cursor='';do{const page=await call('/privacy/requests/'+copyRequests.get(who.account_id)+'/account-data?section='+section+'&limit=1'+(cursor?'&cursor='+cursor:''),who,{party:false,schema:'PrivacyAccountCopyPageResponse'});items.push(...page.items);cursor=page.next_cursor;}while(cursor);return items;
  }
  const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic',merchant_id:'synthetic',merchant_party_id:artist.personal_party_id,config_revision:'synthetic'};
  const prepare=step=>S.trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:order.id,installment_key:step,operation_key:key()},config);
@@ -65,6 +65,29 @@ test('paid participation amendments: reviewed differences, refunds and separate 
  assert.equal((await S.trade.read(buyer.ctx,{record_id:order.id,party_id:buyer.personal_party_id})).data.financial.net_minor,3000);
  await assert.rejects(S.trade.read(artist.ctx,{record_id:nextOrder.id,party_id:artist.personal_party_id}),e=>[403,404].includes(e.status));
  assert.equal((await S.trade.read(newcomer.ctx,{record_id:nextOrder.id,party_id:newcomer.personal_party_id})).merchant_party_id,newcomer.personal_party_id);
+ const profileOnly=await call('/privacy/requests',buyer,{body:{type:'COPY',scopes:['PROFILE'],details:'Synthetic narrow scope'},party:false,schema:'PrivacyRequestResponse'});
+ for(const section of ['PARTICIPATION_CONFIRMATIONS','PARTICIPATION_MILESTONES'])await assert.rejects(call('/privacy/requests/'+profileOnly.id+'/account-data?section='+section,buyer,{party:false,schema:'PrivacyAccountCopyPageResponse'}),{status:409});
+ const ownConfirmations=await copies(buyer,'PARTICIPATION_CONFIRMATIONS');
+ assert.ok(ownConfirmations.length>=4);assert.equal(new Set(ownConfirmations.map(x=>x.copy_ref)).size,ownConfirmations.length);
+ assert.ok(ownConfirmations.every(x=>x.party_id===buyer.personal_party_id&&x.decision==='APPROVED'&&x.created_at.endsWith('Z')));
+ for(const x of ownConfirmations)assert.equal(x.confirmation_matches_current,x.confirmed_content_sha256===x.current_content_sha256);
+ assert.equal(ownConfirmations.find(x=>x.agreement_id===agreement.id).agreement_status,'SUPERSEDED');
+ const newcomerConfirmations=await copies(newcomer,'PARTICIPATION_CONFIRMATIONS');assert.deepEqual(newcomerConfirmations.map(x=>x.agreement_id),[r.id]);
+ assert.deepEqual(await copies(producer,'PARTICIPATION_CONFIRMATIONS'),[]);assert.deepEqual(await copies(outsider,'PARTICIPATION_CONFIRMATIONS'),[]);
+ const ownMilestones=await copies(buyer,'PARTICIPATION_MILESTONES');assert.equal(ownMilestones.length,1);assert.equal(ownMilestones[0].agreement_id,agreement.id);assert.equal(ownMilestones[0].installment_key,'final');assert.equal(ownMilestones[0].evidence_asset_id,buyerProof.id);assert.equal(ownMilestones[0].confirmed_at,null);assert.equal(ownMilestones[0].confirmation_time_recorded,false);
+ for(const u of [artist,newcomer,producer,outsider])assert.deepEqual(await copies(u,'PARTICIPATION_MILESTONES'),[]);
+ for(const x of [...ownConfirmations,...ownMilestones]){assert.equal(x.account_id,undefined);assert.equal(x.data_json,undefined);assert.equal(x.download_url,undefined);}
+ const historyPath='/privacy/requests/'+copyRequests.get(buyer.account_id)+'/account-data?section=';
+ await assert.rejects(call(historyPath+'PARTICIPATION_CONFIRMATIONS&cursor='+newcomerConfirmations[0].copy_ref,buyer,{party:false,schema:'PrivacyAccountCopyPageResponse'}),{status:400});
+ await assert.rejects(call(historyPath+'PARTICIPATION_MILESTONES&cursor='+ownConfirmations[0].copy_ref,buyer,{party:false,schema:'PrivacyAccountCopyPageResponse'}),{status:400});
+ await assert.rejects(call(historyPath+'PARTICIPATION_CONFIRMATIONS',newcomer,{party:false,schema:'PrivacyAccountCopyPageResponse'}),{status:404});
+ // Parent integrity failure must not export potentially misassociated history.
+ const [[storedAgreement]]=await db.execute('SELECT data_sha256 FROM project_records WHERE id=?',[agreement.id]);
+ await db.execute('UPDATE project_records SET data_sha256=? WHERE id=?',['0'.repeat(64),agreement.id]);
+ try{await assert.rejects(copies(buyer,'PARTICIPATION_CONFIRMATIONS'),{status:503});await assert.rejects(copies(buyer,'PARTICIPATION_MILESTONES'),{status:503});}finally{await db.execute('UPDATE project_records SET data_sha256=? WHERE id=?',[storedAgreement.data_sha256,agreement.id]);}
+ // Institution ownership is never broadened to the employee's personal copy.
+ await db.execute('UPDATE project_records SET owner_party_id=? WHERE id=?',[S.org.party_id,project.id]);
+ try{assert.deepEqual(await copies(buyer,'PARTICIPATION_MILESTONES'),[]);}finally{await db.execute('UPDATE project_records SET owner_party_id=? WHERE id=?',[buyer.personal_party_id,project.id]);}
  const beforeWithdrawal={};
  for(const u of [buyer,artist,newcomer])beforeWithdrawal[u.account_id]=await copies(u);
  const originalCopy=beforeWithdrawal[artist.account_id].find(x=>x.id===agreement.id),newCopy=beforeWithdrawal[newcomer.account_id].find(x=>x.id===r.id),buyerCopy=beforeWithdrawal[buyer.account_id].find(x=>x.id===r.id),artistCopy=beforeWithdrawal[artist.account_id].find(x=>x.id===r.id);

@@ -1,3 +1,7 @@
+## 0.31.52-rc.1 — 本人换号、参演确认与阶段确认历史
+
+既有本人及运营按申请读取 account-data 路径兼容新增 PHONE_CHANGE_EVENTS（PROFILE）、PARTICIPATION_CONFIRMATIONS 与 PARTICIPATION_MILESTONES（CONTRACTS）。独立分页，游标为本分类、本人仍保留记录的64位引用；不能跨分类/账号使用。只含本人个人身份操作，机构员工行为不混入。历史会签摘要与当前摘要分别保留，比对结果不等于电子签效力。旧阶段确认未存时间，返回 confirmed_at=null / confirmation_time_recorded=false；不得补写假时间。证据仅给关联编号，仍走原下载授权；副本不含原件、不保证全部历史、不自动关闭申请。无新路径/迁移，原调用兼容。
+
 # 0.31.51-rc.1 — 本人身份与参演变更副本补齐
 
 ACCOUNT增加personal_party，ARTISTS增加created_at；PARTICIPATION_AGREEMENTS增加created_at、own_order_id、amendment_activations，以及变更中的settlement_basis/own_settlements。仅本人参与旧订单的约定保留与应退金额，不是实际到账；新艺人看不到他人旧款，旧内容摘要保留。新增字段兼容，原路径/分类和迁移0211不变。

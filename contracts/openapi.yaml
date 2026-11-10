@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.51-rc.1
+  version: 0.31.52-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33247,6 +33247,9 @@ paths:
           - AGENCY_AGREEMENTS
           - SESSION_RECORDS
           - PHONE_CHANGES
+          - PHONE_CHANGE_EVENTS
+          - PARTICIPATION_CONFIRMATIONS
+          - PARTICIPATION_MILESTONES
           - IDENTITY_CHECKS
           - SUPPORT_TICKETS
           - SUPPORT_MESSAGES
@@ -33740,6 +33743,9 @@ paths:
           - AGENCY_AGREEMENTS
           - SESSION_RECORDS
           - PHONE_CHANGES
+          - PHONE_CHANGE_EVENTS
+          - PARTICIPATION_CONFIRMATIONS
+          - PARTICIPATION_MILESTONES
           - IDENTITY_CHECKS
           - SUPPORT_TICKETS
           - SUPPORT_MESSAGES
@@ -76124,6 +76130,210 @@ components:
             - next_cursor
             - coverage
             - request_completion
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PHONE_CHANGE_EVENTS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    copy_ref:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    change_id:
+                      type: string
+                      format: uuid
+                    object_version:
+                      type: integer
+                      minimum: 1
+                    action_code:
+                      type: string
+                      minLength: 1
+                      maxLength: 40
+                    created_at:
+                      type: string
+                      format: date-time
+                  required:
+                  - copy_ref
+                  - change_id
+                  - object_version
+                  - action_code
+                  - created_at
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                pattern: ^[a-f0-9]{64}$
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PARTICIPATION_CONFIRMATIONS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    copy_ref:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    agreement_id:
+                      type: string
+                      format: uuid
+                    project_id:
+                      type: string
+                      format: uuid
+                    party_id:
+                      type: string
+                      format: uuid
+                    decision:
+                      enum:
+                      - APPROVED
+                      - REJECTED
+                    reason:
+                      type: string
+                      maxLength: 4000
+                    confirmed_content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    created_at:
+                      type: string
+                      format: date-time
+                    agreement_status:
+                      type: string
+                      minLength: 1
+                      maxLength: 80
+                    current_content_sha256:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    confirmation_matches_current:
+                      type: boolean
+                  required:
+                  - copy_ref
+                  - agreement_id
+                  - project_id
+                  - party_id
+                  - decision
+                  - reason
+                  - confirmed_content_sha256
+                  - created_at
+                  - agreement_status
+                  - current_content_sha256
+                  - confirmation_matches_current
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                pattern: ^[a-f0-9]{64}$
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
+            - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: PARTICIPATION_MILESTONES
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    copy_ref:
+                      type: string
+                      pattern: ^[a-f0-9]{64}$
+                    agreement_id:
+                      type: string
+                      format: uuid
+                    project_id:
+                      type: string
+                      format: uuid
+                    installment_key:
+                      type: string
+                      minLength: 1
+                      maxLength: 160
+                    evidence_asset_id:
+                      type: string
+                      format: uuid
+                    reason:
+                      type: string
+                      maxLength: 4000
+                    agreement_status:
+                      type: string
+                      minLength: 1
+                      maxLength: 80
+                    confirmed_at:
+                      type: 'null'
+                    confirmation_time_recorded:
+                      const: false
+                  required:
+                  - copy_ref
+                  - agreement_id
+                  - project_id
+                  - installment_key
+                  - evidence_asset_id
+                  - reason
+                  - agreement_status
+                  - confirmed_at
+                  - confirmation_time_recorded
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                pattern: ^[a-f0-9]{64}$
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+              history_complete:
+                const: false
+              original_documents_included:
+                const: false
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
+            - history_complete
             - original_documents_included
       required:
       - meta
