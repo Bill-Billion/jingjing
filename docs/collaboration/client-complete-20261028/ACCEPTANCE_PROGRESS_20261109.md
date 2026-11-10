@@ -2,7 +2,7 @@
 
 此表由验收登记生成；不将测试个数当功能数，不把未登记证据当未开发。来源条款和已批准更新都保留，不能通过修改标准凑通过。
 
-当前151条：单条通过 **12**，部分验证 **77**，未登记足够证据 **62**，明确受阻 **0**。这不是开发完成率。
+当前151条：单条通过 **16**，部分验证 **78**，未登记足够证据 **57**，明确受阻 **0**。这不是开发完成率。
 
 单条通过只覆盖该条登记的端和场景；接口条款通过不等于App页面通过。完整交付还需18组双方交付与共享规则实审、12条同版本同记录整链，以及固定包和上线条件。
 
@@ -14,7 +14,7 @@
 |---|---|---:|---:|---:|---:|---|
 |1|首次现货上架与试镜方案：服务器与接口|10|0|9|1|后端：进行中／待审；前端：进行中／待审|
 |2|机构逐人选择出镜授权：服务器与接口|15|2|11|2|后端：进行中／待审；前端：进行中／待审|
-|3|退回商品修改重提：服务器与接口|7|0|5|2|后端：进行中／待审；前端：进行中／待审|
+|3|退回商品修改重提：服务器与接口|7|0|6|1|后端：进行中／待审；前端：进行中／待审|
 |4|本人删除材料和处理进度：服务器与接口|6|0|4|2|后端：进行中／待审；前端：进行中／待审|
 |5|艺人肖像和作品封面时长：服务器与接口|11|0|8|3|后端：进行中／待审；前端：进行中／待审|
 |6|出品机构档案和精选艺人：服务器与接口|6|0|2|4|后端：进行中／待审；前端：交付待审／待审|
@@ -22,13 +22,13 @@
 |8|收藏和浏览记录：服务器与接口|5|0|4|1|后端：进行中／待审；前端：交付待审／待审|
 |9|正式产品反馈举报：服务器与接口|8|0|6|2|后端：进行中／待审；前端：交付待审／待审|
 |10|消息未读和全部已读：服务器与接口|6|0|4|2|后端：进行中／待审；前端：交付待审／待审|
-|11|统一合同作品和收入入口：服务器与接口|12|1|8|3|后端：进行中／待审；前端：交付待审／待审|
-|12|开票申请和人工处理：服务器与接口|5|0|3|2|后端：进行中／待审；前端：进行中／待审|
+|11|统一合同作品和收入入口：服务器与接口|12|1|9|2|后端：进行中／待审；前端：交付待审／待审|
+|12|开票申请和人工处理：服务器与接口|5|0|4|1|后端：进行中／待审；前端：进行中／待审|
 |13|更换登录手机号：服务器与接口|5|0|5|0|后端：进行中／待审；前端：交付待审／待审|
 |14|累计晶钻与记录说明：服务器与接口|9|0|8|1|后端：进行中／待审；前端：进行中／待审|
 |15|故事草稿与共创发起：服务器与接口|16|7|5|4|后端：进行中／待审；前端：进行中／待审|
-|16|全流程模拟服务及测试资料：服务器与接口|22|0|6|16|后端：进行中／待审；前端：进行中／待审|
-|17|12条完整业务跨端测试：服务器与接口|134|12|61|61|后端：进行中／待审；前端：进行中／待审|
+|16|全流程模拟服务及测试资料：服务器与接口|22|0|7|15|后端：进行中／待审；前端：进行中／待审|
+|17|12条完整业务跨端测试：服务器与接口|134|16|62|56|后端：进行中／待审；前端：进行中／待审|
 |18|甲方完整测试版定版交付：服务器与接口|9|0|0|9|后端：已认领／待审；前端：受阻／待审|
 
 ## 12条完整办理路线
@@ -80,17 +80,17 @@
 |ACC-DEL-05.02|供给上架<br>艺人/MCN自制视频经权利和内容审核后发布。；作者剧本门户停用不能连带关闭艺人视频上架。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-05.03|许可明示<br>非独家个人非商业分享默认范围及排除用途写进商品和订单。；买视频不取得模型、声音独用或再次AI生成权。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-05.04|CMS内容<br>类别、节日、SKU、价格、推荐位、上下架和附件版本可管理。；表单配置不含可执行代码，不允许草稿价直接成为正式价。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
-|ACC-DEL-06.01|现货独立路径<br>购买现成成片不填故事、不强制拥有数字人。；不能把现货带进定制工单。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
-|ACC-DEL-06.02|发放幂等<br>验签查单确认后发放购买权益。；重复回调、重复点击不重复发权或扣款。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
-|ACC-DEL-06.03|下载与许可<br>按买家/已购版本/用途控制文件访问。；链接过期可重取；退款/侵权处置须按规则控制新增分发。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
-|ACC-DEL-06.04|交付时序<br>付款解锁、验收、售后与清分分别记录。；验收期限未定不能混用48小时、3天、7天。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-06.01|现货独立路径<br>购买现成成片不填故事、不强制拥有数字人。；不能把现货带进定制工单。|单条已通过|api × 正常办理、失败分支|[证据1](../../../docs/reviews/stock-finance-acceptance-20261110/formal-api-report.json)<br>[证据2](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|单条范围已验；保留至组合版本复核，不自动关闭整组|
+|ACC-DEL-06.02|发放幂等<br>验签查单确认后发放购买权益。；重复回调、重复点击不重复发权或扣款。|单条已通过|api × 正常办理、失败分支|[证据1](../../../docs/reviews/stock-finance-acceptance-20261110/formal-api-report.json)|单条范围已验；保留至组合版本复核，不自动关闭整组|
+|ACC-DEL-06.03|下载与许可<br>按买家/已购版本/用途控制文件访问。；链接过期可重取；退款/侵权处置须按规则控制新增分发。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/reviews/stock-finance-acceptance-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
+|ACC-DEL-06.04|交付时序<br>付款解锁、验收、售后与清分分别记录。；验收期限未定不能混用48小时、3天、7天。|单条已通过|api × 正常办理、失败分支|[证据1](../../../docs/reviews/stock-finance-acceptance-20261110/formal-api-report.json)|单条范围已验；保留至组合版本复核，不自动关闭整组|
 |ACC-DEL-07.01|类型化付款计划<br>新合同定制规格为签约30%、脚本/图纸确认40%、最终验收30%，分别核实际确认和应付；旧30/60/10按原订单快照。人工样片50/50及试镜一次支付按各自已审规格，不混用定制分期。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-07.02|真实收银接线<br>调用已确认的渠道产品，回跳后向服务器查单。；取消/超时/未知结果不冒充失败可重扣或成功。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
 |ACC-DEL-07.03|补差与订单变更<br>订单内报价变更需对方确认并产生补差记录。；不建transport_fee字段、不用聊天文字改历史实收。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
-|ACC-DEL-07.04|退款补救<br>按订单行和履约证据申请，回调幂等、超额拦截、部分退款。；退款已申请与原路到账分开；券/积分/返佣联动。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-07.04|退款补救<br>按订单行和履约证据申请，回调幂等、超额拦截、部分退款。；退款已申请与原路到账分开；券/积分/返佣联动。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/stock-finance-acceptance-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-08.01|两层计算<br>样片18%、商单/试镜22%先扣，供给余额默认艺人80/MCN20。；样片100元有MCN应为平台18、MCN16.40、艺人65.60（无推荐人）。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
-|ACC-DEL-08.02|双重校验更新<br>计算器与财务来源校验/目标应付同步分版本。；不能只修gigs函数而被历史校验拒绝。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
-|ACC-DEL-08.03|历史隔离<br>旧订单按旧规则重放；新单用新规则；无法判定版本进复核。；禁止给旧合同静默补V5费率或重算已付。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-08.02|双重校验更新<br>计算器与财务来源校验/目标应付同步分版本。；不能只修gigs函数而被历史校验拒绝。|单条已通过|api × 正常办理、失败分支|[证据1](../../../docs/reviews/stock-finance-acceptance-20261110/formal-api-report.json)|单条范围已验；保留至组合版本复核，不自动关闭整组|
+|ACC-DEL-08.03|历史隔离<br>旧订单按旧规则重放；新单用新规则；无法判定版本进复核。；禁止给旧合同静默补V5费率或重算已付。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/stock-finance-acceptance-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-08.04|资金事实<br>净留、MCN、艺人、推荐人总额守恒；退款及小额尾差有据。；实际结算成功以通道证据为准；发行未来收入不从订单金额凭空分红。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-09.01|可约与报价<br>公开试镜开关与个人主页可见分开；总价含交通抽22%。；不新增实报交通分账豁免或固定妆造菜单。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-09.02|先付后接拒<br>付款托管成功后发邀约，艺人接受/拒绝/超时。；未接受退款不得计成长、返佣或开放联系。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
@@ -176,7 +176,7 @@
 |ACC-DEL-29.02|迁移和恢复<br>增量迁移保留旧规则、备份、恢复和账实校验。；不重建已跑MySQL、不强制删除旧记录。|未登记足够证据|operations × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
 |ACC-DEL-29.03|供应商验证<br>本次测试版验证隔离支付/实名/存储/模型/电子签模拟、失败恢复及正式环境拒绝模拟的关闭边界；真实供应商沙箱/正式产品权限、资金到账、实名/签署/模型质量和真实存储删除证据仍待外部验收，不能以本条隔离PASS宣称正式接入完成。|未登记足够证据|operations × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
 |ACC-DEL-29.04|发布边界<br>main、生产部署和真实收费另授权；阶段合integration不发生产。；正式签名缺失不得回退debug；未核验外部项保持限制。|未登记足够证据|operations × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
-|E2E-01|公开已审视频→查看非独家许可→真实测试付款确认→一次发权→播放下载→退款限制或侵权处置<br>现货不进故事卡；跨买家拒绝；重复回调不重复发权|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据4](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json)<br>[证据6](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据7](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
+|E2E-01|公开已审视频→查看非独家许可→真实测试付款确认→一次发权→播放下载→退款限制或侵权处置<br>现货不进故事卡；跨买家拒绝；重复回调不重复发权|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据4](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json)<br>[证据6](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据7](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)<br>[证据8](../../../docs/reviews/stock-finance-acceptance-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |E2E-02|选婚礼等品类→动态故事→报价合同→30%→派单→预览/补至90%→10%→最终验收<br>新合同已审规格采用签约30%、脚本/图纸确认40%、最终验收30%；未确认脚本不能支付中款，未完成最终确认和付款不能取得正式文件。比例须明确写入报价及合同；历史订单按原冻结快照，不追改30/60/10。|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据4](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)<br>[证据6](../../../docs/reviews/manual-production-acceptance-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |E2E-03|公开可约→一口价付款→艺人接拒→接受后会话→取样→买方确认→T+1清分<br>未接全退；无transport_fee；录用与履约分开|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/afternoon-audition-aftercare-20261104/acceptance-links.json)<br>[证据2](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据4](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/mac-mini-pr39-audition-delivery-20261103/PARTIAL_ACCEPTANCE.json)<br>[证据6](../../../docs/testing/evidence/mac-mini-pr39-audition-delivery-20261103/COMBINED_RETEST.json)<br>[证据7](../../../docs/testing/evidence/demo-combined-closure-20261103/acceptance-links.json)<br>[证据8](../../../docs/testing/evidence/team-next-stage-20261104/auditions/PARTIAL_ACCEPTANCE.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |E2E-04|有效通告→艺人单向投稿→感兴趣→客服工单→报价付款接受→双向会话<br>感兴趣不自动开聊或授予角色；重复回复只建一工单|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据2](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据3](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
