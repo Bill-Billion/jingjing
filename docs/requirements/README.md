@@ -1,6 +1,6 @@
 2026-11-02最新增量：[新合同包与当前需求变更](CONTRACT_CHANGES_20261102.md)优先处理与旧材料的冲突。原60项编号与来源保留，不能把历史参数当最新定稿。
 
-2026-11-09验收对账：原需求条款不变，机构批量旧“缺实现”描述已纠正；五条API验收已通过，80部分验证、66未登记足够证据。依据原文和实际断言见[本轮对账](../reviews/acceptance-reconciliation-20261109/REPORT.md)，全部151条见[逐项清单](../collaboration/client-complete-20261028/ACCEPTANCE_PROGRESS_20261109.md)。
+2026-11-10：七条人工定制/剧本入库后端标准本轮结案，累计12通过、77部分验证、62未登记足够证据；原文与最新适用预期保留。实际断言和限制见[本轮报告](../reviews/manual-production-acceptance-20261110/REPORT.md)，完整范围见[151条清单](../collaboration/client-complete-20261028/ACCEPTANCE_PROGRESS_20261109.md)。
 
 # 统一需求入口
 
