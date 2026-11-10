@@ -1003,8 +1003,13 @@
         "P14"
       ],
       "decision_refs": [],
-      "status": "PARTIAL",
-      "evidence": [],
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/reviews/recovery-refund-review-20261110/formal-api-report.json",
+          "sha256": "fa5e6904023a5c2bf2dbaba925c79076348d1004ea4f57a8f74a36032ba5758f"
+        }
+      ],
       "required_cases": [
         "normal",
         "reverse"
@@ -1033,7 +1038,8 @@
           ],
           "scope": "No expiring download-link refresh assertion or complete commercial-use journey in this batch"
         }
-      ]
+      ],
+      "acceptance_note": "当前是每次重新核权的受控下载接口，不生成公开签名链接；会话真实过期后以合成新会话重新请求同一文件，旧会话仍401，撤权的新会话403。买家/个人与机构/已购版本/商用范围和期限检查分别覆盖，退款与撤权禁止新增下载。未使用真实OSS或执行实际短信登录，不声称外部签名URL已验收。"
     },
     {
       "id": "ACC-DEL-06.04",
@@ -1191,8 +1197,13 @@
         "P22"
       ],
       "decision_refs": [],
-      "status": "PARTIAL",
-      "evidence": [],
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/reviews/recovery-refund-review-20261110/formal-api-report.json",
+          "sha256": "fa5e6904023a5c2bf2dbaba925c79076348d1004ea4f57a8f74a36032ba5758f"
+        }
+      ],
       "required_cases": [
         "normal",
         "reverse"
@@ -1211,7 +1222,8 @@
           ],
           "scope": "No voucher, growth, points and referral reversal on same refunded order in this batch"
         }
-      ]
+      ],
+      "acceptance_note": "按订单行申请并独审；超额/并发拒绝，部分退款与成功回执防重，审批不记到账。定制券当前30/40/30按净额计算、已用券不返；现货现金退款照常，成长撤回，已花晶钻记待冲回、未来获得先抵扣。新10%直推退款自动冲回，独立清分不重复。按适用业务分别同单验收，不强行让现货用制作券。渠道回执为合成，真实原路到账仍未验证。"
     },
     {
       "id": "ACC-DEL-08.01",
@@ -1300,8 +1312,13 @@
         "P14"
       ],
       "decision_refs": [],
-      "status": "PARTIAL",
-      "evidence": [],
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "docs/reviews/recovery-refund-review-20261110/formal-api-report.json",
+          "sha256": "fa5e6904023a5c2bf2dbaba925c79076348d1004ea4f57a8f74a36032ba5758f"
+        }
+      ],
       "required_cases": [
         "normal",
         "reverse"
@@ -1320,7 +1337,8 @@
           ],
           "scope": "Missing version is rejected; review queue creation, ownership and resolution not yet proven"
         }
-      ]
+      ],
+      "acceptance_note": "已知历史订单按原费率/快照重放，新规则不覆盖旧合同；无法判定的外部旧单由授权运营显式登记NEEDS_REVIEW，独立人员审核，仅VERIFIED_REFERENCE_ONLY，未知金额/条款保留，无付款事实/权益/新费率写入。录入者和交易方不能自审，越权/重复导入/旧版本操作受限。这是人工登记复核流程，不是自动识别所有旧库异常或自动迁移付款。"
     },
     {
       "id": "ACC-DEL-08.04",
@@ -4614,6 +4632,17 @@
             "STOCK-SAME-ORDER"
           ],
           "scope": "Trusted payment/refund proofs injected internally; no provider call"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/recovery-refund-review-20261110/partial-api-evidence.json",
+            "sha256": "f7c75f9806d6cf422efa978787a19a1fb4137cad00c395fd18012c39ec2add00"
+          },
+          "checks": [
+            "RECOVERY-API",
+            "REFERRAL-REFUND-API"
+          ],
+          "scope": "同一适用订单API检查，未覆盖App/网页和该路线全部场景；合成回执不是实际到账。"
         }
       ]
     },
@@ -5112,6 +5141,17 @@
             "BENEFIT-API-05"
           ],
           "scope": "同订单实际API或网页局部证据；正式状态不变。原生、全部权益类别、到期与其他完整预期仍须逐项验。"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/recovery-refund-review-20261110/partial-api-evidence.json",
+            "sha256": "f7c75f9806d6cf422efa978787a19a1fb4137cad00c395fd18012c39ec2add00"
+          },
+          "checks": [
+            "COUPON-REFUND-API",
+            "WALLET-REFUND-API"
+          ],
+          "scope": "同一适用订单API检查，未覆盖App/网页和该路线全部场景；合成回执不是实际到账。"
         }
       ]
     },
@@ -5244,6 +5284,16 @@
             "JOURNEY-UI-08"
           ],
           "scope": "余额、规则与记录双宽读取；仍缺：模拟充值、资格、续期、冻结及退款完整两端；真实资金服务未启用"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/recovery-refund-review-20261110/partial-api-evidence.json",
+            "sha256": "f7c75f9806d6cf422efa978787a19a1fb4137cad00c395fd18012c39ec2add00"
+          },
+          "checks": [
+            "WALLET-REFUND-API"
+          ],
+          "scope": "同一适用订单API检查，未覆盖App/网页和该路线全部场景；合成回执不是实际到账。"
         }
       ]
     },
@@ -7027,6 +7077,19 @@
       "NOT_RUN": 57,
       "PARTIAL": 78,
       "PASS": 16
+    }
+  },
+  "recovery_refund_review_20261110": {
+    "report": "docs/reviews/recovery-refund-review-20261110/REPORT.md",
+    "closed_ids": [
+      "ACC-DEL-06.03",
+      "ACC-DEL-07.04",
+      "ACC-DEL-08.03"
+    ],
+    "counts": {
+      "NOT_RUN": 57,
+      "PARTIAL": 75,
+      "PASS": 19
     }
   }
 }
