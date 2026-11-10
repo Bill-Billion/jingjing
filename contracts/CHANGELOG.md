@@ -1,3 +1,9 @@
+## 0.31.53-rc.1 — 素材与交易副本补齐办理背景
+
+既有资料导出ARTIST_MATERIALS/CONTENT兼容增加created_at与artist_person_id；只返回申请人本人档案关联，无本人关联时为null，不表示文件无主。分类、他人和不存在的素材游标返回400。原受控原件下载不变，不返回存储地址、上传操作人或内部请求哈希。
+
+既有交易副本ORDERS/SUMMARY兼容增加created_at和cancel_reason（未记录为null）；PAYMENTS/REFUNDS增加expires_at，只有付款原记录存在有效期限时返回，退款为null。下单/上传时间不是签署、到账或交付时间；到期字段不是重新开放付款的依据。旧字段、路径和0211迁移不变；新增素材字段结构校验，旧合规记录兼容。
+
 ## 0.31.52-rc.1 — 本人换号、参演确认与阶段确认历史
 
 既有本人及运营按申请读取 account-data 路径兼容新增 PHONE_CHANGE_EVENTS（PROFILE）、PARTICIPATION_CONFIRMATIONS 与 PARTICIPATION_MILESTONES（CONTRACTS）。独立分页，游标为本分类、本人仍保留记录的64位引用；不能跨分类/账号使用。只含本人个人身份操作，机构员工行为不混入。历史会签摘要与当前摘要分别保留，比对结果不等于电子签效力。旧阶段确认未存时间，返回 confirmed_at=null / confirmation_time_recorded=false；不得补写假时间。证据仅给关联编号，仍走原下载授权；副本不含原件、不保证全部历史、不自动关闭申请。无新路径/迁移，原调用兼容。

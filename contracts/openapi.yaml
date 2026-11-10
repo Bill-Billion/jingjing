@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.52-rc.1
+  version: 0.31.53-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -64133,6 +64133,49 @@ components:
       required:
       - meta
       - data
+    PrivacyAssetCopy:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        purpose:
+          enum:
+          - AVATAR_MATERIAL
+          - WORK_CONTENT
+        media_type:
+          type: string
+          minLength: 1
+          maxLength: 120
+        byte_size:
+          type: integer
+          minimum: 0
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        current_status:
+          enum:
+          - UPLOADING
+          - READY
+          - FAILED
+        - ERASURE_PENDING
+        - ERASED
+        created_at:
+          type: string
+          format: date-time
+        artist_person_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - id
+      - purpose
+      - media_type
+      - byte_size
+      - content_sha256
+      - current_status
     PrivacyDataExportResponse:
       type: object
       additionalProperties: false
@@ -64176,6 +64219,18 @@ components:
           - items
           - next_cursor
           - coverage
+          allOf:
+          - if:
+              properties:
+                category:
+                  enum:
+                  - ARTIST_MATERIALS
+                  - CONTENT
+            then:
+              properties:
+                items:
+                  items:
+                    $ref: '#/components/schemas/PrivacyAssetCopy'
       required:
       - meta
       - data
@@ -70316,6 +70371,15 @@ components:
           type: integer
           minimum: 0
           maximum: 900000000000
+        created_at:
+          type: string
+          format: date-time
+        cancel_reason:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 2000
       required:
       - id
       - current_status
@@ -70407,6 +70471,15 @@ components:
             - key
             - trigger
             - allocations
+        created_at:
+          type: string
+          format: date-time
+        cancel_reason:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          maxLength: 2000
       required:
       - id
       - current_status
@@ -70479,6 +70552,11 @@ components:
           - 'null'
         created_at:
           type: string
+          format: date-time
+        expires_at:
+          type:
+          - string
+          - 'null'
           format: date-time
       required:
       - id

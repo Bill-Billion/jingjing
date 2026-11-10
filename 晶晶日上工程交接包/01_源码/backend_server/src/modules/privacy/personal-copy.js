@@ -33,7 +33,11 @@ async function exportPersonalCopy(tx,a,request,i){
  if(i.category==='PROFILE')return {category:i.category,items:[{account_id:a.id,display_name:a.display_name,object_version:a.object_version}],next_cursor:null,coverage:'ACCOUNT_PROFILE_ONLY'};
  let rows,coverage;const args=[a.id,i.after||'',i.limit+1];
  if(i.category==='ARTIST_MATERIALS'||i.category==='CONTENT'){
-  [rows]=await tx.execute("SELECT s.id,s.purpose,s.media_type,s.byte_size,s.content_sha256,s.current_status FROM supply_assets s JOIN parties p ON p.id=s.owner_party_id WHERE p.personal_account_id=? AND p.kind='PERSON' AND s.id>? AND s.purpose=? ORDER BY s.id LIMIT ?",[args[0],args[1],i.category==='CONTENT'?'WORK_CONTENT':'AVATAR_MATERIAL',args[2]]);
+  const purpose=i.category==='CONTENT'?'WORK_CONTENT':'AVATAR_MATERIAL';
+  const q="SELECT s.id,s.purpose,s.media_type,s.byte_size,s.content_sha256,s.current_status,s.created_at,CASE WHEN ap.kind='PERSON' AND ap.personal_account_id=p.personal_account_id THEN a.id ELSE NULL END AS artist_person_id FROM supply_assets s JOIN parties p ON p.id=s.owner_party_id LEFT JOIN artist_asset_links l ON l.asset_id=s.id LEFT JOIN artist_people a ON a.id=l.person_id LEFT JOIN parties ap ON ap.id=a.owner_party_id WHERE p.personal_account_id=? AND p.kind='PERSON' AND s.purpose=?";
+  if(i.after&&!(await tx.execute(q+' AND s.id=?',[a.id,purpose,i.after]))[0].length)throw error('INVALID_CURSOR',400);
+  [rows]=await tx.execute(q+' AND s.id>? ORDER BY s.id LIMIT ?',[a.id,purpose,args[1],args[2]]);
+  rows=rows.map(r=>({...r,created_at:require('../artists/context').instant(r.created_at)}));
   coverage=i.category==='CONTENT'?'OWN_CONTENT_METADATA_ONLY':'OWN_MATERIAL_METADATA_ONLY';
  }else if(i.category==='PRIVATE_STORY'){
   [rows]=await tx.execute("SELECT r.* FROM customization_requests r JOIN parties p ON p.id=r.party_id WHERE p.kind='PERSON' AND p.personal_account_id=? AND r.created_by=p.personal_account_id AND r.id>? ORDER BY r.id LIMIT ?",args);

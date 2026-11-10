@@ -11982,6 +11982,133 @@
           "original_documents_included": false
         }
       }
+    },
+    {
+      "name": "material linkage",
+      "schema": "PrivacyDataExportResponse",
+      "value": {
+        "meta": {
+          "request_id": "c6dab9ad-8c96-459b-a351-7b43febb08f7",
+          "actor": {
+            "account_id": "916cdfbf-77fb-41ae-9a68-0a2e768a409e"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "category": "ARTIST_MATERIALS",
+          "items": [
+            {
+              "id": "38739694-615c-4248-92da-daba72d7972a",
+              "purpose": "AVATAR_MATERIAL",
+              "media_type": "text/plain",
+              "byte_size": 25,
+              "content_sha256": "f943923a584e7c66de1b86514f90fe847138f78149a2bf8d4193a5ae9651dd43",
+              "current_status": "READY",
+              "created_at": "2026-11-10T10:24:23.963Z",
+              "artist_person_id": "06c0bd7c-51a8-48ed-b788-8a1ece2061b2"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_MATERIAL_METADATA_ONLY"
+        }
+      }
+    },
+    {
+      "name": "cancelled order context",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "66bf5a8a-c8a0-473f-8046-3a25a1e35a83",
+          "actor": {
+            "account_id": "8b9ef145-26d1-4de1-bd72-e5198dff0f0c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "SUMMARY",
+          "order_id": "04f08ff0-d2d8-4c07-ac23-28f590f90963",
+          "items": [
+            {
+              "id": "04f08ff0-d2d8-4c07-ac23-28f590f90963",
+              "created_at": "2026-11-10T10:24:25.866Z",
+              "cancel_reason": "Synthetic customer cancelled before payment",
+              "current_status": "CANCELLED",
+              "object_version": 2,
+              "buyer_party_id": "ac9b70a8-bca0-4301-9b1e-4324899222ff",
+              "merchant_party_id": "05c58058-4b58-4de0-81ac-669b710bd390",
+              "roles": [
+                "BUYER"
+              ],
+              "currency": "CNY",
+              "total_minor": 10000,
+              "financial": {
+                "received_minor": 0,
+                "refunded_minor": 0,
+                "net_minor": 0
+              },
+              "installments": [
+                {
+                  "key": "first",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "film",
+                      "amount_minor": 10000
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
+    },
+    {
+      "name": "payment deadline",
+      "schema": "PrivacyTransactionCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "cbe89eeb-9999-4dec-926d-39296c3a55d1",
+          "actor": {
+            "account_id": "8b9ef145-26d1-4de1-bd72-e5198dff0f0c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "PAYMENTS",
+          "order_id": "ab00f07b-65ac-4a34-a627-0920c703e6e2",
+          "items": [
+            {
+              "id": "ed13c0db-caee-40f4-99e7-09ff8f0a858e",
+              "order_id": "ab00f07b-65ac-4a34-a627-0920c703e6e2",
+              "parent_id": null,
+              "kind": "PAYMENT",
+              "current_status": "SUCCEEDED",
+              "object_version": 2,
+              "provider": "ALIPAY",
+              "environment": "SANDBOX",
+              "currency": "CNY",
+              "amount_minor": 10000,
+              "installment_key": "first",
+              "allocations": [
+                {
+                  "line_id": "film",
+                  "amount_minor": 10000
+                }
+              ],
+              "reason": null,
+              "expires_at": "2026-11-10T10:54:24.185Z",
+              "created_at": "2026-11-10T10:24:24.186Z"
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_TRADE_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED"
+        }
+      }
     }
   ],
   "contract_version": "0.31.48-rc.1",

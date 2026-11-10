@@ -53,9 +53,23 @@ test('personal copy provides bounded records and actual private bytes without cl
   const asset=async id=>(await db.execute('SELECT id,content_sha256 FROM supply_assets WHERE id=?',[id]))[0][0];
   const material=await asset(own.look.data.material_asset_ids[0]),content=await S.upload(buyer,'WORK_CONTENT'),foreign=await asset(other.look.data.material_asset_ids[0]),evidence=await asset(own.production.data.evidence_asset_ids[0]);
   const download=(asset,category,person=buyer,r=request)=>fetch(base+r.id+'/copies/'+asset.id+'/content?category='+category,{headers:{Authorization:'Bearer '+person.token}});
+  await t.test('material metadata includes recorded creation and only the applicants own artist link',async()=>{
+   const read=cat=>get('/data?category='+cat+'&limit=100');
+   const item=ok(await read('ARTIST_MATERIALS')).items.find(x=>x.id===material.id);assert.ok(item.created_at.endsWith('Z'));assert.equal(item.artist_person_id,own.person.id);
+   const work=ok(await read('CONTENT')).items.find(x=>x.id===content.id);assert.equal(work.artist_person_id,null);assert.ok(work.created_at.endsWith('Z'));
+   for(const x of [item,work])for(const field of ['object_key','created_by','operation_hash','acting_party_id'])assert.equal(x[field],undefined);
+   for(const [cat,cursor] of [['ARTIST_MATERIALS',foreign.id],['CONTENT',material.id],['ARTIST_MATERIALS',content.id]])assert.equal((await get('/data?category='+cat+'&cursor='+cursor)).status,400);
+   let cursor='',ids=[];do{const page=ok(await get('/data?category=ARTIST_MATERIALS&limit=1'+(cursor?'&cursor='+cursor:'')));ids.push(...page.items.map(x=>x.id));cursor=page.next_cursor;}while(cursor);assert.equal(ids.length,new Set(ids).size);assert.ok(ids.includes(material.id));
+   // A malformed/cross-person relation must not export the other person's identity.
+   const [[link]]=await db.execute('SELECT person_id FROM artist_asset_links WHERE asset_id=?',[material.id]);
+   try{await db.execute('UPDATE artist_asset_links SET person_id=? WHERE asset_id=?',[other.person.id,material.id]);assert.equal(ok(await read('ARTIST_MATERIALS')).items.find(x=>x.id===material.id).artist_person_id,null);}finally{await db.execute('UPDATE artist_asset_links SET person_id=? WHERE asset_id=?',[link.person_id,material.id]);}
+  });
   await t.test('actual file bytes match recorded hash; wrong person, purpose and request scope rejected',async()=>{
    for(const [asset,category] of [[material,'ARTIST_MATERIALS'],[content,'CONTENT']]){const response=await download(asset,category);assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(require('node:crypto').createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),asset.content_sha256);}
    for(const [asset,cat,person,r,status] of [[foreign,'ARTIST_MATERIALS',buyer,request,404],[evidence,'ARTIST_MATERIALS',buyer,request,404],[material,'CONTENT',buyer,request,404],[material,'ARTIST_MATERIALS',outsider,request,404],[material,'ARTIST_MATERIALS',producer,request,404],[material,'ARTIST_MATERIALS',buyer,restricted,409],[material,'ARTIST_MATERIALS',buyer,deletion,409]])assert.equal((await download(asset,cat,person,r)).status,status);
+  });
+  await t.test('erased file retains only metadata and cannot be downloaded as a usable original',async()=>{
+   try{for(const state of ['ERASURE_PENDING','ERASED']){await db.execute("UPDATE supply_assets SET current_status=? WHERE id=?",[state,material.id]);const item=ok(await get('/data?category=ARTIST_MATERIALS')).items.find(x=>x.id===material.id);assert.equal(item.current_status,state);assert.equal(item.artist_person_id,own.person.id);assert.equal((await download(material,'ARTIST_MATERIALS')).status,409);}}finally{await db.execute("UPDATE supply_assets SET current_status='READY' WHERE id=?",[material.id]);}
   });
   await t.test('withdrawn access during storage read cannot send bytes to the client',async()=>{
    afterRead=()=>db.execute("UPDATE supply_assets SET current_status='FAILED' WHERE id=?",[material.id]);

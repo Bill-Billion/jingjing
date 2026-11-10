@@ -70,6 +70,15 @@ test('personal trade copies preserve receipts, refunds and historical contracts'
    const unapproved=await trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:payment.id,allocations:[{line_id:'film',amount_minor:1000}],reason:'Synthetic unapproved request',operation_key:key()});
    assert.equal(ok(await page('REFUNDS')).items.find(x=>x.id===unapproved.id).current_status,'REQUESTED');assert.equal(ok(await page('SUMMARY')).items[0].financial.refunded_minor,2500);
   });
+  await t.test('creation, cancellation and payment deadline are actual recorded facts, not settlement timestamps',async()=>{
+   const s=ok(await page('SUMMARY')).items[0];assert.ok(s.created_at.endsWith('Z'));assert.equal(s.cancel_reason,null);
+   assert.equal(ok(await page('ORDERS')).items.find(x=>x.id===order.id).created_at,s.created_at);
+   assert.equal(ok(await page('PAYMENTS')).items.find(x=>x.id===payment.id).expires_at,payment.data.expires_at);assert.equal(ok(await page('REFUNDS')).items.find(x=>x.id===refund.id).expires_at,null);
+   const cancellable=await make();const cancelled=await trade.cancel(buyer.ctx,{record_id:cancellable.id,party_id:buyer.personal_party_id,expected_version:cancellable.object_version,reason:'Synthetic customer cancelled before payment',operation_key:key()});
+   const mine=ok(await page('SUMMARY',{record:cancelled})).items[0],supplier=ok(await page('SUMMARY',{who:seller,req:sellerRequest,record:cancelled})).items[0];assert.equal(mine.cancel_reason,'Synthetic customer cancelled before payment');assert.equal(supplier.cancel_reason,mine.cancel_reason);assert.equal(mine.financial.received_minor,0);
+   const [[row]]=await db.execute('SELECT data_json,data_sha256 FROM trade_records WHERE id=?',[payment.id]),original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;
+   try{for(const expires_at of ['synthetic-invalid-time','2026-02-30T00:00:00.000Z']){const bad={...original,expires_at};await db.execute('UPDATE trade_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(bad),digest(bad),payment.id]);assert.equal((await page('PAYMENTS')).status,503);}}finally{await db.execute('UPDATE trade_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(original),row.data_sha256,payment.id]);}
+  });
   await t.test('disabled account is rechecked, reads do not complete the privacy request',async()=>{
    try{await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[buyer.account_id]);assert.notEqual((await page('CONTRACT')).status,200);}finally{await db.execute("UPDATE identity_accounts SET current_status='ACTIVE' WHERE id=?",[buyer.account_id]);}
    assert.equal((await repo.read(buyer.ctx,{request_id:all.id})).current_status,'RECEIVED');
