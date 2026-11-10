@@ -1,3 +1,7 @@
+## 0.31.49-rc.1 — 运营按个人申请范围准备资料副本
+
+新增五个 `/privacy/operations/requests/{request_id}` 只读取数入口：copy-options、account-data、transaction-data、stories/{story_id}/data、data。复用本人脱敏投影和分页；PRIVACY_HANDLE有效、非申请人本人、申请为QUERY/COPY且处于处理中/待补/待复核时才可读，每次成功读取留记录。不提供供应商原件，不自动形成完整副本或结案。原本人入口及迁移0211不变；前端在原本人资料/运营办理包接续。
+
 ## 0.31.48-rc.1 — 本人使用记录副本
 
 原 account-data 新增 GUARDIAN_SESSIONS（本人时段申请回执）和 PERSONAL_USAGE_STATE（本人当前提醒状态）；不新增采集，不更改计时与监护规则。监护人不能用本人副本导出儿童历史；回执不是实时通行权限，累计预留不可相加或当实际用量。迁移仍 0211，旧分类兼容。

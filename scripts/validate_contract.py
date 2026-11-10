@@ -200,6 +200,7 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.update({'listGuardianSuitableContent','downloadGuardianSuitablePreview'})
             account_scoped_supply.update({'importDailyReconciliationStatement', 'recordDailyReconciliationManualEvidence', 'createDailyReconciliation', 'getDailyReconciliationHistory', 'reviewDailyReconciliation', 'reopenDailyReconciliation', 'getDailyReconciliation', 'downloadDailyReconciliationEvidence', 'listDailyReconciliationFacts', 'compareDailyReconciliation', 'listDailyReconciliations'})
             account_scoped_supply.add('getOperatorInvoiceCommandResult')
+            account_scoped_supply.update({'getPrivacyTransactionCopyForOperations', 'exportPrivacyDataForOperations', 'getPrivacyAccountCopyForOperations', 'getPrivacyStoryCopyForOperations', 'getPrivacyCopyOptionsForOperations'})
             account_scoped_supply.add('downloadAuditionDisputeEvidence')
             account_scoped_supply.add('listNoticeCaseQuoteOptions')
             account_scoped_supply.update({'listInvoiceRequestsForOperator', 'downloadInvoiceDocumentForOperator', 'listInvoiceDocumentsForOperator', 'downloadInvoiceEvidenceForOperator', 'listInvoiceHistoryForOperator', 'actOnInvoiceForOperator', 'getInvoiceRequestForOperator'})

@@ -1,5 +1,5 @@
 {
-  "version": "0.31.48-rc.1",
+  "version": "0.31.49-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -625,7 +625,12 @@
     "getOrganizationBatch",
     "getDiscoveryRecommendations",
     "getDiscoveryMatches",
-    "getEngagementRankingExplanation"
+    "getEngagementRankingExplanation",
+    "getPrivacyCopyOptionsForOperations",
+    "getPrivacyAccountCopyForOperations",
+    "getPrivacyTransactionCopyForOperations",
+    "getPrivacyStoryCopyForOperations",
+    "exportPrivacyDataForOperations"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1414,5 +1419,17 @@
     "report": "docs/reviews/privacy-usage-closure-20261109/REPORT.md",
     "production_enabled": false,
     "limits": "Request receipts and current state only, not actual complete usage history; original evidence remains subject to separate authorization."
+  },
+  "privacy_operator_copy_evidence": {
+    "test": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-response-delivery.integration.test.cjs",
+    "operations": [
+      "getPrivacyCopyOptionsForOperations",
+      "getPrivacyAccountCopyForOperations",
+      "getPrivacyTransactionCopyForOperations",
+      "getPrivacyStoryCopyForOperations",
+      "exportPrivacyDataForOperations"
+    ],
+    "scope": "Scoped redacted projections only, independent review and request-bound bytes; not complete provider export.",
+    "production_enabled": false
   }
 }

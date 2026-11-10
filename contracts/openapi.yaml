@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.48-rc.1
+  version: 0.31.49-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33590,6 +33590,387 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/privacy/operations/requests/{request_id}/copy-options:
+    get:
+      operationId: getPrivacyCopyOptionsForOperations
+      summary: 运营按申请范围读取脱敏资料
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyCopyOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: '仅PRIVACY_HANDLE有效权限，申请为QUERY/COPY且处于PROCESSING、FOLLOW_UP或AWAITING_REVIEW；不得处理自己的申请。按申请人及范围复用本人脱敏投影，逐页留查询记录，不接受指定其他账号，不自动生成答复或结案，不开放供应商原件。
+
+        仅本人且按申请范围返回分页副本；coverage明确范围，不自动完成隐私申请；不导出供应商凭据。'
+  /api/v1/privacy/operations/requests/{request_id}/account-data:
+    get:
+      operationId: getPrivacyAccountCopyForOperations
+      summary: 运营按申请范围读取脱敏资料
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: section
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ACCOUNT
+          - PREFERENCES
+          - ARTISTS
+          - WALLET
+          - FINANCE
+          - FINANCE_AGREEMENTS
+          - LICENSE_AGREEMENTS
+          - PARTICIPATION_AGREEMENTS
+          - AGENCY_AGREEMENTS
+          - SESSION_RECORDS
+          - PHONE_CHANGES
+          - IDENTITY_CHECKS
+          - SUPPORT_TICKETS
+          - SUPPORT_MESSAGES
+          - INVOICE_REQUESTS
+          - INVOICE_HISTORY
+          - INVOICE_DOCUMENTS
+          - FAVORITES
+          - BROWSING_HISTORY
+          - COLLECTION_SETTINGS
+          - PRIVACY_REQUESTS
+          - PRIVACY_RESPONSES
+          - PRIVACY_EVENTS
+          - PRIVACY_ACTIONS
+          - PRIVACY_EXECUTIONS
+          - NOTIFICATION_DELIVERIES
+          - GUARDIAN_LINKS
+          - ENGAGEMENT_RECORDS
+          - GROWTH_RECORDS
+          - REFERRAL_COMMISSIONS
+          - REWARD_GRANTS
+          - LOTTERY_DRAWS
+          - REWARD_FULFILLMENT
+          - REWARD_DISCOUNTS
+          - NOTIFICATION_READS
+          - GUARDIAN_USAGE
+          - GUARDIAN_SESSIONS
+          - PERSONAL_USAGE_STATE
+          - GUARDIAN_CONTROLS
+          - GUARDIAN_CASES
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 36
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyAccountCopyPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: '仅PRIVACY_HANDLE有效权限，申请为QUERY/COPY且处于PROCESSING、FOLLOW_UP或AWAITING_REVIEW；不得处理自己的申请。按申请人及范围复用本人脱敏投影，逐页留查询记录，不接受指定其他账号，不自动生成答复或结案，不开放供应商原件。
+
+        ACCOUNT/PREFERENCES/ARTISTS需要PROFILE；WALLET/FINANCE需要TRANSACTIONS；四类AGREEMENTS需要CONTRACTS。ALL兼容。仅本人个人身份为当事人的记录，机构经办权限不扩大范围。许可复制历史封存约定；协议副本不附签署证据，不凭状态推断已签。每页最多100，FINANCE游标是十进制字符串，其余列表是UUID。读取不自动结案。
+        SESSION_RECORDS/PHONE_CHANGES属于PROFILE，仅提供仍保留的会话/换号记录，history_complete=false；会话游标为64位脱敏副本引用，不能用于登录；原游标对应记录已清理时返回400，客户端重新分页。凭据、验证码、完整号码不提供，不延长保留时间。
+
+        SUPPORT_TICKETS/SUPPORT_MESSAGES/FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS属于PROFILE；INVOICE_REQUESTS/INVOICE_HISTORY/INVOICE_DOCUMENTS属于TRANSACTIONS。仅本人个人主体，排除机构经办。消息游标为记录UUID.版本号，收藏浏览为十进制序号；游标记录已清理返回400，重新分页。浏览沿原留存配置清理且history_complete=false；失权公开资料只保留引用，标题城市为null。票据仅ISSUED/SUPERSEDED，脱敏副本不是票据原件；原件按原业务受控下载。所有分类不自动办结申请。
+
+        PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动仅十类本人记录白名单，机构/评委/设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
+  /api/v1/privacy/operations/requests/{request_id}/transaction-data:
+    get:
+      operationId: getPrivacyTransactionCopyForOperations
+      summary: 运营按申请范围读取脱敏资料
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: section
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ORDERS
+          - SUMMARY
+          - PAYMENTS
+          - REFUNDS
+          - JOURNAL
+          - CONTRACT
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - in: query
+        name: order_id
+        description: ORDERS不得提供；其他section必填。
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyTransactionCopyPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: '仅PRIVACY_HANDLE有效权限，申请为QUERY/COPY且处于PROCESSING、FOLLOW_UP或AWAITING_REVIEW；不得处理自己的申请。按申请人及范围复用本人脱敏投影，逐页留查询记录，不接受指定其他账号，不自动生成答复或结案，不开放供应商原件。
+
+        ORDERS列本人个人买卖订单；其余section必填order_id。机构订单不能凭经办人身份导出。CONTRACT须申请CONTRACTS，钱账须TRANSACTIONS；ALL均可。游标必须来自同订单同section。合同去除已知内部审核字段并给出独立副本摘要，原条款不改；NOT_SIGNED不是已签约，SANDBOX不是实款，读取不自动结案。钱包、清分与其他业务协议不在此接口范围。'
+  /api/v1/privacy/operations/requests/{request_id}/stories/{story_id}/data:
+    get:
+      operationId: getPrivacyStoryCopyForOperations
+      summary: 运营按申请范围读取脱敏资料
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: story_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: section
+        in: query
+        required: true
+        schema:
+          enum:
+          - SUBMISSIONS
+          - SUPPLEMENTS
+          - ATTACHMENTS
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyStoryCopyPageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: '仅PRIVACY_HANDLE有效权限，申请为QUERY/COPY且处于PROCESSING、FOLLOW_UP或AWAITING_REVIEW；不得处理自己的申请。按申请人及范围复用本人脱敏投影，逐页留查询记录，不接受指定其他账号，不自动生成答复或结案，不开放供应商原件。
+
+        仅本人个人故事；机构员工即使创建机构故事也不能从本人副本导出。SUBMISSIONS按提交次序、SUPPLEMENTS按补件次序分页，ATTACHMENTS按ID分页。游标必须来自同故事同section，草稿与正式版分开，不返回运营账号或存储键，也不自动结案。'
+  /api/v1/privacy/operations/requests/{request_id}/data:
+    get:
+      operationId: exportPrivacyDataForOperations
+      summary: 运营按申请范围读取脱敏资料
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: category
+        in: query
+        required: true
+        schema:
+          enum:
+          - PROFILE
+          - ARTIST_MATERIALS
+          - PRIVATE_STORY
+          - TRANSACTIONS
+          - CONTENT
+          - CONTRACTS
+          - DIGITAL_MODELS
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyDataExportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: '仅PRIVACY_HANDLE有效权限，申请为QUERY/COPY且处于PROCESSING、FOLLOW_UP或AWAITING_REVIEW；不得处理自己的申请。按申请人及范围复用本人脱敏投影，逐页留查询记录，不接受指定其他账号，不自动生成答复或结案，不开放供应商原件。
+
+        仅本人且按申请范围返回分页副本；coverage明确范围，不自动完成隐私申请；不导出供应商凭据。'
+
 components:
   securitySchemes:
     bearerAuth:

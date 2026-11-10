@@ -32,7 +32,7 @@ function createPrivacyRepository(db,{resolvePrincipal=async()=>null,calendar={},
  Object.assign(api,require('./closure-clock').methods({db,actor,operator,load,owned,command,change,match,decode:checked}));
  Object.assign(api, require('./actions').createPrivacyActions({db, resolvePrincipal, actor, load, owned, command, change, match, decode:checked}));
  const store=require('./erasure').storageFor(db,{env,storageFactory});
- Object.assign(api,require('./execution').createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode:checked,env,storageDescriptor:store.descriptor}));
+ Object.assign(api,require('./execution').createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode:checked,event,env,storageDescriptor:store.descriptor}));
  return api;
 }
 module.exports={createPrivacyRepository};

@@ -42,12 +42,27 @@ async function closureBlockers(tx,account){
  }
  return [...new Set(blocks)];
 }
-function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor,env={}}){
+function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor,event,env={}}){
  const get=async(tx,key)=>{const r=await one(tx,'SELECT * FROM privacy_executions WHERE id=? FOR UPDATE',[id(key)]);if(!r)throw error('PRIVACY_EXECUTION_NOT_FOUND',404);r.payload=checked(r.payload_json,r.payload_sha256);return r;};
  async function access(tx,ctx,i,{exclusive=false}={}){
   const a=await actor(tx,ctx,exclusive?'FOR UPDATE':'FOR SHARE'),request=await load(tx,i.request_id);
   if(i.operations)await operator(tx,a);else owned(a,request);
   return {a,request};
+ }
+ // Operators use the same redacted projections as the applicant, never a raw account dump.
+ async function copyRead(tx,ctx,i,read){
+  const {a,request}=await access(tx,ctx,i),spec=decode(request.request_json,request.request_sha256);
+  if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+  let subject=a;
+  if(i.operations){
+   if(a.id===request.account_id)throw error('SELF_REVIEW_FORBIDDEN');
+   if(!['PROCESSING','FOLLOW_UP','AWAITING_REVIEW'].includes(request.current_status))throw error('PRIVACY_STATE_CONFLICT',409);
+   subject=await one(tx,'SELECT * FROM identity_accounts WHERE id=? FOR SHARE',[request.account_id]);
+   if(!subject)throw error('PRIVACY_REQUEST_NOT_FOUND',404);
+  }
+  const result=await read(subject,spec);
+  if(i.operations)await event(tx,a,request,'COPY_DATA_ACCESSED','工作人员按申请范围读取脱敏资料：'+(i.section||i.category||'COPY_OPTIONS'));
+  return result;
  }
  async function dto(tx,r){
   const p=r.payload||checked(r.payload_json,r.payload_sha256),j=r.job_id?await one(tx,'SELECT status,last_error FROM platform_jobs WHERE id=?',[r.job_id]):null;
@@ -233,24 +248,12 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   },
   async exportData(ctx,i){
    if(i.after)id(i.after);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
-   return db.withTransaction(async tx=>{
-    const {a,request}=await access(tx,ctx,{...i,operations:false}),s=decode(request.request_json,request.request_sha256);
-    if(!['QUERY','COPY'].includes(s.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-    return require('./personal-copy').exportPersonalCopy(tx,a,s,i);
-   });
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').exportPersonalCopy(tx,a,s,i)));
   },
-  async copyOptions(ctx,i){return db.withTransaction(async tx=>{
-   const {request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
-   if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-   return require('./personal-copy').copyOptions(spec);
-  });},
+  async copyOptions(ctx,i){return db.withTransaction(tx=>copyRead(tx,ctx,i,(_a,s)=>require('./personal-copy').copyOptions(s)));},
   async storyCopy(ctx,i){
    if(i.after)id(i.after);id(i.story_id);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
-   return db.withTransaction(async tx=>{
-    const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
-    if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-    return require('./personal-copy').storyCopy(tx,a.id,spec,i);
-   });
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').storyCopy(tx,a.id,s,i)));
   },
   async copyFile(ctx,i){return db.withTransaction(async tx=>{
    id(i.asset_id);const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
@@ -259,15 +262,11 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   });},
   async accountCopy(ctx,i){
    if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
-   return db.withTransaction(async tx=>{const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);return require('./account-copy').page(tx,a,spec,i,env);});
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./account-copy').page(tx,a,s,i,env)));
   },
   async transactionCopy(ctx,i){
    if(i.after)id(i.after);if(i.order_id!==undefined)id(i.order_id);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
-   return db.withTransaction(async tx=>{
-    const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
-    if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-    return require('./personal-copy').transactionCopy(tx,a.id,spec,i);
-   });
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').transactionCopy(tx,a.id,s,i)));
   },
  };
 }

@@ -8,7 +8,7 @@ test('privacy responses require the actual reviewed files before publication',{s
  const S=await require('./support/customization-delivery.cjs').seed(db),{producer,buyer,reviewer,outsider}=S.people;await S.grant(producer,'PRIVACY_HANDLE');await S.grant(producer,'PRIVACY_REVIEW');await S.grant(reviewer,'PRIVACY_HANDLE');await S.grant(reviewer,'PRIVACY_REVIEW');
  const proof=await S.assets.upload(producer.ctx,{party_id:producer.acting_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic redacted privacy copy'),operation_key:key()});
  server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1/privacy',fixtures=[];
- async function call(method,url,who=buyer,body,version=null,operation=key(),party=null){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...party?{'X-Acting-Party':party}:{},...body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':operation},...version===null?{}:{'If-Match':'"'+version+'"'}},...body===undefined?{}:{body:JSON.stringify(body)}});if(!(res.headers.get('content-type')||'').includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.startsWith('/preferences')?'PrivacyPreferencesResponse':url.endsWith('/history')?'PrivacyHistoryResponse':value.data?.items?'PrivacyListResponse':'PrivacyRequestResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
+ async function call(method,url,who=buyer,body,version=null,operation=key(),party=null){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...party?{'X-Acting-Party':party}:{},...body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':operation},...version===null?{}:{'If-Match':'"'+version+'"'}},...body===undefined?{}:{body:JSON.stringify(body)}});if(!(res.headers.get('content-type')||'').includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.includes('/account-data?')?'PrivacyAccountCopyPageResponse':url.includes('/transaction-data?')?'PrivacyTransactionCopyPageResponse':url.includes('/stories/')&&url.includes('/data?')?'PrivacyStoryCopyPageResponse':url.includes('/data?')?'PrivacyDataExportResponse':url.endsWith('/copy-options')?'PrivacyCopyOptionsResponse':url.startsWith('/preferences')?'PrivacyPreferencesResponse':url.endsWith('/history')?'PrivacyHistoryResponse':value.data?.items?'PrivacyListResponse':'PrivacyRequestResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
 
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;};
  const rejects=r=>assert.notEqual(r.status,200,JSON.stringify(r));
@@ -81,6 +81,49 @@ test('privacy responses require the actual reviewed files before publication',{s
   const r=await create();const forged={response:'Synthetic',outcome:'INFORMATION_PROVIDED',evidence_asset_ids:[proof.id],retentions:[],remaining_actions:[],files:[{id:proof.id}]};
   assert.notEqual((await call('POST','/operations/requests/'+r.id+'/response',producer,{result:forged},r.object_version)).status,200);
   const other=await S.upload(outsider,'REVIEW_EVIDENCE');assert.equal((await propose(r,other)).error.code,'PRIVACY_EVIDENCE_OWNER_REQUIRED');
+ });
+
+ await t.test('same application exports actual scoped records, delivers reviewed bytes and reopens without losing history',async()=>{
+  const own=await S.newOrder({preview:'SCRIPT_BEFORE_INTERIM'}),foreign=await S.newOrder({commissioner:outsider,preview:'SCRIPT_BEFORE_INTERIM'});
+  const artist=await S.actorCast(buyer);await S.actorCast(outsider);
+  let r=ok(await call('POST','/requests',buyer,{type:'COPY',scopes:['ALL'],details:'Synthetic actual account and order copy'}));
+  const page=(suffix,who=producer)=>call('GET','/operations/requests/'+r.id+suffix,who);
+  assert.equal((await page('/account-data?section=ACCOUNT')).error.code,'PRIVACY_STATE_CONFLICT');
+  r=ok(await call('POST','/operations/requests/'+r.id+'/start',producer,{},r.object_version));
+  assert.equal(ok(await page('/copy-options')).request_completion,'NOT_CONFIRMED');
+  const account=ok(await page('/account-data?section=ACCOUNT'));
+  assert.equal(account.items[0].id,buyer.account_id);assert.equal(account.items[0].subject_ref,undefined);assert.equal(account.items[0].phone_hash,undefined);
+  assert.deepEqual(account,ok(await call('GET','/requests/'+r.id+'/account-data?section=ACCOUNT')));
+  let orders=[],cursor='';do{const d=ok(await page('/transaction-data?section=ORDERS&limit=1'+(cursor?'&cursor='+cursor:'')));orders.push(...d.items);cursor=d.next_cursor;}while(cursor);
+  assert.ok(orders.some(x=>x.id===own.order.id));assert.ok(!orders.some(x=>x.id===foreign.order.id));assert.equal(new Set(orders.map(x=>x.id)).size,orders.length);
+  const contract=ok(await page('/transaction-data?section=CONTRACT&order_id='+own.order.id));
+  assert.equal(contract.items[0].source_content_sha256,own.order.data.contract.content_sha256);assert.equal(contract.items[0].terms.commitments.quote.review,undefined);
+  const consents=ok(await page('/data?category=CONTRACTS'));assert.ok(consents.items.some(x=>x.id===artist.production.id));
+  const story=ok(await page('/stories/'+own.story.id+'/data?section=SUBMISSIONS'));assert.ok(story.items.length);
+  assert.equal((await page('/transaction-data?section=CONTRACT&order_id='+foreign.order.id)).status,404);
+  assert.equal((await page('/stories/'+foreign.story.id+'/data?section=SUBMISSIONS')).status,404);
+  assert.equal((await page('/account-data?section=ACCOUNT&account_id='+outsider.account_id)).status,400);
+  assert.equal((await page('/account-data?section=ACCOUNT',outsider)).status,403);
+  assert.equal((await call('GET','/operations/requests/'+r.id+'/account-data?section=ACCOUNT',producer,undefined,null,key(),producer.acting_party_id)).status,400);
+  await S.grant(buyer,'PRIVACY_HANDLE');assert.equal((await page('/account-data?section=ACCOUNT',buyer)).error.code,'SELF_REVIEW_FORBIDDEN');
+  const scoped=await create();assert.equal((await call('GET','/operations/requests/'+scoped.id+'/account-data?section=WALLET',producer)).error.code,'PRIVACY_ACTION_SCOPE_MISMATCH');
+  const body=JSON.stringify({request_id:r.id,coverage:'SELECTED_RECORDS_ONLY',account,orders,contract,consents,story});
+  assert.ok(!body.includes(foreign.order.id));assert.ok(!body.includes(buyer.token));
+  const attachment=await freshProof(body);
+  r=ok(await propose(r,attachment,['Remaining categories and supplier originals need separate handling']));
+  assert.equal((await call('GET','/requests/'+r.id+'/evidence/'+attachment.id+'/content')).error.code,'PRIVACY_FILE_NOT_FOUND');
+  assert.deepEqual(ok(await page('/account-data?section=ACCOUNT',reviewer)),account);
+  const self=await call('POST','/operations/requests/'+r.id+'/review',producer,{decision:'APPROVED',reason:'must fail',proposal_sha256:r.proposal_sha256,evidence_verified:true,third_party_data_redacted:true,remaining_actions_checked:true},r.object_version);assert.equal(self.error.code,'SELF_REVIEW_FORBIDDEN');
+  const op=key(),pending=r;r=ok(await review(pending,op));assert.equal(ok(await review(pending,op)).id,r.id);assert.equal(r.current_status,'FOLLOW_UP');
+  const fileUrl='/requests/'+r.id+'/evidence/'+attachment.id+'/content';assert.equal((await call('GET',fileUrl)).bytes.toString(),body);assert.equal((await call('GET',fileUrl,outsider)).status,404);
+  assert.equal(ok(await history(r)).responses.length,1);
+  r=ok(await call('POST','/requests/'+r.id+'/reopen',buyer,{reason:'Please complete the remaining categories'},r.object_version));assert.equal(r.current_status,'REOPENED');
+  assert.equal((await page('/account-data?section=ACCOUNT')).error.code,'PRIVACY_STATE_CONFLICT');assert.equal((await call('GET',fileUrl)).bytes.toString(),body);
+  r=ok(await call('POST','/operations/requests/'+r.id+'/start',producer,{},r.object_version));
+  await db.execute("UPDATE governance_operator_grants SET enabled=0 WHERE account_id=? AND action_code='PRIVACY_HANDLE'",[producer.account_id]);
+  try{assert.equal((await page('/account-data?section=ACCOUNT')).status,403);}finally{await db.execute("UPDATE governance_operator_grants SET enabled=1 WHERE account_id=? AND action_code='PRIVACY_HANDLE'",[producer.account_id]);}
+  const [audit]=await db.execute("SELECT actor_account_id,message FROM privacy_events WHERE request_id=? AND event_code='COPY_DATA_ACCESSED'",[r.id]);assert.ok(audit.some(x=>x.actor_account_id===producer.account_id));assert.ok(audit.some(x=>x.actor_account_id===reviewer.account_id));assert.ok(audit.every(x=>!x.message.includes(buyer.token)));
+  assert.equal(ok(await current(r)).current_status,'PROCESSING');
  });
 
  await fs.mkdir(path.resolve(__dirname,'../../../..','.local/privacy-response-delivery-20261109'),{recursive:true});
