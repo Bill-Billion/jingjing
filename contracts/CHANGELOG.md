@@ -1,5 +1,10 @@
 ## 0.31.49-rc.1 — 运营按个人申请范围准备资料副本
 
+## 0.31.50-rc.1 — 个人申请的业务消息工作稿（2026-11-10）
+
+新增运营GET `/api/v1/privacy/operations/requests/{request_id}/business-messages`；source为COMMERCIAL/AUDITION，source_id为订单/预约ID，cursor/limit分页。PRIVACY_HANDLE、原会话权限和客服实际加入缺一不可；仅本人个人主体直接参与的交易，不因机构成员身份扩大范围。工作稿去掉原始参与人ID/联系方式/附件引用，正文仍须人工脱敏和独立复核；不是本人可直接领取的已审核副本。复用原附件答复流程，未给齐项保留FOLLOW_UP。旧接口兼容，迁移0211不变，真实服务未启用。
+
+
 新增五个 `/privacy/operations/requests/{request_id}` 只读取数入口：copy-options、account-data、transaction-data、stories/{story_id}/data、data。复用本人脱敏投影和分页；PRIVACY_HANDLE有效、非申请人本人、申请为QUERY/COPY且处于处理中/待补/待复核时才可读，每次成功读取留记录。不提供供应商原件，不自动形成完整副本或结案。原本人入口及迁移0211不变；前端在原本人资料/运营办理包接续。
 
 ## 0.31.48-rc.1 — 本人使用记录副本

@@ -42,7 +42,7 @@ async function closureBlockers(tx,account){
  }
  return [...new Set(blocks)];
 }
-function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor,event,env={}}){
+function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor,event,resolvePrincipal,env={}}){
  const get=async(tx,key)=>{const r=await one(tx,'SELECT * FROM privacy_executions WHERE id=? FOR UPDATE',[id(key)]);if(!r)throw error('PRIVACY_EXECUTION_NOT_FOUND',404);r.payload=checked(r.payload_json,r.payload_sha256);return r;};
  async function access(tx,ctx,i,{exclusive=false}={}){
   const a=await actor(tx,ctx,exclusive?'FOR UPDATE':'FOR SHARE'),request=await load(tx,i.request_id);
@@ -61,7 +61,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
    if(!subject)throw error('PRIVACY_REQUEST_NOT_FOUND',404);
   }
   const result=await read(subject,spec);
-  if(i.operations)await event(tx,a,request,'COPY_DATA_ACCESSED','工作人员按申请范围读取脱敏资料：'+(i.section||i.category||'COPY_OPTIONS'));
+  if(i.operations)await event(tx,a,request,'COPY_DATA_ACCESSED',i.section==='BUSINESS_MESSAGES'?'工作人员按申请范围读取待人工脱敏的业务消息工作稿：'+i.source+'/'+i.source_id:'工作人员按申请范围读取脱敏资料：'+(i.section||i.category||'COPY_OPTIONS'));
   return result;
  }
  async function dto(tx,r){
@@ -249,6 +249,9 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   async exportData(ctx,i){
    if(i.after)id(i.after);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
    return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').exportPersonalCopy(tx,a,s,i)));
+  },
+  async businessMessageCopy(ctx,i){
+   return db.withTransaction(tx=>copyRead(tx,ctx,{...i,operations:true,section:'BUSINESS_MESSAGES'},(a,s)=>require('./business-message-copy').page(tx,ctx,a,s,i,{resolvePrincipal})));
   },
   async copyOptions(ctx,i){return db.withTransaction(tx=>copyRead(tx,ctx,i,(_a,s)=>require('./personal-copy').copyOptions(s)));},
   async storyCopy(ctx,i){

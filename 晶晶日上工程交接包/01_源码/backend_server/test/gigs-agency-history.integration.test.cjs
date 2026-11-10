@@ -122,6 +122,10 @@ test('same commercial order: agency switch, scoped employee, withdrawal and hist
   assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee2)).orders.length,0);
   assert.equal((await call('GET',conversation(),employee,undefined,null,employee.personal_party_id)).status,404);
  });
+ await check('same paid commercial conversation provides independently reviewed personal message copy',async()=>{
+  ok(await call('POST',conversation(),buyer,{kind:'TEXT',body:'Synthetic applicant asks for a revised delivery date'}));
+  await require('./support/privacy-business-copy.cjs').verify({base:host+'/api/v1',db,source:'COMMERCIAL',sourceId:order.id,buyer,handler:reviewer,reviewer:other,outsider:S.people.outsider,upload:(u,body)=>S.assets.upload(u.ctx,{party_id:u.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body,operation_key:key()})});
+ });
  await check('reassignment changes income visibility; revocation immediately removes messages and dashboard',async()=>{
   ok(await call('POST','/engagement/mcn/assignments',mcn,{booking_id:null,order_id:order.id,account_id:employee2.account_id}));
   assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee)).orders.length,0);assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee2)).orders[0].order_id,order.id);

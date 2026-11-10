@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.49-rc.1
+  version: 0.31.50-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -29,6 +29,77 @@ tags:
 x-baseline-id: JX-R06-EXECUTION-BASELINE-20260921
 x-review-status: PENDING_EXPERIENCE_REVIEW
 paths:
+  /api/v1/privacy/operations/requests/{request_id}/business-messages:
+    get:
+      operationId: getPrivacyBusinessMessageDraft
+      summary: 按个人申请读取待脱敏的业务消息工作稿
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: source
+        in: query
+        required: true
+        schema:
+          enum:
+          - COMMERCIAL
+          - AUDITION
+      - name: source_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 36
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyBusinessMessageDraftResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: 仅已受理QUERY/COPY，申请范围TRANSACTIONS或ALL，申请人的个人主体必须是订单/预约直接当事人，不纳入机构经办记录。处理人同时需要PRIVACY_HANDLE和原商单/试镜会话权限及实际客服加入；不冒充申请人、不自动加入会话。逐页留痕。移除对方账号/主体、联系方式、附件引用和内部审核字段，但自由文本仍须人工脱敏；工作稿不得直接作为审核完成副本交付。沿原答复附件上传与独审后本人下载，余项不自动结案。
   /api/v1/artists/catalog/{listing_id}/media:
     get:
       operationId: readPublicArtistMedia
@@ -34201,6 +34272,90 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    PrivacyBusinessMessageDraftResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - source
+          - source_id
+          - copy_kind
+          - third_party_redaction
+          - original_attachments_included
+          - request_completion
+          - items
+          - next_cursor
+          properties:
+            source:
+              enum:
+              - COMMERCIAL
+              - AUDITION
+            source_id:
+              type: string
+              format: uuid
+            copy_kind:
+              const: BUSINESS_MESSAGE_REVIEW_DRAFT
+            third_party_redaction:
+              const: REQUIRES_MANUAL_REVIEW
+            original_attachments_included:
+              const: false
+            request_completion:
+              const: NOT_CONFIRMED
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - kind
+                - current_status
+                - sender
+                - at
+                - body
+                - hidden
+                - attachment_present
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  kind:
+                    enum:
+                    - TEXT
+                    - ORDER_CARD
+                    - MEDIA
+                    - DELIVERY_MEDIA
+                  current_status:
+                    type: string
+                  sender:
+                    enum:
+                    - APPLICANT
+                    - OTHER
+                  at:
+                    type: string
+                    format: date-time
+                  body:
+                    type:
+                    - string
+                    - 'null'
+                  hidden:
+                    type: boolean
+                  attachment_present:
+                    type: boolean
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
     CocreationInviteLink:
       type: object
       additionalProperties: false
