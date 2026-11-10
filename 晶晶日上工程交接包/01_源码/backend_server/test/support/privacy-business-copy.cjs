@@ -7,7 +7,7 @@ async function verify({base,db,source,sourceId,buyer,handler,reviewer,outsider,u
  async function call(method,url,who,body,version,party=null,operation=key()){
   const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...party?{'X-Acting-Party':party}:{},...body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':operation},...version===undefined?{}:{'If-Match':'"'+version+'"'}},...body===undefined?{}:{body:JSON.stringify(body)}});
   if(!(res.headers.get('content-type')||'').includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};
-  const value=await res.json();if(url.startsWith('/privacy/'))fixtures.push({method,path:new URL('http://local'+url).pathname,schema:res.status!==200?'ErrorResponse':url.includes('/business-messages')?'PrivacyBusinessMessageDraftResponse':url.endsWith('/history')?'PrivacyHistoryResponse':'PrivacyRequestResponse',value});return {status:res.status,...value};
+  const value=await res.json();if(url.startsWith('/privacy/'))fixtures.push({method,path:new URL(base+url).pathname,schema:res.status!==200?'ErrorResponse':url.includes('/business-messages')?'PrivacyBusinessMessageDraftResponse':url.endsWith('/history')?'PrivacyHistoryResponse':'PrivacyRequestResponse',value});return {status:res.status,...value};
  }
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;};
  let request=ok(await call('POST','/privacy/requests',buyer,{type:'COPY',scopes:['TRANSACTIONS'],details:'Synthetic business conversation copy; third party text requires manual review'}));
