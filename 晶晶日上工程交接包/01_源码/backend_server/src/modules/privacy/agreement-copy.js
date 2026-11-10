@@ -24,15 +24,27 @@ async function page(tx,account,{section,after='',limit}){
  // A supplied cursor must belong to this account and this section, even for historical rows.
  if(after&&!(await tx.execute(q+' AND r.id=?',[account,after]))[0].length)throw error('INVALID_CURSOR',400);
  const [rows]=await tx.execute(q+' AND r.id>? ORDER BY r.id LIMIT ?',[account,after,limit+1]);
+ const personalParty=section==='PARTICIPATION_AGREEMENTS'?(await tx.execute("SELECT id FROM parties WHERE kind='PERSON' AND personal_account_id=?",[account]))[0][0]:null;
+ const activations=section==='PARTICIPATION_AGREEMENTS'&&rows.length?(await tx.execute('SELECT previous_agreement_id,replacement_agreement_id,activated_at FROM project_participation_amendments WHERE previous_agreement_id IN ('+rows.slice(0,limit).map(()=>'?').join(',')+') OR replacement_agreement_id IN ('+rows.slice(0,limit).map(()=>'?').join(',')+') ORDER BY activated_at,previous_agreement_id',[...rows.slice(0,limit).map(r=>r.id),...rows.slice(0,limit).map(r=>r.id)]))[0]:[];
+ const ownOrders=personalParty&&rows.length?(await tx.execute("SELECT l.agreement_id,l.order_id FROM project_participation_orders l JOIN trade_records o ON o.id=l.order_id AND o.kind='ORDER' WHERE (o.buyer_party_id=? OR o.merchant_party_id=?) AND l.agreement_id IN ("+rows.slice(0,limit).map(()=>'?').join(',')+')',[personalParty.id,personalParty.id,...rows.slice(0,limit).map(r=>r.id)]))[0]:[];
  const items=rows.slice(0,limit).map(r=>{
   const d=checked(r);let terms;
   if(section==='LICENSE_AGREEMENTS')terms=license(d);
   else if(section==='PARTICIPATION_AGREEMENTS'){
    terms=pick(d,['candidate_id','role_id','avatar_id','consent_id','cast','terms','fee_minor','order_id']);
    terms.parties=d.confirmers.map(x=>({party_id:x.party_id,responsibility:x.responsibility,after_party_ids:x.after_party_ids}));
-   if(d.amendment)terms.amendment=pick(d.amendment,['previous_agreement_id','previous_sha256','kind','cash_required_minor','reason']);
+   if(d.amendment){
+    terms.amendment=pick(d.amendment,['previous_agreement_id','previous_sha256','kind','cash_required_minor','reason']);
+    // The agreement contains proposed retained amounts, not a bank refund receipt.
+    if(!Array.isArray(d.amendment.settlements))throw error('STORED_CONTENT_MISMATCH',503);
+    terms.amendment.settlement_basis='AGREED_AT_PROPOSAL_NOT_PAYMENT_RESULT';
+    terms.amendment.own_settlements=d.amendment.settlements.filter(x=>personalParty&&(x.buyer_party_id===personalParty.id||x.merchant_party_id===personalParty.id)).map(x=>{
+     if(!Number.isSafeInteger(x.net_minor)||!Number.isSafeInteger(x.retained_minor)||x.retained_minor<0||x.net_minor<x.retained_minor)throw error('STORED_CONTENT_MISMATCH',503);
+     return {order_id:x.order_id,net_minor_at_proposal:x.net_minor,retained_minor:x.retained_minor,refund_due_minor:x.net_minor-x.retained_minor};
+    });
+   }
   }else terms=pick(d,['scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','ended_reason']);
-  return {id:r.id,kind:r.kind,owner_party_id:r.owner_party_id,counterparty_id:r.counterparty_id||null,project_id:r.project_id||null,current_status:r.current_status,object_version:r.object_version,source_content_sha256:r.data_sha256,copy_sha256:digest(terms),copy_kind:'REDACTED_AGREEMENT_COPY',signature_evidence:'NOT_INCLUDED',terms};
+  return {...(section==='PARTICIPATION_AGREEMENTS'?{created_at:A.instant(r.created_at),own_order_id:ownOrders.find(x=>x.agreement_id===r.id)?.order_id||null,amendment_activations:activations.filter(x=>x.previous_agreement_id===r.id||x.replacement_agreement_id===r.id).map(x=>({...x,activated_at:A.instant(x.activated_at)}))}:{}),id:r.id,kind:r.kind,owner_party_id:r.owner_party_id,counterparty_id:r.counterparty_id||null,project_id:r.project_id||null,current_status:r.current_status,object_version:r.object_version,source_content_sha256:r.data_sha256,copy_sha256:digest(terms),copy_kind:'REDACTED_AGREEMENT_COPY',signature_evidence:'NOT_INCLUDED',terms};
  });
  return {section,items,next_cursor:rows.length>limit?rows[limit-1].id:null,coverage:'OWN_ACCOUNT_RECORDS_ONLY',request_completion:'NOT_CONFIRMED'};
 }

@@ -30,7 +30,10 @@ async function page(tx,a,request,{section,after='',limit},env={}){
  const result=(items,next_cursor=null)=>({section,items,next_cursor,coverage:'OWN_ACCOUNT_RECORDS_ONLY',request_completion:'NOT_CONFIRMED'});
  if(section==='ACCOUNT'||section==='PREFERENCES'){
   if(after)throw error('INVALID_CURSOR',400);
-  if(section==='ACCOUNT')return result([{...pick(a,['id','display_name','current_status','object_version']),created_at:A.instant(a.created_at)}]);
+  if(section==='ACCOUNT'){
+   const personal=await one(tx,"SELECT id,kind,display_name,current_status,object_version,created_at FROM parties WHERE kind='PERSON' AND personal_account_id=?",[a.id]);
+   return result([{...pick(a,['id','display_name','current_status','object_version']),created_at:A.instant(a.created_at),personal_party:personal?{...personal,created_at:A.instant(personal.created_at)}:null}]);
+  }
   const p=await one(tx,'SELECT * FROM privacy_preferences WHERE account_id=?',[a.id]);
   return result([{id:a.id,object_version:p?.object_version||0,...require('./notification-policy').normalize(p?checked(p):{personalization:false,marketing:false,rest_reminder_minutes:0})}]);
  }
@@ -39,7 +42,7 @@ async function page(tx,a,request,{section,after='',limit},env={}){
   const q="SELECT a.* FROM artist_people a JOIN parties p ON p.id=a.owner_party_id WHERE p.kind='PERSON' AND p.personal_account_id=?";
   if(after&&!(await tx.execute(q+' AND a.id=?',[a.id,after]))[0].length)throw error('INVALID_CURSOR',400);
   const [rows]=await tx.execute(q+' AND a.id>? ORDER BY a.id LIMIT ?',[a.id,after,limit+1]);
-  return result(rows.slice(0,limit).map(r=>A.personDTO({...r,identity_valid_until:A.instant(r.identity_valid_until)})),rows.length>limit?rows[limit-1].id:null);
+  return result(rows.slice(0,limit).map(r=>({...A.personDTO({...r,identity_valid_until:A.instant(r.identity_valid_until)}),created_at:A.instant(r.created_at)})),rows.length>limit?rows[limit-1].id:null);
  }
  if(section==='WALLET'){
   if(after)id(after);
