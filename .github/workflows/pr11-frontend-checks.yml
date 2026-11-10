@@ -108,7 +108,7 @@ jobs:
   web:
     name: 网页构建与真实接口浏览器检查
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: 晶晶日上工程交接包/01_源码/frontend_ops_workspace
@@ -137,16 +137,17 @@ jobs:
       - run: npm run test:business
       - run: npm run build
       - name: 安装浏览器及隔离接口测试依赖
-        timeout-minutes: 15
+        timeout-minutes: 25
         run: |
           # Keep Ubuntu's signed packages while avoiding the stalled Azure mirror.
           for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt /etc/apt/apt-mirrors-security.txt; do
             if [ -f "$source" ]; then
-              sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' "$source"
+              sudo sed -i -e 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' -e 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g' -e 's|http://security.ubuntu.com|https://security.ubuntu.com|g' "$source"
             fi
           done
           sudo tee /etc/apt/apt.conf.d/99-jx-bounded-ci > /dev/null <<'APT_EOF'
           Acquire::ForceIPv4 "true";
+          Acquire::Languages "none";
           Acquire::Retries "1";
           Acquire::http::Timeout "30";
           Acquire::https::Timeout "30";
@@ -160,10 +161,8 @@ jobs:
             timeout 45s node -e "$browser_smoke"
           fi
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
-            if ! timeout 180s sudo apt-get install --no-install-recommends -y ffmpeg; then
-              timeout 90s sudo apt-get update
-              timeout 180s sudo apt-get install --no-install-recommends -y ffmpeg
-            fi
+            timeout 180s sudo apt-get update
+            timeout 300s sudo apt-get install --no-install-recommends -y ffmpeg
           fi
           ffmpeg -version
           ffprobe -version

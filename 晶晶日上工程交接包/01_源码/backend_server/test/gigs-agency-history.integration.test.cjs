@@ -29,7 +29,9 @@ test('same commercial order: agency switch, scoped employee, withdrawal and hist
  let consent=await S.supply.createConsent(seller.ctx,{consent:{avatar_id:avatar.id,subject_party_id:seller.personal_party_id,features:['FACE'],purposes:['COMMERCIAL'],territories:['CN'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'Synthetic commercial permission',evidence_asset_ids:[ce.id]},operation_key:key()});consent=await S.supply.reviewConsent(reviewer.ctx,{record_id:consent.id,expected_version:consent.object_version,decision:'APPROVED',reason:'Synthetic independent review',operation_key:key()});
  const ruleId=key(),content=createRuleContent({id:ruleId,rule_key:'independent.agency',version:'1',terms:{marketplace_finance:{model:'V5_TWO_LAYER',product_type:'COMMERCIAL',fee_base:'NET_PAID',platform_party_id:S.people.outsider.personal_party_id,platform_bps:2200,referral_bps:0,rounding:'HALF_UP_PLATFORM_REMAINDER'}}});
  await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,content.rule_key,'1',JSON.stringify(content),'2020-01-01 00:00:00',mcn.account_id,'EFFECTIVE']);
- server=createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory,supplyEnv:{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const host='http://127.0.0.1:'+server.address().port;
+ let duringRead=null;
+ const storageFactory=()=>({...S.storageFactory(),async getBuffer(k){const bytes=await S.storageFactory().getBuffer(k);if(duringRead){const fn=duringRead;duringRead=null;await fn();}return bytes;}});
+ server=createAccountApi({db,secret:S.secret,supplyStorageFactory:storageFactory,supplyEnv:{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const host='http://127.0.0.1:'+server.address().port;
  async function call(method,url,u,body,version=null,party=u?.acting_party_id,operationKey=key()){const response=await fetch(host+'/api/v1'+url,{method,headers:{...(u?{Authorization:'Bearer '+u.token}:{}),...(party?{'X-Acting-Party':party}:{}),...(method==='POST'?{'Content-Type':'application/json','Idempotency-Key':operationKey}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});const json=await response.json();if(url.includes('options')){evidence.option_responses||=[];evidence.option_responses.push({method,path:url,status:response.status,response:json});}evidence.http.push({method,path:url,status:response.status,account_id:u?.account_id,party_id:party||null,record_id:json.data?.id||null,error:json.error?.code||null});return {status:response.status,...json};}
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;};
  async function ensureWeb(){
@@ -123,7 +125,16 @@ test('same commercial order: agency switch, scoped employee, withdrawal and hist
  await check('reassignment changes income visibility; revocation immediately removes messages and dashboard',async()=>{
   ok(await call('POST','/engagement/mcn/assignments',mcn,{booking_id:null,order_id:order.id,account_id:employee2.account_id}));
   assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee)).orders.length,0);assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee2)).orders[0].order_id,order.id);
-  ok(await call('POST','/engagement/mcn/staff/'+grant2.id+'/revoke',mcn,{reason:'Synthetic staff revocation'},grant2.object_version));
+  const file=await S.upload(buyer,'WORK_CONTENT');
+  const message=ok(await call('POST',conversation(),buyer,{kind:'MEDIA',asset_id:file.id}));
+  const mediaPath=conversation()+'/'+message.id+'/file';
+  const download=()=>fetch(host+'/api/v1'+mediaPath,{headers:{Authorization:'Bearer '+employee2.token,'X-Acting-Party':employee2.acting_party_id}});
+  let response=await download();assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');
+  const bytes=Buffer.from(await response.arrayBuffer());assert.equal(require('node:crypto').createHash('sha256').update(bytes).digest('hex'),file.content_sha256);
+  duringRead=async()=>{ok(await call('POST','/engagement/mcn/staff/'+grant2.id+'/revoke',mcn,{reason:'Synthetic staff revocation during media transport'},grant2.object_version));};
+  response=await download();assert.equal(duringRead,null);assert.equal(response.status,403);assert.ok((await response.json()).error);
+  evidence.http.push({method:'GET',path:mediaPath,status:response.status,account_id:employee2.account_id,party_id:employee2.acting_party_id,record_id:message.id,check:'STAFF_REVOKED_DURING_MEDIA_READ'});
+  Object.assign(evidence.records,{controlled_media_message_id:message.id,controlled_media_asset_id:file.id});
   assert.equal((await call('GET',conversation(),employee2)).status,403);assert.equal((await call('GET','/engagement/mcn/dashboard',employee2)).status,403);
   await webCheck(employee2,'/conversations/messages/'+order.id,'employee-revoked-conversation',{expectedStatus:403});
  });

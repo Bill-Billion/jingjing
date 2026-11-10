@@ -21,10 +21,12 @@ class MediaPlatform extends VideoPlayerPlatform {
   final disposed = <int>[];
   final events = <int, StreamController<VideoEvent>>{};
   bool initialize = true;
+  Duration createDelay = Duration.zero;
   @override
   Future<void> init() async {}
   @override
   Future<int?> create(DataSource dataSource) async {
+    if (createDelay > Duration.zero) await Future<void>.delayed(createDelay);
     sources.add(dataSource);
     return sources.length;
   }
@@ -82,14 +84,18 @@ class SavePicker extends FilePickerPlatform {
   }
 }
 
-Future<void> settleMedia(WidgetTester t) async {
-  await t.pump(const Duration(milliseconds: 100));
-  for (var i = 0; i < 20; i++) {
+Future<void> settleMedia(WidgetTester t, {bool Function()? ready}) async {
+  // Real temporary-file I/O and platform callbacks do not finish by pumping
+  // a fixed number of frames. Wait for the intended observable state, bounded.
+  final done =
+      ready ?? () => find.byType(LinearProgressIndicator).evaluate().isEmpty;
+  for (var i = 0; i < 250; i++) {
     await t
-        .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
-    await t.pump();
-    if (find.byType(LinearProgressIndicator).evaluate().isEmpty) break;
+        .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+    await t.pump(const Duration(milliseconds: 20));
+    if (done()) return;
   }
+  fail('Media did not reach the expected state within the bounded wait');
 }
 
 Future<void> expectRemoved(WidgetTester t, File file) async {
@@ -109,6 +115,9 @@ void main() {
       t.view.devicePixelRatio = 1;
       addTearDown(t.view.reset);
       final old = VideoPlayerPlatform.instance, platform = MediaPlatform();
+      if (type == 'video/mp4') {
+        platform.createDelay = const Duration(milliseconds: 350);
+      }
       VideoPlayerPlatform.instance = platform;
       addTearDown(() => VideoPlayerPlatform.instance = old);
       final a = artistAdapter(
@@ -127,7 +136,8 @@ void main() {
       await t.pumpAndSettle();
       await t.tap(find.text('读取${item.label}预览 1'));
       await t.pump(const Duration(milliseconds: 100));
-      await settleMedia(t);
+      await settleMedia(t,
+          ready: () => find.byTooltip('播放').evaluate().isNotEmpty);
       expect(find.byTooltip('播放'), findsOneWidget);
       expect(find.byType(VideoPlayer),
           type == 'video/mp4' ? findsOneWidget : findsNothing);
@@ -173,7 +183,7 @@ void main() {
                 index: 1))));
     await t.pumpAndSettle();
     await t.tap(find.text('读取声音预览 1'));
-    await settleMedia(t);
+    await settleMedia(t, ready: () => platform.events.isNotEmpty);
     final file = File.fromUri(Uri.parse(platform.sources.single.uri!));
     expect(await t.runAsync(file.exists), isTrue);
     await t.runAsync(s.logout);

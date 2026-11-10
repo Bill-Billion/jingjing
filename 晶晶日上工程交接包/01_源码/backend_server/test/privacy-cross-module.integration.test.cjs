@@ -72,6 +72,23 @@ test('privacy restrictions protect commercial and release evidence across their 
    assert.equal((await raw('GET','/privacy/requests/'+r.id+'/files/'+material.id+'/content',buyer)).status,200);
    result.checks.push({label:'new-avatar-reference-after-review',request_id:r.id,asset_id:material.id,avatar_id:avatar.id,status:denied.status,disposition:entry.disposition});
   });
+  await t.test('personal original copy cannot bypass restrictions or grant handlers raw evidence access',async()=>{
+   const material=await S.upload(buyer,'AVATAR_MATERIAL'),content=await S.upload(buyer,'WORK_CONTENT'),r=await request('COPY',['ALL']);
+   for(const [asset,category] of [[material,'ARTIST_MATERIALS'],[content,'CONTENT']]){
+    const route='/privacy/requests/'+r.id+'/copies/'+asset.id+'/content?category='+category;
+    const before=await raw('GET',route,buyer);assert.equal(before.status,200);assert(Buffer.isBuffer(before.value));
+    assert.equal((await raw('GET',route,producer)).status,404);
+    const hold=await restrict(asset);
+    try{const blocked=await raw('GET',route,buyer);assert.equal(blocked.status,409);assert.equal(blocked.value.error.code,'CONTENT_RESTRICTED');}
+    finally{await release(hold);}
+    let raced;duringRead=async()=>{raced=await restrict(asset);};
+    try{const blocked=await raw('GET',route,buyer);assert(raced);assert.equal(blocked.status,409);assert.equal(blocked.value.error.code,'CONTENT_RESTRICTED');}
+    finally{duringRead=null;if(raced)await release(raced);}
+    const restored=await raw('GET',route,buyer);assert.equal(restored.status,200);assert.deepEqual(restored.value,before.value);
+    result.checks.push({label:'personal-original-'+category,request_id:r.id,asset_id:asset.id,owner_sha256:createHash('sha256').update(before.value).digest('hex'),handler_status:404,restricted_status:409,race_status:409,restored_status:200});
+   }
+   assert.equal((await call('GET','/privacy/requests/'+r.id,buyer)).current_status,'RECEIVED');
+  });
   await t.test('revoked handling permission cannot execute an approved restriction',async()=>{
    const material=await S.upload(buyer,'AVATAR_MATERIAL'),r=await request(),e=await approve(await propose(r,'RESTRICT_CONTENT',material.id));
    const grant=(await db.execute("SELECT object_version FROM governance_operator_grants WHERE account_id=? AND action_code='PRIVACY_HANDLE'",[producer.account_id]))[0][0];
