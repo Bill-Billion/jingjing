@@ -40,6 +40,6 @@ async function seed(db){
   return {person,avatar,production,look,repo,roster:{uses_identifiable_people:true,cast:[{person_id:person.id,avatar_id:avatar.id,supply_consent_id:legacy.id,artist_consent_ids:[production.id],look_version_id:look.id,voice_version_id:null,usage:'EXISTING_MATERIAL'}]}};
  }
  async function registerActor(name){const ctx={};principals.set(ctx,{subject_ref:'synthetic:'+key()});const r={ctx,...await parties.registerAccount(ctx,{display_name:'synthetic '+name}),token:randomBytes(32).toString('base64url')};r.acting_party_id=r.personal_party_id;await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+86400000)',[auth.secure.digest('token',r.token),r.account_id]);return r;}
- return {db,secret,resolvePrincipal,parties,people,org,files,storageFactory,supply,assets,stories,trade,proof,work,newOrder,pay,reviewTrade,grant,upload,actorCast,registerActor};
+ return {db,secret,resolvePrincipal,parties,people,org,files,storageFactory,supply,assets,stories,trade,proof,work,template,ruleId:rid,newOrder,pay,reviewTrade,grant,upload,actorCast,registerActor};
 }
 module.exports={seed};

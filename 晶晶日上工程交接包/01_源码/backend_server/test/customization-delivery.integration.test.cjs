@@ -10,7 +10,7 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
  await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
  const f=await require('./support/customization-delivery.cjs').seed(db),{producer,buyer,reviewer,outsider,artist}=f.people;
  server=createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,CUSTOMIZATION_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
- async function call(method,url,who=producer,body,version=null,op=key(),party=who.acting_party_id){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...(party?{'X-Acting-Party':party}:{}),...(body===undefined?{}:{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':op}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)})});const binary=!(res.headers.get('content-type')||'').includes('application/json'),value=binary?Buffer.from(await res.arrayBuffer()):await res.json();if(!binary)fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.includes('/fulfillment')||['/start','/cases','/case-resolution','/refund-sync','/delivery-receipt','/reissue'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':url.endsWith('/story')?'ProductionStoryResponse':url.startsWith('/operations')?'OpsReadResponse':url.startsWith('/trade/')?'TradeRecordResponse':'ProductionRecordResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
+ async function call(method,url,who=producer,body,version=null,op=key(),party=who.acting_party_id){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...(party?{'X-Acting-Party':party}:{}),...(body===undefined?{}:{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':op}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)})});const binary=!(res.headers.get('content-type')||'').includes('application/json'),value=binary?Buffer.from(await res.arrayBuffer()):await res.json();if(!binary)fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?((url.startsWith('/customization-requests')||url.startsWith('/operations/customization-requests'))?'CustomizationRequestResponse':url.includes('/fulfillment')||['/start','/cases','/case-resolution','/refund-sync','/delivery-receipt','/reissue'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':url.endsWith('/story')?'ProductionStoryResponse':url.startsWith('/operations')?'OpsReadResponse':url.startsWith('/trade/')?'TradeRecordResponse':'ProductionRecordResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r.body));return r.data;},bad=(r,code)=>assert.equal(r.error?.code,code,JSON.stringify(r.body));
  const get=p=>call('GET','/production/records/'+p.id).then(ok),flow=p=>call('GET','/production/projects/'+p.id+'/fulfillment').then(ok);
  async function command(p,action,who,body={},op=key()){return call('POST','/production/projects/'+p.id+'/'+action,who,body,(await get(p)).object_version,op,who===reviewer?null:who.acting_party_id);}
@@ -151,6 +151,52 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
   const stale=ok(await call('POST','/trade/quotes',producer,{...body,lines:[{line_id:'film',spec_id:y.spec.id,quantity:1}],customization_source:y.quote.data.customization,customization_change_source:{project_id:y.project.id,case_id:yc.id,description:'Later withdrawn request'}}));
   ok(await command(y.project,'case-resolution',reviewer,{case_id:yc.id,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'Cancel original commission before additional work'}));
   bad(await call('POST','/trade/records/'+stale.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Stale case'},stale.object_version,key(),null),'CUSTOMIZATION_CHANGE_SOURCE_INVALID');
+ });
+
+ await t.test('one new story completes manual quotation and 30/40/30 delivery through the same HTTP order',async()=>{
+  const journalCount=async()=>Number((await db.execute('SELECT COUNT(*) n FROM trade_journal'))[0][0].n),journalBefore=await journalCount();
+  const answer='Synthetic complete manual request '+key();
+  let story=ok(await call('POST','/customization-requests',buyer,{template_version_id:f.template.template_version_id,answers:{story:answer}}));
+  assert.equal(story.current_status,'DRAFT');
+  assert.equal((await call('GET','/customization-requests/'+story.id,producer,undefined,null,key(),null)).status,404);
+  story=ok(await call('PATCH','/customization-requests/'+story.id,buyer,{answers:{story:answer+' saved'}},story.object_version));
+  const reopened=ok(await call('GET','/customization-requests/'+story.id,buyer));assert.deepEqual(reopened.answers,story.answers);
+  story=ok(await call('POST','/customization-requests/'+story.id+'/submissions',buyer,{},story.object_version));
+  assert.equal(await journalCount(),journalBefore,'story submission must not receive or charge money');
+  story=ok(await call('POST','/operations/customization-requests/'+story.id+'/intake',producer,{},story.object_version,key(),null));
+  // Approved catalogue/price and operating roles are synthetic prerequisites; no fixture quote/order is created.
+  let spec;const stop=new Error('stop after preparing catalogue');
+  await assert.rejects(f.newOrder({sourceStory:story,preview:'SCRIPT_BEFORE_INTERIM',calendar:require('./support/working-calendar.cjs')(),beforeQuote:async x=>{spec=x.spec;throw stop;}}),e=>e===stop);
+  const source={request_id:story.id,submission_id:story.submission.id,content_sha256:story.submission.content_sha256};
+  const body={buyer_party_id:buyer.acting_party_id,lines:[{line_id:'film',spec_id:spec.id,quantity:1}],installments:[['first','ORDER_ACCEPTED',3000],['interim','CUSTOMIZATION_SCRIPT_CONFIRMED',4000],['last','FINAL_ACCEPTED',3000]].map(([key,trigger,amount_minor])=>({key,trigger,allocations:[{line_id:'film',amount_minor}],apple_product_id:null})),channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:f.ruleId,expires_at:'2099-01-01T00:00:00.000Z',payment_window_minutes:30,license_reservation_id:null,customization_source:source};
+  let quote=ok(await call('POST','/trade/quotes',producer,body));
+  assert.equal((await call('POST','/trade/records/'+quote.id+'/reviews',producer,{decision:'APPROVED',reason:'self'},quote.object_version,key(),null)).status,403);
+  assert.equal((await call('POST','/trade/quotes/'+quote.id+'/acceptance',buyer,{quote_sha256:quote.content_sha256},quote.object_version)).status,409);
+  quote=ok(await call('POST','/trade/records/'+quote.id+'/reviews',reviewer,{decision:'APPROVED',reason:'synthetic independent quotation'},quote.object_version,key(),null));
+  const op=key(),order=ok(await call('POST','/trade/quotes/'+quote.id+'/acceptance',buyer,{quote_sha256:quote.content_sha256},quote.object_version,op));
+  assert.equal(ok(await call('POST','/trade/quotes/'+quote.id+'/acceptance',buyer,{quote_sha256:quote.content_sha256},quote.object_version,op)).id,order.id);
+  assert.equal(order.data.financial.received_minor,0);assert.equal(order.data.contract.signing_method,'NOT_SIGNED');
+  assert.deepEqual(order.data.quote.customization,source);assert.deepEqual(order.data.quote.installments.map(x=>x.allocations[0].amount_minor),[3000,4000,3000]);
+  const contract=structuredClone(order.data.contract);
+  const project=await review(ok(await call('POST','/production/projects',producer,input(order))));
+  assert.equal((await flow(project)).source.submission_id,story.submission.id);
+  bad(await command(project,'start',producer),'PRODUCTION_PAYMENT_REQUIRED');
+  const first=await f.pay(order,'first');assert.equal(first.data.amount_minor,3000);ok(await command(project,'start',producer));
+  await assert.rejects(()=>f.pay(order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  const script=await deliver(project,'SCRIPT');await viewed(script);ok(await accept(script));
+  const middle=await f.pay(order,'interim');assert.equal(middle.data.amount_minor,4000);
+  for(const stage of ['SAMPLE','ROUGH_CUT']){const version=await deliver(project,stage);await viewed(version);ok(await accept(version));}
+  const final=await deliver(project,'FINAL');await viewed(final);ok(await accept(final));
+  assert.equal((await content(final,'final')).status,409);
+  const last=await f.pay(order,'last');assert.equal(last.data.amount_minor,3000);
+  const file=await get({id:final.data.file_id}),download=await content(final,'final');assert.equal(download.status,200);assert.deepEqual(download.body,f.files.get(file.data.object_key));
+  assert.notEqual((await content(final,'final',outsider)).status,200);
+  assert.equal((await flow(project)).state,'DELIVERED');
+  assert.deepEqual(ok(await call('GET','/trade/records/'+order.id,buyer)).data.contract,contract);
+  assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE record_id=? AND event_code='CUSTOMIZATION_FULFILLED'",[project.id]))[0][0].n),1);
+  const [[money]]=await db.execute("SELECT SUM(amount_minor) n FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[order.id]);assert.equal(Number(money.n),10000);
+  const record={synthetic_only:true,request_id:story.id,submission_id:story.submission.id,quote_id:quote.id,order_id:order.id,project_id:project.id,final_version_id:final.id,payment_ids:[first.id,middle.id,last.id],amounts_minor:[3000,4000,3000],actors:['buyer','producer','independent_reviewer'],surface:'api',limitations:['approved catalogue and roles are fixtures','payment preparation and trusted provider observations use isolated test helper','no App, browser, live signature or provider acceptance']};
+  const evidence=path.resolve(__dirname,'../../../../.local/manual-production-journey-20261110.json');await fs.writeFile(evidence,JSON.stringify(record,null,2));
  });
  const out=process.env.JX_CUSTOMIZATION_DELIVERY_HTTP_FIXTURES||path.resolve(__dirname,'../../../../.local/customization-delivery-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
