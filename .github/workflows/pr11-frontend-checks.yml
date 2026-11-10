@@ -151,7 +151,14 @@ jobs:
           Acquire::http::Timeout "30";
           Acquire::https::Timeout "30";
           APT_EOF
-          timeout 300s npx playwright-core install --with-deps chromium
+          # Check the installed browser first. Hosted runners often already have its
+          # native libraries; do not force a full apt index refresh on every run.
+          timeout 300s npx playwright-core install chromium
+          browser_smoke='const {chromium}=require("playwright-core"); (async()=>{const b=await chromium.launch({headless:true}); await b.close();})().catch(e=>{console.error(e);process.exit(1);});'
+          if ! timeout 45s node -e "$browser_smoke"; then
+            timeout 300s npx playwright-core install-deps chromium
+            timeout 45s node -e "$browser_smoke"
+          fi
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
             if ! timeout 180s sudo apt-get install --no-install-recommends -y ffmpeg; then
               timeout 90s sudo apt-get update

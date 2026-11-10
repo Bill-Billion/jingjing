@@ -1,6 +1,6 @@
 # 本人资料提供：实际覆盖和剩余工作
 
-2026-11-09；后端负责人chengcongcong222。依据[28号第一节](../../sources/contracts-20261029/extracted/28.md)原文：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”当前0.31.48-rc.1/0211。
+2026-11-09；后端负责人chengcongcong222。依据[28号第一节](../../sources/contracts-20261029/extracted/28.md)原文：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”当前0.31.49-rc.1/0211。
 
 本表是已定位类别，不是全库逐字段审计结论，行数不能当需求完成率。能查看、能复制记录、能下载原件、实际办理完成分别记录。机构经办不等于本人所有，其他人/儿童/供应商资料不能一并直接导出。
 
@@ -17,6 +17,7 @@
 |反馈和投诉|support_tickets/events/asset_refs|SUPPORT_TICKETS/SUPPORT_MESSAGES及原受控附件下载|其他纠纷域证据继续核对，机构经办不混入本人|
 |开票资料|invoice_requests/events/documents|INVOICE_REQUESTS/HISTORY/DOCUMENTS；历史更正、已签发/已替换票据与原受控下载|真实税务资料另验；待审不提供，模拟凭证不是真实发票|
 |收藏与浏览|personal_collection_entries/settings|FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS；保留、清理和撤权正反例已测|不是完整历史；已删除不恢复、失权内容不返回标题城市|
+|运营按申请准备副本|复用本人五类读取入口、privacy_events|本轮可按申请范围读脱敏数据、逐页留痕；同申请独审交付/重开已验|全库逐字段与供应商原件仍未完成，运营页面组装上传/保存待验|
 |隐私办理|privacy_requests/responses/events/actions/executions|本轮PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS；已审核历史答复原附件已补下载；提交/审核实际读文件并锁定摘要，缺件/变件/受限不发布|内部载荷不提供；供应商删除/备份执行证据及其他未覆盖结果需继续实际办理，排队不等于完成|
 |通知|notification_deliveries；ops_reads等|NOTIFICATION_DELIVERIES发送状态及本轮NOTIFICATION_READS本人已读时间|已读不含原内容，原收件箱按当前权限读取；受控消息原文与供应商回执/设备资料仍须按范围核查，发送不等于送达|
 |成人提醒|privacy_usage_state|PERSONAL_USAGE_STATE当前已保存状态；只读不触发计时|不是完整历史，不恢复清零状态；不新增行为追踪|

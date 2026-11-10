@@ -666,7 +666,7 @@
         "docs/requirements/CONTRACT_CHANGES_20261102.md",
         "docs/collaboration/client-complete-20261028/PRELAUNCH_EXECUTION_20261106.md"
       ],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -696,7 +696,20 @@
           "precedence": "20261029合同包，用户20261106重申最新条款优先"
         }
       ],
-      "source_resolution_status": "LATEST_SOURCE_IDENTIFIED_IMPLEMENTATION_NOT_CLOSED"
+      "source_resolution_status": "LATEST_SOURCE_IDENTIFIED_IMPLEMENTATION_NOT_CLOSED",
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json",
+            "sha256": "0e253fefd9fd2e92e622a7132b41e972a5a06929acbc0d101f8bf8a50b0c9761"
+          },
+          "checks": [
+            "MATCH-STOCK-ORDER",
+            "MATCH-AUDITION-ORDER"
+          ],
+          "scope": "同版隔离API片段：申请范围内运营取数到独审附件交付/重开，或关闭推荐后选择至未付款订单。未覆盖全部字段、供应商原件、各端及全部逆向，不是整条正式PASS。"
+        }
+      ]
     },
     {
       "id": "ACC-DEL-04.04",
@@ -3485,6 +3498,16 @@
             "TEAM-B-DELETION-03"
           ],
           "scope": "同预约原生、网页及接口局部证据；未覆盖原标准全部端和异常，正式状态保持NOT_RUN。"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json",
+            "sha256": "0e253fefd9fd2e92e622a7132b41e972a5a06929acbc0d101f8bf8a50b0c9761"
+          },
+          "checks": [
+            "PRIVACY-SAME-REQUEST"
+          ],
+          "scope": "同版隔离API片段：申请范围内运营取数到独审附件交付/重开，或关闭推荐后选择至未付款订单。未覆盖全部字段、供应商原件、各端及全部逆向，不是整条正式PASS。"
         }
       ],
       "effective_expected": "查询、复制、更正、删除、注销按请求范围分别办理。复制须覆盖本人个人资料、数字人资产、订单与授权记录，提供机器可读副本；类别索引或部分导出不等于完整提供。其他人资料、供应商凭据和受限文件不直接导出，剩余范围及人工答复必须明示，不因未结订单无限期拒绝全部权利。",
@@ -4643,6 +4666,16 @@
             "REFERRAL-REFUND-API"
           ],
           "scope": "同一适用订单API检查，未覆盖App/网页和该路线全部场景；合成回执不是实际到账。"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json",
+            "sha256": "0e253fefd9fd2e92e622a7132b41e972a5a06929acbc0d101f8bf8a50b0c9761"
+          },
+          "checks": [
+            "MATCH-STOCK-ORDER"
+          ],
+          "scope": "同版隔离API片段：申请范围内运营取数到独审附件交付/重开，或关闭推荐后选择至未付款订单。未覆盖全部字段、供应商原件、各端及全部逆向，不是整条正式PASS。"
         }
       ]
     },
@@ -4883,6 +4916,16 @@
             "TEAM-B-TPLUS1-04"
           ],
           "scope": "同预约原生、网页及接口局部证据；未覆盖原标准全部端和异常，正式状态保持NOT_RUN。"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json",
+            "sha256": "0e253fefd9fd2e92e622a7132b41e972a5a06929acbc0d101f8bf8a50b0c9761"
+          },
+          "checks": [
+            "MATCH-AUDITION-ORDER"
+          ],
+          "scope": "同版隔离API片段：申请范围内运营取数到独审附件交付/重开，或关闭推荐后选择至未付款订单。未覆盖全部字段、供应商原件、各端及全部逆向，不是整条正式PASS。"
         }
       ]
     },
@@ -5561,6 +5604,16 @@
             "TONIGHT-11"
           ],
           "scope": "本轮六条分层办理及缺陷修复证据；页面、HTTP和预置前提分别列明，未覆盖全部端/逆向，不改变正式NOT_RUN。"
+        },
+        {
+          "artifact": {
+            "path": "docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json",
+            "sha256": "0e253fefd9fd2e92e622a7132b41e972a5a06929acbc0d101f8bf8a50b0c9761"
+          },
+          "checks": [
+            "PRIVACY-SAME-REQUEST"
+          ],
+          "scope": "同版隔离API片段：申请范围内运营取数到独审附件交付/重开，或关闭推荐后选择至未付款订单。未覆盖全部字段、供应商原件、各端及全部逆向，不是整条正式PASS。"
         }
       ]
     },
@@ -7091,5 +7144,11 @@
       "PARTIAL": 75,
       "PASS": 19
     }
+  },
+  "privacy_matching_journey_20261110": {
+    "source_sha": "0de171e74ec2168b4a7fb0dafcd04bb593cf417f",
+    "report": "docs/reviews/privacy-matching-journey-20261110/REPORT.md",
+    "contract_version": "0.31.49-rc.1",
+    "production_enabled": false
   }
 }
