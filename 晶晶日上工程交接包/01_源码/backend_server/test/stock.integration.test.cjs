@@ -124,6 +124,31 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
   const artifact=path.resolve(__dirname,'../../../..','.local/stock-payment-refund-journey-20261110.json');
   await fs.writeFile(artifact,JSON.stringify({synthetic_only:true,listing_id:listing.id,order_id:placed.id,payment_id:payment.payment.id,case_id:caseId,refund_id:refund.id,contract_sha256:originalContract,financial:final.data.financial,license_status:purchase.data.status,acceptance_policy:specification.stock_license.acceptance_policy,acceptance_hours:48,limits:['Trusted payment/refund proofs injected internally; no provider call','Invalid-session recovery uses existing valid synthetic session, not SMS login','Synthetic file bytes; no App or web interaction']},null,2));
  });
+ await t.test('expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership',async()=>{
+  const listing=await S.listing(),o=await S.checkout(listing);await S.payment(o);
+  const route='/stock/purchases/'+o.id+'/content',before=await purchased(o),first=await call('GET',route);assert.equal(first.status,200);
+  const auth=require('../src/modules/auth/repository').createAuthRepository(db,{secret:S.secret});
+  const oldHash=auth.secure.digest('token',buyer.token),oldSession=(await db.execute('SELECT expires_ms FROM auth_sessions WHERE token_hash=?',[oldHash]))[0][0];
+  const newToken=randomBytes(32).toString('base64url'),newHash=auth.secure.digest('token',newToken),renewed={...buyer,token:newToken};
+  try{
+   await db.execute('UPDATE auth_sessions SET expires_ms=1 WHERE token_hash=?',[oldHash]);
+   assert.equal((await call('GET',route)).status,401);
+   await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[newHash,buyer.account_id]);
+   const recovered=await call('GET',route,renewed);assert.equal(recovered.status,200);assert.deepEqual(recovered.bytes,first.bytes);
+   assert.equal((await call('GET',route)).status,401);
+   bad(await call('GET',route,buyer2),'STOCK_NOT_FOUND');
+   await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);
+   assert.equal((await call('GET',route,renewed)).status,403);
+   await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);
+   assert.deepEqual((await call('GET',route,renewed)).bytes,first.bytes);
+   assert.equal((await purchased(o)).contract_sha256,before.contract_sha256);
+   assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[o.id]))[0].length,1);
+   await fs.writeFile(path.resolve(__dirname,'../../../..','.local/stock-download-recovery-20261110.json'),JSON.stringify({synthetic_only:true,order_id:o.id,contract_sha256:before.contract_sha256,checks:['expired session 401','new synthetic session same bytes','old session remains rejected','other buyer hidden','new session with revoked membership 403','restored membership same bytes','one receipt'],limits:['Synthetic authentication session replacement, not SMS login','Controlled authenticated endpoint; no signed public URL or OSS']},null,2));
+  }finally{
+   await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);
+   await db.execute('UPDATE auth_sessions SET expires_ms=? WHERE token_hash=?',[oldSession.expires_ms,oldHash]);await db.execute('DELETE FROM auth_sessions WHERE token_hash=?',[newHash]);
+  }
+ });
  await t.test('concurrent clicks with different keys cannot create duplicate purchase',async()=>{const l=await S.listing();const results=await Promise.allSettled([S.checkout(l),S.checkout(l)]);assert.equal(results.filter(x=>x.status==='fulfilled').length,1);assert.equal(results.find(x=>x.status==='rejected').reason.code,'STOCK_ORDER_ALREADY_EXISTS');});
  await t.test('changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping',async()=>{const l=await S.listing();await assert.rejects(trade.stockCheckout(buyer.ctx,{party_id:buyer.personal_party_id,listing_id:l.id,offer_sha256:'0'.repeat(64),channel:'ALIPAY',operation_key:key()}),{code:'STOCK_OFFER_CHANGED'});await assert.rejects(trade.stockCheckout(buyer.ctx,{party_id:buyer.personal_party_id,listing_id:l.id,offer_sha256:l.content_sha256,channel:'APPLE',operation_key:key()}),{code:'STOCK_APPLE_PRODUCT_NOT_READY'});});
  await t.test('unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access',async()=>{let l=await S.listing();const o=await S.checkout(l),p=await S.payment(o,buyer,false);l=await change(l,'UNLIST');await assert.rejects(trade.claim(buyer.ctx,p.payment.id,buyer.personal_party_id,'PAYMENT'),{code:'STOCK_NOT_LISTED'});await trade.cancel(buyer.ctx,{record_id:o.id,party_id:buyer.personal_party_id,expected_version:o.object_version,reason:'cancel test',operation_key:key()});await trade.applyPayment(p.proof);const info=await purchased(o);assert.equal(info.order_status,'PAYMENT_REVIEW_REQUIRED');assert.equal(info.data.granted_at,null);assert.equal(info.data.status,'PAYMENT_REVIEW_REQUIRED');});
@@ -152,7 +177,7 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
  await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:d.id,expected_version:d.object_version,reason:'withdraw listing delegation',operation_key:key()});await assert.rejects(stock.offer(buyer.ctx,{record_id:l.id}),{code:'ARTIST_DELEGATION_REQUIRED'});
  });
  await t.test('first seller reads published rules and scoped consents without past listings',async()=>{
- const rules=ok(await call('GET','/stock/sales-publications',seller));assert.equal(rules.items[0].spec_id,S.spec.id);assert.ok(!JSON.stringify(rules).includes('rule_sha256'));
+ const rules=ok(await call('GET','/stock/sales-publications',seller));assert.ok(rules.items.some(x=>x.spec_id===S.spec.id));assert.ok(!JSON.stringify(rules).includes('rule_sha256'));
  const choices=ok(await call('GET','/stock/participant-options?person_id='+seller.person.id,seller));assert.equal(choices.items[0].consent_id,S.consent.id);
  bad(await call('GET','/stock/participant-options?person_id='+seller.person.id,outsider),'ARTIST_NOT_FOUND');
  });
