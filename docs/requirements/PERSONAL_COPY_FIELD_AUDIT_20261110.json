@@ -1,13 +1,12 @@
 {
   "schema_source": "docs/reviews/privacy-fields-participation-20261110/schema.json",
   "migration": "0211",
-  "contract_version": "0.31.51-rc.1",
+  "contract_version": "0.31.52-rc.1",
   "counts": {
     "UNREVIEWED": 1126,
-    "PROVIDED": 37,
+    "PROVIDED": 51,
     "EXCLUDED_INTERNAL": 12,
-    "RELATION_ONLY": 7,
-    "COPY_GAP": 16,
+    "RELATION_ONLY": 9,
     "TRANSFORMED": 7,
     "PARTIAL_JSON": 2
   },
@@ -22,17 +21,16 @@
     "privacy_preferences": "PREFERENCES；仅本人",
     "project_records": "PARTICIPATION_AGREEMENTS；仅PARTICIPATION，其他kind未在本批核清",
     "project_participation_amendments": "PARTICIPATION_AGREEMENTS.amendment_activations",
-    "project_participation_orders": "PARTICIPATION_AGREEMENTS.own_order_id；本人是实际买卖方"
+    "project_participation_orders": "PARTICIPATION_AGREEMENTS.own_order_id；本人是实际买卖方",
+    "auth_phone_change_events": "PHONE_CHANGE_EVENTS；仅本人保留换号动作",
+    "project_confirmations": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+    "project_participation_milestones": "PARTICIPATION_MILESTONES；仅本人个人项目阶段确认"
   },
-  "known_copy_gaps": {
-    "auth_phone_change_events": "换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替",
-    "project_confirmations": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-    "project_participation_milestones": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权"
-  },
+  "known_copy_gaps": {},
   "limits": [
     "Not a legal decision on access rights or retention.",
     "Physical columns are not atomic product requirements.",
-    "Only nine table scopes and three uncovered relation histories examined; all other fields explicitly unreviewed.",
+    "Twelve table scopes examined; 1126 other physical columns remain explicitly unreviewed. Historical milestone timestamp never stored; no fabricated backfill.",
     "project_records review only applies to PARTICIPATION; nested JSON needs separate enumeration."
   ],
   "fields": [
@@ -1084,10 +1082,10 @@
       "position": 1,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auth/phone-change.js"
+      "status": "PROVIDED",
+      "scope": "PHONE_CHANGE_EVENTS；仅本人保留换号动作",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "auth_phone_change_events",
@@ -1095,10 +1093,10 @@
       "position": 2,
       "data_type": "int",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auth/phone-change.js"
+      "status": "PROVIDED",
+      "scope": "PHONE_CHANGE_EVENTS；仅本人保留换号动作",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "auth_phone_change_events",
@@ -1106,10 +1104,10 @@
       "position": 3,
       "data_type": "varchar",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auth/phone-change.js"
+      "status": "PROVIDED",
+      "scope": "PHONE_CHANGE_EVENTS；仅本人保留换号动作",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "auth_phone_change_events",
@@ -1117,10 +1115,10 @@
       "position": 4,
       "data_type": "datetime",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auth/phone-change.js"
+      "status": "PROVIDED",
+      "scope": "PHONE_CHANGE_EVENTS；仅本人保留换号动作",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "auth_phone_changes",
@@ -9975,10 +9973,10 @@
       "position": 1,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_confirmations",
@@ -9986,10 +9984,10 @@
       "position": 2,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_confirmations",
@@ -9997,10 +9995,10 @@
       "position": 3,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "RELATION_ONLY",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "用于限定本人操作，不直接输出内部账号字段",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_confirmations",
@@ -10008,10 +10006,10 @@
       "position": 4,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_confirmations",
@@ -10019,10 +10017,10 @@
       "position": 5,
       "data_type": "enum",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_confirmations",
@@ -10030,10 +10028,10 @@
       "position": 6,
       "data_type": "varchar",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_confirmations",
@@ -10041,10 +10039,10 @@
       "position": 7,
       "data_type": "datetime",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_funding",
@@ -10126,10 +10124,10 @@
       "position": 1,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_MILESTONES；仅本人个人项目阶段确认",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_participation_milestones",
@@ -10137,10 +10135,10 @@
       "position": 2,
       "data_type": "varchar",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_MILESTONES；仅本人个人项目阶段确认",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_participation_milestones",
@@ -10148,10 +10146,10 @@
       "position": 3,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "RELATION_ONLY",
+      "scope": "PARTICIPATION_MILESTONES；仅本人个人项目阶段确认",
+      "reason": "用于限定本人操作，不直接输出内部账号字段",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_participation_milestones",
@@ -10159,10 +10157,10 @@
       "position": 4,
       "data_type": "char",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_MILESTONES；仅本人个人项目阶段确认",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_participation_milestones",
@@ -10170,10 +10168,10 @@
       "position": 5,
       "data_type": "text",
       "nullable": "NO",
-      "status": "COPY_GAP",
-      "scope": "统一副本待补",
-      "reason": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权",
-      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/participation.js"
+      "status": "PROVIDED",
+      "scope": "PARTICIPATION_MILESTONES；仅本人个人项目阶段确认",
+      "reason": "按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权",
+      "implementation_ref": "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/related-history-copy.js"
     },
     {
       "table_name": "project_participation_orders",
@@ -12187,5 +12185,15 @@
       "scope": "未做字段语义核对",
       "reason": "物理字段登记不代表本人有权复制；JSON内部字段另核"
     }
-  ]
+  ],
+  "closed_gap_history_20261110": {
+    "previous_gaps": {
+      "auth_phone_change_events": "换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替",
+      "project_confirmations": "本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿",
+      "project_participation_milestones": "本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权"
+    },
+    "result": "IMPLEMENTED_ISOLATED_TESTS",
+    "report": "docs/reviews/privacy-related-history-20261110/REPORT.md",
+    "limits": "Only these three previously identified history gaps; no claim of complete personal data coverage."
+  }
 }

@@ -1,18 +1,18 @@
 # 本人资料提供：实际覆盖和剩余工作
 
-2026-11-09；后端负责人chengcongcong222。依据[28号第一节](../../sources/contracts-20261029/extracted/28.md)原文：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”当前0.31.51-rc.1/0211。
+2026-11-09；后端负责人chengcongcong222。依据[28号第一节](../../sources/contracts-20261029/extracted/28.md)原文：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”当前0.31.52-rc.1/0211。
 
 本表是已定位类别，不是全库逐字段审计结论，行数不能当需求完成率。能查看、能复制记录、能下载原件、实际办理完成分别记录。机构经办不等于本人所有，其他人/儿童/供应商资料不能一并直接导出。
 
 |资料类别|实际存储/实现|目前已经提供|后端仍需核查或补齐|
 |---|---|---|---|
 |账户/偏好/艺人基本档案|identity_accounts、privacy_preferences、artist_people|ACCOUNT/PREFERENCES/ARTISTS|其他持有字段和留存依据；不提供凭据|
-|登录与换号|auth_sessions、auth_phone_changes|SESSION_RECORDS/PHONE_CHANGES|只含仍保留记录；不延长期限、不恢复已清理历史|
+|登录与换号|auth_sessions、auth_phone_changes、auth_phone_change_events|SESSION_RECORDS/PHONE_CHANGES/PHONE_CHANGE_EVENTS|只含仍保留记录；不延长期限、不恢复已清理历史|
 |本人实名结果|artist_records IDENTITY|IDENTITY_CHECKS，状态/年龄段/有效期|供应商身份证/人脸原件、实际可携带与删除，须按具体产品核实|
 |素材与作品|supply_assets、artist_asset_links|本人可访问素材/作品原件与记录|其他授权证据、他人资料、衍生材料须核权脱敏|
 |私人故事|customization_requests及版本附件|正式历史、补件草稿、文字和本人附件|原机构故事不当个人所有；新页面完整办理待验|
 |交易与钱账|trade_records/journal、wallet_records、finance_entries/records|本人买卖单、付款退款、流水、钱包和清分相关记录|成长/星光/佣金及权益副本本轮已补，其他冻结和账务资料继续核对，不以余额代替全部历史|
-|许可/参演/经纪等协议|privacy/agreement-copy等|本人当事人脱敏历史约定|其他合同和真实签署原件；封存不等于签完|
+|许可/参演/经纪等协议|privacy/agreement-copy等|本人当事人脱敏历史约定、本人个人身份会签与阶段确认|其他合同和真实签署原件；封存不等于签完|
 |数字人模型|production_records DIGITAL_ASSET|本人关联制作模型记录|真实供应商长期资产、源文件/可携带/退出删除仍待工程与产品落实|
 |反馈和投诉|support_tickets/events/asset_refs|SUPPORT_TICKETS/SUPPORT_MESSAGES及原受控附件下载|其他纠纷域证据继续核对，机构经办不混入本人|
 |开票资料|invoice_requests/events/documents|INVOICE_REQUESTS/HISTORY/DOCUMENTS；历史更正、已签发/已替换票据与原受控下载|真实税务资料另验；待审不提供，模拟凭证不是真实发票|
@@ -34,6 +34,8 @@
 
 前批193项相关回归与75份实际HTTP结构校验通过；前批六分类证据见privacy-benefit-copy-20261109报告；本轮四分类52项回归及52份HTTP通过，页面、完整流程和真实接入未因此完成。前端接已有分类和缺项说明，原18组/12路线/151标准保留。正式联系方式、保留依据与外部产品资料仍按甲方交付，不自行编造；当前不重复索要仍申请中的配置。
 
-本轮详细边界见[资料与原件](PERSONAL_DATA_BOUNDARIES_20261109.md)；已建179表1207列底册并核9个表范围；完整逐字段审计仍未完成，不以分类表全部有行当全部资料齐全。
+本轮详细边界见[资料与原件](PERSONAL_DATA_BOUNDARIES_20261109.md)；已建179表1207列底册并核12个表范围；完整逐字段审计仍未完成，不以分类表全部有行当全部资料齐全。
 
-2026-11-10字段补缺：个人身份档案与艺人创建时间、参演本人实际订单/变更生效历史/本人约定保留应退已补。接下来先补换号动作历史、本人参演会签、本人阶段确认，再扩展其余字段；[逐列状态和缺项](../../requirements/PERSONAL_COPY_FIELD_AUDIT_20261110.md)。原件、第三方资料与供应商执行仍独立核查，不能把1207物理列当需求或缺口数。
+2026-11-10字段补缺：个人身份档案与艺人创建时间、参演本人实际订单/变更生效历史/本人约定保留应退已补。换号动作历史、本人参演会签、本人阶段确认现已补齐并通过144项相关检查；下一批核素材与交易JSON等其余字段；[逐列状态和缺项](../../requirements/PERSONAL_COPY_FIELD_AUDIT_20261110.md)。原件、第三方资料与供应商执行仍独立核查，不能把1207物理列当需求或缺口数。
+
+本轮阶段确认的旧表无时间，返回未知；证据编号不代表可直接下载或已付款。机构员工操作、其他人的会签不随个人副本提供。历史会签摘要与当前协议摘要分别保留，比对不是电子签效力结论。

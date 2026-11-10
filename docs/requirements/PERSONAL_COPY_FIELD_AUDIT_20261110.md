@@ -1,24 +1,24 @@
-# 本人副本字段核对：底册、已补缺口与下一步
+# 本人副本字段核对：已定位历史缺口已补，剩余范围继续核查
 
-依据[28号第一节](../sources/contracts-20261029/extracted/28.md)：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”本清单是实施核对，不是原文要求导出全部数据库或所有第三方资料。
+依据[28号第一节](../sources/contracts-20261029/extracted/28.md)：“在 App 内查看/导出个人资料、数字人资产、订单与授权记录；可申请机器可读副本。”本清单是实施核对，不能理解为必须导出所有数据库或第三方资料。
 
-从当前0211迁移在空白隔离MySQL建立179张表、1207列，没有读取业务数据。**已逐列核对9个表范围，另确认3个关联历史缺口；其他字段明确未核查。** `project_records`仅核参演协议，JSON动态内容未因此全部覆盖。数据表/字段数不是需求数或完成率。
+0211迁移空白隔离MySQL的底册含179表1207列。本轮核对范围由9表65列扩至12表81列，前批查实的3类历史缺口、涉及16列已处理；剩余1126列未做语义核查，其中含内部工程字段，不能报成1126个缺功能。project_records仅核参演类型，JSON动态内容尚未全部覆盖。
 
-[全部1207列及逐列状态](PERSONAL_COPY_FIELD_AUDIT_20261110.json)；[原始结构](../reviews/privacy-fields-participation-20261110/schema.json)。
+[全部字段及状态](PERSONAL_COPY_FIELD_AUDIT_20261110.json)；[原始结构](../reviews/privacy-fields-participation-20261110/schema.json)；[本轮代码和测试](../reviews/privacy-related-history-20261110/REPORT.md)。接口0.31.52-rc.1，迁移未变。
 
-|本轮范围|核查结果|下一步|
+|核查范围|现在提供什么|还需要做什么|
 |---|---|---|
-|账号与个人身份|账号基础已提供；本轮补个人身份档案，组织资料不混入|前端副本展示新增个人身份；认证内部关联不导出|
-|艺人档案|本轮补创建时间；实名结果另有分类；实名指纹排除|继续其他形象/模型JSON字段核对|
-|登录会话与换号|保留会话状态/时间及换号掩码摘要已提供|换号事件动作/时间为本轮查实缺口；验证码、哈希不直接复制|
-|隐私偏好|当前规范化设置已提供，摘要验证|动态JSON未使用字段继续审，不编造历史|
-|参演合同变更|本轮补本人订单、变更生效历史和本人原订单保留/应退约定；原合同摘要保留|本人会签和阶段确认历史是两个明确缺口；新艺人不得读旧艺人订单|
+|账号、个人身份与艺人|基础资料、个人身份档案和创建时间|前端展示；其他形象/模型JSON按用途核查|
+|登录与换号|保留会话、换号摘要、本轮每步动作和时间|不恢复清理历史，不导出凭据；前端新增动作分类|
+|参演协议和变更|本人订单、变更生效、本人约定保留/应退、本人会签及阶段确认|同版页面验收；证据原件仍独立核权，约定不是到账|
+|会签与阶段确认时间|会签时间来自原记录；旧阶段确认时间未存，明确返回未知|不得拿订单创建时间或导出时间补写；不是新增采集需求|
+|个人与机构边界|个人副本排除机构员工行为及别人的确认；内部账号用于过滤|机构材料继续原业务权限，不能以经办身份批量索取|
 
-下一批按三个确定缺口先补：换号动作历史、本人参演会签、本人阶段确认。各项先界定本人/机构和他人资料边界，再补原分类或兼容分类、权限反例和前端接法。随后扩展交易/素材等尚未核过的表与JSON，不能把剩余未核查列直接报成待开发。
+下一批先核supply_assets及artist_asset_links持有的本人素材字段与原件，再核trade_records中订单/付款/退款JSON已提供与遗漏字段；按原文、已有实现、个人/机构/他人边界形成逐项结果，有确定缺项才补。继续后端六路线和前端同版页面，不把未核查当未开发。
 
-## 本轮逐字段核对
+## 已核范围逐字段结果
 
-|表/字段|状态|返回范围或排除理由|
+|表/字段|状态|提供范围或排除理由|
 |---|---|---|
 |artist_people.id|已提供|ARTISTS；仅本人；由该分类返回，限定本人/当事人范围|
 |artist_people.owner_party_id|已提供|ARTISTS；仅本人；由该分类返回，限定本人/当事人范围|
@@ -32,10 +32,10 @@
 |artist_people.identity_record_id|用于归属/关联|ARTISTS；仅本人；用于本人筛选或关联到另一个已提供记录，不直接输出内部关联|
 |artist_people.object_version|已提供|ARTISTS；仅本人；由该分类返回，限定本人/当事人范围|
 |artist_people.created_at|已提供|ARTISTS；仅本人；由该分类返回，限定本人/当事人范围|
-|auth_phone_change_events.change_id|统一副本缺项|统一副本待补；换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替|
-|auth_phone_change_events.object_version|统一副本缺项|统一副本待补；换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替|
-|auth_phone_change_events.action_code|统一副本缺项|统一副本待补；换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替|
-|auth_phone_change_events.created_at|统一副本缺项|统一副本待补；换号每步动作/时间尚未纳入统一副本，既有换号摘要不能代替|
+|auth_phone_change_events.change_id|已提供|PHONE_CHANGE_EVENTS；仅本人保留换号动作；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|auth_phone_change_events.object_version|已提供|PHONE_CHANGE_EVENTS；仅本人保留换号动作；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|auth_phone_change_events.action_code|已提供|PHONE_CHANGE_EVENTS；仅本人保留换号动作；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|auth_phone_change_events.created_at|已提供|PHONE_CHANGE_EVENTS；仅本人保留换号动作；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
 |auth_phone_changes.id|已提供|PHONE_CHANGES；仅本人；由该分类返回，限定本人/当事人范围|
 |auth_phone_changes.account_id|用于归属/关联|PHONE_CHANGES；仅本人；用于本人筛选或关联到另一个已提供记录，不直接输出内部关联|
 |auth_phone_changes.session_hash|内部/安全信息不直接提供|PHONE_CHANGES；仅本人；登录/验证/去重材料不直接导出；本人手机号仅提供已有掩码，原始信息另按申请核查|
@@ -73,22 +73,22 @@
 |privacy_preferences.object_version|已提供|PREFERENCES；仅本人；由该分类返回，限定本人/当事人范围|
 |privacy_preferences.data_json|JSON仅部分核对|PREFERENCES；仅本人；仅审过现有白名单，JSON全部动态字段尚未核清；不能按一个列算完整|
 |privacy_preferences.data_sha256|内部/安全信息不直接提供|PREFERENCES；仅本人；内部完整性摘要，读时校验|
-|project_confirmations.record_id|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
-|project_confirmations.party_id|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
-|project_confirmations.account_id|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
-|project_confirmations.content_sha256|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
-|project_confirmations.decision|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
-|project_confirmations.reason|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
-|project_confirmations.created_at|统一副本缺项|统一副本待补；本人会签决定/理由/时间尚未逐行提供，不能直接导出所有签署人底稿|
+|project_confirmations.record_id|已提供|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_confirmations.party_id|已提供|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_confirmations.account_id|用于归属/关联|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；用于限定本人操作，不直接输出内部账号字段|
+|project_confirmations.content_sha256|已提供|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_confirmations.decision|已提供|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_confirmations.reason|已提供|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_confirmations.created_at|已提供|PARTICIPATION_CONFIRMATIONS；仅本人个人身份会签；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
 |project_participation_amendments.previous_agreement_id|已提供|PARTICIPATION_AGREEMENTS.amendment_activations；由该分类返回，限定本人/当事人范围|
 |project_participation_amendments.replacement_agreement_id|已提供|PARTICIPATION_AGREEMENTS.amendment_activations；由该分类返回，限定本人/当事人范围|
 |project_participation_amendments.activated_by|内部/安全信息不直接提供|PARTICIPATION_AGREEMENTS.amendment_activations；内部操作人，不暴露审核身份|
 |project_participation_amendments.activated_at|已提供|PARTICIPATION_AGREEMENTS.amendment_activations；由该分类返回，限定本人/当事人范围|
-|project_participation_milestones.agreement_id|统一副本缺项|统一副本待补；本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权|
-|project_participation_milestones.installment_key|统一副本缺项|统一副本待补；本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权|
-|project_participation_milestones.account_id|统一副本缺项|统一副本待补；本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权|
-|project_participation_milestones.evidence_asset_id|统一副本缺项|统一副本待补；本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权|
-|project_participation_milestones.reason|统一副本缺项|统一副本待补；本人阶段确认/理由及证据关联尚未提供，证据原件需另行核权|
+|project_participation_milestones.agreement_id|已提供|PARTICIPATION_MILESTONES；仅本人个人项目阶段确认；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_participation_milestones.installment_key|已提供|PARTICIPATION_MILESTONES；仅本人个人项目阶段确认；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_participation_milestones.account_id|用于归属/关联|PARTICIPATION_MILESTONES；仅本人个人项目阶段确认；用于限定本人操作，不直接输出内部账号字段|
+|project_participation_milestones.evidence_asset_id|已提供|PARTICIPATION_MILESTONES；仅本人个人项目阶段确认；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
+|project_participation_milestones.reason|已提供|PARTICIPATION_MILESTONES；仅本人个人项目阶段确认；按本人记录独立分页提供；不含其他签署人或机构员工行为，证据编号不授予下载权|
 |project_participation_orders.agreement_id|用于归属/关联|PARTICIPATION_AGREEMENTS.own_order_id；本人是实际买卖方；用于本人筛选或关联到另一个已提供记录，不直接输出内部关联|
 |project_participation_orders.order_id|已提供|PARTICIPATION_AGREEMENTS.own_order_id；本人是实际买卖方；由该分类返回，限定本人/当事人范围|
 |project_records.id|已提供|PARTICIPATION_AGREEMENTS；仅PARTICIPATION，其他kind未在本批核清；由该分类返回，限定本人/当事人范围|
