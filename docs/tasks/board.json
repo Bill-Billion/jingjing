@@ -7759,7 +7759,39 @@
       "updated_on": "2026-11-10",
       "implementation": "IMPLEMENTED_ISOLATED_TESTS",
       "production_enabled": false,
-      "next_step": "4182692f已集中原PR39，准确检查见双方CURRENT；继续同申请实际副本交付及六路线，前端原第一包接字段，未确认认领。"
+      "next_step": "4182692f四项远端检查成功；同申请实际副本已由11月11日后续批隔离验，仍待页面和独立审阅；后续核来源报价/商品约定/供应商凭据与六路线。"
+    },
+    {
+      "id": "CORE-PRIVACY-COPY-FULFILLMENT-20261111",
+      "title": "验证同申请素材交易副本的实际交付与失败恢复",
+      "stage": 6,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_REVIEW",
+      "branch": "core/full-business-closure-20261028",
+      "work_refs": [
+        "WORK-14"
+      ],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/tasks/records/CORE-privacy-copy-fulfillment-20261111.md",
+        "docs/reviews/privacy-copy-fulfillment-20261111/REPORT.md"
+      ],
+      "acceptance": "同申请素材/交易取数、实际文件、独审、下载及缺件/丢响应/撤权/重开七场景通过；其他资料保留待办，不冒充全量。",
+      "shared_boundaries": [
+        "auth/permission"
+      ],
+      "review_status": "PENDING",
+      "test_status": "PASS_WITH_LIMITS",
+      "evidence": [
+        "docs/reviews/privacy-copy-fulfillment-20261111/REPORT.md"
+      ],
+      "blockers": [],
+      "updated_on": "2026-11-11",
+      "implementation": "IMPLEMENTED_ISOLATED_TESTS",
+      "production_enabled": false,
+      "next_step": "后端负责人chengcongcong222下一批集中核对订单来源报价、商品特定约定和供应商凭据的个人副本边界，发现实际缺项就补，并继续机构员工撤权与参演发行的同记录验收；不重复开发已验证的副本交付段。前端负责人Bill-Billion继续原三包（本人资料、机构批量、推荐匹配）和03/05/06/07/08/09六路线，第一包按本轮七场景接续复验；新包认领/交付/复验未确认，旧六路线已交付事项不重派。"
     }
   ],
   "delivery_policy": {
@@ -7778,7 +7810,7 @@
       "guide": "docs/collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md",
       "base_commit": "468df28a",
       "pull_request": "https://github.com/Bill-Billion/jingjing/pull/39",
-      "current_increment": "素材/交易背景已补；继续同申请实际副本交付与六路线完整办理"
+      "current_increment": "CORE-PRIVACY-COPY-FULFILLMENT-20261111"
     },
     "note": "原阶段历史在delivery_policy_before_contract_gaps_20261102保留；阶段集中交付，不逐任务建申请、不强推或自动部署。"
   },
@@ -13671,7 +13703,7 @@
     "backend_owner": "chengcongcong222",
     "combined_review": "docs/tasks/records/CORE-client-complete-merge-20261028.md",
     "frontend_story_handoff": "docs/collaboration/client-complete-20261028/FRONTEND_STORY_HANDOFF.md",
-    "latest_record": "docs/tasks/records/CORE-privacy-material-trade-20261110.md",
+    "latest_record": "docs/tasks/records/CORE-privacy-copy-fulfillment-20261111.md",
     "next_delivery_plan": "docs/collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md",
     "acceptance_progress": "docs/collaboration/client-complete-20261028/ACCEPTANCE_PROGRESS_20261109.md"
   },
@@ -14616,9 +14648,9 @@
   },
   "prelaunch_development_20261106": {
     "plan": "docs/collaboration/client-complete-20261028/PRELAUNCH_EXECUTION_20261106.md",
-    "current_step": "MATERIAL_TRADE_CONTEXT_IMPLEMENTED_NEXT_SAME_REQUEST_DELIVERY",
+    "current_step": "SAME_REQUEST_COPY_VERIFIED_NEXT_PRODUCT_SPECIFIC_SCOPE_AND_JOURNEYS",
     "kunshan_materials": "USER_CONFIRMED_STILL_APPLYING",
-    "last_verified_remote": "053cc4d044dff07fb1cdccb4d87eb0037423dbb3",
+    "last_verified_remote": "4182692fdecaef66d9e6305aa52bf3b168d20744",
     "last_verified_remote_checks": "TOOLS_APP_PUSH_BACKEND_SUCCESS_PR_BACKEND_RUNNING",
     "new_frontend_claim": "NOT_CONFIRMED",
     "formal_closed_groups": 0,
@@ -14902,15 +14934,15 @@
       "commit": "4182692fdecaef66d9e6305aa52bf3b168d20744",
       "remote_checks": [
         {
-          "conclusion": "",
+          "conclusion": "success",
           "databaseId": 42800737605,
-          "status": "in_progress",
+          "status": "completed",
           "workflowName": "App 与网页账号页面检查"
         },
         {
-          "conclusion": "",
+          "conclusion": "success",
           "databaseId": 42800737560,
-          "status": "in_progress",
+          "status": "completed",
           "workflowName": "服务器自动检查"
         },
         {
@@ -14920,13 +14952,27 @@
           "workflowName": "甲方测试工具检查"
         },
         {
-          "conclusion": "",
+          "conclusion": "success",
           "databaseId": 42800723659,
-          "status": "in_progress",
+          "status": "completed",
           "workflowName": "服务器自动检查"
         }
       ],
-      "receipt": "LOCAL_ONLY_UNTIL_NEXT_STAGE"
+      "receipt": "INCLUDED_IN_NEXT_STAGE"
+    },
+    "copy_fulfillment_20261111": {
+      "contract": "0.31.53-rc.1",
+      "migration": "0211",
+      "code_sha": "c171e5ba49b5447efc5c6818c2be6de47082670e",
+      "backend": "ISOLATED_JOURNEY_VERIFIED",
+      "regression_pass": 77,
+      "new_scenarios": 7,
+      "runtime_responses": 267,
+      "report": "docs/reviews/privacy-copy-fulfillment-20261111/REPORT.md",
+      "frontend_claim": "NOT_CONFIRMED",
+      "pushed": false,
+      "merged": false,
+      "deployed": false
     }
   }
 }
