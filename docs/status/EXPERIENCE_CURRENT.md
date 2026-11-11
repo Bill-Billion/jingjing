@@ -24,3 +24,5 @@
 [任务记录](../tasks/records/CORE-pm01-w04-w09-20261111.md) · [本人范围](../requirements/PERSONAL_COPY_SCOPE_PM01_20261111.md) · [三包接续](../collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md) · [九项服务](../operations/EXTERNAL_READINESS.md) · [全部剩余](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md)
 
 [PM01开工前历史](../archive/pm01-20261111/EXPERIENCE_CURRENT.md)。前批PM01具体结果保留原报告及主线历史。
+
+本批实现及自验提交 e17b5249407a0c09dda55167a81331850f987a8b；本地提交已保存，拟按本阶段集中交付原PR39。当前未合入，远端结果不沿用前批。
