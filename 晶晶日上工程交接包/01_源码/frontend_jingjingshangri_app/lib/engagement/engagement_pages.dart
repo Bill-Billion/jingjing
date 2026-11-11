@@ -11,6 +11,7 @@ import '../artists/artists_models.dart';
 import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import 'community_support.dart';
+import 'ranking_explanation.dart';
 
 Map<String, dynamic> mcnDashboardForAccount(
     Map<String, dynamic> raw, String accountId,
@@ -485,6 +486,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     final boards = communityMap(d['boards']);
     return [
       communityHeading('艺人榜单', '按发布时的业务事实形成快照，排名不代表付费推广。'),
+      RankingExplanation(session: session, id: widget.id!),
       communityFact('统计时间', communityDate(d['at'])),
       for (final b in [
         ('sales', '成交榜'),

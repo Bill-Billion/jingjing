@@ -14,6 +14,18 @@ import '../notices/notices_models.dart';
 import '../stock/stock_models.dart';
 import '../trade/trade_widgets.dart';
 
+const matchReasons = {
+  'PUBLIC_AVAILABLE': '当前公开且可用',
+  'CITY_MATCH': '符合所选城市',
+  'TEXT_MATCH': '公开介绍符合关键词',
+  'LICENSE_MATCH': '许可范围符合用途',
+  'COMMERCIAL_USE_MATCH': '包含所选商用用途',
+  'PUBLIC_PRICE_WITHIN_BUDGET': '公开价格在预算内',
+  'HALO_THRESHOLD_MET': '达到所选星环等级',
+  'TAG_MATCH': '包含所选标签',
+  'AUDITION_MODE_MATCH': '符合试镜方式',
+  'NOTICE_TYPE_MATCH': '符合通告类型'
+};
 const discoveryKinds = {
   'ARTIST': '艺人',
   'STOCK': '作品',
@@ -139,7 +151,44 @@ class _PublicSearch extends StatefulWidget {
 
 class _PublicSearchState extends State<_PublicSearch> {
   late final city = TextEditingController(text: widget.initialCity);
-  final query = TextEditingController();
+  final query = TextEditingController(),
+      budget = TextEditingController(),
+      tag = TextEditingController();
+  bool matching = false, activeMatching = false;
+  String purpose = '',
+      commercialUse = '',
+      halo = '',
+      auditionMode = '',
+      noticeType = '';
+  Map<String, dynamic> activeFilters = {};
+  final reasons = <String, List<String>>{};
+  Map<String, dynamic> filters() {
+    final f = <String, dynamic>{};
+    if (!matching) return f;
+    if (kind == 'ARTIST') {
+      if (halo.isNotEmpty) f['min_halo'] = int.parse(halo);
+      if (tag.text.trim().isNotEmpty) f['tag'] = tag.text.trim();
+    }
+    if (kind == 'STOCK') {
+      if (purpose.isNotEmpty) f['purpose'] = purpose;
+      if (purpose == 'COMMERCIAL_LIMITED' && commercialUse.isNotEmpty) {
+        f['commercial_use'] = commercialUse;
+      }
+    }
+    if (['STOCK', 'AUDITION'].contains(kind) && budget.text.trim().isNotEmpty) {
+      final n = communityMinor(budget.text, '最高公开价格', zero: true);
+      communityRequire(n <= 900000000000);
+      f['max_price_minor'] = n;
+    }
+    if (kind == 'AUDITION' && auditionMode.isNotEmpty) {
+      f['audition_mode'] = auditionMode;
+    }
+    if (kind == 'NOTICE' && noticeType.isNotEmpty) {
+      f['notice_type'] = noticeType;
+    }
+    return f;
+  }
+
   String kind = 'ARTIST',
       activeKind = 'ARTIST',
       activeCity = '',
@@ -173,6 +222,7 @@ class _PublicSearchState extends State<_PublicSearch> {
   void clearResults() {
     ticket++;
     rows = [];
+    reasons.clear();
     cursor = null;
     seen.clear();
     busy = false;
@@ -181,6 +231,15 @@ class _PublicSearchState extends State<_PublicSearch> {
 
   Future<void> load({bool more = false}) async {
     if (more && (busy || cursor == null)) return;
+    if (!more) {
+      try {
+        activeFilters = filters();
+        activeMatching = matching;
+      } catch (e) {
+        setState(() => error = communityError(e));
+        return;
+      }
+    }
     if (!more) {
       clearResults();
       activeKind = kind;
@@ -194,14 +253,37 @@ class _PublicSearchState extends State<_PublicSearch> {
     });
     try {
       final d = await CommunityApi(widget.session, 'discovery')
-          .read('search', account: true, query: {
+          .read(activeMatching ? 'matches' : 'search', account: true, query: {
+        ...activeFilters,
         'kind': activeKind,
         'limit': 20,
         if (activeCity.isNotEmpty) 'city': activeCity,
         if (activeQuery.isNotEmpty) 'q': activeQuery,
         if (previous != null) 'cursor': previous,
       });
-      final result = validatePublicPage(d, previous: previous);
+      final raw = validatePublicPage(d, previous: previous);
+      if (activeMatching) {
+        communityRequire(d['algorithm_version'] ==
+                'EXPLICIT_BUSINESS_FILTERS_V1' &&
+            d['personalized'] == false &&
+            d['price_personalized'] == false &&
+            d['requires_business_validation'] == true &&
+            d['principle'] == 'EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER' &&
+            d['scan_limited'] is bool);
+        final f = communityMap(d['filters']);
+        communityRequire(f.length == activeFilters.length &&
+            activeFilters.entries.every((e) =>
+                e.key == 'tag' ? f[e.key] is String : f[e.key] == e.value));
+        for (final r in raw) {
+          communityRequire(r['reasons'] is List &&
+              (r['reasons'] as List).isNotEmpty &&
+              (r['reasons'] as List).every((v) => matchReasons.containsKey(v)));
+          communityMap(r['item']);
+        }
+      }
+      final result = activeMatching
+          ? raw.map((r) => communityMap(r['item'])).toList()
+          : raw;
       communityRequire(d['kind'] == activeKind);
       for (final r in result) {
         switch (activeKind) {
@@ -221,6 +303,13 @@ class _PublicSearchState extends State<_PublicSearch> {
       final next = d['next_cursor'] as String?;
       communityRequire(next == null || seen.add(next));
       setState(() {
+        if (activeMatching) {
+          for (final r in raw) {
+            final item = communityMap(r['item']);
+            reasons[(item['listing_id'] ?? item['id']) as String] =
+                List<String>.from(r['reasons']);
+          }
+        }
         rows = [...rows, ...result];
         cursor = next;
       });
@@ -245,6 +334,8 @@ class _PublicSearchState extends State<_PublicSearch> {
     ticket++;
     city.dispose();
     query.dispose();
+    budget.dispose();
+    tag.dispose();
     super.dispose();
   }
 
@@ -253,6 +344,9 @@ class _PublicSearchState extends State<_PublicSearch> {
     final id = (activeKind == 'ARTIST' ? r['listing_id'] : r['id']) as String;
     return tradeSection('${data['display_name'] ?? data['title'] ?? '试镜方案'}', [
       tradeFact('城市', data['city']),
+      if (activeMatching)
+        tradeFact(
+            '符合原因', (reasons[id] ?? []).map((r) => matchReasons[r]).join('、')),
       if (activeKind == 'AUDITION')
         tradeFact(
             '服务费用',
@@ -278,6 +372,13 @@ class _PublicSearchState extends State<_PublicSearch> {
             discoveryKinds.entries.map((e) => (e.key, e.value)).toList(), (v) {
           setState(() {
             kind = v!;
+            purpose = '';
+            commercialUse = '';
+            halo = '';
+            auditionMode = '';
+            noticeType = '';
+            budget.clear();
+            tag.clear();
             clearResults();
           });
           load();
@@ -306,16 +407,117 @@ class _PublicSearchState extends State<_PublicSearch> {
         ],
         TextField(
             controller: query,
-            maxLength: 200,
+            maxLength: 100,
             decoration:
                 const InputDecoration(labelText: '关键词', hintText: '按公开名称、介绍查找'),
             onChanged: (_) => setState(clearResults),
             onSubmitted: (_) => load()),
+        SwitchListTile(
+            title: const Text('按明确条件匹配'),
+            value: matching,
+            onChanged: (v) => setState(() {
+                  matching = v;
+                  clearResults();
+                })),
+        if (matching) ...[
+          if (kind == 'ARTIST') ...[
+            communitySelect(
+                '最低星环',
+                halo,
+                [
+                  ('', '不限'),
+                  ('0', '0级'),
+                  ('1', '1级'),
+                  ('2', '2级'),
+                  ('3', '3级')
+                ],
+                (v) => setState(() {
+                      halo = v!;
+                      clearResults();
+                    })),
+            TextField(
+                controller: tag,
+                maxLength: 40,
+                decoration: const InputDecoration(labelText: '人物标签'),
+                onChanged: (_) => setState(clearResults)),
+          ],
+          if (kind == 'STOCK') ...[
+            communitySelect(
+                '许可用途',
+                purpose,
+                [
+                  ('', '不限'),
+                  ('PERSONAL_NONCOMMERCIAL', '个人非商业'),
+                  ('COMMERCIAL_LIMITED', '约定商用范围')
+                ],
+                (v) => setState(() {
+                      purpose = v!;
+                      commercialUse = '';
+                      clearResults();
+                    })),
+            if (purpose == 'COMMERCIAL_LIMITED')
+              communitySelect(
+                  '商用用途',
+                  commercialUse,
+                  [
+                    ('', '不限'),
+                    ('BRAND_PROMOTION', '品牌推广'),
+                    ('COMMERCIAL_ADVERTISING', '商业广告'),
+                    ('CORPORATE_DISPLAY', '企业展示')
+                  ],
+                  (v) => setState(() {
+                        commercialUse = v!;
+                        clearResults();
+                      })),
+          ],
+          if (['STOCK', 'AUDITION'].contains(kind))
+            TextField(
+                controller: budget,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                    labelText: '最高公开价格（元）', helperText: '留空不限；未公开价格不参与预算匹配'),
+                onChanged: (_) => setState(clearResults)),
+          if (kind == 'AUDITION')
+            communitySelect(
+                '试镜方式',
+                auditionMode,
+                [('', '不限'), ('OFFLINE', '线下试镜'), ('ONLINE_MATERIALS', '线上材料')],
+                (v) => setState(() {
+                      auditionMode = v!;
+                      clearResults();
+                    })),
+          if (kind == 'NOTICE')
+            communitySelect(
+                '通告类型',
+                noticeType,
+                [
+                  ('', '不限'),
+                  ('DRAMA', '剧集'),
+                  ('PERFORMANCE', '商演'),
+                  ('COMMERCIAL', '商单'),
+                  ('EVENT', '活动'),
+                  ('RECRUITMENT', '招募'),
+                  ('OFFICIAL', '平台官方')
+                ],
+                (v) => setState(() {
+                      noticeType = v!;
+                      clearResults();
+                    })),
+          const Text('按你明确选择的条件匹配，不计算AI匹配率，不按个人身份改价。进入详情后仍须核对当前授权、有效期与办理资格。'),
+        ],
         tradeButton('查找', busy ? null : load),
         tradeButton('清空条件', () {
           setState(() {
             city.clear();
             query.clear();
+            budget.clear();
+            tag.clear();
+            purpose = '';
+            commercialUse = '';
+            halo = '';
+            auditionMode = '';
+            noticeType = '';
             clearResults();
           });
           load();

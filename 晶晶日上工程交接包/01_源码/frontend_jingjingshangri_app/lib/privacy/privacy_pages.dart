@@ -12,6 +12,7 @@ import '../trade/trade_widgets.dart';
 import '../engagement/community_support.dart';
 import '../customization/private_draft_guard.dart';
 import 'closure_reference.dart';
+import 'privacy_copy_panel.dart';
 
 const privacyTypes = {
   'QUERY': '查询本人资料',
@@ -1074,7 +1075,11 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                 : null,
             outline: true)
       ]),
-      if (['QUERY', 'COPY'].contains(q['type'])) ...copySection(q),
+      if (['QUERY', 'COPY'].contains(q['type'])) ...[
+        ...copySection(q),
+        PrivacyCopyPanel(
+            key: ValueKey('copy-${r['id']}'), session: session, request: r)
+      ],
       if (['DELETE', 'CLOSE_ACCOUNT'].contains(q['type']) &&
           (q['scopes'] as List)
               .any((v) => ['ALL', 'ARTIST_MATERIALS'].contains(v)))
@@ -1396,7 +1401,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                       : null,
                   outline: true)
           ],
-          appNotice('完整合同、多方资料和历史版本另由审核后的答复附件提供，本次目录不能标成全部资料导出。')
+          appNotice(
+              '本次目录不是完整资料。账户记录、原订单合同及故事历史可在下方逐类读取；涉及第三方或其他原件的资料，另按审核答复核对。')
         ])
       ];
   List<Widget> copyFacts(Map<String, dynamic> x) => [

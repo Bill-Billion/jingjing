@@ -13,6 +13,74 @@ Finder get cityField => find.byWidgetPredicate((widget) =>
     widget is TextField && widget.decoration?.labelText == '城市（可留空）');
 
 void main() {
+  for (final active in [true, false]) {
+    testWidgets('普通规则按active/types开放发布，零等级不引导充值：$active', (t) async {
+      final adapter = FakeAccountAdapter(handler: (r) {
+        if (r.path.endsWith('/rules')) {
+          return envelope({
+            'items': [
+              {
+                'id': noticeId,
+                'content_sha256': 'c' * 64,
+                'rule': {
+                  'version': '普通版',
+                  'publishing_policy': 'VERIFIED_ADULT_20261111',
+                  'terms': '成年实名普通发布',
+                  'submission_days': 7,
+                  'minimum_levels': {
+                    'EVENT': 3,
+                    'COMMERCIAL': 1,
+                    'RECRUITMENT': 1,
+                    'OFFICIAL': null
+                  }
+                }
+              }
+            ],
+            'next_cursor': null
+          });
+        }
+        if (r.path.endsWith('/eligibility')) {
+          return envelope({
+            'rule_id': noticeId,
+            'rule_sha256': 'c' * 64,
+            'active': active,
+            'level': 0,
+            'source_ids': <String>[],
+            'types': active ? ['COMMERCIAL'] : <String>[],
+            'reason': active ? null : 'IDENTITY_REQUIRED'
+          });
+        }
+        return FakeAccountAdapter().defaultReply(r);
+      });
+      final session = (await t.runAsync(() => buyerSession(adapter)))!;
+      await host(t, session, const NoticesPage(mode: 'new'));
+      final rule =
+          find.widgetWithText(DropdownButtonFormField<String>, '选择已生效发布规则');
+      await reveal(t, rule);
+      await t.tap(rule);
+      await frames(t);
+      await t.tap(find.text('普通版 · 投稿7天 · 普通实名发布').last);
+      await frames(t);
+      expect(find.text('查看个人钱包与资格'), findsNothing);
+      expect(find.text('查看历史会员资格'), findsNothing);
+      if (active) {
+        final type =
+            find.widgetWithText(DropdownButtonFormField<String>, '本次可发布类型');
+        await reveal(t, type);
+        await t.tap(type);
+        await frames(t);
+        await t.tap(find.text('商单').last);
+        await frames(t);
+        await reveal(t, find.widgetWithText(TextFormField, '通告标题'));
+        expect(find.widgetWithText(TextFormField, '通告标题'), findsOneWidget);
+      } else {
+        expect(find.textContaining('充值不能代替核验'), findsOneWidget);
+        expect(find.widgetWithText(TextFormField, '通告标题'), findsNothing);
+      }
+      expect(t.takeException(), isNull);
+    });
+  }
+
   testWidgets('保活通告目录跟随城市且保留品类，本地城市优先并可恢复同步', (t) async {
     final adapter = FakeAccountAdapter(
         handler: (r) => r.path.endsWith('/catalog')

@@ -77,6 +77,7 @@ function createOrganizationBatch(db,{resolvePrincipal}){
 
  return {
   async submit(ctx,i){shape(i,['party_id','items','operation_key']);const items=payload(i.items),key=ref(i.operation_key),b=await db.withTransaction(async tx=>{const a=await org(tx,ctx,i.party_id),hash=digest(items),requestKey=digest([a.id,i.party_id,key]);await tx.execute('INSERT INTO organization_batches(id,request_key,account_id,party_id,payload_json,payload_sha256) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE request_key=request_key',[randomUUID(),requestKey,a.id,i.party_id,JSON.stringify(items),hash]);const b=await A.one(tx,'SELECT * FROM organization_batches WHERE request_key=? FOR SHARE',[requestKey]);if(b.payload_sha256!==hash)throw error('IDEMPOTENCY_CONFLICT',409);itemsOf(b);return b;});return output(ctx,b,true);},
+  async lookup(ctx,i){shape(i,['party_id','operation_key']);const operation=ref(i.operation_key);const b=await db.withTransaction(async tx=>{const a=await org(tx,ctx,i.party_id);const row=await A.one(tx,'SELECT * FROM organization_batches WHERE request_key=? AND account_id=? AND party_id=?',[digest([a.id,i.party_id,operation]),a.id,i.party_id]);if(!row)throw error('BATCH_NOT_FOUND',404);itemsOf(row);return row;});return output(ctx,b,false);},
   async read(ctx,i){shape(i,['party_id','batch_id']);return output(ctx,await load(ctx,i.party_id,i.batch_id),false);},
  };
 }

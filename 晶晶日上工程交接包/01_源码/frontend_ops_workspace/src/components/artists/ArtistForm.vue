@@ -6,7 +6,7 @@ import { sha256,features,purposes,delegatedActions,artistMediaTypes,type ArtistD
 import AgencyDelegationFields from './AgencyDelegationFields.vue'
 import { money } from '@/api/modules/trade'
 export type ArtistFormAction='PERSON'|'AVATAR'|'IDENTITY'|'CONSENT'|'DELEGATION'|'VARIANT'|'HALO'|'LISTING'|'SERVICE'|'SUPPLEMENT'|'APPEAL'|'WITHDRAW'|'REVIEW'|'RESULT'
-const props=defineProps<{action:ArtistFormAction;disabled:boolean;person?:ArtistDetail|null;record?:ArtistRecord|null;services?:ArtistServices|null;avatarId?:string;readEvidence?:string[];assets?:SupplyAsset[];canManageMaterials?:boolean;reviewServices?:ArtistRecord[];uploadMaterial?:(file:File)=>Promise<SupplyAsset|null>}>(),emit=defineEmits<{submit:[body:unknown];readPortraits:[assetIds:string[]];inspectPortrait:[asset:SupplyAsset]}>()
+const props=defineProps<{action:ArtistFormAction;disabled:boolean;batchAllowed?:boolean;person?:ArtistDetail|null;record?:ArtistRecord|null;services?:ArtistServices|null;avatarId?:string;readEvidence?:string[];assets?:SupplyAsset[];canManageMaterials?:boolean;reviewServices?:ArtistRecord[];uploadMaterial?:(file:File)=>Promise<SupplyAsset|null>}>(),emit=defineEmits<{submit:[body:unknown];batch:[body:unknown];readPortraits:[assetIds:string[]];inspectPortrait:[asset:SupplyAsset]}>()
 const form=reactive<Record<string,string>>({avatar_id:props.avatarId||'',level:'',renewal_reminder:'false',audition_public:'false',ownership_promise:'false',primary_portrait_asset_id:'',replace_materials:'false'})
 const selectedFeatures=ref<string[]>([]),selectedPurposes=ref<string[]>([]),selectedActions=ref<string[]>([])
 const titles:Record<ArtistFormAction,string>={PERSON:'建立本人的真人档案',AVATAR:'建立一个数字人档案',IDENTITY:'核对实名服务会话',CONSENT:'本人确认这次用途',DELEGATION:'本人确认机构代办范围',VARIANT:'保存造型或声音新版本',HALO:'提交认证申请',LISTING:'申请公开展示',SERVICE:'选择已审核的服务',SUPPLEMENT:'补充原申请材料',APPEAL:'对原审核提出异议',WITHDRAW:'撤回本次同意、委托或展示',REVIEW:'独立审核这份申请',RESULT:'记录创建服务的实际结果'}
@@ -114,5 +114,6 @@ const needsConfirmation=computed(()=>['CONSENT','DELEGATION','HALO','LISTING','R
    <label v-if="needsConfirmation" class="artist-check"><input v-model="confirmed.checked" data-testid="artists-form-confirm" type="checkbox">我已核对当前真人、数字人、用途、材料和本次明确约定。</label>
    <button class="primary" data-testid="artists-form-submit" :disabled="disabled||!payload||needsConfirmation&&!confirmed.checked">{{action==='SERVICE'?(freeOffer?'提交免费申请':'保存服务申请，后续另行报价'):action==='REVIEW'?'提交这份版本的审核决定':'提交本次明确内容'}}</button>
   </fieldset>
- </form>
+ <button v-if="action==='LISTING'&&batchAllowed" type="button" class="outline" :disabled="disabled||!payload||!confirmed.checked" @click="payload&&emit('batch',payload)">加入机构批量清单（暂不提交）</button><RouterLink v-if="action==='LISTING'&&batchAllowed" to="/engagement/dashboard" class="button-link outline">核对机构批量清单</RouterLink>
+</form>
 </template>

@@ -38,6 +38,15 @@ test('privacy responses require the actual reviewed files before publication',{s
  const hash=b=>require('node:crypto').createHash('sha256').update(b).digest('hex');
  const freshProof=body=>S.assets.upload(producer.ctx,{party_id:producer.acting_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from(body),operation_key:key()});
  const rejectDraft=r=>call('POST','/operations/requests/'+r.id+'/review',reviewer,{decision:'REJECTED',reason:'Replace missing or changed evidence',proposal_sha256:r.proposal_sha256},r.object_version);
+ await t.test('operator actual-file preview is scoped to current proposal and does not publish the draft',async()=>{
+  const r=ok(await propose(await create())),path='/operations/requests/'+r.id+'/evidence/'+proof.id+'/content';
+  assert.equal((await call('GET',path,reviewer)).bytes.toString(),original.toString());
+  assert.equal((await call('GET',path,producer)).bytes.toString(),original.toString());
+  assert.equal((await call('GET',path,outsider)).status,403);
+  assert.notEqual((await call('GET','/requests/'+r.id+'/evidence/'+proof.id+'/content',buyer)).status,200);
+  const other=await create();assert.notEqual((await call('GET','/operations/requests/'+other.id+'/evidence/'+proof.id+'/content',reviewer)).status,200);
+  assert.equal(ok(await current(r)).current_status,'AWAITING_REVIEW');assert.equal(ok(await history(r)).responses.length,0);
+ });
  await t.test('tampered bytes cannot pass even when metadata still looks ready',async()=>{
   const r=ok(await propose(await create()));S.files.set(file.object_key,Buffer.alloc(original.length,120));
   try{const failure=await review(r);assert.equal(failure.status,503);assert.equal(failure.error.code,'SERVICE_UNAVAILABLE');assert.equal(ok(await history(r)).responses.length,0);}

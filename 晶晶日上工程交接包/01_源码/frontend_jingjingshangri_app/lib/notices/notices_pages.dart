@@ -473,7 +473,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     .map((x) => DropdownMenuItem(
                         value: x.id,
                         child: Text(
-                            '${x.rule['version']} · 投稿${x.rule['submission_days']}天')))
+                            '${x.rule['version']} · 投稿${x.rule['submission_days']}天${x.ordinaryPublishing ? " · 普通实名发布" : ""}')))
                     .toList(),
                 onChanged: busy ? null : (v) => chooseRule(v!)),
             if (ruleId != null) ...[
@@ -486,13 +486,25 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                       (eligibility!.raw['types'] as List)
                           .map((t) => noticeTypes[t])
                           .join('、')),
-                  tradeFact('实际资格等级', eligibility!.raw['level']),
+                  if (rules
+                          .firstWhere((x) => x.id == ruleId)
+                          .ordinaryPublishing &&
+                      widget.session.party?['kind'] != 'ORGANIZATION')
+                    appNotice('普通发布按成年实名、当前账号状态和可发布类型核验，无需充值星探。')
+                  else
+                    tradeFact('本版规则资格等级', eligibility!.raw['level']),
                   tradeFact('原因', eligibility!.raw['reason'] ?? '当前资格有效')
                 ]
               ]),
               if (eligibility != null && eligibility!.raw['active'] != true)
-                appNotice('当前没有正式发布资格。机构请独立提交资质；个人可在钱包查看会员年和消费成长依据。'),
-              tradeButton('查看个人钱包与资格', () => go('/wallet'), outline: true),
+                appNotice(widget.session.party?['kind'] == 'ORGANIZATION'
+                    ? '当前机构未取得本类发布资格，请核对资质、授权与有效期。'
+                    : rules.firstWhere((x) => x.id == ruleId).ordinaryPublishing
+                        ? '当前未满足普通发布条件，请核对成年实名、身份有效期和账号状态。充值不能代替核验。'
+                        : '当前选择的是历史星探规则。普通发布请选择标有“普通实名发布”的已生效规则；历史通告仍按原规则办理。'),
+              if (!rules.firstWhere((x) => x.id == ruleId).ordinaryPublishing &&
+                  widget.session.party?['kind'] != 'ORGANIZATION')
+                tradeButton('查看历史会员资格', () => go('/wallet'), outline: true),
               if (widget.session.party?['kind'] == 'ORGANIZATION')
                 tradeButton('申请机构发布资格', () => go('/notices/qualification'),
                     outline: true)
@@ -516,7 +528,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           ],
           if (widget.mode == 'qualification') ...[
             if (widget.session.party?['kind'] != 'ORGANIZATION')
-              appNotice('此项仅适用于机构负责人；个人资格从个人账本和会员事实核对。')
+              appNotice('此项仅适用于机构负责人；个人请返回发布页，选择适用的已生效规则核对资格。')
             else
               V5Form(
                   api: api,

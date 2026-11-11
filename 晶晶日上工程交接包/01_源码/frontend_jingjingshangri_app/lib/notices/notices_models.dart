@@ -80,6 +80,9 @@ class NoticeRule {
     v5Require(rule['version'] is String &&
         rule['terms'] is String &&
         v5Int(rule['submission_days'], min: 1, max: 365));
+    v5Require(rule['publishing_policy'] == null ||
+        ['SCOUT_QUALIFIED', 'VERIFIED_ADULT_20261111']
+            .contains(rule['publishing_policy']));
     final levels = v5Map(rule['minimum_levels']);
     v5Require(levels['EVENT'] == 3 &&
         levels['COMMERCIAL'] == 1 &&
@@ -89,6 +92,8 @@ class NoticeRule {
   final Map<String, dynamic> raw;
   late final Map<String, dynamic> rule;
   String get id => raw['id'];
+  bool get ordinaryPublishing =>
+      rule['publishing_policy'] == 'VERIFIED_ADULT_20261111';
 }
 
 class NoticeEligibility {

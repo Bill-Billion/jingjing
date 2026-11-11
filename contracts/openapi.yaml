@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.55-rc.1
+  version: 0.31.56-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -24402,6 +24402,59 @@ paths:
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
       description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
         or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
+  /api/v1/privacy/operations/requests/{request_id}/evidence/{asset_id}/content:
+    get:
+      operationId: downloadPrivacyOperationEvidence
+      summary: 获准处理人核对同申请当前待审答复实际文件
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 仅当前PRIVACY_HANDLE岗位可读，申请本人不得借岗位读取未审稿；待审时只读取当前提案列明且哈希、大小和类型一致的文件。原始存储读取前后重复核权，不授予第三方原件或泛化文件访问。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Account-only personal request workflow. A reviewed response is not proof that an external deletion
+        or account closure has executed. Unconfigured holiday calendar is explicitly labelled an estimate.
   /api/v1/privacy/requests/{request_id}/model-creations:
     get:
       operationId: getPrivacyModelCreations
@@ -33329,6 +33382,52 @@ paths:
         PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动仅十类本人记录白名单，机构/评委/设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
 
   /api/v1/engagement/mcn/batches:
+    get:
+      operationId: findOrganizationBatchByRequest
+      summary: 按原请求编号查找本人发起的机构批次（不重办）
+      description: 最多20项，同一请求键绑定原始内容，失败项可原键重试；逐项权限与业务事务不放宽。成功表示提交成功，不表示已审核/已上架。UNAVAILABLE表示当前无权查看，不能推断历史执行失败；RETRY_REQUIRED先查原批次。PRICE_REVISION只创建待审新版规格，审核及更新上架另走原流程。仅创建者可恢复，始终重查机构成员和艺人授权。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: operation_key
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationBatchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
     post:
       operationId: submitOrganizationBatch
       summary: 机构逐项批量提交、调价送审或分派

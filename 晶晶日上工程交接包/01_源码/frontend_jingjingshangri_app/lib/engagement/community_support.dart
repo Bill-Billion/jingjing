@@ -334,9 +334,12 @@ class CommunityApi {
           {bool account = false, String method = 'POST'}) =>
       session.pending(method, path(suffix), actingParty: party(account));
   Future<Uint8List> bytes(String suffix,
-      {bool account = false, String? sha256Value}) async {
+      {bool account = false,
+      String? sha256Value,
+      Map<String, dynamic>? query}) async {
     final p = party(account), e = session.epoch;
-    final b = await session.readBytes(path(suffix), actingParty: p);
+    final b =
+        await session.readBytes(path(suffix), actingParty: p, query: query);
     check(e, p);
     if (sha256Value != null) {
       communityRequire(sha256.convert(b).toString() == sha256Value);
