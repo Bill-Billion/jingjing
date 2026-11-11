@@ -48,7 +48,7 @@ function main(){
   const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())walk(file);else executable.push(path.relative(root,file).split(path.sep).join('/'));}};
   walk(path.join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/dist'));
  }
- if(crossSurface)executable.push('scripts/pm01-stock-native-check.mjs','scripts/afternoon-audition-aftercare-native-check.mjs','scripts/team-next-cocreation-combined-check.mjs','scripts/native-test-runtime.cjs','scripts/run-native-test.ps1');
+ if(crossSurface)executable.push('scripts/pm01-stock-native-check.mjs','scripts/afternoon-audition-aftercare-native-check.mjs','scripts/team-next-cocreation-combined-check.mjs','scripts/native-test-runtime.cjs','scripts/run-native-test.ps1','scripts/native-document-picker.py');
  for(const f of ['scripts/backend-evidence-reporter.cjs','scripts/run-backend-acceptance.cjs'])executable.push(f);
  const sources=[...new Set(executable)].sort().map(f=>({path:f,sha256:hash(path.join(root,f))}));
  const start={run_id:runId,profile,base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),started_at:new Date().toISOString(),node:process.version,environment:'isolated',test_files:files,sources};

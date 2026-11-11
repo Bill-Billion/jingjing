@@ -4,8 +4,7 @@ import '../account/account_api.dart';
 import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
-import '../supply/supply_api.dart';
-import '../supply/supply_files.dart';
+import '../artists/artists_files.dart';
 import '../trade/trade_widgets.dart';
 import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
@@ -48,7 +47,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   @override
   String get domain => 'cocreation';
   @override
-  bool get enabled => super.enabled && !checking;
+  bool get enabled => super.enabled && !checking && !materialBusy;
   bool get personalCreator => session.party?['kind'] == 'PERSON';
   late final title = field(),
       request = field(),
@@ -70,6 +69,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   List<Map<String, dynamic>> producers = [];
   String caseKind = 'CANCEL';
   bool agreed = false, sharing = false, withdrawAgreed = false;
+  bool materialBusy = false;
+  String? materialPerson;
   Map<String, dynamic>? room, member;
   List<Map<String, dynamic>> rules = [], rows = [], cases = [], ownMembers = [];
   @override
@@ -94,6 +95,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     cases = [];
     ownMembers = [];
     materials = [];
+    materialBusy = false;
+    materialPerson = null;
     people = [];
     stories = [];
     agreed = false;
@@ -819,6 +822,11 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     final r = room;
     if (r == null) return [];
     final editing = widget.view == 'member';
+    final person = casts.isEmpty ? null : casts.first.selectedPerson;
+    final materialReady = person != null &&
+        person.id == casts.first.person.text &&
+        person.owner == session.partyId;
+    final canEdit = r['current_status'] == 'OPEN';
     return [
       communityHeading(
           editing ? '我的参加资料' : '本人参加与授权', '只提交本人的资料。其他人的故事、素材和授权不会在此开放。'),
@@ -829,40 +837,70 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       for (final (i, c) in casts.indexed)
         communitySection('本人形象 ${i + 1}', [
           c.chooser(session,
-              enabled: enabled && r['current_status'] == 'OPEN',
-              changed: () => setState(() {})),
+              enabled: enabled && canEdit,
+              changed: () => setState(() {
+                    final id = casts.first.person.text;
+                    if (id.isNotEmpty) {
+                      if (materialPerson != null && materialPerson != id) {
+                        materials = [];
+                        agreed = false;
+                      }
+                      materialPerson = id;
+                    }
+                  })),
           if (casts.length > 1)
             TextButton(
-                onPressed:
-                    enabled ? () => setState(() => casts.removeAt(i)) : null,
+                onPressed: enabled && canEdit
+                    ? () => setState(() => casts.removeAt(i))
+                    : null,
                 child: const Text('移除此处的形象引用'))
         ]),
       if (casts.length < 4)
         tradeButton(
             '增加本人另一形象',
-            enabled
+            enabled && canEdit
                 ? () => setState(() => casts.add(CocreationCastInput(field)))
                 : null,
             outline: true),
-      communityField(story, '我本人的私人故事', lines: 5, enabled: enabled),
+      communityField(story, '我本人的私人故事', lines: 5, enabled: enabled && canEdit),
       communitySection('我本人的私有素材', [
-        SupplyFiles(
-            api: SupplyApi(session),
-            purpose: 'AVATAR_MATERIAL',
-            ids: materials,
-            enabled: enabled,
-            onChanged: enabled ? (v) => setState(() => materials = v) : null)
+        if (materialReady)
+          ArtistFiles(
+              key: ValueKey('participation-materials:${person.id}'),
+              api: ArtistsApi(session),
+              person: person,
+              purpose: 'AVATAR_MATERIAL',
+              ids: materials,
+              maxFiles: 20,
+              enabled: enabled && canEdit,
+              onBusy: (v) => setState(() => materialBusy = v),
+              onChanged: canEdit
+                  ? (v) => setState(() {
+                        materials = v;
+                        agreed = false;
+                      })
+                  : null)
+        else
+          appNotice('请先选择并核对本人的艺人档案，再上传本人的私有素材。')
       ]),
       communitySection('核对本次参与条款', [
         SelectableText(communityText(
             communityMap(r['rule_snapshot'])['participation_terms'])),
-        communityCheck('允许我本人片段按本次约定分享', sharing,
-            enabled ? (v) => setState(() => sharing = v == true) : null),
-        communityCheck('我已核对本人、形象、资料与本次参与条款，并明确同意', agreed,
-            enabled ? (v) => setState(() => agreed = v == true) : null),
+        communityCheck(
+            '允许我本人片段按本次约定分享',
+            sharing,
+            enabled && canEdit
+                ? (v) => setState(() => sharing = v == true)
+                : null),
+        communityCheck(
+            '我已核对本人、形象、资料与本次参与条款，并明确同意',
+            agreed,
+            enabled && canEdit
+                ? (v) => setState(() => agreed = v == true)
+                : null),
         tradeButton(
             editing ? '确认修订自己的参加资料' : '确认本人参加',
-            enabled && agreed && r['current_status'] == 'OPEN'
+            enabled && agreed && canEdit && materialReady
                 ? () => submit(() async {
                       final cast = casts.map((c) => c.value()).toList();
                       if (cast.map((c) => c['person_id']).toSet().length != 1) {
@@ -934,7 +972,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             caseKind,
             casts.length
           ],
-      locked: busy || recovery != null,
+      locked: busy || recovery != null || materialBusy,
       child: tradeScaffold(
           context,
           '多人共创',

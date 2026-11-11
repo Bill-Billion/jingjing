@@ -193,6 +193,23 @@ void main() {
     await press(t, find.text('受控播放已购作品'));
     await wait(t, find.text('本次私有预览已打开，请核对完整内容。'));
     await shot(t, 'native-paid');
+    await control('expire');
+    await press(t, find.text('受控播放已购作品'));
+    await frames(t, 10);
+    expect(session!.isLoggedIn, isFalse);
+    expect(find.text('本次私有预览已打开，请核对完整内容。'), findsNothing);
+    await control('renew');
+    await boot(t, 'stock');
+    await open(t, '/stock/purchase?orderId=' + id);
+    await control('picker', {'mode': 'cancel'});
+    await press(t, find.text('下载本次私有文件'));
+    await wait(t, find.text('已取消保存，本次未确认收件。'));
+    await control('cancelled');
+    await control('picker', {'mode': 'save'});
+    await press(t, find.text('下载本次私有文件'));
+    await wait(t, find.text('本次私有文件已保存。'));
+    await control('saved');
+
     for (final action in ['KEEP', 'REVOKE']) {
       await select(t, '问题类型', '申请售后退款');
       final field = find.byWidgetPredicate(
@@ -215,9 +232,9 @@ void main() {
       }
       await shot(t, 'native-' + action);
     }
+    await control('complete');
     await session!.logout();
     await frames(t);
     expect(find.text('本次私有预览已打开，请核对完整内容。'), findsNothing);
-    await control('complete');
   }, timeout: const Timeout(Duration(minutes: 10)));
 }

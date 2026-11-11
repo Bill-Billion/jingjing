@@ -112,6 +112,7 @@ class CocreationCastInput {
       consents;
   String usage = 'EXISTING_MATERIAL';
   bool personAvatarVerified = false;
+  ArtistPerson? selectedPerson;
   Map<String, dynamic> value() {
     final ids = communityIds(consents.text, '脸声用途同意');
     if (ids.length > 2) throw const AccountError(400, '每次最多选择两份脸声用途同意');
@@ -184,6 +185,7 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
   Future<void> load({String? personId}) async {
     final t = ++ticket, e = widget.session.epoch, p = widget.session.partyId;
     input.personAvatarVerified = false;
+    input.selectedPerson = null;
     setState(() {
       busy = true;
       error = null;
@@ -224,6 +226,7 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
         records = rs;
         supply = ss;
       });
+      input.selectedPerson = d?.person;
       input.personAvatarVerified =
           d != null && d.avatars.any((a) => a.id == input.avatar.text);
       if (d == null) {
@@ -251,6 +254,7 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
         input.supplyConsent.clear();
         input.consents.clear();
         input.personAvatarVerified = false;
+        input.selectedPerson = null;
         widget.onChanged();
       }
     } finally {
@@ -299,6 +303,7 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
           enabled
               ? (v) {
                   input.person.text = v ?? '';
+                  input.selectedPerson = null;
                   input.avatar.clear();
                   input.personAvatarVerified = false;
                   input.look.clear();

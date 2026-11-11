@@ -19,9 +19,11 @@ void main() {
   NavigatorState? nav;
   Map<String, dynamic> fixture = {};
   final keys = <String>[];
-  bool loseCreate = false;
+  bool loseCreate = false, loseMember = false;
+  final memberWrites = <String>[];
   Future<Map<String, dynamic>> control(String action,
       [Map<String, dynamic> args = const {}]) async {
+    debugPrint('COCREATION_CONTROL $action');
     final client = HttpClient();
     try {
       final req = await client.postUrl(Uri.parse('$origin/__native/control'));
@@ -99,6 +101,14 @@ void main() {
       if (o.method == 'POST' && o.path.endsWith('/invite-links')) {
         keys.add('${o.headers['Idempotency-Key']}');
       }
+      if (o.method == 'POST' && o.path.contains('/cocreation/members/')) {
+        memberWrites.add(jsonEncode({
+          'path': o.path,
+          'key': o.headers['Idempotency-Key'],
+          'version': o.headers['If-Match'],
+          'body': o.data
+        }));
+      }
       if (first && o.method == 'POST' && o.path == '/api/v1/auth/sessions') {
         first = false;
         h.resolve(Response<dynamic>(requestOptions: o, statusCode: 200, data: {
@@ -112,6 +122,17 @@ void main() {
         h.next(o);
       }
     }, onResponse: (r, h) {
+      if (loseMember &&
+          r.statusCode == 200 &&
+          r.requestOptions.method == 'POST' &&
+          r.requestOptions.path.contains('/cocreation/members/')) {
+        loseMember = false;
+        h.reject(DioException(
+            requestOptions: r.requestOptions,
+            type: DioExceptionType.connectionError,
+            message: 'Synthetic member response lost after commit'));
+        return;
+      }
       if (loseCreate &&
           r.statusCode == 200 &&
           r.requestOptions.method == 'POST' &&
@@ -154,10 +175,59 @@ void main() {
     await frames(t, 10);
   }
 
+  Future<void> selectFirst(WidgetTester t, String label) async {
+    final f = find.byWidgetPredicate((w) =>
+        w is DropdownButtonFormField<String> &&
+        w.decoration.labelText == label);
+    debugPrint('COCREATION_CHOICE $label');
+    await reveal(t, f);
+    final dropdown = t.widget<DropdownButton<String>>(
+        find.descendant(of: f, matching: find.byType(DropdownButton<String>)));
+    final item =
+        dropdown.items!.firstWhere((x) => x.value != null && x.value != '');
+    await tap(t, f);
+    await t.tap(find.text((item.child as Text).data!).last);
+    await frames(t, 10);
+  }
+
+  Future<void> enter(WidgetTester t, String label, String text) async {
+    final f = find.byWidgetPredicate(
+        (w) => w is TextField && w.decoration?.labelText == label);
+    await reveal(t, f);
+    await t.enterText(f, text);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await frames(t, 3);
+  }
+
+  Future<void> recoverMember(WidgetTester t) async {
+    await reveal(t, find.text('上次操作结果尚未确定'));
+    await tap(t, find.text('先核对当前记录'));
+    await tap(t, find.text('使用原编号继续核对'));
+    await reveal(t, find.text('已按原编号核对原请求结果。'));
+    expect(memberWrites.length, 2);
+    expect(memberWrites[0], memberWrites[1]);
+    memberWrites.clear();
+  }
+
   testWidgets(
       'native host retry and guest claim same room without automatic participation',
       (t) async {
     addTearDown(() => Clipboard.setData(const ClipboardData(text: '')));
+    fixture = await control('setup', {'role': 'co_actor_2'});
+    if (fixture['phase'] == 'withdraw') {
+      await boot(t, 'co_actor_2');
+      final id = fixture['member_id'] as String;
+      await open(t, '/cocreation?view=member&recordId=$id');
+      await enter(t, '退出原因', 'Native member withdraw after delivery');
+      await tap(t, find.text('我知道退出会停止自己的资料和旧片段继续使用，退款另按原约定处理'));
+      loseMember = true;
+      await tap(t, find.text('确认本人退出'));
+      await recoverMember(t);
+      await control('complete');
+      await reveal(t, find.text('本人参加状态'));
+      expect(find.text('确认本人退出'), findsNothing);
+      return;
+    }
     await boot(t, 'buyer');
     final room = fixture['room_id'] as String;
     final before = await control('count');
@@ -202,7 +272,39 @@ void main() {
     await reveal(t, find.text('填写我本人的参加资料'));
     await control(
         'record', {'name': 'native-guest-claim-same-room-count-unchanged'});
+    await tap(t, find.text('填写我本人的参加资料'));
+    await selectFirst(t, '本人艺人');
+    await selectFirst(t, '本人数字人');
+    await selectFirst(t, '已登记造型版本');
+    await selectFirst(t, '已审核的作品使用授权');
+    final consent = find.byWidgetPredicate((w) =>
+        w is CheckboxListTile &&
+        w.title is Text &&
+        ((w.title as Text).data ?? '').contains('具体项目制作'));
+    await tap(t, consent.first);
+    await enter(t, '我本人的私人故事', 'App member original private story');
+    await control('pick');
+    await tap(t, find.text('选择并上传私有材料'));
+    await wait(t, find.text('私有材料已上传，尚未作出用途同意或提交审核。'));
+    await tap(t, find.text('允许我本人片段按本次约定分享'));
+    await tap(t, find.text('我已核对本人、形象、资料与本次参与条款，并明确同意'));
+    await tap(t, find.text('确认本人参加'));
+    await reveal(t, find.text('本人参加状态'));
+    final joined = await control('joined');
+    await enter(t, '我本人的私人故事', 'App member revised private story');
+    await tap(t, find.text('允许我本人片段按本次约定分享'));
+    await tap(t, find.text('我已核对本人、形象、资料与本次参与条款，并明确同意'));
+    loseMember = true;
+    await tap(t, find.text('确认修订自己的参加资料'));
+    await recoverMember(t);
+    await control('updated');
+    await open(t, "/cocreation?view=member&recordId=${joined['member_id']}");
+    final storyField = find.byWidgetPredicate(
+        (w) => w is TextField && w.decoration?.labelText == '我本人的私人故事');
+    await reveal(t, storyField);
+    expect(t.widget<TextField>(storyField).controller!.text,
+        'App member revised private story');
     await Clipboard.setData(const ClipboardData(text: ''));
     await control('complete');
-  });
+  }, timeout: const Timeout(Duration(minutes: 12)));
 }
