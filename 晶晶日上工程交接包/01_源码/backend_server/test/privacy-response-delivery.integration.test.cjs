@@ -7,7 +7,8 @@ test('privacy responses require the actual reviewed files before publication',{s
  try{await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
  const S=await require('./support/customization-delivery.cjs').seed(db),{producer,buyer,reviewer,outsider}=S.people;await S.grant(producer,'PRIVACY_HANDLE');await S.grant(producer,'PRIVACY_REVIEW');await S.grant(reviewer,'PRIVACY_HANDLE');await S.grant(reviewer,'PRIVACY_REVIEW');
  const proof=await S.assets.upload(producer.ctx,{party_id:producer.acting_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic redacted privacy copy'),operation_key:key()});
- server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1/privacy',fixtures=[];
+ let afterRead=null;const checkedStorage=()=>({...S.storageFactory(),async getBuffer(k){const b=await S.storageFactory().getBuffer(k);if(afterRead)await afterRead(k);return b;}});
+ server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:checkedStorage}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1/privacy',fixtures=[];
  async function call(method,url,who=buyer,body,version=null,operation=key(),party=null){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...party?{'X-Acting-Party':party}:{},...body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':operation},...version===null?{}:{'If-Match':'"'+version+'"'}},...body===undefined?{}:{body:JSON.stringify(body)}});if(!(res.headers.get('content-type')||'').includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.includes('/account-data?')?'PrivacyAccountCopyPageResponse':url.includes('/transaction-data?')?'PrivacyTransactionCopyPageResponse':url.includes('/stories/')&&url.includes('/data?')?'PrivacyStoryCopyPageResponse':url.includes('/data?')?'PrivacyDataExportResponse':url.endsWith('/copy-options')?'PrivacyCopyOptionsResponse':url.startsWith('/preferences')?'PrivacyPreferencesResponse':url.endsWith('/history')?'PrivacyHistoryResponse':value.data?.items?'PrivacyListResponse':'PrivacyRequestResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
 
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;};
@@ -83,9 +84,10 @@ test('privacy responses require the actual reviewed files before publication',{s
   const other=await S.upload(outsider,'REVIEW_EVIDENCE');assert.equal((await propose(r,other)).error.code,'PRIVACY_EVIDENCE_OWNER_REQUIRED');
  });
 
+ let existingCast,existingForeignCast;
  await t.test('same application exports actual scoped records, delivers reviewed bytes and reopens without losing history',async()=>{
   const own=await S.newOrder({preview:'SCRIPT_BEFORE_INTERIM'}),foreign=await S.newOrder({commissioner:outsider,preview:'SCRIPT_BEFORE_INTERIM'});
-  const artist=await S.actorCast(buyer);await S.actorCast(outsider);
+  const artist=existingCast=await S.actorCast(buyer);existingForeignCast=await S.actorCast(outsider);
   let r=ok(await call('POST','/requests',buyer,{type:'COPY',scopes:['ALL'],details:'Synthetic actual account and order copy'}));
   const page=(suffix,who=producer)=>call('GET','/operations/requests/'+r.id+suffix,who);
   assert.equal((await page('/account-data?section=ACCOUNT')).error.code,'PRIVACY_STATE_CONFLICT');
@@ -124,6 +126,75 @@ test('privacy responses require the actual reviewed files before publication',{s
   try{assert.equal((await page('/account-data?section=ACCOUNT')).status,403);}finally{await db.execute("UPDATE governance_operator_grants SET enabled=1 WHERE account_id=? AND action_code='PRIVACY_HANDLE'",[producer.account_id]);}
   const [audit]=await db.execute("SELECT actor_account_id,message FROM privacy_events WHERE request_id=? AND event_code='COPY_DATA_ACCESSED'",[r.id]);assert.ok(audit.some(x=>x.actor_account_id===producer.account_id));assert.ok(audit.some(x=>x.actor_account_id===reviewer.account_id));assert.ok(audit.every(x=>!x.message.includes(buyer.token)));
   assert.equal(ok(await current(r)).current_status,'PROCESSING');
+ });
+
+
+ await t.test('one material and trade copy stays recoverable and scoped through actual delivery',async t=>{
+  const own=await S.newOrder({preview:'SCRIPT_BEFORE_INTERIM'}),foreign=await S.newOrder({commissioner:outsider,preview:'SCRIPT_BEFORE_INTERIM'});
+  const payment=await S.pay(own.order,'first'),cast=existingCast,foreignCast=existingForeignCast;
+  const materialId=cast.look.data.material_asset_ids[0],foreignMaterialId=foreignCast.look.data.material_asset_ids[0];
+  let refund=await S.trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:payment.id,allocations:[{line_id:'film',amount_minor:500}],reason:'Synthetic copy partial refund',operation_key:key()});
+  refund=await S.reviewTrade(refund);await S.trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+  await S.trade.applyRefund(refund.id,{provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',config_revision:'r04',refund_id:refund.id,payment_id:payment.id,transaction_id:refund.data.transaction_id,currency:'CNY',amount_minor:500,status:'SUCCEEDED'});
+  const content=await S.upload(buyer,'WORK_CONTENT'),foreignContent=await S.upload(outsider,'WORK_CONTENT');
+  let r=ok(await call('POST','/requests',buyer,{type:'COPY',scopes:['ARTIST_MATERIALS','CONTENT','TRANSACTIONS','CONTRACTS'],details:'Synthetic single-request material and trade fulfillment'}));
+  const requestId=r.id,read=suffix=>call('GET','/operations/requests/'+requestId+suffix,producer);
+  r=ok(await call('POST','/operations/requests/'+r.id+'/start',producer,{},r.object_version));
+  const material=ok(await read('/data?category=ARTIST_MATERIALS')),works=ok(await read('/data?category=CONTENT'));
+  const transactions={};for(const section of ['ORDERS','SUMMARY','PAYMENTS','REFUNDS','JOURNAL','CONTRACT'])transactions[section]=ok(await read('/transaction-data?section='+section+(section==='ORDERS'?'':'&order_id='+own.order.id)));
+  let attachment,text,pending,reviewKey,submitKey,submittedVersion,submission;
+  const fileUrl=()=>'/requests/'+requestId+'/evidence/'+attachment.id+'/content';
+  await t.test('real selected rows form the same request file, without other people or provider internals',async()=>{
+   const m=material.items.find(x=>x.id===materialId);assert.ok(m);assert.equal(m.artist_person_id,cast.person.id);assert.ok(m.created_at);assert.ok(works.items.some(x=>x.id===content.id));
+   assert.deepEqual(transactions.SUMMARY.items[0].financial,{received_minor:3000,refunded_minor:500,net_minor:2500});
+   assert.ok(transactions.ORDERS.items.some(x=>x.id===own.order.id&&x.created_at));assert.equal(transactions.PAYMENTS.items[0].id,payment.id);assert.equal(transactions.PAYMENTS.items[0].expires_at,payment.data.expires_at);assert.equal(transactions.REFUNDS.items[0].id,refund.id);
+   text=JSON.stringify({request_id:requestId,coverage:'SELECTED_RECORDS_ONLY',original_files_included:false,material,works,transactions});
+   for(const forbidden of [foreign.order.id,foreignMaterialId,foreignContent.id,buyer.token,'object_key','merchant_id','consumer_request_key'])assert.ok(!text.includes(forbidden),forbidden==='object_key'?'internal storage key leaked':'unrelated or internal data leaked');
+   attachment=await freshProof(text);assert.equal(attachment.content_sha256,hash(Buffer.from(text)));
+  });
+  await t.test('lost submission result uses original key; an unapproved file stays private',async()=>{
+   submitKey=key();submittedVersion=r.object_version;
+   submission={result:{response:'Selected material metadata and trade records; originals remain pending',outcome:'INFORMATION_PROVIDED',evidence_asset_ids:[attachment.id],retentions:[],remaining_actions:['Original files, other categories and unreviewed fields remain pending']}};
+   // The server completes the write, but the simulated client discards its response.
+   ok(await call('POST','/operations/requests/'+requestId+'/response',producer,submission,submittedVersion,submitKey));
+   r=ok(await current(r));assert.equal(r.current_status,'AWAITING_REVIEW');
+   pending=ok(await call('POST','/operations/requests/'+requestId+'/response',producer,submission,submittedVersion,submitKey));assert.equal(pending.object_version,r.object_version);
+   assert.equal(ok(await history(r)).responses.length,0);assert.equal((await call('GET',fileUrl())).status,404);
+   const [[counts]]=await db.execute("SELECT COUNT(*) AS n FROM privacy_events WHERE request_id=? AND event_code='REVIEW_PENDING'",[requestId]);assert.equal(Number(counts.n),1);
+  });
+  await t.test('revoked operator or reviewer cannot recover an old operation or approve',async()=>{
+   await db.execute("UPDATE governance_operator_grants SET enabled=0 WHERE account_id=? AND action_code='PRIVACY_HANDLE'",[producer.account_id]);
+   try{assert.equal((await read('/data?category=ARTIST_MATERIALS')).status,403);assert.equal((await call('POST','/operations/requests/'+requestId+'/response',producer,submission,submittedVersion,submitKey)).status,403);}
+   finally{await db.execute("UPDATE governance_operator_grants SET enabled=1 WHERE account_id=? AND action_code='PRIVACY_HANDLE'",[producer.account_id]);}
+   reviewKey=key();await db.execute("UPDATE governance_operator_grants SET enabled=0 WHERE account_id=? AND action_code='PRIVACY_REVIEW'",[reviewer.account_id]);
+   try{assert.equal((await review(pending,reviewKey)).status,403);assert.equal(ok(await history(r)).responses.length,0);}
+   finally{await db.execute("UPDATE governance_operator_grants SET enabled=1 WHERE account_id=? AND action_code='PRIVACY_REVIEW'",[reviewer.account_id]);}
+  });
+  await t.test('missing file blocks review; restoration and lost approval recover one answer only',async()=>{
+   const [[row]]=await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[attachment.id]),bytes=S.files.get(row.object_key);S.files.delete(row.object_key);
+   try{assert.equal((await review(pending,reviewKey)).status,503);assert.equal(ok(await current(r)).current_status,'AWAITING_REVIEW');assert.equal(ok(await history(r)).responses.length,0);}
+   finally{S.files.set(row.object_key,bytes);}
+   ok(await review(pending,reviewKey));r=ok(await current(r));assert.equal(r.current_status,'FOLLOW_UP');
+   assert.equal(ok(await review(pending,reviewKey)).object_version,r.object_version);assert.equal(ok(await history(r)).responses.length,1);
+  });
+  await t.test('downloaded bytes match the reviewed snapshot and same business identifiers',async()=>{
+   const got=await call('GET',fileUrl());assert.equal(got.status,200);assert.equal(got.bytes.toString(),text);assert.equal(hash(got.bytes),attachment.content_sha256);
+   const payload=JSON.parse(got.bytes);assert.equal(payload.request_id,requestId);assert.equal(payload.transactions.SUMMARY.items[0].id,own.order.id);assert.equal(payload.transactions.REFUNDS.items[0].id,refund.id);
+   assert.equal((await call('GET',fileUrl(),outsider)).status,404);assert.equal((await call('GET',fileUrl(),buyer,undefined,null,key(),buyer.personal_party_id)).status,400);
+  });
+  await t.test('account disabled during file transport cannot receive bytes; restored account can retry',async()=>{
+   const [[row]]=await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[attachment.id]);
+   afterRead=async k=>{if(k===row.object_key){afterRead=null;await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[buyer.account_id]);}};
+   try{const got=await call('GET',fileUrl());assert.notEqual(got.status,200);assert.equal(got.bytes,undefined);}
+   finally{afterRead=null;await db.execute("UPDATE identity_accounts SET current_status='ACTIVE' WHERE id=?",[buyer.account_id]);}
+   assert.equal((await call('GET',fileUrl())).bytes.toString(),text);
+  });
+  await t.test('reopened follow-up preserves reviewed file without claiming all personal data finished',async()=>{
+   r=ok(await call('POST','/requests/'+requestId+'/reopen',buyer,{reason:'Please handle original files and other categories'},r.object_version));assert.equal(r.current_status,'REOPENED');
+   assert.equal((await read('/data?category=ARTIST_MATERIALS')).error.code,'PRIVACY_STATE_CONFLICT');assert.equal((await call('GET',fileUrl())).bytes.toString(),text);assert.equal(ok(await history(r)).responses.length,1);
+   const out=path.resolve(__dirname,'../../../..','.local/privacy-copy-fulfillment-20261111/records.json');await fs.mkdir(path.dirname(out),{recursive:true});
+   await fs.writeFile(out,JSON.stringify({synthetic_only:true,request_id:requestId,order_id:own.order.id,payment_id:payment.id,refund_id:refund.id,material_id:materialId,content_id:content.id,response_asset_id:attachment.id,content_sha256:attachment.content_sha256,status:r.current_status,scope:'SELECTED_RECORDS_ONLY',original_files_included:false},null,2));
+  });
  });
 
  await fs.mkdir(path.resolve(__dirname,'../../../..','.local/privacy-response-delivery-20261109'),{recursive:true});
