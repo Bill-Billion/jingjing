@@ -34,7 +34,7 @@ module.exports=Object.freeze({
  engagement:['test/ranking-contract.test.cjs','test/ranking-contract.integration.test.cjs','test/organization-batch.integration.test.cjs','test/organization-merchandise-batch.integration.test.cjs','test/engagement-policy.test.cjs','test/engagement.integration.test.cjs'],
  wallet:['test/wallet-policy.test.cjs','test/wallet.integration.test.cjs','test/wallet-refund-entitlement-journey.integration.test.cjs'],
  auditions:['test/auditions-policy.test.cjs','test/auditions.integration.test.cjs','test/auditions-supplements.integration.test.cjs','test/auditions-delivery-options.integration.test.cjs','test/auditions-delivery-staff.integration.test.cjs'],
- notices:['test/notices-quote-options.integration.test.cjs','test/notices-policy.test.cjs','test/notices.integration.test.cjs'],
+ notices:['test/notices-quote-options.integration.test.cjs','test/notices-ordinary.integration.test.cjs','test/notices-policy.test.cjs','test/notices.integration.test.cjs'],
  'stock-commercial':['test/stock-commercial-policy.test.cjs','test/stock-commercial.integration.test.cjs'],
  stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs','test/stock-media.test.cjs','test/stock-media.integration.test.cjs'],
  'customization-delivery':['test/customization-delivery-policy.test.cjs','test/customization-delivery.integration.test.cjs'],

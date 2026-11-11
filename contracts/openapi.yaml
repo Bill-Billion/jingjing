@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.53-rc.1
+  version: 0.31.54-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -56377,6 +56377,10 @@ components:
       type: object
       additionalProperties: false
       properties:
+        publishing_policy:
+          type: string
+          enum: [SCOUT_QUALIFIED, VERIFIED_ADULT_20261111]
+          description: 新审核规则显式选择 VERIFIED_ADULT_20261111 后，成年实名个人可发布非官方通告，不依赖星探充值或等级。缺省或 SCOUT_QUALIFIED 保留旧规则；机构资质、官方权限、独立审核及具体项目资格不变。
         version:
           type: string
           minLength: 1

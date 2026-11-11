@@ -14,7 +14,17 @@ async function liveRule(tx,key){const r=await load(tx,key,'RULE','FOR SHARE');if
 async function verifiedPerson(tx,party){const rows=(await tx.execute('SELECT * FROM artist_people WHERE owner_party_id=? FOR SHARE',[party]))[0];const at=await A.now(tx);for(const raw of rows){const p={...raw,identity_valid_until:A.instant(raw.identity_valid_until)};try{require('../artists/policy').adult(p,at);return p;}catch(e){if(e.status>=500)throw e;}}throw error('NOTICE_VERIFIED_ADULT_REQUIRED',409);}
 async function qualification(tx,party,rule){
  const p=await A.activeParty(tx,party),now=await A.now(tx);
- if(p.kind==='PERSON')await verifiedPerson(tx,party);
+ if(p.kind==='PERSON'){
+  const person=await verifiedPerson(tx,party);
+  // An explicitly reviewed rule opts into ordinary publishing. Legacy rules and
+  // their notices keep their original qualification; wallet benefits are unchanged.
+  if(rule.data.rule.publishing_policy==='VERIFIED_ADULT_20261111'){
+   const account=await A.one(tx,'SELECT id,current_status FROM identity_accounts WHERE id=? FOR SHARE',[p.personal_account_id]);
+   if(!account||account.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE',403);
+   await A.owner(tx,account,party);
+   return {active:true,level:0,types:P.TYPES.filter(t=>t!=='OFFICIAL'),source_ids:[],valid_until:person.identity_valid_until,reason:null};
+  }
+ }
  const rows=(await tx.execute("SELECT * FROM notice_records WHERE owner_party_id=? AND kind IN ('QUALIFICATION','FACT') AND current_status='APPROVED' FOR SHARE",[party]))[0].map(checked);
  if(p.kind==='ORGANIZATION'){const q=rows.filter(r=>r.kind==='QUALIFICATION'&&r.data.valid_from<=now&&now<r.data.valid_until);return {active:q.length>0,level:0,types:[...new Set(q.flatMap(r=>r.data.types))],source_ids:q.map(r=>r.id),reason:q.length?null:'ORGANIZATION_QUALIFICATION_REQUIRED'};}
  const facts=rows.filter(r=>r.kind==='FACT');const legacy={...P.scout(rule.data.rule,facts.map(r=>r.data),now),source_ids:facts.map(r=>r.id)};const W=require('../wallet/qualification'),chosen=W.choose(legacy,await W.read(tx,party,now));const q={active:chosen.active,level:chosen.level,valid_until:chosen.valid_until,reason:chosen.reason};

@@ -1,4 +1,5 @@
 """Generate a read-only acceptance work queue; never mark tests as passed."""
+import argparse
 import hashlib
 import json
 from collections import Counter
@@ -16,8 +17,7 @@ SURFACES = {"api": "后端", "app": "App", "web": "网页", "operations": "运�
 def cell(value):
     return str(value).replace("|", "／").replace("\n", " ")
 
-def main():
-    data = json.loads(SOURCE.read_text(encoding="utf-8"))
+def render(data):
     items = data["items"] + data["supplemental_items"]
     assert len(items) == 151 and len({i["id"] for i in items}) == 151
     count = Counter(i["status"] for i in items)
@@ -51,7 +51,26 @@ def main():
             "；".join(refs) or "尚待按完整预期整理",
             item["status"]])) + "|")
     lines += ["", "原始预期、需求变化依据、局部报告路径和哈希保存在 FULL_BUSINESS_ACCEPTANCE_20261028.json；本表是可读队列，不替代正式登记。", ""]
-    OUT.write_text("\n".join(lines), encoding="utf-8")
+    return "\n".join(lines)
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    from full_business_check import read, validate, SOURCE as REQUIREMENTS
+    data = json.loads(SOURCE.read_text(encoding="utf-8"))
+    errors = validate(ROOT, data, read(ROOT, "docs/tasks/board.json"), read(ROOT, REQUIREMENTS))
+    if errors:
+        raise SystemExit("Invalid register: " + "; ".join(errors))
+    content = render(data)
+    if args.check:
+        if not OUT.exists() or OUT.read_text(encoding="utf-8") != content:
+            raise SystemExit("Acceptance queue stale; run python scripts/acceptance_work_queue.py")
+    else:
+        OUT.write_text(content, encoding="utf-8")
+    items = data["items"] + data["supplemental_items"]
+    count = Counter(i["status"] for i in items)
+    partial_count = sum(bool(i.get("partial_evidence")) for i in items)
     print(json.dumps({"registered": len(items), "statuses": dict(count), "partial_links": partial_count,
                       "status_changed": False, "output": str(OUT.relative_to(ROOT))}, ensure_ascii=False))
 
