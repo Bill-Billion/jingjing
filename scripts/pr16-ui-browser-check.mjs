@@ -104,7 +104,9 @@ async function run() {
     const pendingFinal=await api(buyer,'GET','/production/records/'+id('webFinalVersion'));if(pendingFinal.current_status==='IN_REVIEW')await review(pendingFinal,'versions');const p=buyer.page;await go(p,'/production/versions/'+id('webFinalVersion'));await p.getByTestId('production-read-preview').click();await p.locator('video').waitFor();await p.waitForFunction(()=>document.querySelector('video')?.readyState>=2)
     for(const k of ['script','specification','audio','branding'])await p.getByTestId('production-check-'+k).check();await p.getByTestId('production-feedback-decision').selectOption('ACCEPT');await p.getByTestId('production-feedback-note').fill('合成测试：按本版逐项核对并验收，尚未付清尾款。');await shot(p,'customer-final-desktop')
     const r=post(p,'/versions/'+id('webFinalVersion')+'/feedback');await p.getByTestId('production-feedback-submit').click();assert.equal((await data(await r)).data.decision,'ACCEPT')
-    const blocked=p.waitForResponse(r=>r.request().method()==='GET'&&new URL(r.url()).pathname==='/api/v1/production/versions/'+id('webFinalVersion')+'/content'&&new URL(r.url()).searchParams.get('variant')==='final');await p.getByTestId('production-download-final').click();assert.equal((await blocked).status(),409)
+    assert.equal(await p.getByTestId('production-download-final').isDisabled(),true)
+    // The page now prevents an unpaid download; direct HTTP must still enforce the boundary.
+    const blocked=await fetch(state.apiUrl+'/api/v1/production/versions/'+id('webFinalVersion')+'/content?variant=final',{headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.actingPartyId||buyer.personalPartyId}});assert.equal(blocked.status,409);await blocked.arrayBuffer()
     await go(p,'/production/versions/'+id('appDownloadFinal'));const download=p.waitForEvent('download');await p.getByTestId('production-download-final').click();assert.equal(await (await download).failure(),null);await shot(p,'final-delivered-desktop')
   })
   await check('生成默认未启用，不排假任务；实际任务仅按原请求恢复',async()=>{
