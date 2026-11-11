@@ -38,7 +38,7 @@ jobs:
           python3 scripts/audit_requirement_trace.py --check
           python3 scripts/full_business_check_test.py
           node --test scripts/v5-r05-r12-app-actions-result.test.mjs
-          node --test scripts/backend-acceptance-evidence.test.cjs
+          node --test scripts/backend-acceptance-evidence.test.cjs scripts/ci-ubuntu-mirror.test.cjs
       - name: 单独检查账号权限规则
         run: node scripts/backend-check.cjs party-unit
       - name: 安装锁定版本的接口检查工具
@@ -79,12 +79,7 @@ jobs:
         run: |
           # Hosted runners often already contain these tools. Verify before touching apt.
           if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null || [ ! -r /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]; then
-            # The Azure mirror stalled this job; keep Ubuntu's signed packages on its main mirror.
-            for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt /etc/apt/apt-mirrors-security.txt; do
-              if [ -f "$source" ]; then
-                sudo sed -i 's|azure.archive.ubuntu.com|archive.ubuntu.com|g' "$source"
-              fi
-            done
+            node scripts/ci-ubuntu-mirror.cjs
             apt_options=(-o Acquire::ForceIPv4=true -o Acquire::Retries=1 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
             # Use existing package indexes first; an unrelated repository must not hang the whole job.
             if ! timeout 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends ffmpeg fonts-dejavu-core; then
