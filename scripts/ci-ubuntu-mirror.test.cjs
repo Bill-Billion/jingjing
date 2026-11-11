@@ -14,3 +14,10 @@ test('changing mirror preserves suites, keyring and unrelated package sources',(
  assert.equal(value,'URIs: https://archive.ubuntu.com/ubuntu/\nSuites: noble noble-updates\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\nhttps://archive.ubuntu.com/ubuntu/ priority:1\nhttps://packages.microsoft.com/ubuntu/24.04/prod\n');
  assert(!value.includes('trusted=yes'));assert.throws(()=>rewriteSources(input,'https://unknown.invalid/ubuntu'),/UNRECOGNIZED/);
 });
+
+test('Canonical host outage may use the recognized independent Kernel.org mirror without changing apt trust',()=>{
+ const seen=[],selected=selectMirror('noble',u=>{seen.push(u);return u.startsWith('https://mirrors.us.kernel.org/');});
+ assert.equal(selected,'https://mirrors.us.kernel.org/ubuntu');assert.equal(seen.length,4);
+ assert.equal(rewriteSources('deb https://archive.ubuntu.com/ubuntu noble main',selected),'deb https://mirrors.us.kernel.org/ubuntu/ noble main');
+ assert.equal(rewriteSources('deb https://mirrors.us.kernel.org/ubuntu/ noble main','https://archive.ubuntu.com/ubuntu'),'deb https://archive.ubuntu.com/ubuntu/ noble main');
+});
