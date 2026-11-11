@@ -1,4 +1,4 @@
-import { type Domain, type Field, text,long,id,hash,integer,select,group,rows,fixed,reason,operation as op,bool } from './model'
+import { type Domain, type Field, text,long,id,hash,integer,money,select,group,rows,fixed,reason,operation as op,bool } from './model'
 const approved=(fields:Field[]):Field=>({...group('verification','已实际检查的依据',fields),visible:r=>r.decision==='APPROVED',inactive:null})
 const participants=rows('participants','出镜人物',[id('person_id','真实人物'),id('avatar_id','具体数字人'),id('consent_id','本次销售与展示授权')],20,0)
 export const stock:Domain={key:'stock',title:'现成影片',journal:'FILM EDITIONS / 05',intro:'先看已审核影片及明确的个人或商用许可，再购买并取得正式文件。',note:'个人商品为收藏与社交分享许可；独立商用商品须逐项核对用途、地域与期间。未明确授权的广告，以及改编、发行、重新生成、独立声音、源文件与买断不包含。普通下架保留已售许可，权利暂停将限制再次下载。',sections:[
@@ -20,4 +20,4 @@ op('hold','暂停权利或重新双审','/stock/reviews/:record_id/status',[sele
 op('receipt','确认已取得文件','/stock/purchases/:record_id/receipt',[],'required',true,['purchases']),
 op('accept','明确验收本次购买','/stock/purchases/:record_id/acceptance',[],'required',true,['purchases']),
 op('case','提出原订单售后','/stock/purchases/:record_id/cases',[select('kind','问题类型',[['FILE_UNAVAILABLE','文件无法取得'],['EXTENSION','申请延期'],['RIGHTS_DISPUTE','权利争议'],['WRONG_CONTENT','内容不符'],['REFUND','申请退款']]),reason()],'required',true,['purchases']),
-op('resolve','独立决定售后结果','/stock/purchases/:record_id/case-resolution',[id('case_id','当前待处理售后'),select('decision','处理决定',[['RESUME','恢复交付'],['REFUND','全额退款']]),reason()],'none',true,['aftercare'])]}
+op('resolve','独立决定售后结果','/stock/purchases/:record_id/case-resolution',[id('case_id','当前待处理售后'),select('decision','处理决定',[['RESUME','恢复交付'],['REFUND','核定退款与许可']]),{...money('refund_minor','本案核定退款金额',1),visible:r=>r.decision==='REFUND',inactive:null},{...select('license_action','退款到账后原许可',[['KEEP','保留原许可'],['REVOKE','撤销原许可']]),visible:r=>r.decision==='REFUND',inactive:null},reason()],'none',true,['aftercare'])]}

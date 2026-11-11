@@ -46,7 +46,7 @@ export function actionAvailability(domain: string, operation: Operation, record:
     if (key === 'unlist' && record?.seller_party_id && record.seller_party_id !== context.partyId) return blocked('请使用本影片的卖方身份。')
     if (['receipt', 'accept', 'case'].includes(key) && record?.buyer_party_id && record.buyer_party_id !== context.partyId) return blocked('仅本订单买方可办理此项。')
     if (['rights', 'content'].includes(key) && (data.reviews as BusinessData | undefined)?.[key === 'rights' ? 'RIGHTS' : 'CONTENT']) return blocked('本版本此项已有审核结论，请查看记录。')
-    if (['receipt', 'accept'].includes(key) && record && (record.order_status !== 'PAID' || data.status !== 'ACTIVE' || data.current_case_id)) return blocked('正式付款、有效许可及售后状态核对后，才能确认交付。')
+    if (['receipt', 'accept'].includes(key) && record && ((record.order_status !== 'PAID' && !(['PARTIALLY_REFUNDED','REFUNDED'].includes(String(record.order_status)) && (data.refund_plan as BusinessData | undefined)?.license_action === 'KEEP')) || data.status !== 'ACTIVE' || data.current_case_id)) return blocked('正式付款、有效许可及售后状态核对后，才能确认交付。')
     if (key === 'resolve' && !data.current_case_id) return blocked('当前没有待处理的原订单售后。')
   }
   if (domain === 'auditions' && record?.kind === 'BOOKING') {

@@ -236,6 +236,14 @@ class StockPurchase {
     v5Require(data['acceptance_method'] == null ||
         ['BUYER_EXPLICIT', 'AGREED_TIMEOUT']
             .contains(data['acceptance_method']));
+    if (data['refund_plan'] != null) {
+      final plan = v5Map(data['refund_plan']);
+      v5Require(v5Id(plan['case_id']) &&
+          v5Int(plan['amount_minor'], min: 1) &&
+          v5Int(plan['target_refunded_minor'], min: 1) &&
+          plan['target_refunded_minor'] >= plan['amount_minor'] &&
+          ['KEEP', 'REVOKE'].contains(plan['license_action']));
+    }
     cases = v5Rows(data['cases'], max: 10000).map(v5Map).toList();
     for (final c in cases) {
       v5Require(v5Id(c['id']) &&
@@ -245,6 +253,9 @@ class StockPurchase {
       final r = c['resolution'];
       if (r != null) {
         final d = v5Map(r);
+        if (d['refund_minor'] != null || d['license_action'] != null) {
+          v5Require(d['decision'] == 'REFUND' && v5Int(d['refund_minor'], min: 1) && ['KEEP', 'REVOKE'].contains(d['license_action']));
+        }
         v5Require(['RESUME', 'REFUND'].contains(d['decision']) &&
             d['reason'] is String &&
             v5Date(d['at']));
@@ -261,7 +272,9 @@ class StockPurchase {
   int get version => raw['object_version'];
   bool get usable =>
       status == 'ACTIVE' &&
-      raw['order_status'] == 'PAID' &&
+      (raw['order_status'] == 'PAID' ||
+          (['PARTIALLY_REFUNDED', 'REFUNDED'].contains(raw['order_status']) &&
+              data['refund_plan']?['license_action'] == 'KEEP')) &&
       data['current_case_id'] == null &&
       (license.data['scope'] != 'COMMERCIAL_LIMITED' ||
           !DateTime.now()

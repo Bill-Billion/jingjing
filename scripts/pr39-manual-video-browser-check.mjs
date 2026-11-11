@@ -14,10 +14,11 @@ const mysql=require('mysql2/promise'),{openDatabase}=require(resolve(b,'src/infr
 const {chromium}=webRequire('playwright-core'),{preview}=await import(pathToFileURL(webRequire.resolve('vite')))
 const env=JSON.parse(await readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'))
 for(const [k,v] of Object.entries({NODE_ENV:'test',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v)
+const recoveryMode=process.env.JX_PM01_RECOVERY_TEST==='1';
 const copyrightMode=process.env.JX_PR39_COPYRIGHT_MODE||null;assert(copyrightMode===null||['BUYER_OWNERSHIP','PRODUCER_OWNERSHIP_LICENSE'].includes(copyrightMode));
 const couponMode=process.env.JX_PR39_COUPON_TEST==='1',unitMinor=couponMode?50000:10001,originalParts=couponMode?[15000,20000,15000]:[3000,4000,3001],netParts=couponMode?[13500,18000,13500]:originalParts;
-const out=resolve(root,copyrightMode?'.local/pr39-copyright-'+copyrightMode:couponMode?'.local/pr39-coupon-browser':'.local/pr39-manual-video-browser');await mkdir(out,{recursive:true})
-const name='jx_test_manual_ui_'+randomBytes(8).toString('hex'),checks=[],requests=[],errors=[],ids={}
+const out=resolve(root,recoveryMode?'.local/pm01-w12-recovery-browser':copyrightMode?'.local/pr39-copyright-'+copyrightMode:couponMode?'.local/pr39-coupon-browser':'.local/pr39-manual-video-browser');await mkdir(out,{recursive:true})
+const name='jx_test_manual_ui_'+randomBytes(8).toString('hex'),checks=[],requests=[],errors=[],transport=[],ids={}
 let control,db,server,browser,web,created=false,completed=false,problem
 const key=randomUUID
 async function check(label,fn){await fn();checks.push({label,result:'PASS'});console.log('PASS '+label)}
@@ -25,21 +26,24 @@ try{
  control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE})
  await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');created=true
  db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db)
- const f=await require(resolve(b,'test/support/customization-delivery.cjs')).seed(db),{producer,buyer,reviewer}=f.people
+ const f=await require(resolve(b,'test/support/customization-delivery.cjs')).seed(db),{producer,buyer,reviewer}=f.people;ids.actors={buyer:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id}
  const template=await f.stories.publishTemplate(producer.ctx,{category_code:'blessing_manual',template_version:1,template_snapshot:require(resolve(b,'src/modules/customization/blessing-template.json')),source_ref:'synthetic:manual-browser',operation_key:key()})
  const model=await f.newOrder({preview:'SCRIPT_BEFORE_INTERIM',calendar:require(resolve(b,'test/support/working-calendar.cjs'))(),unitMinor,copyrightTerms:copyrightMode?require(resolve(b,'test/support/copyright-terms.cjs'))(copyrightMode):null,title:'合成新版人工短视频规格'})
  const old=await f.newOrder({unitMinor:10001,title:'合成旧版私人定制规格'})
- server=require(resolve(b,'src/http/account-api')).createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,...(copyrightMode?{COPYRIGHT_CONTRACT_POLICY:'CONTRACT_20261029'}:{})}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r))
+ const sim=recoveryMode?await require(resolve(b,'src/testing/payment-simulator')).createPaymentSimulator(db,{...env,MYSQL_DATABASE:name,JX_PAYMENT_SIMULATOR_ENABLED:'true'},{merchant_party_id:f.org.party_id,resolvePrincipal:f.resolvePrincipal}):null
+ server=require(resolve(b,'src/http/account-api')).createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,...(sim?{tradeProvidersFactory:()=>sim}:{}),tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,...(copyrightMode?{COPYRIGHT_CONTRACT_POLICY:'CONTRACT_20261029'}:{})}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r))
  const base='http://127.0.0.1:'+server.address().port
- web=await preview({root:w,configFile:false,preview:{host:'127.0.0.1',port:5174,strictPort:true,proxy:{'/api':{target:base}}}})
- const origin='http://127.0.0.1:5174'
+ const webPort=recoveryMode?5328:5174
+ web=await preview({root:w,configFile:false,preview:{host:'127.0.0.1',port:webPort,strictPort:true,proxy:{'/api':{target:base}}}})
+ const origin='http://127.0.0.1:'+webPort
  browser=await chromium.launch({...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}),headless:true})
- async function actor(person){const context=await browser.newContext({viewport:{width:1280,height:1000},acceptDownloads:true});await context.addInitScript(({token,party})=>{sessionStorage.setItem('ops.session.token',token);sessionStorage.setItem('ops.session.selected',party)},{token:person.token,party:person.acting_party_id});const page=await context.newPage();page.setDefaultTimeout(15000);page.on('dialog',d=>d.accept());page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/api/'))requests.push({method:r.method(),path:new URL(r.url()).pathname})});return page}
+ async function actor(person){const context=await browser.newContext({viewport:{width:1280,height:1000},acceptDownloads:true});await context.addInitScript(({token,party})=>{sessionStorage.setItem('ops.session.token',token);sessionStorage.setItem('ops.session.selected',party)},{token:person.token,party:person.acting_party_id});const page=await context.newPage();page.setDefaultTimeout(15000);page.on('dialog',d=>d.accept());page.on('pageerror',e=>errors.push(e.message));page.on('requestfailed',r=>transport.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText}));page.on('request',r=>{if(r.url().includes('/api/'))requests.push({method:r.method(),path:new URL(r.url()).pathname})});return page}
  const customer=await actor(buyer),operator=await actor(producer),independent=await actor(reviewer)
  async function goto(page,path){await page.goto(origin+path);await page.waitForLoadState('networkidle')}
- async function post(page,needle,act){const waiting=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith(needle));await act();const res=await waiting,json=await res.json();assert.equal(res.status(),200,JSON.stringify(json));await page.waitForLoadState('networkidle');return json.data}
+ async function post(page,needle,act){const waiting=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith(needle));await act();let res;try{res=await waiting}catch(e){await writeFile(resolve(out,'failure-page.txt'),await page.locator('body').innerText());await page.screenshot({path:resolve(out,'failure-page.png'),fullPage:true});throw e}const json=await res.json();assert.equal(res.status(),200,JSON.stringify(json));await page.waitForLoadState('networkidle');return json.data}
  async function get(path,person=buyer){const res=await fetch(base+'/api/v1'+path,{headers:{Authorization:'Bearer '+person.token,'X-Acting-Party':person.acting_party_id}});const json=await res.json();assert.equal(res.status,200,JSON.stringify(json));return json.data}
  async function request(path,who,body,version,party=true){const res=await fetch(base+'/api/v1'+path,{method:body==null?'GET':'POST',headers:{Authorization:'Bearer '+who.token,...party?{'X-Acting-Party':who.acting_party_id}:{},...body!=null?{'Content-Type':'application/json','Idempotency-Key':key()}:{},...version?{'If-Match':'"'+version+'"'}:{}},...body!=null?{body:JSON.stringify(body)}:{}}),json=await res.json();assert.equal(res.status,200,JSON.stringify(json));return json.data}
+ if(recoveryMode&&!couponMode)await f.actorCast(buyer);
  if(couponMode){await f.actorCast(buyer);for(const u of [producer,reviewer])for(const action of ['REDEMPTION_REVIEW','WALLET_RULE_REVIEW'])await f.grant(u,action);const W=require(resolve(b,'src/modules/wallet/repository')).createWalletRepository(db,{resolvePrincipal:f.resolvePrincipal});let wr=await W.createRule(producer.ctx,{rule:{...require(resolve(b,'test/helpers/wallet-rule.cjs')),free_awards:{REGISTER:100000,DAILY_CHECKIN:null,REVIEW:null,SHARE:null}},operation_key:key()});wr=await W.reviewRule(reviewer.ctx,{record_id:wr.id,expected_version:wr.object_version,decision:'APPROVE',reason:'synthetic',operation_key:key()});await W.open(buyer.ctx,{party_id:buyer.personal_party_id,rule_id:wr.id,rule_sha256:wr.content_sha256,operation_key:key()})}
  async function grantFor(spec){const template={version:'synthetic-pr39-credit',source_ref:'synthetic-only',title:'合成制作券50元',kind:'PRODUCTION_CREDIT',valid_days:30,exchange_points:6000,capacity:10,available_until:'2099-01-01T00:00:00.000Z',terms:'合成抵扣；分期按实付，已使用券退款不返',production:{face_minor:5000,minimum_minor:50000,spec_ids:[spec.id]},interview:null,exposure:null};let stock=await request('/redemption/stock',producer,{template,evidence_asset_ids:[f.proof.id]});stock=await request('/redemption/stock/'+stock.id+'/review',reviewer,{decision:'APPROVE',reason:'synthetic independent'},stock.object_version,false);return request('/redemption/exchanges',buyer,{stock_id:stock.id,template_sha256:require(resolve(b,'src/modules/governance/content')).digest(template)})}
  async function chooseCoupon(grant){await customer.getByRole('button',{name:'读取本人可用制作权益',exact:true}).click();await customer.getByLabel('选择已取得的实际权益').selectOption(grant.id);await post(customer,'/checkout',()=>customer.getByRole('button',{name:'按原报价试算并锁定本券',exact:true}).click());assert.match(await customer.getByTestId('trade-coupon-selector').innerText(),/450.00/)}
@@ -54,6 +58,32 @@ try{
   await customer.getByRole('checkbox',{name:'我已核对保存的文字和故事问题，确认作为正式版本发送给平台。'}).check();story=await post(customer,'/submissions',()=>customer.getByTestId('story-submit').click())
   await goto(operator,'/operations/customization/'+story.id);await post(operator,'/intake',()=>operator.getByTestId('customization-intake').click());assert.match(await operator.getByTestId('customization-current-status').innerText(),/受理中/)
   await customer.screenshot({path:resolve(out,'01-manual-story.png'),fullPage:true})
+ })
+ if(recoveryMode)await check('同故事页面补件：私有草稿不泄露，正式重提丢响应沿原请求恢复后重新受理',async()=>{
+  const initial=story.submission.id,privateText='合成补件后的具体祝福 '+key(),writes=[]
+  await operator.getByTestId('customization-supplement-field-0').selectOption('message')
+  await operator.getByTestId('customization-supplement-reason-0').fill('请补充具体祝福内容')
+  await operator.getByTestId('customization-supplement-instruction-0').fill('请写明要传达的一句话')
+  await post(operator,'/supplements',()=>operator.getByTestId('customization-supplement-submit').click())
+  await goto(customer,'/operations/customization/mine/'+story.id)
+  await customer.locator('#story-answers-message').fill(privateText);await customer.locator('#story-responses-message').fill('已补充实际祝福内容')
+  const saving=customer.waitForResponse(r=>r.request().method()==='PATCH'&&new URL(r.url()).pathname.endsWith('/supplement'))
+  await customer.getByTestId('story-save').click();assert.equal((await saving).status(),200);await customer.waitForLoadState('networkidle')
+  await goto(operator,'/operations/customization/'+story.id);assert(!(await operator.locator('body').innerText()).includes(privateText));assert.equal(await operator.getByTestId('customization-create-quote').count(),0)
+  await customer.route('**/api/v1/customization-requests/*/supplement-submissions',async route=>{
+   const q=route.request();if(q.method()!=='POST')return route.continue();writes.push({key:q.headers()['idempotency-key'],body:q.postData(),version:q.headers()['if-match']})
+   if(writes.length===1){const response=await route.fetch();assert.equal(response.status(),200);return route.abort('failed')}return route.continue()
+  })
+  await customer.getByRole('checkbox',{name:'我已核对保存的文字和逐项补充说明，确认作为正式版本发送给平台。'}).check()
+  await customer.getByTestId('story-submit').click();await customer.getByTestId('story-pending').waitFor()
+  await customer.getByRole('button',{name:'核对当前记录',exact:true}).click()
+  story=await post(customer,'/supplement-submissions',()=>customer.getByRole('button',{name:'恢复原操作请求',exact:true}).click())
+  assert.equal(writes.length,2);assert.deepEqual(writes[0],writes[1]);assert.notEqual(story.submission.id,initial);assert.equal(story.submission.answers.message,privateText)
+  await customer.unroute('**/api/v1/customization-requests/*/supplement-submissions')
+  await goto(operator,'/operations/customization/'+story.id);assert.equal(await operator.getByTestId('customization-create-quote').count(),0)
+  await post(operator,'/intake',()=>operator.getByTestId('customization-intake').click());assert.match(await operator.getByTestId('customization-formal-response').innerText(),/已补充实际祝福内容/)
+  ids.original_submission=initial;ids.supplement_submission=story.submission.id
+  await operator.screenshot({path:resolve(out,'02-supplement-recovered.png'),fullPage:true})
  })
  await check('运营按已审新版规格创建30/40/30报价，客户确认同一故事订单',async()=>{
   await goto(operator,'/trade/quotes/new?customizationRequest='+story.id)
@@ -86,7 +116,21 @@ try{
   await assert.rejects(()=>f.pay(order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'})
   const script=await deliver('SCRIPT');await acknowledge(script);await accept(script);const revised=await deliver('SCRIPT');await assert.rejects(()=>f.pay(order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});await accept(revised)
   await goto(operator,'/production/projects/'+project.id+'/versions');assert.equal(await operator.locator('[data-testid="production-stage"] option[value="SAMPLE"]').evaluate(e=>e.disabled),true);await operator.screenshot({path:resolve(out,'03-middle-unpaid.png'),fullPage:true})
-  assert.equal((await f.pay(order,'interim')).data.amount_minor,netParts[1]);await operator.reload();await operator.waitForLoadState('networkidle');assert.equal(await operator.locator('[data-testid="production-stage"] option[value="SAMPLE"]').evaluate(e=>e.disabled),false)
+  if(recoveryMode){
+   await goto(customer,'/trade/payments/new?orderId='+order.id);await customer.getByTestId('trade-installment').selectOption('interim')
+   const payment=await post(customer,'/payments',()=>customer.getByRole('button',{name:'建立本期付款记录',exact:true}).click());ids.unknown_payment=payment.id
+   await sim.choose(buyer.ctx,{record_id:payment.id,party_id:buyer.acting_party_id,state:'UNKNOWN'})
+   await goto(customer,'/trade/payments/'+payment.id)
+   const unknown=customer.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname.endsWith('/reconciliation'))
+   await customer.getByRole('button',{name:'核实支付结果',exact:true}).click();const response=await unknown;assert.equal(response.status(),503);await customer.waitForLoadState('networkidle')
+   assert.equal((await get('/trade/records/'+order.id)).data.financial.received_minor,netParts[0])
+   await goto(operator,'/production/projects/'+project.id+'/versions');assert.equal(await operator.locator('[data-testid="production-stage"] option[value="SAMPLE"]').evaluate(e=>e.disabled),true)
+   await sim.choose(buyer.ctx,{record_id:payment.id,party_id:buyer.acting_party_id,state:'SUCCEEDED'})
+   await goto(customer,'/trade/payments/'+payment.id);const paid=await post(customer,'/reconciliation',()=>customer.getByRole('button',{name:'恢复原消费操作',exact:true}).click());assert.equal(paid.current_status,'SUCCEEDED');assert.equal(paid.data.amount_minor,netParts[1])
+   await post(customer,'/reconciliation',()=>customer.getByRole('button',{name:'核实支付结果',exact:true}).click())
+   assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[order.id]))[0][0].n),2)
+   await customer.screenshot({path:resolve(out,'03-payment-recovered.png'),fullPage:true})
+  }else assert.equal((await f.pay(order,'interim')).data.amount_minor,netParts[1]);await operator.reload();await operator.waitForLoadState('networkidle');assert.equal(await operator.locator('[data-testid="production-stage"] option[value="SAMPLE"]').evaluate(e=>e.disabled),false)
  })
  await check('同单5工作日收讫、问题暂停重发、逐版确认及尾款后实际私有下载',async()=>{
   for(const stage of ['SAMPLE','ROUGH_CUT'])await accept(await deliver(stage))
@@ -118,6 +162,6 @@ try{
 }catch(e){problem=e.stack;console.error(e.message);process.exitCode=1}
 finally{
  if(browser)await browser.close();if(web)await new Promise(r=>web.httpServer.close(r));if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}if(db)await db.close();if(control){if(created)await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end()}
- await writeFile(resolve(out,'results.json'),JSON.stringify({synthetic_only:true,coupon_mode:couponMode,net_installments:netParts,head:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),checked_at:new Date().toISOString(),completed,checks,ids,requests,errors,error:problem,cleanup:'database and sessions removed',scope:'Actual customer/operator UI and local HTTP/MySQL; fixture simulates payment receipts, producer files and independent reviews. Not native App or production provider acceptance.'},null,2)+'\n')
+ await writeFile(resolve(out,'results.json'),JSON.stringify({synthetic_only:true,recovery_mode:recoveryMode,coupon_mode:couponMode,net_installments:netParts,head:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),checked_at:new Date().toISOString(),completed,checks,ids,requests,errors,transport,error:problem,cleanup:'database and sessions removed',scope:'Actual customer/operator UI and local HTTP/MySQL; fixture simulates first/last receipts, producer uploads and independent reviews; recovery mode uses browser middle-payment creation and simulator reconciliation, never real money. Not native App or production provider acceptance.'},null,2)+'\n')
  console.log(JSON.stringify({completed,checks:checks.length,evidence:resolve(out,'results.json')}))
 }

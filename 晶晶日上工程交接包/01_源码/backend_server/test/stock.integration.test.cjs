@@ -4,7 +4,7 @@ const {randomUUID:key,randomBytes}=require('node:crypto'),mysql=require('mysql2/
 const {openDatabase}=require('../src/infrastructure/database'),{migrate}=require('../src/infrastructure/database/migrator'),{digest}=require('../src/modules/governance/content');
 test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},async t=>{
  const env=JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));for(const [k,v] of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
- const name=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`,control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});let db,server;
+ const name=`jx_test_${process.pid}_${randomBytes(6).toString('hex')}`,control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});let db,server,web;
  try{await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
  const S=await require('./helpers/stock-seed.cjs').seedStock(db),{seller,buyer,buyer2,reviewer,outsider,stock,trade}=S;
  server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory,supplyEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
@@ -257,6 +257,58 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
  await assert.rejects(S.checkout(l,buyer2),{code:'STOCK_SALES_RULE_NOT_PUBLISHED'});assert.equal((await call('GET','/stock/purchases/'+o.id+'/content')).status,200);
  await S.publishSales(seller.personal_party_id,S.spec.id);
  });
+
+ if(process.env.JX_PM01_STOCK_WEB==='1')web=await require('./support/stock-refund-browser.cjs').start({base,buyer,reviewer,fixtures});
+ const reviewedRefunds=[];
+ for(const amount of [40,100])for(const action of ['KEEP','REVOKE'])await t.test('reviewed stock refund '+amount+' independently '+action+' licence, old contract and cash journal unchanged by retries',async()=>{
+  const listing=await S.listing(),o=await S.checkout(listing),paid=await S.payment(o);
+  let p=ok(await call('GET','/stock/purchases/'+o.id));
+  const original=o.data.contract;
+  p=ok(await call('POST','/stock/purchases/'+o.id+'/cases',buyer,{kind:'REFUND',reason:'Synthetic reviewed compensation or cancellation'},buyer.personal_party_id,headers(p)));
+  const decision={case_id:p.data.current_case_id,decision:'REFUND',refund_minor:amount,license_action:action,reason:'Synthetic independent explicit cash and licence decision'},endpoint='/stock/purchases/'+o.id+'/case-resolution';
+  bad(await call('POST',endpoint,buyer,decision,null,headers(p)),'STOCK_REVIEW_FORBIDDEN');
+  bad(await call('POST',endpoint,reviewer,{...decision,refund_minor:101},null,headers(p)),'STOCK_REFUND_AMOUNT_MISMATCH');
+  bad(await call('POST',endpoint,reviewer,{...decision,license_action:null},null,headers(p)),'INVALID_STOCK_REFUND_DECISION');
+  let h=headers(p),decided;if(web){const result=await web.resolve(o,decision);h=result.headers;decided=result.data;}else decided=ok(await call('POST',endpoint,reviewer,decision,null,h));
+  assert.deepEqual(ok(await call('POST',endpoint,reviewer,decision,null,h)),decided);p=decided;
+  assert.equal(p.data.status,'REFUND_REQUIRED');assert.equal(p.data.refund_plan.license_action,action);
+  bad(await call('GET','/stock/purchases/'+o.id+'/content'),'STOCK_LICENSE_NOT_ACTIVE');
+  bad(await call('POST','/stock/purchases/'+o.id+'/cases',buyer,{kind:'REFUND',reason:'Must finish original refund'},buyer.personal_party_id,headers(p)),'STOCK_CASE_NOT_ALLOWED');
+  const body={payment_id:paid.payment.id,allocations:[{line_id:'stock',amount_minor:amount}],reason:'Synthetic exact approved amount'};
+  bad(await call('POST','/trade/refunds',buyer,{...body,allocations:[{line_id:'stock',amount_minor:amount-1}]},buyer.personal_party_id,headers()),'STOCK_REFUND_AMOUNT_MISMATCH');
+  const refundHeaders=headers();let refund=ok(await call('POST','/trade/refunds',buyer,body,buyer.personal_party_id,refundHeaders));
+  assert.deepEqual(ok(await call('POST','/trade/refunds',buyer,body,buyer.personal_party_id,refundHeaders)),refund);
+  bad(await call('POST','/trade/refunds',buyer,body,buyer.personal_party_id,headers()),'STOCK_REFUND_PENDING');
+  refund=ok(await call('POST','/trade/records/'+refund.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Synthetic independent refund execution check'},null,headers(refund)));
+  assert.equal((await purchased(o)).data.status,'REFUND_REQUIRED');
+  await trade.claim(reviewer.ctx,refund.id,null,'REFUND');const proof={...refund.data,refund_id:refund.id,status:'SUCCEEDED'};
+  await trade.applyRefund(refund.id,proof);await trade.applyRefund(refund.id,proof);
+  p=ok(await call('GET','/stock/purchases/'+o.id));
+  assert.equal(p.data.status,action==='KEEP'?'ACTIVE':'REVOKED');
+  const download=await call('GET','/stock/purchases/'+o.id+'/content');
+  if(action==='KEEP')assert.equal(download.status,200);else bad(download,'STOCK_LICENSE_NOT_ACTIVE');
+  let current=ok(await call('GET','/trade/records/'+o.id));
+  assert.deepEqual(current.data.financial,{received_minor:100,refunded_minor:amount,net_minor:100-amount});assert.deepEqual(current.data.contract,original);
+  assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[o.id]))[0].length,1);
+  if(web)await web.afterRefund(o,action);
+  reviewedRefunds.push({order_id:o.id,case_id:decision.case_id,refund_id:refund.id,refund_minor:amount,license_action:action,license_status:p.data.status,financial:current.data.financial,result:'PASS'});
+  if(amount===40){
+   p=ok(await call('GET','/stock/purchases/'+o.id));
+   // A second decision spends only the remaining budget; revoked licences never revive.
+   p=ok(await call('POST','/stock/purchases/'+o.id+'/cases',buyer,{kind:'REFUND',reason:'Synthetic remaining refund'},buyer.personal_party_id,headers(p)));
+   const second={case_id:p.data.current_case_id,decision:'REFUND',refund_minor:60,license_action:action,reason:'Synthetic remaining amount'};
+   if(action==='REVOKE')bad(await call('POST',endpoint,reviewer,{...second,license_action:'KEEP'},null,headers(p)),'STOCK_LICENSE_CANNOT_RESTORE');
+   p=ok(await call('POST',endpoint,reviewer,second,null,headers(p)));
+   let last=ok(await call('POST','/trade/refunds',buyer,{...body,allocations:[{line_id:'stock',amount_minor:60}]},buyer.personal_party_id,headers()));
+   last=await trade.review(reviewer.ctx,{record_id:last.id,expected_version:last.object_version,decision:'APPROVED',reason:'Synthetic remaining refund reviewed',operation_key:key()});
+   await trade.claim(reviewer.ctx,last.id,null,'REFUND');await trade.applyRefund(last.id,{...last.data,refund_id:last.id,status:'SUCCEEDED'});
+   p=ok(await call('GET','/stock/purchases/'+o.id));assert.equal(p.data.status,action==='KEEP'?'ACTIVE':'REVOKED');
+   current=ok(await call('GET','/trade/records/'+o.id));assert.equal(current.data.financial.refunded_minor,100);assert.deepEqual(current.data.contract,original);
+   if(action==='KEEP')assert.equal((await call('GET','/stock/purchases/'+o.id+'/content')).status,200);
+   reviewedRefunds.push({order_id:o.id,case_id:second.case_id,refund_id:last.id,refund_minor:60,license_action:action,license_status:p.data.status,financial:current.data.financial,result:'PASS'});
+  }
+ });
+ await fs.writeFile(path.resolve(__dirname,'../../../..','.local/stock-reviewed-refunds-20261111.json'),JSON.stringify({synthetic_only:true,actors:{buyer:buyer.account_id,seller:seller.account_id,reviewer:reviewer.account_id},branches:reviewedRefunds,limits:['HTTP/repository synthetic observations, no real payment','Four separate orders for 40/100 x KEEP/REVOKE; two partial orders continue with remaining 60','Legacy omitted terms preserve whole-refund/revoke behavior; original order contracts not rewritten']},null,2));
  await t.test('new consent withdrawal hides catalog and stops another download without rewriting sold history',async()=>{const listing=await S.listing(),paid=await S.checkout(listing);await S.payment(paid);assert.equal((await call('GET','/stock/purchases/'+paid.id+'/content')).status,200);const before=await purchased(paid);await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'stop new use',operation_key:key()});assert.equal(ok(await call('GET','/stock/catalog',buyer,undefined,null)).items.length,0);assert.equal((await purchased(order)).data.license.duration,'PERPETUAL');bad(await call('GET','/stock/purchases/'+paid.id+'/content'),'STOCK_SALE_CONSENT_REQUIRED');const after=await purchased(paid);assert.equal(after.contract_sha256,before.contract_sha256);assert.equal(after.data.status,'ACTIVE');});
  await t.test('historical unpaid order retains original admission policy without admitting new purchases',async()=>{
   const S=await require('./helpers/stock-seed.cjs').seedStock(db,{ruleKey:'stock.legacy.synthetic'}),{buyer,buyer2,trade}=S;
@@ -270,5 +322,5 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
   await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);
  });
  const out=process.env.JX_STOCK_HTTP_FIXTURES||path.resolve(__dirname,'../../../..','.local/stock-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
- }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
+ }finally{if(web)await web.close();if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

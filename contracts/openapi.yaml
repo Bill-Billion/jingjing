@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.56-rc.1
+  version: 0.31.57-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -56079,6 +56079,8 @@ components:
           type: object
           additionalProperties: false
           properties:
+            refund_plan:
+              $ref: "#/components/schemas/StockRefundPlan"
             status:
               enum:
               - AWAITING_PAYMENT
@@ -56183,6 +56185,11 @@ components:
                     - type: object
                       additionalProperties: false
                       properties:
+                        refund_minor:
+                          type: integer
+                          minimum: 1
+                        license_action:
+                          enum: [KEEP, REVOKE]
                         decision:
                           enum:
                           - RESUME
@@ -56450,6 +56457,21 @@ components:
     StockCaseResolutionRequest:
       type: object
       additionalProperties: false
+      allOf:
+      - if:
+          anyOf:
+          - required: [refund_minor]
+            properties:
+              refund_minor: {type: integer}
+          - required: [license_action]
+            properties:
+              license_action: {enum: [KEEP, REVOKE]}
+        then:
+          required: [refund_minor, license_action]
+          properties:
+            decision: {const: REFUND}
+            refund_minor: {type: integer, minimum: 1}
+            license_action: {enum: [KEEP, REVOKE]}
       properties:
         case_id:
           type: string
@@ -56458,6 +56480,13 @@ components:
           enum:
           - RESUME
           - REFUND
+        refund_minor:
+          type: [integer, "null"]
+          minimum: 1
+          description: REFUND时与license_action一并显式填写；旧客户端均省略时仍为原整单退款并撤销许可，不推断保留。
+        license_action:
+          enum: [KEEP, REVOKE, null]
+          description: 独立审核员决定；到账前仍暂停使用，KEEP不覆盖权属撤回、受限或实名失效，已撤销许可不能藉新退款恢复。
         reason:
           type: string
           minLength: 1
@@ -56466,6 +56495,22 @@ components:
       - case_id
       - decision
       - reason
+    StockRefundPlan:
+      type: object
+      additionalProperties: false
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          minimum: 1
+        target_refunded_minor:
+          type: integer
+          minimum: 1
+        license_action:
+          enum: [KEEP, REVOKE]
+      required: [case_id, amount_minor, target_refunded_minor, license_action]
     StockEmptyRequest:
       type: object
       additionalProperties: false

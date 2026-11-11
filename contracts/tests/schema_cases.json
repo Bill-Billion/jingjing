@@ -5839,6 +5839,52 @@
         "source_quote_id"
       ],
       "replace_with": "not-a-quote-id"
+    },
+    {
+      "name": "Stock zero refund",
+      "fixture": "StockCaseResolutionRequest",
+      "mutate_path": [
+        "refund_minor"
+      ],
+      "replace_with": 0
+    },
+    {
+      "name": "Stock unknown licence",
+      "fixture": "StockCaseResolutionRequest",
+      "mutate_path": [
+        "license_action"
+      ],
+      "replace_with": "AUTO"
+    },
+    {
+      "name": "Stock amount cannot accompany resume",
+      "fixture": "StockCaseResolutionRequest",
+      "mutate_path": [
+        "decision"
+      ],
+      "replace_with": "RESUME"
+    },
+    {
+      "name": "Stock amount cannot be fractional",
+      "fixture": "StockCaseResolutionRequest",
+      "mutate_path": [
+        "refund_minor"
+      ],
+      "replace_with": 1.5
+    },
+    {
+      "name": "Stock explicit decision requires refund_minor",
+      "fixture": "StockCaseResolutionRequest",
+      "remove_path": [
+        "refund_minor"
+      ]
+    },
+    {
+      "name": "Stock explicit decision requires license_action",
+      "fixture": "StockCaseResolutionRequest",
+      "remove_path": [
+        "license_action"
+      ]
     }
   ]
 }

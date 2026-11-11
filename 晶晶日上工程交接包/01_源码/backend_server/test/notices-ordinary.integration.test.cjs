@@ -7,7 +7,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
  for(const [k,v]of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
  const name='jx_test_'+process.pid+'_'+randomBytes(6).toString('hex');
  const control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});
- let db,server;
+ let db,server,web;
  try{
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');
   db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
@@ -154,9 +154,10 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    assert.equal(order.data.quote.marketplace_finance.allocation.platform_bps,2200);
    let project=ok(await call('POST','/production/projects',seller,{order_id:order.id,line_id:'commercial',script_version_id:work.id,license_project_id:null,assignee_account_id:seller.account_id,purpose:'COMMERCIAL',territory:'CN',consent_ids:[],evidence_asset_id:productionProof.id},seller.personal_party_id,headers()));
    project=ok(await call('POST','/production/records/'+project.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Synthetic non-identifiable animation',verification:{contract_sha256:project.data.contract_sha256,identity_verified:true,signatures_verified:true,rights_verified:true}},null,headers(project)));
+   if(process.env.JX_PM01_NOTICES_WEB==='1')web=await require('./support/notices-browser.cjs').start({base,buyer,fixtures});
    const versions={};let finalBytes;
    for(const stage of ['SCRIPT','SAMPLE','ROUGH_CUT','FINAL']){
-    const bytes=Buffer.from('synthetic '+stage+' full protocol bytes '+key()),previewBytes=Buffer.from('synthetic '+stage+' preview '+key()),media=stage==='SCRIPT'?'text/plain':'video/mp4';
+    const bytes=web&&stage!=='SCRIPT'?web.media:Buffer.from('synthetic '+stage+' full protocol bytes '+key()),previewBytes=web&&stage!=='SCRIPT'?web.previewMedia:Buffer.from('synthetic '+stage+' preview '+key()),media=stage==='SCRIPT'?'text/plain':'video/mp4';
     const file=ok(await call('POST','/production/projects/'+project.id+'/files?media_type='+encodeURIComponent(media),seller,bytes,seller.personal_party_id,headers()));
     const preview=stage==='SCRIPT'?file:ok(await call('POST','/production/projects/'+project.id+'/files?media_type='+encodeURIComponent(media),seller,previewBytes,seller.personal_party_id,headers()));
     project=ok(await call('GET','/production/records/'+project.id,seller));
@@ -165,12 +166,12 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
     bad(await call('POST','/production/records/'+version.id+'/reviews',seller,{decision:'APPROVED',reason:'Self review rejected',verification:checks},null,headers(version)),'PRODUCTION_REVIEW_FORBIDDEN');
     version=ok(await call('POST','/production/records/'+version.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Independent synthetic stage review',verification:checks},null,headers(version)));
     assert.deepEqual((await call('GET','/production/versions/'+version.id+'/content?variant=preview')).bytes,stage==='SCRIPT'?bytes:previewBytes);
-    ok(await call('POST','/production/versions/'+version.id+'/feedback',buyer,{decision:'ACCEPT',note:'Buyer confirms original stage',checklist:checks},buyer.personal_party_id,headers(version)));
+    if(web)await web.accept(version);else ok(await call('POST','/production/versions/'+version.id+'/feedback',buyer,{decision:'ACCEPT',note:'Buyer confirms original stage',checklist:checks},buyer.personal_party_id,headers(version)));
     versions[stage]=version.id;if(stage==='FINAL')finalBytes=bytes;
    }
    project=ok(await call('GET','/production/records/'+project.id,seller));assert.equal(project.current_status,'ACCEPTED');
    const finalRoute='/production/versions/'+versions.FINAL+'/content?variant=final';assert.deepEqual((await call('GET',finalRoute)).bytes,finalBytes);
-   bad(await call('GET',finalRoute,buyer2),'PRODUCTION_NOT_FOUND');
+   bad(await call('GET',finalRoute,buyer2),'PRODUCTION_NOT_FOUND');if(web)await web.download(versions.FINAL,finalBytes);
    Object.assign(records,{project_id:project.id,versions,platform_bps:2200});
    let refund=ok(await call('POST','/trade/refunds',buyer,{payment_id:payment.id,allocations:[{line_id:'commercial',amount_minor:10001}],reason:'Synthetic independent full cancellation'},buyer.personal_party_id,headers()));
    refund=ok(await call('POST','/trade/records/'+refund.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Synthetic independent refund'},null,headers(refund)));
@@ -180,10 +181,10 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    await trade.applyRefund(refund.id,refundProof);await trade.applyRefund(refund.id,refundProof);
    const current=ok(await call('GET','/trade/records/'+order.id));assert.deepEqual(current.data.financial,{received_minor:10001,refunded_minor:10001,net_minor:0});assert.deepEqual(current.data.contract,originalContract);
    bad(await call('POST',route,seller,{kind:'TEXT',body:'Cannot restart refunded cooperation'},seller.personal_party_id,headers()),'COMMERCIAL_CONVERSATION_ARCHIVED');
-   bad(await call('GET',finalRoute),'PRODUCTION_ORDER_BLOCKED');
+   bad(await call('GET',finalRoute),'PRODUCTION_ORDER_BLOCKED');if(web)await web.refunded(versions.FINAL);
    assert.equal(ok(await read(caseRecord)).order_id,order.id);
    const rows=(await db.execute('SELECT direction FROM trade_journal WHERE order_id=?',[order.id]))[0];assert.equal(rows.filter(x=>x.direction==='RECEIPT').length,1);assert.equal(rows.filter(x=>x.direction==='REFUND').length,1);
-   Object.assign(records,{surface:'API',actors:{buyer:buyer.account_id,artist:seller.account_id,independent_reviewer:reviewer.account_id},payment_id:payment.id,message_id:message.id,refund_id:refund.id,received_minor:10001,financial:current.data.financial,limits:['Synthetic non-identifiable animation; protocol bytes only, not playable video or real marking review','Synthetic identity/materials and trusted payment/refund observations','No browser/native/live service acceptance']});
+   Object.assign(records,{surface:web?'API plus buyer Web':'API',actors:{buyer:buyer.account_id,artist:seller.account_id,independent_reviewer:reviewer.account_id},payment_id:payment.id,message_id:message.id,refund_id:refund.id,received_minor:10001,financial:current.data.financial,limits:[web?'Synthetic color video played and downloaded; no real marking or creative-quality certification':'Synthetic non-identifiable animation; protocol bytes only, not playable video or real marking review','Synthetic identity/materials and trusted payment/refund observations',web?'Buyer browser playback/acceptance/download verified; full staff UI/native/live services pending':'No browser/native/live service acceptance']});
   });
   await t.test('closing ordinary notice blocks new submissions while historical quote remains unchanged',async()=>{
    const before=await trade.read(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id});
@@ -197,7 +198,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
   await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
   await fs.writeFile(out.replace(/\.json$/,'.records.json'),JSON.stringify(records,null,2));
  }finally{
-  if(server)await new Promise(r=>server.close(r));if(db)await db.close();
+  if(web)await web.close();if(server)await new Promise(r=>server.close(r));if(db)await db.close();
   await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();
  }
 });

@@ -23,7 +23,7 @@ function createStockRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/reviews/:record_id/status','status',['action','reason'],{party:false,match:true});
  router.get('/seller-eligibility',wrap(async(req,res)=>{shape(req.query,['person_id']);reply(req,res,await repo.sellerEligibility(req,{party_id:acting(req),person_id:id(req.query.person_id)}));}));
  post('/checkout','stockCheckout',['listing_id','offer_sha256','channel'],{target:trade});
- for(const [path,method,fields,party] of [['receipt','receipt',[],true],['acceptance','accept',[],true],['cases','openCase',['kind','reason'],true],['case-resolution','resolveCase',['case_id','decision','reason'],false]])post('/purchases/:order_id/'+path,method,fields,{party,match:true});
+ for(const [path,method,fields,party] of [['receipt','receipt',[],true],['acceptance','accept',[],true],['cases','openCase',['kind','reason'],true],['case-resolution','resolveCase',['case_id','decision','reason','refund_minor','license_action'],false]])post('/purchases/:order_id/'+path,method,fields,{party,match:true});
  router.get('/catalog',wrap(async(req,res)=>{const p=page(req,['city','person_id']);operator(req);reply(req,res,await repo.catalog(req,{...p,...(req.query.city?{city:req.query.city}:{}),...(req.query.person_id?{person_id:req.query.person_id}:{})}));}));
  router.get('/catalog/:record_id',wrap(async(req,res)=>{shape(req.query,[]);operator(req);reply(req,res,await repo.offer(req,{record_id:id(req.params.record_id)}));}));
  router.get('/listings',wrap(async(req,res)=>{const p=page(req);reply(req,res,await repo.listings(req,{...p,party_id:acting(req,false)}));}));

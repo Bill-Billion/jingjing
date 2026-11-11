@@ -110,6 +110,68 @@ test('private invitations reach twenty-person production under new contract with
    assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[order.id]))[0].length,3);
    return {actors:{host:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id,withdrawn_member:people[0].user.account_id},room_id:room.id,order_id:order.id,project_id:project.id,case_id:c.id,refund_ids:refundIds,financial:current.data.financial,benefit_status:'REVOKED'};
   });
+
+  // Distinct room branches: extension and cancellation cannot share one terminal outcome.
+  const smallRooms=[];
+  async function smallRoom(count){
+   let r;const x=await f.newOrder({preview:'SCRIPT_BEFORE_INTERIM',calendar:require('./support/working-calendar.cjs')(),copyrightTerms:require('./support/copyright-terms.cjs')(),beforeQuote:async({story})=>{
+    const at=await db.withTransaction(tx=>A.now(tx));r=await call('POST','/cocreation/rooms',buyer,{request_id:story.id,rule_id:rule.id,producer_party_id:f.org.party_id,title:'Synthetic unformed recovery',deadline:new Date(Date.parse(at)+60000).toISOString(),purpose:'PRIVATE',territory:'CN'});
+   }});
+   const rows=[];
+   for(const p of people.slice(0,count)){
+    r=await call('GET','/cocreation/rooms/'+r.id,buyer);const link=await call('POST','/cocreation/rooms/'+r.id+'/invite-links',buyer,{},r.object_version);
+    await call('POST','/cocreation/invite-links/claim',p.user,{token:link.token,person_id:p.person.id});
+    const body={person_id:p.person.id,cast:p.roster.cast,private_story:'Synthetic extension story',material_asset_ids:p.look.data.material_asset_ids,sharing_allowed:false,participation_sha256:r.participation_sha256,agreed:true};
+    rows.push({p,body,member:await call('POST','/cocreation/rooms/'+r.id+'/members',p.user,body)});
+   }
+   const payment=await f.pay(x.order,'first');r=await call('GET','/cocreation/rooms/'+r.id,buyer);
+   await db.execute('SET timestamp=?',[Math.floor(Date.parse(r.deadline)/1000)+1]);
+   r=await call('POST','/cocreation/rooms/'+r.id+'/close',buyer,{},r.object_version);
+   assert.equal(r.current_status,'UNFORMED');assert.equal(r.cutoff.eligible_count,count);
+   const branch={room:r,order:x.order,payment,rows};smallRooms.push(branch);return branch;
+  }
+  await check('nine-person unformed room extends only after independent review; old personal agreement cannot silently carry forward',async()=>{
+   const x=await smallRoom(9),old=x.room;
+   const c=await call('POST','/cocreation/rooms/'+old.id+'/cases',buyer,{kind:'EXTEND',reason:'Synthetic one more participant needed',new_deadline:new Date(Date.parse(old.deadline)+600000).toISOString()},old.object_version);
+   await call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Synthetic independent extension'},c.object_version);
+   const r=await call('GET','/cocreation/rooms/'+old.id,buyer);assert.equal(r.current_status,'OPEN');assert.equal(r.counts.eligible_count,0);assert.notEqual(r.participation_sha256,old.participation_sha256);
+   const first=x.rows[0],{person_id,...stale}=first.body;
+   await bad(call('POST','/cocreation/members/'+first.member.id,first.p.user,stale,first.member.object_version),'COCREATION_PARTICIPATION_REQUIRED');
+   assert.equal((await call('GET','/cocreation/rooms/'+old.id,buyer)).counts.eligible_count,0);
+   x.room=r;return {room_id:r.id,order_id:x.order.id,case_id:c.id,old_eligible:9,eligible_after_extension:0};
+  });
+  await check('same extended room requires nine renewed agreements and a tenth separate participant; ten qualifies without twenty-person reward',async()=>{
+   const x=smallRooms[0],r=x.room;
+   for(const row of x.rows){const {person_id,...body}=row.body;await call('POST','/cocreation/members/'+row.member.id,row.p.user,{...body,participation_sha256:r.participation_sha256},row.member.object_version);}
+   let now=await call('GET','/cocreation/rooms/'+r.id,buyer);assert.equal(now.counts.eligible_count,9);
+   const p=people[9],link=await call('POST','/cocreation/rooms/'+r.id+'/invite-links',buyer,{},now.object_version);
+   await call('POST','/cocreation/invite-links/claim',p.user,{token:link.token,person_id:p.person.id});
+   await call('POST','/cocreation/rooms/'+r.id+'/members',p.user,{person_id:p.person.id,cast:p.roster.cast,private_story:'Synthetic tenth participant',material_asset_ids:p.look.data.material_asset_ids,sharing_allowed:false,participation_sha256:r.participation_sha256,agreed:true});
+   now=await call('GET','/cocreation/rooms/'+r.id,buyer);assert.equal(now.counts.eligible_count,10);
+   await db.execute('SET timestamp=?',[Math.floor(Date.parse(now.deadline)/1000)+1]);
+   const ready=await call('POST','/cocreation/rooms/'+r.id+'/close',buyer,{},now.object_version);
+   assert.equal(ready.current_status,'READY');assert.equal(ready.cutoff.eligible_count,10);assert.equal(ready.cutoff.benefit_eligible,false);
+   assert.equal((await call('GET','/cocreation/benefits',buyer)).items.filter(b=>b.parent_id===r.id).length,0);
+   return {room_id:r.id,order_id:x.order.id,eligible:10,benefit_eligible:false};
+  });
+  await check('separate nine-person room cancels before production; review is not a refund and duplicate receipt credits only once',async()=>{
+   const x=await smallRoom(9),r=x.room;
+   const body={payment_id:x.payment.id,allocations:[{line_id:'film',amount_minor:3000}],reason:'Synthetic unformed cancellation'};
+   await bad(call('POST','/trade/refunds',buyer,body),'COCREATION_CANCELLATION_REVIEW_REQUIRED');
+   const c=await call('POST','/cocreation/rooms/'+r.id+'/cases',buyer,{kind:'CANCEL',reason:'Synthetic cannot form',new_deadline:null},r.object_version);
+   await call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Synthetic independent before-start cancellation'},c.object_version);
+   const sync=async()=>{const now=await call('GET','/cocreation/rooms/'+r.id,buyer);return call('POST','/cocreation/rooms/'+r.id+'/sync',buyer,{},now.object_version);};
+   assert.equal((await sync()).current_status,'REFUND_REQUIRED');
+   let refund=await reviewTrade(await call('POST','/trade/refunds',buyer,body));assert.equal((await sync()).current_status,'REFUND_REQUIRED');
+   await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');const proof={...refund.data,refund_id:refund.id,status:'SUCCEEDED'};
+   await f.trade.applyRefund(refund.id,proof);await f.trade.applyRefund(refund.id,proof);
+   const done=await sync();assert.equal(done.current_status,'REFUNDED');
+   const actual=await call('GET','/trade/records/'+x.order.id,buyer);assert.deepEqual(actual.data.financial,{received_minor:3000,refunded_minor:3000,net_minor:0});
+   assert.deepEqual(actual.data.contract,x.order.data.contract);
+   assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[x.order.id]))[0].length,1);
+   await bad(call('POST','/cocreation/rooms/'+r.id+'/cases',buyer,{kind:'EXTEND',reason:'Synthetic rejected revival',new_deadline:new Date(Date.parse(r.deadline)+600000).toISOString()},done.object_version),'COCREATION_CANCELLED');
+   return {room_id:r.id,order_id:x.order.id,case_id:c.id,refund_id:refund.id,financial:actual.data.financial};
+  });
  }catch(e){failed=true;throw e;}
  finally{
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();if(created)await control.query('DROP DATABASE '+mysql.escapeId(database));await control.end();

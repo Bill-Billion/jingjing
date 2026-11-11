@@ -73,6 +73,29 @@ Map<String, dynamic> stockPurchase(
     };
 
 void main() {
+  test('退款状态与许可决定分开核对，缺决定或撤销不能下载', () {
+    final r = stockPurchase();
+    r['order_status'] = 'PARTIALLY_REFUNDED';
+    expect(StockPurchase(r, personId).usable, isFalse);
+    r['data']['refund_plan'] = {
+      'case_id': stockId, 'amount_minor': 40,
+      'target_refunded_minor': 40, 'license_action': 'KEEP'
+    };
+    expect(StockPurchase(r, personId).usable, isTrue);
+    r['order_status'] = 'REFUNDED';
+    expect(StockPurchase(r, personId).usable, isTrue);
+    r['data']['status'] = 'REFUND_REQUIRED';
+    expect(StockPurchase(r, personId).usable, isFalse);
+    r['data']['status'] = 'ACTIVE';
+    r['data']['refund_plan']['license_action'] = 'REVOKE';
+    expect(StockPurchase(r, personId).usable, isFalse);
+    r['data']['refund_plan']['license_action'] = 'KEEP';
+    r['data']['current_case_id'] = stockId;
+    expect(StockPurchase(r, personId).usable, isFalse);
+    r['data']['refund_plan']['amount_minor'] = 41;
+    expect(() => StockPurchase(r, personId), throwsA(isA<Object>()));
+  });
+
   testWidgets('首次上架读取已发布销售说明和当前授权，不读取旧商品', (t) async {
     final a = FakeAccountAdapter(handler: (r) {
       if (r.path == '/api/v1/artists/people') {

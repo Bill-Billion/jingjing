@@ -702,6 +702,10 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice(p.data['acceptance_method'] == 'AGREED_TIMEOUT'
                   ? '按原约定期限处理，未冒记本人主动确认。'
                   : '本人已明确确认本次交付。'),
+            if (p.data['refund_plan'] != null) ...[
+              tradeFact('本案核定退款', v5Money(p.data['refund_plan']['amount_minor'])),
+              tradeFact('退款到账后原许可', p.data['refund_plan']['license_action'] == 'KEEP' ? '保留原许可，仍须满足当前授权' : '撤销原许可'),
+            ],
             for (final c in p.cases)
               tradeSection(stockCases[c['kind']]!, [
                 Text(c['reason']),
@@ -711,8 +715,8 @@ class _StockScreenState extends State<_StockScreen> {
                         ? '等待独立客服核对'
                         : '${c['resolution']['decision'] == 'REFUND' ? '已核定应退款，渠道结果另查' : '恢复核对；需重新读取与收件'} · ${c['resolution']['reason']}')
               ]),
-            if (p.data['current_case_id'] == null &&
-                !['AWAITING_PAYMENT', 'REVOKED', 'REFUND_REQUIRED']
+            if (p.data['current_case_id'] == null && p.raw['order_status'] != 'REFUNDED' &&
+                !['AWAITING_PAYMENT', 'REFUND_REQUIRED']
                     .contains(p.status))
               V5Form(
                   api: api,
@@ -733,7 +737,7 @@ class _StockScreenState extends State<_StockScreen> {
             tradeButton(
                 '原订单、付款与退款记录', () => go('/trade/record?recordId=${p.orderId}'),
                 outline: true),
-            appNotice('实际退款核实后平台停止继续下载，不能远程抹去已经保存到本地的文件。售后独立处理不等于资金已经到账。'),
+            appNotice('退款金额和许可处理分别由独立审核员决定。到账前暂停使用；到账后按已审决定保留或撤销原许可，权属和本人授权仍另行核验。不能远程抹去本地文件，售后决定也不表示资金已到账。'),
           ],
           if (cursor != null)
             tradeButton('继续读取下一页', busy ? null : () => load(more: true),
