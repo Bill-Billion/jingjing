@@ -183,7 +183,18 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
   bad(await command(project,'start',producer),'PRODUCTION_PAYMENT_REQUIRED');
   const first=await f.pay(order,'first');assert.equal(first.data.amount_minor,3000);ok(await command(project,'start',producer));
   await assert.rejects(()=>f.pay(order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
-  const script=await deliver(project,'SCRIPT');await viewed(script);ok(await accept(script));
+  const script=await deliver(project,'SCRIPT');await viewed(script);
+  ok(await command(project,'cases',buyer,{kind:'RIGHTS_DISPUTE',reason:'Synthetic same-order pause before script confirmation',evidence_asset_ids:[]}));
+  const pause=(await flow(project)).cases.at(-1);
+  assert.equal((await content(script)).status,409);
+  assert.notEqual((await accept(script)).status,200);
+  await assert.rejects(()=>f.pay(order,'interim'));
+  bad(await command(project,'case-resolution',producer,{case_id:pause.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'self review rejected'}),'PRODUCTION_REVIEW_FORBIDDEN');
+  ok(await command(project,'case-resolution',reviewer,{case_id:pause.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'Synthetic independent recovery'}));
+  assert.equal((await flow(project)).receipt,null);
+  ok(await command(project,'reissue',producer,{version_id:script.id,reason:'Fresh formal script after recovery'}));
+  assert.equal((await flow(project)).receipt.started_at,null);
+  await viewed(script);ok(await accept(script));
   const middle=await f.pay(order,'interim');assert.equal(middle.data.amount_minor,4000);
   for(const stage of ['SAMPLE','ROUGH_CUT']){const version=await deliver(project,stage);await viewed(version);ok(await accept(version));}
   const final=await deliver(project,'FINAL');await viewed(final);ok(await accept(final));
@@ -195,7 +206,7 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
   assert.deepEqual(ok(await call('GET','/trade/records/'+order.id,buyer)).data.contract,contract);
   assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE record_id=? AND event_code='CUSTOMIZATION_FULFILLED'",[project.id]))[0][0].n),1);
   const [[money]]=await db.execute("SELECT SUM(amount_minor) n FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[order.id]);assert.equal(Number(money.n),10000);
-  const record={synthetic_only:true,request_id:story.id,submission_id:story.submission.id,quote_id:quote.id,order_id:order.id,project_id:project.id,final_version_id:final.id,payment_ids:[first.id,middle.id,last.id],amounts_minor:[3000,4000,3000],actors:['buyer','producer','independent_reviewer'],surface:'api',limitations:['approved catalogue and roles are fixtures','payment preparation and trusted provider observations use isolated test helper','no App, browser, live signature or provider acceptance']};
+  const record={synthetic_only:true,request_id:story.id,submission_id:story.submission.id,quote_id:quote.id,order_id:order.id,project_id:project.id,final_version_id:final.id,pause_case_id:pause.id,recovery_requires_fresh_receipt:true,payment_ids:[first.id,middle.id,last.id],amounts_minor:[3000,4000,3000],database:name,actors:{buyer:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id},surface:'api',limitations:['approved catalogue and roles are fixtures','payment preparation and trusted provider observations use isolated test helper','no App, browser, live signature or provider acceptance']};
   const evidence=path.resolve(__dirname,'../../../../.local/manual-production-journey-20261110.json');await fs.writeFile(evidence,JSON.stringify(record,null,2));
  });
  const out=process.env.JX_CUSTOMIZATION_DELIVERY_HTTP_FIXTURES||path.resolve(__dirname,'../../../../.local/customization-delivery-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));

@@ -72,6 +72,30 @@ test('audition booking, delivery, privacy and refunds in isolated MySQL',{skip:!
 
  await t.test('legacy order comments cannot bypass dedicated conversation gate',async()=>{bad(await call('POST','/operations/objects/TRADE/'+order.id+'/comments',buyer,{reply_to:null,body:'bypass'},buyer.personal_party_id,headers()),'USE_AUDITION_CONVERSATION');});
  await t.test('automated expiry is lease fenced and creates only one refund request',async()=>{const x=await paidBooking();let r=await patch(x.r,{accept_by:'2020-01-01T00:00:00.000Z'});const jobId=r.data.expiry_job_id,token=key();await db.execute("UPDATE platform_jobs SET status='RUNNING',lease_owner='synthetic-worker',lease_token=?,lease_until=TIMESTAMPADD(SECOND,60,CURRENT_TIMESTAMP(6)) WHERE id=?",[token,jobId]);const job={id:jobId,payload_ref:r.id,lease_owner:'synthetic-worker',lease_token:token};await assert.rejects(S.auditions.expireJob({...job,lease_token:key()}),{code:'LEASE_LOST'});await S.auditions.expireJob(job);await S.auditions.expireJob(job);r=ok(await read(r));assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal((await db.execute("SELECT id FROM trade_records WHERE order_id=? AND kind='REFUND'",[x.o.id]))[0].length,1);});
+ await t.test('one accepted booking cancels before departure, freezes conversation and verifies refund once',async()=>{
+  const x=await paidBooking(),contract=structuredClone(x.o.data.contract);
+  let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'Synthetic same-booking acceptance'}));
+  r=ok(await post(r,'contact',buyer,{name:'Synthetic cancellation buyer',phone:'13900009801',consent:true}));
+  const input={reason:'Synthetic before-departure cancellation',safety:false,evidence_asset_ids:[]},op=key(),before=r;
+  r=ok(await post(before,'cancel',buyer,input,buyer.personal_party_id,op));
+  assert.deepEqual(ok(await post(before,'cancel',buyer,input,buyer.personal_party_id,op)),r);
+  assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal(r.refund_is_verified,false);
+  bad(await call('GET','/auditions/bookings/'+r.id+'/contacts'),'AUDITION_CONTACT_NOT_AVAILABLE');
+  assert.notEqual((await call('POST','/auditions/bookings/'+r.id+'/messages',buyer,{body:'Cannot restart a cancelled job'},buyer.personal_party_id,headers())).status,200);
+  assert.notEqual((await post(r,'travel',seller,{action:'DEPART',evidence_asset_ids:[S.arrival.id]})).status,200);
+  bad(await read(r,buyer2),'ARTIST_NOT_FOUND');
+  let refund=await trade.read(reviewer.ctx,{record_id:r.data.refund_id,party_id:null});
+  refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'Independent cancellation check',operation_key:key()});
+  assert.equal(ok(await read(r)).refund_is_verified,false);
+  await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+  const proof={...S.config,refund_id:refund.id,payment_id:x.p.payment.id,transaction_id:x.p.proof.transaction_id,currency:'CNY',amount_minor:10000,status:'SUCCEEDED'};
+  await trade.applyRefund(refund.id,proof);await trade.applyRefund(refund.id,proof);
+  r=ok(await read(r));assert.equal(r.current_status,'REFUNDED');assert.equal(r.refund_is_verified,true);
+  const final=await trade.read(buyer.ctx,{record_id:x.o.id,party_id:buyer.personal_party_id});assert.deepEqual(final.data.contract,contract);
+  assert.deepEqual(final.data.financial,{received_minor:10000,refunded_minor:10000,net_minor:0});
+  assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[x.o.id]))[0].length,1);
+  await fs.writeFile(path.resolve(__dirname,'../../../../.local/pm01-audition-aftercare-records.json'),JSON.stringify({synthetic_only:true,database:name,surface:'API',booking_id:r.id,order_id:x.o.id,payment_id:x.p.payment.id,refund_id:refund.id,actors:{buyer:buyer.account_id,artist:seller.account_id,independent_reviewer:reviewer.account_id},financial:final.data.financial,conversation_status:r.conversation_status,performance_rights_granted:r.performance_rights_granted,limits:['Synthetic identity, materials and trusted payment/refund receipts','No page, native or live provider acceptance']},null,2));
+ });
  await t.test('before departure cancellation is full refund even for safety reason',async()=>{const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'yes'}));r=ok(await post(r,'cancel',buyer,{reason:'changed plan',safety:true,evidence_asset_ids:[]}));assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal(r.data.refund_minor,10000);});
 
  await t.test('custody channel is captured at checkout without changing old contracts or claiming real payment',async()=>{

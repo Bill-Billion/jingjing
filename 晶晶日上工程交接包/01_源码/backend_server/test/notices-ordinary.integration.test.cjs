@@ -14,10 +14,11 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
   const S=await require('./helpers/notices-seed.cjs').seedNotices(db),{buyer,buyer2,seller,outsider,reviewer,notices:N}=S;
   server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');
   await new Promise(r=>server.once('listening',r));
-  const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[],records={synthetic_only:true};
+  const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[],records={synthetic_only:true,database:name};
   async function call(method,url,u=buyer,body,party=u.personal_party_id,h={}){
-   const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+u.token,...(party?{'X-Acting-Party':party}:{}),...(body?{'Content-Type':'application/json'}:{}),...h},...(body?{body:JSON.stringify(body)}:{})});
-   const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?'NoticeResponse':'ErrorResponse',value});
+   const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+u.token,...(party?{'X-Acting-Party':party}:{}),...(body?{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json'}:{}),...h},...(body?{body:Buffer.isBuffer(body)?body:JSON.stringify(body)}:{})});
+   if(!(res.headers.get('content-type')||'').includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};
+   const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.startsWith('/gigs/')?'CommercialConversationResponse':url.startsWith('/trade/')?'TradeRecordResponse':url.startsWith('/production/')?'ProductionRecordResponse':'NoticeResponse'):'ErrorResponse',value});
    return {status:res.status,...value};
   }
   const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;},bad=(r,c)=>assert.equal(r.error?.code,c,JSON.stringify(r));
@@ -25,7 +26,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
   const approve=(r,u=reviewer,checks={content_reviewed:true,materials_reviewed:true,no_private_contact:true})=>call('POST','/notices/records/'+r.id+'/reviews',u,{decision:'APPROVE',reason:'synthetic independent review',checks},null,headers(r));
   const read=(r,u=buyer)=>call('GET','/notices/records/'+r.id,u);
   const create=(rule,u=buyer,notice=S.body,h=headers(),party=u.personal_party_id)=>call('POST','/notices/announcements',u,{rule_id:rule.id,notice},party,h);
-  let rule,published,legacy,submission,caseRecord,quote,trade,order;
+  let rule,published,legacy,submission,caseRecord,quote,trade,order,work,productionProof;
   await t.test('new publishing rule requires independent approval; old rule and notices retain snapshots',async()=>{
    legacy=ok(await approve(ok(await create(S.rule))));
    const input={...S.ruleInput,version:'PM01-20261111',publishing_policy:'VERIFIED_ADULT_20261111'};
@@ -127,7 +128,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    assert.equal(ok(await call('GET','/notices/catalog/'+published.id,seller,undefined,null)).id,published.id);
   });
   await t.test('independent support links actual quote and creates the same unpaid order without membership',async()=>{
-   ({trade,quote}=await S.commercialQuote());
+   ({trade,quote,work,productionProof}=await S.commercialQuote({production:true}));
    const body={quote_id:quote.id,quote_sha256:quote.content_sha256,reason:'synthetic same notice quote'};
    bad(await call('POST','/notices/cases/'+caseRecord.id+'/quote',buyer,body,null,headers(caseRecord)),'NOTICE_OPERATOR_FORBIDDEN');
    const h=headers(caseRecord);
@@ -137,6 +138,52 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    assert.equal(order.current_status,'OPEN');assert.equal(order.data.financial.received_minor,0);
    assert.equal(ok(await read(caseRecord)).order_id,order.id);
    records.quote_id=quote.id;records.order_id=order.id;records.received_minor=0;
+  });
+  await t.test('same notice order receives payment, scoped conversation and independently reviewed full refund',async()=>{
+   const route='/gigs/orders/'+order.id+'/conversation/messages',originalContract=structuredClone(order.data.contract);
+   bad(await call('POST',route,seller,{kind:'TEXT',body:'Before payment'},seller.personal_party_id,headers()),'COMMERCIAL_CONVERSATION_AWAITING_PAYMENT');
+   const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:seller.personal_party_id,config_revision:'synthetic-pm01'};
+   const payment=await trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:order.id,installment_key:'full',operation_key:key()},config);
+   const proof={...config,payment_id:payment.id,currency:'CNY',amount_minor:10001,transaction_id:'synthetic.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null};
+   await trade.applyPayment(proof);await trade.applyPayment(proof);
+   const body={kind:'TEXT',body:'Synthetic same-notice agreed work'},h=headers();
+   const message=ok(await call('POST',route,seller,body,seller.personal_party_id,h));
+   assert.deepEqual(ok(await call('POST',route,seller,body,seller.personal_party_id,h)),message);
+   assert.equal(ok(await call('GET',route)).items.filter(x=>x.id===message.id).length,1);
+   bad(await call('GET',route,buyer2),'GIG_NOT_FOUND');
+   assert.equal(order.data.quote.marketplace_finance.allocation.platform_bps,2200);
+   let project=ok(await call('POST','/production/projects',seller,{order_id:order.id,line_id:'commercial',script_version_id:work.id,license_project_id:null,assignee_account_id:seller.account_id,purpose:'COMMERCIAL',territory:'CN',consent_ids:[],evidence_asset_id:productionProof.id},seller.personal_party_id,headers()));
+   project=ok(await call('POST','/production/records/'+project.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Synthetic non-identifiable animation',verification:{contract_sha256:project.data.contract_sha256,identity_verified:true,signatures_verified:true,rights_verified:true}},null,headers(project)));
+   const versions={};let finalBytes;
+   for(const stage of ['SCRIPT','SAMPLE','ROUGH_CUT','FINAL']){
+    const bytes=Buffer.from('synthetic '+stage+' full protocol bytes '+key()),previewBytes=Buffer.from('synthetic '+stage+' preview '+key()),media=stage==='SCRIPT'?'text/plain':'video/mp4';
+    const file=ok(await call('POST','/production/projects/'+project.id+'/files?media_type='+encodeURIComponent(media),seller,bytes,seller.personal_party_id,headers()));
+    const preview=stage==='SCRIPT'?file:ok(await call('POST','/production/projects/'+project.id+'/files?media_type='+encodeURIComponent(media),seller,previewBytes,seller.personal_party_id,headers()));
+    project=ok(await call('GET','/production/records/'+project.id,seller));
+    let version=ok(await call('POST','/production/projects/'+project.id+'/versions',seller,{stage,file_id:file.id,preview_file_id:preview.id,note:'Synthetic protocol bytes, not video quality evidence'},seller.personal_party_id,headers(project)));
+    const checks=stage==='SCRIPT'?{script_reviewed:true}:{script_reviewed:true,specification_reviewed:true,audio_reviewed:true,branding_reviewed:true};
+    bad(await call('POST','/production/records/'+version.id+'/reviews',seller,{decision:'APPROVED',reason:'Self review rejected',verification:checks},null,headers(version)),'PRODUCTION_REVIEW_FORBIDDEN');
+    version=ok(await call('POST','/production/records/'+version.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Independent synthetic stage review',verification:checks},null,headers(version)));
+    assert.deepEqual((await call('GET','/production/versions/'+version.id+'/content?variant=preview')).bytes,stage==='SCRIPT'?bytes:previewBytes);
+    ok(await call('POST','/production/versions/'+version.id+'/feedback',buyer,{decision:'ACCEPT',note:'Buyer confirms original stage',checklist:checks},buyer.personal_party_id,headers(version)));
+    versions[stage]=version.id;if(stage==='FINAL')finalBytes=bytes;
+   }
+   project=ok(await call('GET','/production/records/'+project.id,seller));assert.equal(project.current_status,'ACCEPTED');
+   const finalRoute='/production/versions/'+versions.FINAL+'/content?variant=final';assert.deepEqual((await call('GET',finalRoute)).bytes,finalBytes);
+   bad(await call('GET',finalRoute,buyer2),'PRODUCTION_NOT_FOUND');
+   Object.assign(records,{project_id:project.id,versions,platform_bps:2200});
+   let refund=ok(await call('POST','/trade/refunds',buyer,{payment_id:payment.id,allocations:[{line_id:'commercial',amount_minor:10001}],reason:'Synthetic independent full cancellation'},buyer.personal_party_id,headers()));
+   refund=ok(await call('POST','/trade/records/'+refund.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Synthetic independent refund'},null,headers(refund)));
+   assert.equal(ok(await call('GET','/trade/records/'+order.id)).data.financial.refunded_minor,0);
+   await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+   const refundProof={...refund.data,refund_id:refund.id,status:'SUCCEEDED'};
+   await trade.applyRefund(refund.id,refundProof);await trade.applyRefund(refund.id,refundProof);
+   const current=ok(await call('GET','/trade/records/'+order.id));assert.deepEqual(current.data.financial,{received_minor:10001,refunded_minor:10001,net_minor:0});assert.deepEqual(current.data.contract,originalContract);
+   bad(await call('POST',route,seller,{kind:'TEXT',body:'Cannot restart refunded cooperation'},seller.personal_party_id,headers()),'COMMERCIAL_CONVERSATION_ARCHIVED');
+   bad(await call('GET',finalRoute),'PRODUCTION_ORDER_BLOCKED');
+   assert.equal(ok(await read(caseRecord)).order_id,order.id);
+   const rows=(await db.execute('SELECT direction FROM trade_journal WHERE order_id=?',[order.id]))[0];assert.equal(rows.filter(x=>x.direction==='RECEIPT').length,1);assert.equal(rows.filter(x=>x.direction==='REFUND').length,1);
+   Object.assign(records,{surface:'API',actors:{buyer:buyer.account_id,artist:seller.account_id,independent_reviewer:reviewer.account_id},payment_id:payment.id,message_id:message.id,refund_id:refund.id,received_minor:10001,financial:current.data.financial,limits:['Synthetic non-identifiable animation; protocol bytes only, not playable video or real marking review','Synthetic identity/materials and trusted payment/refund observations','No browser/native/live service acceptance']});
   });
   await t.test('closing ordinary notice blocks new submissions while historical quote remains unchanged',async()=>{
    const before=await trade.read(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id});

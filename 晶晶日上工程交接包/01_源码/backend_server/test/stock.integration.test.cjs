@@ -90,7 +90,22 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
   assert.equal((await db.execute("SELECT id FROM stock_audit WHERE record_id=? AND event_code='STOCK_LICENSE_GRANTED'",[placed.id]))[0].length,1);
   bad(await call('GET','/stock/purchases/'+placed.id,buyer2),'STOCK_NOT_FOUND');
   assert.equal((await call('GET','/stock/purchases/'+placed.id+'/content',{...buyer,token:'synthetic-invalid-session'})).status,401);
-  const content=await call('GET','/stock/purchases/'+placed.id+'/content');assert.equal(content.status,200);
+  const auth=require('../src/modules/auth/repository').createAuthRepository(db,{secret:S.secret}),oldHash=auth.secure.digest('token',buyer.token);
+  const [[oldSession]]=await db.execute('SELECT expires_ms FROM auth_sessions WHERE token_hash=?',[oldHash]);
+  const freshToken=randomBytes(32).toString('base64url'),freshHash=auth.secure.digest('token',freshToken),renewed={...buyer,token:freshToken};
+  let content;
+  try{
+   await db.execute('UPDATE auth_sessions SET expires_ms=1 WHERE token_hash=?',[oldHash]);
+   assert.equal((await call('GET','/stock/purchases/'+placed.id+'/content')).status,401);
+   await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[freshHash,buyer.account_id]);
+   content=await call('GET','/stock/purchases/'+placed.id+'/content',renewed);assert.equal(content.status,200);
+   await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);
+   assert.equal((await call('GET','/stock/purchases/'+placed.id+'/content',renewed)).status,403);
+  }finally{
+   await db.execute('UPDATE auth_sessions SET expires_ms=? WHERE token_hash=?',[oldSession.expires_ms,oldHash]);
+   await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);
+  }
+  assert.deepEqual((await call('GET','/stock/purchases/'+placed.id+'/content',renewed)).bytes,content.bytes);
   const asset=(await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[S.file.id]))[0][0];
   assert.deepEqual(content.bytes,S.bytes.get(asset.object_key));
   purchase=ok(await call('GET','/stock/purchases/'+placed.id));
@@ -105,6 +120,7 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
   purchase=ok(await call('POST','/stock/purchases/'+placed.id+'/case-resolution',reviewer,decision,null,headers(purchase)));
   assert.equal(purchase.data.status,'REFUND_REQUIRED');
   const refundBody={payment_id:payment.payment.id,allocations:[{line_id:'stock',amount_minor:100}],reason:'approved synthetic case'},refundKey=key();
+  bad(await call('POST','/trade/refunds',buyer,{...refundBody,allocations:[{line_id:'stock',amount_minor:40}]},buyer.personal_party_id,headers()),'STOCK_FULL_REFUND_REQUIRED');
   let refund=ok(await call('POST','/trade/refunds',buyer,refundBody,buyer.personal_party_id,headers(null,refundKey)));
   assert.equal(ok(await call('POST','/trade/refunds',buyer,refundBody,buyer.personal_party_id,headers(null,refundKey))).id,refund.id);
   refund=ok(await call('POST','/trade/records/'+refund.id+'/reviews',reviewer,{decision:'APPROVED',reason:'independent refund review'},null,headers(refund)));
@@ -116,13 +132,14 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
   await trade.applyRefund(refund.id,proof);await trade.applyRefund(refund.id,proof);
   purchase=ok(await call('GET','/stock/purchases/'+placed.id));assert.equal(purchase.data.status,'REVOKED');
   bad(await call('GET','/stock/purchases/'+placed.id+'/content'),'STOCK_LICENSE_NOT_ACTIVE');
+  bad(await call('GET','/stock/purchases/'+placed.id+'/content',renewed),'STOCK_LICENSE_NOT_ACTIVE');
   const final=ok(await call('GET','/trade/records/'+placed.id));
   assert.deepEqual(final.data.financial,{received_minor:100,refunded_minor:100,net_minor:0});
   assert.equal(final.data.contract.content_sha256,originalContract);
   const journal=(await db.execute('SELECT direction,amount_minor FROM trade_journal WHERE order_id=? ORDER BY direction',[placed.id]))[0];
   assert.deepEqual(journal.map(x=>({direction:x.direction,amount_minor:Number(x.amount_minor)})),[{direction:'RECEIPT',amount_minor:100},{direction:'REFUND',amount_minor:100}]);
   const artifact=path.resolve(__dirname,'../../../..','.local/stock-payment-refund-journey-20261110.json');
-  await fs.writeFile(artifact,JSON.stringify({synthetic_only:true,listing_id:listing.id,order_id:placed.id,payment_id:payment.payment.id,case_id:caseId,refund_id:refund.id,contract_sha256:originalContract,financial:final.data.financial,license_status:purchase.data.status,acceptance_policy:specification.stock_license.acceptance_policy,acceptance_hours:48,limits:['Trusted payment/refund proofs injected internally; no provider call','Invalid-session recovery uses existing valid synthetic session, not SMS login','Synthetic file bytes; no App or web interaction']},null,2));
+  await fs.writeFile(artifact,JSON.stringify({synthetic_only:true,database:name,actors:{buyer:buyer.account_id,seller:seller.account_id,independent_reviewer:reviewer.account_id},listing_id:listing.id,order_id:placed.id,payment_id:payment.payment.id,case_id:caseId,refund_id:refund.id,contract_sha256:originalContract,financial:final.data.financial,license_status:purchase.data.status,acceptance_policy:specification.stock_license.acceptance_policy,acceptance_hours:48,expired_session_recovered:true,revoked_membership_denied:true,partial_refund_error:'STOCK_FULL_REFUND_REQUIRED',fresh_session_cannot_bypass_refund:true,limits:['Trusted payment/refund proofs injected internally; no provider call','Expired synthetic session replaced by isolated auth-session fixture, not SMS login','Synthetic file bytes; no App or web interaction']},null,2));
  });
  await t.test('expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership',async()=>{
   const listing=await S.listing(),o=await S.checkout(listing);await S.payment(o);

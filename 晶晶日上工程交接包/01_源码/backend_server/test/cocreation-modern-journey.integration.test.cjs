@@ -22,14 +22,14 @@ test('private invitations reach twenty-person production under new contract with
    const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+u.token,...party?{'X-Acting-Party':party}:{},...body===undefined?{}:{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':op},...version?{'If-Match':'"'+version+'"'}:{}},...body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)},signal:AbortSignal.timeout(20000)});
    const binary=!(res.headers.get('content-type')||'').includes('json'),value=binary?Buffer.from(await res.arrayBuffer()):await res.json();
    requests.push({method,path:new URL(base+url).pathname,actor:u.account_id,status:res.status,error:binary?null:value.error?.code||null});
-   if(!binary){const schema=!res.ok?'ErrorResponse':url.includes('/invite-links')?(url.endsWith('/claim')?'CocreationInviteClaimResponse':'CocreationInviteLinkResponse'):url.startsWith('/cocreation')?'CocreationResponse':url.startsWith('/trade')?'TradeRecordResponse':url.endsWith('/start')?'CustomizationFulfillmentResponse':'ProductionRecordResponse';fixtures.push({method,path:new URL(base+url).pathname,schema,value});}
+   if(!binary){const schema=!res.ok?'ErrorResponse':url.includes('/invite-links')?(url.endsWith('/claim')?'CocreationInviteClaimResponse':'CocreationInviteLinkResponse'):url.startsWith('/cocreation')?'CocreationResponse':url.startsWith('/trade')?'TradeRecordResponse':['/start','/case-resolution','/refund-sync'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':'ProductionRecordResponse';fixtures.push({method,path:new URL(base+url).pathname,schema,value});}
    if(!res.ok)throw Object.assign(new Error(value.error?.code),{code:value.error?.code,status:res.status});return binary?value:value.data;
   }
   const bad=(p,code)=>assert.rejects(p,e=>{assert.equal(e.code,code);return true;});
   let rule=await call('POST','/cocreation/rules',producer,{rule:{version:'synthetic-modern-family',source_ref:'synthetic:contract-19-and-13',max_people:40,extension_days:7,participation_terms:'Synthetic separate participation, never consent by host.',benefit:{service_code:'synthetic-credit',description:'Synthetic noncash service credit',credit_minor:1000,valid_days:30}}},null,key(),null);
   rule=await call('POST','/cocreation/rules/'+rule.id+'/review',reviewer,{decision:'APPROVE',reason:'Synthetic independent review'},rule.object_version);
   const people=[];for(let n=0;n<20;n++){const user=await f.registerActor('Synthetic private guest '+n);people.push({user,...await f.actorCast(user)});}
-  let room,order,project,member,final,snippet;const members=[];
+  let room,order,project,member,final,snippet;const members=[],payments=[];
   const getRoom=()=>call('GET','/cocreation/rooms/'+room.id,buyer);
   const reviewTrade=r=>call('POST','/trade/records/'+r.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Synthetic independent contract review'},r.object_version);
   await check('one shared order freezes new 30/40/30, reviewed calendar, copyright and room promise',async()=>{
@@ -57,7 +57,7 @@ test('private invitations reach twenty-person production under new contract with
    member=members[0];await bad(call('GET','/cocreation/members/'+member.id,buyer),'ARTIST_NOT_FOUND');return {room_id:room.id,joined:20,eligible:0,member_ids:members.map(x=>x.id)};
   });
   await check('first payment qualifies twenty people; cutoff creates one noncash benefit and one original order',async()=>{
-   await f.pay(order,'first');let r=await getRoom();assert.equal(r.counts.eligible_count,20);await bad(call('POST','/cocreation/rooms/'+room.id+'/close',buyer,{},r.object_version),'COCREATION_CUTOFF_NOT_DUE');
+   payments.push(await f.pay(order,'first'));let r=await getRoom();assert.equal(r.counts.eligible_count,20);await bad(call('POST','/cocreation/rooms/'+room.id+'/close',buyer,{},r.object_version),'COCREATION_CUTOFF_NOT_DUE');
    // Only the one-connection random test database clock advances; no row status is edited.
    await db.execute('SET timestamp=?',[Math.floor(Date.parse(r.deadline)/1000)+1]);r=await call('POST','/cocreation/rooms/'+room.id+'/close',buyer,{},r.object_version);assert.equal(r.current_status,'READY');assert.equal(r.cutoff.eligible_count,20);
    await call('POST','/cocreation/rooms/'+room.id+'/close',buyer,{},r.object_version);const benefits=await call('GET','/cocreation/benefits',buyer);assert.equal(benefits.items.length,1);assert.equal(benefits.items[0].data.non_cash,true);assert.equal(benefits.items[0].data.units,1);
@@ -75,18 +75,40 @@ test('private invitations reach twenty-person production under new contract with
    await bad(call('GET','/cocreation/rooms/'+room.id+'/materials',buyer),'COCREATION_PRODUCER_FORBIDDEN');return {room_id:room.id,project_id:project.id,material_count:20};
   });
   await check('new contract collects 40 percent after script acceptance, then samples and final require separate reviews',async()=>{
-   await assert.rejects(f.pay(order,'interim'));const script=await deliver('SCRIPT');await accept(script);const p=await f.pay(order,'interim');assert.equal(p.data.amount_minor,4000);await accept(await deliver('SAMPLE'));await accept(await deliver('ROUGH_CUT'));final=await deliver('FINAL');return {order_id:order.id,script_version_id:script.id,final_version_id:final.id,interim_minor:4000};
+   await assert.rejects(f.pay(order,'interim'));const script=await deliver('SCRIPT');await accept(script);const p=await f.pay(order,'interim');assert.equal(p.data.amount_minor,4000);payments.push(p);await accept(await deliver('SAMPLE'));await accept(await deliver('ROUGH_CUT'));final=await deliver('FINAL');return {order_id:order.id,script_version_id:script.id,final_version_id:final.id,interim_minor:4000};
   });
   await check('personal clip remains unavailable until final acceptance and remaining 30 percent; other people cannot download',async()=>{
    const clip=await file('FINAL');snippet=await call('POST','/cocreation/rooms/'+room.id+'/snippets',producer,{member_id:member.id,file_id:clip.id,final_version_id:final.id,note:'Synthetic own-person clip'});
    const original=await call('GET','/cocreation/snippets/'+snippet.id+'/review-file',reviewer);snippet=await call('POST','/cocreation/snippets/'+snippet.id+'/review',reviewer,{decision:'APPROVE',reason:'Synthetic independent person/marking check',verification:{only_target_person:true,authorization_marked:true,ai_label_verified:true,content_reviewed:true}},snippet.object_version);
-   const url='/cocreation/snippets/'+snippet.id+'/file';await bad(call('GET',url,people[0].user),'COCREATION_SNIPPET_NOT_READY');await accept(final);await bad(call('GET',url,people[0].user),'COCREATION_SNIPPET_NOT_READY');const payment=await f.pay(order,'last');assert.equal(payment.data.amount_minor,3000);assert.equal(hash(await call('GET',url,people[0].user)),hash(original));
+   const url='/cocreation/snippets/'+snippet.id+'/file';await bad(call('GET',url,people[0].user),'COCREATION_SNIPPET_NOT_READY');await accept(final);await bad(call('GET',url,people[0].user),'COCREATION_SNIPPET_NOT_READY');const payment=await f.pay(order,'last');assert.equal(payment.data.amount_minor,3000);payments.push(payment);assert.equal(hash(await call('GET',url,people[0].user)),hash(original));
    await bad(call('GET',url,people[1].user),'COCREATION_NOT_FOUND');await bad(call('GET',url,buyer),'COCREATION_NOT_FOUND');await bad(call('GET','/production/versions/'+final.id+'/content?variant=final',people[0].user),'PRODUCTION_NOT_FOUND');return {order_id:order.id,snippet_id:snippet.id,content_sha256:hash(original),final_payment_minor:3000};
   });
   await check('withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions',async()=>{
    member=await call('POST','/cocreation/members/'+member.id+'/withdraw',people[0].user,{reason:'Synthetic personal withdrawal'},member.object_version);let r=await getRoom();assert.equal(r.current_status,'PAUSED');assert.equal(r.cutoff.eligible_count,20);await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');await bad(file('FINAL'),'CUSTOMIZATION_PAUSED');
    const c=await call('POST','/cocreation/rooms/'+room.id+'/cases',buyer,{kind:'RESUME',reason:'Make new film without withdrawn person',new_deadline:null},r.object_version);await call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Synthetic independent review of remaining nineteen'},c.object_version);
    r=await getRoom();assert.equal(r.current_status,'READY');assert.equal(r.cutoff.eligible_count,20);const p=await getProject();assert.deepEqual(p.data.current,{});assert.deepEqual(p.data.accepted,{});await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');const materials=await call('GET','/cocreation/rooms/'+room.id+'/materials?limit=30',producer);assert.equal(materials.items.length,19);assert(!materials.items.some(x=>x.id===member.id));const originalOrder=await call('GET','/trade/records/'+order.id,buyer);assert.equal(originalOrder.data.financial.received_minor,10000);assert.equal(originalOrder.data.financial.refunded_minor,0);assert.deepEqual(originalOrder.data.contract,order.data.contract);return {room_id:room.id,project_id:project.id,original_cutoff:20,current_production_members:19,received_minor:10000};
+  });
+  await check('same paid room cancels through production review; three actual refunds revoke benefit and cannot revive old files',async()=>{
+   let r=await getRoom();const c=await call('POST','/cocreation/rooms/'+room.id+'/cases',buyer,{kind:'CANCEL',reason:'Synthetic whole-package cancellation after authorization withdrawal',new_deadline:null},r.object_version);
+   await bad(call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Wrong review route'},c.object_version),'USE_CUSTOMIZATION_CASE_REVIEW');
+   await cmd('case-resolution',reviewer,{case_id:c.data.production_case_id,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'Independent synthetic full cancellation'});
+   const sync=async()=>{const current=await getRoom();return call('POST','/cocreation/rooms/'+room.id+'/sync',buyer,{},current.object_version);};
+   r=await sync();assert.equal(r.current_status,'REFUND_REQUIRED');
+   const refundIds=[];
+   for(const payment of payments){
+    let refund=await call('POST','/trade/refunds',buyer,{payment_id:payment.id,allocations:[{line_id:'film',amount_minor:payment.data.amount_minor}],reason:'Synthetic reviewed full package refund'});
+    refund=await reviewTrade(refund);await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+    const proof={...refund.data,refund_id:refund.id,status:'SUCCEEDED'};await f.trade.applyRefund(refund.id,proof);await f.trade.applyRefund(refund.id,proof);refundIds.push(refund.id);
+    r=await sync();assert.equal(r.current_status,refundIds.length===3?'REFUNDED':'REFUND_REQUIRED');
+   }
+   r=await sync();assert.equal(r.current_status,'REFUNDED');
+   const current=await call('GET','/trade/records/'+order.id,buyer);assert.deepEqual(current.data.financial,{received_minor:10000,refunded_minor:10000,net_minor:0});assert.deepEqual(current.data.contract,order.data.contract);
+   const benefits=await call('GET','/cocreation/benefits',buyer);assert.equal(benefits.items[0].current_status,'REVOKED');
+   await bad(call('POST','/cocreation/rooms/'+room.id+'/cases',buyer,{kind:'RESUME',reason:'Must not revive refunded film',new_deadline:null},r.object_version),'COCREATION_CANCELLED');
+   await bad(call('GET','/production/versions/'+final.id+'/content?variant=final',buyer),'PRODUCTION_ORDER_BLOCKED');
+   await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');
+   assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[order.id]))[0].length,3);
+   return {actors:{host:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id,withdrawn_member:people[0].user.account_id},room_id:room.id,order_id:order.id,project_id:project.id,case_id:c.id,refund_ids:refundIds,financial:current.data.financial,benefit_status:'REVOKED'};
   });
  }catch(e){failed=true;throw e;}
  finally{
