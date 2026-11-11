@@ -884,6 +884,19 @@ class V5FormState extends State<V5Form>
   @override
   void didUpdateWidget(covariant V5Form oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Reading private media can advance the parent record before any input.
+    // Only pristine forms follow that version; drafts and uncertain writes
+    // retain their original concurrency boundary and explicit recovery flow.
+    if (widget.api.session == oldWidget.api.session &&
+        widget.suffix == oldWidget.suffix &&
+        widget.version != oldWidget.version &&
+        !busy &&
+        !dirty &&
+        !conflict &&
+        !completed &&
+        pending == null) {
+      version = widget.version;
+    }
     if (widget.api.session != oldWidget.api.session) {
       oldWidget.api.session.removeListener(_sessionChanged);
       widget.api.session.addListener(_sessionChanged);

@@ -186,9 +186,13 @@ void main() {
         w is DropdownButtonFormField<String> &&
         w.decoration.labelText == '本人档案');
     await tap(t, dropdown);
-    final options = find.byType(DropdownMenuItem<String>);
-    expect(options, findsWidgets);
-    await t.tap(options.last.hitTestable());
+    final item = t
+        .widget<DropdownButton<String>>(find.descendant(
+            of: dropdown, matching: find.byType(DropdownButton<String>)))
+        .items!
+        .last;
+    final label = (item.child as Text).data!;
+    await t.tap(find.text(label).last);
     await frames(t);
     await tap(t, find.text('确认领取邀请'));
     await wait(t, find.textContaining('已领取邀请'));

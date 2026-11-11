@@ -12,11 +12,12 @@ test('stale, missing, failed and empty evidence cannot be substituted for fresh 
   const put=(name,value)=>fs.writeFileSync(path.join(local,name),JSON.stringify(value));
   put('old.json',{result:'PASS'});fs.utimesSync(path.join(local,'old.json'),1,1);
   fs.mkdirSync(path.join(local,'browser'));put('browser/absent.json',{});put('browser/passed.json',{passed:true});
+  fs.mkdirSync(path.join(local,'pm01-stock-native'));put('pm01-stock-native/result.json',{});put('failed-steps.json',{passed:true,failures:['native incomplete']});
   put('failed.json',{result:'FAIL'});put('web-incomplete.json',{completed:false});put('web-failed.json',{passed:false});put('null.json',null);put('empty-fixtures.json',{cases:[]});put('fresh-fixtures.json',{synthetic_only:true,cases:[{value:{data:{id:'synthetic'}}}]});
   fs.writeFileSync(path.join(local,'broken.json'),'{');
-  const names=['missing.json','browser/absent.json','browser/passed.json','old.json','failed.json','web-incomplete.json','web-failed.json','null.json','empty-fixtures.json','broken.json','fresh-fixtures.json'];
+  const names=['pm01-stock-native/result.json','failed-steps.json','missing.json','browser/absent.json','browser/passed.json','old.json','failed.json','web-incomplete.json','web-failed.json','null.json','empty-fixtures.json','broken.json','fresh-fixtures.json'];
   const result=collectEvidence(root,out,names,'2000-01-01T00:00:00.000Z');
-  assert.equal(result.artifactErrors.length,9);assert.deepEqual(result.evidence.map(x=>x.path),['browser/passed.json','fresh-fixtures.json']);assert.match(result.evidence[0].sha256,/^[a-f0-9]{64}$/);
+  assert.equal(result.artifactErrors.length,11);assert.deepEqual(result.evidence.map(x=>x.path),['browser/passed.json','fresh-fixtures.json']);assert.match(result.evidence[0].sha256,/^[a-f0-9]{64}$/);
   assert.deepEqual(fs.readFileSync(path.join(out,'fresh-fixtures.json')),fs.readFileSync(path.join(local,'fresh-fixtures.json')));
   assert(!fs.existsSync(path.join(out,'old.json')));
  }finally{fs.rmSync(root,{recursive:true,force:true});}

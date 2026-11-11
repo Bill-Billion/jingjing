@@ -47,6 +47,48 @@ Future<void> openForms(WidgetTester t, AccountSession session,
 }
 
 void main() {
+  for (final drafted in [false, true]) {
+    testWidgets(
+        'parent refresh uses latest version only before drafting: $drafted',
+        (t) async {
+      final adapter = FakeAccountAdapter(
+          handler: (r) => r.path == '/api/v1/notices/test'
+              ? envelope({'saved': true})
+              : FakeAccountAdapter().defaultReply(r));
+      final s = (await t.runAsync(() => buyerSession(adapter)))!;
+      var version = 1;
+      late StateSetter refresh;
+      await openForms(t, s,
+          children: (api) => [
+                StatefulBuilder(builder: (context, setState) {
+                  refresh = setState;
+                  return V5Form(
+                      api: api,
+                      title: '内容',
+                      action: '提交内容',
+                      suffix: '/test',
+                      version: version,
+                      fields: const [V5Field('content', '内容')],
+                      buildBody: (v) => v,
+                      parse: (_) {});
+                })
+              ]);
+      if (drafted) await t.enterText(find.byType(TextFormField), '保留我的输入');
+      refresh(() => version = 2);
+      await frames(t);
+      if (!drafted) await t.enterText(find.byType(TextFormField), '保留我的输入');
+      expect(find.text('保留我的输入'), findsOneWidget);
+      await t.tap(find.text('提交内容'));
+      await frames(t);
+      await t.tap(find.text('确认办理'));
+      await frames(t);
+      final write =
+          adapter.requests.singleWhere((r) => r.path == '/api/v1/notices/test');
+      expect(write.headers['If-Match'], drafted ? '"1"' : '"2"');
+      expect(write.data, {'content': '保留我的输入'});
+    });
+  }
+
   testWidgets('未修改输入直接返回，修改后取消离开保留输入，还原后不再拦截', (t) async {
     final s = (await t.runAsync(() => buyerSession(FakeAccountAdapter())))!;
     await openForms(t, s);

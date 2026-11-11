@@ -1,0 +1,687 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_benefit_flow_44fc697a349d2319",
+  "checks": [
+    {
+      "name": "independently reviewed wallet and new 48-hour stock terms, zero initial points",
+      "result": "PASS",
+      "records": {
+        "rule_id": "e3fb0c36-c721-41c6-94c0-bb08164fc088",
+        "spec_id": "5091590b-5e5e-45ea-b070-27c0011a77d6"
+      }
+    },
+    {
+      "name": "two fresh paid orders earn nothing before real content read and buyer acceptance",
+      "result": "PASS",
+      "records": {
+        "order_ids": [
+          "97bb67c3-4278-4277-95d3-0ad139b3fdd5",
+          "0427f5db-906b-4fa2-8bbd-e84156b93707"
+        ],
+        "payment_ids": [
+          "188deea4-7f00-4ab4-8c7c-7e53f5b3f7a0",
+          "c1581de6-9ff6-4a4d-b04f-4117f38bae16"
+        ]
+      }
+    },
+    {
+      "name": "mature original order issues once under its captured rule; concurrent sync does not duplicate",
+      "result": "PASS",
+      "records": {
+        "earning_id": "5f0edef8-73ac-49e2-ba9f-89c1cb76c407",
+        "points": 10,
+        "expires_at": "2027-11-19T15:06:19.074Z"
+      }
+    },
+    {
+      "name": "a real reward exchange consumes four points once and retains original expiry",
+      "result": "PASS",
+      "records": {
+        "grant_id": "1ee2b17c-d210-4eb7-85e1-cde36e157e5c",
+        "spent": 4
+      }
+    },
+    {
+      "name": "full cash refund succeeds despite spent points; debt prevents new exchange without using stock",
+      "result": "PASS",
+      "records": {
+        "refund_id": "05fbfa3c-1757-4c05-bfb3-bd1ec3718af2",
+        "pending_reversal": 4,
+        "inventory_remaining": 4
+      }
+    },
+    {
+      "name": "later order earnings clear earlier debt without erasing the new consumption growth",
+      "result": "PASS",
+      "records": {
+        "earning_id": "b7b513e1-1f06-4e42-9f53-a3b08b0f7220",
+        "offset": 4,
+        "available": 6,
+        "growth": 10
+      }
+    },
+    {
+      "name": "refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth",
+      "result": "PASS",
+      "records": {
+        "refund_id": "6dd2482e-e76f-4d13-903d-459e2d5e3be6",
+        "pending_reversal": 1
+      }
+    },
+    {
+      "name": "independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth",
+      "result": "PASS",
+      "records": {
+        "grant_id": "1ee2b17c-d210-4eb7-85e1-cde36e157e5c",
+        "remedy_id": "a394cc85-4bcf-4dbb-9ed1-0d2ff8128529",
+        "available": 3,
+        "consumption_growth": 0,
+        "expiry_unchanged": true
+      }
+    },
+    {
+      "name": "same fulfilled stock partial KEEP then final REVOKE reverses points and referral finance exactly once",
+      "result": "PASS",
+      "records": {
+        "order_id": "12e1d19e-996e-4827-bd76-0e8651730e3c",
+        "agreement_id": "61b21ea7-d786-465b-b2ff-c7f2b9414f32",
+        "earning_id": "30e5767f-72d0-4839-a6be-fda3af9e94f3",
+        "stages": [
+          {
+            "refund_id": "a138fb75-3154-4ac0-8e56-206e4f9ffcdb",
+            "amount_minor": 40,
+            "cumulative_refunded_minor": 40,
+            "license": "KEEP",
+            "available_points": 9,
+            "commission_minor": 6,
+            "balances": [
+              {
+                "party_id": "2450e12f-7cb7-4f9e-b9e0-a9dc034e5746",
+                "accrued_minor": 5,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 5,
+                "expected_accrued_minor": 5,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+              },
+              {
+                "party_id": "8d365403-fe55-490e-a2e4-e44682360861",
+                "accrued_minor": 6,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 6,
+                "expected_accrued_minor": 6,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+              },
+              {
+                "party_id": "9f4c5df8-3dba-421a-84c3-1f0298cb9d18",
+                "accrued_minor": 0,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 0,
+                "expected_accrued_minor": 0,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+              },
+              {
+                "party_id": "f77bb194-faf1-4ecc-9849-8e8e18092dbd",
+                "accrued_minor": 49,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 49,
+                "expected_accrued_minor": 49,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "MERCHANT_RETAINED_NOT_TRANSFER"
+              }
+            ]
+          },
+          {
+            "refund_id": "143d3902-3056-4889-85d5-c260b6f7e391",
+            "amount_minor": 60,
+            "cumulative_refunded_minor": 100,
+            "license": "REVOKE",
+            "available_points": 3,
+            "commission_minor": 0,
+            "balances": [
+              {
+                "party_id": "2450e12f-7cb7-4f9e-b9e0-a9dc034e5746",
+                "accrued_minor": 0,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 0,
+                "expected_accrued_minor": 0,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+              },
+              {
+                "party_id": "8d365403-fe55-490e-a2e4-e44682360861",
+                "accrued_minor": 0,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 0,
+                "expected_accrued_minor": 0,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+              },
+              {
+                "party_id": "9f4c5df8-3dba-421a-84c3-1f0298cb9d18",
+                "accrued_minor": 0,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 0,
+                "expected_accrued_minor": 0,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+              },
+              {
+                "party_id": "f77bb194-faf1-4ecc-9849-8e8e18092dbd",
+                "accrued_minor": 0,
+                "adjustment_minor": 0,
+                "paid_minor": 0,
+                "balance_minor": 0,
+                "expected_accrued_minor": 0,
+                "available_minor": 0,
+                "recovery_due_minor": 0,
+                "reason_code": "MARKETPLACE_PAYOUT_NOT_ENABLED",
+                "meaning": "MERCHANT_RETAINED_NOT_TRANSFER"
+              }
+            ]
+          }
+        ],
+        "fulfillment": "actual content read and acceptance; isolated clock only",
+        "receipt": "synthetic PRODUCTION-labelled fact; no provider called"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/wallet/rules",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/rules/e3fb0c36-c721-41c6-94c0-bb08164fc088/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/accounts",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/checkout",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/97bb67c3-4278-4277-95d3-0ad139b3fdd5",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/97bb67c3-4278-4277-95d3-0ad139b3fdd5/acceptance",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/checkout",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/0427f5db-906b-4fa2-8bbd-e84156b93707",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/0427f5db-906b-4fa2-8bbd-e84156b93707/acceptance",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 404,
+      "error": "WALLET_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/stock",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/stock/539575cb-cbb9-44b7-9ff7-f5f29ac5ca43/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/exchanges",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/exchanges",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/97bb67c3-4278-4277-95d3-0ad139b3fdd5",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/97bb67c3-4278-4277-95d3-0ad139b3fdd5/cases",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/97bb67c3-4278-4277-95d3-0ad139b3fdd5/case-resolution",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/05fbfa3c-1757-4c05-bfb3-bd1ec3718af2/reviews",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/exchanges",
+      "status": 409,
+      "error": "POINTS_REVERSAL_PENDING"
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/catalog",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/97bb67c3-4278-4277-95d3-0ad139b3fdd5",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/0427f5db-906b-4fa2-8bbd-e84156b93707",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/0427f5db-906b-4fa2-8bbd-e84156b93707/cases",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/0427f5db-906b-4fa2-8bbd-e84156b93707/case-resolution",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/6dd2482e-e76f-4d13-903d-459e2d5e3be6/reviews",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/check-in",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/check-in",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/grants/1ee2b17c-d210-4eb7-85e1-cde36e157e5c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/grants/1ee2b17c-d210-4eb7-85e1-cde36e157e5c/remedies",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/remedies/a394cc85-4bcf-4dbb-9ed1-0d2ff8128529/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/remedies/a394cc85-4bcf-4dbb-9ed1-0d2ff8128529/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/grants/1ee2b17c-d210-4eb7-85e1-cde36e157e5c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/records?kind=EARNING",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/97bb67c3-4278-4277-95d3-0ad139b3fdd5",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/0427f5db-906b-4fa2-8bbd-e84156b93707",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/checkout",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c/acceptance",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c/cases",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c/case-resolution",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/a138fb75-3154-4ac0-8e56-206e4f9ffcdb/reviews",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c/cases",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c/case-resolution",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/143d3902-3056-4889-85d5-c260b6f7e391/reviews",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/12e1d19e-996e-4827-bd76-0e8651730e3c",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "limits": [
+    "API chain, not page/native acceptance",
+    "Approved seller and media review are synthetic fixtures; media protocol bytes are not playable",
+    "Payments/refunds are synthetic trusted receipts; no real money",
+    "Only isolated DB connection clock advances; business fulfillment rows are never patched"
+  ],
+  "result": "PASS",
+  "cleanup": {
+    "server_stopped": true,
+    "database_removed": true
+  }
+}

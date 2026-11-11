@@ -1,10 +1,10 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),{createRequire}=require('node:module'),{pathToFileURL}=require('node:url');
-async function start({base,buyer,reviewer,fixtures}){
- const root=path.resolve(__dirname,'../../../../..'),webRoot=path.join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace'),wr=createRequire(path.join(webRoot,'package.json')),out=path.join(root,'.local/pm01-w11-browser');
+async function start({base,buyer,reviewer,fixtures,expectedRefunds=4,outputDir=null}){
+ const root=path.resolve(__dirname,'../../../../..'),webRoot=path.join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace'),wr=createRequire(path.join(webRoot,'package.json')),out=outputDir||path.join(root,'.local/pm01-w11-browser');
  await fs.mkdir(out,{recursive:true});const {preview}=await import(pathToFileURL(wr.resolve('vite'))),{chromium}=wr('playwright-core');
  let web,browser,finished=0;const checks=[];
- async function close(){await browser?.close();if(web)await new Promise(r=>web.httpServer.close(r));await fs.writeFile(path.join(out,'result.json'),JSON.stringify({completed:finished===4,checks,synthetic_only:true,limits:['Browser independent refund decision and buyer download permission; prerequisites and provider receipts remain HTTP/helpers','Synthetic file bytes do not prove playable movie quality; App state separately unit tested']},null,2));}
+ async function close(){await browser?.close();if(web)await new Promise(r=>web.httpServer.close(r));await fs.writeFile(path.join(out,'result.json'),JSON.stringify({completed:finished===expectedRefunds,checks,synthetic_only:true,limits:['Browser independent refund decision and buyer download permission; prerequisites and provider receipts remain HTTP/helpers','Synthetic file bytes do not prove playable movie quality; App execution requires separate native evidence']},null,2));}
  try{
   web=await preview({root:webRoot,configFile:false,preview:{host:'127.0.0.1',port:5331,strictPort:true,proxy:{'/api':{target:new URL(base).origin}}}});
   browser=await chromium.launch({headless:true,...process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}});

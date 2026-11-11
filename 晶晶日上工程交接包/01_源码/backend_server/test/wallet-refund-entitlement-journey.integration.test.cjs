@@ -69,8 +69,52 @@ test('received stock orders, refunds and returned rewards preserve original poin
    const q=await summary();assert.equal(q.available_points,3);assert.equal(q.points_pending_reversal,0);assert.equal(q.qualifying_growth,0);assert.equal((await get('/redemption/grants/'+grant.id)).current_status,'POINTS_RETURNED');
    const lots=await get('/wallet/records?kind=EARNING');assert.equal(lots.items.find(x=>x.id===earnA.id).data.expires_at,originalExpiry);for(const o of orders){const current=await get('/trade/records/'+o.id);assert.equal(current.data.financial.net_minor,0);assert.deepEqual(current.data.quote,o.data.quote);}return {grant_id:grant.id,remedy_id:remedy.id,available:3,consumption_growth:0,expiry_unchanged:true};
   });
+
+  await check('same fulfilled stock partial KEEP then final REVOKE reverses points and referral finance exactly once',async()=>{
+   await db.execute('SET timestamp=0');
+   for(const action of ['ENGAGEMENT_REVIEW','FINANCE_REVIEW'])for(const u of [reviewer,outsider])await require('../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:u.account_id,action,enabled:true,expected_version:0,expires_at:null,authority_ref:'synthetic:pm01',reason:'isolated only'});
+   const R=require('../src/modules/engagement/repository').createEngagementRepository(db,{resolvePrincipal:S.resolvePrincipal});
+   let er=await R.createRule(outsider.ctx,{rule:{...require('./helpers/engagement-rule.cjs'),referral_contract_policy:'CONTRACT_20261029',referral_bps:{STOCK:1000,AUDITION:1000,CUSTOMIZATION:1000,COMMERCIAL:1000}},operation_key:key()});
+   er=await R.reviewRule(reviewer.ctx,{record_id:er.id,expected_version:er.object_version,decision:'APPROVE',reason:'synthetic independent',operation_key:key()});
+   const link=await R.referralLink(buyer2.ctx,{party_id:buyer2.personal_party_id,target_party_id:seller.personal_party_id,category:'STOCK',rule_id:er.id,operation_key:key()});
+   await R.referralClick(buyer.ctx,{party_id:buyer.personal_party_id,link_id:link.id,operation_key:key()});
+   const rid=key(),content=require('../src/modules/governance/content').createRuleContent({id:rid,rule_key:'pm01.stock.referral',version:'1',terms:{marketplace_finance:{model:'V5_TWO_LAYER',product_type:'STOCK_VIDEO',fee_base:'NET_PAID',platform_party_id:outsider.personal_party_id,platform_bps:1800,referral_bps:1000,rounding:'HALF_UP_PLATFORM_REMAINDER'}}});
+   await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[rid,'pm01.stock.referral','1',JSON.stringify(content),'2020-01-01 00:00:00',outsider.account_id,'EFFECTIVE']);
+   await S.publishSales(seller.personal_party_id,S.listingInput.spec_id,rid);
+   let listing=await S.stock.create(seller.ctx,{...S.listingInput,rule_id:rid,operation_key:key()});listing=await S.reviewListing(listing,'RIGHTS');listing=await S.reviewListing(listing,'CONTENT');
+   const o=await post('/stock/checkout',buyer,{listing_id:listing.id,offer_sha256:listing.content_sha256,channel:'ALIPAY'});
+   const config={...S.config,environment:'PRODUCTION'},pay=await S.trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:o.id,installment_key:'stock',operation_key:key()},config);
+   // Labelled receipt exercises the production-accounting branch only; never calls or enables a provider.
+   await S.trade.applyPayment({...config,payment_id:pay.id,currency:'CNY',amount_minor:100,transaction_id:'synthetic-pm01:'+key(),status:'SUCCEEDED',product_id:null,app_account_token:null});
+   const download=await fetch(base+'/stock/purchases/'+o.id+'/content',{headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.personal_party_id}});assert.equal(download.status,200);assert.equal(createHash('sha256').update(Buffer.from(await download.arrayBuffer())).digest('hex'),S.file.content_sha256);
+   let p=await get('/stock/purchases/'+o.id);await post('/stock/purchases/'+o.id+'/acceptance',buyer,{},p.object_version);
+   assert.equal((await sync(o)).pending_reason,'AFTERCARE_WINDOW');
+   const [[clock]]=await db.execute('SELECT UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3)) seconds');await db.execute('SET timestamp=?',[Number(clock.seconds)+8*86400]);
+   const before=await summary(),earned=await sync(o);assert.equal(earned.data.points,10);assert.equal((await summary()).available_points,before.available_points+10);
+   const referral=()=>R.referralSync(buyer2.ctx,{party_id:buyer2.personal_party_id,order_id:o.id,operation_key:key()});
+   assert.equal((await referral()).data.amount_minor,10);
+   const finance=require('../src/modules/settlement/repository').createSettlementRepository(db,{resolvePrincipal:S.resolvePrincipal});
+   const evidence=await S.supply.upload(seller.ctx,{party_id:seller.personal_party_id,purpose:'RIGHTS_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic independent exact allocation'),operation_key:key()});
+   let agreement=await finance.agreement(seller.ctx,{party_id:seller.personal_party_id,source_type:'ORDER',source_id:o.id,previous_agreement_id:null,environment:'PRODUCTION',rule_id:rid,rules:{version:'pm01-referral',settlement_at:'2020-01-01T00:00:00.000Z',release_condition:'DELIVERY_ACCEPTED',terms:'synthetic only',lines:[{line_id:'stock',allocation:o.data.quote.marketplace_finance.allocation,deductions:[]}]},evidence_asset_id:evidence.id,operation_key:key()});
+   agreement=await finance.review(reviewer.ctx,{record_id:agreement.id,expected_version:agreement.object_version,decision:'APPROVED',reason:'synthetic independent',verification:{parties_verified:true,contract_verified:true,amount_verified:true,evidence_verified:true},operation_key:key()});
+   for(const u of [seller,buyer,buyer2,outsider])await finance.confirm(u.ctx,{record_id:agreement.id,party_id:u.personal_party_id,expected_version:agreement.object_version,content_sha256:agreement.content_sha256,decision:'APPROVED',reason:'synthetic exact agreement',operation_key:key()});
+   const settle=()=>finance.settle(seller.ctx,{record_id:agreement.id,party_id:seller.personal_party_id,expected_version:agreement.object_version,period_reference:key(),note:'synthetic reconciliation',operation_key:key()});
+   await settle();const stages=[];
+   for(const [amount,action,total] of [[40,'KEEP',40],[60,'REVOKE',100]]){
+    p=await get('/stock/purchases/'+o.id);p=await post('/stock/purchases/'+o.id+'/cases',buyer,{kind:'REFUND',reason:'synthetic partial and remaining'},p.object_version);
+    await post('/stock/purchases/'+o.id+'/case-resolution',reviewer,{case_id:p.data.current_case_id,decision:'REFUND',refund_minor:amount,license_action:action,reason:'independent amount and licence'},p.object_version,null,null);
+    let refund=await post('/trade/refunds',buyer,{payment_id:pay.id,allocations:[{line_id:'stock',amount_minor:amount}],reason:'synthetic approved amount'});refund=await post('/trade/records/'+refund.id+'/reviews',reviewer,{decision:'APPROVED',reason:'independent'},refund.object_version,null,null);
+    await S.trade.claim(reviewer.ctx,refund.id,null,'REFUND');const receipt={...refund.data,refund_id:refund.id,status:'SUCCEEDED'};await S.trade.applyRefund(refund.id,receipt);await S.trade.applyRefund(refund.id,receipt);
+    const wallet=await summary(),commission=await referral();assert.equal(wallet.available_points,before.available_points+10-total/10);assert.equal(wallet.qualifying_growth,10-total/10);assert.equal(commission.data.amount_minor,(100-total)/10);
+    await settle();const balances=await finance.balances(seller.ctx,{record_id:agreement.id,party_id:seller.personal_party_id});assert.equal(balances.items.reduce((n,x)=>n+x.accrued_minor,0),100-total);assert.equal(balances.items.find(x=>x.party_id===buyer2.personal_party_id).accrued_minor,(100-total)/10);
+    const [[count]]=await db.execute('SELECT COUNT(*) n FROM finance_entries WHERE agreement_id=?',[agreement.id]);await settle();assert.equal((await db.execute('SELECT COUNT(*) n FROM finance_entries WHERE agreement_id=?',[agreement.id]))[0][0].n,count.n);
+    p=await get('/stock/purchases/'+o.id);assert.equal(p.data.status,action==='KEEP'?'ACTIVE':'REVOKED');const current=await get('/trade/records/'+o.id);assert.deepEqual(current.data.contract,o.data.contract);
+    stages.push({refund_id:refund.id,amount_minor:amount,cumulative_refunded_minor:total,license:action,available_points:wallet.available_points,commission_minor:commission.data.amount_minor,balances:balances.items});
+   }
+   return {order_id:o.id,agreement_id:agreement.id,earning_id:earned.id,stages,fulfillment:'actual content read and acceptance; isolated clock only',receipt:'synthetic PRODUCTION-labelled fact; no provider called'};
+  });
  }finally{
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();if(created)await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();
-  result.result=failed||result.checks.length!==8?'FAIL':'PASS';result.cleanup={server_stopped:true,database_removed:created};const dir=path.resolve(__dirname,'../../../../.local');await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'wallet-refund-entitlement-result.json'),JSON.stringify(result,null,2));await fs.writeFile(path.join(dir,'wallet-refund-entitlement-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
+  result.result=failed||result.checks.length!==9?'FAIL':'PASS';result.cleanup={server_stopped:true,database_removed:created};const dir=path.resolve(__dirname,'../../../../.local');await fs.mkdir(dir,{recursive:true});await fs.writeFile(path.join(dir,'wallet-refund-entitlement-result.json'),JSON.stringify(result,null,2));await fs.writeFile(path.join(dir,'wallet-refund-entitlement-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }
 });
