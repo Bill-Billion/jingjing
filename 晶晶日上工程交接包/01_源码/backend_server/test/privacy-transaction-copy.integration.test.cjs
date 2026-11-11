@@ -79,6 +79,36 @@ test('personal trade copies preserve receipts, refunds and historical contracts'
    const [[row]]=await db.execute('SELECT data_json,data_sha256 FROM trade_records WHERE id=?',[payment.id]),original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;
    try{for(const expires_at of ['synthetic-invalid-time','2026-02-30T00:00:00.000Z']){const bad={...original,expires_at};await db.execute('UPDATE trade_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(bad),digest(bad),payment.id]);assert.equal((await page('PAYMENTS')).status,503);}}finally{await db.execute('UPDATE trade_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(original),row.data_sha256,payment.id]);}
   });
+  await t.test('source quotation uses frozen terms and rejects cross-order parent substitution',async()=>{
+   const summary=ok(await page('SUMMARY')).items[0],copy=ok(await page('CONTRACT')).items[0];
+   assert.equal(summary.source_quote_id,order.parent_id);
+   assert.equal(copy.terms.commitments.quote_id,summary.source_quote_id);
+   assert.equal(ok(await page('ORDERS')).items.find(x=>x.id===order.id).source_quote_id,summary.source_quote_id);
+   assert.equal(ok(await page('SUMMARY',{who:seller,req:sellerRequest})).items[0].source_quote_id,summary.source_quote_id);
+   assert.equal(copy.terms.commitments.quote.lines[0].specification.terms,'Synthetic only');
+   const [[source]]=await db.execute('SELECT data_json,data_sha256 FROM trade_records WHERE id=?',[order.parent_id]);
+   const original=typeof source.data_json==='string'?JSON.parse(source.data_json):source.data_json;
+   try{
+    const changed=structuredClone(original);changed.lines[0].specification.terms='Later quote must not rewrite the order';
+    await db.execute('UPDATE trade_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(changed),digest(changed),order.parent_id]);
+    assert.equal(ok(await page('CONTRACT')).items[0].copy_sha256,copy.copy_sha256);
+   }finally{await db.execute('UPDATE trade_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(original),source.data_sha256,order.parent_id]);}
+   try{
+    await db.execute('UPDATE trade_records SET parent_id=? WHERE id=?',[foreign.parent_id,order.id]);
+    for(const section of ['SUMMARY','CONTRACT','PAYMENTS','REFUNDS','JOURNAL'])assert.equal((await page(section)).status,503);
+    assert.equal((await page('ORDERS')).status,503);
+   }finally{await db.execute('UPDATE trade_records SET parent_id=? WHERE id=?',[order.parent_id,order.id]);}
+   // Older direct purchases may have neither source field. Absence is explicit,
+   // while a missing field on only one side must never fabricate a source.
+   const [[raw]]=await db.execute('SELECT data_json,data_sha256 FROM trade_records WHERE id=?',[other.id]);
+   const d=typeof raw.data_json==='string'?JSON.parse(raw.data_json):raw.data_json;
+   try{
+    const direct=structuredClone(d);delete direct.contract.commitments.quote_id;delete direct.contract.content_sha256;
+    direct.contract.content_sha256=digest(direct.contract);
+    await db.execute('UPDATE trade_records SET parent_id=NULL,data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(direct),digest(direct),other.id]);
+    assert.equal(ok(await page('SUMMARY',{record:other})).items[0].source_quote_id,null);
+   }finally{await db.execute('UPDATE trade_records SET parent_id=?,data_json=?,data_sha256=? WHERE id=?',[other.parent_id,JSON.stringify(d),raw.data_sha256,other.id]);}
+  });
   await t.test('disabled account is rechecked, reads do not complete the privacy request',async()=>{
    try{await db.execute("UPDATE identity_accounts SET current_status='SUSPENDED' WHERE id=?",[buyer.account_id]);assert.notEqual((await page('CONTRACT')).status,200);}finally{await db.execute("UPDATE identity_accounts SET current_status='ACTIVE' WHERE id=?",[buyer.account_id]);}
    assert.equal((await repo.read(buyer.ctx,{request_id:all.id})).current_status,'RECEIVED');

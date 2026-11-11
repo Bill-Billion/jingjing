@@ -39,7 +39,7 @@ module.exports=Object.freeze({
  stock:['test/stock-policy.test.cjs','test/stock.integration.test.cjs','test/stock-media.test.cjs','test/stock-media.integration.test.cjs'],
  'customization-delivery':['test/customization-delivery-policy.test.cjs','test/customization-delivery.integration.test.cjs'],
  artists:['test/artists-policy.test.cjs','test/artists-contract-policy.test.cjs','test/artists.integration.test.cjs','test/artists-contract.integration.test.cjs'],
- customization:['test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs','test/story-room-journey.integration.test.cjs'],
+ customization:['test/customization-contract-cutover.integration.test.cjs','test/customization-policy.test.cjs','test/customization.integration.test.cjs','test/customization-trade.integration.test.cjs','test/story-room-journey.integration.test.cjs'],
  release:['test/release-policy.test.cjs','test/release.integration.test.cjs'],
  support:['test/support-policy.test.cjs','test/support.integration.test.cjs','test/notifications.integration.test.cjs'],
  operations:['test/operations-policy.test.cjs','test/operations.integration.test.cjs'],

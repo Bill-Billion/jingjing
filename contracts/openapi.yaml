@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.54-rc.1
+  version: 0.31.55-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -70349,6 +70349,12 @@ components:
         id:
           type: string
           format: uuid
+        source_quote_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: 冻结合同与订单父记录一致的来源报价编号。直接商品购买或未记录来源时为null，不虚构报价；不是当前报价内容。
         current_status:
           type: string
         object_version:
@@ -70400,6 +70406,12 @@ components:
         id:
           type: string
           format: uuid
+        source_quote_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: 冻结合同与订单父记录一致的来源报价编号。直接商品购买或未记录来源时为null，不虚构报价；不是当前报价内容。
         current_status:
           type: string
         object_version:

@@ -147,6 +147,10 @@ test('privacy responses require the actual reviewed files before publication',{s
   await t.test('real selected rows form the same request file, without other people or provider internals',async()=>{
    const m=material.items.find(x=>x.id===materialId);assert.ok(m);assert.equal(m.artist_person_id,cast.person.id);assert.ok(m.created_at);assert.ok(works.items.some(x=>x.id===content.id));
    assert.deepEqual(transactions.SUMMARY.items[0].financial,{received_minor:3000,refunded_minor:500,net_minor:2500});
+   assert.equal(transactions.SUMMARY.items[0].source_quote_id,own.order.parent_id);
+   assert.equal(transactions.CONTRACT.items[0].terms.commitments.quote_id,own.order.parent_id);
+   assert.deepEqual(transactions.CONTRACT.items[0].terms.commitments.quote.installments,own.order.data.quote.installments);
+
    assert.ok(transactions.ORDERS.items.some(x=>x.id===own.order.id&&x.created_at));assert.equal(transactions.PAYMENTS.items[0].id,payment.id);assert.equal(transactions.PAYMENTS.items[0].expires_at,payment.data.expires_at);assert.equal(transactions.REFUNDS.items[0].id,refund.id);
    text=JSON.stringify({request_id:requestId,coverage:'SELECTED_RECORDS_ONLY',original_files_included:false,material,works,transactions});
    for(const forbidden of [foreign.order.id,foreignMaterialId,foreignContent.id,buyer.token,'object_key','merchant_id','consumer_request_key'])assert.ok(!text.includes(forbidden),forbidden==='object_key'?'internal storage key leaked':'unrelated or internal data leaked');

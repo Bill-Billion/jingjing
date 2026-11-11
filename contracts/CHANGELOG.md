@@ -1,3 +1,9 @@
+## 0.31.55-rc.1 — 本人订单副本明确来源报价
+
+既有本人和运营按申请 transaction-data 的 ORDERS/SUMMARY 增加可选 source_quote_id。服务端核对订单父记录与冻结合同 quote_id 一致后提供；二者均未记录时为null，不凭当前商品或新报价补造来源。关联不一致返回503，不能把他人报价拼入副本。商品约定继续取既有 CONTRACT.terms.commitments.quote 冻结内容，不新增复制全库或供应商原件接口；各类需脱敏或待取得原件另列。付款、退款和下载规则不变，迁移0211。
+
+本批W04—W09后端与接入支援范围、页面缺口及九项外部准备见 docs/reviews/pm01-w04-w09-20261111/REPORT.md。共享接口仍待实际审阅，页面未因后端通过而完成。
+
 ## 0.31.54-rc.1 — 普通成年实名个人发布通告
 
 NoticeRule 新增可选 publishing_policy：新审核规则显式使用 VERIFIED_ADULT_20261111；旧规则缺省或 SCOUT_QUALIFIED 不变。新规则的本人资格返回 active=true、level=0 和五种非官方通告类型；level=0 不代表星探会员，会员资金、成长与权益不变。失效实名、未成年人、停用账号/身份与无权代机构发布仍拒绝。

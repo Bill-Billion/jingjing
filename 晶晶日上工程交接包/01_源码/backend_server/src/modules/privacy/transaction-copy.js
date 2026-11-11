@@ -8,10 +8,19 @@ function checked(row){const data=typeof row.data_json==='string'?JSON.parse(row.
 function money(value){if(typeof value!=='number'&&!(typeof value==='string'&&/^\d+$/.test(value)))throw error('FINANCIAL_INVARIANT_BROKEN',503);const n=Number(value);if(!Number.isSafeInteger(n)||n<0||n>900000000000)throw error('FINANCIAL_INVARIANT_BROKEN',503);return n;}
 function optionalText(value,max){if(value==null)return null;if(typeof value!=='string'||!value.trim()||value.length>max)throw error('STORED_CONTENT_MISMATCH',503);return value;}
 function paymentExpiry(r,d){if(r.kind!=='PAYMENT'||d.expires_at==null)return null;const s=optionalText(d.expires_at,40);if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(s)||!Number.isFinite(Date.parse(s)))throw error('STORED_CONTENT_MISMATCH',503);const normalized=new Date(s).toISOString();if(normalized!==(s.includes('.')?s:s.replace('Z','.000Z')))throw error('STORED_CONTENT_MISMATCH',503);return normalized;}
-function orderItem(r){const d=checked(r);return {id:r.id,created_at:instant(r.created_at),cancel_reason:optionalText(d.cancel_reason,2000),current_status:r.current_status,object_version:r.object_version,buyer_party_id:r.buyer_party_id,merchant_party_id:r.merchant_party_id,roles:[...(r.personal_party_id===r.buyer_party_id?['BUYER']:[]),...(r.personal_party_id===r.merchant_party_id?['MERCHANT']:[])],currency:d.quote.currency,total_minor:money(d.quote.total_minor)};}
+function sourceQuoteId(order,data){
+ // Use the immutable accepted contract, never a mutable current quotation.
+ let snapshot;try{snapshot=verifyUnsignedContent(data.contract);}catch{throw error('STORED_CONTENT_MISMATCH',503);}
+ if(!snapshot.party_ids.includes(order.buyer_party_id)||!snapshot.party_ids.includes(order.merchant_party_id)||digest(snapshot.commitments.quote)!==digest(data.quote))throw error('STORED_CONTENT_MISMATCH',503);
+ const quoteId=snapshot.commitments.quote_id??null,parent=order.parent_id??null;
+ if(quoteId!==parent)throw error('STORED_CONTENT_MISMATCH',503);
+ if(quoteId!==null){try{id(quoteId);}catch{throw error('STORED_CONTENT_MISMATCH',503);}}
+ return quoteId;
+}
+function orderItem(r){const d=checked(r);return {id:r.id,source_quote_id:sourceQuoteId(r,d),created_at:instant(r.created_at),cancel_reason:optionalText(d.cancel_reason,2000),current_status:r.current_status,object_version:r.object_version,buyer_party_id:r.buyer_party_id,merchant_party_id:r.merchant_party_id,roles:[...(r.personal_party_id===r.buyer_party_id?['BUYER']:[]),...(r.personal_party_id===r.merchant_party_id?['MERCHANT']:[])],currency:d.quote.currency,total_minor:money(d.quote.total_minor)};}
 async function own(tx,account,orderId){
  const row=await one(tx,"SELECT r.*,p.id AS personal_party_id FROM trade_records r JOIN parties p ON p.id IN (r.buyer_party_id,r.merchant_party_id) WHERE r.id=? AND r.kind='ORDER' AND p.kind='PERSON' AND p.personal_account_id=? FOR SHARE",[id(orderId),account]);
- if(!row)throw error('PRIVACY_TARGET_NOT_FOUND',404);checked(row);return row;
+ if(!row)throw error('PRIVACY_TARGET_NOT_FOUND',404);sourceQuoteId(row,checked(row));return row;
 }
 function paymentItem(r){const d=checked(r);return {id:r.id,order_id:r.order_id,parent_id:r.parent_id,kind:r.kind,current_status:r.current_status,object_version:r.object_version,provider:d.provider,environment:d.environment,currency:d.currency,amount_minor:money(d.amount_minor),installment_key:d.installment_key||null,allocations:d.allocations.map(x=>({line_id:x.line_id,amount_minor:money(x.amount_minor)})),reason:r.kind==='REFUND'?d.reason:null,expires_at:paymentExpiry(r,d),created_at:instant(r.created_at)};}
 function contractItem(order){
