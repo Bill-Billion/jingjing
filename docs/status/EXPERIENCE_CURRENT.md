@@ -23,3 +23,5 @@
 提交/上传/远端检查以报告“交付回执”为准；不得用前批成功代替本批。下一步先完成本候选检查和独立审阅，仍限W01—W09，不开展W10以后。用户暂不需重复转发原三包、补未到使用节点的资料或提供密钥。未启用真实服务/公网，未动人工3490或离线APK；总览驾驶舱按用户发起再更新。
 
 [任务记录](../tasks/records/CORE-pm01-w01-w09-closure-20261111.md) · [当前接法](../collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md) · [全部剩余安排](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md) · [本批之前历史](../archive/pm01-w01-w09-before-20261111/CORE_CURRENT.md)
+
+本批代码及本地证据提交 `0c17482017a36eba8e87064e5b1e9bb58d90df39`；集中交付与准确远端检查待核，PR39仍草稿、无另一方实际review、未合入。

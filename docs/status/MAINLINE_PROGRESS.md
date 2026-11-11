@@ -24,6 +24,8 @@
 
 [任务记录](../tasks/records/CORE-pm01-w01-w09-closure-20261111.md) · [当前接法](../collaboration/client-complete-20261028/FRONTEND_UI_AND_INTEGRATION_PLAN_20261109.md) · [全部剩余安排](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md) · [本批之前历史](../archive/pm01-w01-w09-before-20261111/CORE_CURRENT.md)
 
+本批源码与本地证据提交 `0c17482017a36eba8e87064e5b1e9bb58d90df39`；集中交付检查另核，未合入。
+
 ---
 
 ## 以下为本批之前的主线历史
