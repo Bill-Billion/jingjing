@@ -24,6 +24,8 @@
 
 [本批任务](../tasks/records/CORE-pm01-start-notices-20261111.md) · [普通通告前端接法](../collaboration/client-complete-20261028/PM01_NOTICE_HANDOFF_20261111.md) · [后续完整计划](../collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md)
 
+本批实现及自验提交 1be8a8894ecbd9c00507ac6efa7e9b4cf637f870 已本地保存；受测源码摘要与该提交一致。阶段交付将集中到原PR39，本批远端检查待上传后核对。未合入integration或启用，不能沿用0515475e的检查代替本批结果。
+
 ---
 
 ## 历史批次（非当前待办）
