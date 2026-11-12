@@ -58,6 +58,18 @@ node scripts/release-tools.cjs legacy-inspect --file <脱敏副本路径> --sour
 
 ## 出问题后按什么顺序处理
 
+2026-11-13新增只读故障观测命令（仅隔离库）：
+
+```text
+node scripts/release-tools.cjs recovery-check --env-file <测试配置> --database <随机隔离库>
+```
+
+无需上线材料清单。即使当前代码与已尝试迁移不一致，也会输出迁移异常、恢复隔离、待处理/阻塞/失败任务和过期执行权的聚合信息；不输出业务正文、任务引用或凭证。命令返回0只表示观测成功，必须另看`attention_required`和`alerts`；`production_release`始终NOT_APPROVED。JOBS_WAITING只是现状提示，不代表超过业务时限；WARNING/BLOCKED需要检查。这是按需本地诊断，不是已接通告警推送或全天候监控。
+
+迁移失败时，后端负责人chengcongcong222先停止相关写入/任务并保存失败现场及失败版本，运行观测；核对变更前备份的版本、内容摘要、文件摘要与密钥，再用已有restore命令恢复到另一个空白隔离库。失败库不删表、不改迁移历史，也不原地覆盖。新库恢复后重新运行recovery-check，逐项核对业务记录、金额、授权和原任务。仍隔离，原请求只能先核查外部最终结果；正式运行与回切必须由维护者及业务/资金/隐私责任人审阅后另行决定。
+
+本机已用实际key-create/backup/restore/recovery-check命令演练合成迁移失败后的数据库恢复，未切换应用发布目录、流量或实际服务；不将这种数据库恢复演练称为生产部署回退完成。[本批证据](../reviews/pm01-rollback-drill-20261112/REPORT.md)。历史deploy_ops/deploy_release.sh与STAGING_RUNBOOK.md面向旧SQLite部署，不作为当前MySQL候选回退指令。
+
 |情况|本侧先做什么|继续运行前必须确认|
 |---|---|---|
 |付款、退款或供应商请求超时|保留原请求编号，暂停重复发起，查询供应商实际结果，保留通知与查询证据|未知结果不写成失败后重新扣款；按既有幂等处理核对到账和账本|
