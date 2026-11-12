@@ -1,11 +1,9 @@
-# 当前施工入口：机构交接、隐私执行、参演变更，仅后端
+# 当前施工入口：发行收入、积分权益与独审权限，仅后端
 
-2026-11-12。用户授权连续推进维护清单，禁止本侧任何前端开发修补。正式树worktrees/client-testing，分支core/full-business-closure-20261028；先核Git与未提交修改，读[后端CURRENT](status/CORE_CURRENT.md)、[前端CURRENT](status/EXPERIENCE_CURRENT.md)、[任务板](tasks/board.json)、[维护计划](sources/pm01-20261111/03_本轮施工任务与验收.md)及[本批报告](reviews/pm01-handover-privacy-project-20261112/REPORT.md)。
+正式树worktrees/client-testing，分支core/full-business-closure-20261028。先核Git/未提交修改，读[后端CURRENT](status/CORE_CURRENT.md)、[前端CURRENT](status/EXPERIENCE_CURRENT.md)、[任务板](tasks/board.json)、[维护计划](sources/pm01-20261111/03_本轮施工任务与验收.md)及[本批报告](reviews/pm01-income-benefits-20261112/REPORT.md)。
 
-前候选d058c287远端三组全通过。本批前三轮W20同单交接71项、W21删除执行/恢复48项、W22参演变更及相邻交易63项通过；业务51eb6651已随候选4edc0d67上传，完整后端1563项通过、0失败、1项旧库对比跳过；同次74份文件5666份响应格式通过，826份源码未变。接口/迁移0.31.57-rc.1/0211不变。原18组0/18、12整链部分、151标准19/76/56，未开发总数尚未核清。
+2026-11-12本批七轮完成六处关联方独审修复及发行/积分同记录复验，固定业务0a4ac160：完整后端1569项通过、0失败、1项旧库结构对比跳过；同次74份文件5745份响应格式通过，826份冻结源码未变。W18误充值退款只查实后端缺口，未开发不记通过。前候选4edc0d67远端全成功，本批上传及远端另记；未审未合入。
 
-chengcongcong222继续后端，Bill-Billion原UI不代认领，维护者阶段末审阅。真实/收费/生产/公网不开，不动3490及离线APK。用户暂不需材料或决定；问题及时反馈，每轮说明阶段、动作、效果、限制、下一步。
+接口0.31.57-rc.1/0211，原18组0/18、12部分、151为19/76/56；未开发数不详。chengcongcong222只做后端，不开发修补任何前端；Bill-Billion原UI不代认领，维护者阶段末审阅。真实/收费/生产/公网不开，不动3490与离线APK。用户暂不需材料；问题及时反馈，每轮说明动作、效果、限制和下一步。
 
-[剩余安排](collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md) · [前批入口](archive/pm01-handover-before-20261112/START_HERE.md)
-
-候选4edc0d67已上传原草稿PR39，说明已同步；工具43147237629成功，服务器43147237655与既有跨端43147237657仍运行，未完成不记通过。此上传后回执本地保存，随下批集中同步；未实审、未合入、未启用。
+[后端接续](reviews/pm01-income-benefits-20261112/NEXT_BACKEND.md) · [剩余安排](collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md) · [前批入口](archive/pm01-income-before-20261112/START_HERE.md)
