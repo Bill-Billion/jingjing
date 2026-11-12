@@ -41,6 +41,8 @@ chengcongcong222已完成同版回归与证据上传，先核远端，再按[接
 
 最终运行backend-acceptance-2026-11-12T07-00-12-899Z-cbdfa0，固定4529c52b。完整同版后端1585项通过、0失败、1项旧库结构对比跳过；同次75份文件5771份HTTP响应格式通过，829份冻结源码未变。唯一跳过是改造前58表结构对比缺配置，不算真实旧库迁移已验。
 
-证据：[后端](FINAL_BACKEND.json)、[接口响应](FINAL_CONTRACT.json)、[同次HTTP摘要](HTTP_MANIFEST.json)、[同次业务摘要](BUSINESS_MANIFEST.json)、[退款检查](REFUND_CHECKS.json)、[原充值部分与余款](RECHARGE_REFUND_JOURNEY.json)、[实际中奖制作券退款](DRAWN_CREDIT_REFUND.json)、[运营下架恢复](MODERATION_RECOVERY.json)。119专项与最终完整检查分开登记，不相加作为功能数量。候选50ee146b已上传原草稿PR39，说明已同步；工具43174328880成功，服务器43174328667与既有跨端43174328678运行，未完成不记通过。上传后回执本地保存，随下批集中同步；未实审、未合入、未启用。
+证据：[后端](FINAL_BACKEND.json)、[接口响应](FINAL_CONTRACT.json)、[同次HTTP摘要](HTTP_MANIFEST.json)、[同次业务摘要](BUSINESS_MANIFEST.json)、[退款检查](REFUND_CHECKS.json)、[原充值部分与余款](RECHARGE_REFUND_JOURNEY.json)、[实际中奖制作券退款](DRAWN_CREDIT_REFUND.json)、[运营下架恢复](MODERATION_RECOVERY.json)。119专项与最终完整检查分开登记，不相加作为功能数量。首候选50ee146b已上传；工具成功，但服务器独立作业131034799806因总验收当前版本未同步失败，数据库业务作业仍运行。已本机修正登记并通过24项拒绝假通过反例及5项后端证据/镜像检查；829份冻结源码未变，修复候选待上传。未实审、未合入、未启用。
 
 [本候选远端回执](CURRENT_REMOTE.json)为上传后实查；当前PR仍草稿、无审阅提交。远端自动检查不代替维护者实审。
+
+远端新增失败与修复：[登记版本回执](RELEASE_REGISTER_FIX.json)。首候选接口升级后遗漏总验收release版本，独立作业拒绝通过；仅修正登记，不改业务源码、历史证据或正式进度。829份源码再次逐项摘要核对未变，本轮1585/5771仍对应同版业务；不重复运行未改变的整套业务以替代针对性的登记检查。原自动运行的端侧测试不由本侧本机复跑。
