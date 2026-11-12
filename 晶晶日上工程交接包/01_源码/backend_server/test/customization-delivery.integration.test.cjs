@@ -153,6 +153,39 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
   bad(await call('POST','/trade/records/'+stale.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Stale case'},stale.object_version,key(),null),'CUSTOMIZATION_CHANGE_SOURCE_INVALID');
  });
 
+ await t.test('prepared manual payment is rechecked at dispatch after pause, then recovers without duplicate dispatch',async()=>{
+  const x=await create(),config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:f.org.party_id,config_revision:'r04'};
+  const payment=await f.trade.preparePayment(buyer.ctx,{party_id:buyer.acting_party_id,order_id:x.order.id,installment_key:'first',operation_key:key()},config);
+  ok(await command(x.project,'cases',buyer,{kind:'RIGHTS_DISPUTE',reason:'Pause before provider dispatch',evidence_asset_ids:[]}));
+  await assert.rejects(()=>f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT'),e=>e.code==='CUSTOMIZATION_PAYMENT_PAUSED');
+  assert.equal(ok(await call('GET','/trade/records/'+payment.id,buyer)).current_status,'CREATED');
+  assert.equal(Number((await db.execute('SELECT COUNT(*) n FROM trade_journal WHERE order_id=?',[x.order.id]))[0][0].n),0);
+  const c=(await flow(x.project)).cases.at(-1);
+  ok(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'Independent rights clarification'}));
+  assert.equal((await f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT')).dispatch,true);
+  assert.equal((await f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT')).dispatch,false);
+ });
+
+ await t.test('prepared amendment cannot dispatch after original case cancellation; trusted late receipts remain accountable',async()=>{
+  const x=await create();await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  ok(await command(x.project,'cases',buyer,{kind:'CREATIVE_CHANGE',reason:'Additional ending awaiting decision',evidence_asset_ids:[]}));
+  const c=(await flow(x.project)).cases.at(-1),change=await f.newOrder({changeSource:{project_id:x.project.id,case_id:c.id,description:'Additional ending'},sourceStory:x.story});
+  const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:f.org.party_id,config_revision:'r04'};
+  const payment=await f.trade.preparePayment(buyer.ctx,{party_id:buyer.acting_party_id,order_id:change.order.id,installment_key:'change',operation_key:key()},config);
+  ok(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'Buyer declines additional cost and cancels original commission'}));
+  await assert.rejects(()=>f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT'),e=>e.code==='CUSTOMIZATION_CHANGE_SOURCE_INVALID');
+  assert.equal(ok(await call('GET','/trade/records/'+payment.id,buyer)).current_status,'CREATED');
+  assert.equal((await flow(x.project)).additional_creative_changes,0);
+  const cancelled=(await flow(x.project)).cases.at(-1);
+  assert.equal(cancelled.change_order_id,change.order.id,'Cancellation must retain the accepted amendment order for reconciliation');
+  const proof={...config,payment_id:payment.id,currency:'CNY',amount_minor:payment.data.amount_minor,transaction_id:'synthetic.late.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null};
+  await f.trade.applyPayment(proof);await f.trade.applyPayment(proof);
+  assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[change.order.id]))[0][0].n),1);
+  assert.equal((await flow(x.project)).state,'REFUND_REQUIRED');
+  assert.equal((await flow(x.project)).additional_creative_changes,0);
+  bad(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'CHANGE_ORDER',retained_minor:null,change_order_id:change.order.id,reason:'Late receipt must not resume cancelled case'}),'CUSTOMIZATION_CASE_NOT_REVIEWABLE');
+ });
+
  await t.test('one new story completes manual quotation and 30/40/30 delivery through the same HTTP order',async()=>{
   const journalCount=async()=>Number((await db.execute('SELECT COUNT(*) n FROM trade_journal'))[0][0].n),journalBefore=await journalCount();
   const answer='Synthetic complete manual request '+key();
