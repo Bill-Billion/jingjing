@@ -247,6 +247,7 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
     if(m.object_version!==input.expected_version)throw error('VERSION_CONFLICT',412);
     if(m.current_status!=='ACTIVE')throw error('MEMBERSHIP_NOT_ACTIVE');
     await tx.execute("UPDATE party_memberships SET current_status='REVOKED',object_version=object_version+1,updated_at=CURRENT_TIMESTAMP(6) WHERE id=?",[m.id]);
+    await require('../engagement/mcn').revokeMemberGrants(tx,{id:a.account_id,request_id:a.request_id},p.id,input.account_id);
     await audit(tx,a,p.id,'MEMBER_REMOVED',m.id,m.object_version+1);
     return {membership_id:m.id,current_status:'REVOKED',object_version:m.object_version+1};
    });

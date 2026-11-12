@@ -142,6 +142,32 @@ test('same commercial order: agency switch, scoped employee, withdrawal and hist
   assert.equal((await call('GET',conversation(),employee2)).status,403);assert.equal((await call('GET','/engagement/mcn/dashboard',employee2)).status,403);
   await webCheck(employee2,'/conversations/messages/'+order.id,'employee-revoked-conversation',{expectedStatus:403});
  });
+ await check('removing and reinviting an employee does not resurrect the old scoped artist grant',async()=>{
+  assert.equal(ok(await call('GET',conversation(),employee)).status,'OPEN');
+  const [members]=await db.execute('SELECT object_version FROM party_memberships WHERE party_id=? AND account_id=?',[mcn.acting_party_id,employee.account_id]);
+  const removal={party_id:mcn.acting_party_id,account_id:employee.account_id,expected_version:members[0].object_version,operation_key:key()};
+  const removed=await S.parties.removeMember(mcn.ctx,removal);assert.equal(removed.current_status,'REVOKED');
+  assert.equal((await call('GET',conversation(),employee)).status,403);
+  const revoked=ok(await call('GET','/engagement/mcn/staff',mcn)).items.find(x=>x.id===grant.id);assert.equal(revoked.current_status,'REVOKED');
+  assert.equal(revoked.object_version,grant.object_version+1);
+  assert.deepEqual(await S.parties.removeMember(mcn.ctx,removal),removed);
+  const [revocations]=await db.execute("SELECT id FROM engagement_audit WHERE record_id=? AND event_code='STAFF_REVOKED'",[grant.id]);assert.equal(revocations.length,1);
+  const invitation=await S.parties.inviteMember(mcn.ctx,{party_id:mcn.acting_party_id,invitee_account_id:employee.account_id,expires_at:'2099-01-01T00:00:00.000Z',operation_key:key()});
+  await S.parties.respondInvitation(employee.ctx,{party_id:mcn.acting_party_id,invitation_id:invitation.invitation_id,expected_version:1,decision:'ACCEPT',operation_key:key()});
+  assert.equal((await call('GET',conversation(),employee)).status,403);
+  assert.equal((await call('GET','/engagement/mcn/dashboard',employee)).status,403);
+  const previous=ok(await call('GET','/engagement/mcn/staff',mcn)).items.find(x=>x.id===grant.id);assert.equal(previous.current_status,'REVOKED');
+  // Simulate a historical grant left active by the prior removal implementation: current membership alone cannot restore it.
+  await db.execute("UPDATE engagement_records SET current_status='ACTIVE' WHERE id=?",[previous.id]);
+  try{assert.equal((await call('GET',conversation(),employee)).status,403);assert.equal((await call('GET','/engagement/mcn/dashboard',employee)).status,403);}
+  finally{await db.execute("UPDATE engagement_records SET current_status='REVOKED' WHERE id=?",[previous.id]);}
+  assert.equal(digest(ok(await call('GET','/trade/records/'+order.id,buyer)).data.contract),originalHash);
+  grant=ok(await call('POST','/engagement/mcn/staff',mcn,{account_id:employee.account_id,person_ids:[person.id],actions:['COMMERCIAL_MESSAGES','READ_INCOME'],valid_until:'2099-01-01T00:00:00.000Z'}));
+  assert.notEqual(grant.id,previous.id);assert.equal(ok(await call('GET',conversation(),employee)).status,'OPEN');
+  assert.deepEqual(await S.parties.removeMember(mcn.ctx,removal),removed);assert.equal(ok(await call('GET',conversation(),employee)).status,'OPEN');
+  assert.equal(ok(await call('GET','/engagement/mcn/staff',mcn)).items.find(x=>x.id===grant.id).current_status,'ACTIVE');
+  assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee)).orders.length,0);
+ });
  await check('artist withdrawal removes old agency live access without erasing contract or old income',async()=>{
   ok(await call('POST','/artists/people/'+person.id+'/records/'+delegation.id+'/withdrawals',seller,{reason:'Synthetic delegation withdrawal'},delegation.object_version));
   assert.equal((await call('GET',conversation(),mcn)).status,403);assert.equal((await call('GET',conversation(),employee)).status,403);
