@@ -2,6 +2,9 @@
 const A=require('../artists/context'),C=require('./context'),P=require('./policy'),{error}=require('../party/policy');
 async function enforce(db,account,path,method){
  if(/^\/(guardians(?:\/|$)|privacy(?:\/|$)|auth(?:\/|$)|support(?:\/|$)|infringement(?:\/|$))/.test(path)||method==='GET'&&/^\/(me|parties)(\/|$)/.test(path))return;
+ // Preserve own historical financial access and cancellation of unsent refunds; repository rechecks ownership.
+ // This never permits recharge, spending, new refund applications, review or dispatch.
+ if(method==='GET'&&/^\/wallet\/recharge-refunds(?:\/[0-9a-f-]{36})?$/.test(path)||method==='POST'&&/^\/wallet\/recharge-refunds\/[0-9a-f-]{36}\/cancellation$/.test(path))return;
  return db.withTransaction(async tx=>{
  const raw=await A.one(tx,"SELECT * FROM guardian_records WHERE kind='LINK' AND child_account_id=? ORDER BY created_at DESC,id DESC LIMIT 1 FOR SHARE",[account.id]);if(!raw)return;
  const r=await C.active(tx,C.checked(raw));

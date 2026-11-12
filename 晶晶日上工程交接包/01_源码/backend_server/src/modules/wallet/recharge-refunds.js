@@ -1,5 +1,5 @@
 'use strict';
-// Internal custody service only. No HTTP route or live provider is enabled by this module.
+// Custody engine. HTTP uses explicit projections; dispatch and receipts remain internal only.
 const {shape,id,label,error}=require('../party/policy');
 const {instant}=require('../trade/policy');
 const {digest}=require('../governance/content');
@@ -27,8 +27,35 @@ function createRechargeRefunds(db,{resolvePrincipal=async()=>null}={}){
     });
    });
   },
-  async read(ctx,i){shape(i,['record_id','party_id','operations']);return run(ctx,async(tx,a)=>{const r=await C.load(tx,i.record_id,KIND,'FOR SHARE');if(i.operations===true)await C.operator(tx,a,ACTION);else{await C.owner(tx,a,i.party_id);if(r.owner_party_id!==i.party_id)throw error('WALLET_NOT_FOUND',404);}return r;});},
+  async read(ctx,i){shape(i,['record_id','party_id','operations']);return run(ctx,async(tx,a)=>{const r=await C.load(tx,i.record_id,KIND,'FOR SHARE');if(i.operations===true)await independent(tx,a,r);else{await C.owner(tx,a,i.party_id);if(r.owner_party_id!==i.party_id)throw error('WALLET_NOT_FOUND',404);}return r;});},
   async readForGuardian(ctx,i){shape(i,['record_id']);return run(ctx,async(tx,a)=>{const r=await locked(tx,id(i.record_id));if(!r.data.guardian_link_id||r.data.guardian_account_id!==a.id)throw error('WALLET_NOT_FOUND',404);await guardian.current(tx,r);return r;});},
+  async list(ctx,i){
+   shape(i,['party_id','guardian','operations','after','limit']);const limit=i.limit??20;P.integer(limit,1,100);if(i.after)id(i.after);
+   return run(ctx,async(tx,a)=>{
+    let filter,args;
+    if(i.operations===true){await C.operator(tx,a,ACTION);filter="1=1";args=[];}
+    else if(i.guardian===true){filter="r.created_by=? AND JSON_UNQUOTE(JSON_EXTRACT(r.data_json,'$.guardian_account_id'))=?";args=[a.id,a.id];}
+    else{await C.owner(tx,a,i.party_id);filter="r.owner_party_id=?";args=[i.party_id];}
+    const q="SELECT r.* FROM wallet_records r WHERE r.kind='RECHARGE_REFUND' AND "+filter;
+    if(i.after&&!(await tx.execute(q+' AND r.id=?',[...args,i.after]))[0].length)throw error('INVALID_CURSOR',400);
+    const rows=(await tx.execute(q+' AND r.id>? ORDER BY r.id LIMIT ?',[...args,i.after||'',limit+1]))[0],items=[];
+    for(const raw of rows.slice(0,limit)){
+     const r=C.checked(raw);
+     try{if(i.operations===true)await independent(tx,a,r);if(i.guardian===true)await guardian.current(tx,r);}
+     catch(e){if(['SELF_REVIEW_FORBIDDEN','GUARDIAN_ACCOUNT_NOT_AVAILABLE','GUARDIAN_VERIFIED_IDENTITY_REQUIRED','GUARDIAN_LINK_NOT_ACTIVE'].includes(e.code))continue;throw e;}
+     items.push(require('./recharge-refund-view').view(r));
+    }
+    return {items,next_cursor:rows.length>limit?rows[limit-1].id:null};
+   });
+  },
+  async evidence(ctx,i){
+   shape(i,['record_id','asset_id']);
+   return run(ctx,async(tx,a)=>{const r=await locked(tx,id(i.record_id));await independent(tx,a,r);
+    if(!r.data.evidence_asset_ids.includes(id(i.asset_id)))throw error('WALLET_NOT_FOUND',404);
+    await A.assets(tx,[i.asset_id],r.data.evidence_owner_party_id||r.owner_party_id,['REVIEW_EVIDENCE']);
+    return A.one(tx,'SELECT * FROM supply_assets WHERE id=?',[i.asset_id]);
+   });
+  },
   async review(ctx,i){
    shape(i,['record_id','expected_version','decision','amount_minor','reason','checks','operation_key']);label(i.reason,2000);P.integer(i.amount_minor);shape(i.checks,['identity_verified','source_verified','refund_basis_verified','relationship_verified']);
    if(!['APPROVE','REJECT'].includes(i.decision)||i.decision==='REJECT'&&i.amount_minor!==0)throw error('INVALID_REVIEW',400);

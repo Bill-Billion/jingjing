@@ -1,5 +1,5 @@
 {
-  "version": "0.31.58-rc.1",
+  "version": "0.31.59-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -633,7 +633,20 @@
     "getPrivacyTransactionCopyForOperations",
     "getPrivacyStoryCopyForOperations",
     "exportPrivacyDataForOperations",
-    "getPrivacyBusinessMessageDraft"
+    "getPrivacyBusinessMessageDraft",
+    "requestRechargeRefund",
+    "requestGuardianRechargeRefund",
+    "listMyRechargeRefunds",
+    "getMyRechargeRefund",
+    "listGuardianRechargeRefunds",
+    "getGuardianRechargeRefund",
+    "listOperatorRechargeRefunds",
+    "getOperatorRechargeRefund",
+    "cancelRechargeRefund",
+    "reviewRechargeRefund",
+    "scheduleRechargeRefund",
+    "retryRechargeRefundTask",
+    "downloadRechargeRefundEvidence"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1434,5 +1447,29 @@
     ],
     "scope": "Scoped redacted projections only, independent review and request-bound bytes; not complete provider export.",
     "production_enabled": false
+  },
+  "recharge_refund_http": {
+    "operations": [
+      "requestRechargeRefund",
+      "requestGuardianRechargeRefund",
+      "listMyRechargeRefunds",
+      "getMyRechargeRefund",
+      "listGuardianRechargeRefunds",
+      "getGuardianRechargeRefund",
+      "listOperatorRechargeRefunds",
+      "getOperatorRechargeRefund",
+      "cancelRechargeRefund",
+      "reviewRechargeRefund",
+      "scheduleRechargeRefund",
+      "retryRechargeRefundTask",
+      "downloadRechargeRefundEvidence"
+    ],
+    "backend_test": "test/recharge-refund-api.integration.test.cjs",
+    "guardian_copy_section": "GUARDIAN_RECHARGE_REFUNDS",
+    "limits": [
+      "No live provider registered",
+      "No public dispatch or trusted receipt endpoint",
+      "No frontend changes; independent maintainer review pending"
+    ]
   }
 }

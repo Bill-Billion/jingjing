@@ -3,6 +3,52 @@
   "cases": [
     {
       "method": "GET",
+      "path": "/api/v1/privacy/requests/146512c9-4ceb-4377-8100-d75e216d8157/account-data",
+      "schema": "PrivacyAccountCopyPageResponse",
+      "value": {
+        "meta": {
+          "request_id": "97be92df-e2a0-4b14-8647-0d267c4f6fe9",
+          "actor": {
+            "account_id": "be7133ca-d94c-4f85-88b6-cb2b39b24489"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "section": "GUARDIAN_RECHARGE_REFUNDS",
+          "items": [
+            {
+              "id": "e6b4213e-030b-4e8b-890d-45fbb4c98049",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "own_role": "GUARDIAN",
+              "detail_access": "AVAILABLE",
+              "data": {
+                "id": "e6b4213e-030b-4e8b-890d-45fbb4c98049",
+                "current_status": "APPROVED",
+                "object_version": 2,
+                "recharge_id": "14fc8414-59a5-418a-ad75-dc7ed8dd1d6e",
+                "requested_minor": 1000,
+                "amount_minor": 1000,
+                "currency": "CNY",
+                "reason": "synthetic guardian original refund",
+                "created_at": "2026-11-12T10:57:28.583Z",
+                "submitted_at": null,
+                "settled_at": null,
+                "applicant_kind": "GUARDIAN",
+                "task_scheduled": false
+              }
+            }
+          ],
+          "next_cursor": null,
+          "coverage": "OWN_ACCOUNT_RECORDS_ONLY",
+          "request_completion": "NOT_CONFIRMED",
+          "original_documents_included": false
+        }
+      },
+      "name": "Guardian recharge refund current-access copy"
+    },
+    {
+      "method": "GET",
       "path": "/api/v1/discovery/matches",
       "schema": "DiscoveryMatchesResponse",
       "value": {
@@ -12147,8 +12193,38 @@
         "refund_minor": 40,
         "license_action": "KEEP"
       }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/recharge-refunds",
+      "schema": "RechargeRefundResponse",
+      "value": {
+        "meta": {
+          "request_id": "2b1a94e1-fead-4b76-a77a-91954cbe0cc5",
+          "actor": {
+            "account_id": "95a692df-fe59-4b4b-904e-fea09d5ad905"
+          },
+          "acting_party": "d3b3148d-bac8-4d98-a731-5ef0cb61b497"
+        },
+        "data": {
+          "id": "4256c6bf-6f86-4fee-8e8d-e651a6a29d13",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "recharge_id": "87b96d56-681a-4e1f-98ef-70130aa57a5f",
+          "requested_minor": 1000,
+          "amount_minor": 0,
+          "currency": "CNY",
+          "reason": "synthetic original recharge request",
+          "created_at": "2026-11-12T10:57:27.904Z",
+          "submitted_at": null,
+          "settled_at": null,
+          "applicant_kind": "SELF",
+          "task_scheduled": false
+        }
+      },
+      "name": "Original recharge refund redacted case"
     }
   ],
-  "contract_version": "0.31.58-rc.1",
-  "version": "0.31.58-rc.1"
+  "contract_version": "0.31.59-rc.1",
+  "version": "0.31.59-rc.1"
 }
