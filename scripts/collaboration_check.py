@@ -81,6 +81,7 @@ def validate():
             errors.append(msg)
 
     def within_repo(path):
+        check('\\' not in path, 'Repository path must use forward slashes: ' + path)
         p = (ROOT / path).resolve()
         check(p.is_relative_to(ROOT), 'Path escapes repository: ' + path)
         return p
