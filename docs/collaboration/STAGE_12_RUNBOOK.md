@@ -48,6 +48,10 @@ node scripts/release-tools.cjs legacy-inspect --file <脱敏副本路径> --sour
 
 恢复成功仍会保留 `recovery_status=QUARANTINED`。正式API和后台程序启动都会拒绝使用它；没有“一键解锁”命令。不能为了启动而删除标记，也不能把返回的MATCHED理解为可以恢复收款。原后台任务、旧会话、外部交易编号仍在库中：先核对外部最终结果、重置必要凭据、处理会话和未完成任务，再经独立审阅决定如何放行。
 
+2026-11-12补强：快照逐表比较通过后，在同一恢复事务内作废RUNNING任务的旧执行资格，将其改为RETRY并清除租约，返回`invalidated_job_leases`数量；原任务/业务编号、渠道任务号、尝试次数、次数上限和原定执行时间保持。MATCHED不是所有运行字段原封不动的声明，需同时记录这些恢复保护。新执行者后续沿既有原请求查询，不能把恢复当成重新发送或重置次数。作废步骤失败时恢复业务行整体回滚，隔离标记保留；任务不会自动启动。具体同案钱账和隐私组合见[本批报告](../reviews/pm01-restore-fencing-20261112/REPORT.md)。
+
+发布前检查的`pending_jobs`同时列出PENDING、RETRY、RUNNING、BLOCKED、FAILED各状态数量，避免遗漏刚恢复后等待重试的任务。此检查仍只读，`production_release`始终NOT_APPROVED，不能将“能看到任务”当成获准执行。
+
 当前是有明确大小上限的应用数据备份：总内容64MiB、单表10万行，只支持本项目同版MySQL/InnoDB结构；不覆盖大规模物理备份、binlog时间点恢复、数据库账号/授权、主机配置、触发器或外部私有文件。正式规模超出时须另做受控备份方案并验收，不能静默截断。文件mode=0600不代表Windows访问控制已经设置，实际保管人须限制Windows目录/文件权限。加密无法弥补同目录同时泄露备份与密钥。
 
 备份使用只读一致性快照，并与仓库迁移共用锁；所有建表改表须走该迁移流程，维护期间禁止管理员绕过锁执行DDL。[MySQL一致性读取说明](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)说明了快照与DDL的限制。
