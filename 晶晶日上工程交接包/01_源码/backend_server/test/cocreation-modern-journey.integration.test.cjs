@@ -172,6 +172,23 @@ test('private invitations reach twenty-person production under new contract with
    await bad(call('POST','/cocreation/rooms/'+r.id+'/cases',buyer,{kind:'EXTEND',reason:'Synthetic rejected revival',new_deadline:new Date(Date.parse(r.deadline)+600000).toISOString()},done.object_version),'COCREATION_CANCELLED');
    return {room_id:r.id,order_id:x.order.id,case_id:c.id,refund_id:refund.id,financial:actual.data.financial};
   });
+  await check('unformed room cannot mark refund complete while original payment requires review',async()=>{
+   const x=await smallRoom(9),r=x.room;
+   const c=await call('POST','/cocreation/rooms/'+r.id+'/cases',buyer,{kind:'CANCEL',reason:'Synthetic unformed refund reconciliation',new_deadline:null},r.object_version);
+   await call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Independent cancellation'},c.object_version);
+   const refund=await reviewTrade(await call('POST','/trade/refunds',buyer,{payment_id:x.payment.id,allocations:[{line_id:'film',amount_minor:3000}],reason:'Unformed full refund'}));
+   await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+   await f.trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'});
+   const payment=await f.trade.read(buyer.ctx,{record_id:x.payment.id,party_id:buyer.acting_party_id});
+   await f.trade.applyPayment({...payment.data.proof,status:'REVIEW_REQUIRED'});
+   const order=await call('GET','/trade/records/'+x.order.id,buyer);
+   assert.equal(order.current_status,'PAYMENT_REVIEW_REQUIRED');
+   const before=await call('GET','/cocreation/rooms/'+r.id,buyer);
+   await bad(call('POST','/cocreation/rooms/'+r.id+'/sync',buyer,{},before.object_version),'COCREATION_REFUND_REVIEW_REQUIRED');
+   const after=await call('GET','/cocreation/rooms/'+r.id,buyer);
+   assert.equal(after.current_status,'REFUND_REQUIRED');assert.equal(after.object_version,before.object_version);
+   return {room_id:r.id,order_id:x.order.id,case_id:c.id,refund_id:refund.id,order_status:order.current_status,room_status:after.current_status};
+  });
  }catch(e){failed=true;throw e;}
  finally{
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();if(created)await control.query('DROP DATABASE '+mysql.escapeId(database));await control.end();

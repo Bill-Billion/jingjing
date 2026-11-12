@@ -175,8 +175,17 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    const finalRoute='/production/versions/'+versions.FINAL+'/content?variant=final';assert.deepEqual((await call('GET',finalRoute)).bytes,finalBytes);
    bad(await call('GET',finalRoute,buyer2),'PRODUCTION_NOT_FOUND');if(web)await web.download(versions.FINAL,finalBytes);
    Object.assign(records,{project_id:project.id,versions,platform_bps:2200});
-   if(web){
-    await web.withdraw(submission,published);
+   {
+    if(web)await web.withdraw(submission,published);
+    else {
+     submission=ok(await read(submission,seller));
+     const withdrawKey=headers(submission);
+     const withdrawBody={reason:'Synthetic artist withdraws notice contact, retaining paid contract'};
+     const withdrawn=ok(await call('POST','/notices/records/'+submission.id+'/close',seller,withdrawBody,seller.personal_party_id,withdrawKey));
+     assert.deepEqual(ok(await call('POST','/notices/records/'+submission.id+'/close',seller,withdrawBody,seller.personal_party_id,withdrawKey)),withdrawn);
+     published=ok(await read(published,buyer));
+     published=ok(await call('POST','/notices/records/'+published.id+'/close',buyer,{reason:'Synthetic publisher withdraws new applications'},buyer.personal_party_id,headers(published)));
+    }
     assert.equal(ok(await call('GET','/trade/records/'+order.id)).current_status,'PAID');
     assert.equal(ok(await call('GET',route)).items.filter(x=>x.id===message.id).length,1);
     assert.equal((await call('GET',finalRoute)).status,200);
@@ -198,8 +207,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
   });
   await t.test('closing ordinary notice blocks new submissions while historical quote remains unchanged',async()=>{
    const before=await trade.read(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id});
-   if(web)assert.equal(ok(await call('GET','/notices/records/'+published.id)).current_status,'WITHDRAWN');
-   else ok(await call('POST','/notices/records/'+published.id+'/close',buyer,{reason:'synthetic closure'},buyer.personal_party_id,headers(published)));
+   assert.equal(ok(await call('GET','/notices/records/'+published.id)).current_status,'WITHDRAWN');
    bad(await call('GET','/notices/catalog/'+published.id,seller,undefined,null),'NOTICE_NOT_OPEN');
    bad(await call('POST','/notices/submissions',seller,{rule_id:rule.id,submission:{...S.submission,notice_id:published.id}},seller.personal_party_id,headers()),'NOTICE_NOT_OPEN');
    const stored=await trade.read(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id});
