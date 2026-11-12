@@ -1,0 +1,7 @@
+# 前候选路径检查失败与修复
+
+6ced13f0服务器作业43162042956在collaboration_check失败，业务检查未开始。三条原错误分别是docs\\reviews\\pm01-refund-assessment-20261112\\REPORT.md、EXECUTION_BOUNDARY.md、FOCUSED.json，Linux按反斜杠作为文件名查找失败；Windows本机存在性检查未发现该跨平台问题。
+
+a7248590统一任务证据和active_batch为正斜杠，并在仓库路径校验中明确拒绝反斜杠。本机注入反斜杠证据的负例得到预期失败，正常台账校验通过。随后同候选服务器43170196187、工具43170196259、既有跨端43170196191均成功。
+
+这是上传检查修复，没有前端开发修补，也不是业务代码失败或依赖源不可达。旧失败和修复回执分别见PRIOR_REMOTE_FINAL.json、PATH_FIX_REMOTE.json；原上传时排队回执保留于PRIOR_REMOTE_AT_UPLOAD.json。当前充值退款业务4529c52b尚须独立验证/上传，不能借用这次成功。
