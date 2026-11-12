@@ -51,6 +51,7 @@ function methods({db,actor}){return {
  async reviewDelivery(ctx,i){
   shape(i,['record_id','expected_version','decision','reason','operation_key']);label(i.reason,2000);if(!['APPROVE','REJECT'].includes(i.decision))throw error('INVALID_REVIEW',400);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx),hint=await C.load(tx,i.record_id,'SCHEDULE',''),r=await C.load(tx,hint.parent_id,'GRANT'),s=await C.load(tx,hint.id,'SCHEDULE');await C.operator(tx,a,'REDEMPTION_REVIEW',s);
+   await C.operator(tx,a,'REDEMPTION_REVIEW',await C.load(tx,r.parent_id,'STOCK','FOR SHARE'));
    return C.command(tx,a,'SCHEDULE_REVIEW',i,async()=>{A.match(s,i.expected_version);if(s.current_status!=='IN_REVIEW'||r.current_status!=='BOUND')throw error('REVIEW_NOT_PENDING',409);
     if(i.decision==='APPROVE'){
      if(s.data.starts_at<await A.now(tx)||s.data.ends_at>r.data.expires_at)throw error('REWARD_SCHEDULE_INVALID',409);
@@ -71,6 +72,7 @@ function methods({db,actor}){return {
   shape(i,['record_id','expected_version','outcome','evidence_asset_id','reason','operation_key']);label(i.reason,2000);
   if(!['INTERVIEWED','NOT_SELECTED','EXPOSURE_COMPLETED'].includes(i.outcome))throw error('INVALID_REWARD_OUTCOME',400);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await C.load(tx,i.record_id,'GRANT');await C.operator(tx,a,'REDEMPTION_REVIEW',r);
+   await C.operator(tx,a,'REDEMPTION_REVIEW',await C.load(tx,r.parent_id,'STOCK','FOR SHARE'));
    return C.command(tx,a,'FINISH',i,async()=>{A.match(r,i.expected_version);
     if(r.current_status!=='CONFIRMED'||r.data.delivery.ends_at>await A.now(tx))throw error('REWARD_DELIVERY_NOT_DUE',409);
     if((r.data.template.kind==='EXPOSURE')!==(i.outcome==='EXPOSURE_COMPLETED'))throw error('INVALID_REWARD_OUTCOME',400);
@@ -91,8 +93,9 @@ function methods({db,actor}){return {
   shape(i,['record_id','expected_version','decision','reason','evidence_asset_id','operation_key']);label(i.reason,2000);
   if(!['REJECT','EXTEND_ONCE','RETURN_POINTS'].includes(i.decision))throw error('INVALID_REVIEW',400);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx),hint=await C.load(tx,i.record_id,'REMEDY',''),r=await C.load(tx,hint.parent_id,'GRANT'),c=await C.load(tx,hint.id,'REMEDY');await C.operator(tx,a,'REDEMPTION_REVIEW',c);
+   const stock=await C.load(tx,r.parent_id,'STOCK','FOR SHARE');await C.operator(tx,a,'REDEMPTION_REVIEW',stock);
    return C.command(tx,a,'REMEDY_REVIEW',i,async()=>{A.match(c,i.expected_version);if(c.current_status!=='IN_REVIEW'||r.current_status!=='REMEDY_PENDING')throw error('REVIEW_NOT_PENDING',409);
-    const stock=await C.load(tx,r.parent_id,'STOCK','FOR SHARE');await A.assets(tx,[id(i.evidence_asset_id)],stock.owner_party_id,['REVIEW_EVIDENCE']);
+    await A.assets(tx,[id(i.evidence_asset_id)],stock.owner_party_id,['REVIEW_EVIDENCE']);
     let status=c.data.previous_status,data=r.data;
     if(i.decision==='EXTEND_ONCE'){
      if(r.data.template.kind!=='INTERVIEW'||r.data.extension_used)throw error('REWARD_EXTENSION_NOT_AVAILABLE',409);

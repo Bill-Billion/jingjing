@@ -82,6 +82,33 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
    await assert.rejects(draw(p,1),{code:'LOTTERY_PARTICIPATION_LIMIT'});
    const grants=(await db.execute("SELECT id FROM redemption_records WHERE kind='GRANT' AND owner_party_id=?",[buyer.personal_party_id]))[0];for(const result of d.data.results)assert(grants.some(g=>g.id===result.grant_id));
   });
+  await t.test('same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake',async()=>{
+   const buyer=await S.registerActor('synthetic prize remedy');await S.actorCast(buyer);await W.open(buyer.ctx,{party_id:buyer.personal_party_id,rule_id:wr.id,rule_sha256:wr.content_sha256,operation_key:key()});
+   const template={version:'synthetic-expired-prize',source_ref:'synthetic-only',title:'synthetic interview with explicit fallback',kind:'INTERVIEW',valid_days:90,exchange_points:null,capacity:20,available_until:'2099-01-01T00:00:00.000Z',terms:'synthetic no-slot fallback 600, not a published commercial promise',production:null,interview:{channel:'OPEN',project_ref:'synthetic-project',batch_ref:'synthetic-batch',min_halo:1,purpose:'PRIVATE',territory:'CN',extension_days:30,fallback_points:600},exposure:null};
+   let stock=await request('/redemption/stock',producer,{body:{template,evidence_asset_ids:[evidence.id]}});stock=await request('/redemption/stock/'+stock.id+'/review',reviewer,{party:false,version:stock.object_version,body:{decision:'APPROVE',reason:'synthetic stock'}});
+   let p=await request('/redemption/pools',producer,{body:{config:config([{key:'exposure',kind:'INTERVIEW_OPEN',weight:10000,estimated_cost_minor:100}]),bindings:[{key:'exposure',stock_id:stock.id,point_back:0}],starts_at:'2020-01-01T00:00:00.000Z',ends_at:'2099-01-01T00:00:00.000Z',terms:'synthetic guaranteed interview for recovery test',cost_limit_single_minor:100,cost_limit_ten_minor:1000,evidence_asset_ids:[evidence.id]}});
+   p=await review(p,reviewer,'RULES');p=await review(p,outsider,'FINANCE');p=await ageNotice(p);
+   const drawKey=key(),risk=require('../src/modules/wallet/risk').createConsumerRisk(db,{resolvePrincipal:S.resolvePrincipal}),target={kind:'LOTTERY',pool_id:p.id,count:1,request_key:drawKey};
+   const riskPreview=await risk.preview(buyer.ctx,{party_id:buyer.personal_party_id,target});await risk.confirm(buyer.ctx,{party_id:buyer.personal_party_id,target,preview_sha256:riskPreview.preview_sha256,read_confirmed:true,operation_key:key()});
+   const d=await draw(p,1,drawKey,buyer),snapshot=structuredClone(d.data),grantId=d.data.results[0].grant_id;
+   const originalGrant=await request('/redemption/grants/'+grantId,buyer);
+   await request('/redemption/pools/'+p.id+'/retirement',reviewer,{party:false,version:p.object_version,body:{reason:'synthetic no more slots'}});
+   const A=require('../src/modules/artists/context'),previous=A.now;A.now=async()=>new Date(Date.now()+91*86400000).toISOString();
+   try{
+    assert.equal((await request('/redemption/grants/'+grantId,buyer)).effective_status,'EXPIRED');
+    const open=async(g,operation=key())=>request('/redemption/grants/'+g.id+'/remedies',buyer,{operation,version:g.object_version,body:{reason:'synthetic expired, no slot supplied'}});
+    const reviewRemedy=(r,decision,operation=key(),who=reviewer)=>request('/redemption/remedies/'+r.id+'/review',who,{operation,party:false,version:r.object_version,body:{decision,reason:'synthetic independent remedy',evidence_asset_id:evidence.id}});
+    const first=await open(originalGrant);await assert.rejects(reviewRemedy(first,'RETURN_POINTS',key(),producer),{code:'SELF_REVIEW_FORBIDDEN'});
+    await reviewRemedy(first,'REJECT');let restored=await request('/redemption/grants/'+grantId,buyer);assert.equal(restored.current_status,'AVAILABLE');assert.equal(restored.effective_status,'EXPIRED');assert.equal(restored.data.expires_at,originalGrant.data.expires_at);
+    const remedyKey=key(),remedy=await open(restored,remedyKey);assert.equal((await open(restored,remedyKey)).id,remedy.id);
+    const before=await request('/wallet/summary',buyer),reviewKey=key();await reviewRemedy(remedy,'RETURN_POINTS',reviewKey);await reviewRemedy(remedy,'RETURN_POINTS',reviewKey);
+    const after=await request('/wallet/summary',buyer);assert.equal(after.available_points-before.available_points,600);assert.equal(after.qualifying_growth,before.qualifying_growth);
+    const granted=await request('/redemption/grants/'+grantId,buyer);assert.equal(granted.current_status,'POINTS_RETURNED');await assert.rejects(open(granted),{code:'REWARD_REMEDY_NOT_AVAILABLE'});
+    assert.deepEqual(await draw(p,1,drawKey,buyer),d);await assert.rejects(draw(p,1,key(),buyer),{code:'LOTTERY_NOT_OPEN'});assert.deepEqual((await request('/redemption/draws/'+d.id,buyer)).data,snapshot);
+    const WC=require('../src/modules/wallet/context'),stake=await db.withTransaction(tx=>WC.load(tx,d.data.hold_id,'POINT_HOLD'));assert.equal(stake.current_status,'SPENT');assert.equal(stake.data.points,300);
+    await fs.writeFile(path.resolve(__dirname,'../../../../.local/pm01-lottery-remedy.json'),JSON.stringify({synthetic_only:true,pool_id:p.id,draw_id:d.id,grant_id:grantId,remedy_id:remedy.id,stake_points:300,fallback_points:600,grant_status:granted.current_status,original_draw_unchanged:true,duplicate_reward:false,limits:['synthetic guaranteed pool and fallback amounts','isolated expiry clock','no actual exposure delivery or frontend']},null,2));
+   }finally{A.now=previous;}
+  });
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/redemption-lottery-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

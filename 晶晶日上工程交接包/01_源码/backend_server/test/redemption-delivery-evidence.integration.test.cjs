@@ -38,6 +38,8 @@ test('supplier evidence is explicitly linked to one grant and only an independen
   await t.test('completion requires this grant completion evidence; original schedule and finish replay remain stable',async()=>{
    const scheduleBody={starts_at:starts,ends_at:ends,reference:'synthetic correct same-grant schedule',evidence_asset_id:proof.id},scheduleKey=key();
    const proposed=await call(outsider,'/grants/'+separate.id+'/deliveries',{method:'POST',version:separate.object_version,body:scheduleBody,op:scheduleKey});assert.equal(proposed.status,200);const schedule=proposed.data.data;
+   const supplierReview=await call(seller,'/deliveries/'+schedule.id+'/review',{method:'POST',version:schedule.object_version,body:{decision:'APPROVE',reason:'must not independently approve own supplied prize'}});
+   assert.equal(supplierReview.status,403);assert.equal(supplierReview.data.error.code,'SELF_REVIEW_FORBIDDEN');
    assert.equal((await call(reviewer,'/deliveries/'+schedule.id+'/review',{method:'POST',version:schedule.object_version,body:{decision:'APPROVE',reason:'independent synthetic review'}})).status,200);
    let actual=(await call(buyer,'/grants/'+separate.id,{party:buyer.personal_party_id})).data.data;
    const accepted=await call(buyer,'/grants/'+separate.id+'/confirmation',{method:'POST',party:buyer.personal_party_id,version:actual.object_version,body:{accepted:true}});assert.equal(accepted.status,200);actual=accepted.data.data;
@@ -48,6 +50,9 @@ test('supplier evidence is explicitly linked to one grant and only an independen
     const refused=await call(outsider,'/grants/'+separate.id+'/finish',{method:'POST',version:actual.object_version,body:finishBody,op:finishKey});
     console.log('cross-purpose completion HTTP '+refused.status+' '+(refused.data.error?.code||refused.data.data?.current_status));assert.equal(refused.status,409);assert.equal(refused.data.error.code,'REWARD_EVIDENCE_NOT_FOUND');assert.equal((await call(buyer,'/grants/'+separate.id,{party:buyer.personal_party_id})).data.data.current_status,'CONFIRMED');
     const submit={method:'POST',party:seller.personal_party_id,version:actual.object_version,body:{asset_id:proof.id,purpose:'COMPLETION'},op:key()};const completionEvidence=await call(seller,'/grants/'+separate.id+'/evidence-submissions',submit);assert.equal(completionEvidence.status,200);
+    const supplierFinish=await call(seller,'/grants/'+separate.id+'/finish',{method:'POST',version:actual.object_version,body:finishBody});
+    assert.equal(supplierFinish.status,403);assert.equal(supplierFinish.data.error.code,'SELF_REVIEW_FORBIDDEN');
+    assert.equal((await call(buyer,'/grants/'+separate.id,{party:buyer.personal_party_id})).data.data.current_status,'CONFIRMED');
     const completed=await call(outsider,'/grants/'+separate.id+'/finish',{method:'POST',version:actual.object_version,body:finishBody,op:finishKey});assert.equal(completed.status,200);assert.equal(completed.data.data.current_status,'FULFILLED');
     assert.equal((await call(outsider,'/grants/'+separate.id+'/finish',{method:'POST',version:actual.object_version,body:finishBody,op:finishKey})).data.data.object_version,completed.data.data.object_version);
     assert.equal((await call(seller,'/grants/'+separate.id+'/evidence-submissions',submit)).data.data.id,completionEvidence.data.data.id);

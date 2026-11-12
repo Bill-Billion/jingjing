@@ -215,20 +215,45 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   assert.equal((await db.withTransaction(tx=>daily.facts(tx,{...scope,merchant_id:'wrong-account'}))).items.length,0);
   assert.equal((await db.withTransaction(tx=>daily.facts(tx,{...scope,environment:'PRODUCTION'}))).items.length,0);
  });
- let revenue,statement;
+ let revenue,statement,pendingRevenueReceipt,oldRevenueSettlement;
  await t.test('external release statement is accrued revenue, not cash received or automatic payout',async()=>{
   const rr={...rules,release_condition:'RECEIVED',lines:[{line_id:'revenue',shares:[{party_id:buyer.personal_party_id,bps:6000,role:'PRODUCER'},{party_id:producer.personal_party_id,bps:4000,role:'RIGHTSHOLDER'}],deductions:[]}]};
   revenue=await approveAll(ft(await fc('POST','/agreements',buyer,{...agreementInput,source_type:'RELEASE',source_id:release.id,rules:rr,evidence_asset_id:buyerProof.id})),[buyer,producer]);
   statement=ft(await fp('/agreements/'+revenue.id+'/statements',revenue,{external_reference:'synthetic.channel.bill',period_start:'2020-01-01T00:00:00.000Z',period_end:'2020-02-01T00:00:00.000Z',gross_minor:100000,refund_minor:10000,channel_fee_minor:5000,tax_minor:5000,direction:'CREDIT',original_statement_id:null,evidence_asset_id:buyerProof.id,note:'synthetic statement'},buyer));statement=ft(await freview(statement));
   await settle(revenue,[buyer,producer],buyer);const b=await balances(revenue,buyer);assert.equal(b.receivable_minor,80000);assert.equal(b.received_minor,0);assert.equal(b.items.find(x=>x.party_id===producer.personal_party_id).accrued_minor,32000);assert.equal(b.items.find(x=>x.party_id===producer.personal_party_id).available_minor,0);
  });
+ await t.test('same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation',async()=>{
+  const before=await balances(revenue,buyer),agreementHash=revenue.content_sha256;
+  oldRevenueSettlement=ft(await freview(ft(await fp('/agreements/'+revenue.id+'/settlements',revenue,{period_reference:'before-receipt',note:'same release before verified cash'},buyer))));
+  const receiptKey=key(),input={amount_minor:30000,external_reference:'synthetic.channel.receipt',occurred_at:'2020-02-02T00:00:00.000Z',evidence_asset_id:buyerProof.id,note:'synthetic cash receipt'};
+  pendingRevenueReceipt=ft(await fp('/statements/'+statement.id+'/receipts',statement,input,buyer,buyer.personal_party_id,{'Idempotency-Key':receiptKey}));
+  assert.equal(ft(await fp('/statements/'+statement.id+'/receipts',statement,input,buyer,buyer.personal_party_id,{'Idempotency-Key':receiptKey})).id,pendingRevenueReceipt.id);
+  assert.equal((await balances(revenue,buyer)).received_minor,before.received_minor);
+  assert.equal((await freview(pendingRevenueReceipt,'APPROVED',buyer)).status,403);
+  assert.equal((await fp('/agreements/'+revenue.id+'/payouts',revenue,{recipient_party_id:producer.personal_party_id,amount_minor:1,destination_asset_id:proof.id,note:'must await cash'},producer)).body.error.code,'REVENUE_NOT_RECEIVED');
+  const reviewKey=key(),reviewBody={decision:'APPROVED',reason:'synthetic independently verified cash',verification:{parties_verified:true,contract_verified:true,amount_verified:true,evidence_verified:true}};
+  const reviewed=ft(await fp('/records/'+pendingRevenueReceipt.id+'/reviews',pendingRevenueReceipt,reviewBody,reviewer,null,{'Idempotency-Key':reviewKey}));
+  assert.equal(ft(await fp('/records/'+pendingRevenueReceipt.id+'/reviews',pendingRevenueReceipt,reviewBody,reviewer,null,{'Idempotency-Key':reviewKey})).id,reviewed.id);
+  assert.equal((await balances(revenue,buyer)).received_minor,30000);
+  assert.equal((await fconfirm(oldRevenueSettlement,buyer)).body.error.code,'SETTLEMENT_SOURCE_CHANGED');
+  assert.equal((await fr(revenue,buyer)).content_sha256,agreementHash);
+ });
  await t.test('partial receipts, duplicate bank references and statement corrections never rewrite history',async()=>{
   const input={amount_minor:30000,external_reference:'synthetic.channel.receipt',occurred_at:'2020-02-02T00:00:00.000Z',evidence_asset_id:buyerProof.id,note:'synthetic cash receipt'};
-  ft(await freview(ft(await fp('/statements/'+statement.id+'/receipts',statement,input,buyer))));assert.equal((await balances(revenue,buyer)).receivable_minor,50000);
+  assert.equal((await balances(revenue,buyer)).receivable_minor,50000);
   const dup=ft(await fp('/statements/'+statement.id+'/receipts',statement,input,buyer));assert.equal((await freview(dup)).body.error.code,'EXTERNAL_REFERENCE_ALREADY_USED');
   ft(await freview(ft(await fp('/statements/'+statement.id+'/receipts',statement,{...input,amount_minor:50000,external_reference:key()},buyer))));await settle(revenue,[buyer,producer],buyer);assert.equal((await balances(revenue,buyer)).items.find(x=>x.party_id===producer.personal_party_id).available_minor,32000);
+  const pendingPayout=ft(await fp('/agreements/'+revenue.id+'/payouts',revenue,{recipient_party_id:producer.personal_party_id,amount_minor:32000,destination_asset_id:proof.id,note:'same-release pending payout before correction'},producer));
+  const originalStatement=JSON.stringify((await fr(statement,buyer)).data);
   const correction={...statement.data};delete correction.review;delete correction.net_minor;delete correction.environment;correction.direction='DEBIT';correction.original_statement_id=statement.id;correction.gross_minor=10000;correction.refund_minor=0;correction.channel_fee_minor=0;correction.tax_minor=0;correction.external_reference=key();
-  ft(await freview(ft(await fp('/agreements/'+revenue.id+'/statements',revenue,correction,buyer))));await settle(revenue,[buyer,producer],buyer);const b=await balances(revenue,buyer);assert.equal(b.received_minor,80000);assert.equal(b.receivable_minor,-10000);assert.equal(b.items.find(x=>x.party_id===producer.personal_party_id).accrued_minor,28000);assert.equal((await fr(statement,buyer)).data.net_minor,80000);
+  const corrected=ft(await freview(ft(await fp('/agreements/'+revenue.id+'/statements',revenue,correction,buyer))));
+  assert.equal((await freview(pendingPayout)).body.error.code,'CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED');
+  assert.equal((await fr(pendingPayout,producer)).current_status,'REQUESTED');
+  await settle(revenue,[buyer,producer],buyer);
+  assert.equal((await freview(pendingPayout)).body.error.code,'PAYOUT_EXCEEDS_AVAILABLE');
+  ft(await fp('/payouts/'+pendingPayout.id+'/cancellation',pendingPayout,{reason:'corrected entitlement is smaller'},producer));
+  assert.equal(JSON.stringify((await fr(statement,buyer)).data),originalStatement);
+  assert.equal(corrected.data.original_statement_id,statement.id);const b=await balances(revenue,buyer);assert.equal(b.received_minor,80000);assert.equal(b.receivable_minor,-10000);assert.equal(b.items.find(x=>x.party_id===producer.personal_party_id).accrued_minor,28000);assert.equal((await fr(statement,buyer)).data.net_minor,80000);
  });
  await t.test('record permissions, private proof integrity, stale membership and disabled automatic payout',async()=>{
   assert.equal((await fc('GET','/records/'+payout.id,buyer)).status,404);assert.equal((await fc('GET','/records/'+g.id+'/evidence/'+proof.id,outsider)).status,403);
