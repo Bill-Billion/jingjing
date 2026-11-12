@@ -96,6 +96,33 @@ test('audition booking, delivery, privacy and refunds in isolated MySQL',{skip:!
   assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[x.o.id]))[0].length,1);
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/pm01-audition-aftercare-records.json'),JSON.stringify({synthetic_only:true,database:name,surface:'API',booking_id:r.id,order_id:x.o.id,payment_id:x.p.payment.id,refund_id:refund.id,actors:{buyer:buyer.account_id,artist:seller.account_id,independent_reviewer:reviewer.account_id},financial:final.data.financial,conversation_status:r.conversation_status,performance_rights_granted:r.performance_rights_granted,limits:['Synthetic identity, materials and trusted payment/refund receipts','No page, native or live provider acceptance']},null,2));
  });
+ await t.test('partial and full refunds followed by payment review freeze booking and T+1 settlement',async()=>{
+  for(const refundMinor of [4000,10000]){
+  const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'Synthetic partial refund journey'}));
+  r=ok(await post(r,'travel',seller,{action:'DEPART',evidence_asset_ids:[S.arrival.id]}));
+  r=ok(await post(r,'cancel',seller,{reason:'Unsafe changed venue',safety:true,evidence_asset_ids:[S.arrival.id]}));
+  r=ok(await post(r,'resolution',reviewer,{decision:'REFUND',refund_minor:refundMinor,reason:'Independent partial refund decision',evidence_asset_ids:[S.arrival.id]},null));
+  let refund=await trade.read(reviewer.ctx,{record_id:r.data.refund_id,party_id:null});
+  refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'Independent refund',operation_key:key()});
+  await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+  await trade.applyRefund(refund.id,{...S.config,refund_id:refund.id,payment_id:x.p.payment.id,transaction_id:x.p.proof.transaction_id,currency:'CNY',amount_minor:refundMinor,status:'SUCCEEDED'});
+  r=ok(await read(r));const settledStatus=refundMinor===10000?'REFUNDED':'PARTIAL_REFUND_SETTLED';assert.equal(r.current_status,settledStatus);
+  const gate=()=>db.withTransaction(async tx=>require('../src/modules/auditions/context').financeGate(tx,await require('../src/modules/auditions/context').order(tx,x.o.id)));
+  if(refundMinor<10000)await assert.rejects(gate,{code:'AUDITION_SETTLEMENT_NOT_READY'});else await gate();
+  r=await patch(r,{fulfilled_at:'2020-01-01T00:00:00.000Z'});await gate();
+  await trade.applyPayment({...x.p.proof,status:'REVIEW_REQUIRED'});
+  const orderNow=await trade.read(buyer.ctx,{record_id:x.o.id,party_id:buyer.personal_party_id});
+  assert.equal(orderNow.current_status,'PAYMENT_REVIEW_REQUIRED');
+  r=ok(await read(r));assert.equal(r.current_status,'PAYMENT_REVIEW_REQUIRED');
+  await assert.rejects(gate,{code:'AUDITION_SETTLEMENT_NOT_READY'});
+  assert.notEqual(r.conversation_status,'OPEN');
+  // Historical booking snapshots may lag the order: settlement must still fail closed.
+  const staleData={...r.data,status:settledStatus};
+  await db.execute('UPDATE audition_records SET current_status=?,data_json=?,data_sha256=? WHERE id=?',[settledStatus,JSON.stringify(staleData),digest(staleData),r.id]);
+  await assert.rejects(gate,{code:'AUDITION_SETTLEMENT_NOT_READY'});
+  }
+ });
+
  await t.test('before departure cancellation is full refund even for safety reason',async()=>{const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'yes'}));r=ok(await post(r,'cancel',buyer,{reason:'changed plan',safety:true,evidence_asset_ids:[]}));assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal(r.data.refund_minor,10000);});
 
  await t.test('custody channel is captured at checkout without changing old contracts or claiming real payment',async()=>{
