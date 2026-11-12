@@ -39,6 +39,7 @@ async function closureBlockers(tx,account){
   // No universal zero-balance inference from a missing/unrecognized wallet row.
   const money=await require('../wallet/cash').overview(tx,p.id);
   if(money.recorded_balance_minor!==0||await one(tx,"SELECT id FROM wallet_records WHERE owner_party_id=? AND kind IN ('RECHARGE','CASH_SPEND','REFUND') AND current_status NOT IN ('SUCCEEDED','FAILED','CANCELLED','RELEASED','REFUNDED','SPENT') LIMIT 1 FOR SHARE",[p.id]))blocks.push('WALLET_SETTLEMENT_REVIEW_REQUIRED');
+  if(await one(tx,"SELECT id FROM wallet_records WHERE owner_party_id=? AND kind='RECHARGE_REFUND' AND current_status NOT IN ('SUCCEEDED','REJECTED','CANCELLED','CLOSED') LIMIT 1 FOR SHARE",[p.id]))blocks.push('WALLET_SETTLEMENT_REVIEW_REQUIRED');
  }
  return [...new Set(blocks)];
 }

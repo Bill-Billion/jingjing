@@ -34,11 +34,13 @@ function createCustodyLedger(db){return {
    }
   }
   P.integer(r.data.amount_minor,1);P.integer(r.data.refunded_minor);
+  const cash=require('./cash'),refunds=(await C.rows(tx,i.party_id,'RECHARGE_REFUND')).filter(f=>f.parent_id===r.id);
+  amounts.refund_reserved_minor=P.sum(cash.refundReservations(refunds).map(f=>f.data.amount_minor));
   const available=r.data.amount_minor-P.sum([r.data.refunded_minor,...Object.values(amounts)]);
   if(available<0)throw error('WALLET_CASH_INVARIANT',503);
   // Cross-check against the allocator used by actual order payment, not a second spending balance.
-  if(require('./cash').balances([r],spends)[0].available_minor!==available)throw error('WALLET_CASH_INVARIANT',503);
-  const sources={account:{id:account.id,object_version:account.object_version,content_sha256:account.content_sha256},recharge:{id:r.id,object_version:r.object_version,content_sha256:r.content_sha256},spends:related};
+  if(cash.balances([r],spends,refunds)[0].available_minor!==available)throw error('WALLET_CASH_INVARIANT',503);
+  const sources={account:{id:account.id,object_version:account.object_version,content_sha256:account.content_sha256},recharge:{id:r.id,object_version:r.object_version,content_sha256:r.content_sha256},spends:related,refunds:refunds.map(f=>({id:f.id,object_version:f.object_version,content_sha256:f.content_sha256,status:f.current_status}))};
   return {recharge_id:r.id,currency:'CNY',binding:cfg,original_transaction_id:r.data.transaction_id,
    amount_minor:r.data.amount_minor,refunded_minor:r.data.refunded_minor,...amounts,available_for_refund_minor:available,
    observed_at:await A.now(tx),source_sha256:digest(sources),execution_enabled:false,meaning:'ASSESSMENT_ONLY_NOT_REFUND_APPROVAL'};

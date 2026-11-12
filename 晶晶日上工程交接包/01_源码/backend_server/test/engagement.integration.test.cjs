@@ -222,6 +222,26 @@ test('engagement real database journey and permission boundaries',{skip:!process
   assert.deepEqual(restored.result,original.result);assert.deepEqual(restored.candidates,original.candidates);
   assert.deepEqual((await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id})).result,tieOriginal.result);
  });
+ await t.test('operator exclusion hides the same published result; only independent recovery restores original facts',async()=>{
+  const original=await R.competitionResult(buyer.ctx,{record_id:event.id}),tieOriginal=await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id});
+  const frozen=await db.withTransaction(tx=>C.load(tx,event.id,'COMPETITION')),pointsBefore=await W.summary(buyer.ctx,{party_id:buyer.personal_party_id});
+  profile=await write('rankingProfile',seller,{party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:true});
+  profile=await write('moderate',reviewer,{record_id:profile.id,expected_version:profile.object_version,reason:'synthetic operator content exclusion',exclude:true});
+  profile=await write('rankingProfile',seller,{party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:true});
+  assert.equal(profile.current_status,'EXCLUDED');
+  const hidden=await R.competitionResult(buyer.ctx,{record_id:event.id});
+  assert.deepEqual(hidden.candidates,[]);assert.equal(hidden.result,null);assert.equal(JSON.stringify(hidden).includes(seller.person.id),false);
+  const other=await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id});
+  assert.equal(other.result.winner_person_id,buyer2.person.id);assert.equal(JSON.stringify(other).includes(seller.person.id),false);
+  await assert.rejects(write('moderate',seller,{record_id:profile.id,expected_version:profile.object_version,reason:'self recovery forbidden',exclude:false}));
+  assert.equal((await db.withTransaction(tx=>C.load(tx,event.id,'COMPETITION'))).content_sha256,frozen.content_sha256);
+  profile=await write('moderate',reviewer,{record_id:profile.id,expected_version:profile.object_version,reason:'synthetic independent recovery after review',exclude:false});
+  const restored=await R.competitionResult(buyer.ctx,{record_id:event.id});
+  assert.deepEqual(restored.result,original.result);assert.deepEqual(restored.candidates,original.candidates);
+  assert.deepEqual((await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id})).result,tieOriginal.result);
+  const pointsAfter=await W.summary(buyer.ctx,{party_id:buyer.personal_party_id});assert.equal(pointsAfter.available_points,pointsBefore.available_points);assert.equal(pointsAfter.qualifying_growth,pointsBefore.qualifying_growth);
+  await fs.writeFile(path.resolve(__dirname,'../../../..','.local/engagement-moderation-recovery.json'),JSON.stringify({synthetic_only:true,event_id:event.id,tie_event_id:tiePublicEvent.id,profile_id:profile.id,checks:{operator_exclusion_hides:true,owner_edit_does_not_restore:true,independent_recovery_restores_original:true,other_winner_preserved:true,original_event_unchanged:true,points_unchanged:true},limits:'Actual loopback HTTP and isolated MySQL; no frontend or real activity.'},null,2));
+ });
  await t.test('withdrawing public consent immediately removes the selectable profile',async()=>{
   assert.equal((await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id})).items.length,1);
   await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'synthetic public consent withdrawal',operation_key:key()});

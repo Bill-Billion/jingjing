@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.57-rc.1
+  version: 0.31.58-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -71299,6 +71299,106 @@ components:
                             type:
                             - string
                             - 'null'
+                            format: date-time
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: RECHARGE_REFUND
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          recharge_id:
+                            type: string
+                            format: uuid
+                          requested_minor:
+                            type: integer
+                            minimum: 1
+                          amount_minor:
+                            type: integer
+                            minimum: 0
+                          currency:
+                            const: CNY
+                          reason:
+                            type: string
+                          created_at:
+                            type: string
+                            format: date-time
+                          submitted_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                          settled_at:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                        required: []
+                      environment:
+                        enum:
+                        - null
+                        - SANDBOX
+                        - PRODUCTION
+                    required:
+                    - id
+                    - kind
+                    - current_status
+                    - object_version
+                    - data
+                    - environment
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      kind:
+                        const: RECHARGE_REFUND_RECEIPT
+                      current_status:
+                        type: string
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      data:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          refund_id:
+                            type: string
+                            format: uuid
+                          recharge_id:
+                            type: string
+                            format: uuid
+                          amount_minor:
+                            type: integer
+                            minimum: 1
+                          currency:
+                            const: CNY
+                          occurred_at:
+                            type: string
                             format: date-time
                         required: []
                       environment:

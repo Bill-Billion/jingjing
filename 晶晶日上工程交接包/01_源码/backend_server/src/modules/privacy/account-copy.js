@@ -12,6 +12,8 @@ const walletFields={
  CASH_RECEIPT:['amount_minor','occurred_at'],
  CASH_SPEND:['order_id','payment_id','currency','amount_minor','allocations','refund_ids'],
  CASH_REFUND:['payment_id','refund_id','amount_minor','currency'],
+ RECHARGE_REFUND:['recharge_id','requested_minor','amount_minor','currency','reason','created_at','submitted_at','settled_at'],
+ RECHARGE_REFUND_RECEIPT:['refund_id','recharge_id','amount_minor','currency','occurred_at'],
  EARNING:['order_id','category','rule_id','rule','source_kind','paid_minor','refunded_minor','points','reversed','growth_reversed','spent','expired','expires_at','issued_at','available_at','pending_shortfall','debt_offset','debt_settled'],
  POINT_HOLD:['purpose','reference','points','allocations','reason','expires_at'],
  CASH_RECONCILIATION:['statement_id','observed_at','occurred_at','local_available_minor','provider_available_minor','meaning'],
