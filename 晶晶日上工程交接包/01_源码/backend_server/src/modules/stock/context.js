@@ -39,8 +39,9 @@ async function bind(tx,order,r){const data={status:'AWAITING_PAYMENT',seller_adm
 async function paymentAllowed(tx,order){if(!order.data.quote.stock_video)return;if(Date.parse(order.data.quote.expires_at)<=Date.parse(await A.now(tx)))throw error('STOCK_CHECKOUT_EXPIRED',409);const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR SHARE',[order.id]));await listed(tx,order.data.quote.stock_video.listing_id,{newSale:false});if(p.data.seller_admission_policy===require('../artists/commerce-admission').POLICY)await validateRights(tx,await listing(tx,p.listing_id),null,{newSale:true});P.active(p.data.license,await A.now(tx));await currentPurchaseConsent(tx,order,p);if(p.data.current_case_id)throw error('STOCK_AFTERCARE_PENDING',409);}
 async function financial(tx,order){
  if(!order.data.quote.stock_video)return;const p=checked(await A.one(tx,'SELECT * FROM stock_purchases WHERE order_id=? FOR UPDATE',[order.id]));let d={...p.data};
- if(order.data.financial.refunded_minor>0){d.status=require('./refund-policy').retained(order,p)&&p.data.status!=='REVOKED'?'ACTIVE':'REVOKED';d.deadline_at=null;d.job_id=null;}
- else if(order.current_status==='PAYMENT_REVIEW_REQUIRED'){d.status='PAYMENT_REVIEW_REQUIRED';d.deadline_at=null;d.job_id=null;}
+ // Payment uncertainty freezes access; it must not override an independent KEEP decision.
+ if(order.current_status==='PAYMENT_REVIEW_REQUIRED'){d.status=p.data.status==='REVOKED'?'REVOKED':'PAYMENT_REVIEW_REQUIRED';d.deadline_at=null;d.job_id=null;}
+ else if(order.data.financial.refunded_minor>0){d.status=require('./refund-policy').retained(order,p)&&p.data.status!=='REVOKED'?'ACTIVE':'REVOKED';d.deadline_at=null;d.job_id=null;}
  else if(order.current_status==='PAID'&&!d.granted_at){d.granted_at=await A.now(tx);d.status='ACTIVE';if(require('../trade/acceptance-policy').modern(d.license)){Object.assign(d,await require('../trade/acceptance-policy').schedule(tx,'STOCK_ACCEPTANCE',order.id,d.acceptance_order_created_at));d.observed_rights_epoch=(await listing(tx,p.listing_id)).data.rights_epoch;}}
  if(digest(d)===digest(p.data))return;
  const issued=!p.data.granted_at&&!!d.granted_at,event=d.status==='ACTIVE'?'STOCK_LICENSE_GRANTED':d.status==='REVOKED'?'STOCK_LICENSE_REVOKED':'STOCK_PAYMENT_REVIEW_REQUIRED';

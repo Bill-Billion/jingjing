@@ -309,6 +309,25 @@ test('stock video commerce in isolated MySQL',{skip:!process.env.JX_MYSQL_TEST_E
   }
  });
  await fs.writeFile(path.resolve(__dirname,'../../../..','.local/stock-reviewed-refunds-20261111.json'),JSON.stringify({synthetic_only:true,actors:{buyer:buyer.account_id,seller:seller.account_id,reviewer:reviewer.account_id},branches:reviewedRefunds,limits:['HTTP/repository synthetic observations, no real payment','Four separate orders for 40/100 x KEEP/REVOKE; two partial orders continue with remaining 60','Legacy omitted terms preserve whole-refund/revoke behavior; original order contracts not rewritten']},null,2));
+ for(const amount of [40,100])for(const action of ['KEEP','REVOKE'])await t.test('payment review after '+amount+' refund preserves independent '+action+' licence decision while blocking access',async()=>{
+  const listing=await S.listing(),o=await S.checkout(listing),paid=await S.payment(o);
+  let p=ok(await call('GET','/stock/purchases/'+o.id));
+  p=ok(await call('POST','/stock/purchases/'+o.id+'/cases',buyer,{kind:'REFUND',reason:'Synthetic refund before provider review'},buyer.personal_party_id,headers(p)));
+  p=ok(await call('POST','/stock/purchases/'+o.id+'/case-resolution',reviewer,{case_id:p.data.current_case_id,decision:'REFUND',refund_minor:amount,license_action:action,reason:'Independent licence decision'},null,headers(p)));
+  let refund=ok(await call('POST','/trade/refunds',buyer,{payment_id:paid.payment.id,allocations:[{line_id:'stock',amount_minor:amount}],reason:'Exact approved refund'},buyer.personal_party_id,headers()));
+  refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'Independent cash execution',operation_key:key()});
+  await trade.claim(reviewer.ctx,refund.id,null,'REFUND');await trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'});
+  const before=await purchased(o),revocations=async()=>Number((await db.execute("SELECT COUNT(*) n FROM stock_audit WHERE record_id=? AND event_code='STOCK_LICENSE_REVOKED'",[o.id]))[0][0].n);
+  const previousRevocations=await revocations(),journalCount=(await db.execute('SELECT id FROM trade_journal WHERE order_id=?',[o.id]))[0].length;
+  await trade.applyPayment({...paid.proof,status:'REVIEW_REQUIRED'});await trade.applyPayment({...paid.proof,status:'REVIEW_REQUIRED'});
+  const after=await purchased(o);
+  assert.equal(after.data.status,action==='KEEP'?'PAYMENT_REVIEW_REQUIRED':'REVOKED');
+  assert.deepEqual(after.data.refund_plan,before.data.refund_plan);assert.deepEqual(after.data.cases,before.data.cases);
+  assert.equal(await revocations(),previousRevocations,'Payment uncertainty is not a new licence revocation decision');
+  assert.equal((await db.execute('SELECT id FROM trade_journal WHERE order_id=?',[o.id]))[0].length,journalCount);
+  bad(await call('GET','/stock/purchases/'+o.id+'/content'),'STOCK_LICENSE_NOT_ACTIVE');
+  assert.deepEqual(ok(await call('GET','/trade/records/'+o.id)).data.contract,o.data.contract);
+ });
  await t.test('new consent withdrawal hides catalog and stops another download without rewriting sold history',async()=>{const listing=await S.listing(),paid=await S.checkout(listing);await S.payment(paid);assert.equal((await call('GET','/stock/purchases/'+paid.id+'/content')).status,200);const before=await purchased(paid);await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'stop new use',operation_key:key()});assert.equal(ok(await call('GET','/stock/catalog',buyer,undefined,null)).items.length,0);assert.equal((await purchased(order)).data.license.duration,'PERPETUAL');bad(await call('GET','/stock/purchases/'+paid.id+'/content'),'STOCK_SALE_CONSENT_REQUIRED');const after=await purchased(paid);assert.equal(after.contract_sha256,before.contract_sha256);assert.equal(after.data.status,'ACTIVE');});
  await t.test('historical unpaid order retains original admission policy without admitting new purchases',async()=>{
   const S=await require('./helpers/stock-seed.cjs').seedStock(db,{ruleKey:'stock.legacy.synthetic'}),{buyer,buyer2,trade}=S;
