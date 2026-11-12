@@ -168,14 +168,39 @@ test('same commercial order: agency switch, scoped employee, withdrawal and hist
   assert.equal(ok(await call('GET','/engagement/mcn/staff',mcn)).items.find(x=>x.id===grant.id).current_status,'ACTIVE');
   assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee)).orders.length,0);
  });
+ await check('same paid order enters seven-day handover with expiry, original-key recovery and bilateral acknowledgement',async()=>{
+  const endedInput={decision:'END',reason:'Same paid order enters old agency handover'},endKey=key(),oldVersion=relation.object_version;
+  relation=ok(await call('POST','/gigs/relations/'+relation.id+'/decision',seller,endedInput,oldVersion,seller.personal_party_id,endKey));
+  assert.equal(ok(await call('POST','/gigs/relations/'+relation.id+'/decision',seller,endedInput,oldVersion,seller.personal_party_id,endKey)).id,relation.id);
+  const route='/gigs/relations/'+relation.id+'/handover';
+  const handover=ok(await call('GET',route,seller));assert.equal(handover.order_count,1);assert.equal(handover.items[0].order_id,order.id);assert.equal(handover.new_business_allowed,false);
+  assert.equal(Date.parse(handover.deadline_at)-Date.parse(handover.started_at),7*86400000);
+  assert.equal((await call('GET',route,other)).status,404);
+  assert.equal(ok(await call('GET',conversation(),mcn)).status,'OPEN');
+  assert.equal(ok(await call('GET',conversation(),employee)).status,'OPEN');
+  const clock=require('../src/modules/artists/context'),now=clock.now;clock.now=async()=>handover.deadline_at;
+  try{assert.equal(ok(await call('GET',route,seller)).period_status,'EXPIRED');assert.equal((await call('GET',conversation(),mcn)).error.code,'HANDOVER_NOT_ACTIVE');assert.equal((await call('GET',conversation(),employee)).status,403);}
+  finally{clock.now=now;}
+  const ack={order_id:order.id,note:'Agency acknowledges captured original paid order'},ackKey=key(),ackVersion=relation.object_version;
+  relation=ok(await call('POST',route,mcn,ack,ackVersion,mcn.acting_party_id,ackKey));
+  assert.equal(ok(await call('POST',route,mcn,ack,ackVersion,mcn.acting_party_id,ackKey)).object_version,relation.object_version);
+  const pending=ok(await call('GET',route,seller));assert.equal(pending.items[0].status,'PENDING');assert.equal(Object.keys(pending.items[0].acknowledgements).length,1);
+  assert.equal(ok(await call('GET',conversation(),mcn)).status,'OPEN');
+  assert.equal(digest(ok(await call('GET','/trade/records/'+order.id,buyer)).data.contract),originalHash);
+  evidence.records.handover_order_id=handover.items[0].order_id;evidence.records.handover_deadline_at=handover.deadline_at;
+ });
  await check('artist withdrawal removes old agency live access without erasing contract or old income',async()=>{
   ok(await call('POST','/artists/people/'+person.id+'/records/'+delegation.id+'/withdrawals',seller,{reason:'Synthetic delegation withdrawal'},delegation.object_version));
   assert.equal((await call('GET',conversation(),mcn)).status,403);assert.equal((await call('GET',conversation(),employee)).status,403);
   assert.equal(ok(await call('GET','/engagement/mcn/dashboard',employee)).orders.length,0);
   assert.equal(ok(await call('GET','/engagement/mcn/dashboard',mcn)).orders[0].contract_sha256,originalHash);
+  relation=ok(await call('POST','/gigs/relations/'+relation.id+'/handover',seller,{order_id:order.id,note:'Artist acknowledges same original order after revoking delegation'},relation.object_version));
+  const h=ok(await call('GET','/gigs/relations/'+relation.id+'/handover',seller));assert.equal(h.items[0].status,'ACKNOWLEDGED');assert.equal(Object.keys(h.items[0].acknowledgements).length,2);
+  assert.equal((await call('GET',conversation(),mcn)).status,403);
+
  });
  await check('changing agency cannot transfer historic order, commission or messages to new agency',async()=>{
-  relation=ok(await call('POST','/gigs/relations/'+relation.id+'/decision',seller,{decision:'END',reason:'Synthetic switch to another agency'},relation.object_version));
+  assert.equal(relation.current_status,'ENDED');
   newRelation=ok(await call('POST','/gigs/relations',other,relationBody(op,3000)));newRelation=ok(await call('POST','/gigs/relations/'+newRelation.id+'/decision',seller,{decision:'ACCEPT',reason:'Synthetic new agreement'},newRelation.object_version));
   ok(await call('POST','/artists/people/'+person.id+'/delegations',seller,{delegation:{organization_party_id:other.acting_party_id,relation_id:newRelation.id,actions:['READ_PROFILE'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',evidence_asset_ids:[ce.id],terms:'Synthetic new agency permission'}}));
   assert.equal((await call('GET',conversation(),other)).status,404);assert.equal((await call('POST','/gigs/commissions',other,{order_id:order.id})).status,404);
