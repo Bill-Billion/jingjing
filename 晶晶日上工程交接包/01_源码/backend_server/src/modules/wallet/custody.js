@@ -6,6 +6,43 @@ const {digest}=require('../governance/content');
 const A=require('../artists/context'),C=require('./context'),P=require('./policy');
 function config(c){shape(c,['provider','environment','merchant_id','revision']);ref(c.provider);ref(c.merchant_id);ref(c.revision);if(!['SANDBOX','PRODUCTION'].includes(c.environment))throw error('CUSTODY_CONFIG_INVALID',400);return structuredClone(c);}
 function createCustodyLedger(db){return {
+ // Internal, read-only assessment. This is neither an approval nor a reservation/payment instruction.
+ // A future refund command must re-read under the same account lock before reserving any funds.
+ async assessRefund(tx,a,i,binding){
+  shape(i,['party_id','recharge_id']);const cfg=config(binding);
+  // Reading original money facts remains possible after adult verification expires.
+  await C.owner(tx,a,i.party_id);const account=await C.account(tx,i.party_id);
+  const r=await C.load(tx,i.recharge_id,'RECHARGE');
+  if(r.owner_party_id!==i.party_id)throw error('WALLET_NOT_FOUND',404);
+  if(r.current_status!=='SUCCEEDED')throw error('CUSTODY_RECHARGE_NOT_RECEIVED',409);
+  if(digest(r.data.binding)!==digest(cfg))throw error('CUSTODY_RECEIPT_MISMATCH',409);
+  const spends=await C.rows(tx,i.party_id,'CASH_SPEND'),related=[];
+  const amounts={spent_minor:0,held_minor:0,unknown_minor:0};
+  for(const s of spends){
+   const allocations=s.data.allocations.filter(x=>x.recharge_id===r.id);
+   if(!allocations.length)continue;
+   if(!['SPENT','HELD','UNKNOWN','RELEASED'].includes(s.current_status))throw error('CUSTODY_REFUND_REVIEW_REQUIRED',409);
+   if(digest(s.data.binding)!==digest(cfg))throw error('WALLET_CASH_INVARIANT',503);
+   related.push({id:s.id,object_version:s.object_version,content_sha256:s.content_sha256,status:s.current_status});
+   for(const item of allocations){
+    P.integer(item.amount_minor,1);P.integer(item.returned_minor);
+    if(item.returned_minor>item.amount_minor||(s.current_status!=='SPENT'&&item.returned_minor!==0))throw error('WALLET_CASH_INVARIANT',503);
+    if(s.current_status!=='RELEASED'){
+     const field={SPENT:'spent_minor',HELD:'held_minor',UNKNOWN:'unknown_minor'}[s.current_status];
+     amounts[field]=P.sum([amounts[field],item.amount_minor-item.returned_minor]);
+    }
+   }
+  }
+  P.integer(r.data.amount_minor,1);P.integer(r.data.refunded_minor);
+  const available=r.data.amount_minor-P.sum([r.data.refunded_minor,...Object.values(amounts)]);
+  if(available<0)throw error('WALLET_CASH_INVARIANT',503);
+  // Cross-check against the allocator used by actual order payment, not a second spending balance.
+  if(require('./cash').balances([r],spends)[0].available_minor!==available)throw error('WALLET_CASH_INVARIANT',503);
+  const sources={account:{id:account.id,object_version:account.object_version,content_sha256:account.content_sha256},recharge:{id:r.id,object_version:r.object_version,content_sha256:r.content_sha256},spends:related};
+  return {recharge_id:r.id,currency:'CNY',binding:cfg,original_transaction_id:r.data.transaction_id,
+   amount_minor:r.data.amount_minor,refunded_minor:r.data.refunded_minor,...amounts,available_for_refund_minor:available,
+   observed_at:await A.now(tx),source_sha256:digest(sources),execution_enabled:false,meaning:'ASSESSMENT_ONLY_NOT_REFUND_APPROVAL'};
+ },
  // Called only after a licensed custody adapter has been configured and user authority resolved by a service.
  async prepare(tx,a,{party_id,amount_minor,operation_key},binding){
   const cfg=config(binding);await C.owner(tx,a,party_id,true);const account=await C.account(tx,party_id),i={party_id,amount_minor,operation_key,binding:cfg};P.integer(amount_minor,1);

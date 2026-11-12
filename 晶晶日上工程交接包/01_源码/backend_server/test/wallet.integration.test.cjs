@@ -15,7 +15,10 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
   server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
   async function call(method,url,user=buyer,body,party=user.personal_party_id,headers={}){const h={Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{}),...headers};if(body!==undefined)h['Content-Type']='application/json';const res=await fetch(base+url,{method,headers:h,...(body===undefined?{}:{body:JSON.stringify(body)})});const json=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?'WalletResponse':'ErrorResponse',value:json});return {status:res.status,data:json.data,error:json.error};}
   const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;},bad=(r,c)=>assert.equal(r.error?.code,c,JSON.stringify(r)),headers=(r,k=key())=>({'Idempotency-Key':k,...(r?{'If-Match':'"'+r.object_version+'"'}:{})});
-  const summary=()=>W.summary(buyer.ctx,{party_id:buyer.personal_party_id});let rule,account,order,pay,earning;
+  const summary=()=>W.summary(buyer.ctx,{party_id:buyer.personal_party_id});let rule,account,order,pay,earning,recharge;
+  const custodyBinding={provider:'synthetic-custodian',environment:'SANDBOX',merchant_id:'synthetic-merchant',revision:'v1'};
+  const assess=(user=buyer,rechargeId=recharge.id,binding=custodyBinding)=>db.withTransaction(tx=>custody.assessRefund(tx,{id:user.account_id},{party_id:user.personal_party_id,recharge_id:rechargeId},binding));
+  async function refundable(expected){const result=await assess();for(const [field,value] of Object.entries(expected))assert.equal(result[field],value,field);assert.equal(result.execution_enabled,false);assert.equal(result.meaning,'ASSESSMENT_ONLY_NOT_REFUND_APPROVAL');return result;}
   await t.test('independent rule review, stale rule hash and client balance forgery rejected',async()=>{
    const body={rule:require('./helpers/wallet-rule.cjs')};bad(await call('POST','/wallet/rules',buyer,body,null,headers()),'WALLET_OPERATOR_FORBIDDEN');
    rule=ok(await call('POST','/wallet/rules',outsider,body,null,headers()));bad(await call('POST','/wallet/rules/'+rule.id+'/review',outsider,{decision:'APPROVE',reason:'self'},null,headers(rule)),'SELF_REVIEW_FORBIDDEN');
@@ -37,10 +40,24 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    const intent=await db.withTransaction(tx=>custody.prepare(tx,a,{party_id:buyer.personal_party_id,amount_minor:30000,operation_key:key()},binding));
    const proof={record_id:intent.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:new Date().toISOString(),status:'SUCCEEDED'};
    await assert.rejects(custody.applyVerifiedReceipt({...proof,amount_minor:29999}),{code:'CUSTODY_RECEIPT_MISMATCH'});
-   const results=await Promise.all([custody.applyVerifiedReceipt(proof),custody.applyVerifiedReceipt(proof)]);assert.equal(results[0].id,results[1].id);
+   const results=await Promise.all([custody.applyVerifiedReceipt(proof),custody.applyVerifiedReceipt(proof)]);assert.equal(results[0].id,results[1].id);recharge=results[0];
    let q=await summary();assert.equal(q.recorded_balance_minor,30000);assert.equal(q.available_points,0);assert.equal(q.qualifying_growth,0);assert.equal(q.membership.level,1);
    await assert.rejects(custody.applyVerifiedReceipt({...proof,transaction_id:'changed'}),{code:'CUSTODY_RECEIPT_MISMATCH'});
    assert.equal((await db.execute("SELECT id FROM wallet_records WHERE kind='CASH_RECEIPT'"))[0].length,1);
+  });
+  await t.test('original recharge refund assessment is read-only, personal and bound to the credited channel',async()=>{
+   const auditBefore=(await db.execute('SELECT COUNT(*) AS n FROM wallet_audit'))[0][0].n;
+   const recordBefore=(await db.execute('SELECT COUNT(*) AS n FROM wallet_records'))[0][0].n;
+   const first=await refundable({amount_minor:30000,refunded_minor:0,spent_minor:0,held_minor:0,unknown_minor:0,available_for_refund_minor:30000});
+   assert.equal((await assess()).source_sha256,first.source_sha256);
+   for(const [field,value] of Object.entries({provider:'other',environment:'PRODUCTION',merchant_id:'other',revision:'other'}))await assert.rejects(assess(buyer,recharge.id,{...custodyBinding,[field]:value}),{code:'CUSTODY_RECEIPT_MISMATCH'});
+   await assert.rejects(db.withTransaction(tx=>custody.assessRefund(tx,{id:buyer2.account_id},{party_id:buyer.personal_party_id,recharge_id:recharge.id},custodyBinding)),{code:'ARTIST_PARTY_FORBIDDEN'});
+   const until=(await db.execute('SELECT identity_valid_until FROM artist_people WHERE id=?',[buyer.person.id]))[0][0].identity_valid_until;
+   await db.execute("UPDATE artist_people SET identity_valid_until='2020-01-01 00:00:00' WHERE id=?",[buyer.person.id]);
+   try{assert.equal((await assess()).available_for_refund_minor,30000);}finally{await db.execute('UPDATE artist_people SET identity_valid_until=? WHERE id=?',[until,buyer.person.id]);}
+   assert.equal((await db.execute('SELECT COUNT(*) AS n FROM wallet_audit'))[0][0].n,auditBefore);
+   assert.equal((await db.execute('SELECT COUNT(*) AS n FROM wallet_records'))[0][0].n,recordBefore);
+   assert.equal((await db.withTransaction(tx=>C.load(tx,recharge.id))).content_sha256,recharge.content_sha256);
   });
   await t.test('new order captures original rule and payment without fulfillment earns nothing',async()=>{
    order=await S.checkout(await S.listing());pay=await S.payment(order);
@@ -111,16 +128,20 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    const orders=await Promise.all([make(),make()]);const result=await Promise.allSettled(orders.map(o=>trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:o.id,installment_key:'stock',operation_key:key()},cfg)));
    assert.equal(result.filter(r=>r.status==='fulfilled').length,1);assert.equal(result.find(r=>r.status==='rejected').reason.code,'WALLET_BALANCE_INSUFFICIENT');
    const p=result.find(r=>r.status==='fulfilled').value;const heldSummary=ok(await call('GET','/wallet/summary'));assert.equal(heldSummary.available_balance_minor,10000);assert.equal(heldSummary.recorded_balance_minor,30000);assert.equal(heldSummary.reserved_balance_minor,20000);
+   const heldAssessment=await refundable({spent_minor:0,held_minor:20000,unknown_minor:0,available_for_refund_minor:10000});
    const proof={...cfg,payment_id:p.id,currency:'CNY',amount_minor:20000,transaction_id:'synthetic:'+p.id,status:'PENDING',product_id:null,app_account_token:null};
    await trade.applyPayment(proof);assert.equal((await summary()).available_balance_minor,10000);
    await assert.rejects(trade.applyPayment({...proof,status:'SUCCEEDED',amount_minor:1}),{code:'PAYMENT_PROOF_MISMATCH'});
    await Promise.all([trade.applyPayment({...proof,status:'SUCCEEDED'}),trade.applyPayment({...proof,status:'SUCCEEDED'})]);assert.equal((await summary()).available_balance_minor,10000);
+   const paidAssessment=await refundable({spent_minor:20000,held_minor:0,unknown_minor:0,available_for_refund_minor:10000});assert.notEqual(paidAssessment.source_sha256,heldAssessment.source_sha256);
    let purchase=await stock.purchased(buyer.ctx,{party_id:buyer.personal_party_id,order_id:p.order_id});purchase=await stock.openCase(buyer.ctx,{party_id:buyer.personal_party_id,order_id:p.order_id,expected_version:purchase.object_version,kind:'RIGHTS_DISPUTE',reason:'synthetic',operation_key:key()});await stock.resolveCase(reviewer.ctx,{order_id:p.order_id,expected_version:purchase.object_version,case_id:purchase.data.current_case_id,decision:'REFUND',reason:'synthetic independent',operation_key:key()});
    let refund=await trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:p.id,allocations:[{line_id:'stock',amount_minor:20000}],reason:'synthetic original route',operation_key:key()});refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'synthetic refund',operation_key:key()});await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
    await Promise.all([trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'}),trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'})]);assert.equal((await summary()).recorded_balance_minor,30000);
+   await refundable({spent_minor:0,held_minor:0,unknown_minor:0,available_for_refund_minor:30000});
    const spends=await W.records(buyer.ctx,{party_id:buyer.personal_party_id,kind:'CASH_SPEND'});assert.equal(spends.items.length,1);assert.equal(spends.items[0].data.allocations[0].returned_minor,20000);
    const next=orders.find(o=>o.id!==p.order_id),pending=await trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:next.id,installment_key:'stock',operation_key:key()},cfg);
    await trade.applyPayment({...proof,payment_id:pending.id,transaction_id:'synthetic:'+pending.id,status:'CLOSED'});assert.equal((await summary()).recorded_balance_minor,30000);
+   await refundable({spent_minor:0,held_minor:0,unknown_minor:0,available_for_refund_minor:30000});
    await assert.rejects(trade.applyPayment({...proof,payment_id:pending.id,transaction_id:'synthetic:'+pending.id,status:'SUCCEEDED'}),{code:'CUSTODY_LATE_PAYMENT_REVIEW_REQUIRED'});
    const reconcile=require('../src/modules/wallet/cash').createCashReconciler(db),statement={party_id:buyer.personal_party_id,binding,statement_id:'synthetic:'+key(),available_minor:29999,occurred_at:new Date().toISOString()};
    const diff=await reconcile.observe(statement);assert.equal(diff.current_status,'DIFFERENCE');assert.equal((await reconcile.observe(statement)).id,diff.id);assert.equal((await summary()).recorded_balance_minor,30000);
@@ -130,10 +151,30 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    await trade.applyPayment({...proof,payment_id:reviewed.id,transaction_id:'synthetic:'+reviewed.id,status:'REVIEW_REQUIRED'});
    await trade.applyPayment({...proof,payment_id:reviewed.id,transaction_id:'synthetic:'+reviewed.id,status:'SUCCEEDED'});
    const held=(await W.records(buyer.ctx,{party_id:buyer.personal_party_id,kind:'CASH_SPEND'})).items.find(r=>r.parent_id===reviewed.id);assert.equal(held.current_status,'UNKNOWN');assert.equal((await trade.read(buyer.ctx,{record_id:reviewed.id,party_id:buyer.personal_party_id})).current_status,'REVIEW_REQUIRED');
+   await refundable({spent_minor:0,held_minor:0,unknown_minor:20000,available_for_refund_minor:10000});
    assert.equal((await db.execute('SELECT id FROM trade_journal WHERE order_id=?',[reviewedOrder.id]))[0].length,0);
    await assert.rejects(db.withTransaction(tx=>custody.prepare(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,amount_minor:100,operation_key:key()},{...binding,environment:'PRODUCTION'})),{code:'CUSTODY_ACCOUNT_MIGRATION_REQUIRED'});
    bad(await call('POST','/trade/payments',buyer,{order_id:reviewedOrder.id,installment_key:'stock'},buyer.personal_party_id,headers()),'CUSTODY_PROVIDER_NOT_CONNECTED');
    ok(await call('GET','/wallet/records?kind=CASH_SPEND'));ok(await call('GET','/wallet/records?kind=CASH_REFUND'));ok(await call('GET','/wallet/records?kind=CASH_RECONCILIATION'));
+  });
+  await t.test('refund assessment never treats imported refunds, unknown allocations or another lot as spendable money',async()=>{
+   await assert.rejects(assess(buyer2),{code:'WALLET_NOT_FOUND'});
+   const original=await db.withTransaction(tx=>C.load(tx,recharge.id));
+   // Historical/import fixture only: this is not a refund executor or a verified refund receipt.
+   const setRecharge=async(data,status='SUCCEEDED')=>db.execute('UPDATE wallet_records SET current_status=?,data_json=?,data_sha256=? WHERE id=?',[status,JSON.stringify(data),digest(data),recharge.id]);
+   try{
+    await setRecharge({...original.data,refunded_minor:5000});await refundable({refunded_minor:5000,unknown_minor:20000,available_for_refund_minor:5000});
+    await setRecharge({...original.data,refunded_minor:10001});await assert.rejects(assess(),{code:'WALLET_CASH_INVARIANT'});
+    await setRecharge(original.data,'PENDING');await assert.rejects(assess(),{code:'CUSTODY_RECHARGE_NOT_RECEIVED'});
+   }finally{await setRecharge(original.data,original.current_status);}
+   const spend=(await W.records(buyer.ctx,{party_id:buyer.personal_party_id,kind:'CASH_SPEND'})).items.find(x=>x.current_status==='UNKNOWN');
+   const setSpend=async(data,status)=>db.execute('UPDATE wallet_records SET current_status=?,data_json=?,data_sha256=? WHERE id=?',[status,JSON.stringify(data),digest(data),spend.id]);
+   try{
+    await setSpend(spend.data,'UNRECOGNIZED');await assert.rejects(assess(),{code:'CUSTODY_REFUND_REVIEW_REQUIRED'});
+    await setSpend({...spend.data,allocations:spend.data.allocations.map(x=>({...x,returned_minor:1}))},'UNKNOWN');await assert.rejects(assess(),{code:'WALLET_CASH_INVARIANT'});
+   }finally{await setSpend(spend.data,spend.current_status);}
+   const q=await summary();assert.equal(q.available_balance_minor,10000);assert.equal(q.membership.active,true);
+   await refundable({refunded_minor:0,spent_minor:0,held_minor:0,unknown_minor:20000,available_for_refund_minor:10000});
   });
   await t.test('wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain',async()=>{
    const Q=require('../src/modules/wallet/qualification'),now=new Date().toISOString();
