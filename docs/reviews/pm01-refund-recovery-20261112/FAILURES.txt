@@ -1,0 +1,201 @@
+Earlier failed test fixtures; superseded by focused pass, not erased.
+
+pm01-refund-recovery-first.log
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    not ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 75.4563
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:50:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'PENDING'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    not ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 28.837
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:63:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        'PENDING' !== 'RETRY'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'RETRY'
+      actual: 'PENDING'
+
+      ...
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    not ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 28.1218
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:72:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'acf3433b-78ba-4b40-84dd-92dc4ff0a3de'
+        - '6f975cf3-11d7-4393-8d68-86f93407a1be'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+
+      ...
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    not ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 46.5354
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:82:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'PENDING'
+        - 'BLOCKED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    not ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 32.2388
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:93:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + null
+        - 'CUSTODY_PROVIDER_NOT_CONNECTED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    not ok 6 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 349.0251
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:101:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'APPROVED'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+
+      ...
+    # Subtest: guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+    not ok 7 - guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+      ---
+      duration_ms: 88.9732
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:129:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'PENDING'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+
+      ...
+    # Subtest: revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+    not ok 8 - revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+      ---
+      duration_ms: 60.2314
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:145:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        The expression evaluated to a falsy value:
+        
+          assert.ok([queued.job_id,active.job_id].includes(task.id))
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+
+      ...
+    1..8
+not ok 1 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 9327.3489
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '8 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: original recharge refund cases, reservations, trusted recovery and private copies in isolated MySQL
+    # Subtest: same request key returns one case; foreign account and changed request are denied
+    ok 1 - same request key returns one case; foreign account and changed request are denied
+      ---
+      duration_ms: 37.1621
+      type: 'test'
+
+pm01-refund-recovery-focused.log
+      ...
+    # Subtest: ranking listen reads authorized audio bytes before counting and deduplicates
+    not ok 22 - ranking listen reads authorized audio bytes before counting and deduplicates
+      ---
+      duration_ms: 265.1678
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists.integration.test.cjs:212:10'
+      failureType: 'testCodeFailure'
+      error: "Duplicate entry 'df0966fc-648f-4a4c-b1cb-bf120bce110a' for key 'content_restrictions.execution_id'"
+      code: 'ER_DUP_ENTRY'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:31:60
+        withConnection (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:19:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\artists.integration.test.cjs:226:27)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\artists.integration.test.cjs:212:2)
+
+      ...
+    1..30
+not ok 1 - artist rights and delegated access in isolated MySQL
+  ---
+  duration_ms: 14864.919
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists.integration.test.cjs:8:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: notification read and guardian copies through isolated MySQL HTTP
+    # Subtest: actual read receipt is personal only and never carries original private content
+    ok 1 - actual read receipt is personal only and never carries original private content
+      ---
+      duration_ms: 97.403
+      type: 'test'
