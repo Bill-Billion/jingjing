@@ -216,6 +216,22 @@ test('artist rights and delegated access in isolated MySQL',{skip:!process.env.J
  for(let n=0;n<2;n++){const r=await fetch(url+audio.id+'?device_id='+stranger.account_id,{headers:{Authorization:'Bearer '+stranger.token,'Idempotency-Key':key()}});assert.equal(r.status,200);assert.equal(r.headers.get('content-type').split(';')[0],'audio/wav');assert.equal(await r.text(),'synthetic audio fixture bytes');}
  assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM engagement_records WHERE kind='INTERACTION' AND parent_id=?",[profile.id]))[0][0].n),1);
  const denied=await fetch(url+evidence.id+'?device_id='+stranger.account_id,{headers:{Authorization:'Bearer '+stranger.token,'Idempotency-Key':key()}});assert.equal(denied.status,404);assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM engagement_records WHERE kind='INTERACTION' AND parent_id=?",[profile.id]))[0][0].n),1);
+ // Isolated restrictions represent already-reviewed privacy execution; this is a read-boundary test.
+ const requestId=key(),empty=JSON.stringify({});
+ await db.execute('INSERT INTO privacy_requests(id,account_id,request_json,request_sha256,response_due_on) VALUES (?,?,?,?,?)',[requestId,artist.account_id,empty,digest({}),'2099-01-01']);
+ const original=(await db.execute("SELECT id,data_sha256 FROM engagement_records WHERE kind='INTERACTION' AND parent_id=?",[profile.id]))[0][0];
+ const replayKey=key(),listen=()=>fetch(url+audio.id+'?device_id='+stranger.account_id,{headers:{Authorization:'Bearer '+stranger.token,'Idempotency-Key':replayKey}});
+ for(const [kind,target] of [['ASSET',audio.id],['ARTIST_LISTING',audioListing.id]]){
+  const executionId=key();await db.execute("INSERT INTO privacy_executions(id,request_id,action_code,target_id,proposed_by,current_status,payload_json,payload_sha256) VALUES (?,?,?,?,?,'EXECUTED',?,?)",[executionId,requestId,'RESTRICT_CONTENT',target,artist.account_id,empty,digest({})]);
+  const restriction=key();await db.execute('INSERT INTO content_restrictions(id,target_kind,target_id,execution_id) VALUES (?,?,?,?)',[restriction,kind,target,executionId]);
+  for(let n=0;n<2;n++){const blocked=await listen(),value=await blocked.json();assert.equal(blocked.status,409,JSON.stringify(value));assert.equal(value.error.code,'CONTENT_RESTRICTED');fixtures.push({method:'GET',path:new URL(url+audio.id).pathname,schema:'ErrorResponse',value});}
+  const kept=(await db.execute("SELECT id,data_sha256 FROM engagement_records WHERE kind='INTERACTION' AND parent_id=?",[profile.id]))[0];assert.deepEqual(kept,[original]);
+  await db.execute("UPDATE content_restrictions SET current_status='RELEASED' WHERE id=?",[restriction]);
+  const restored=await listen();assert.equal(restored.status,200);assert.equal(await restored.text(),'synthetic audio fixture bytes');
+  assert.deepEqual((await db.execute("SELECT id,data_sha256 FROM engagement_records WHERE kind='INTERACTION' AND parent_id=?",[profile.id]))[0],[original]);
+ }
+ await fs.writeFile(require('node:path').resolve(__dirname,'../../../..','.local/ranking-listen-restrictions.json'),JSON.stringify({synthetic_only:true,profile_id:profile.id,listing_id:audioListing.id,asset_id:audio.id,interaction_id:original.id,asset_and_listing_restrictions:true,duplicate_denied:true,release_restores_bytes:true,original_interaction_unchanged:true,limits:'Actual HTTP with synthetic audio and isolated restriction rows; no frontend or real moderation signoff.'},null,2));
+
  });
  await t.test('renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order',async()=>{
   let h=ok(await call('POST','/people/'+person.id+'/services/'+hosted.service.id+'/reminder',artist,{enabled:true},artist.personal_party_id,headers(hosted.service)));h=ok(await call('POST','/people/'+person.id+'/services/'+h.id+'/reminder',artist,{enabled:false},artist.personal_party_id,headers(h)));assert.equal(h.data.renewal_reminder,false);assert.equal(h.data.auto_debit_enabled,false);
