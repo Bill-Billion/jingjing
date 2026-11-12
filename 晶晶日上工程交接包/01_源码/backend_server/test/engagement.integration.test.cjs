@@ -57,6 +57,27 @@ test('engagement real database journey and permission boundaries',{skip:!process
   assert.equal(after.current_status,'SPENT');assert.deepEqual(after.data,hold.data);
  });
 
+
+ await t.test('same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in',async()=>{
+  let r=C.checked((await db.execute("SELECT * FROM engagement_records WHERE kind='VOTE' AND owner_party_id=? AND parent_id=? AND current_status='VALID' LIMIT 1",[buyer.personal_party_id,event.id]))[0][0]);
+  const original=structuredClone(r.data),eventHash=(await db.withTransaction(tx=>C.load(tx,event.id))).content_sha256,before=await W.summary(buyer.ctx,{party_id:buyer.personal_party_id});
+  const votesBefore=(await R.myVotes(buyer.ctx,{event_id:event.id,party_id:buyer.personal_party_id})).items.map(x=>x.id).sort();
+  r=await write('voteReview',reviewer,{record_id:r.id,expected_version:r.object_version,decision:'SUSPEND',reason:'synthetic suspected manipulation'});
+  let appeal=await write('appeal',buyer,{party_id:buyer.personal_party_id,event_id:event.id,reason:'synthetic same-vote appeal'});
+  const input={party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category'};
+  profile=await write('rankingProfile',seller,{...input,opt_in:false});
+  const restore={record_id:r.id,expected_version:r.object_version,decision:'RESTORE',reason:'synthetic independent correction',operation_key:key()};
+  r=await R.voteReview(outsider.ctx,restore);assert.equal((await R.voteReview(outsider.ctx,restore)).object_version,r.object_version);
+  appeal=await write('resolveAppeal',reviewer,{record_id:appeal.id,expected_version:appeal.object_version,reason:'same original vote restored, public withdrawal remains'});
+  assert.equal((await R.competitionResult(buyer.ctx,{record_id:event.id})).candidates.length,0);
+  await assert.rejects(write('vote',buyer,{party_id:buyer.personal_party_id,event_id:event.id,candidate_id:candidate.id}),{code:'PUBLIC_ARTIST_NOT_AVAILABLE'});
+  for(const k of ['candidate_id','hold_id','points','day','at'])assert.deepEqual(r.data[k],original[k]);
+  assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,before.available_points);
+  assert.deepEqual((await R.myVotes(buyer.ctx,{event_id:event.id,party_id:buyer.personal_party_id})).items.map(x=>x.id).sort(),votesBefore);
+  assert.equal((await db.withTransaction(tx=>C.load(tx,event.id))).content_sha256,eventHash);
+  profile=await write('rankingProfile',seller,{...input,opt_in:true});assert.ok((await R.competitionResult(buyer.ctx,{record_id:event.id})).candidates.some(x=>x.id===candidate.id));
+  await fs.writeFile(path.resolve(__dirname,'../../../../.local/appeal-vote-visibility.json'),JSON.stringify({synthetic_only:true,event_id:event.id,vote_id:r.id,appeal_id:appeal.id,hold_id:r.data.hold_id,withdrawal_survives_appeal:true,original_debit_preserved:true,explicit_opt_in_required:true,no_frontend:true},null,2));
+ });
  await t.test('appeals block finalization; confirmed award and proof-backed redemption',async()=>{await assert.rejects(write('judge',seller,{candidate_id:candidate.id,realism:90,fit:90,completeness:90,reason:'self'}));await write('judge',reviewer,{candidate_id:candidate.id,realism:90,fit:90,completeness:90,reason:'synthetic independent score'});let appeal=await write('appeal',buyer,{party_id:buyer.personal_party_id,event_id:event.id,reason:'synthetic appeal'});event=await patch('engagement_records',event,{ends_at:'2020-01-01T00:00:00.000Z',appeal_until:'2020-01-02T00:00:00.000Z'});await assert.rejects(write('finalize',reviewer,{record_id:event.id,expected_version:event.object_version}),{code:'COMPETITION_REVIEW_PENDING'});appeal=await write('resolveAppeal',reviewer,{record_id:appeal.id,expected_version:appeal.object_version,reason:'evidence reviewed'});event=await write('finalize',reviewer,{record_id:event.id,expected_version:event.object_version});const awards=await R.myRewards(seller.ctx,{party_id:seller.personal_party_id});assert.equal(awards.items.length,1);award=awards.items[0];assert.equal(award.data.performance_rights_granted,false);const proof=await S.supply.upload(outsider.ctx,{party_id:outsider.personal_party_id,purpose:'WORK_CONTENT',media_type:'text/plain',body:Buffer.from('synthetic certificate document'),operation_key:key()});award=await write('redeemReward',outsider,{record_id:award.id,expected_version:award.object_version,delivery:{evidence_asset_id:proof.id,reference:'synthetic certificate',starts_at:null,ends_at:null,placement:null}});assert.equal(award.current_status,'REDEEMED');await assert.rejects(R.rewardFile(buyer.ctx,{record_id:award.id,party_id:buyer.personal_party_id}),{code:'ENGAGEMENT_NOT_FOUND'});assert.equal((await R.rewardFile(seller.ctx,{record_id:award.id,party_id:seller.personal_party_id})).id,proof.id);const download=await fetch(base+'/engagement/rewards/'+award.id+'/file',{headers:{Authorization:'Bearer '+seller.token,'X-Acting-Party':seller.personal_party_id}});assert.equal(download.status,200);assert.equal(await download.text(),'synthetic certificate document');});
  await t.test('starlight configuration is independent, version frozen, no exchange',async()=>{const input={party_id:seller.personal_party_id,person_id:seller.person.id,rule_id:rule.id};let g=await write('syncGrowth',seller,input);assert.equal(g.data.starlight,null);assert.equal((await R.artistGrowth(seller.ctx,input)).starlight_entries.length,0);const config=structuredClone(rule.data.rule);config.version='synthetic-starlight-v2';config.starlight={STOCK:4,AUDITION:6,CUSTOMIZATION:8,COMMERCIAL:8,five_star:1};let enabled=await review('reviewRule',await write('createRule',outsider,{rule:config}));g=await write('syncGrowth',seller,{...input,rule_id:enabled.id});assert.equal(g.data.starlight,5);config.version='synthetic-starlight-v3';config.starlight.STOCK=99;const changed=await review('reviewRule',await write('createRule',outsider,{rule:config}));g=await write('syncGrowth',seller,{...input,rule_id:changed.id});assert.equal(g.data.starlight,5);assert.equal(g.data.exchange_enabled,false);await assert.rejects(R.artistGrowth(buyer.ctx,{person_id:seller.person.id,party_id:buyer.personal_party_id}));});
  await t.test('last valid referral is frozen at checkout and receives only platform allocation',async()=>{
@@ -242,6 +263,28 @@ test('engagement real database journey and permission boundaries',{skip:!process
   const pointsAfter=await W.summary(buyer.ctx,{party_id:buyer.personal_party_id});assert.equal(pointsAfter.available_points,pointsBefore.available_points);assert.equal(pointsAfter.qualifying_growth,pointsBefore.qualifying_growth);
   await fs.writeFile(path.resolve(__dirname,'../../../..','.local/engagement-moderation-recovery.json'),JSON.stringify({synthetic_only:true,event_id:event.id,tie_event_id:tiePublicEvent.id,profile_id:profile.id,checks:{operator_exclusion_hides:true,owner_edit_does_not_restore:true,independent_recovery_restores_original:true,other_winner_preserved:true,original_event_unchanged:true,points_unchanged:true},limits:'Actual loopback HTTP and isolated MySQL; no frontend or real activity.'},null,2));
  });
+
+ await t.test('same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible',async()=>{
+  let r=C.checked((await db.execute("SELECT * FROM engagement_records WHERE kind='INTERACTION' AND parent_id=? AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.action'))='VIEW' LIMIT 1",[profile.id]))[0][0]);
+  const original=structuredClone(r.data),frozen=(await db.withTransaction(tx=>C.load(tx,snapshot.id))).content_sha256,other=(await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id})).result;
+  r=await write('moderate',outsider,{record_id:r.id,expected_version:r.object_version,reason:'synthetic interaction excluded',exclude:true});
+  profile=await write('moderate',reviewer,{record_id:profile.id,expected_version:profile.object_version,reason:'independent public restriction',exclude:true});
+  const input={party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category'};
+  profile=await write('rankingProfile',seller,{...input,opt_in:false});
+  const restore={record_id:r.id,expected_version:r.object_version,reason:'synthetic interaction appeal upheld',exclude:false,operation_key:key()};
+  r=await R.moderate(reviewer.ctx,restore);assert.equal((await R.moderate(reviewer.ctx,restore)).object_version,r.object_version);
+  async function hidden(){
+   const publicRank=await R.rankings(buyer.ctx,{record_id:snapshot.id});assert.ok(Object.values(publicRank.boards).every(rows=>rows.every(x=>x.person_id!==seller.person.id)));
+   const result=await R.competitionResult(buyer.ctx,{record_id:event.id});assert.equal(result.result,null);assert.equal(result.candidates.length,0);
+   assert.equal((await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id})).result.winner_person_id,other.winner_person_id);
+  }
+  await hidden();
+  profile=await write('moderate',reviewer,{record_id:profile.id,expected_version:profile.object_version,reason:'independent profile restriction lifted',exclude:false});await hidden();
+  profile=await write('rankingProfile',seller,{...input,opt_in:true});assert.ok((await R.competitionResult(buyer.ctx,{record_id:event.id})).result);
+  for(const k of ['account_id','action','at','day','weight','device_hash'])assert.deepEqual(r.data[k],original[k]);
+  assert.equal((await db.withTransaction(tx=>C.load(tx,snapshot.id))).content_sha256,frozen);
+  await fs.writeFile(path.resolve(__dirname,'../../../../.local/appeal-interaction-visibility.json'),JSON.stringify({synthetic_only:true,interaction_id:r.id,profile_id:profile.id,snapshot_id:snapshot.id,event_id:event.id,other_event_id:tiePublicEvent.id,profile_restriction_survives_appeal:true,optout_survives_profile_restore:true,other_winner_preserved:true,history_unchanged:true,no_frontend:true},null,2));
+ });
  await t.test('withdrawing public consent immediately removes the selectable profile',async()=>{
   assert.equal((await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id})).items.length,1);
   await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'synthetic public consent withdrawal',operation_key:key()});
@@ -250,6 +293,16 @@ test('engagement real database journey and permission boundaries',{skip:!process
   const hidden=await R.competitionResult(buyer.ctx,{record_id:event.id});
   assert.deepEqual(hidden.candidates,[]);assert.equal(hidden.result,null);assert.equal(JSON.stringify(hidden).includes(seller.person.id),false);
   assert.equal((await db.withTransaction(tx=>C.load(tx,event.id,'COMPETITION'))).content_sha256,frozen.content_sha256);
+ });
+
+ await t.test('restoring an interaction after public consent withdrawal cannot restore public ranking or results',async()=>{
+  let r=C.checked((await db.execute("SELECT * FROM engagement_records WHERE kind='INTERACTION' AND parent_id=? LIMIT 1",[profile.id]))[0][0]);
+  r=await write('moderate',outsider,{record_id:r.id,expected_version:r.object_version,reason:'synthetic dispute after consent withdrawal',exclude:true});
+  r=await write('moderate',reviewer,{record_id:r.id,expected_version:r.object_version,reason:'independent interaction restoration only',exclude:false});
+  assert.equal(r.current_status,'VALID');assert.equal((await R.myProfiles(seller.ctx,{party_id:seller.personal_party_id})).items.length,0);
+  assert.equal((await R.competitionResult(buyer.ctx,{record_id:event.id})).result,null);
+  assert.ok(Object.values((await R.rankings(buyer.ctx,{record_id:snapshot.id})).boards).every(rows=>rows.every(x=>x.person_id!==seller.person.id)));
+  assert.equal((await R.competitionResult(buyer.ctx,{record_id:tiePublicEvent.id})).result.winner_person_id,buyer2.person.id);
  });
  const output=process.env.ENGAGEMENT_HTTP_FIXTURES_OUT||require('node:path').resolve(__dirname,'../../../..','.local/engagement-http-fixtures.json');await fs.mkdir(require('node:path').dirname(output),{recursive:true});await fs.writeFile(output,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}

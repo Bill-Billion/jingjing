@@ -64,7 +64,7 @@ function methods({db,actor}){return {
   shape(i,['record_id','party_id','expected_version','accepted','operation_key']);if(typeof i.accepted!=='boolean')throw error('INVALID_INPUT',400);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await C.load(tx,i.record_id,'GRANT');await own(tx,a,r,i.party_id);
    return C.command(tx,a,'ACKNOWLEDGE',i,async()=>{A.match(r,i.expected_version);if(r.current_status!=='SCHEDULED'||r.data.delivery.starts_at<=await A.now(tx))throw error('REWARD_CONFIRMATION_CLOSED',409);
-    await validateBinding(tx,r);const s=await C.load(tx,r.data.delivery.schedule_id,'SCHEDULE');
+    if(i.accepted)await validateBinding(tx,r);const s=await C.load(tx,r.data.delivery.schedule_id,'SCHEDULE');
     await C.save(tx,a,s,i.accepted?'CONFIRMED':'DECLINED',s.data,'REWARD_APPOINTMENT_CONFIRMED');
     return C.save(tx,a,r,i.accepted?'CONFIRMED':'BOUND',{...r.data,delivery:i.accepted?{...r.data.delivery,confirmed_at:await A.now(tx)}:null},'REWARD_HOLDER_CONFIRMED');});});
  },
@@ -106,7 +106,11 @@ function methods({db,actor}){return {
      else if(r.data.template.kind==='EXPOSURE'&&r.data.template.exposure.fallback_points)await require('./points').award(tx,a,r.owner_party_id,r.data.template.exposure.fallback_points,['REWARD_REMEDY',r.id]);else throw error('REWARD_REMEDY_RULE_MISSING',409);
      status='POINTS_RETURNED';
     }
-    if(i.decision!=='REJECT'&&r.data.delivery){const s=await C.load(tx,r.data.delivery.schedule_id,'SCHEDULE');await C.save(tx,a,s,'CANCELLED',s.data,'REWARD_SCHEDULE_CANCELLED');}
+    if(i.decision!=='REJECT'){
+     // A proposed slot has no delivery pointer yet. Resolve every live slot for this grant.
+     const schedules=(await tx.execute("SELECT * FROM redemption_records WHERE kind='SCHEDULE' AND parent_id=? AND current_status IN ('IN_REVIEW','APPROVED','CONFIRMED') ORDER BY id FOR UPDATE",[r.id]))[0].map(C.checked);
+     for(const s of schedules)await C.save(tx,a,s,'CANCELLED',s.data,'REWARD_SCHEDULE_CANCELLED');
+    }
     await C.save(tx,a,r,status,data,'REWARD_REMEDY_APPLIED');
     return C.save(tx,a,c,i.decision==='REJECT'?'REJECTED':'RESOLVED',{...c.data,resolution:{decision:i.decision,reason:i.reason,evidence_asset_id:i.evidence_asset_id,by:a.id}},'REWARD_REMEDY_REVIEWED');});});
  },
