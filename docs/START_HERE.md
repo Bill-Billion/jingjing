@@ -1,7 +1,7 @@
-# 当前施工入口：W18退款任务恢复与监护代办
+# 当前施工入口：W18退款HTTP办理与监护资料
 
-正式树worktrees/client-testing，分支core/full-business-closure-20261028。先读[后端CURRENT](status/CORE_CURRENT.md)、[前端CURRENT](status/EXPERIENCE_CURRENT.md)、[任务板](tasks/board.json)、[PM01施工计划](sources/pm01-20261111/03_本轮施工任务与验收.md)、[本批报告](reviews/pm01-refund-recovery-20261112/REPORT.md)，核Git和未提交改动。
+正式树worktrees/client-testing，分支core/full-business-closure-20261028。先读[后端CURRENT](status/CORE_CURRENT.md)、[前端CURRENT](status/EXPERIENCE_CURRENT.md)、[任务板](tasks/board.json)、[本批报告](reviews/pm01-refund-api-20261112/REPORT.md)，核Git与未提交修改。
 
-业务b104d941补W18六项后端接续，W17既有材料限制复验，W19受限试听重复请求反例。七组115项专项通过，0失败/0跳过；完整同版后端1595项通过、0失败、1项旧库结构对比跳过；同次75份文件5777份HTTP响应格式通过，833份冻结源码未变。前候选a71edaf9三组远端全部成功；候选17e84b36已上传原草稿PR39，说明已同步；既有跨端43192942049运行中、工具43192942006成功、服务器43192942000运行中，未结束不记通过。上传后回执本地保存随下批同步；未实审、未合入、未启用，不借前批结果。
+业务ea5df2a0补13个受限退款HTTP操作及监护充值资料副本，修未成年人总入口对本人退款读取/未发送撤销的误挡。七组74项专项通过，0失败/0跳过；新退款与副本77份HTTP响应格式通过；完整同版后端1603项通过、0失败、1项旧库结构对比跳过；同次76份文件5856份HTTP响应格式通过，837份冻结源码未变。前候选17e84b36三组远端全成功，本批尚未上传、未实审未合入未启用。
 
-接口0.31.58-rc.1/0212不变，无新HTTP入口或真实渠道注册。chengcongcong222仅后端，禁止前端开发修补，Bill-Billion原UI不代认领；维护者阶段末审阅。原18组0/18、12部分、151为19/76/56。下一步见[接续表](reviews/pm01-refund-recovery-20261112/NEXT_BACKEND.md)。用户暂不需资料，真实/收费/生产/公网不开，不动3490和离线APK。
+接口0.31.59-rc.1/0212；真实渠道未注册，不开放可信回执/发送HTTP。chengcongcong222仅后端，禁止前端开发修补；维护者阶段末审阅，Bill-Billion原UI不代认领。原18组0/18、12部分、151为19/76/56。下一步见[接续表](reviews/pm01-refund-api-20261112/NEXT_BACKEND.md)。用户暂不需资料；真实/收费/生产/公网不开，不动3490和离线APK。
