@@ -16,11 +16,11 @@ test('durable recharge refund recovery and guardian delegation in isolated MySQL
   for(const u of [buyer,buyer2])await W.open(u.ctx,{party_id:u.personal_party_id,rule_id:rule.id,rule_sha256:rule.content_sha256,operation_key:key()});
   const binding={provider:'synthetic-custodian',environment:'SANDBOX',merchant_id:'synthetic-merchant',revision:'v1'};
   const recharge=await db.withTransaction(tx=>custody.prepare(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,amount_minor:30000,operation_key:key()},binding));
-  const topupProof={record_id:recharge.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:new Date().toISOString(),status:'SUCCEEDED'};await custody.applyVerifiedReceipt(topupProof);
+  const topupProof={record_id:recharge.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'};await custody.applyVerifiedReceipt(topupProof);
   const proofAsset=await S.supply.upload(buyer.ctx,{party_id:buyer.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic mistaken topup evidence'),operation_key:key()});
   const summary=()=>W.summary(buyer.ctx,{party_id:buyer.personal_party_id}),read=r=>R.read(buyer.ctx,{record_id:r.id,party_id:buyer.personal_party_id}),request=(amount,operation=key())=>R.request(buyer.ctx,{party_id:buyer.personal_party_id,recharge_id:recharge.id,amount_minor:amount,reason:'synthetic mistaken recharge',evidence_asset_ids:[proofAsset.id],operation_key:operation});
   const reviewInput=(r,amount=r.data.requested_minor,decision='APPROVE')=>({record_id:r.id,expected_version:r.object_version,decision,amount_minor:amount,reason:'synthetic independent case decision',checks:{identity_verified:true,source_verified:true,refund_basis_verified:true},operation_key:key()});
-  const receipt=(r,status='SUCCEEDED',extra={})=>({record_id:r.id,recharge_id:recharge.id,...binding,original_transaction_id:topupProof.transaction_id,refund_transaction_id:status==='SUCCEEDED'?'synthetic-refund:'+r.id:null,currency:'CNY',amount_minor:r.data.amount_minor,occurred_at:new Date().toISOString(),status,...extra});
+  const receipt=async(r,status='SUCCEEDED',extra={})=>({record_id:r.id,recharge_id:recharge.id,...binding,original_transaction_id:topupProof.transaction_id,refund_transaction_id:status==='SUCCEEDED'?'synthetic-refund:'+r.id:null,currency:'CNY',amount_minor:r.data.amount_minor,occurred_at:await require('../src/modules/artists/context').now(db),status,...extra});
   const assessment=()=>db.withTransaction(tx=>custody.assessRefund(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,recharge_id:recharge.id},binding));
   const config={...S.config,provider:'CUSTODY',merchant_id:binding.merchant_id,config_revision:binding.revision,custody_binding:binding};
   async function order(amount){let spec=await trade.createSpec(S.seller.ctx,{party_id:S.seller.personal_party_id,previous_spec_id:null,title:'synthetic refund/payment competition',provider_party_id:S.seller.personal_party_id,line_kind:'OTHER',unit_minor:amount,currency:'CNY',specification:S.spec.data.specification,product_profile:{version:'V5',type:'STOCK_VIDEO'},operation_key:key()});spec=await trade.review(reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'synthetic cash',operation_key:key()});await S.publishSales(S.seller.personal_party_id,spec.id);let l=await stock.create(S.seller.ctx,{...S.listingInput,spec_id:spec.id,operation_key:key()});l=await S.reviewListing(l,'RIGHTS');l=await S.reviewListing(l,'CONTENT');return trade.stockCheckout(buyer.ctx,{party_id:buyer.personal_party_id,listing_id:l.id,offer_sha256:l.content_sha256,channel:'CUSTODY',operation_key:key()});}
@@ -32,7 +32,7 @@ test('durable recharge refund recovery and guardian delegation in isolated MySQL
   const providerCalls=[],observations=new Map();let behavior='success',duringRefund=null;
   const provider={binding,assertReady:async()=>{},refund:async(input,ctx)=>{
    assert.equal(ctx.idempotency_key,input.record_id);providerCalls.push({method:'refund',id:input.record_id});
-   const proof={record_id:input.record_id,recharge_id:input.recharge_id,...binding,original_transaction_id:input.original_transaction_id,refund_transaction_id:'synthetic-task:'+input.record_id,currency:'CNY',amount_minor:input.amount_minor,occurred_at:new Date().toISOString(),status:'SUCCEEDED'};
+   const proof={record_id:input.record_id,recharge_id:input.recharge_id,...binding,original_transaction_id:input.original_transaction_id,refund_transaction_id:'synthetic-task:'+input.record_id,currency:'CNY',amount_minor:input.amount_minor,occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'};
    observations.set(input.record_id,proof);
    if(duringRefund)await duringRefund(input);
    if(behavior==='lost')throw new Error('synthetic provider response lost; never expose this text');
@@ -67,7 +67,7 @@ test('durable recharge refund recovery and guardian delegation in isolated MySQL
    assert.equal((await R.schedule(reviewer.ctx,input)).job_id,first.job_id);
    assert.equal((await schedule(await read(r))).job_id,first.job_id);
    assert.equal((await db.execute('SELECT id FROM platform_jobs WHERE business_key=?',[r.id]))[0].length,1);
-   await advance(first.job_id);assert.equal((await jobs.get(first.job_id)).status,'SUCCEEDED');assert.equal((await read(r)).current_status,'SUCCEEDED');
+   await advance(first.job_id);assert.equal((await jobs.get(first.job_id)).status,'SUCCEEDED',JSON.stringify({last_error:(await jobs.get(first.job_id)).last_error,proof_at:observations.get(r.id)?.occurred_at,submitted_at:(await read(r)).data.submitted_at}));assert.ok(observations.get(r.id).occurred_at>=(await read(r)).data.submitted_at);assert.equal((await read(r)).current_status,'SUCCEEDED');
    assert.equal(count('refund',r.id),1);evidence.push({case_id:r.id,job_id:first.job_id,check:'atomic_schedule_and_one_send'});
   });
   await t.test('lost provider response persists UNKNOWN and worker restart only queries the original refund',async()=>{
@@ -140,7 +140,7 @@ test('durable recharge refund recovery and guardian delegation in isolated MySQL
   // Synthetic historical recharge first, then change this isolated person's age band to represent a minor's old balance.
   // This does not enable a minor to create new real recharges.
   const childTopup=await db.withTransaction(tx=>custody.prepare(tx,{id:buyer2.account_id},{party_id:buyer2.personal_party_id,amount_minor:30000,operation_key:key()},binding));
-  await custody.applyVerifiedReceipt({record_id:childTopup.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic-child:'+childTopup.id,occurred_at:new Date().toISOString(),status:'SUCCEEDED'});
+  await custody.applyVerifiedReceipt({record_id:childTopup.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic-child:'+childTopup.id,occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'});
   await db.execute("UPDATE artist_people SET age_band='MINOR' WHERE id=?",[buyer2.person.id]);
   const G=require('../src/modules/guardians/repository').createGuardianRepository(db,{resolvePrincipal:S.resolvePrincipal});
   await grant(reviewer,'PRIVACY_REVIEW');await grant(S.seller,'WALLET_REFUND_REVIEW');await grant(buyer2,'WALLET_REFUND_REVIEW');

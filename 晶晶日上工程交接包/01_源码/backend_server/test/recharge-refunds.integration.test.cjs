@@ -16,11 +16,11 @@ test('original recharge refund cases, reservations, trusted recovery and private
   for(const u of [buyer,buyer2])await W.open(u.ctx,{party_id:u.personal_party_id,rule_id:rule.id,rule_sha256:rule.content_sha256,operation_key:key()});
   const binding={provider:'synthetic-custodian',environment:'SANDBOX',merchant_id:'synthetic-merchant',revision:'v1'};
   const recharge=await db.withTransaction(tx=>custody.prepare(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,amount_minor:30000,operation_key:key()},binding));
-  const topupProof={record_id:recharge.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:new Date().toISOString(),status:'SUCCEEDED'};await custody.applyVerifiedReceipt(topupProof);
+  const topupProof={record_id:recharge.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'};await custody.applyVerifiedReceipt(topupProof);
   const proofAsset=await S.supply.upload(buyer.ctx,{party_id:buyer.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic mistaken topup evidence'),operation_key:key()});
   const summary=()=>W.summary(buyer.ctx,{party_id:buyer.personal_party_id}),read=r=>R.read(buyer.ctx,{record_id:r.id,party_id:buyer.personal_party_id}),request=(amount,operation=key())=>R.request(buyer.ctx,{party_id:buyer.personal_party_id,recharge_id:recharge.id,amount_minor:amount,reason:'synthetic mistaken recharge',evidence_asset_ids:[proofAsset.id],operation_key:operation});
   const reviewInput=(r,amount=r.data.requested_minor,decision='APPROVE')=>({record_id:r.id,expected_version:r.object_version,decision,amount_minor:amount,reason:'synthetic independent case decision',checks:{identity_verified:true,source_verified:true,refund_basis_verified:true},operation_key:key()});
-  const receipt=(r,status='SUCCEEDED',extra={})=>({record_id:r.id,recharge_id:recharge.id,...binding,original_transaction_id:topupProof.transaction_id,refund_transaction_id:status==='SUCCEEDED'?'synthetic-refund:'+r.id:null,currency:'CNY',amount_minor:r.data.amount_minor,occurred_at:new Date().toISOString(),status,...extra});
+  const receipt=async(r,status='SUCCEEDED',extra={})=>({record_id:r.id,recharge_id:recharge.id,...binding,original_transaction_id:topupProof.transaction_id,refund_transaction_id:status==='SUCCEEDED'?'synthetic-refund:'+r.id:null,currency:'CNY',amount_minor:r.data.amount_minor,occurred_at:await require('../src/modules/artists/context').now(db),status,...extra});
   const assessment=()=>db.withTransaction(tx=>custody.assessRefund(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,recharge_id:recharge.id},binding));
   const config={...S.config,provider:'CUSTODY',merchant_id:binding.merchant_id,config_revision:binding.revision,custody_binding:binding};
   async function order(amount){let spec=await trade.createSpec(S.seller.ctx,{party_id:S.seller.personal_party_id,previous_spec_id:null,title:'synthetic refund/payment competition',provider_party_id:S.seller.personal_party_id,line_kind:'OTHER',unit_minor:amount,currency:'CNY',specification:S.spec.data.specification,product_profile:{version:'V5',type:'STOCK_VIDEO'},operation_key:key()});spec=await trade.review(reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'synthetic cash',operation_key:key()});await S.publishSales(S.seller.personal_party_id,spec.id);let l=await stock.create(S.seller.ctx,{...S.listingInput,spec_id:spec.id,operation_key:key()});l=await S.reviewListing(l,'RIGHTS');l=await S.reviewListing(l,'CONTENT');return trade.stockCheckout(buyer.ctx,{party_id:buyer.personal_party_id,listing_id:l.id,offer_sha256:l.content_sha256,channel:'CUSTODY',operation_key:key()});}
@@ -40,7 +40,7 @@ test('original recharge refund cases, reservations, trusted recovery and private
    approved=await R.review(reviewer.ctx,input);assert.equal((await R.review(reviewer.ctx,input)).object_version,approved.object_version);
    const q=await summary();assert.equal(q.recorded_balance_minor,30000);assert.equal(q.available_balance_minor,10000);assert.equal(q.reserved_balance_minor,20000);assert.equal(q.membership.active,true);
    assert.equal((await assessment()).refund_reserved_minor,20000);assert.equal((await assessment()).available_for_refund_minor,10000);
-   await assert.rejects(R.applyVerifiedReceipt(receipt(approved)),{code:'CUSTODY_RECEIPT_MISMATCH'});
+   await assert.rejects(R.applyVerifiedReceipt(await receipt(approved)),{code:'CUSTODY_RECEIPT_MISMATCH'});
   });
   await t.test('reserved refund blocks actual payment; insufficient available funds leave a new case open rather than rejecting its basis',async()=>{
    const o=await order(20000);await assert.rejects(payment(o),{code:'WALLET_BALANCE_INSUFFICIENT'});
@@ -51,13 +51,13 @@ test('original recharge refund cases, reservations, trusted recovery and private
    await assert.rejects(R.claim(outsider.ctx,{record_id:first.id},binding),{code:'WALLET_OPERATOR_FORBIDDEN'});
    await assert.rejects(R.claim(reviewer.ctx,{record_id:first.id},{...binding,merchant_id:'wrong'}),{code:'CUSTODY_RECEIPT_MISMATCH'});
    const claims=await Promise.all([R.claim(reviewer.ctx,{record_id:first.id},binding),R.claim(reviewer.ctx,{record_id:first.id},binding)]);assert.equal(claims.filter(x=>x.dispatch).length,1);assert.equal(claims.find(x=>!x.dispatch).reconcile,true);
-   let current=await read(first);const unknown=receipt(current,'UNKNOWN');current=await R.applyVerifiedReceipt(unknown);assert.equal((await R.applyVerifiedReceipt(unknown)).object_version,current.object_version);
+   let current=await read(first);const unknown=await receipt(current,'UNKNOWN');current=await R.applyVerifiedReceipt(unknown);assert.equal((await R.applyVerifiedReceipt(unknown)).object_version,current.object_version);
    await assert.rejects(cancel(current),{code:'CUSTODY_REFUND_CANNOT_CANCEL'});assert.equal((await R.claim(reviewer.ctx,{record_id:first.id},binding)).reconcile,true);
-   for(const extra of [{amount_minor:1},{merchant_id:'other'},{environment:'PRODUCTION'},{revision:'other'},{recharge_id:key()},{original_transaction_id:'wrong'},{occurred_at:'2000-01-01T00:00:00.000Z'},{occurred_at:'2099-01-01T00:00:00.000Z'}])await assert.rejects(R.applyVerifiedReceipt(receipt(current,'SUCCEEDED',extra)),{code:'CUSTODY_RECEIPT_MISMATCH'});
+   for(const extra of [{amount_minor:1},{merchant_id:'other'},{environment:'PRODUCTION'},{revision:'other'},{recharge_id:key()},{original_transaction_id:'wrong'},{occurred_at:'2000-01-01T00:00:00.000Z'},{occurred_at:'2099-01-01T00:00:00.000Z'}])await assert.rejects(R.applyVerifiedReceipt(await receipt(current,'SUCCEEDED',extra)),{code:'CUSTODY_RECEIPT_MISMATCH'});
    assert.equal((await summary()).available_balance_minor,10000);assert.equal((await summary()).membership.active,true);assert.equal((await db.withTransaction(tx=>C.load(tx,recharge.id))).data.refunded_minor,0);
   });
   await t.test('trusted partial receipt and duplicate queries reduce recharge net once; membership recalculates without adding consumption growth',async()=>{
-   successfulProof=receipt(await read(first));const results=await Promise.all([R.applyVerifiedReceipt(successfulProof),R.applyVerifiedReceipt(successfulProof)]);assert.equal(results[0].object_version,results[1].object_version);
+   successfulProof=await receipt(await read(first));const results=await Promise.all([R.applyVerifiedReceipt(successfulProof),R.applyVerifiedReceipt(successfulProof)]);assert.equal(results[0].object_version,results[1].object_version);
    const q=await summary();assert.equal(q.recorded_balance_minor,10000);assert.equal(q.reserved_balance_minor,0);assert.equal(q.membership.active,false);assert.equal(q.qualifying_growth,0);assert.equal(q.available_points,0);
    assert.equal((await custody.applyVerifiedReceipt(topupProof)).data.refunded_minor,20000);assert.equal((await summary()).recorded_balance_minor,10000);
    await assert.rejects(R.applyVerifiedReceipt({...successfulProof,refund_transaction_id:'different'}),{code:'CUSTODY_REFUND_TERMINAL_CONFLICT'});
@@ -79,14 +79,14 @@ test('original recharge refund cases, reservations, trusted recovery and private
   });
   await t.test('verified close releases an unknown refund, terminal contradictions require review and revoked operators cannot dispatch',async()=>{
    let r=await R.review(reviewer.ctx,reviewInput(await request(5000)));await grant(reviewer,'WALLET_REFUND_REVIEW',false,1);await assert.rejects(R.claim(reviewer.ctx,{record_id:r.id},binding),{code:'WALLET_OPERATOR_FORBIDDEN'});await grant(reviewer,'WALLET_REFUND_REVIEW',true,2);
-   r=(await R.claim(reviewer.ctx,{record_id:r.id},binding)).record;const closed=receipt(r,'CLOSED');r=await R.applyVerifiedReceipt(closed);assert.equal((await R.applyVerifiedReceipt(closed)).object_version,r.object_version);assert.equal((await summary()).available_balance_minor,10000);
-   await assert.rejects(R.applyVerifiedReceipt(receipt(r)),{code:'CUSTODY_REFUND_TERMINAL_CONFLICT'});
+   r=(await R.claim(reviewer.ctx,{record_id:r.id},binding)).record;const closed=await receipt(r,'CLOSED');r=await R.applyVerifiedReceipt(closed);assert.equal((await R.applyVerifiedReceipt(closed)).object_version,r.object_version);assert.equal((await summary()).available_balance_minor,10000);
+   await assert.rejects(R.applyVerifiedReceipt(await receipt(r)),{code:'CUSTODY_REFUND_TERMINAL_CONFLICT'});
   });
   await t.test('receipt replay across cases and failed audit cannot mutate money; final remainder receipt closes the original recharge net',async()=>{
    final=await R.review(reviewer.ctx,reviewInput(await request(10000)));final=(await R.claim(reviewer.ctx,{record_id:final.id},binding)).record;
-   await assert.rejects(R.applyVerifiedReceipt(receipt(final,'SUCCEEDED',{refund_transaction_id:successfulProof.refund_transaction_id})),{code:'WALLET_SOURCE_ALREADY_USED'});
+   await assert.rejects(R.applyVerifiedReceipt(await receipt(final,'SUCCEEDED',{refund_transaction_id:successfulProof.refund_transaction_id})),{code:'WALLET_SOURCE_ALREADY_USED'});
    const trigger='refund_audit_fail';await db.withConnection(c=>c.query("CREATE TRIGGER "+trigger+" BEFORE INSERT ON wallet_audit FOR EACH ROW BEGIN IF NEW.event_code='RECHARGE_REFUND_SETTLED' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic refund audit failure'; END IF; END"));
-   const proof=receipt(final);
+   const proof=await receipt(final);
    try{await assert.rejects(R.applyVerifiedReceipt(proof),/synthetic refund audit failure/);}finally{await db.withConnection(c=>c.query('DROP TRIGGER '+trigger));}
    assert.equal((await db.withTransaction(tx=>C.load(tx,recharge.id))).data.refunded_minor,20000);assert.equal((await read(final)).current_status,'SUBMITTING');assert.equal((await summary()).reserved_balance_minor,10000);
    assert.equal((await db.execute("SELECT id FROM wallet_records WHERE kind='RECHARGE_REFUND_RECEIPT'"))[0].length,1);

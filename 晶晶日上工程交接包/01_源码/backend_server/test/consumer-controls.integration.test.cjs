@@ -76,7 +76,7 @@ test('self-service monthly limits constrain actual orders and custody attempts w
   const op=key(),first=await prep(100,op);assert.equal((await prep(100,op)).id,first.id);
   await assert.rejects(prep(101),{code:'WALLET_SINGLE_LIMIT'});await assert.rejects(prep(100),{code:'WALLET_DAILY_LIMIT'});
   await change(120,'RECHARGE');await assert.rejects(prep(30),{code:'CONSUMER_MONTHLY_LIMIT_EXCEEDED'});assert.equal((await get()).usage.RECHARGE.used_minor,100);
-  await custody.applyVerifiedReceipt({record_id:first.id,...binding,currency:'CNY',amount_minor:100,transaction_id:'synthetic:'+key(),occurred_at:new Date().toISOString(),status:'SUCCEEDED'});
+  await custody.applyVerifiedReceipt({record_id:first.id,...binding,currency:'CNY',amount_minor:100,transaction_id:'synthetic:'+key(),occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'});
   assert.equal((await get()).usage.RECHARGE.pending_minor,0);await assert.rejects(W.recharge(buyer.ctx,{party_id:buyer.personal_party_id,amount_minor:10,operation_key:key()}),{code:'CUSTODY_PROVIDER_NOT_CONNECTED'});
  });
  await t.test('cancelling an unsent custody payment releases reserved cash atomically; cap denial leaves no cash hold',async()=>{

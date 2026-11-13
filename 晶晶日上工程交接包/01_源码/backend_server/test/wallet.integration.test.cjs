@@ -38,7 +38,7 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
   await t.test('only matching verified custody receipt credits balance once; topup yields zero growth',async()=>{
    const binding={provider:'synthetic-custodian',environment:'SANDBOX',merchant_id:'synthetic-merchant',revision:'v1'},a={id:buyer.account_id,request_id:key()};
    const intent=await db.withTransaction(tx=>custody.prepare(tx,a,{party_id:buyer.personal_party_id,amount_minor:30000,operation_key:key()},binding));
-   const proof={record_id:intent.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:new Date().toISOString(),status:'SUCCEEDED'};
+   const proof={record_id:intent.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'};
    await assert.rejects(custody.applyVerifiedReceipt({...proof,amount_minor:29999}),{code:'CUSTODY_RECEIPT_MISMATCH'});
    const results=await Promise.all([custody.applyVerifiedReceipt(proof),custody.applyVerifiedReceipt(proof)]);assert.equal(results[0].id,results[1].id);recharge=results[0];
    let q=await summary();assert.equal(q.recorded_balance_minor,30000);assert.equal(q.available_points,0);assert.equal(q.qualifying_growth,0);assert.equal(q.membership.level,1);
@@ -143,7 +143,7 @@ test('wallet ledger, custody boundary and order points in isolated MySQL',{skip:
    await trade.applyPayment({...proof,payment_id:pending.id,transaction_id:'synthetic:'+pending.id,status:'CLOSED'});assert.equal((await summary()).recorded_balance_minor,30000);
    await refundable({spent_minor:0,held_minor:0,unknown_minor:0,available_for_refund_minor:30000});
    await assert.rejects(trade.applyPayment({...proof,payment_id:pending.id,transaction_id:'synthetic:'+pending.id,status:'SUCCEEDED'}),{code:'CUSTODY_LATE_PAYMENT_REVIEW_REQUIRED'});
-   const reconcile=require('../src/modules/wallet/cash').createCashReconciler(db),statement={party_id:buyer.personal_party_id,binding,statement_id:'synthetic:'+key(),available_minor:29999,occurred_at:new Date().toISOString()};
+   const reconcile=require('../src/modules/wallet/cash').createCashReconciler(db),statement={party_id:buyer.personal_party_id,binding,statement_id:'synthetic:'+key(),available_minor:29999,occurred_at:await require('../src/modules/artists/context').now(db)};
    const diff=await reconcile.observe(statement);assert.equal(diff.current_status,'DIFFERENCE');assert.equal((await reconcile.observe(statement)).id,diff.id);assert.equal((await summary()).recorded_balance_minor,30000);
    await assert.rejects(reconcile.observe({...statement,available_minor:30000}),{code:'CUSTODY_RECEIPT_MISMATCH'});
 
