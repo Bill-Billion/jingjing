@@ -173,6 +173,8 @@ def validate(runtime_fixtures=None):
             if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
                 if op['operationId'] == 'reportPersonalUsage':
                     check(path == '/api/v1/privacy/usage/pulse' and method == 'post' and op.get('x-idempotency-mode') == 'SERVER_TIME_SAMPLE', 'Server time sampling exception is explicit and bounded')
+                elif op['operationId'] == 'searchAuditionsByDistance':
+                    check(path == '/api/v1/discovery/auditions/distance' and method == 'post' and op.get('x-idempotency-mode') == 'READ_ONLY_EPHEMERAL_QUERY' and 'Idempotency-Key' not in headers, 'Ephemeral distance query is read-only, uses no stored command, and has one explicit path')
                 else:
                     check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
@@ -205,6 +207,7 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.add('getOperatorInvoiceCommandResult')
             account_scoped_supply.update({'getPrivacyTransactionCopyForOperations', 'exportPrivacyDataForOperations', 'getPrivacyAccountCopyForOperations', 'getPrivacyStoryCopyForOperations', 'getPrivacyCopyOptionsForOperations'})
             account_scoped_supply.add('downloadAuditionDisputeEvidence')
+            account_scoped_supply.add('searchAuditionsByDistance')
             account_scoped_supply.update({'listNoticeCaseQuoteOptions','assignNoticeCaseSupport','listNoticeAssignmentOptions','listNoticeAssignmentHistory'})
             account_scoped_supply.update({'listInvoiceRequestsForOperator', 'downloadInvoiceDocumentForOperator', 'listInvoiceDocumentsForOperator', 'downloadInvoiceEvidenceForOperator', 'listInvoiceHistoryForOperator', 'actOnInvoiceForOperator', 'getInvoiceRequestForOperator'})
             account_scoped_supply.update({'actOnSupportTicketForSupport', 'downloadSupportEvidenceForSupport', 'listSupportHistoryForSupport', 'listSupportTicketsForSupport', 'getSupportTicketForSupport'})

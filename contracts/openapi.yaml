@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.61-rc.1
+  version: 0.31.62-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -33333,6 +33333,7 @@ paths:
           - GUARDIAN_CONTROLS
           - GUARDIAN_CASES
           - GUARDIAN_RECHARGE_REFUNDS
+          - AUDITION_DISTANCE_LOCATIONS
       - name: cursor
         in: query
         schema:
@@ -33381,7 +33382,6 @@ paths:
         SUPPORT_TICKETS/SUPPORT_MESSAGES/FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS属于PROFILE；INVOICE_REQUESTS/INVOICE_HISTORY/INVOICE_DOCUMENTS属于TRANSACTIONS。仅本人个人主体，排除机构经办。消息游标为记录UUID.版本号，收藏浏览为十进制序号；游标记录已清理返回400，重新分页。浏览沿原留存配置清理且history_complete=false；失权公开资料只保留引用，标题城市为null。票据仅ISSUED/SUPERSEDED，脱敏副本不是票据原件；原件按原业务受控下载。所有分类不自动办结申请。
 
         PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动仅十类本人记录白名单，机构/评委/设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
-
   /api/v1/engagement/mcn/batches:
     get:
       operationId: findOrganizationBatchByRequest
@@ -33876,6 +33876,7 @@ paths:
           - GUARDIAN_CONTROLS
           - GUARDIAN_CASES
           - GUARDIAN_RECHARGE_REFUNDS
+          - AUDITION_DISTANCE_LOCATIONS
       - name: cursor
         in: query
         schema:
@@ -35132,6 +35133,148 @@ paths:
           $ref: '#/components/responses/Conflict'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/auditions/offers/{record_id}/distance-location:
+    get:
+      operationId: getAuditionDistanceLocation
+      summary: 本人查看当前试镜服务区域声明
+      description: 仅艺人本人个人身份，无地点时version为0、grid为null；声明不是实时定位，也不自动替代隐私申请答复。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionDistanceLocationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+    post:
+      operationId: setAuditionDistanceLocation
+      summary: 本人同意或撤销公开试镜服务区域距离用途
+      description: 仅艺人本人个人身份；不允许机构代理或运营代同意。仅0.01度格点，禁止精确坐标、私宅和实时位置；enabled=true须单独同意版本audition-distance-v1，服务仍为合格公开线下试镜。关闭时清空格点，不保存历史格点；旧键返回当前状态。If-Match使用地点自身版本，未声明为0，不改变报价/订单或服务快照。此处只验证调用声明，不能证明设备或真人实际同意。
+      tags:
+      - auditions
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - in: header
+        name: If-Match
+        required: true
+        schema:
+          type: string
+          pattern: ^"(?:0|[1-9][0-9]{0,9})"$
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionDistanceUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionDistanceSetRequest'
+  /api/v1/discovery/auditions/distance:
+    post:
+      operationId: searchAuditionsByDistance
+      x-idempotency-mode: READ_ONLY_EPHEMERAL_QUERY
+      summary: 按当次同意的粗略位置筛选公开线下试镜服务
+      description: POST正文接受客户端粗化后的0.01度格点和本次用途同意，不接受URL位置，不保存查询位置，不记查询事件。仅本人声明公开服务区域且仍可公开预约的线下服务；距离为格点间直线距离向上取整公里，不是实时人员位置或导航。max_distance_km为1至500，按距离桶/编号分页，游标绑定账号与查询条件、不携带位置。每次最多扫描10页，空页仍可续页；当前撤销、资格或授权失效立即重核，无并发快照承诺。手动城市原接口不需要位置。
+      tags:
+      - discovery
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: 当前账号可见的公开结果。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditionDistanceSearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditionDistanceSearchRequest'
 components:
   securitySchemes:
     bearerAuth:
@@ -78198,6 +78341,31 @@ components:
             - coverage
             - request_completion
             - original_documents_included
+          - type: object
+            additionalProperties: false
+            properties:
+              section:
+                const: AUDITION_DISTANCE_LOCATIONS
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/AuditionDistanceOwnLocation'
+              next_cursor:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              coverage:
+                const: OWN_ACCOUNT_RECORDS_ONLY
+              request_completion:
+                const: NOT_CONFIRMED
+            required:
+            - section
+            - items
+            - next_cursor
+            - coverage
+            - request_completion
       required:
       - meta
       - data
@@ -79681,6 +79849,233 @@ components:
               - type: 'null'
           required:
           - case_id
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+
+    AuditionDistanceGrid:
+      type: object
+      additionalProperties: false
+      properties:
+        latitude_grid:
+          type: integer
+          minimum: -9000
+          maximum: 9000
+        longitude_grid:
+          type: integer
+          minimum: -18000
+          maximum: 17999
+      required:
+      - latitude_grid
+      - longitude_grid
+
+    AuditionDistanceConsent:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          const: PUBLIC_AUDITION_DISTANCE
+        notice_version:
+          const: audition-distance-v1
+        accepted:
+          const: true
+      required:
+      - purpose
+      - notice_version
+      - accepted
+
+    AuditionDistanceLocation:
+      type: object
+      additionalProperties: false
+      properties:
+        offer_id:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        enabled:
+          type: boolean
+        notice_version:
+          const: audition-distance-v1
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - offer_id
+      - object_version
+      - enabled
+      - notice_version
+      - updated_at
+
+    AuditionDistanceOwnLocation:
+      type: object
+      additionalProperties: false
+      properties:
+        offer_id:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        enabled:
+          type: boolean
+        notice_version:
+          const: audition-distance-v1
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        grid:
+          anyOf:
+          - $ref: '#/components/schemas/AuditionDistanceGrid'
+          - type: 'null'
+      required:
+      - offer_id
+      - object_version
+      - enabled
+      - notice_version
+      - updated_at
+      - grid
+
+    AuditionDistanceSetRequest:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          enabled:
+            const: true
+          grid:
+            $ref: '#/components/schemas/AuditionDistanceGrid'
+          consent:
+            $ref: '#/components/schemas/AuditionDistanceConsent'
+        required:
+        - enabled
+        - grid
+        - consent
+      - type: object
+        additionalProperties: false
+        properties:
+          enabled:
+            const: false
+        required:
+        - enabled
+
+    AuditionDistanceSearchRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        origin:
+          $ref: '#/components/schemas/AuditionDistanceGrid'
+        consent:
+          $ref: '#/components/schemas/AuditionDistanceConsent'
+        max_distance_km:
+          type: integer
+          minimum: 1
+          maximum: 500
+        city:
+          type: string
+          minLength: 1
+          maxLength: 100
+        q:
+          type: string
+          minLength: 1
+          maxLength: 100
+        cursor:
+          type: string
+          minLength: 1
+          maxLength: 512
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+      required:
+      - origin
+      - consent
+      - max_distance_km
+
+    AuditionDistanceLocationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/AuditionDistanceOwnLocation'
+      required:
+      - meta
+      - data
+
+    AuditionDistanceUpdateResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/AuditionDistanceLocation'
+      required:
+      - meta
+      - data
+
+    AuditionDistanceSearchResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            basis:
+              const: DECLARED_SERVICE_AREA_GRID
+            approximate:
+              const: true
+            distance_unit:
+              const: KM_CEILING
+            city:
+              type:
+              - string
+              - 'null'
+            max_distance_km:
+              type: integer
+              minimum: 1
+              maximum: 500
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  offer:
+                    $ref: '#/components/schemas/AuditionPublicOffer'
+                  distance_km:
+                    type: integer
+                    minimum: 0
+                    maximum: 500
+                required:
+                - offer
+                - distance_km
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              maxLength: 512
+          required:
+          - basis
+          - approximate
+          - distance_unit
+          - city
+          - max_distance_km
           - items
           - next_cursor
       required:
