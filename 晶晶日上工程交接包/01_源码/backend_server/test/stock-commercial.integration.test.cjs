@@ -35,7 +35,7 @@ test('commercial stock independent product, scoped personal rights, business buy
   const r=request();order=await trade.stockCheckout(buyer.ctx,r);assert.equal((await trade.stockCheckout(buyer.ctx,r)).id,order.id);assert.equal(order.buyer_party_id,org.party_id);assert.equal(order.data.quote.total_minor,50000);assert.deepEqual(order.data.quote.stock_video.license.commercial_uses,['BRAND_PROMOTION']);
   await assert.rejects(trade.stockCheckout(buyer.ctx,request()),{code:'STOCK_ORDER_ALREADY_EXISTS'});
  });
- server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory,supplyEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
+ server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory,supplyEnv:{NODE_ENV:'test',INVOICE_SANDBOX_ENABLED:'true',TRADE_REQUIRE_V5_PRODUCTS:'true'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
  async function get(url,party=org.party_id,user=buyer){const r=await fetch(base+url,{headers:{Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{})}});if(!r.headers.get('content-type')?.includes('json'))return {status:r.status,bytes:Buffer.from(await r.arrayBuffer())};const j=await r.json();fixtures.push({method:'GET',path:new URL(base+url).pathname,schema:r.status===200?'StockResponse':'ErrorResponse',value:j});return {status:r.status,...j};}
  let pay;
  await t.test('payment activates the original business license; actual controlled bytes match and strangers cannot read',async()=>{
@@ -49,6 +49,8 @@ test('commercial stock independent product, scoped personal rights, business buy
   assert.equal((await get('/stock/sales-publications',seller.personal_party_id,seller)).status,200);
   assert.equal((await get('/stock/participant-options?person_id='+seller.person.id,seller.personal_party_id,seller)).status,200);
  });
+ const enterpriseRecords=await require('./support/enterprise-invoice-journey.cjs')({t,db,S,parties,org,order,base,fixtures});
+ const evidence=require('node:path').resolve(__dirname,'../../../..','.local/enterprise-invoice-result.json');await fs.mkdir(require('node:path').dirname(evidence),{recursive:true});await fs.writeFile(evidence,JSON.stringify({result:'PASS',checks:enterpriseRecords,limits:['Synthetic reviewed organization capability and operator grants; no real invoice or owner-transfer workflow.']},null,2));
  await t.test('consent withdrawal stops downloads, restoration does not silently expand the license',async()=>{
   await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[consent.id]);assert.equal((await get('/stock/purchases/'+order.id+'/content')).error.code,'STOCK_SALE_CONSENT_REQUIRED');
   await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[consent.id]);
