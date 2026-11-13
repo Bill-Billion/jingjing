@@ -96,8 +96,9 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   for(const p of [producer,buyer,outsider])ft(await fconfirm(g,p));assert.equal((await fc('POST','/agreements',producer,{...agreementInput,previous_agreement_id:g.id})).status,409);
   assert.equal((await fr(g)).data.rules.version,'test.explicit.2');
  });
+ let financeRestrictions;
  await t.test('restricted finance evidence respects overlapping restrictions and restrictions activated during storage read',async()=>{
-  const restrictions=await require('./helpers/gig-privacy-restriction.cjs')({db,resolvePrincipal,author:producer,reviewer,applicant:stranger});
+  const restrictions=financeRestrictions=await require('./helpers/gig-privacy-restriction.cjs')({db,resolvePrincipal,author:producer,reviewer,applicant:stranger});
   const url='/records/'+g.id+'/evidence/'+proof.id,original=JSON.stringify((await fr(g)).data);
   assert.equal((await fc('GET',url)).status,200);
   const first=await restrictions.restrict(proof.id),second=await restrictions.restrict(proof.id);
@@ -116,6 +117,14 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   settlement=ft(await fp('/agreements/'+g.id+'/settlements',g,{period_reference:'initial',note:'synthetic'}));const before=await balances(g);assert.equal(before.items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);
   settlement=ft(await freview(settlement));for(const p of [producer,buyer])ft(await fconfirm(settlement,p));assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);
   const confirmationKey=key(),confirmationBody={content_sha256:settlement.content_sha256,decision:'APPROVED',reason:'synthetic exact own-balance confirmation'};
+  const restrictions=financeRestrictions;
+  const restricted=await restrictions.restrict(proof.id);
+  try{
+   const result=ft(await fp('/records/'+settlement.id+'/confirmations',settlement,confirmationBody,outsider,outsider.personal_party_id,{'Idempotency-Key':confirmationKey}));
+   assert.equal(result.content_sha256,settlement.content_sha256);
+   const held=await balances(g);assert.equal(held.items.find(x=>x.party_id===outsider.personal_party_id).available_minor,0);assert.equal(held.items.find(x=>x.party_id===outsider.personal_party_id).reason_code,'CONTENT_RESTRICTED');
+   assert.equal((await db.execute('SELECT order_id FROM gig_settlement_archives WHERE order_id=?',[order.id]))[0].length,0);
+  }finally{await restrictions.release(restricted);}
   for(let attempt=0;attempt<2;attempt++){const result=ft(await fp('/records/'+settlement.id+'/confirmations',settlement,confirmationBody,outsider,outsider.personal_party_id,{'Idempotency-Key':confirmationKey}));assert.deepEqual(result.data.balances.map(x=>x.party_id),[outsider.personal_party_id]);assert.equal(result.content_sha256,settlement.content_sha256);}
   savedSettlement=JSON.stringify((await fr(settlement)).data);
   const after=await balances(g);assert.equal(after.received_minor,10000);assert.equal(after.items.find(x=>x.party_id===outsider.personal_party_id).available_minor,1500);assert.equal(after.items.find(x=>x.party_id===producer.personal_party_id).available_minor,0);

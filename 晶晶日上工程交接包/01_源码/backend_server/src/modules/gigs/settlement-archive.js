@@ -3,6 +3,8 @@ const A=require('../artists/context'),S=require('../settlement/source'),{digest}
 async function read(tx,orderId){const row=await A.one(tx,'SELECT * FROM gig_settlement_archives WHERE order_id=? FOR SHARE',[orderId]);if(!row)return null;const data=A.parse(row.data_json);if(digest(data)!==row.data_sha256||data.order_id!==orderId||data.settlement_id!==row.settlement_id)throw error('STORED_CONTENT_MISMATCH',503);return data;}
 async function afterConfirmation(tx,a,g,r){
  if(g.data.source_type!=='ORDER'||r.kind!=='SETTLEMENT'||g.data.rules.release_condition!=='DELIVERY_ACCEPTED')return;
+ // Archival adds no new confirmation requirements to unrelated order types.
+ if(!(await S.source(tx,'ORDER',g.data.source_id)).record.data.quote.commercial)return;
  try{await S.confirmed(tx,r,g.data.parties);await S.liveAgreement(tx,g);await S.freeze(tx,g);}catch(e){if(['FINANCE_CONFIRMATIONS_REQUIRED','FINANCE_AGREEMENT_NOT_APPROVED','FINANCE_DISPUTED','FINANCE_EVIDENCE_NOT_READY','PRIVATE_MATERIAL_NOT_READY'].includes(e.code))return;throw e;}
  const f=await S.facts(tx,g),o=f.info.record;
  if(!o.data.quote.commercial||o.current_status!=='PAID'||f.hash!==r.data.facts_sha256||f.receivable_minor!==0||f.received_minor<=0||g.data.rules.settlement_at>await A.now(tx))return;
