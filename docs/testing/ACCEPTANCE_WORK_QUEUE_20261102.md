@@ -69,7 +69,7 @@
 |ACC-DEL-13.04 非标权限|后端|正常办理、取消/退款/撤回|RC-03（局部）|PARTIAL|
 |ACC-DEL-14.01 按品类动态|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-14（局部）|PASS|
 |ACC-DEL-14.02 草稿及补件|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
-|ACC-DEL-14.03 隐私关系|后端|正常办理、取消/退款/撤回|CAST-PURPOSE-PRIVACY（局部）|PARTIAL|
+|ACC-DEL-14.03 隐私关系|后端|正常办理、取消/退款/撤回|CAST-PURPOSE-PRIVACY（局部）；ORDERED-STORY-PRIVATE-FILES（局部）|PARTIAL|
 |ACC-DEL-14.04 需求不等付款|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-15.01 生产边界|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-15（局部）|PASS|
 |ACC-DEL-15.02 复用制作核心|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
