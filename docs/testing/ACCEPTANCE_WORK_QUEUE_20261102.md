@@ -3,7 +3,7 @@
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
 后端负责人 chengcongcong222 按双方CURRENT继续独立开发、后端验证和证据登记；Bill-Billion仅既有UI工作，不代认领新页面任务。当前不开发修补前端、不运行本机App/Web。原18组和12路线不变。
 
-登记共151条；状态：{'NOT_RUN': 19, 'PARTIAL': 113, 'PASS': 19}；其中122条有显式登记的局部证据关联。
+登记共151条；状态：{'NOT_RUN': 18, 'PARTIAL': 114, 'PASS': 19}；其中123条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
 接续顺序以双方CURRENT及本轮报告为准，逐项核原文、实际实现和剩余证据；页面与设备缺口单列待后续安排，不将其重新指派给前端，不阻断独立后端工作。
@@ -89,7 +89,7 @@
 |ACC-DEL-18.04 现金按订单规则退款并撤回消费成长；不足晶钻记待冲回，新获得先抵扣，期间暂停投票/兑换/抽奖；余额不为负、不追收现金，同源撤回不重复。|后端|正常办理、取消/退款/撤回|BENEFIT-API-05, BENEFIT-API-06, BENEFIT-API-07, BENEFIT-API-08（局部）；WALLET-GROWTH-REVERSAL（局部）|PARTIAL|
 |ACC-DEL-19.01 三维分离|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-19（局部）|PARTIAL|
 |ACC-DEL-19.02 城市与六榜|后端|正常办理、取消/退款/撤回|CITY-RANK-SOURCE-BOUNDARY（局部）|PARTIAL|
-|ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|BUYER-RANK-FROZEN-IDENTITY（局部）|PARTIAL|
 |ACC-DEL-19.04 推广预留|后端|正常办理、取消/退款/撤回|EARNED-EXPOSURE-NOT-PAID-AD（局部）|PARTIAL|
 |ACC-DEL-20.01 归因|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-20（局部）|PARTIAL|
 |ACC-DEL-20.02 新合同一级直推返佣10%–15%，具体活动经审核发布；成长归因和财务分账规则须一致，从约定来源列支、不挤占艺人/MCN本金。旧7.2%/6.6%等只按历史订单快照重放，不作为新活动默认。|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-20-02（局部）|PARTIAL|
