@@ -86,6 +86,15 @@ test('MCN actual multi-artist stock sale, assignment, batch and same-order refun
    const v=ok(await dashboard(staff));assert.deepEqual(v.orders,[]);assert.deepEqual(v.assignments,[]);assert.equal(v.total_order_received_minor,0);bad(await assign(staff,requestKey),'MCN_EMPLOYEE_SCOPE_REQUIRED');
    secondGrant=ok(await grant(staff,[coartist.person.id]));assert.equal(ok(await dashboard(staff)).orders.length,1);
   });
+  await t.test('closed artists and suspended personal parties reject dispatch and replay but do not erase owner history',async()=>{
+   for(const [table,column,value,code] of [['artist_people','id',coartist.person.id,'ARTIST_NOT_ACTIVE'],['parties','id',coartist.personal_party_id,'PARTY_NOT_ACTIVE']]){
+    await db.execute('UPDATE '+table+" SET current_status=? WHERE "+column+'=?',[table==='parties'?'SUSPENDED':'CLOSED',value]);
+    try{
+     bad(await assign(staff,requestKey),code);assert.deepEqual(ok(await dashboard(staff)).orders,[]);assert.equal(ok(await dashboard()).orders.length,1);
+     const b=ok(await call('GET','/engagement/mcn/batches/'+batch.id,outsider,undefined,org.party_id));assert.equal(b.items[0].status,'UNAVAILABLE');assert.equal(b.items[0].error_code,code);
+    }finally{await db.execute('UPDATE '+table+" SET current_status='ACTIVE' WHERE "+column+'=?',[value]);}
+   }
+  });
   async function refund(amount,license){
    let p=ok(await call('GET','/stock/purchases/'+order.id,buyer));p=ok(await call('POST','/stock/purchases/'+order.id+'/cases',buyer,{kind:'RIGHTS_DISPUTE',reason:'Synthetic same-order refund'},buyer.personal_party_id,p.object_version));
    p=ok(await call('POST','/stock/purchases/'+order.id+'/case-resolution',reviewer,{case_id:p.data.current_case_id,decision:'REFUND',reason:'Independent case decision',refund_minor:amount,license_action:license},null,p.object_version));
