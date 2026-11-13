@@ -89,7 +89,7 @@
 |ACC-DEL-18.04 现金按订单规则退款并撤回消费成长；不足晶钻记待冲回，新获得先抵扣，期间暂停投票/兑换/抽奖；余额不为负、不追收现金，同源撤回不重复。|后端|正常办理、取消/退款/撤回|BENEFIT-API-05, BENEFIT-API-06, BENEFIT-API-07, BENEFIT-API-08（局部）；WALLET-GROWTH-REVERSAL（局部）|PARTIAL|
 |ACC-DEL-19.01 三维分离|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-19（局部）|PARTIAL|
 |ACC-DEL-19.02 城市与六榜|后端|正常办理、取消/退款/撤回|CITY-RANK-SOURCE-BOUNDARY（局部）；CITY-MULTI-ARTIST-BOARDS（局部）|PARTIAL|
-|ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|BUYER-RANK-FROZEN-IDENTITY（局部）|PARTIAL|
+|ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|BUYER-RANK-FROZEN-IDENTITY（局部）；BUYER-RANK-SCALE-ATOMICITY（局部）|PARTIAL|
 |ACC-DEL-19.04 推广预留|后端|正常办理、取消/退款/撤回|EARNED-EXPOSURE-NOT-PAID-AD（局部）|PARTIAL|
 |ACC-DEL-20.01 归因|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-20（局部）|PARTIAL|
 |ACC-DEL-20.02 新合同一级直推返佣10%–15%，具体活动经审核发布；成长归因和财务分账规则须一致，从约定来源列支、不挤占艺人/MCN本金。旧7.2%/6.6%等只按历史订单快照重放，不作为新活动默认。|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-20-02（局部）|PARTIAL|

@@ -7952,7 +7952,7 @@
         "CORE-CLIENT-COMPLETE-18"
       ],
       "production_enabled": false,
-      "next_step": "新组合匹配后端已验，原页面已交付事实保留；新入口未接页面，本侧前端暂停。继续观察105b89e8远端并核买家榜规模、媒体标签；完整匹配及其他交易依据仍待核。",
+      "next_step": "新组合匹配后端已验，原页面已交付事实保留；新入口未接页面，本侧前端暂停。继续观察6212212d远端并核买家榜规模、媒体标签；完整匹配及其他交易依据仍待核。",
       "implementation": "IMPLEMENTED_ISOLATED_TESTS",
       "historical_next_steps": [
         {
@@ -7970,10 +7970,12 @@
         "source_commit": "26440449dcf0024f0f1601d56855edd8b9c1a7eb",
         "pass_count": 116,
         "http_response_cases": 507,
-        "uploaded": false
+        "uploaded": true,
+        "candidate": "6212212d53257de7f0c304bf5ed792b38504abc3",
+        "remote_receipt": "docs/reviews/pm01-recommended-matches-20261114/UPLOAD_OBSERVED.json"
       },
       "active_batch": "docs/reviews/pm01-recommended-matches-20261114/REPORT.md",
-      "active_batch_status": "BACKEND_VERIFIED_PENDING_UPLOAD"
+      "active_batch_status": "UPLOADED_REMOTE_RUNNING"
     },
     {
       "id": "CORE-PM01-W01-W09-CLOSURE-20261111",
@@ -8112,17 +8114,18 @@
         "docs/reviews/pm01-rank-boundaries-20261114/partial-rank-boundaries-evidence.json",
         "docs/reviews/pm01-mcn-supplier-income-20261114/REPORT.md",
         "docs/reviews/pm01-mcn-supplier-income-20261114/partial-mcn-supplier-evidence.json",
-        "docs/reviews/pm01-backend-runner-isolation-20261114/REPORT.md"
+        "docs/reviews/pm01-backend-runner-isolation-20261114/REPORT.md",
+        "docs/reviews/pm01-buyer-scale-20261114/REPORT.md"
       ],
-      "next_step": "观察105b89e8三组远端；同时按MATCHING_AUDIT推进原04.03组合匹配后端，再买家榜规模和媒体标签；不开发修补前端、不取消活跃候选。",
+      "next_step": "观察6212212d远端，接原24.03媒体标签实际处理与交付，再核原04.03其他交易依据/完整匹配；前端暂停，分批/排程只待核运行要求",
       "implementation": "PARTIAL",
       "pm01_work_items": [
         "W10"
       ],
-      "current_evidence_scope": "5dd8ae69完整纯后端回归已结束：187份测试文件、1830项通过、0失败、1项旧库58表比较因缺脱敏原库样本跳过；全部文件覆盖，888份冻结源码未变。95份同次HTTP文件、7627份响应格式通过，未借用旧文件。此次没有执行本机App/Web；旧误启网页的无效运行及失败证据仍保留。旧库比较未获证明，不能因其他测试通过而算完成。",
+      "current_evidence_scope": "退出档案计数修复及既有规模上限/事务回滚，8文件101通过；不是大规模分批功能或正式验收",
       "remote_check_status": "CURRENT_NOT_UPLOADED_PREVIOUS_SERVER_TIMEOUT_FAILURE",
-      "active_batch": "docs/reviews/pm01-backend-runner-isolation-20261114/REPORT.md",
-      "active_batch_status": "UPLOADED_REMOTE_RUNNING",
+      "active_batch": "docs/reviews/pm01-buyer-scale-20261114/REPORT.md",
+      "active_batch_status": "BACKEND_VERIFIED_PENDING_UPLOAD",
       "frontend_execution": "PAUSED_BY_USER_20261112",
       "local_verification_run": "pm01-mcn-supplier-2026-11-13T17-15-13-507Z",
       "business_commit": "ef808905fc93c0be073fcebeb250b1812080377e",
@@ -8230,6 +8233,17 @@
         "http_files": 95,
         "candidate": "105b89e89c957e43f12c2203e9a39c4c254c7779",
         "remote_receipt": "docs/reviews/pm01-backend-runner-isolation-20261114/UPLOAD_OBSERVED.json"
+      },
+      "buyer_scale_20261114": {
+        "owner": "chengcongcong222",
+        "status": "IMPLEMENTED_ISOLATED_TESTS",
+        "acceptance_id": "ACC-DEL-19.03",
+        "report": "docs/reviews/pm01-buyer-scale-20261114/REPORT.md",
+        "scope": "已退出不占参与候选、现有规模上限及完整回滚，不新增容量承诺或前端",
+        "source_commit": "8d664984d5997692838e9dd0c92c3cdf92eb6b46",
+        "pass_count": 101,
+        "http_response_cases": 376,
+        "uploaded": false
       }
     },
     {
