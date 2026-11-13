@@ -39,7 +39,7 @@ test('notices and one-way submissions in isolated MySQL',{skip:!process.env.JX_M
  const makeNotice=async(body=S.body)=>review(ok(await call('POST','/notices/announcements',buyer,{rule_id:S.rule.id,notice:body},buyer.personal_party_id,headers())));
  const submit=async(s=S.submission)=>review(ok(await call('POST','/notices/submissions',seller,{rule_id:S.rule.id,submission:s},seller.personal_party_id,headers())));
  const read=(r,u=buyer)=>call('GET','/notices/records/'+r.id,u);
- let notice,submission,caseId;
+ let notice,submission,caseId;const journey=[];
  await t.test('ordinary adult cannot publish by supplying a level; funding alone grants no points',async()=>{
   bad(await call('POST','/notices/announcements',buyer2,{rule_id:S.rule.id,notice:S.body},buyer2.personal_party_id,headers()),'NOTICE_PUBLISHER_NOT_ELIGIBLE');
   const rules=ok(await call('GET','/notices/rules',buyer,undefined,null));assert.ok(rules.items.some(r=>r.id===S.rule.id));
@@ -115,10 +115,12 @@ test('notices and one-way submissions in isolated MySQL',{skip:!process.env.JX_M
   bad(await call('POST','/operations/objects/NOTICES/'+submission.id+'/comments',buyer,{reply_to:null,body:'free chat'},buyer.personal_party_id,headers()),'COMMENT_TARGET_NOT_SUPPORTED');
  });
  await t.test('duplicate interest creates one case; no order or chat created',async()=>{
-  const k=key(),body={decision:'INTERESTED'};const x=ok(await call('POST','/notices/submissions/'+submission.id+'/decision',buyer,body,buyer.personal_party_id,headers(submission,k)));caseId=x.data.case_id;
+  const k=key(),body={decision:'INTERESTED'};const replies=await Promise.all([1,2,3].map(()=>call('POST','/notices/submissions/'+submission.id+'/decision',buyer,body,buyer.personal_party_id,headers(submission,k))));const x=ok(replies[0]);caseId=x.data.case_id;for(const r of replies)assert.equal(ok(r).data.case_id,caseId);
   const y=ok(await call('POST','/notices/submissions/'+submission.id+'/decision',buyer,body,buyer.personal_party_id,headers(submission,k)));assert.equal(y.data.case_id,caseId);
   const c=ok(await read({id:caseId}));assert.equal(c.next_action,'WAIT_SUPPORT');assert.equal(c.order_id,null);assert.equal(c.chat_enabled,false);
   assert.equal((await db.execute('SELECT case_id FROM notice_links WHERE submission_id=?',[submission.id]))[0].length,1);
+  const events=(await db.execute("SELECT id FROM ops_events WHERE domain='NOTICES' AND record_id=? AND event_code='INTERESTED'",[submission.id]))[0];assert.equal(events.length,1);assert.equal((await db.execute('SELECT party_id FROM ops_recipients WHERE event_id=?',[events[0].id]))[0].length,2);
+  journey.push({name:'concurrent acceptance creates one case and one event for both parties, not an order',result:'PASS',submission_id:submission.id,case_id:caseId,event_id:events[0].id});
  });
  await t.test('concurrent opposite decisions produce one winner, stale version rejected',async()=>{
   const r=await submit();const replies=await Promise.all(['INTERESTED','DECLINE'].map(decision=>call('POST','/notices/submissions/'+r.id+'/decision',buyer,{decision},buyer.personal_party_id,headers(r))));assert.equal(replies.filter(x=>x.status===200).length,1);assert.equal(replies.filter(x=>x.error?.code==='VERSION_CONFLICT').length,1);
@@ -127,7 +129,11 @@ test('notices and one-way submissions in isolated MySQL',{skip:!process.env.JX_M
   let r=await submit();const data={...r.data,expires_at:'2020-01-01T00:00:00.000Z'};await db.execute('UPDATE notice_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),r.id]);bad(await call('POST','/notices/submissions/'+r.id+'/decision',buyer,{decision:'INTERESTED'},buyer.personal_party_id,headers(r)),'NOTICE_SUBMISSION_EXPIRED');assert.equal(ok(await read(r)).next_action,'EXPIRED');
  });
  await t.test('withdrawal closes unlinked case and blocks later conversion',async()=>{
-  const r=await submit();let x=ok(await call('POST','/notices/submissions/'+r.id+'/decision',buyer,{decision:'INTERESTED'},buyer.personal_party_id,headers(r)));await N.close(seller.ctx,{record_id:x.id,party_id:seller.personal_party_id,expected_version:x.object_version,reason:'withdraw',operation_key:key()});assert.equal(ok(await read({id:x.data.case_id})).current_status,'CLOSED');
+  const r=await submit();let x=ok(await call('POST','/notices/submissions/'+r.id+'/decision',buyer,{decision:'INTERESTED'},buyer.personal_party_id,headers(r)));const command=headers(x),body={reason:'withdraw'};
+  const close=()=>call('POST','/notices/records/'+x.id+'/close',seller,body,seller.personal_party_id,command);const closed=ok(await close());assert.equal(ok(await close()).id,closed.id);assert.equal(ok(await read({id:x.data.case_id})).current_status,'CLOSED');
+  bad(await call('GET','/notices/cases/'+x.data.case_id+'/quote-options',reviewer,undefined,null),'NOTICE_CASE_NOT_OPEN');
+  for(const [id,event] of [[x.id,'WITHDRAWN'],[x.data.case_id,'CASE_CLOSED']]){const rows=(await db.execute("SELECT id FROM ops_events WHERE domain='NOTICES' AND record_id=? AND event_code=?",[id,event]))[0];assert.equal(rows.length,1);assert.equal((await db.execute('SELECT party_id FROM ops_recipients WHERE event_id=?',[rows[0].id]))[0].length,2);}
+  assert.deepEqual(closed.data.submission,r.data.submission);journey.push({name:'same interested submission withdrawal closes case once, preserves authorization and queues both notifications',result:'PASS',submission_id:r.id,case_id:x.data.case_id});
  });
  await t.test('qualified organization still needs reviewed explicit publishing scope',async()=>{
   const org=await S.parties.createOrganization(buyer2.ctx,{display_name:'synthetic org',operation_key:key()});
@@ -149,10 +155,10 @@ test('notices and one-way submissions in isolated MySQL',{skip:!process.env.JX_M
   const c=ok(await read({id:caseId})),{trade,quote}=await S.commercialQuote(),qid=quote.id,data=quote.data;
   const body={quote_id:qid,quote_sha256:'0'.repeat(64),reason:'synthetic quote for same parties'};
   bad(await call('POST','/notices/cases/'+c.id+'/quote',reviewer,body,null,headers(c)),'NOTICE_QUOTE_MISMATCH');
-  const linked=ok(await call('POST','/notices/cases/'+c.id+'/quote',reviewer,{...body,quote_sha256:digest(data)},null,headers(c)));assert.equal(linked.data.quote.id,qid);assert.equal(ok(await read(c)).order_id,null);
+  const command=headers(c),linkBody={...body,quote_sha256:digest(data)},original=ok(await read(submission));const replies=await Promise.all([1,2,3].map(()=>call('POST','/notices/cases/'+c.id+'/quote',reviewer,linkBody,null,command)));const linked=ok(replies[0]);for(const r of replies)assert.equal(ok(r).id,linked.id);assert.equal(linked.data.quote.id,qid);assert.equal(ok(await read(c)).order_id,null);
 
   const accepted=await trade.accept(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id,expected_version:quote.object_version,quote_sha256:quote.content_sha256,operation_key:key()});
-  assert.equal(accepted.current_status,'OPEN');assert.equal(accepted.data.financial.received_minor,0);assert.equal(ok(await read(c)).order_id,accepted.id);
+  assert.equal(accepted.current_status,'OPEN');assert.equal(accepted.data.financial.received_minor,0);assert.equal(ok(await read(c)).order_id,accepted.id);assert.equal(ok(await read(submission)).content_sha256,original.content_sha256);assert.equal((await db.execute("SELECT id FROM trade_records WHERE kind='ORDER' AND parent_id=?",[qid]))[0].length,1);journey.push({name:'same support case independently links one original quote and one order without rewriting intent authorization',result:'PASS',submission_id:submission.id,case_id:c.id,quote_id:qid,order_id:accepted.id,original_submission_sha256:original.content_sha256});
 
  });
 
@@ -202,6 +208,7 @@ test('notices and one-way submissions in isolated MySQL',{skip:!process.env.JX_M
   assert.equal(ok(await call('GET','/notices/records?kind=CASE',buyer2)).items.length,0);
   const audit=ok(await call('GET','/operations/objects/NOTICES/'+submission.id+'/audit',reviewer,undefined,null));assert.ok(audit.items.some(x=>x.event_code==='INTERESTED'));assert.ok(audit.items.every(x=>x.request_id));
  });
+ await fs.writeFile(path.resolve(__dirname,'../../../..','.local/cooperation-intent-result.json'),JSON.stringify({result:'PASS',checks:journey,limits:['Synthetic qualifications, authorizations and quote; no payment or frontend','Notification event/recipient evidence only, not real push delivery','Independent support linking exists; explicit individual staff assignment is not implemented by this batch']},null,2)+'\n');
  const out=process.env.JX_NOTICES_HTTP_FIXTURES||path.resolve(__dirname,'../../../..','.local/notices-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures.filter(x=>!x.path.includes('/operations'))},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

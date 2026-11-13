@@ -100,22 +100,39 @@ test('new artist contract, classified review and free services in isolated MySQL
  const uploadPhoto=()=>call('POST','/people/'+person.id+'/assets?purpose=REVIEW_EVIDENCE&media_type=image/png',artist,png,artist.personal_party_id,{...headers(),'Content-Type':'application/octet-stream'});
  const card=ok(await uploadPhoto()),life=ok(await uploadPhoto()),full=ok(await uploadPhoto()),replacement=ok(await uploadPhoto());
  const classified={model_card_asset_id:card.id,lifestyle_asset_ids:[life.id],full_body_asset_ids:[full.id],personal_introduction:'synthetic personal introduction',resume:'synthetic resume'};
+ const journey=[];
+ await t.test('unpaid classified review cannot submit; failed attempt leaves the same order unpaid and no application',async()=>{
+  const unpaid=await serviceOrder('HALO_REVIEW',{pay:false,haloLevel:2,modern:true});
+  bad(await call('POST','/people/'+person.id+'/halos',artist,{level:2,ownership_promise:true,evidence_asset_ids:[evidence.id],service_id:unpaid.service.id,certification_materials:classified},artist.personal_party_id,headers()),'HALO_PAID_REVIEW_REQUIRED');
+  const rows=(await db.execute("SELECT data_json FROM artist_records WHERE person_id=? AND kind='HALO'",[person.id]))[0];assert.ok(!rows.some(r=>(typeof r.data_json==='string'?JSON.parse(r.data_json):r.data_json).service_id===unpaid.service.id));
+  const current=ok(await call('GET','/people/'+person.id+'/services/'+unpaid.service.id));assert.equal(current.order.financial.received_minor,0);
+  journey.push({name:'unpaid application rejected without phantom submission',result:'PASS',service_id:unpaid.service.id,order_id:unpaid.order.id});
+ });
  const paid=await serviceOrder('HALO_REVIEW',{haloLevel:2,modern:true});
+ await t.test('paid review fee is recorded separately from an application and certification approval',async()=>{
+  const current=ok(await call('GET','/people/'+person.id+'/services/'+paid.service.id));assert.equal(current.current_status,'READY');assert.equal(current.order.financial.received_minor,1000);assert.equal(ok(await call('GET','/people/'+person.id)).halo_level,1);
+  journey.push({name:'fee paid but not certified',result:'PASS',service_id:paid.service.id,order_id:paid.order.id,payment_id:paid.payment.id,fee_minor:1000,halo_level:1});
+ });
  const apply=(extra={})=>call('POST','/people/'+person.id+'/halos',artist,{level:2,ownership_promise:true,evidence_asset_ids:[evidence.id],service_id:paid.service.id,...extra},artist.personal_party_id,headers());let application;
  await t.test('new certification refuses missing categories, wrong files and another owner assets',async()=>{
   bad(await apply(),'HALO_CLASSIFIED_MATERIALS_REQUIRED');bad(await apply({certification_materials:{...classified,resume:''}}),'INVALID_DISPLAY_NAME');
   bad(await apply({certification_materials:{...classified,model_card_asset_id:evidence.id}}),'PRIVATE_MATERIAL_NOT_READY');
   const text=ok(await upload('REVIEW_EVIDENCE'));bad(await apply({certification_materials:{...classified,full_body_asset_ids:[text.id]}}),'HALO_MATERIAL_MEDIA_TYPE_INVALID');
   await db.execute('UPDATE supply_assets SET owner_party_id=? WHERE id=?',[stranger.personal_party_id,card.id]);bad(await apply({certification_materials:classified}),'PRIVATE_MATERIAL_NOT_READY');await db.execute('UPDATE supply_assets SET owner_party_id=? WHERE id=?',[artist.personal_party_id,card.id]);
-  application=ok(await apply({certification_materials:classified}));assert.equal(application.data.rule_version,'CONTRACT_20261029');assert.ok(application.data.evidence_asset_ids.includes(card.id));assert.equal(application.current_status,'SUBMITTED');
+  const command=headers(),body={level:2,ownership_promise:true,evidence_asset_ids:[evidence.id],service_id:paid.service.id,certification_materials:classified};
+  const replies=await Promise.all([1,2,3].map(()=>call('POST','/people/'+person.id+'/halos',artist,body,artist.personal_party_id,command)));application=ok(replies[0]);for(const r of replies)assert.equal(ok(r).id,application.id);
+  assert.equal(ok(await call('GET','/people/'+person.id)).halo_level,1);
+  journey.push({name:'invalid materials fixed and concurrent retry uses one paid application',result:'PASS',application_id:application.id,service_id:paid.service.id,approved:false});
+  assert.equal(application.data.rule_version,'CONTRACT_20261029');assert.ok(application.data.evidence_asset_ids.includes(card.id));assert.equal(application.current_status,'SUBMITTED');
  });
  await t.test('supplement replaces classified snapshot, preserves original evidence and consumes one fee',async()=>{
   const count=Number((await db.execute("SELECT COUNT(*) n FROM trade_records WHERE kind='PAYMENT'"))[0][0].n);
   application=ok(await call('POST','/people/'+person.id+'/records/'+application.id+'/reviews',reviewer,{decision:'NEEDS_MATERIAL',reason:'replace full body image'},null,headers(application)));
-  const next={...classified,full_body_asset_ids:[replacement.id]};application=ok(await call('POST','/people/'+person.id+'/records/'+application.id+'/supplements',artist,{evidence_asset_ids:[replacement.id],note:'updated body image',certification_materials:next},artist.personal_party_id,headers(application)));
+  const next={...classified,full_body_asset_ids:[replacement.id]},command=headers(application),body={evidence_asset_ids:[replacement.id],note:'updated body image',certification_materials:next};
+  const replies=await Promise.all([1,2,3].map(()=>call('POST','/people/'+person.id+'/records/'+application.id+'/supplements',artist,body,artist.personal_party_id,command)));application=ok(replies[0]);for(const r of replies)assert.equal(ok(r).id,application.id);assert.equal(application.data.supplements.length,1);
   assert.deepEqual(application.data.certification_materials,next);assert.deepEqual(application.data.supplements[0].previous_certification_materials,classified);assert.ok(application.data.evidence_asset_ids.includes(full.id));
   for(const asset of [full,replacement]){const res=await fetch(base+'/people/'+person.id+'/records/'+application.id+'/assets/'+asset.id+'/content',{headers:{Authorization:'Bearer '+reviewer.token}});assert.equal(res.status,200);assert.deepEqual(Buffer.from(await res.arrayBuffer()),png);}
-  application=ok(await review(application));assert.equal(application.current_status,'APPROVED');assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_records WHERE kind='PAYMENT'"))[0][0].n),count);assert.equal(ok(await call('GET','/people/'+person.id+'/services/'+paid.service.id)).current_status,'DELIVERED');
+  application=ok(await review(application));assert.equal(application.current_status,'APPROVED');assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_records WHERE kind='PAYMENT'"))[0][0].n),count);assert.equal(ok(await call('GET','/people/'+person.id+'/services/'+paid.service.id)).current_status,'DELIVERED');journey.push({name:'same application supplements once without charging and independent approval consumes original fee',result:'PASS',application_id:application.id,service_id:paid.service.id,payment_id:paid.payment.id,supplements:1,original_materials_retained:true});
  });
  await t.test('new fee cannot be refunded; previous contract remains refundable',async()=>{
   await assert.rejects(trade.requestRefund(artist.ctx,{party_id:artist.personal_party_id,payment_id:paid.payment.id,allocations:[{line_id:'service',amount_minor:1000}],reason:'new fee',operation_key:key()}),{code:'HALO_REVIEW_FEE_NON_REFUNDABLE'});
@@ -126,6 +143,15 @@ test('new artist contract, classified review and free services in isolated MySQL
   a=ok(await call('POST','/people/'+person.id+'/records/'+a.id+'/withdrawals',artist,{reason:'synthetic withdrawal'},artist.personal_party_id,headers(a)));assert.equal(a.current_status,'WITHDRAWN');assert.equal(a.data.valid_from,null);const service=ok(await call('GET','/people/'+person.id+'/services/'+p.service.id));assert.equal(service.data.delivery.decision,'WITHDRAW');assert.equal(service.order.financial.net_minor,1000);
   await assert.rejects(trade.requestRefund(artist.ctx,{party_id:artist.personal_party_id,payment_id:p.payment.id,allocations:[{line_id:'service',amount_minor:1000}],reason:'withdrawn review',operation_key:key()}),{code:'HALO_REVIEW_FEE_NON_REFUNDABLE'});
  });
+ await t.test('expiry removes effective certification without rewriting approval history or automatically charging again',async()=>{
+  const before=ok(await call('GET','/people/'+person.id+'/records/'+application.id)),count=Number((await db.execute("SELECT COUNT(*) n FROM trade_records WHERE kind='PAYMENT'"))[0][0].n);
+  assert.equal(ok(await call('GET','/people/'+person.id)).halo_level,2);
+  const clock=t.mock.method(require('../src/modules/artists/context'),'now',async()=>new Date(Date.parse(before.data.valid_until)+1000).toISOString());
+  try{assert.equal(ok(await call('GET','/people/'+person.id)).halo_level,0);const after=ok(await call('GET','/people/'+person.id+'/records/'+application.id));assert.equal(after.current_status,'APPROVED');assert.equal(after.content_sha256,before.content_sha256);assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_records WHERE kind='PAYMENT'"))[0][0].n),count);}
+  finally{clock.mock.restore();}
+  journey.push({name:'synthetic future clock expires effective identity/certification but preserves approved history and fee',result:'PASS',application_id:application.id,original_valid_until:before.data.valid_until,original_sha256:before.content_sha256});
+ });
+ await fs.writeFile(path.resolve(__dirname,'../../../..','.local/certification-journey-result.json'),JSON.stringify({result:'PASS',checks:journey,limits:['Synthetic receipt and future clock; identity also expires in that future scenario','No real certification material or payment provider; no frontend']},null,2)+'\n');
  const out=process.env.JX_ARTIST_CONTRACT_HTTP_FIXTURES||path.resolve(__dirname,'../../../..','.local/artist-contract-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(modernServer)await new Promise(r=>modernServer.close(r));if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });
