@@ -14,6 +14,7 @@ async function usable(tx,p,r,{confirmed=false}={}){
  const variants=[];
  for(const [key,kind] of [['look_version_id','LOOK'],['voice_version_id','VOICE']]){
   if(d.cast[key]===null){if(consent.data.consent.features.includes('VOICE'))throw error('PARTICIPATION_VOICE_REQUIRED',409);continue;}
+  if(!consent.data.consent.features.includes(kind==='LOOK'?'FACE':'VOICE'))throw error('PARTICIPATION_FEATURE_CONSENT_REQUIRED',409);
   const v=await A.load(tx,d.cast[key],kind);if(v.person_id!==person.id||v.avatar_id!==c.data.avatar_id||v.current_status!=='RECORDED')throw error('PARTICIPATION_VARIANT_MISMATCH',409);
   const archive=await A.load(tx,v.data.consent_id,'CONSENT');if(archive.current_status!=='APPROVED'||archive.person_id!==person.id||archive.avatar_id!==c.data.avatar_id||archive.data.grantee_party_id!==holder||!archive.data.purposes.includes('PRIVATE_ARCHIVE')||!archive.data.features.includes(kind==='LOOK'?'FACE':'VOICE')||!require('../artists/policy').active(archive.data,at))throw error('PARTICIPATION_VARIANT_CONSENT_REQUIRED',409);await A.assets(tx,v.data.material_asset_ids,holder,['AVATAR_MATERIAL']);variants.push({id:v.id,content_sha256:v.content_sha256});
  }

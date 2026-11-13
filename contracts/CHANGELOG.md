@@ -1,3 +1,7 @@
+## 0.31.69-rc.2 — 定制素材许可与角色声音权限（2026-11-14）
+
+人工定制在创建和后续使用造型/声音版本时重新检查该版本归档许可的当前有效性、本人、数字人、特征、用途与授权对象。定制和参演协议的实际造型/声音必须包含在原供给许可特征内，归档声音不自动获得制作或发行权限。新增409错误CUSTOMIZATION_VARIANT_CONSENT_REQUIRED、CUSTOMIZATION_FEATURE_CONSENT_REQUIRED、PARTICIPATION_FEATURE_CONSENT_REQUIRED。无新字段、路由或迁移；原协议、费用和剧本不回写。不涉及前端。
+
 ## 0.31.69-rc.1 — 买家榜身份及可追溯快照（2026-11-13）
 
 新增POST /engagement/buyer-rankings及GET同路径索引、/{record_id}历史查看。有效本人实名、机构独审公开档案及明确入榜选择作为资格，未核验者不入榜；既有GET /engagement/buyers优先读最新快照，未保存时明确LIVE_NOT_SAVED。响应新增可选snapshot_id/snapshot_sha256/as_of/calculation_version/traceability。BUYER_RANK_SNAPSHOT冻结规则结果，BUYER_RANK_ENTRY保留本人金额、排名、归一基数和证据来源，并入本人ENGAGEMENT_RECORDS副本；不披露他人私有来源。退出/迁城/失权隐藏公开投影，历史不改；无新迁移或前端。
