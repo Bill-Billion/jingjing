@@ -16,7 +16,7 @@ test('unknown recharge refund survives encrypted restore without enabling dispat
   for(const u of [buyer,buyer2])await W.open(u.ctx,{party_id:u.personal_party_id,rule_id:rule.id,rule_sha256:rule.content_sha256,operation_key:key()});
   const binding={provider:'synthetic-custodian',environment:'SANDBOX',merchant_id:'synthetic-merchant',revision:'v1'};
   const recharge=await db.withTransaction(tx=>custody.prepare(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,amount_minor:30000,operation_key:key()},binding));
-  const topupProof={record_id:recharge.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:new Date().toISOString(),status:'SUCCEEDED'};await custody.applyVerifiedReceipt(topupProof);
+  const topupProof={record_id:recharge.id,...binding,currency:'CNY',amount_minor:30000,transaction_id:'synthetic:'+key(),occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'};await custody.applyVerifiedReceipt(topupProof);
   const proofAsset=await S.supply.upload(buyer.ctx,{party_id:buyer.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic mistaken topup evidence'),operation_key:key()});
   const summary=()=>W.summary(buyer.ctx,{party_id:buyer.personal_party_id}),read=r=>R.read(buyer.ctx,{record_id:r.id,party_id:buyer.personal_party_id}),request=(amount,operation=key())=>R.request(buyer.ctx,{party_id:buyer.personal_party_id,recharge_id:recharge.id,amount_minor:amount,reason:'synthetic mistaken recharge',evidence_asset_ids:[proofAsset.id],operation_key:operation});
   const reviewInput=(r,amount=r.data.requested_minor,decision='APPROVE')=>({record_id:r.id,expected_version:r.object_version,decision,amount_minor:amount,reason:'synthetic independent case decision',checks:{identity_verified:true,source_verified:true,refund_basis_verified:true},operation_key:key()});
@@ -25,7 +25,7 @@ test('unknown recharge refund survives encrypted restore without enabling dispat
   const providerCalls=[],observations=new Map();let behavior='success',duringRefund=null;
   const provider={binding,assertReady:async()=>{},refund:async(input,ctx)=>{
    assert.equal(ctx.idempotency_key,input.record_id);providerCalls.push({method:'refund',id:input.record_id});
-   const proof={record_id:input.record_id,recharge_id:input.recharge_id,...binding,original_transaction_id:input.original_transaction_id,refund_transaction_id:'synthetic-task:'+input.record_id,currency:'CNY',amount_minor:input.amount_minor,occurred_at:new Date().toISOString(),status:'SUCCEEDED'};
+   const proof={record_id:input.record_id,recharge_id:input.recharge_id,...binding,original_transaction_id:input.original_transaction_id,refund_transaction_id:'synthetic-task:'+input.record_id,currency:'CNY',amount_minor:input.amount_minor,occurred_at:await require('../src/modules/artists/context').now(db),status:'SUCCEEDED'};
    observations.set(input.record_id,proof);
    if(duringRefund)await duringRefund(input);
    if(behavior==='lost')throw new Error('synthetic provider response lost; never expose this text');
@@ -48,6 +48,7 @@ test('unknown recharge refund survives encrypted restore without enabling dispat
   await t.test('unknown original send is frozen with reserved funds and the same durable task',async()=>{
    r=await approvedCase(1000);q=await schedule(r);behavior='lost';await advance(q.job_id);behavior='success';
    r=await read(r);assert.equal(r.current_status,'UNKNOWN');assert.equal(count('refund',r.id),1);
+   assert.ok(observations.get(r.id).occurred_at>=r.data.submitted_at,'synthetic provider receipt uses the same database clock as dispatch');
    before=await summary();assert.equal(before.reserved_balance_minor,1000);jobBefore=await jobs.get(q.job_id);
    backup=await B.backup(db,{source_ref:'synthetic.refund.unknown.restore'});sealed=B.seal(backup.payload,encryptionKey);
    assert.equal(backup.manifest.external_object_bytes_included,false);assert.ok(!JSON.stringify(sealed).includes(r.id));
@@ -148,6 +149,8 @@ test('unknown recharge refund survives encrypted restore without enabling dispat
    // Exercise the internal engine in the disposable DB. Never start HTTP/worker main or set RELEASED.
    const restoredHandler=createRechargeRefundHandler({refunds:restoredRefunds,operatorContext:async()=>reviewer.ctx,providers});
    const fresh=await restoredJobs.claim('synthetic-isolated-recovery',60000);assert.equal(fresh.id,q.job_id);assert.notEqual(fresh.lease_token,oldLease.lease_token);assert.equal(fresh.attempts,oldLease.attempts+1);
+   // A receipt earlier than dispatch remains invalid; aligning synthetic clocks must not weaken the money guard.
+   await assert.rejects(restoredRefunds.applyVerifiedReceipt({...observations.get(r.id),occurred_at:new Date(Date.parse(r.data.submitted_at)-1).toISOString()},{task:fresh}),{code:'CUSTODY_RECEIPT_MISMATCH'});
    const outcome=await restoredHandler.recover(fresh,{});assert.equal(outcome.status,'SUCCEEDED');
    assert.equal(count('refund',r.id),1);assert.equal(count('query',r.id),1);
    const wallet=require('../src/modules/wallet/repository').createWalletRepository(restoredLive,{resolvePrincipal:S.resolvePrincipal});
