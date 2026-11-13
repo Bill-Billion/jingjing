@@ -54,7 +54,7 @@ test('reward remedy preserves one grant and all pending schedules across invalid
    await call('submitDeliveryEvidence',seller,{record_id:g.id,party_id:seller.personal_party_id,expected_version:g.object_version,asset_id:proof.id,purpose:'SCHEDULE'});
    return g;
   }
-  const propose=g=>call('proposeDelivery',outsider,{record_id:g.id,expected_version:g.object_version,starts_at:new Date(Date.now()+3600000).toISOString(),ends_at:new Date(Date.now()+3600000+7*86400000).toISOString(),reference:'synthetic future slot',evidence_asset_id:proof.id});
+  const propose=g=>{const start=Date.now()+3600000;return call('proposeDelivery',outsider,{record_id:g.id,expected_version:g.object_version,starts_at:new Date(start).toISOString(),ends_at:new Date(start+7*86400000).toISOString(),reference:'synthetic future slot',evidence_asset_id:proof.id});};
   const remedy=g=>call('requestRemedy',seller,{record_id:g.id,party_id:seller.personal_party_id,expected_version:g.object_version,reason:'synthetic unavailable slot or binding'});
   const resolve=(c,decision,op=key(),u=reviewer)=>call('reviewRemedy',u,{record_id:c.id,expected_version:c.object_version,decision,reason:'synthetic independent remedy evidence',evidence_asset_id:proof.id,operation_key:op});
   const schedule=id=>db.withTransaction(tx=>C.load(tx,id,'SCHEDULE'));
@@ -103,7 +103,7 @@ test('reward remedy preserves one grant and all pending schedules across invalid
   });
   await t.test('confirmed but no longer public award cannot finish; remedy cancels its approved slot once',async()=>{
    let g=await create();const s=await propose(g);await approve(s);g=await confirm(await get(g,seller),true);
-   await patch(g,{delivery:{...g.data.delivery,starts_at:new Date(Date.now()-8*86400000).toISOString(),ends_at:new Date(Date.now()-86400000).toISOString()}});
+   const elapsed=Date.now();await patch(g,{delivery:{...g.data.delivery,starts_at:new Date(elapsed-8*86400000).toISOString(),ends_at:new Date(elapsed-86400000).toISOString()}});
    g=await get(g,seller);await E.rankingProfile(seller.ctx,{...profileInput,opt_in:false,operation_key:key()});
    try{
     await assert.rejects(call('finish',reviewer,{record_id:g.id,expected_version:g.object_version,outcome:'EXPOSURE_COMPLETED',reason:'must not claim restricted exposure',evidence_asset_id:proof.id}),{code:'PUBLIC_ARTIST_NOT_AVAILABLE'});
