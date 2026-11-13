@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.63-rc.2
+  version: 0.31.64-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -18729,7 +18729,7 @@ paths:
     get:
       operationId: engagementMcnDashboard
       summary: 查看机构经营和历史订单收入
-      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      description: 筛选仅作用于orders和金额汇总。期间按订单创建时间UTC起含止不含，金额为选中订单截至查询时累计值，不是期间收款流水。person_id仅识别商单数字人绑定的艺人，未知归属保留null且不匹配艺人筛选。每订单只计一次；汇总仅含有已核实PRODUCTION收款的订单，SANDBOX及尚无已核实收款订单只列明细。应计不代表打款；truncated为true时总计仅所返子集，不能充当完整账表。员工仍受当前授权和订单指派限制。
       tags:
       - engagement
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -18737,6 +18737,34 @@ paths:
       parameters:
       - $ref: '#/components/parameters/RequestId'
       - $ref: '#/components/parameters/ActingParty'
+      - in: query
+        name: person_id
+        required: false
+        description: 业务数字人绑定的艺人
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: order_id
+        required: false
+        description: 精确订单
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: created_from
+        required: false
+        description: 订单创建时间下界，包含；规范UTC毫秒时间
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_before
+        required: false
+        description: 订单创建时间上界，不含；规范UTC毫秒时间
+        schema:
+          type: string
+          format: date-time
       responses:
         '200':
           description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
@@ -35611,6 +35639,55 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    McnIncomeOrder:
+      type: object
+      additionalProperties: false
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        person_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+        environment:
+          enum: [PRODUCTION, SANDBOX, null]
+        meaning:
+          const: ACCRUAL_NOT_PAYOUT
+        contract_sha256:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+        mcn_accrual_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        mcn_expected_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        order_quoted_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        order_received_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        order_refunded_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        order_net_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      required: [order_id, status, environment, meaning, contract_sha256, mcn_accrual_minor]
     RechargeRefundView:
       type: object
       additionalProperties: false
@@ -38625,11 +38702,37 @@ components:
               orders:
                 type: array
                 items:
-                  type: object
+                  $ref: '#/components/schemas/McnIncomeOrder'
               total_accrual_minor:
                 type: integer
                 minimum: 0
                 maximum: 900000000000
+              total_mcn_expected_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_order_quoted_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_order_received_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_order_refunded_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_order_net_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              period_basis:
+                const: ORDER_CREATED_AT_UTC
+              amount_basis:
+                const: ORDER_LIFETIME_AT_QUERY
+              total_basis:
+                const: VERIFIED_PRODUCTION_ORDERS
               history_preserved:
                 const: true
               truncated:

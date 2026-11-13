@@ -179,7 +179,7 @@ test('engagement real database journey and permission boundaries',{skip:!process
  });
  await t.test('artist cannot erase operator exclusion by editing public profile',async()=>{let p=await write('moderate',reviewer,{record_id:profile.id,expected_version:profile.object_version,reason:'synthetic safety exclusion',exclude:true});p=await write('rankingProfile',seller,{party_id:seller.personal_party_id,person_id:seller.person.id,city:'test-city',district:'test-district',category:'test-category',opt_in:true});assert.equal(p.current_status,'EXCLUDED');await assert.rejects(write('interaction',buyer,{profile_id:p.id,action:'VIEW',device_id:key()}));profile=await write('moderate',reviewer,{record_id:p.id,expected_version:p.object_version,reason:'independent recovery',exclude:false});});
 
- await t.test('MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation',async()=>{
+ await t.test('MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation',async t=>{
   const parties=require('../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal:S.resolvePrincipal});
   const org=await parties.createOrganization(outsider.ctx,{display_name:'synthetic two-artist income scope',operation_key:key()});
   await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]);
@@ -213,6 +213,40 @@ test('engagement real database journey and permission boundaries',{skip:!process
   }
   const dashboard=u=>R.mcnDashboard(u.ctx,{party_id:org.party_id});
   const owner=await dashboard(outsider);assert.equal(owner.orders.length,4);assert.equal(owner.total_accrual_minor,1000);
+  await t.test('income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once',async()=>{
+   const query=(u,filters={})=>R.mcnDashboard(u.ctx,{party_id:org.party_id,...filters});
+   for(let n=0;n<orders.length;n++)await db.execute('UPDATE trade_records SET created_at=? WHERE id=?',[`2026-10-${String(10+n).padStart(2,'0')} 00:00:00`,orders[n]]);
+   // A second artist assignment must not multiply the original order or its money.
+   const duplicate=await db.withTransaction(tx=>C.insert(tx,{id:outsider.account_id},'ASSIGNMENT',org.party_id,null,'ASSIGNED',{person_id:buyer2.person.id,account_id:outsider.account_id,order_id:orders[0],booking_id:null}));
+   const all=await query(outsider);assert.equal(all.orders.length,4);assert.equal(all.total_accrual_minor,1000);
+   const filtered=await query(outsider,{person_id:seller.person.id,created_from:'2026-10-10T00:00:00.000Z',created_before:'2026-10-12T00:00:00.000Z'});
+   assert.deepEqual(filtered.orders.map(x=>x.order_id),[orders[0]]);
+   assert.equal(filtered.period_basis,'ORDER_CREATED_AT_UTC');assert.equal(filtered.amount_basis,'ORDER_LIFETIME_AT_QUERY');
+   const row=filtered.orders[0];assert.equal(row.person_id,seller.person.id);assert.equal(row.created_at,'2026-10-10T00:00:00.000Z');
+   assert.equal(row.order_quoted_minor,1000);assert.equal(row.order_received_minor,1000);assert.equal(row.order_refunded_minor,0);assert.equal(row.order_net_minor,1000);assert.equal(row.mcn_expected_minor,100);assert.equal(row.mcn_accrual_minor,100);
+   assert.equal(filtered.total_order_received_minor,1000);assert.equal(filtered.total_mcn_expected_minor,100);
+   assert.deepEqual((await query(outsider,{order_id:orders[1]})).orders.map(x=>x.order_id),[orders[1]]);
+   assert.deepEqual((await query(buyer,{order_id:orders[1],person_id:buyer2.person.id})).orders,[]);
+   assert.equal((await query(buyer,{order_id:orders[1]})).total_order_received_minor,0);
+   assert.deepEqual((await query(outsider,{created_before:'2026-10-10T00:00:00.000Z'})).orders,[]);
+   await assert.rejects(query(outsider,{created_from:'2026-10-12T00:00:00.000Z',created_before:'2026-10-10T00:00:00.000Z'}),{code:'INVALID_REPORT_PERIOD'});
+   await assert.rejects(query(outsider,{person_id:'bad'}),{status:400});
+   await assert.rejects(query(outsider,{created_from:'bad'}),{status:400});
+   await db.withTransaction(tx=>C.save(tx,{id:outsider.account_id},duplicate,'REVOKED',duplicate.data,'SYNTHETIC_ASSIGNMENT_CLOSED'));
+  });
+  await t.test('income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution',async()=>{
+   const oid=orders[3],original=(await db.execute('SELECT * FROM trade_records WHERE id=?',[oid]))[0][0],contract=digest(A.parse(original.data_json).contract),refundId=key(),data={environment:'PRODUCTION',synthetic_only:true};
+   await db.execute("INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,'REFUND',?,?,?,?,'SUCCEEDED',?,?)",[refundId,buyer.personal_party_id,buyer2.personal_party_id,oid,outsider.account_id,JSON.stringify(data),digest(data)]);
+   await db.execute("INSERT INTO trade_journal(id,source_id,order_id,direction,currency,amount_minor,provider_reference) VALUES (?,?,?,'REFUND','CNY',?,?)",[key(),refundId,oid,2000,'synthetic:'+refundId]);
+   await db.execute("UPDATE trade_records SET current_status='PARTIALLY_REFUNDED' WHERE id=?",[oid]);
+   const query=()=>R.mcnDashboard(outsider.ctx,{party_id:org.party_id,order_id:oid});let view=await query(),row=view.orders[0];
+   assert.equal(row.order_quoted_minor,4000);assert.equal(row.order_received_minor,4000);assert.equal(row.order_refunded_minor,2000);assert.equal(row.order_net_minor,2000);assert.equal(row.mcn_expected_minor,400);assert.equal(row.mcn_accrual_minor,200);assert.equal(row.contract_sha256,contract);assert.equal(view.total_order_refunded_minor,2000);
+   const payment=(await db.execute("SELECT * FROM trade_records WHERE kind='PAYMENT' AND order_id=?",[oid]))[0][0];await patch('trade_records',payment,{environment:'SANDBOX'});
+   view=await query();assert.equal(view.orders[0].order_received_minor,4000);assert.equal(view.orders[0].environment,'SANDBOX');assert.equal(view.total_order_received_minor,0);assert.equal(view.total_accrual_minor,0);assert.equal(view.total_basis,'VERIFIED_PRODUCTION_ORDERS');
+   const o=A.parse(original.data_json);await patch('trade_records',original,{quote:{...o.quote,commercial:{...o.quote.commercial,avatar_id:null}}});
+   view=await query();assert.equal(view.orders[0].person_id,null);assert.equal(view.orders[0].contract_sha256,contract);
+   assert.deepEqual((await R.mcnDashboard(outsider.ctx,{party_id:org.party_id,order_id:oid,person_id:buyer2.person.id})).orders,[]);
+  });
   let first=await dashboard(buyer),second=await dashboard(reviewer);
   assert.deepEqual(first.relations.map(x=>x.id),[relations[0]]);
   assert.deepEqual(second.relations.map(x=>x.id),[relations[1]]);

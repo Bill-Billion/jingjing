@@ -14,7 +14,12 @@ function methods({db,actor}){return {
  async revokeStaff(ctx,i){shape(i,['party_id','record_id','expected_version','reason','operation_key']);label(i.reason,2000);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);const r=await C.load(tx,i.record_id,'STAFF_GRANT');if(r.owner_party_id!==i.party_id)throw error('ENGAGEMENT_NOT_FOUND',404);return C.command(tx,a,'REVOKE_STAFF',i,async()=>{A.match(r,i.expected_version);return C.save(tx,a,r,'REVOKED',{...r.data,reason:i.reason},'STAFF_REVOKED');});});},
  async staffList(ctx,i){return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);return {items:await C.rows(tx,i.party_id,'STAFF_GRANT')};});},
  async assign(ctx,i){shape(i,['party_id','booking_id','order_id','account_id','operation_key']);if(!!i.booking_id===!!i.order_id)throw error('ONE_BUSINESS_REFERENCE_REQUIRED',400);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);let person_id,reference,action;if(i.booking_id){const {r}=await require('../auditions/context').booking(tx,i.booking_id);person_id=r.data.offer.person_id;reference=r.id;action='MANAGE_AUDITIONS';}else{const o=await require('./facts').order(tx,i.order_id);if(o.data.quote.commercial?.relation?.mcn_party_id!==i.party_id)throw error('ENGAGEMENT_NOT_FOUND',404);const link=await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=?',[o.data.quote.commercial.avatar_id]);if(!link)throw error('ORDER_ARTIST_LINK_REQUIRED',409);person_id=link.person_id;reference=o.id;action='COMMERCIAL_MESSAGES';}await delegated(tx,a,i.party_id,person_id,action);const staff=await A.one(tx,'SELECT id,current_status FROM identity_accounts WHERE id=? FOR SHARE',[id(i.account_id)]);if(staff?.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE',403);await delegated(tx,staff,i.party_id,person_id,action);return C.command(tx,a,'MCN_ASSIGN',i,async()=>{const old=await A.one(tx,"SELECT * FROM engagement_records WHERE kind='ASSIGNMENT' AND source_key=? FOR UPDATE",[require('../governance/content').digest(['ASSIGNMENT',[i.party_id,reference]])]);const data={booking_id:i.booking_id||null,order_id:i.order_id||null,person_id,account_id:staff.id,assigned_by:a.id,at:await A.now(tx)};return old?C.save(tx,a,C.checked(old),'ASSIGNED',data,'ORDER_REASSIGNED'):C.insert(tx,a,'ASSIGNMENT',i.party_id,null,'ASSIGNED',data,[i.party_id,reference]);});});},
- async mcnDashboard(ctx,i){return db.withTransaction(async tx=>{
+ async mcnDashboard(ctx,i){
+  shape(i,['party_id','person_id','order_id','created_from','created_before']);
+  for(const k of ['person_id','order_id'])if(i[k]!==undefined)id(i[k]);
+  for(const k of ['created_from','created_before'])if(i[k]!==undefined)require('../trade/policy').instant(i[k]);
+  if(i.created_from&&i.created_before&&i.created_from>=i.created_before)throw error('INVALID_REPORT_PERIOD',400);
+  return db.withTransaction(async tx=>{
   const a=await actor(tx,ctx);await member(tx,a,i.party_id,null,'READ_INCOME');
   const owner=await A.one(tx,"SELECT id FROM party_memberships WHERE party_id=? AND account_id=? AND role_code='OWNER' AND current_status='ACTIVE'",[i.party_id,a.id]);
   const people=new Map();
@@ -30,22 +35,28 @@ function methods({db,actor}){return {
   const relations=owner?rawRelations:rawRelations.filter(r=>new Set(people.values()).has(r.counterparty_id));
   const assignments=(await C.rows(tx,i.party_id,'ASSIGNMENT')).filter(r=>owner||(r.current_status==='ASSIGNED'&&r.data.account_id===a.id&&people.has(r.data.person_id)));
   const assigned=new Map(assignments.filter(r=>r.data.order_id).map(r=>[r.data.order_id,r.data.person_id]));
-  const [rows]=await tx.execute("SELECT * FROM trade_records WHERE kind='ORDER' AND (JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.quote.marketplace_finance.allocation.mcn_party_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.quote.commercial.relation.mcn_party_id'))=?) ORDER BY created_at,id LIMIT 500",[i.party_id,i.party_id]);
+  const filters=[],params=[i.party_id,i.party_id];
+  if(i.order_id){filters.push('t.id=?');params.push(i.order_id);}
+  if(i.person_id){filters.push("EXISTS (SELECT 1 FROM artist_avatar_links l WHERE l.avatar_id=JSON_UNQUOTE(JSON_EXTRACT(t.data_json,'$.quote.commercial.avatar_id')) AND l.person_id=?)");params.push(i.person_id);}
+  for(const [field,op] of [['created_from','>='],['created_before','<']])if(i[field]){filters.push('t.created_at'+op+'?');params.push(i[field].replace('T',' ').replace('Z',''));}
+  // Select business orders once, never join assignment rows into monetary aggregates.
+  const [rows]=await tx.execute("SELECT t.* FROM trade_records t WHERE t.kind='ORDER' AND (JSON_UNQUOTE(JSON_EXTRACT(t.data_json,'$.quote.marketplace_finance.allocation.mcn_party_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(t.data_json,'$.quote.commercial.relation.mcn_party_id'))=?)"+(filters.length?' AND '+filters.join(' AND '):'')+' ORDER BY t.created_at,t.id LIMIT 500',params);
   const items=[];
   for(const raw of rows){
    // Check the live artist scope and actual assignment before calculating or returning money.
    if(!owner&&!assigned.has(raw.id))continue;
    const o=G.checked(raw);
+   const avatar=o.data.quote.commercial?.avatar_id;
+   const link=avatar?await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=? FOR SHARE',[avatar]):null;
    if(!owner){
-    const avatar=o.data.quote.commercial?.avatar_id;
-    const link=avatar?await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=? FOR SHARE',[avatar]):null;
     if(!link||link.person_id!==assigned.get(o.id)||!people.has(link.person_id))continue;
    }
    const f=await require('../gigs/settlement').financialFacts(tx,o),allocation=o.data.quote.marketplace_finance?.allocation;
-   const value=allocation?require('../settlement/marketplace-policy').split(f.net_minor,allocation).entries.find(x=>x.role==='MCN')?.amount_minor:require('../gigs/policy').split(f.net_minor,o.data.quote.commercial.commission).mcn_minor;
-   items.push({order_id:o.id,status:o.current_status,mcn_accrual_minor:value||0,environment:f.environment,meaning:'ACCRUAL_NOT_PAYOUT',contract_sha256:require('../governance/content').digest(o.data.contract)});
+   const mcn=amount=>allocation?require('../settlement/marketplace-policy').split(amount,allocation).entries.find(x=>x.role==='MCN')?.amount_minor:require('../gigs/policy').split(amount,o.data.quote.commercial.commission).mcn_minor;
+   items.push({order_id:o.id,person_id:link?.person_id||null,created_at:new Date(o.created_at.replace(' ','T')+'Z').toISOString(),status:o.current_status,order_quoted_minor:o.data.quote.total_minor,order_received_minor:f.received_minor,order_refunded_minor:f.refunded_minor,order_net_minor:f.net_minor,mcn_expected_minor:mcn(o.data.quote.total_minor)||0,mcn_accrual_minor:mcn(f.net_minor)||0,environment:f.environment,meaning:'ACCRUAL_NOT_PAYOUT',contract_sha256:require('../governance/content').digest(o.data.contract)});
   }
-  return {relations,assignments,orders:items,total_accrual_minor:items.filter(x=>x.environment==='PRODUCTION').reduce((s,x)=>s+x.mcn_accrual_minor,0),history_preserved:true,truncated:rows.length===500||rawRelations.length===500};
+  const production=items.filter(x=>x.environment==='PRODUCTION'),sum=field=>require('../trade/policy').sum(production.map(x=>x[field]));
+  return {relations,assignments,orders:items,total_accrual_minor:sum('mcn_accrual_minor'),total_mcn_expected_minor:sum('mcn_expected_minor'),total_order_quoted_minor:sum('order_quoted_minor'),total_order_received_minor:sum('order_received_minor'),total_order_refunded_minor:sum('order_refunded_minor'),total_order_net_minor:sum('order_net_minor'),period_basis:'ORDER_CREATED_AT_UTC',amount_basis:'ORDER_LIFETIME_AT_QUERY',total_basis:'VERIFIED_PRODUCTION_ORDERS',history_preserved:true,truncated:rows.length===500||rawRelations.length===500};
  });}
 
 };}
