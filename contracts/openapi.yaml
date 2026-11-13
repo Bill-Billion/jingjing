@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.69-rc.2
+  version: 0.31.70-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -36073,6 +36073,64 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/production/projects/{record_id}/story/attachments/{asset_id}/content:
+    get:
+      operationId: downloadProductionStoryAttachment
+      summary: 按项目当前资格读取原订单提交版本中的私有故事附件
+      tags:
+      - production
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Acting-Party
+        in: header
+        required: false
+        schema:
+          type: string
+          format: uuid
+        description: Act as a project party; omit only for authorized reviewer.
+      - name: asset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Committed record or permission-checked private bytes; no implied real provider approval.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Only declared PRIVATE_ATTACHMENT references in the exact ordered submission are readable. Rechecks project assignment, party membership or independent reviewer plus intake authority after private byte retrieval. Historical and unsubmitted files are excluded; no public URL or marketing authorization.
+
 components:
   securitySchemes:
     bearerAuth:

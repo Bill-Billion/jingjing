@@ -97,4 +97,4 @@ function service(repo,storage){
  },
  async download(ctx,i){const f=await repo.attachment(ctx,i),body=await storage.getBuffer(f.object_key);check(f,body);await repo.attachment(ctx,i);return {body,metadata:metadata(f)};}
  };}
-module.exports={methods,validate,metadata,service};
+module.exports={methods,validate,metadata,service,references};

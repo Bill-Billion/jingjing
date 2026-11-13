@@ -1,3 +1,7 @@
+## 0.31.70-rc.1 — 同项目故事附件（2026-11-14）
+
+新增GET /production/projects/{record_id}/story/attachments/{asset_id}/content。仅返回原订单绑定提交版本中声明的PRIVATE_ATTACHMENT；沿项目买方/商家负责人、当前受派人或独审兼受理权限，读取前后重核资格及文件摘要。旧版/未提交/其他项目附件拒绝，不输出存储路径或公开链接。无新迁移，无前端。
+
 ## 0.31.69-rc.2 — 定制素材许可与角色声音权限（2026-11-14）
 
 人工定制在创建和后续使用造型/声音版本时重新检查该版本归档许可的当前有效性、本人、数字人、特征、用途与授权对象。定制和参演协议的实际造型/声音必须包含在原供给许可特征内，归档声音不自动获得制作或发行权限。新增409错误CUSTOMIZATION_VARIANT_CONSENT_REQUIRED、CUSTOMIZATION_FEATURE_CONSENT_REQUIRED、PARTICIPATION_FEATURE_CONSENT_REQUIRED。无新字段、路由或迁移；原协议、费用和剧本不回写。不涉及前端。
