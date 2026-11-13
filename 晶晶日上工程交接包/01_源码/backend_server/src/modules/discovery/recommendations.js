@@ -2,15 +2,17 @@
 const {createHmac,timingSafeEqual}=require('node:crypto');
 const {error}=require('../party/policy');
 const {digest}=require('../governance/content');
-const A=require('../artists/context'),S=require('./search'),sources=require('../collections/source');
+const A=require('../artists/context'),S=require('./search'),M=require('./matching'),sources=require('../collections/source');
 const VERSION='CITY_ACTIVITY_V1';
+const MATCH_VERSION='EXPLICIT_FILTERS_CITY_ACTIVITY_V1';
 const city=v=>(v||'').normalize('NFKC').replace(/市$/,'').toLowerCase();
 const itemCity=(kind,item)=>city(kind==='NOTICE'?item.notice.city:item.city);
 const itemId=item=>item.id||item.listing_id;
 function rank(kind,items,profile){
  return items.map((item,index)=>{const c=itemCity(kind,item),b=profile.purchased.has(c),h=profile.browsed.has(c);return {item,index,priority:profile.enabled?(b?2:h?1:0):0,reasons:profile.enabled?(b?['RECENT_PURCHASE_CITY']:h?['RECENT_BROWSING_CITY']:['PUBLIC_CATALOG']):['PUBLIC_CATALOG']};}).sort((a,b)=>b.priority-a.priority||a.index-b.index);
 }
-function createRecommendations({db,resolvePrincipal,catalogs,secret}){
+function createRankedRecommendations({db,resolvePrincipal,catalogs,secret},businessMatching){
+ const version=businessMatching?MATCH_VERSION:VERSION;
  const actor=A.createActor(resolvePrincipal),mac=s=>createHmac('sha256',secret).update('recommendation:'+s).digest();
  async function profile(ctx){return db.withTransaction(async tx=>{
   const a=await actor(tx,ctx),p=await A.one(tx,'SELECT * FROM privacy_preferences WHERE account_id=?',[a.id]);let enabled=false;
@@ -27,13 +29,16 @@ function createRecommendations({db,resolvePrincipal,catalogs,secret}){
  });}
  function decode(cursor,scope){if(cursor===undefined)return 0;try{if(typeof cursor!=='string'||cursor.length>800)throw 0;const [body,signature,...rest]=cursor.split('.');if(rest.length||!/^[a-f0-9]{64}$/.test(signature)||!timingSafeEqual(mac(body),Buffer.from(signature,'hex')))throw 0;const d=JSON.parse(Buffer.from(body,'base64url').toString());if(d.scope!==scope)throw error('RECOMMENDATION_CHANGED',409);if(!Number.isSafeInteger(d.offset)||d.offset<1||d.offset>500)throw 0;return d.offset;}catch(e){if(e.code==='RECOMMENDATION_CHANGED')throw e;throw error('INVALID_CURSOR',400);}}
  return async(ctx,input)=>{
-  const p=S.query(input),before=await profile(ctx),items=[];let after='',more=null;
+  const p=businessMatching?M.query(input):S.query(input),before=await profile(ctx),items=[];let after='',more=null;
   // Public catalogs recheck visibility/consent. The limit is explicit to clients.
-  for(let n=0;n<5;n++){const page=await catalogs[p.kind](ctx,{after,limit:100,...p.city?{city:p.city}:{}});items.push(...page.items.filter(x=>S.matches(p.kind,x,p.q)));more=page.next_cursor;if(!more)break;if(more===after)throw error('SEARCH_CURSOR_STALLED',503);after=more;}
+  for(let n=0;n<5;n++){const page=await catalogs[p.kind](ctx,{after,limit:100,...p.city?{city:p.city}:{}});items.push(...page.items.filter(x=>businessMatching?M.match(p,x):S.matches(p.kind,x,p.q)));more=page.next_cursor;if(!more)break;if(more===after)throw error('SEARCH_CURSOR_STALLED',503);after=more;}
   const current=await profile(ctx);if(current.hash!==before.hash)throw error('RECOMMENDATION_CHANGED',409);
-  const ranked=rank(p.kind,items,current),scope=digest([VERSION,current.hash,p.kind,p.city,p.q,ranked.map(x=>digest([itemId(x.item),itemCity(p.kind,x.item),x.priority]))]),offset=decode(input.cursor,scope),selected=ranked.slice(offset,offset+p.limit);
+  const ranked=rank(p.kind,items,current),scope=digest([version,current.hash,p.kind,p.city,p.q,ranked.map(x=>digest([itemId(x.item),itemCity(p.kind,x.item),x.priority])),...businessMatching?[p.filters]:[]]),offset=decode(input.cursor,scope),selected=ranked.slice(offset,offset+p.limit);
   let next=null;if(offset+p.limit<ranked.length){const body=Buffer.from(JSON.stringify({scope,offset:offset+p.limit})).toString('base64url');next=body+'.'+mac(body).toString('hex');}
-  return {kind:p.kind,city:p.city||null,q:p.q||null,algorithm_version:VERSION,personalized:current.enabled,principle:current.enabled?'RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG':'PUBLIC_CATALOG_ORDER',items:selected.map(x=>({item:x.item,reasons:x.reasons})),next_cursor:next,candidate_limit:500,catalog_truncated:!!more,price_personalized:false};
+  const principle=current.enabled?'RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG':'PUBLIC_CATALOG_ORDER';
+  return {kind:p.kind,city:p.city||null,q:p.q||null,algorithm_version:version,personalized:current.enabled,principle:(businessMatching?'EXPLICIT_FILTERS_THEN_':'')+principle,items:selected.map(x=>({item:x.item,reasons:[...businessMatching?M.match(p,x.item):[],...x.reasons]})),next_cursor:next,candidate_limit:500,catalog_truncated:!!more,price_personalized:false,...businessMatching?{filters:p.filters,requires_business_validation:true}:{}};
  };
 }
-module.exports={createRecommendations,rank,VERSION};
+const createRecommendations=options=>createRankedRecommendations(options,false);
+const createRecommendedMatches=options=>createRankedRecommendations(options,true);
+module.exports={createRecommendations,createRecommendedMatches,rank,VERSION,MATCH_VERSION};

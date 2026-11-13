@@ -6103,6 +6103,57 @@
         "acceptance_result"
       ],
       "replace_with": "PAID"
+    },
+    {
+      "name": "matching cannot personalize price",
+      "fixture": "DiscoveryRecommendedMatchesResponse",
+      "mutate_path": [
+        "data",
+        "price_personalized"
+      ],
+      "replace_with": true
+    },
+    {
+      "name": "matching cannot waive business validation",
+      "fixture": "DiscoveryRecommendedMatchesResponse",
+      "mutate_path": [
+        "data",
+        "requires_business_validation"
+      ],
+      "replace_with": false
+    },
+    {
+      "name": "stock matching cannot declare artist-only filters",
+      "fixture": "DiscoveryRecommendedMatchesResponse",
+      "mutate_path": [
+        "data",
+        "filters"
+      ],
+      "replace_with": {
+        "min_halo": 1
+      }
+    },
+    {
+      "name": "matching cannot invent a semantic algorithm version",
+      "fixture": "DiscoveryRecommendedMatchesResponse",
+      "mutate_path": [
+        "data",
+        "algorithm_version"
+      ],
+      "replace_with": "AI_SEMANTIC_MATCH"
+    },
+    {
+      "name": "matching must explain a recognized public basis",
+      "fixture": "DiscoveryRecommendedMatchesResponse",
+      "mutate_path": [
+        "data",
+        "items",
+        0,
+        "reasons"
+      ],
+      "replace_with": [
+        "SECRET_PROFILE"
+      ]
     }
   ]
 }

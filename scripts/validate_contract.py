@@ -187,7 +187,7 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.add('getPrivacyBusinessMessageDraft')
             account_scoped_supply.update({'getPrivacyCopyOptions','downloadPrivacyCopyFile','getPrivacyStoryCopy','getPrivacyTransactionCopy','getPrivacyAccountCopy'})
             account_scoped_supply.update({'getStockPublicMedia','downloadStockCover'})
-            account_scoped_supply.update({'getDiscoveryRecommendations','getDiscoveryMatches','getEngagementRankingExplanation'})
+            account_scoped_supply.update({'getDiscoveryRecommendations','getDiscoveryMatches','getDiscoveryRecommendedMatches','getEngagementRankingExplanation'})
             account_scoped_supply.update({'listDirectoryRecords', 'downloadDirectoryMaterial', 'listPublicOrganizations', 'downloadOrganizationCover', 'listFeaturedArtists', 'getDirectoryRecord', 'getPublicOrganization', 'withdrawDirectoryRecord', 'proposeDirectoryFeature', 'reviewDirectoryRecord'})
             account_scoped_supply.update({'customizationAttachments','downloadCustomizationAttachment'})
             account_scoped_supply.update({'withdrawPrivacyConsent', 'requestPrivacyModelDeletion', 'getPrivacyActions', 'getPrivacyModelAssets', 'getPrivacyModelCreations'})

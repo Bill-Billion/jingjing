@@ -23,7 +23,7 @@ module.exports=Object.freeze({
  invoices:['test/invoices-policy.test.cjs','test/invoices.integration.test.cjs'],
  'personal-center':['test/personal-center-policy.test.cjs','test/personal-center.integration.test.cjs'],
  collections:['test/collections-policy.test.cjs','test/collections.integration.test.cjs'],
- discovery:['test/recommendations.integration.test.cjs','test/recommendations-boundaries.test.cjs','test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
+ discovery:['test/recommended-matches.test.cjs','test/recommended-matches.integration.test.cjs','test/recommendations.integration.test.cjs','test/recommendations-boundaries.test.cjs','test/catalog-city.test.cjs','test/discovery.test.cjs','test/discovery.integration.test.cjs'],
  directory:['test/directory-policy.test.cjs','test/directory.integration.test.cjs'],
  media:['test/media-marking.test.cjs','test/media.integration.test.cjs'],
  privacy:['test/privacy-security-copy.integration.test.cjs','test/privacy-agreement-copy.integration.test.cjs','test/privacy-account-copy.integration.test.cjs','test/privacy-transaction-copy.integration.test.cjs','test/privacy-story-copy.integration.test.cjs','test/privacy-copy.integration.test.cjs','test/privacy-cross-module.integration.test.cjs','test/privacy-policy-options.integration.test.cjs','test/privacy-execution.integration.test.cjs','test/privacy-policy.test.cjs','test/privacy.integration.test.cjs','test/privacy-actions.integration.test.cjs'],

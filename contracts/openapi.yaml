@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.71-rc.1
+  version: 0.31.72-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -34114,6 +34114,132 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DiscoveryRecommendationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/discovery/recommended-matches:
+    get:
+      operationId: getDiscoveryRecommendedMatches
+      summary: 满足明确业务条件后按本人授权偏好匹配
+      description: '先筛明确许可、预算、艺人等级标签、试镜模式或通告类型，再按本人已同意使用的有效现货购买城市、浏览城市及公共目录顺序排序。默认关闭个性化，关闭后不读取浏览或交易历史，仍可条件筛选。不是语义模型或职业适配率，不改价、不自动授权/下单。最多扫描500个目录候选，截断明确返回；游标绑定账号、偏好、条件、候选及算法版本，来源撤回/退款导致依据变化须重开。当前只读结果不代替实际业务权限重核。Cache-Control: no-store。'
+      tags:
+      - discovery
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - ARTIST
+          - STOCK
+          - AUDITION
+          - NOTICE
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 800
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: purpose
+        in: query
+        required: false
+        schema:
+          enum:
+          - PERSONAL_NONCOMMERCIAL
+          - COMMERCIAL_LIMITED
+      - name: commercial_use
+        in: query
+        required: false
+        schema:
+          enum:
+          - BRAND_PROMOTION
+          - COMMERCIAL_ADVERTISING
+          - CORPORATE_DISPLAY
+      - name: max_price_minor
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+      - name: min_halo
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 3
+      - name: audition_mode
+        in: query
+        required: false
+        schema:
+          enum:
+          - OFFLINE
+          - ONLINE_MATERIALS
+      - name: notice_type
+        in: query
+        required: false
+        schema:
+          enum:
+          - DRAMA
+          - PERFORMANCE
+          - COMMERCIAL
+          - EVENT
+          - RECRUITMENT
+          - OFFICIAL
+      - name: tag
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 40
+      responses:
+        '200':
+          description: 当前账号可见的公开结果。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryRecommendedMatchesResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -80891,6 +81017,394 @@ components:
       - meta
       - data
 
+    DiscoveryRecommendedMatchesResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: ARTIST
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/ArtistCatalogueItem'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - PUBLIC_AVAILABLE
+                        - CITY_MATCH
+                        - TEXT_MATCH
+                        - LICENSE_MATCH
+                        - COMMERCIAL_USE_MATCH
+                        - PUBLIC_PRICE_WITHIN_BUDGET
+                        - HALO_THRESHOLD_MET
+                        - TAG_MATCH
+                        - AUDITION_MODE_MATCH
+                        - NOTICE_TYPE_MATCH
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 11
+                      uniqueItems: true
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: EXPLICIT_FILTERS_CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - EXPLICIT_FILTERS_THEN_RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  min_halo:
+                    type: integer
+                    minimum: 0
+                    maximum: 3
+                  tag:
+                    type: string
+                    minLength: 1
+                    maxLength: 40
+                required: []
+              requires_business_validation:
+                const: true
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+            - filters
+            - requires_business_validation
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: STOCK
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/StockOffer'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - PUBLIC_AVAILABLE
+                        - CITY_MATCH
+                        - TEXT_MATCH
+                        - LICENSE_MATCH
+                        - COMMERCIAL_USE_MATCH
+                        - PUBLIC_PRICE_WITHIN_BUDGET
+                        - HALO_THRESHOLD_MET
+                        - TAG_MATCH
+                        - AUDITION_MODE_MATCH
+                        - NOTICE_TYPE_MATCH
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 11
+                      uniqueItems: true
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: EXPLICIT_FILTERS_CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - EXPLICIT_FILTERS_THEN_RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  purpose:
+                    enum:
+                    - PERSONAL_NONCOMMERCIAL
+                    - COMMERCIAL_LIMITED
+                  commercial_use:
+                    enum:
+                    - BRAND_PROMOTION
+                    - COMMERCIAL_ADVERTISING
+                    - CORPORATE_DISPLAY
+                  max_price_minor:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                required: []
+              requires_business_validation:
+                const: true
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+            - filters
+            - requires_business_validation
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: AUDITION
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/AuditionPublicOffer'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - PUBLIC_AVAILABLE
+                        - CITY_MATCH
+                        - TEXT_MATCH
+                        - LICENSE_MATCH
+                        - COMMERCIAL_USE_MATCH
+                        - PUBLIC_PRICE_WITHIN_BUDGET
+                        - HALO_THRESHOLD_MET
+                        - TAG_MATCH
+                        - AUDITION_MODE_MATCH
+                        - NOTICE_TYPE_MATCH
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 11
+                      uniqueItems: true
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: EXPLICIT_FILTERS_CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - EXPLICIT_FILTERS_THEN_RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  max_price_minor:
+                    type: integer
+                    minimum: 0
+                    maximum: 900000000000
+                  audition_mode:
+                    enum:
+                    - OFFLINE
+                    - ONLINE_MATERIALS
+                required: []
+              requires_business_validation:
+                const: true
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+            - filters
+            - requires_business_validation
+          - type: object
+            additionalProperties: false
+            properties:
+              kind:
+                const: NOTICE
+              city:
+                type:
+                - string
+                - 'null'
+              q:
+                type:
+                - string
+                - 'null'
+              items:
+                type: array
+                maxItems: 100
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    item:
+                      $ref: '#/components/schemas/NoticePublic'
+                    reasons:
+                      type: array
+                      items:
+                        enum:
+                        - PUBLIC_AVAILABLE
+                        - CITY_MATCH
+                        - TEXT_MATCH
+                        - LICENSE_MATCH
+                        - COMMERCIAL_USE_MATCH
+                        - PUBLIC_PRICE_WITHIN_BUDGET
+                        - HALO_THRESHOLD_MET
+                        - TAG_MATCH
+                        - AUDITION_MODE_MATCH
+                        - NOTICE_TYPE_MATCH
+                        - RECENT_PURCHASE_CITY
+                        - RECENT_BROWSING_CITY
+                        - PUBLIC_CATALOG
+                      minItems: 1
+                      maxItems: 11
+                      uniqueItems: true
+                  required:
+                  - item
+                  - reasons
+              next_cursor:
+                type:
+                - string
+                - 'null'
+                maxLength: 800
+              algorithm_version:
+                const: EXPLICIT_FILTERS_CITY_ACTIVITY_V1
+              personalized:
+                type: boolean
+              principle:
+                enum:
+                - EXPLICIT_FILTERS_THEN_RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG
+                - EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER
+              candidate_limit:
+                const: 500
+              catalog_truncated:
+                type: boolean
+              price_personalized:
+                const: false
+              filters:
+                type: object
+                additionalProperties: false
+                properties:
+                  notice_type:
+                    enum:
+                    - DRAMA
+                    - PERFORMANCE
+                    - COMMERCIAL
+                    - EVENT
+                    - RECRUITMENT
+                    - OFFICIAL
+                required: []
+              requires_business_validation:
+                const: true
+            required:
+            - kind
+            - city
+            - q
+            - items
+            - next_cursor
+            - algorithm_version
+            - personalized
+            - principle
+            - candidate_limit
+            - catalog_truncated
+            - price_personalized
+            - filters
+            - requires_business_validation
+      required:
+      - meta
+      - data
     DiscoveryMatchesResponse:
       type: object
       additionalProperties: false

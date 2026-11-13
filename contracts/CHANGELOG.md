@@ -1,3 +1,7 @@
+## 0.31.72-rc.1 — 条件与授权偏好结合匹配（2026-11-14）
+
+新增GET /discovery/recommended-matches：先满足明确许可/预算等硬条件，再按本人已同意使用的购买城市、浏览城市及公共目录排序；关闭后不读历史并仍可筛选。四类目录复用原可见性与业务约束，提供原因、版本、上限/截断及业务再次核验提示。不改原matches/recommendations接口、不改价、不生成适配百分比、不自动授权或下单。无迁移，无前端。该可解释规则方案不代替完整智能匹配、榜单与跨端正式验收。
+
 ## 0.31.71-rc.1 — 机构供给收入与经纪应计（2026-11-14）
 
 既有GET /engagement/mcn/dashboard纳入冻结marketplace_finance分配中本机构作为SUPPLIER且等于订单商家的订单。逐单新增income_role、supplier_expected_minor/supplier_accrual_minor、organization_expected_minor/organization_accrual_minor；顶层新增对应四项total_字段。原mcn_*及total_accrual_minor继续仅表示经纪分成，机构合计使用total_organization_*。订单总额只计一次；汇总仍只含已核实PRODUCTION回执，按订单创建期间筛选、查询时全生命周期金额，不表示银行到账。
