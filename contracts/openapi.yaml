@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.70-rc.1
+  version: 0.31.71-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -36983,6 +36983,25 @@ components:
         contract_sha256:
           type: string
           pattern: '^[a-f0-9]{64}$'
+        income_role:
+          enum: [SUPPLIER, MCN]
+          description: 本机构在该订单冻结分配中的角色；不代表当前艺人关系或银行到账。
+        supplier_expected_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        supplier_accrual_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        organization_expected_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
+        organization_accrual_minor:
+          type: integer
+          minimum: 0
+          maximum: 900000000000
         mcn_accrual_minor:
           type: integer
           minimum: 0
@@ -40063,10 +40082,27 @@ components:
                 items:
                   $ref: '#/components/schemas/McnIncomeOrder'
               total_accrual_minor:
+                description: 保留旧含义，仅经纪分成应计合计；完整机构应计见total_organization_accrual_minor。
                 type: integer
                 minimum: 0
                 maximum: 900000000000
               total_mcn_expected_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_supplier_expected_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_supplier_accrual_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_organization_expected_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              total_organization_accrual_minor:
                 type: integer
                 minimum: 0
                 maximum: 900000000000

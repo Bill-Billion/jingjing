@@ -30,4 +30,21 @@ async function auditionResult(tx,o,who){
  const result={AUDITION_ACCEPTED:'ACCEPTED',AUDITION_DECLINED:'DECLINED',AUDITION_ACCEPTANCE_EXPIRED:'EXPIRED'}[event?.event_code]||(r.data.accepted_at?'ACCEPTED':r.current_status==='AWAITING_ACCEPTANCE'?'PENDING':'NOT_RECORDED');
  return {booking_id:r.id,status:r.current_status,acceptance_result:result,accepted_at:r.data.accepted_at||null};
 }
-module.exports={attribution,auditionResult};
+// Accrual follows the frozen order allocation, not the current agency relationship.
+function organizationIncome(o,party,net){
+ const q=o.data.quote,a=q.marketplace_finance?.allocation;
+ let role,expected,accrual;
+ if(a){
+  if(a.supplier_party_id!==o.merchant_party_id)throw mismatch();
+  const P=require('../settlement/marketplace-policy'),planned=P.split(q.total_minor,a),actual=P.split(net,a);
+  const own=planned.entries.find(x=>x.party_id===party);
+  if(!own||!['SUPPLIER','MCN'].includes(own.role))throw mismatch();
+  role=own.role;expected=own.amount_minor;accrual=actual.entries.find(x=>x.party_id===party).amount_minor;
+ }else{
+  if(q.commercial?.relation?.mcn_party_id!==party)throw mismatch();
+  role='MCN';const split=require('../gigs/policy').split;
+  expected=split(q.total_minor,q.commercial.commission).mcn_minor;accrual=split(net,q.commercial.commission).mcn_minor;
+ }
+ return {income_role:role,mcn_expected_minor:role==='MCN'?expected:0,mcn_accrual_minor:role==='MCN'?accrual:0,supplier_expected_minor:role==='SUPPLIER'?expected:0,supplier_accrual_minor:role==='SUPPLIER'?accrual:0,organization_expected_minor:expected,organization_accrual_minor:accrual};
+}
+module.exports={attribution,auditionResult,organizationIncome};

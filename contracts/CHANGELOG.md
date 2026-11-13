@@ -1,3 +1,9 @@
+## 0.31.71-rc.1 — 机构供给收入与经纪应计（2026-11-14）
+
+既有GET /engagement/mcn/dashboard纳入冻结marketplace_finance分配中本机构作为SUPPLIER且等于订单商家的订单。逐单新增income_role、supplier_expected_minor/supplier_accrual_minor、organization_expected_minor/organization_accrual_minor；顶层新增对应四项total_字段。原mcn_*及total_accrual_minor继续仅表示经纪分成，机构合计使用total_organization_*。订单总额只计一次；汇总仍只含已核实PRODUCTION回执，按订单创建期间筛选、查询时全生命周期金额，不表示银行到账。
+
+现货分单同时支持本机构供给订单，仍要求全参与人当前委托、员工逐人操作权和单独READ_INCOME权。供给/经纪同主体重叠仍拒绝，未知或矛盾快照不猜测，不改原合同/费率/清分。无新路由或迁移，无前端。
+
 ## 0.31.70-rc.1 — 同项目故事附件（2026-11-14）
 
 新增GET /production/projects/{record_id}/story/attachments/{asset_id}/content。仅返回原订单绑定提交版本中声明的PRIVATE_ATTACHMENT；沿项目买方/商家负责人、当前受派人或独审兼受理权限，读取前后重核资格及文件摘要。旧版/未提交/其他项目附件拒绝，不输出存储路径或公开链接。无新迁移，无前端。
