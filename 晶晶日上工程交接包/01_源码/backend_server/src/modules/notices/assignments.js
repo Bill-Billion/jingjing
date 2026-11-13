@@ -8,8 +8,7 @@ async function independent(tx,a,r){
 async function manager(tx,a,r){await C.operator(tx,a,'NOTICE_ASSIGN',r,true);}
 async function access(tx,a,r,{write=false}={}){
  if(r.kind!=='CASE')throw error('NOTICE_NOT_FOUND',404);
- await independent(tx,a,r);
- if(!write&&await authorizeOperator(tx,{account_id:a.id,action:'NOTICE_ASSIGN'}))return;
+ if(!write&&await authorizeOperator(tx,{account_id:a.id,action:'NOTICE_ASSIGN'})){await independent(tx,a,r);return;}
  await C.operator(tx,a,'NOTICE_SUPPORT',r,true);
  if(r.data.support_assignment&&r.data.support_assignment.account_id!==a.id)throw error('NOTICE_CASE_NOT_ASSIGNED',403);
 }
