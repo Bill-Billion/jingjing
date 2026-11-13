@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.60-rc.1
+  version: 0.31.61-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -13677,7 +13677,7 @@ paths:
     get:
       operationId: listNoticeCaseQuoteOptions
       summary: 客服选择当前工单可关联的已审报价
-      description: 仅独立NOTICE_SUPPORT岗位，无X-Acting-Party。按当前双方、形象和有效授权筛选已审未过期且未被其他工单关联的报价，仅返回最小选择信息。空页可能仍有next_cursor；关联提交仍重新核对。
+      description: 仅当前承办人（未指派时为独立NOTICE_SUPPORT岗位），无X-Acting-Party。按当前双方、形象和有效授权筛选已审未过期且未被其他工单关联的报价，仅返回最小选择信息。空页可能仍有next_cursor；关联提交仍重新核对。
       tags:
       - notices
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
@@ -34972,6 +34972,166 @@ paths:
         '503':
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+  /api/v1/notices/cases/{record_id}/assignment:
+    post:
+      operationId: assignNoticeCaseSupport
+      summary: 指派或交接同一合作案件承办客服
+      description: 仅明确授予的NOTICE_ASSIGN岗位；调度人与目标NOTICE_SUPPORT客服都须独立于案件双方。仅待接管案件可指派或转派，已关联报价或关闭后禁止改派。并发版本检查，同键恢复返回当前承办状态；原报价/订单不改，调度理由仅运营历史可读。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeAssignmentRequest'
+  /api/v1/notices/cases/{record_id}/assignment-options:
+    get:
+      operationId: listNoticeAssignmentOptions
+      summary: 按同案件筛选当前可指派的客服
+      description: 仅独立NOTICE_ASSIGN岗位，不接受X-Acting-Party；只返回有效NOTICE_SUPPORT账号最小名称/编号并排除案件参与方。分页空页仍可能有游标；提交指派时重核岗位和利益冲突。
+      tags:
+      - notices
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeAssignmentOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/notices/cases/{record_id}/assignment-history:
+    get:
+      operationId: listNoticeAssignmentHistory
+      summary: 读取同案件客服指派与交接历史
+      description: 当前有效承办客服或独立NOTICE_ASSIGN岗位读取，无X-Acting-Party。原承办人在转派/撤权后不能读取；历史有摘要校验，关闭案件保留历史，按对象版本分页。
+      tags:
+      - notices
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 4294967294
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeAssignmentHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -58348,6 +58508,8 @@ components:
             minLength: 1
             maxLength: 2000
           - type: 'null'
+        support_assignment:
+          $ref: '#/components/schemas/NoticeSupportAssignment'
       required:
       - submission_id
       - quote
@@ -79356,6 +79518,169 @@ components:
           required:
           - notice_id
           - current
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+
+    NoticeSupportAssignment:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        assigned_at:
+          type: string
+          format: date-time
+        mode:
+          enum:
+          - ASSIGNED
+          - QUOTE_CLAIM
+      required:
+      - account_id
+      - assigned_at
+      - mode
+
+    NoticeSupportAssignmentDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        assigned_at:
+          type: string
+          format: date-time
+        assigned_by:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        mode:
+          enum:
+          - ASSIGNED
+          - QUOTE_CLAIM
+      required:
+      - account_id
+      - assigned_at
+      - assigned_by
+      - reason
+      - mode
+
+    NoticeAssignmentRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - account_id
+      - reason
+
+    NoticeAssignmentHistoryItem:
+      type: object
+      additionalProperties: false
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 1
+        previous_account_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        assignment:
+          $ref: '#/components/schemas/NoticeSupportAssignmentDetail'
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - case_id
+      - object_version
+      - previous_account_id
+      - assignment
+      - content_sha256
+
+    NoticeAssignmentHistoryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            case_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              maxItems: 100
+              items:
+                $ref: '#/components/schemas/NoticeAssignmentHistoryItem'
+            next_cursor:
+              anyOf:
+              - type: integer
+                minimum: 1
+              - type: 'null'
+          required:
+          - case_id
+          - items
+          - next_cursor
+      required:
+      - meta
+      - data
+
+    NoticeAssignmentOptionsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            case_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  account_id:
+                    type: string
+                    format: uuid
+                  display_name:
+                    type: string
+                    minLength: 1
+                    maxLength: 80
+                required:
+                - account_id
+                - display_name
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - case_id
           - items
           - next_cursor
       required:

@@ -37,6 +37,7 @@ async function artist(tx,a,s,acting,action='SUBMIT_COOPERATION'){
 }
 async function rights(tx,s,receiver){const p=await A.person(tx,s.person_id),now=await A.now(tx);require('../artists/policy').adult(p,now);await A.avatar(tx,s.avatar_id,p);const c=await A.load(tx,s.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==s.avatar_id||c.current_status!=='APPROVED'||!c.data.purposes.includes('COOPERATION_SUBMISSION')||c.data.grantee_party_id!==receiver||!require('../artists/policy').active(c.data,now))throw error('NOTICE_SUBMISSION_CONSENT_REQUIRED',409);return c;}
 async function access(tx,a,r,party){
+ if(!party&&r.kind==='CASE')return require('./assignments').access(tx,a,r);
  if(!party){await operator(tx,a,['FACT'].includes(r.kind)?'FINANCE_REVIEW':r.kind==='CASE'?'NOTICE_SUPPORT':'NOTICE_REVIEW');return;}
  await A.owner(tx,a,party);if(![r.owner_party_id,r.counterparty_id].includes(party))throw error('NOTICE_NOT_FOUND',404);
  if(r.kind==='SUBMISSION'){
