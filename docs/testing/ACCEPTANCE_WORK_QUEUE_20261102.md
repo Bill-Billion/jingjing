@@ -28,7 +28,7 @@
 |ACC-DEL-03.03 新合同基础数字人资产/云托管永久免费；免费权益、实际存储可用与模型就绪分别显示。旧29元/月订单按原约定，不追改历史付款或删除保留材料；不能用旧收费规则验收新售。|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-03.04 造型底板与授权|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-04.01 公开投影|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-04（局部）|PARTIAL|
-|ACC-DEL-04.02 城市与位置|后端|正常办理、取消/退款/撤回|MANUAL-CITY-BOUNDARY（局部）|PARTIAL|
+|ACC-DEL-04.02 城市与位置|后端|正常办理、取消/退款/撤回|MANUAL-CITY-BOUNDARY（局部）；AUDITION-DECLARED-AREA-DISTANCE（局部）|PARTIAL|
 |ACC-DEL-04.03 最新合同仍承诺智能匹配与基于浏览、交易信息的个性化推荐，并允许关闭后基础使用。真实字段筛选与运营精选只是已有基础，不替代智能匹配；未启用须诚实说明，但不能仅凭未启用关闭该项。推荐依据、同意/关闭、撤权和不合理差别待遇保护须分别验收。|后端|正常办理、取消/退款/撤回|MATCH-STOCK-ORDER, MATCH-AUDITION-ORDER（局部）；MATCH-ARTIST-INVITATION, MATCH-NOTICE-SUBMISSION（局部）；RANKING-PREFERENCE-PARTICIPATION（局部）|PARTIAL|
 |ACC-DEL-04.04 详情与邀约|后端|正常办理、取消/退款/撤回|ARTIST-DETAIL-INVITATION（局部）|PARTIAL|
 |ACC-DEL-05.01 商品分型|后端|正常办理、取消/退款/撤回|RC-02（局部）；SOURCE-BACKEND-05（局部）|PARTIAL|

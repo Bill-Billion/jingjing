@@ -1,0 +1,46 @@
+{
+  "result": "PASS",
+  "checks": [
+    {
+      "name": "owner separately declares coarse service area once; original offer unchanged",
+      "result": "PASS",
+      "offer_id": "58516622-f724-472f-8f31-36a22b1105e6",
+      "location_version": 1,
+      "offer_sha256": "27c2baea46c8202ef6b772e1c5c98bd4c21f39685e970cda6aea87b99877e201"
+    },
+    {
+      "name": "approximate service area distance, price visibility and query-bound pagination",
+      "result": "PASS",
+      "offer_ids": [
+        "58516622-f724-472f-8f31-36a22b1105e6",
+        "785ce096-db28-44b9-8d6e-db0e9fbfce32"
+      ],
+      "distances_km": [
+        0,
+        12
+      ]
+    },
+    {
+      "name": "same privacy request returns only own current declared areas, not query location or another account",
+      "result": "PASS",
+      "request_id": "5b011ccd-159b-44d6-be29-48a08eec1722",
+      "offer_id": "58516622-f724-472f-8f31-36a22b1105e6"
+    },
+    {
+      "name": "withdrawal clears current grid; old key returns withdrawn status",
+      "result": "PASS",
+      "offer_id": "58516622-f724-472f-8f31-36a22b1105e6",
+      "version": 3
+    },
+    {
+      "name": "closed offers and revoked qualification/consent disappear; owner can still remove area",
+      "result": "PASS",
+      "offer_id": "785ce096-db28-44b9-8d6e-db0e9fbfce32"
+    }
+  ],
+  "limits": [
+    "Synthetic deliberately public coarse service areas, not device GPS or real consent",
+    "No frontend, real location collection or real map service",
+    "Approximate grid straight-line distance, not navigation"
+  ]
+}
