@@ -24,11 +24,9 @@ function createOrganizationBatch(db,{resolvePrincipal}){
   // Read existing target through the same domain permission checks on every replay.
   if(item.action==='PRODUCTION_ASSIGNMENT')return production.read(ctx,{record_id:id(i.record_id),party_id:party});
   return db.withTransaction(async tx=>{
-   const a=await org(tx,ctx,party);let person,action;
-   if(!!i.booking_id===!!i.order_id)throw error('ONE_BUSINESS_REFERENCE_REQUIRED',400);
-   if(i.booking_id){const {r}=await require('../auditions/context').booking(tx,id(i.booking_id));person=r.data.offer.person_id;action='MANAGE_AUDITIONS';}
-   else {const o=await require('./facts').order(tx,id(i.order_id));if(o.data.quote.commercial?.relation?.mcn_party_id!==party)throw error('ENGAGEMENT_NOT_FOUND',404);person=(await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=?',[o.data.quote.commercial.avatar_id]))?.person_id;action='COMMERCIAL_MESSAGES';}
-   await require('./mcn').delegated(tx,a,party,id(person),action);
+   const a=await org(tx,ctx,party),mcn=require('./mcn');
+   const {person_ids,action}=await mcn.assignmentTarget(tx,party,i);
+   for(const person of person_ids)await mcn.delegated(tx,a,party,person,action);
   });
  }
  async function execute(ctx,batch,item){

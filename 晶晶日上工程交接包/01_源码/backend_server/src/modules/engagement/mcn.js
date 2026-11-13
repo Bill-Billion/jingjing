@@ -9,11 +9,42 @@ async function revokeMemberGrants(tx,a,party,accountId){
  const [rows]=await tx.execute("SELECT * FROM engagement_records WHERE kind='STAFF_GRANT' AND owner_party_id=? AND current_status='ACTIVE' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.account_id'))=? ORDER BY id FOR UPDATE",[party,accountId]);
  for(const raw of rows){const r=C.checked(raw);await C.save(tx,a,r,'REVOKED',{...r.data,reason:'机构成员身份已移除，重新入职须重新明确授权'},'STAFF_REVOKED');}
 }
+function assignmentPeople(r){return r.data.person_ids||[r.data.person_id].filter(Boolean);}
+async function assignmentTarget(tx,party,i){
+ if(!!i.booking_id===!!i.order_id)throw error('ONE_BUSINESS_REFERENCE_REQUIRED',400);
+ if(i.booking_id){const {r}=await require('../auditions/context').booking(tx,id(i.booking_id));return {reference:r.id,person_ids:[r.data.offer.person_id],action:'MANAGE_AUDITIONS'};}
+ const o=await require('./facts').order(tx,id(i.order_id));
+ if(o.data.quote.stock_video){
+  if(o.data.quote.marketplace_finance?.allocation?.mcn_party_id!==party)throw error('ENGAGEMENT_NOT_FOUND',404);
+  const who=await require('./income-attribution').attribution(tx,o);
+  if(!who.person_ids.length)throw error('ORDER_ARTIST_LINK_REQUIRED',409);
+  return {reference:o.id,person_ids:who.person_ids,action:'SUBMIT_LISTING'};
+ }
+ if(o.data.quote.commercial?.relation?.mcn_party_id!==party)throw error('ENGAGEMENT_NOT_FOUND',404);
+ const link=await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=? FOR SHARE',[o.data.quote.commercial.avatar_id]);
+ if(!link)throw error('ORDER_ARTIST_LINK_REQUIRED',409);
+ return {reference:o.id,person_ids:[link.person_id],action:'COMMERCIAL_MESSAGES'};
+}
 function methods({db,actor}){return {
  async staffGrant(ctx,i){shape(i,['party_id','account_id','person_ids','actions','valid_until','operation_key']);id(i.account_id);require('../artists/policy').list(i.person_ids,id,100);if(!Array.isArray(i.actions)||!i.actions.length||new Set(i.actions).size!==i.actions.length||i.actions.some(x=>!ACTIONS.includes(x)))throw error('INVALID_STAFF_ACTIONS',400);require('../trade/policy').instant(i.valid_until);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);if(i.valid_until<=await A.now(tx)||!await A.one(tx,"SELECT id FROM party_memberships WHERE account_id=? AND party_id=? AND current_status='ACTIVE' FOR SHARE",[i.account_id,i.party_id]))throw error('MCN_ACTIVE_MEMBER_REQUIRED',409);for(const p of i.person_ids)await delegated(tx,a,i.party_id,p,'READ_PROFILE');return C.command(tx,a,'STAFF_GRANT',i,()=>C.insert(tx,a,'STAFF_GRANT',i.party_id,null,'ACTIVE',{account_id:i.account_id,person_ids:i.person_ids,actions:i.actions,valid_until:i.valid_until}));});},
  async revokeStaff(ctx,i){shape(i,['party_id','record_id','expected_version','reason','operation_key']);label(i.reason,2000);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);const r=await C.load(tx,i.record_id,'STAFF_GRANT');if(r.owner_party_id!==i.party_id)throw error('ENGAGEMENT_NOT_FOUND',404);return C.command(tx,a,'REVOKE_STAFF',i,async()=>{A.match(r,i.expected_version);return C.save(tx,a,r,'REVOKED',{...r.data,reason:i.reason},'STAFF_REVOKED');});});},
  async staffList(ctx,i){return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);return {items:await C.rows(tx,i.party_id,'STAFF_GRANT')};});},
- async assign(ctx,i){shape(i,['party_id','booking_id','order_id','account_id','operation_key']);if(!!i.booking_id===!!i.order_id)throw error('ONE_BUSINESS_REFERENCE_REQUIRED',400);return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await org(tx,a,i.party_id);let person_id,reference,action;if(i.booking_id){const {r}=await require('../auditions/context').booking(tx,i.booking_id);person_id=r.data.offer.person_id;reference=r.id;action='MANAGE_AUDITIONS';}else{const o=await require('./facts').order(tx,i.order_id);if(o.data.quote.commercial?.relation?.mcn_party_id!==i.party_id)throw error('ENGAGEMENT_NOT_FOUND',404);const link=await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=?',[o.data.quote.commercial.avatar_id]);if(!link)throw error('ORDER_ARTIST_LINK_REQUIRED',409);person_id=link.person_id;reference=o.id;action='COMMERCIAL_MESSAGES';}await delegated(tx,a,i.party_id,person_id,action);const staff=await A.one(tx,'SELECT id,current_status FROM identity_accounts WHERE id=? FOR SHARE',[id(i.account_id)]);if(staff?.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE',403);await delegated(tx,staff,i.party_id,person_id,action);return C.command(tx,a,'MCN_ASSIGN',i,async()=>{const old=await A.one(tx,"SELECT * FROM engagement_records WHERE kind='ASSIGNMENT' AND source_key=? FOR UPDATE",[require('../governance/content').digest(['ASSIGNMENT',[i.party_id,reference]])]);const data={booking_id:i.booking_id||null,order_id:i.order_id||null,person_id,account_id:staff.id,assigned_by:a.id,at:await A.now(tx)};return old?C.save(tx,a,C.checked(old),'ASSIGNED',data,'ORDER_REASSIGNED'):C.insert(tx,a,'ASSIGNMENT',i.party_id,null,'ASSIGNED',data,[i.party_id,reference]);});});},
+ async assign(ctx,i){
+  shape(i,['party_id','booking_id','order_id','account_id','operation_key']);
+  return db.withTransaction(async tx=>{
+   const a=await actor(tx,ctx);await org(tx,a,i.party_id);
+   const {reference,person_ids,action}=await assignmentTarget(tx,i.party_id,i);
+   for(const person of person_ids)await delegated(tx,a,i.party_id,person,action);
+   const staff=await A.one(tx,'SELECT id,current_status FROM identity_accounts WHERE id=? FOR SHARE',[id(i.account_id)]);
+   if(staff?.current_status!=='ACTIVE')throw error('ACCOUNT_NOT_ACTIVE',403);
+   for(const person of person_ids)await delegated(tx,staff,i.party_id,person,action);
+   return C.command(tx,a,'MCN_ASSIGN',i,async()=>{
+    const old=await A.one(tx,"SELECT * FROM engagement_records WHERE kind='ASSIGNMENT' AND source_key=? FOR UPDATE",[require('../governance/content').digest(['ASSIGNMENT',[i.party_id,reference]])]);
+    const data={booking_id:i.booking_id||null,order_id:i.order_id||null,person_id:person_ids.length===1?person_ids[0]:null,person_ids,account_id:staff.id,assigned_by:a.id,at:await A.now(tx)};
+    return old?C.save(tx,a,C.checked(old),'ASSIGNED',data,'ORDER_REASSIGNED'):C.insert(tx,a,'ASSIGNMENT',i.party_id,null,'ASSIGNED',data,[i.party_id,reference]);
+   });
+  });
+ },
  async mcnDashboard(ctx,i){
   shape(i,['party_id','person_id','order_id','created_from','created_before']);
   for(const k of ['person_id','order_id'])if(i[k]!==undefined)id(i[k]);
@@ -33,7 +64,7 @@ function methods({db,actor}){return {
   }
   const rawRelations=(await tx.execute("SELECT * FROM gig_records WHERE kind='RELATION' AND owner_party_id=? ORDER BY created_at,id LIMIT 500",[id(i.party_id)]))[0].map(G.dto);
   const relations=owner?rawRelations:rawRelations.filter(r=>new Set(people.values()).has(r.counterparty_id));
-  const assignments=(await C.rows(tx,i.party_id,'ASSIGNMENT')).filter(r=>owner||(r.current_status==='ASSIGNED'&&r.data.account_id===a.id&&people.has(r.data.person_id)));
+  const assignments=(await C.rows(tx,i.party_id,'ASSIGNMENT')).filter(r=>owner||(r.current_status==='ASSIGNED'&&r.data.account_id===a.id&&assignmentPeople(r).length>0&&assignmentPeople(r).every(p=>people.has(p))));
   const assigned=assignments.filter(r=>r.current_status==='ASSIGNED');
   const filters=[],params=[i.party_id,i.party_id];
   if(i.order_id){filters.push('t.id=?');params.push(i.order_id);}
@@ -50,7 +81,7 @@ function methods({db,actor}){return {
    if(i.person_id&&!who.person_ids.includes(i.person_id))continue;
    if(!owner){
     if(!who.person_ids.length||!who.person_ids.every(p=>people.has(p)))continue;
-    if(!assigned.some(r=>who.person_ids.includes(r.data.person_id)&&(r.data.order_id===o.id||(who.booking_id&&r.data.booking_id===who.booking_id))))continue;
+    if(!assigned.some(r=>assignmentPeople(r).some(p=>who.person_ids.includes(p))&&(r.data.order_id===o.id||(who.booking_id&&r.data.booking_id===who.booking_id))))continue;
    }
    const audition=await require('./income-attribution').auditionResult(tx,o,who);
    const f=await require('../gigs/settlement').financialFacts(tx,o),allocation=o.data.quote.marketplace_finance?.allocation;
@@ -62,4 +93,4 @@ function methods({db,actor}){return {
  });}
 
 };}
-module.exports={member,delegated,revokeMemberGrants,methods};
+module.exports={member,delegated,revokeMemberGrants,assignmentTarget,methods};

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.66-rc.1
+  version: 0.31.67-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -17402,7 +17402,7 @@ paths:
     post:
       operationId: engagementAssign
       summary: 将具体订单交给员工处理
-      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      description: 机构负责人分派商单、试镜预约或原合同约定机构分成的现货订单。现货参与人来自购买快照，机构及员工均须逐人有效SUBMIT_LISTING委托/员工MANAGE_LISTINGS权限；收入另需READ_INCOME。返回data.person_ids，多人时兼容person_id为null；单笔与批量共享验证，不改变历史合同、收益或素材权限。
       tags:
       - engagement
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
