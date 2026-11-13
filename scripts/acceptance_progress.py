@@ -35,9 +35,9 @@ def render(data, board):
               '|路线|当前有效办理内容|状态|主办人|下一步|', '|---|---|---|---|---|']
     for i in items:
         if not i['id'].startswith('E2E-'): continue
-        n = int(i['id'][-2:]); owner = 'chengcongcong222' if n in (1,2,4,10,11,12) else 'Bill-Billion'
+        n = int(i['id'][-2:]); owner = 'chengcongcong222（当前后端接续）；Bill-Billion仅既有UI'
         expected = i.get('effective_expected', i.get('source_expected', ''))
-        lines.append(f"|{i['id']}|原路线：{cell(i['work'])}<br>当前有效预期：{cell(expected)}|{LABELS[i['status']]}|{owner}|汇集现有原生/网页/接口证据；补缺的端和逆向；统一版本、资料与记录号后结案|")
+        lines.append(f"|{i['id']}|原路线：{cell(i['work'])}<br>当前有效预期：{cell(expected)}|{LABELS[i['status']]}|{owner}|汇集已有端侧证据；当前仅补后端缺口与逆向。前端开发修补暂停，所需端和共同版本整链待另行接续；未代对方认领|")
     lines += ['', '## 151条逐项清单', '',
               '通过项查看正式报告；其余按有效预期补证。部分验证的证据范围不一定覆盖整条，不从文件名推断通过。未登记足够证据的条目先核已有代码和历史测试，不能直接转成新开发任务。', '',
               '|标准|工作及当前有效预期|状态|所需端与场景|现有证据|下一步|', '|---|---|---|---|---|---|']

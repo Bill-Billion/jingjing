@@ -3,7 +3,7 @@
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
 后端负责人 chengcongcong222 按双方CURRENT继续独立开发、后端验证和证据登记；Bill-Billion仅既有UI工作，不代认领新页面任务。当前不开发修补前端、不运行本机App/Web。原18组和12路线不变。
 
-登记共151条；状态：{'NOT_RUN': 37, 'PARTIAL': 95, 'PASS': 19}；其中104条有显式登记的局部证据关联。
+登记共151条；状态：{'NOT_RUN': 28, 'PARTIAL': 104, 'PASS': 19}；其中113条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
 接续顺序以双方CURRENT及本轮报告为准，逐项核原文、实际实现和剩余证据；页面与设备缺口单列待后续安排，不将其重新指派给前端，不阻断独立后端工作。
@@ -24,9 +24,9 @@
 |ACC-DEL-02.03 补件与到期|后端|正常办理、取消/退款/撤回|CERTIFICATION-SUPPLEMENT-EXPIRY（局部）；CERTIFICATION-ISOLATED-EXPIRY（局部）|PARTIAL|
 |ACC-DEL-02.04 代理及监护|后端|正常办理、取消/退款/撤回|SC-04（局部）|PARTIAL|
 |ACC-DEL-03.01 演员与造型分离|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-03（局部）|PARTIAL|
-|ACC-DEL-03.02 新合同基础形象/声音创建免费，受理、基础档案和长期可复用资产分别记录；真实长期资产ID及复用证据齐套才显示模型就绪。普通图生视频和档案插入不等于长期建模；历史已收费服务按原快照履约。|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-03.03 新合同基础数字人资产/云托管永久免费；免费权益、实际存储可用与模型就绪分别显示。旧29元/月订单按原约定，不追改历史付款或删除保留材料；不能用旧收费规则验收新售。|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-03.04 造型底板与授权|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-03.02 新合同基础形象/声音创建免费，受理、基础档案和长期可复用资产分别记录；真实长期资产ID及复用证据齐套才显示模型就绪。普通图生视频和档案插入不等于长期建模；历史已收费服务按原快照履约。|后端|正常办理、取消/退款/撤回|FREE-CREATION-IS-NOT-MODEL（局部）|PARTIAL|
+|ACC-DEL-03.03 新合同基础数字人资产/云托管永久免费；免费权益、实际存储可用与模型就绪分别显示。旧29元/月订单按原约定，不追改历史付款或删除保留材料；不能用旧收费规则验收新售。|后端|正常办理、取消/退款/撤回|FREE-HOSTING-AND-OLD-TERM（局部）|PARTIAL|
+|ACC-DEL-03.04 造型底板与授权|后端|正常办理、取消/退款/撤回|AVATAR-MATERIAL-PURPOSE（局部）|PARTIAL|
 |ACC-DEL-04.01 公开投影|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-04（局部）|PARTIAL|
 |ACC-DEL-04.02 城市与位置|后端|正常办理、取消/退款/撤回|MANUAL-CITY-BOUNDARY（局部）；AUDITION-DECLARED-AREA-DISTANCE（局部）|PARTIAL|
 |ACC-DEL-04.03 最新合同仍承诺智能匹配与基于浏览、交易信息的个性化推荐，并允许关闭后基础使用。真实字段筛选与运营精选只是已有基础，不替代智能匹配；未启用须诚实说明，但不能仅凭未启用关闭该项。推荐依据、同意/关闭、撤权和不合理差别待遇保护须分别验收。|后端|正常办理、取消/退款/撤回|MATCH-STOCK-ORDER, MATCH-AUDITION-ORDER（局部）；MATCH-ARTIST-INVITATION, MATCH-NOTICE-SUBMISSION（局部）；RANKING-PREFERENCE-PARTICIPATION（局部）|PARTIAL|
@@ -60,9 +60,9 @@
 |ACC-DEL-11.03 客服接管|后端|正常办理、取消/退款/撤回|INTENT-SUPPORT-QUOTE（局部）；SUPPORT-ASSIGNMENT-HANDOVER（局部）|PARTIAL|
 |ACC-DEL-11.04 关闭与通知|后端|正常办理、取消/退款/撤回|INTENT-CLOSE-NOTIFY（局部）|PARTIAL|
 |ACC-DEL-12.01 成立条件|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-12（局部）|PARTIAL|
-|ACC-DEL-12.02 消息能力|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-12.03 风控与归档|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-12.04 通知复用|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-12.02 消息能力|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-RETRY-AUTH（局部）|PARTIAL|
+|ACC-DEL-12.03 风控与归档|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-RISK-ARCHIVE（局部）|PARTIAL|
+|ACC-DEL-12.04 通知复用|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-NOTIFICATION-ISOLATION（局部）|PARTIAL|
 |ACC-DEL-13.01 停新不删旧|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-13（局部）|PASS|
 |ACC-DEL-13.02 商务入库|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-13.03 版本用途|后端|正常办理、取消/退款/撤回|RC-03（局部）|PARTIAL|
@@ -96,8 +96,8 @@
 |ACC-DEL-20.03 结佣|后端|正常办理、取消/退款/撤回|REFERRAL-RISK-SETTLEMENT（局部）|PARTIAL|
 |ACC-DEL-20.04 逆向|后端|正常办理、取消/退款/撤回|REFERRAL-ORIGINAL-REFUNDS（局部）|PARTIAL|
 |ACC-DEL-21.01 奖项版本|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-21（局部）|PARTIAL|
-|ACC-DEL-21.02 300与2700|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-21.03 十连保底|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-21.02 300与2700|后端|正常办理、取消/退款/撤回|LOTTERY-POINTS-ATOMIC-REPLAY（局部）|PARTIAL|
+|ACC-DEL-21.03 十连保底|后端|正常办理、取消/退款/撤回|LOTTERY-EFFECTIVE-ODDS-VERSION（局部）|PARTIAL|
 |ACC-DEL-21.04 真实奖品|后端|正常办理、取消/退款/撤回|PRIZE-FULFILLMENT（局部）|PARTIAL|
 |ACC-DEL-22.01 固定兑换|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-22（局部）；BENEFIT-WEB-01（局部）|PARTIAL|
 |ACC-DEL-22.02 制作金仅用于人工承制定制片和做剧；不用于现货、人工样片、数字人创建或托管；按券后应付金额计算分期。新合同已审规格采用签约30%、脚本/图纸确认40%、最终验收30%；未确认脚本不能支付中款，未完成最终确认和付款不能取得正式文件。比例须明确写入报价及合同；历史订单按原冻结快照，不追改30/60/10。|后端|正常办理、取消/退款/撤回|BENEFIT-WEB-01（局部）|PARTIAL|
@@ -122,7 +122,7 @@
 |ACC-DEL-27.01 非标参与|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-27（局部）|PARTIAL|
 |ACC-DEL-27.02 角色绑定|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-27.03 发行真实性|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-27.04 未来收入|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-27.04 未来收入|后端|正常办理、取消/退款/撤回|RELEASE-ACTUAL-CASH（局部）|PARTIAL|
 |ACC-DEL-28.01 导航和深链|App、网页|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-28.02 同步规范测试|App、网页|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-28.03 原型修复|App、网页|正常办理、取消/退款/撤回|FP-02（局部）；CP01, CP02, CP05, CP07（局部）|PARTIAL|
