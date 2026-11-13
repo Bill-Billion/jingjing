@@ -124,6 +124,7 @@ test('fixed redemption through actual HTTP and isolated MySQL transactions',{ski
    const remedy=await call('requestRemedy',buyer,{record_id:g.id,party_id:buyer.personal_party_id,expected_version:g.object_version,reason:'synthetic expired original points'});await call('reviewRemedy',reviewer,{record_id:remedy.id,expected_version:remedy.object_version,decision:'RETURN_POINTS',reason:'synthetic original batch return',evidence_asset_id:proof.id});
    lot=await db.withTransaction(tx=>Wc.load(tx,lot.id,'EARNING'));assert.equal(lot.data.expires_at,data.expires_at);assert.equal((await balance(buyer)).available_points,0);
   });
+  await require('./support/lottery-exposure-journey.cjs')({t,db,S,call,template,proof,patch,balance});
   await fs.mkdir(path.resolve(__dirname,'../../../../.local'),{recursive:true});await fs.writeFile(path.resolve(__dirname,'../../../../.local/redemption-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });
