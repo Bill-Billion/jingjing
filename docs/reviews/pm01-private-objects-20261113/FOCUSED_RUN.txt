@@ -1,0 +1,283 @@
+TAP version 13
+# Subtest: failed migration is diagnosed and recovered through isolated maintenance commands
+    # Subtest: CLI safety rejects live targets and emits no credentials
+    ok 1 - CLI safety rejects live targets and emits no credentials
+      ---
+      duration_ms: 209.623
+      type: 'test'
+      ...
+    # Subtest: read-only diagnostics see waiting work without requiring a release manifest
+    ok 2 - read-only diagnostics see waiting work without requiring a release manifest
+      ---
+      duration_ms: 343.6829
+      type: 'test'
+      ...
+    # Subtest: backup commands create an authenticated pre-change artifact and refuse overwrite
+    ok 3 - backup commands create an authenticated pre-change artifact and refuse overwrite
+      ---
+      duration_ms: 1393.7456
+      type: 'test'
+      ...
+    # Subtest: actual failed migration retains prior committed DDL and is observable without rewriting history
+    ok 4 - actual failed migration retains prior committed DDL and is observable without rewriting history
+      ---
+      duration_ms: 760.6913
+      type: 'test'
+      ...
+    # Subtest: restore refuses wrong hash and a populated target without destroying the failed scene
+    ok 5 - restore refuses wrong hash and a populated target without destroying the failed scene
+      ---
+      duration_ms: 500.1957
+      type: 'test'
+      ...
+    # Subtest: actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+    ok 6 - actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+      ---
+      duration_ms: 5992.0492
+      type: 'test'
+      ...
+    # Subtest: post-recovery observation blocks runtime and never claims migration recovery is service cutover
+    ok 7 - post-recovery observation blocks runtime and never claims migration recovery is service cutover
+      ---
+      duration_ms: 787.6815
+      type: 'test'
+      ...
+    # Subtest: diagnostics report blocked, failed and expired jobs without executing or exposing private references
+    ok 8 - diagnostics report blocked, failed and expired jobs without executing or exposing private references
+      ---
+      duration_ms: 357.7171
+      type: 'test'
+      ...
+    # Subtest: empty database is diagnosed as unavailable without creating schema
+    ok 9 - empty database is diagnosed as unavailable without creating schema
+      ---
+      duration_ms: 330.7989
+      type: 'test'
+      ...
+    1..9
+ok 1 - failed migration is diagnosed and recovered through isolated maintenance commands
+  ---
+  duration_ms: 20329.0171
+  type: 'test'
+  ...
+# Subtest: private object evidence is tied to real encrypted snapshot and CLI remains offline
+    # Subtest: authenticated snapshot exports private inventory without database or provider access
+    ok 1 - authenticated snapshot exports private inventory without database or provider access
+      ---
+      duration_ms: 109.756
+      type: 'test'
+      ...
+    # Subtest: existing inventory, wrong snapshot digest and wrong decryption key are refused
+    ok 2 - existing inventory, wrong snapshot digest and wrong decryption key are refused
+      ---
+      duration_ms: 324.8012
+      type: 'test'
+      ...
+    # Subtest: actual bytes are compared with the same encrypted backup rather than a caller-edited inventory
+    ok 3 - actual bytes are compared with the same encrypted backup rather than a caller-edited inventory
+      ---
+      duration_ms: 367.8086
+      type: 'test'
+      ...
+    # Subtest: wrong bytes, wrong size and missing originals are distinguished without changing source
+    ok 4 - wrong bytes, wrong size and missing originals are distinguished without changing source
+      ---
+      duration_ms: 330.8477
+      type: 'test'
+      ...
+    # Subtest: a newer privacy register blocks an otherwise matching object and retains absent-later suppressions
+    ok 5 - a newer privacy register blocks an otherwise matching object and retains absent-later suppressions
+      ---
+      duration_ms: 325.5537
+      type: 'test'
+      ...
+    # Subtest: directory junctions and symlinks cannot redirect the local object check
+    ok 6 - directory junctions and symlinks cannot redirect the local object check
+      ---
+      duration_ms: 215.0732
+      type: 'test'
+      ...
+    1..6
+ok 2 - private object evidence is tied to real encrypted snapshot and CLI remains offline
+  ---
+  duration_ms: 8886.4766
+  type: 'test'
+  ...
+# Subtest: snapshot-bound inventory covers both native object tables and deduplicates consistent references
+ok 3 - snapshot-bound inventory covers both native object tables and deduplicates consistent references
+  ---
+  duration_ms: 2.9384
+  type: 'test'
+  ...
+# Subtest: changed snapshot, missing coverage and conflicting references cannot produce a misleading list
+ok 4 - changed snapshot, missing coverage and conflicting references cannot produce a misleading list
+  ---
+  duration_ms: 1.3561
+  type: 'test'
+  ...
+# Subtest: erasure, revocation, unfinished uploads and tombstones are never restoration candidates
+ok 5 - erasure, revocation, unfinished uploads and tombstones are never restoration candidates
+  ---
+  duration_ms: 1.5166
+  type: 'test'
+  ...
+# Subtest: newer suppression and suppressed keys absent from the backup remain in the review list
+ok 6 - newer suppression and suppressed keys absent from the backup remain in the review list
+  ---
+  duration_ms: 1.5427
+  type: 'test'
+  ...
+# Subtest: unsafe object keys and unknown register hashes are rejected
+ok 7 - unsafe object keys and unknown register hashes are rejected
+  ---
+  duration_ms: 0.5752
+  type: 'test'
+  ...
+# Subtest: local bytes distinguish matched, missing, wrong size, wrong digest and non-regular files
+ok 8 - local bytes distinguish matched, missing, wrong size, wrong digest and non-regular files
+  ---
+  duration_ms: 14.6522
+  type: 'test'
+  ...
+# Subtest: suppressed local objects are reported without reading, deleting or permitting recovery
+ok 9 - suppressed local objects are reported without reading, deleting or permitting recovery
+  ---
+  duration_ms: 2.2054
+  type: 'test'
+  ...
+# Subtest: release evidence is commit-bound, time-bound and never self-approves launch
+ok 10 - release evidence is commit-bound, time-bound and never self-approves launch
+  ---
+  duration_ms: 0.9729
+  type: 'test'
+  ...
+# Subtest: backup cells preserve exact integers and distinguish binary from plain text
+ok 11 - backup cells preserve exact integers and distinguish binary from plain text
+  ---
+  duration_ms: 0.9648
+  type: 'test'
+  ...
+# Subtest: maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names
+ok 12 - maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names
+  ---
+  duration_ms: 0.3392
+  type: 'test'
+  ...
+# Subtest: release config distinguishes unavailable and unsafe configuration without leaking values
+ok 13 - release config distinguishes unavailable and unsafe configuration without leaking values
+  ---
+  duration_ms: 0.375
+  type: 'test'
+  ...
+# Subtest: release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+    # Subtest: legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+    ok 1 - legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+      ---
+      duration_ms: 5.4513
+      type: 'test'
+      ...
+    # Subtest: source declaration and active WAL reject before unsafe copy
+    ok 2 - source declaration and active WAL reject before unsafe copy
+      ---
+      duration_ms: 2.1055
+      type: 'test'
+      ...
+    # Subtest: archiving twice preserves old facts without creating active identities, payment receipts or licenses
+    ok 3 - archiving twice preserves old facts without creating active identities, payment receipts or licenses
+      ---
+      duration_ms: 13.385
+      type: 'test'
+      ...
+    # Subtest: concurrent archives converge and manifest tampering is detected
+    ok 4 - concurrent archives converge and manifest tampering is detected
+      ---
+      duration_ms: 11.6709
+      type: 'test'
+      ...
+    # Subtest: modified archive payload fails without partial writes
+    ok 5 - modified archive payload fails without partial writes
+      ---
+      duration_ms: 0.3543
+      type: 'test'
+      ...
+    # Subtest: backup includes immutable payment and pending-job facts
+    ok 6 - backup includes immutable payment and pending-job facts
+      ---
+      duration_ms: 539.9186
+      type: 'test'
+      ...
+    # Subtest: encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+    ok 7 - encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+      ---
+      duration_ms: 53.6326
+      type: 'test'
+      ...
+    # Subtest: restore to a fresh database matches every row while leaving runtime quarantined
+    ok 8 - restore to a fresh database matches every row while leaving runtime quarantined
+      ---
+      duration_ms: 6908.4491
+      type: 'test'
+      ...
+    # Subtest: restore never overwrites an existing database or accepts the wrong source checksum
+    ok 9 - restore never overwrites an existing database or accepts the wrong source checksum
+      ---
+      duration_ms: 32.9328
+      type: 'test'
+      ...
+    # Subtest: invalid foreign key rolls back all imported rows and preserves quarantine
+    ok 10 - invalid foreign key rolls back all imported rows and preserves quarantine
+      ---
+      duration_ms: 5441.3546
+      type: 'test'
+      ...
+    # Subtest: schema injection or renamed column is rejected without executing backup SQL
+    ok 11 - schema injection or renamed column is rejected without executing backup SQL
+      ---
+      duration_ms: 5170.6559
+      type: 'test'
+      ...
+    # Subtest: release checks do not confuse filled forms, sandbox providers or running process with launch approval
+    ok 12 - release checks do not confuse filled forms, sandbox providers or running process with launch approval
+      ---
+      duration_ms: 136.2783
+      type: 'test'
+      ...
+    # Subtest: registered provider evidence remains version-bound and never substitutes for a live check
+    ok 13 - registered provider evidence remains version-bound and never substitutes for a live check
+      ---
+      duration_ms: 256.75
+      type: 'test'
+      ...
+    # Subtest: sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+    ok 14 - sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+      ---
+      duration_ms: 620.9067
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate writes preserve one business object and one set of receipts
+    ok 15 - concurrent duplicate writes preserve one business object and one set of receipts
+      ---
+      duration_ms: 40.5271
+      type: 'test'
+      ...
+    # Subtest: HTTP security failures never expose SQL, credentials or accept forged payment flags
+    ok 16 - HTTP security failures never expose SQL, credentials or accept forged payment flags
+      ---
+      duration_ms: 7.0158
+      type: 'test'
+      ...
+    1..16
+ok 14 - release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+  ---
+  duration_ms: 30876.5267
+  type: 'test'
+  ...
+1..14
+# tests 45
+# suites 0
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61183.9074

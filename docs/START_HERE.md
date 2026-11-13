@@ -1,5 +1,5 @@
-# 当前施工：W28迁移失败恢复与故障观测
+# 当前施工：私有文件清单、离线字节核对与阶段证据收敛
 
-正式树client-testing，分支core/full-business-closure-20261028。先读[后端CURRENT](status/CORE_CURRENT.md)、[前端CURRENT](status/EXPERIENCE_CURRENT.md)、[报告](reviews/pm01-rollback-drill-20261112/REPORT.md)、[阶段退出核对](reviews/pm01-rollback-drill-20261112/STAGE_EXIT.md)。
+正式树client-testing，分支core/full-business-closure-20261028；先读[后端CURRENT](status/CORE_CURRENT.md)、[前端CURRENT](status/EXPERIENCE_CURRENT.md)、[报告](reviews/pm01-private-objects-20261113/REPORT.md)、[退出表](reviews/pm01-private-objects-20261113/STAGE_EXIT.md)。
 
-2026-11-13业务04fe18fc新增只读恢复诊断和实际迁移失败后的CLI恢复演练。完整同版后端1652项通过、0失败、1项旧库样本对照跳过；同次78份文件6055份HTTP响应格式通过，843份冻结源码未变；前候选8945cc9e三组远端成功，候选7d463dc0已上传原草稿PR39，说明已同步；App 与管理网页业务页面检查43257971615运行中，服务器自动检查43257969920运行中，甲方测试工具检查43257970027运行中（观察于2026-11-12 16:23:27 UTC）；尚无实审、未合入未启用。未完成不计通过，交付观察回执本地保存随下批同步。W28仍部分，真实旧库/文件/应用回退/签收等另验。接口0.31.59-rc.1/0212；原18组0/18正式关闭、12整链部分、151标准19通过/76部分/56证据不足；未开发总数尚未核清。本侧禁止前端开发修补和本机App/Web运行；维护者阶段末审阅，真实/生产/公网不开，不动3490与离线APK。
+业务a90d88a5新增两条备份绑定的离线命令，五份45项检查通过，无真实文件恢复/放行。本轮无全量/HTTP批次，前候选7d463dc0三组远端成功；本批尚未上传、未实审未合入未启用。原18组0/18正式关闭、12整链部分；151标准现为19通过/77部分/55证据不足，未开发总数尚未核清，仅迁移恢复一条补登记PARTIAL。接口0.31.59-rc.1/0212，维护者阶段末审阅，本侧禁止前端开发修补，真实/生产/公网不开，不动3490和离线APK。
