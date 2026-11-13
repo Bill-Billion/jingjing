@@ -18,7 +18,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
   async function call(method,url,u=buyer,body,party=u.personal_party_id,h={}){
    const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+u.token,...(party?{'X-Acting-Party':party}:{}),...(body?{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json'}:{}),...h},...(body?{body:Buffer.isBuffer(body)?body:JSON.stringify(body)}:{})});
    if(!(res.headers.get('content-type')||'').includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};
-   const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.startsWith('/gigs/')?'CommercialConversationResponse':url.startsWith('/trade/')?'TradeRecordResponse':url.startsWith('/production/')?'ProductionRecordResponse':'NoticeResponse'):'ErrorResponse',value});
+   const value=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.startsWith('/operations/notifications')?'OpsNotificationListResponse':url.startsWith('/gigs/')?'CommercialConversationResponse':url.startsWith('/trade/')?'TradeRecordResponse':url.startsWith('/production/')?'ProductionRecordResponse':'NoticeResponse'):'ErrorResponse',value});
    return {status:res.status,...value};
   }
   const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;},bad=(r,c)=>assert.equal(r.error?.code,c,JSON.stringify(r));
@@ -212,6 +212,40 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    bad(await call('POST','/notices/submissions',seller,{rule_id:rule.id,submission:{...S.submission,notice_id:published.id}},seller.personal_party_id,headers()),'NOTICE_NOT_OPEN');
    const stored=await trade.read(buyer.ctx,{record_id:quote.id,party_id:buyer.personal_party_id});
    assert.deepEqual(stored,before);
+  });
+  await t.test('notice withdrawal notifies each historical application once without changing submission or contract',async()=>{
+   const n=ok(await approve(ok(await create(rule))));
+   const make=async()=>ok(await call('POST','/notices/submissions',seller,{rule_id:rule.id,submission:{...S.submission,notice_id:n.id}},seller.personal_party_id,headers()));
+   const pending=await make(),sent=ok(await approve(await make()));
+   const history=[ok(await read(pending,seller)),ok(await read(sent,seller))];
+   const count=async()=>Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE domain='NOTICES' AND event_code='NOTICE_WITHDRAWN' AND record_id IN (?,?)",[pending.id,sent.id]))[0][0].n);
+   const h=headers(n),body={reason:'Synthetic notice no longer available'};
+   const closed=ok(await call('POST','/notices/records/'+n.id+'/close',buyer,body,buyer.personal_party_id,h));
+   assert.equal(closed.current_status,'WITHDRAWN');assert.equal(await count(),2);
+   assert.deepEqual(ok(await call('POST','/notices/records/'+n.id+'/close',buyer,body,buyer.personal_party_id,h)),closed);assert.equal(await count(),2);
+   assert.deepEqual(ok(await read(pending,seller)),history[0]);
+   assert.deepEqual(ok(await read(sent,seller)),history[1]);
+   bad(await read(pending,buyer),'NOTICE_NOT_FOUND');
+   const notices=ok(await call('GET','/operations/notifications?limit=100',seller)).items.filter(x=>x.event_code==='NOTICE_WITHDRAWN'&&[pending.id,sent.id].includes(x.record_id));
+   assert.equal(notices.length,2);
+   const receiver=ok(await call('GET','/operations/notifications?limit=100',buyer)).items.filter(x=>x.event_code==='NOTICE_WITHDRAWN'&&[pending.id,sent.id].includes(x.record_id));
+   assert.equal(receiver.length,1);assert.equal(receiver[0].record_id,sent.id);
+   bad(await call('POST','/notices/submissions/'+sent.id+'/decision',buyer,{decision:'INTERESTED'},buyer.personal_party_id,headers(sent)),'NOTICE_NOT_OPEN');
+   bad(await call('GET','/notices/catalog/'+n.id,seller,undefined,null),'NOTICE_NOT_OPEN');
+   records.withdrawal_notification={notice_id:n.id,submission_ids:[pending.id,sent.id],events:2,replay_events:2,pending_recipient_hidden:true,history_unchanged:true};
+  });
+  await t.test('failure to record notice withdrawal notification rolls back closure and all prior events',async()=>{
+   const n=ok(await approve(ok(await create(rule))));
+   const s=ok(await call('POST','/notices/submissions',seller,{rule_id:rule.id,submission:{...S.submission,notice_id:n.id}},seller.personal_party_id,headers()));
+   const h=headers(n),body={reason:'Synthetic atomic withdrawal'},before=ok(await read(n));
+   await db.withConnection(c=>c.query("CREATE TRIGGER notice_close_event_abort BEFORE INSERT ON ops_events FOR EACH ROW BEGIN IF NEW.event_code='NOTICE_WITHDRAWN' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic notification failure'; END IF; END"));
+   try{
+    assert.equal((await call('POST','/notices/records/'+n.id+'/close',buyer,body,buyer.personal_party_id,h)).status,503);
+    assert.deepEqual(ok(await read(n)),before);
+    assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM notice_audit WHERE record_id IN (?,?) AND event_code IN ('WITHDRAWN','NOTICE_WITHDRAWN')",[n.id,s.id]))[0][0].n),0);
+   }finally{await db.withConnection(c=>c.query('DROP TRIGGER notice_close_event_abort'));}
+   assert.equal(ok(await call('POST','/notices/records/'+n.id+'/close',buyer,body,buyer.personal_party_id,h)).current_status,'WITHDRAWN');
+   assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE record_id=? AND event_code='NOTICE_WITHDRAWN'",[s.id]))[0][0].n),1);
   });
   const out=process.env.JX_NOTICES_ORDINARY_HTTP_FIXTURES||path.resolve(__dirname,'../../../..','.local/notices-ordinary-http-fixtures.json');
   await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
