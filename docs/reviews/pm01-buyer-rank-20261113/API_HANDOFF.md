@@ -6,7 +6,7 @@
 - GET同路径，city必填，limit 1—100默认20、cursor可选；游标按同城id遍历，不是时间降序全量一次返回。
 - GET /api/v1/engagement/buyer-rankings/{record_id}，任一已登录账号可读当前允许公开的历史投影；不返回rule_snapshot、订单/实名来源。
 
-既有GET /engagement/buyers?city=优先返回最新已发布快照；没有时保留实时兼容计算并标LIVE_NOT_SAVED。新增可选snapshot_id/snapshot_sha256/as_of/calculation_version/traceability；快照FROZEN_SNAPSHOT，实时ID及摘要为空。数据更新时间看as_of，不冒充每次请求重新排名。运营须主动生成；定时/大批生成尚未补。
+既有GET /engagement/buyers?city=优先返回最新已发布快照；没有时保留实时兼容计算并标LIVE_NOT_SAVED。新增可选snapshot_id/snapshot_sha256/as_of/calculation_version/traceability；快照FROZEN_SNAPSHOT，实时ID及摘要为空。数据更新时间看as_of，不冒充每次请求重新排名。运营须主动生成；定时/大批生成属待核需求的实施建议，非本轮新增验收门槛。
 
 个人重新核有效实名、账号及成员；机构复用独审公开档案当前有效身份，未审/失效不入榜。报名选择保留；退出/迁城/失权隐藏历史公开条目，不重算其他人分数。city为声明城市，不是位置认证。消费成长仅有效消费来源，赠分不计；退款/风控改变后续快照，旧规则和旧分数保留。
 
