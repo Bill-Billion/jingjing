@@ -247,6 +247,32 @@ test('engagement real database journey and permission boundaries',{skip:!process
    view=await query();assert.equal(view.orders[0].person_id,null);assert.equal(view.orders[0].contract_sha256,contract);
    assert.deepEqual((await R.mcnDashboard(outsider.ctx,{party_id:org.party_id,order_id:oid,person_id:buyer2.person.id})).orders,[]);
   });
+  await t.test('frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments',async()=>{
+   // Historical fixture: this is not a new rights-reviewed multi-artist sale.
+   const listing=await S.listing(),oid=key(),pid=key();
+   const snapshot={...listing.data,participants:[...listing.data.participants,{person_id:buyer2.person.id,avatar_id:key(),consent_id:key()}]};
+   const allocation={model:'V5_TWO_LAYER',product_type:'STOCK_VIDEO',fee_base:'NET_PAID',platform_party_id:reviewer.personal_party_id,platform_bps:1800,supplier_party_id:seller.personal_party_id,mcn_party_id:org.party_id,mcn_supply_bps:2000,referrer_party_id:null,referral_bps:0,rounding:'HALF_UP_PLATFORM_REMAINDER'};
+   const data={quote:{total_minor:1000,stock_video:{listing_id:listing.id,offer_sha256:digest(snapshot)},marketplace_finance:{allocation}},contract:{synthetic_only:true,order_id:oid}};
+   await db.execute("INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,created_by,current_status,data_json,data_sha256) VALUES (?,'ORDER',?,?,?,'PAID',?,?)",[oid,buyer.personal_party_id,seller.personal_party_id,outsider.account_id,JSON.stringify(data),digest(data)]);
+   const purchase={listing_snapshot:snapshot,offer_sha256:digest(snapshot),status:'ACTIVE'};
+   await db.execute('INSERT INTO stock_purchases(order_id,listing_id,buyer_party_id,data_json,data_sha256) VALUES (?,?,?,?,?)',[oid,listing.id,buyer.personal_party_id,JSON.stringify(purchase),digest(purchase)]);
+   const payment={environment:'PRODUCTION',synthetic_only:true};
+   await db.execute("INSERT INTO trade_records(id,kind,buyer_party_id,merchant_party_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,'PAYMENT',?,?,?,?,'SUCCEEDED',?,?)",[pid,buyer.personal_party_id,seller.personal_party_id,oid,outsider.account_id,JSON.stringify(payment),digest(payment)]);
+   await db.execute("INSERT INTO trade_journal(id,source_id,order_id,direction,currency,amount_minor,provider_reference) VALUES (?,?,?,'RECEIPT','CNY',?,?)",[key(),pid,oid,1000,'synthetic:'+pid]);
+   const assignments=[];for(const artist of [seller,buyer2])assignments.push(await db.withTransaction(tx=>C.insert(tx,{id:outsider.account_id},'ASSIGNMENT',org.party_id,null,'ASSIGNED',{person_id:artist.person.id,account_id:buyer.account_id,order_id:oid,booking_id:null})));
+   const query=(u,filters={})=>R.mcnDashboard(u.ctx,{party_id:org.party_id,order_id:oid,...filters});
+   const people=[seller.person.id,buyer2.person.id].sort();
+   for(const person_id of [undefined,...people]){const v=await query(outsider,person_id?{person_id}:{});assert.equal(v.orders.length,1);assert.deepEqual(v.orders[0].person_ids,people);assert.equal(v.orders[0].person_id,null);assert.equal(v.orders[0].attribution_basis,'STOCK_PURCHASE_SNAPSHOT');assert.equal(v.total_order_received_minor,1000);assert.equal(v.total_accrual_minor,164);}
+   assert.deepEqual((await query(buyer)).orders,[]); // Partial artist authorization cannot expose the joint order.
+   const all=await grant(buyer,buyer2);assert.equal((await query(buyer)).orders.length,1);
+   await write('revokeStaff',outsider,{party_id:org.party_id,record_id:all.id,expected_version:all.object_version,reason:'Joint artist scope withdrawn'});assert.deepEqual((await query(buyer)).orders,[]);
+   await patch('stock_listings',listing,{participants:[]});const historical=await query(outsider);assert.deepEqual(historical.orders[0].person_ids,people);assert.equal(historical.orders[0].contract_sha256,digest(data.contract));
+   const changed={...purchase,listing_snapshot:{...snapshot,participants:[snapshot.participants[0]]}};
+   await db.execute('UPDATE stock_purchases SET data_json=?,data_sha256=? WHERE order_id=?',[JSON.stringify(changed),digest(changed),oid]);
+   try{await assert.rejects(query(outsider),{status:503,code:'SERVICE_UNAVAILABLE'});}
+   finally{await db.execute('UPDATE stock_purchases SET data_json=?,data_sha256=? WHERE order_id=?',[JSON.stringify(purchase),digest(purchase),oid]);}
+   for(const r of assignments)await db.withTransaction(tx=>C.save(tx,{id:outsider.account_id},r,'REVOKED',r.data,'SYNTHETIC_ASSIGNMENT_CLOSED'));
+  });
   let first=await dashboard(buyer),second=await dashboard(reviewer);
   assert.deepEqual(first.relations.map(x=>x.id),[relations[0]]);
   assert.deepEqual(second.relations.map(x=>x.id),[relations[1]]);

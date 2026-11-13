@@ -6083,6 +6083,26 @@
         "object_key"
       ],
       "replace_with": "private/key"
+    },
+    {
+      "name": "MCN participants cannot duplicate an artist",
+      "fixture": "McnIncomeOrder",
+      "mutate_path": [
+        "person_ids"
+      ],
+      "replace_with": [
+        "1c48902b-6504-428e-b208-9edf0f8b4afd",
+        "1c48902b-6504-428e-b208-9edf0f8b4afd"
+      ]
+    },
+    {
+      "name": "MCN unknown acceptance cannot be called paid",
+      "fixture": "McnIncomeOrder",
+      "mutate_path": [
+        "audition",
+        "acceptance_result"
+      ],
+      "replace_with": "PAID"
     }
   ]
 }

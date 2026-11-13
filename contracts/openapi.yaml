@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.65-rc.1
+  version: 0.31.66-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -36716,6 +36716,36 @@ components:
         order_id:
           type: string
           format: uuid
+        person_ids:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uuid
+          description: 参与人来自原单或购买快照；商单历史兼容取数字人关联。多人同单金额只计一次，不是各人的分成。
+        attribution_basis:
+          enum: [AUDITION_ORDER_SNAPSHOT, STOCK_PURCHASE_SNAPSHOT, COMMERCIAL_AVATAR_LINK, NOT_RECORDED]
+        business_type:
+          enum: [AUDITION, STOCK_VIDEO, COMMERCIAL, OTHER]
+        audition:
+          anyOf:
+          - type: 'null'
+          - type: object
+            additionalProperties: false
+            required: [booking_id, status, acceptance_result, accepted_at]
+            properties:
+              booking_id:
+                type: string
+                format: uuid
+              status:
+                type: string
+              acceptance_result:
+                enum: [PENDING, ACCEPTED, DECLINED, EXPIRED, NOT_RECORDED]
+              accepted_at:
+                anyOf:
+                - type: 'null'
+                - type: string
+                  format: date-time
         person_id:
           anyOf:
           - type: string
