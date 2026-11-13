@@ -61,7 +61,7 @@
 |ACC-DEL-11.04 关闭与通知|后端|正常办理、取消/退款/撤回|INTENT-CLOSE-NOTIFY（局部）|PARTIAL|
 |ACC-DEL-12.01 成立条件|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-12（局部）|PARTIAL|
 |ACC-DEL-12.02 消息能力|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-RETRY-AUTH（局部）|PARTIAL|
-|ACC-DEL-12.03 风控与归档|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-RISK-ARCHIVE（局部）|PARTIAL|
+|ACC-DEL-12.03 风控与归档|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-RISK-ARCHIVE（局部）；COMMERCIAL-ARCHIVE-SCOPE-TIMING（局部）|PARTIAL|
 |ACC-DEL-12.04 通知复用|后端|正常办理、取消/退款/撤回|BUSINESS-MESSAGE-NOTIFICATION-ISOLATION（局部）|PARTIAL|
 |ACC-DEL-13.01 停新不删旧|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-13（局部）|PASS|
 |ACC-DEL-13.02 商务入库|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
