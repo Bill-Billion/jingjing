@@ -23,3 +23,7 @@
 普通制作确认只记录参与方对现有已审结算的确认，不提供私有证明或放行资金；实际证据访问与提现继续按现有证明限制。商单自动归档仍只在新确认且全部条件满足时执行；晚验收路径由独审人员明确操作，不能称自动扫描完成。
 
 [最终关联回归](FINAL_BACKEND.json)、[同次响应](FINAL_CONTRACT.json)、[时序实际记录](TIMING_RECORDS.json)、[局部证据](partial-archive-scope-evidence.json)。首轮VERSION_CONFLICT是测试辅助初始化失败；第二轮CONTENT_RESTRICTED才是修复前业务反例，后续十一个失败含一个实际首因、依赖结算未完成的连带项与父项，不宣称十一种独立产品缺陷。预览文件错误同样保留，不改业务判断凑通过。
+
+## 后续远端回执
+
+2026-11-13 13:30:32 UTC核实，81466dd1服务器/App网页/工具三组均成功，见[第三十轮回执](../pm01-mcn-income-controls-20261113/PRIOR_REMOTE_FINAL.json)。这是前候选结果，不代表后续78f07c29已远端通过。

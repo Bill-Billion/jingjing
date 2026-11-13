@@ -3,7 +3,7 @@
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
 后端负责人 chengcongcong222 按双方CURRENT继续独立开发、后端验证和证据登记；Bill-Billion仅既有UI工作，不代认领新页面任务。当前不开发修补前端、不运行本机App/Web。原18组和12路线不变。
 
-登记共151条；状态：{'NOT_RUN': 28, 'PARTIAL': 104, 'PASS': 19}；其中113条有显式登记的局部证据关联。
+登记共151条；状态：{'NOT_RUN': 22, 'PARTIAL': 110, 'PASS': 19}；其中119条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
 接续顺序以双方CURRENT及本轮报告为准，逐项核原文、实际实现和剩余证据；页面与设备缺口单列待后续安排，不将其重新指派给前端，不阻断独立后端工作。
@@ -34,21 +34,21 @@
 |ACC-DEL-05.01 商品分型|后端|正常办理、取消/退款/撤回|RC-02（局部）；SOURCE-BACKEND-05（局部）|PARTIAL|
 |ACC-DEL-05.02 供给上架|后端|正常办理、取消/退款/撤回|RC-02, RC-04（局部）|PARTIAL|
 |ACC-DEL-05.03 许可明示|后端|正常办理、取消/退款/撤回|RC-05（局部）|PARTIAL|
-|ACC-DEL-05.04 CMS内容|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-05.04 CMS内容|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-05-04（局部）|PARTIAL|
 |ACC-DEL-06.01 现货独立路径|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-06（局部）|PASS|
 |ACC-DEL-06.02 发放幂等|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-06.03 下载与许可|后端|正常办理、取消/退款/撤回|RC-06（局部）；STOCK-DOWNLOAD-PARTIAL（局部）|PASS|
 |ACC-DEL-06.04 交付时序|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-07.01 新合同定制规格为签约30%、脚本/图纸确认40%、最终验收30%，分别核实际确认和应付；旧30/60/10按原订单快照。人工样片50/50及试镜一次支付按各自已审规格，不混用定制分期。|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-07（局部）|PARTIAL|
 |ACC-DEL-07.02 真实收银接线|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-07.03 补差与订单变更|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-07.03 补差与订单变更|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-07-03（局部）|PARTIAL|
 |ACC-DEL-07.04 退款补救|后端|正常办理、取消/退款/撤回|REFUND-PARTIAL（局部）|PASS|
 |ACC-DEL-08.01 两层计算|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-08（局部）|PARTIAL|
 |ACC-DEL-08.02 双重校验更新|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-08.03 历史隔离|后端|正常办理、取消/退款/撤回|HISTORY-PARTIAL（局部）|PASS|
 |ACC-DEL-08.04 资金事实|后端|正常办理、取消/退款/撤回|FIN-01, FIN-02（局部）；FP-01（局部）|PARTIAL|
 |ACC-DEL-09.01 可约与报价|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-09（局部）|PARTIAL|
-|ACC-DEL-09.02 先付后接拒|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-09.02 先付后接拒|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-09-02（局部）|PARTIAL|
 |ACC-DEL-09.03 履约与素材|后端|正常办理、取消/退款/撤回|AUD-LOCAL-01（局部）；BOTH-AUDITION-01（局部）；TEAM-B-NATIVE-01（局部）|PARTIAL|
 |ACC-DEL-09.04 试镜取消和异常处理遵守当前决定及订单规则快照，资金退款与安全取消/责任独立记录；实际取消条件、重复和恢复均验。|后端|正常办理、取消/退款/撤回|AFTERNOON-AUDITION-DECLINE-01, AFTERNOON-AUDITION-REFUND-02, AFTERNOON-AUDITION-SAFETY-03, AFTERNOON-AUDITION-REVIEW-04, AFTERNOON-AUDITION-AUTH-05（局部）|PARTIAL|
 |ACC-DEL-10.01 六类结构|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-10（局部）|PARTIAL|
@@ -92,7 +92,7 @@
 |ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-19.04 推广预留|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-20.01 归因|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-20（局部）|PARTIAL|
-|ACC-DEL-20.02 新合同一级直推返佣10%–15%，具体活动经审核发布；成长归因和财务分账规则须一致，从约定来源列支、不挤占艺人/MCN本金。旧7.2%/6.6%等只按历史订单快照重放，不作为新活动默认。|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-20.02 新合同一级直推返佣10%–15%，具体活动经审核发布；成长归因和财务分账规则须一致，从约定来源列支、不挤占艺人/MCN本金。旧7.2%/6.6%等只按历史订单快照重放，不作为新活动默认。|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-20-02（局部）|PARTIAL|
 |ACC-DEL-20.03 结佣|后端|正常办理、取消/退款/撤回|REFERRAL-RISK-SETTLEMENT（局部）|PARTIAL|
 |ACC-DEL-20.04 逆向|后端|正常办理、取消/退款/撤回|REFERRAL-ORIGINAL-REFUNDS（局部）|PARTIAL|
 |ACC-DEL-21.01 奖项版本|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-21（局部）|PARTIAL|
@@ -114,10 +114,10 @@
 |ACC-DEL-25.01 管理不所有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-25（局部）|PARTIAL|
 |ACC-DEL-25.02 批量经营|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-25.03 解除与历史|后端|正常办理、取消/退款/撤回|SC-01（局部）|PARTIAL|
-|ACC-DEL-25.04 经营看板|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-25.04 经营看板|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-25-04（局部）|PARTIAL|
 |ACC-DEL-26.01 按职责待办|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-26（局部）|PARTIAL|
 |ACC-DEL-26.02 配置发布|后端|正常办理、取消/退款/撤回|SC-03（局部）；FP-03（局部）；CP01, CP06（局部）|PARTIAL|
-|ACC-DEL-26.03 真实进度|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-26.03 真实进度|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-26-03（局部）|PARTIAL|
 |ACC-DEL-26.04 数据与审计|后端|正常办理、取消/退款/撤回|CP07（局部）|PARTIAL|
 |ACC-DEL-27.01 非标参与|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-27（局部）|PARTIAL|
 |ACC-DEL-27.02 角色绑定|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
