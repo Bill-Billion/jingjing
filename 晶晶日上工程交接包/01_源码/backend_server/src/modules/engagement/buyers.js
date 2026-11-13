@@ -31,7 +31,9 @@ async function insertFrozen(tx,a,kind,owner,parent,status,data,source){
  catch(e){if(['CONTENT_TOO_COMPLEX','CONTENT_TOO_LARGE'].includes(e.code))throw error('RANKING_BATCH_REQUIRED',409);throw e;}
 }
 async function calculate(tx,city,rule){
- const at=await A.now(tx),profiles=(await tx.execute("SELECT * FROM engagement_records WHERE kind='BUYER_PROFILE' AND current_status='ACTIVE' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.city'))=? ORDER BY id LIMIT 501 FOR SHARE",[city]))[0].map(C.checked);if(profiles.length>500)throw error('RANKING_BATCH_REQUIRED',409);
+ // Withdrawn profiles are not public candidates and must not consume the bounded scan.
+ // Current party/identity checks still run for every selected, integrity-checked profile.
+ const at=await A.now(tx),profiles=(await tx.execute("SELECT * FROM engagement_records WHERE kind='BUYER_PROFILE' AND current_status='ACTIVE' AND JSON_EXTRACT(data_json,'$.opt_in')=true AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.city'))=? ORDER BY id LIMIT 501 FOR SHARE",[city]))[0].map(C.checked);if(profiles.length>500)throw error('RANKING_BATCH_REQUIRED',409);
  const items=[],evidence=[],risk=(await tx.execute("SELECT * FROM engagement_records WHERE kind='RISK_ORDER' AND current_status='EXCLUDED' ORDER BY id FOR SHARE"))[0].map(C.checked),bad=new Set(risk.map(x=>x.parent_id));
  for(const p of profiles){
   let state;try{state=await current(tx,p,city);}catch(e){if(![403,404,409].includes(e.status))throw e;continue;}const {party}=state;
