@@ -66,13 +66,15 @@ test('reviewed notice revisions retain history and fence old offers in isolated 
    try{bad(await approve(revision),'ARTIST_PARTY_FORBIDDEN');}finally{await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[buyer.personal_party_id,buyer.account_id]);}
    assert.deepEqual(ok(await read(n)).data.notice,old.data.notice);
   });
-  await t.test('publication and notifications roll back together and same key can retry; competing base becomes stale',async()=>{
+  await t.test('publication and notifications roll back together; approved history cannot be withdrawn; competing base becomes stale',async()=>{
    const h=headers(revision),body={decision:'APPROVE',reason:'synthetic revision approval',checks:{content_reviewed:true,materials_reviewed:true,no_private_contact:true}};
    await db.withConnection(c=>c.query("CREATE TRIGGER notice_revision_abort BEFORE INSERT ON ops_events FOR EACH ROW BEGIN IF NEW.event_code='NOTICE_REVISED' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic revision event failure'; END IF; END"));
    try{assert.equal((await call('POST','/notices/records/'+revision.id+'/reviews',reviewer,body,null,h)).status,503);assert.deepEqual(ok(await read(n)).data.notice,old.data.notice);assert.equal(ok(await read(revision)).current_status,'IN_REVIEW');}
    finally{await db.withConnection(c=>c.query('DROP TRIGGER notice_revision_abort'));}
    const approved=ok(await call('POST','/notices/records/'+revision.id+'/reviews',reviewer,body,null,h));
    assert.deepEqual(ok(await call('POST','/notices/records/'+revision.id+'/reviews',reviewer,body,null,h)),approved);
+   bad(await call('POST','/notices/records/'+approved.id+'/close',buyer,{reason:'must not erase published history'},buyer.personal_party_id,headers(approved)),'NOTICE_CANNOT_CLOSE');
+   assert.equal(ok(await read(approved)).current_status,'APPROVED');
    n=ok(await read(n));assert.equal(n.data.revision_id,revision.id);assert.equal(n.data.notice.title,'Revised recruitment');
    const count=Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE event_code='NOTICE_REVISED' AND record_id IN (?,?,?)",[sub.id,other.id,pending.id]))[0][0].n);assert.equal(count,3);
    bad(await approve(stale),'VERSION_CONFLICT');
