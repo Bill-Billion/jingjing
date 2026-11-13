@@ -88,7 +88,7 @@
 |ACC-DEL-18.03 期限及来源|后端|正常办理、取消/退款/撤回|BENEFIT-API-03, BENEFIT-API-08（局部）|PARTIAL|
 |ACC-DEL-18.04 现金按订单规则退款并撤回消费成长；不足晶钻记待冲回，新获得先抵扣，期间暂停投票/兑换/抽奖；余额不为负、不追收现金，同源撤回不重复。|后端|正常办理、取消/退款/撤回|BENEFIT-API-05, BENEFIT-API-06, BENEFIT-API-07, BENEFIT-API-08（局部）；WALLET-GROWTH-REVERSAL（局部）|PARTIAL|
 |ACC-DEL-19.01 三维分离|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-19（局部）|PARTIAL|
-|ACC-DEL-19.02 城市与六榜|后端|正常办理、取消/退款/撤回|CITY-RANK-SOURCE-BOUNDARY（局部）|PARTIAL|
+|ACC-DEL-19.02 城市与六榜|后端|正常办理、取消/退款/撤回|CITY-RANK-SOURCE-BOUNDARY（局部）；CITY-MULTI-ARTIST-BOARDS（局部）|PARTIAL|
 |ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|BUYER-RANK-FROZEN-IDENTITY（局部）|PARTIAL|
 |ACC-DEL-19.04 推广预留|后端|正常办理、取消/退款/撤回|EARNED-EXPOSURE-NOT-PAID-AD（局部）|PARTIAL|
 |ACC-DEL-20.01 归因|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-20（局部）|PARTIAL|
@@ -143,7 +143,7 @@
 |E2E-10 MCN互认→样片/商单成交→换绑→退款→旧单结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-01（局部）；ROUTE-10（局部）；JOURNEY-UI-10（局部）；TONIGHT-10（局部）|PARTIAL|
 |E2E-11 撤回脸声→下架/禁新增任务→已有订单处置→供应商删除请求→回执→隐私工单|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-05（局部）；ROUTE-11（局部）；JOURNEY-UI-11（局部）；ACCESS-GIG-01, ACCESS-PRIVACY-02（局部）；CLOSURE-LOST-RESPONSE（局部）；TEAM-A-NATIVE-CLOSE, TEAM-A-REOPEN, TEAM-A-FINAL-CLOSE（局部）；TONIGHT-11（局部）；PRIVACY-SAME-REQUEST（局部）；PRIVACY-MESSAGES-COMMERCIAL, PRIVACY-MESSAGES-AUDITION（局部）；PARTICIPATION-SAME-PROJECT-COPIES（局部）；OWN-PHONE_CHANGE_EVENTS, OWN-PARTICIPATION_CONFIRMATIONS, OWN-PARTICIPATION_MILESTONES（局部）；PERSONAL-MATERIAL-CONTEXT, PERSONAL-TRADE-CONTEXT（局部）；SAME-REQUEST-MATERIAL-TRADE-DELIVERY（局部）|PARTIAL|
 |E2E-12 独立报价合同→具体角色绑定→约定付款→版本会签→外部发行证据→账单到账→结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-12（局部）；JOURNEY-UI-12（局部）；ACCESS-CAST-03（局部）；TONIGHT-12（局部）；PARTICIPATION-SAME-PROJECT-COPIES（局部）；OWN-PARTICIPATION_CONFIRMATIONS, OWN-PARTICIPATION_MILESTONES（局部）|PARTIAL|
-|ACC-DEL-19.05 月冠军投票、复合评分和奖励兑现|后端|正常办理、取消/退款/撤回|CHAMPIONSHIP-CONTRACT-SAME-EVENT（局部）|PARTIAL|
+|ACC-DEL-19.05 月冠军投票、复合评分和奖励兑现|后端|正常办理、取消/退款/撤回|CHAMPIONSHIP-CONTRACT-SAME-EVENT（局部）；CHAMPION-DAY-MULTI-SCORES（局部）|PARTIAL|
 |TASK-01 新卖家无旧商品、艺人无旧试镜方案：分别读取各自获准的现货/试镜规则，提交独立审核至公开可售/可约；停用、错域、失权和重复请求拒绝。 新合同：现货L1及有效人工认证，机构逐人检查；旧参数不能降低门槛，旧商品不合资格停止新购，历史订单按快照，实际授权撤回仍阻止访问。|后端、App、网页|正常办理、取消/退款/撤回|RC-04, RC-05（局部）；COMBINED-01（局部）；SC-02（局部）；TASK-BACKEND-01（局部）；CONTINUITY-03, CONTINUITY-04（局部）|PARTIAL|
 |TASK-02 机构首次逐人选择真人/形象及销售展示授权；错人、错用途、撤回、机构/员工失权均拒绝；本人同意不由经营委托代替。 新合同：现货L1及有效人工认证，机构逐人检查；旧参数不能降低门槛，旧商品不合资格停止新购，历史订单按快照，实际授权撤回仍阻止访问。|后端、App、网页|正常办理、取消/退款/撤回|RC-02, RC-04（局部）；SC-01（局部）；TASK-BACKEND-02（局部）|PARTIAL|
 |TASK-03 退回商品新建关联修订版、双审、重复保护；旧买家文件/许可/合同快照不变，新版未审不销售。|后端、App、网页|正常办理、取消/退款/撤回|TASK-BACKEND-03（局部）|PARTIAL|
