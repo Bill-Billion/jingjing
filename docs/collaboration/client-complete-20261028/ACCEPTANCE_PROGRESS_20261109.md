@@ -2,7 +2,7 @@
 
 此表由验收登记生成；不将测试个数当功能数，不把未登记证据当未开发。来源条款和已批准更新都保留，不能通过修改标准凑通过。
 
-当前151条：单条通过 **19**，部分验证 **110**，未登记足够证据 **22**，明确受阻 **0**。这不是开发完成率。
+当前151条：单条通过 **19**，部分验证 **113**，未登记足够证据 **19**，明确受阻 **0**。这不是开发完成率。
 
 单条通过只覆盖该条登记的端和场景；接口条款通过不等于App页面通过。完整交付还需18组双方交付与共享规则实审、12条同版本同记录整链，以及固定包和上线条件。
 
@@ -17,7 +17,7 @@
 |3|退回商品修改重提：服务器与接口|7|2|5|0|后端：进行中／待审；前端：进行中／待审|
 |4|本人删除材料和处理进度：服务器与接口|6|0|5|1|后端：进行中／待审；前端：进行中／待审|
 |5|艺人肖像和作品封面时长：服务器与接口|11|1|8|2|后端：进行中／待审；前端：进行中／待审|
-|6|出品机构档案和精选艺人：服务器与接口|6|0|5|1|后端：进行中／待审；前端：交付待审／待审|
+|6|出品机构档案和精选艺人：服务器与接口|6|0|6|0|后端：进行中／待审；前端：交付待审／待审|
 |7|城市选择和搜索：服务器与接口|6|0|5|1|后端：进行中／待审；前端：交付待审／待审|
 |8|收藏和浏览记录：服务器与接口|5|0|4|1|后端：进行中／待审；前端：交付待审／待审|
 |9|正式产品反馈举报：服务器与接口|8|0|8|0|后端：进行中／待审；前端：交付待审／待审|
@@ -28,7 +28,7 @@
 |14|累计晶钻与记录说明：服务器与接口|9|0|8|1|后端：进行中／待审；前端：进行中／待审|
 |15|故事草稿与共创发起：服务器与接口|16|7|8|1|后端：进行中／待审；前端：进行中／待审|
 |16|全流程模拟服务及测试资料：服务器与接口|22|1|15|6|后端：进行中／待审；前端：进行中／待审|
-|17|12条完整业务跨端测试：服务器与接口|134|19|94|21|后端：进行中／待审；前端：进行中／待审|
+|17|12条完整业务跨端测试：服务器与接口|134|19|97|18|后端：进行中／待审；前端：进行中／待审|
 |18|甲方完整测试版定版交付：服务器与接口|9|0|1|8|后端：已认领／待审；前端：受阻／待审|
 
 ## 12条完整办理路线
@@ -133,9 +133,9 @@
 |ACC-DEL-18.03|期限及来源<br>365天按来源批次执行；实际渠道限制另有标记。；不假设存在IAP购分SKU；不能将全部历史积分默认过期。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/demo-benefits-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-18.04|冲回与负债<br>现金按订单规则退款并撤回消费成长；不足晶钻记待冲回，新获得先抵扣，期间暂停投票/兑换/抽奖；余额不为负、不追收现金，同源撤回不重复。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/demo-benefits-closure-20261103/acceptance-links.json)<br>[证据2](../../../docs/reviews/pm01-benefit-wallet-lifecycle-20261113/partial-lifecycle-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-19.01|三维分离<br>主角光环、接单成长、服务评分独立计算。；不能把付审核费直接当高服务评分。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
-|ACC-DEL-19.02|城市与六榜<br>等级/新人/好评/销量/人气/复购及城市分区按正式规则。；数据不足显示真实不足，不伪造榜首。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-19.02|城市与六榜<br>等级/新人/好评/销量/人气/复购及城市分区按正式规则。；数据不足显示真实不足，不伪造榜首。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-championship-contract-20261113/partial-championship-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-19.03|买家榜<br>按有效身份、城市和成长等规则生成可追溯快照。；免费赠分是否计等级待统一，不能各端计算不同。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
-|ACC-DEL-19.04|推广预留<br>仅保留配置和结构，不上线购买投流/广告。；中奖曝光另作奖励权益兑现，不被误当未来付费广告删掉。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-19.04|推广预留<br>仅保留配置和结构，不上线购买投流/广告。；中奖曝光另作奖励权益兑现，不被误当未来付费广告删掉。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-championship-contract-20261113/partial-championship-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-20.01|归因<br>直推一层、7天及末次规则有唯一命中和证据。；设备重试或多次点击不重复计佣。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-20.02|费率<br>新合同一级直推返佣10%–15%，具体活动经审核发布；成长归因和财务分账规则须一致，从约定来源列支、不挤占艺人/MCN本金。旧7.2%/6.6%等只按历史订单快照重放，不作为新活动默认。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-mcn-income-controls-20261113/partial-mcn-controls-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-20.03|结佣<br>售后结束且真实履约/支付成立后才可结佣。；无推荐人份额归平台，自购和虚假交易不返。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-enterprise-commission-prizes-20261113/partial-enterprise-commission-prizes-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
@@ -188,7 +188,7 @@
 |E2E-10|MCN互认→样片/商单成交→换绑→退款→旧单结算<br>旧版算法/旧MCN/旧推荐快照重放；新规则只用于相应新单|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据3](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据4](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |E2E-11|撤回脸声→下架/禁新增任务→已有订单处置→供应商删除请求→回执→隐私工单<br>不以点击删除代替外部完成；保留例外可解释；失权缓存不泄露|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据3](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据4](../../../docs/testing/evidence/demo-access-review-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/demo-combined-closure-20261103/acceptance-links.json)<br>[证据6](../../../docs/testing/evidence/team-next-stage-20261104/privacy/PARTIAL_ACCEPTANCE.json)<br>[证据7](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)<br>[证据8](../../../docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json)<br>[证据9](../../../docs/reviews/privacy-business-ranking-20261110/partial-api-evidence.json)<br>[证据10](../../../docs/reviews/privacy-fields-participation-20261110/partial-api-evidence.json)<br>[证据11](../../../docs/reviews/privacy-related-history-20261110/partial-api-evidence.json)<br>[证据12](../../../docs/reviews/privacy-material-trade-20261110/partial-api-evidence.json)<br>[证据13](../../../docs/reviews/privacy-copy-fulfillment-20261111/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |E2E-12|独立报价合同→具体角色绑定→约定付款→版本会签→外部发行证据→账单到账→结算<br>未来分红比例不乘本笔定制款；无真实渠道凭据不标已发行|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据2](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据3](../../../docs/testing/evidence/demo-access-review-20261103/acceptance-links.json)<br>[证据4](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)<br>[证据5](../../../docs/reviews/privacy-fields-participation-20261110/partial-api-evidence.json)<br>[证据6](../../../docs/reviews/privacy-related-history-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
-|ACC-DEL-19.05|月冠军投票、复合评分和奖励兑现<br>100晶钻一票、每账号每日10票、60/20/20评分按专项生效版本；投票、反刷、公示、异议、奖品发放分别记账。；并发投票不突破每日上限；退款/刷票处理有据；只显示冠军标题不算奖品兑现。 官方60%＋月榜20%＋晶钻票20%；未成年人直接请求投票须拦截。|未登记足够证据|api × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-19.05|月冠军投票、复合评分和奖励兑现<br>100晶钻一票、每账号每日10票、60/20/20评分按专项生效版本；投票、反刷、公示、异议、奖品发放分别记账。；并发投票不突破每日上限；退款/刷票处理有据；只显示冠军标题不算奖品兑现。 官方60%＋月榜20%＋晶钻票20%；未成年人直接请求投票须拦截。|部分验证|api × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-championship-contract-20261113/partial-championship-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |TASK-01|<br>新卖家无旧商品、艺人无旧试镜方案：分别读取各自获准的现货/试镜规则，提交独立审核至公开可售/可约；停用、错域、失权和重复请求拒绝。 新合同：现货L1及有效人工认证，机构逐人检查；旧参数不能降低门槛，旧商品不合资格停止新购，历史订单按快照，实际授权撤回仍阻止访问。|部分验证|api、app、web × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据4](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/demo-account-continuity-20261103/partial-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |TASK-02|<br>机构首次逐人选择真人/形象及销售展示授权；错人、错用途、撤回、机构/员工失权均拒绝；本人同意不由经营委托代替。 新合同：现货L1及有效人工认证，机构逐人检查；旧参数不能降低门槛，旧商品不合资格停止新购，历史订单按快照，实际授权撤回仍阻止访问。|部分验证|api、app、web × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |TASK-03|<br>退回商品新建关联修订版、双审、重复保护；旧买家文件/许可/合同快照不变，新版未审不销售。|部分验证|api、app、web × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
