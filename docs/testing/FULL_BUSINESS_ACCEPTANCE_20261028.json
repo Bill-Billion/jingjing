@@ -355,7 +355,7 @@
         "docs/requirements/CONTRACT_CHANGES_20261102.md",
         "docs/collaboration/client-complete-20261028/PRELAUNCH_AUDIT_20261105.md"
       ],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -364,7 +364,19 @@
       "required_surfaces": [
         "api"
       ],
-      "effective_expected": "新合同实行分类人工认证，模卡/生活照/全身照/简历等材料按规则审核，10元审核费与审核通过分开；L1实名免费。旧L2/L3概括不作为新收费菜单，补件不重复收费，历史收费事实保留。"
+      "effective_expected": "新合同实行分类人工认证，模卡/生活照/全身照/简历等材料按规则审核，10元审核费与审核通过分开；L1实名免费。旧L2/L3概括不作为新收费菜单，补件不重复收费，历史收费事实保留。",
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-certification-discovery-intent-20261113/partial-certification-intent-evidence.json",
+            "sha256": "42126f2e98c8fa1d836b8cf120d60434eb646ee797caf341d95ebbf3c6947319"
+          },
+          "checks": [
+            "CERTIFICATION-PAID-NOT-APPROVED"
+          ],
+          "scope": "按新分类规则核付费/材料/审核分离，失败不虚构提交，并发同键仅一申请；未完成：真实审核资料、供应商实名与款项、独立签收仍未验"
+        }
+      ]
     },
     {
       "id": "ACC-DEL-02.03",
@@ -387,7 +399,7 @@
         "P22"
       ],
       "decision_refs": [],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -395,6 +407,18 @@
       ],
       "required_surfaces": [
         "api"
+      ],
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-certification-discovery-intent-20261113/partial-certification-intent-evidence.json",
+            "sha256": "42126f2e98c8fa1d836b8cf120d60434eb646ee797caf341d95ebbf3c6947319"
+          },
+          "checks": [
+            "CERTIFICATION-SUPPLEMENT-EXPIRY"
+          ],
+          "scope": "同案补件并发不重复收费，审批历史与有效状态分离，到期不自动扣费；未完成：到期采用合成时钟且实名同时过期，不能冒充单独认证到期的所有组合；正式新申请重审规则另核"
+        }
       ]
     },
     {
@@ -642,7 +666,7 @@
         "P13"
       ],
       "decision_refs": [],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -650,6 +674,18 @@
       ],
       "required_surfaces": [
         "api"
+      ],
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-certification-discovery-intent-20261113/partial-certification-intent-evidence.json",
+            "sha256": "42126f2e98c8fa1d836b8cf120d60434eb646ee797caf341d95ebbf3c6947319"
+          },
+          "checks": [
+            "MANUAL-CITY-BOUNDARY"
+          ],
+          "scope": "不传位置也可手动城市搜索；不支持的坐标/距离字段拒绝，不伪报距离；未完成：经授权GPS距离查询尚未实现；设备拒绝定位和完整购买未由本次代替"
+        }
       ]
     },
     {
@@ -763,7 +799,7 @@
         "P11"
       ],
       "decision_refs": [],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -771,6 +807,18 @@
       ],
       "required_surfaces": [
         "api"
+      ],
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-certification-discovery-intent-20261113/partial-certification-intent-evidence.json",
+            "sha256": "42126f2e98c8fa1d836b8cf120d60434eb646ee797caf341d95ebbf3c6947319"
+          },
+          "checks": [
+            "ARTIST-DETAIL-INVITATION"
+          ],
+          "scope": "关闭公开试镜仍保留同艺人详情与受当前资格约束的邀约引用；未完成：当前是后端链，设备界面与真实资格仍待独立验收"
+        }
       ]
     },
     {
@@ -1852,7 +1900,7 @@
       ],
       "rule_refs": [],
       "decision_refs": [],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -1860,6 +1908,18 @@
       ],
       "required_surfaces": [
         "api"
+      ],
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-certification-discovery-intent-20261113/partial-certification-intent-evidence.json",
+            "sha256": "42126f2e98c8fa1d836b8cf120d60434eb646ee797caf341d95ebbf3c6947319"
+          },
+          "checks": [
+            "INTENT-SUPPORT-QUOTE"
+          ],
+          "scope": "并发同意仅一案件/事件，独立客服同案关联原报价并生成一订单，原意向不改；未完成：尚无明确指派/交接给具体客服的接口；真实办理与独立签收未验"
+        }
       ]
     },
     {
@@ -1876,7 +1936,7 @@
       ],
       "rule_refs": [],
       "decision_refs": [],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -1884,6 +1944,18 @@
       ],
       "required_surfaces": [
         "api"
+      ],
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-certification-discovery-intent-20261113/partial-certification-intent-evidence.json",
+            "sha256": "42126f2e98c8fa1d836b8cf120d60434eb646ee797caf341d95ebbf3c6947319"
+          },
+          "checks": [
+            "INTENT-CLOSE-NOTIFY"
+          ],
+          "scope": "撤回同意后的未转单案件只关闭一次，禁止继续转报价，通知双方保留原授权；未完成：事件与收件人入库不等于真实推送送达；规则期限以各自快照为准，未一律改成72小时"
+        }
       ]
     },
     {
