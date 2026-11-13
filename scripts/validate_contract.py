@@ -208,6 +208,7 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.update({'getPrivacyTransactionCopyForOperations', 'exportPrivacyDataForOperations', 'getPrivacyAccountCopyForOperations', 'getPrivacyStoryCopyForOperations', 'getPrivacyCopyOptionsForOperations'})
             account_scoped_supply.add('downloadAuditionDisputeEvidence')
             account_scoped_supply.add('searchAuditionsByDistance')
+            account_scoped_supply.update({'listCommercialMessageRisk','listAuditionMessageRisk'})
             account_scoped_supply.update({'listNoticeCaseQuoteOptions','assignNoticeCaseSupport','listNoticeAssignmentOptions','listNoticeAssignmentHistory'})
             account_scoped_supply.update({'listInvoiceRequestsForOperator', 'downloadInvoiceDocumentForOperator', 'listInvoiceDocumentsForOperator', 'downloadInvoiceEvidenceForOperator', 'listInvoiceHistoryForOperator', 'actOnInvoiceForOperator', 'getInvoiceRequestForOperator'})
             account_scoped_supply.update({'actOnSupportTicketForSupport', 'downloadSupportEvidenceForSupport', 'listSupportHistoryForSupport', 'listSupportTicketsForSupport', 'getSupportTicketForSupport'})

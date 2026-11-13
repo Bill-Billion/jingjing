@@ -176,6 +176,30 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    bad(await call('GET',finalRoute,buyer2),'PRODUCTION_NOT_FOUND');if(web)await web.download(versions.FINAL,finalBytes);
    Object.assign(records,{project_id:project.id,versions,platform_bps:2200});
    {
+    const F=require('../src/modules/settlement/repository').createSettlementRepository(db,{resolvePrincipal:S.resolvePrincipal});
+    const review=async r=>F.review(reviewer.ctx,{record_id:r.id,expected_version:r.object_version,decision:'APPROVED',reason:'synthetic independent finance',verification:{parties_verified:true,contract_verified:true,amount_verified:true,evidence_verified:true},operation_key:key()});
+    const input=(r,u,op=key())=>({record_id:r.id,party_id:u.personal_party_id,expected_version:r.object_version,content_sha256:r.content_sha256,decision:'APPROVED',reason:'synthetic party confirms exact settlement',operation_key:op});
+    let g=await F.agreement(seller.ctx,{party_id:seller.personal_party_id,source_type:'ORDER',source_id:order.id,previous_agreement_id:null,environment:'SANDBOX',rule_id:order.data.quote.rule_id,rules:{version:'synthetic-archive',settlement_at:'2020-01-01T00:00:00.000Z',release_condition:'DELIVERY_ACCEPTED',terms:'Synthetic confirmed full commercial production settlement',lines:[{line_id:'commercial',allocation:order.data.quote.marketplace_finance.allocation,deductions:[]}]},evidence_asset_id:productionProof.id,operation_key:key()});
+    g=await review(g);const parties=g.data.parties.map(id=>S.users.find(u=>u.personal_party_id===id));assert.ok(parties.every(Boolean));
+    for(const u of parties)await F.confirm(u.ctx,input(g,u));
+    let settlement=await F.settle(seller.ctx,{record_id:g.id,party_id:seller.personal_party_id,expected_version:g.object_version,period_reference:'synthetic-commercial-final',note:'Accepted final production',operation_key:key()});
+    settlement=await review(settlement);assert.equal(settlement.data.receivable_minor,0);assert.equal(settlement.data.received_minor,10001);
+    for(const u of parties.slice(0,-1))await F.confirm(u.ctx,input(settlement,u));
+    assert.equal(ok(await call('GET',route)).status,'OPEN');
+    const last=parties.at(-1),lastInput=input(settlement,last);
+    await db.withConnection(c=>c.query("CREATE TRIGGER archive_abort BEFORE INSERT ON gig_settlement_archives FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic archive rollback'"));
+    try{await assert.rejects(F.confirm(last.ctx,lastInput));assert.equal((await db.execute('SELECT party_id FROM finance_confirmations WHERE record_id=? AND party_id=?',[settlement.id,last.personal_party_id]))[0].length,0);assert.equal(ok(await call('GET',route)).status,'OPEN');}finally{await db.withConnection(c=>c.query('DROP TRIGGER archive_abort'));}
+    await F.confirm(last.ctx,lastInput);await F.confirm(last.ctx,lastInput);
+    assert.equal((await db.execute('SELECT order_id FROM gig_settlement_archives WHERE order_id=?',[order.id]))[0].length,1);
+    const archived=ok(await call('GET',route));assert.equal(archived.status,'ARCHIVED');assert.equal(archived.items.filter(x=>x.id===message.id).length,1);
+    bad(await call('POST',route,seller,{kind:'TEXT',body:'Cannot resume settled cooperation'},seller.personal_party_id,headers()),'COMMERCIAL_CONVERSATION_ARCHIVED');
+    const G=require('../src/modules/gigs/repository').createGigsRepository(db,{resolvePrincipal:S.resolvePrincipal});
+    await assert.rejects(G.commercialControl(reviewer.ctx,{order_id:order.id,party_id:null,expected_version:archived.object_version,action:'RESUME',reason:'synthetic no reopening',operation_key:key()}),e=>e.code==='COMMERCIAL_CONTROL_NOT_ALLOWED');
+    assert.equal((await call('GET',finalRoute)).status,200);assert.equal((await db.execute("SELECT id FROM finance_entries WHERE agreement_id=? AND category='PAYOUT'",[g.id]))[0].length,0);
+    records.settlement_archive={agreement_id:g.id,settlement_id:settlement.id,checks:['all parties confirmed full current settlement','last confirmation and archive roll back together','same confirmation retries one archive','history remains readable; send and resume denied','final content download unchanged','no actual payout created']};
+   }
+
+   {
     if(web)await web.withdraw(submission,published);
     else {
      submission=ok(await read(submission,seller));
