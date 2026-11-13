@@ -33,6 +33,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/licensing',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/directory',express.json({limit:'64kb',strict:true}));
+ app.use('/api/v1/product-catalog',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/notices',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/stock',express.json({limit:'64kb',strict:true}));
  app.use('/api/v1/redemption',express.json({limit:'128kb',strict:true}));
@@ -163,6 +164,7 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.use('/api/v1/trade',trade.router);
  app.use('/api/v1/discovery',require('./discovery-routes').createDiscoveryRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret}));
  app.use('/api/v1/directory',require('./directory-routes').createDirectoryRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
+ app.use('/api/v1/product-catalog',require('./product-catalog-routes').createProductCatalogRouter({db,resolvePrincipal:async req=>principals.get(req)||null}));
  app.use('/api/v1/notices',require('./notices-routes').createNoticesRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/stock',require('./stock-routes').createStockRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/engagement',require('./engagement-routes').createEngagementRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));

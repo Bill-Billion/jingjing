@@ -209,6 +209,13 @@ def validate(runtime_fixtures=None):
             account_scoped_supply.add('downloadAuditionDisputeEvidence')
             account_scoped_supply.add('searchAuditionsByDistance')
             account_scoped_supply.update({'listCommercialMessageRisk','listAuditionMessageRisk'})
+            catalog_operations={'createProductCatalogRecord', 'reviewProductCatalogRecord', 'getProductCatalogRecord', 'withdrawProductCatalogRecord', 'getPublishedProductCatalog', 'reviseProductCatalogRecord', 'listProductCatalogRecords', 'listPublishedProductCatalog'}
+            account_scoped_supply.update(catalog_operations)
+            if op['operationId'] in catalog_operations:
+                check('X-Acting-Party' not in headers, 'Catalog account/operator identity: '+path)
+                if op['operationId'] in {'reviseProductCatalogRecord', 'withdrawProductCatalogRecord', 'reviewProductCatalogRecord'}:
+                    check(headers.get('If-Match',{}).get('required') is True, 'Catalog mutation version: '+path)
+
             account_scoped_supply.update({'listNoticeCaseQuoteOptions','assignNoticeCaseSupport','listNoticeAssignmentOptions','listNoticeAssignmentHistory'})
             account_scoped_supply.update({'listInvoiceRequestsForOperator', 'downloadInvoiceDocumentForOperator', 'listInvoiceDocumentsForOperator', 'downloadInvoiceEvidenceForOperator', 'listInvoiceHistoryForOperator', 'actOnInvoiceForOperator', 'getInvoiceRequestForOperator'})
             account_scoped_supply.update({'actOnSupportTicketForSupport', 'downloadSupportEvidenceForSupport', 'listSupportHistoryForSupport', 'listSupportTicketsForSupport', 'getSupportTicketForSupport'})

@@ -1,5 +1,5 @@
 {
-  "version": "0.31.64-rc.1",
+  "version": "0.31.65-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -657,7 +657,15 @@
     "setAuditionDistanceLocation",
     "searchAuditionsByDistance",
     "listCommercialMessageRisk",
-    "listAuditionMessageRisk"
+    "listAuditionMessageRisk",
+    "createProductCatalogRecord",
+    "reviseProductCatalogRecord",
+    "reviewProductCatalogRecord",
+    "withdrawProductCatalogRecord",
+    "listProductCatalogRecords",
+    "getProductCatalogRecord",
+    "listPublishedProductCatalog",
+    "getPublishedProductCatalog"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1481,6 +1489,26 @@
       "No live provider registered",
       "No public dispatch or trusted receipt endpoint",
       "No frontend changes; independent maintainer review pending"
+    ]
+  },
+  "product_catalog": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createProductCatalogRecord",
+      "reviseProductCatalogRecord",
+      "reviewProductCatalogRecord",
+      "withdrawProductCatalogRecord",
+      "listProductCatalogRecords",
+      "getProductCatalogRecord",
+      "listPublishedProductCatalog",
+      "getPublishedProductCatalog"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/product-catalog.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "只做后端；前端、正式运营配置及独立签收待接",
+      "集合引用单独销售的现货，不新增捆绑定价或许可",
+      "现货来源变动立即限制新展示，旧订单继续原快照和当前权属约束"
     ]
   }
 }

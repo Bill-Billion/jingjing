@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.64-rc.1
+  version: 0.31.65-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -12,6 +12,7 @@ servers:
 security:
 - bearerAuth: []
 tags:
+- name: product-catalog
 - name: customization
 - name: gigs
 - name: supply
@@ -29,6 +30,507 @@ tags:
 x-baseline-id: JX-R06-EXECUTION-BASELINE-20260921
 x-review-status: PENDING_EXPERIENCE_REVIEW
 paths:
+  /api/v1/product-catalog/records:
+    post:
+      operationId: createProductCatalogRecord
+      summary: 提交品类、节日商品集合或推荐位
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 对象版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCatalogCreate'
+    get:
+      operationId: listProductCatalogRecords
+      summary: 运营查看配置版本和处理状态
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          enum:
+          - CATEGORY
+          - COLLECTION
+          - PLACEMENT
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 512
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/product-catalog/records/{record_id}/revisions:
+    post:
+      operationId: reviseProductCatalogRecord
+      summary: 以新版本编辑运营配置
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 对象版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                content:
+                  oneOf:
+                  - $ref: '#/components/schemas/ProductCatalogCategoryContent'
+                  - $ref: '#/components/schemas/ProductCatalogCollectionContent'
+                  - $ref: '#/components/schemas/ProductCatalogPlacementContent'
+              required:
+              - content
+  /api/v1/product-catalog/records/{record_id}/reviews:
+    post:
+      operationId: reviewProductCatalogRecord
+      summary: 独立审核运营配置
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 对象版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                decision:
+                  enum:
+                  - APPROVE
+                  - REJECT
+                checks:
+                  anyOf:
+                  - type: object
+                    additionalProperties: false
+                    properties:
+                      sources_verified:
+                        const: true
+                      content_reviewed:
+                        const: true
+                      no_price_override:
+                        const: true
+                    required:
+                    - sources_verified
+                    - content_reviewed
+                    - no_price_override
+                  - type: 'null'
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+              required:
+              - decision
+              - checks
+              - reason
+  /api/v1/product-catalog/records/{record_id}/withdrawals:
+    post:
+      operationId: withdrawProductCatalogRecord
+      summary: 下架运营配置并保留历史
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - $ref: '#/components/parameters/IfMatch'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 对象版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+              required:
+              - reason
+  /api/v1/product-catalog/records/{record_id}:
+    get:
+      operationId: getProductCatalogRecord
+      summary: 运营读取指定历史版本
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            ETag:
+              description: 对象版本
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/product-catalog/catalog:
+    get:
+      operationId: listPublishedProductCatalog
+      summary: 查看当前可用商品栏目和推荐
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: kind
+        in: query
+        required: true
+        schema:
+          enum:
+          - CATEGORY
+          - COLLECTION
+          - PLACEMENT
+      - name: code
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+      - name: category_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: slot_code
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 512
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/product-catalog/catalog/{entity_id}:
+    get:
+      operationId: getPublishedProductCatalog
+      summary: 查看当前可用运营入口
+      description: 仅账户身份，不接受X-Acting-Party。作者须现有模板发布权限，独审须内容审核权限且不得是作者或卖方成员。版本不可原地改写；来源变动/下架/撤权或过期立即停止对应展示，旧订单不改。集合引用单独销售的已审商品，不授予额外许可或打包折扣；推荐下架不替代原商品停售。列表按sort_order和ID分页；不可用行可能产生空页但返回继续游标。
+      tags:
+      - product-catalog
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: entity_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 实际权限与当前来源校验后的记录；价格和许可来自已审现货，未启用真实服务。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCatalogResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
   /api/v1/privacy/operations/requests/{request_id}/business-messages:
     get:
       operationId: getPrivacyBusinessMessageDraft
@@ -35639,6 +36141,574 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ProductCatalogCategoryContent:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 10000
+      required:
+      - title
+      - description
+      - sort_order
+    ProductCatalogCollectionContent:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        category_id:
+          type: string
+          format: uuid
+        collection_kind:
+          enum:
+          - HOLIDAY
+          - THEME
+          - TEMPLATE
+        theme_code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+        listing_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 50
+          uniqueItems: true
+      required:
+      - title
+      - description
+      - sort_order
+      - valid_from
+      - valid_until
+      - category_id
+      - collection_kind
+      - theme_code
+      - listing_ids
+    ProductCatalogPlacementContent:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        collection_id:
+          type: string
+          format: uuid
+        slot_code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+      required:
+      - title
+      - description
+      - sort_order
+      - valid_from
+      - valid_until
+      - collection_id
+      - slot_code
+    ProductCatalogRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        entity_id:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        created_by:
+          type: string
+          format: uuid
+        current_status:
+          enum:
+          - IN_REVIEW
+          - PUBLISHED
+          - REJECTED
+          - WITHDRAWN
+          - REPLACED
+        object_version:
+          type: integer
+          minimum: 1
+        content_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            kind:
+              enum:
+              - CATEGORY
+              - COLLECTION
+              - PLACEMENT
+            code:
+              type: string
+              pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+            content:
+              oneOf:
+              - $ref: '#/components/schemas/ProductCatalogCategoryContent'
+              - $ref: '#/components/schemas/ProductCatalogCollectionContent'
+              - $ref: '#/components/schemas/ProductCatalogPlacementContent'
+            source_record_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            base_record_id:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            references:
+              oneOf:
+              - type: object
+                additionalProperties: false
+                properties: {}
+                required: []
+              - type: object
+                additionalProperties: false
+                properties:
+                  category:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      entity_id:
+                        type: string
+                        format: uuid
+                      record_id:
+                        type: string
+                        format: uuid
+                      content_sha256:
+                        type: string
+                        pattern: ^[a-f0-9]{64}$
+                    required:
+                    - entity_id
+                    - record_id
+                    - content_sha256
+                  listings:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        listing_id:
+                          type: string
+                          format: uuid
+                        offer_sha256:
+                          type: string
+                          pattern: ^[a-f0-9]{64}$
+                        seller_party_id:
+                          type: string
+                          format: uuid
+                      required:
+                      - listing_id
+                      - offer_sha256
+                      - seller_party_id
+                    minItems: 1
+                    maxItems: 50
+                required:
+                - category
+                - listings
+              - type: object
+                additionalProperties: false
+                properties:
+                  collection:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      entity_id:
+                        type: string
+                        format: uuid
+                      record_id:
+                        type: string
+                        format: uuid
+                      content_sha256:
+                        type: string
+                        pattern: ^[a-f0-9]{64}$
+                    required:
+                    - entity_id
+                    - record_id
+                    - content_sha256
+                  seller_party_ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    minItems: 1
+                    maxItems: 50
+                required:
+                - collection
+                - seller_party_ids
+            review:
+              anyOf:
+              - type: object
+                additionalProperties: false
+                properties:
+                  account_id:
+                    type: string
+                    format: uuid
+                  decision:
+                    enum:
+                    - APPROVE
+                    - REJECT
+                  checks:
+                    anyOf:
+                    - type: object
+                      additionalProperties: false
+                      properties:
+                        sources_verified:
+                          const: true
+                        content_reviewed:
+                          const: true
+                        no_price_override:
+                          const: true
+                      required:
+                      - sources_verified
+                      - content_reviewed
+                      - no_price_override
+                    - type: 'null'
+                  reason:
+                    type: string
+                    minLength: 1
+                    maxLength: 2000
+                  at:
+                    type: string
+                    format: date-time
+                required:
+                - account_id
+                - decision
+                - checks
+                - reason
+                - at
+              - type: 'null'
+            replaced_by:
+              type: string
+              format: uuid
+            withdrawal:
+              type: object
+              additionalProperties: false
+              properties:
+                account_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                at:
+                  type: string
+                  format: date-time
+              required:
+              - account_id
+              - reason
+              - at
+          required:
+          - kind
+          - code
+          - content
+          - source_record_id
+          - base_record_id
+          - references
+          - review
+      required:
+      - id
+      - entity_id
+      - revision
+      - created_by
+      - current_status
+      - object_version
+      - content_sha256
+      - data
+    ProductCatalogPublicCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        entity_id:
+          type: string
+          format: uuid
+        record_id:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+        kind:
+          const: CATEGORY
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 10000
+      required:
+      - entity_id
+      - record_id
+      - revision
+      - code
+      - kind
+      - title
+      - description
+      - sort_order
+    ProductCatalogPublicCollection:
+      type: object
+      additionalProperties: false
+      properties:
+        entity_id:
+          type: string
+          format: uuid
+        record_id:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+        kind:
+          const: COLLECTION
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        category_id:
+          type: string
+          format: uuid
+        collection_kind:
+          enum:
+          - HOLIDAY
+          - THEME
+          - TEMPLATE
+        theme_code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockOffer'
+          minItems: 1
+          maxItems: 50
+      required:
+      - entity_id
+      - record_id
+      - revision
+      - code
+      - kind
+      - title
+      - description
+      - sort_order
+      - valid_from
+      - valid_until
+      - category_id
+      - collection_kind
+      - theme_code
+      - items
+    ProductCatalogPublicPlacement:
+      type: object
+      additionalProperties: false
+      properties:
+        entity_id:
+          type: string
+          format: uuid
+        record_id:
+          type: string
+          format: uuid
+        revision:
+          type: integer
+          minimum: 1
+        code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+        kind:
+          const: PLACEMENT
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        sort_order:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        valid_from:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+        collection_id:
+          type: string
+          format: uuid
+        slot_code:
+          type: string
+          pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+        collection:
+          $ref: '#/components/schemas/ProductCatalogPublicCollection'
+      required:
+      - entity_id
+      - record_id
+      - revision
+      - code
+      - kind
+      - title
+      - description
+      - sort_order
+      - valid_from
+      - valid_until
+      - collection_id
+      - slot_code
+      - collection
+    ProductCatalogPublic:
+      oneOf:
+      - $ref: '#/components/schemas/ProductCatalogPublicCategory'
+      - $ref: '#/components/schemas/ProductCatalogPublicCollection'
+      - $ref: '#/components/schemas/ProductCatalogPublicPlacement'
+    ProductCatalogCreate:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: CATEGORY
+          code:
+            type: string
+            pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+          content:
+            $ref: '#/components/schemas/ProductCatalogCategoryContent'
+        required:
+        - kind
+        - code
+        - content
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: COLLECTION
+          code:
+            type: string
+            pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+          content:
+            $ref: '#/components/schemas/ProductCatalogCollectionContent'
+        required:
+        - kind
+        - code
+        - content
+      - type: object
+        additionalProperties: false
+        properties:
+          kind:
+            const: PLACEMENT
+          code:
+            type: string
+            pattern: ^[a-z0-9][a-z0-9_-]{0,79}$
+          content:
+            $ref: '#/components/schemas/ProductCatalogPlacementContent'
+        required:
+        - kind
+        - code
+        - content
+    ProductCatalogResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ProductCatalogRecord'
+          - $ref: '#/components/schemas/ProductCatalogPublic'
+          - type: object
+            additionalProperties: false
+            properties:
+              items:
+                type: array
+                items:
+                  anyOf:
+                  - $ref: '#/components/schemas/ProductCatalogRecord'
+                  - $ref: '#/components/schemas/ProductCatalogPublic'
+              next_cursor:
+                anyOf:
+                - type: string
+                  minLength: 1
+                  maxLength: 512
+                - type: 'null'
+            required:
+            - items
+            - next_cursor
+      required:
+      - meta
+      - data
     McnIncomeOrder:
       type: object
       additionalProperties: false
