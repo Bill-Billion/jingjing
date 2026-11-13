@@ -34,4 +34,6 @@
 
 用户暂不需新决定、转发或重复提供申请中材料。Bill-Billion原UI不代认领，本侧禁止前端开发修补/本机App/Web；真实/收费/生产/公网不开，不动3490与离线APK。
 
-[验证清单及源码摘要](VERIFICATION.json)、[联合日志](FOCUSED_RUN.txt)、[私有对象实际命令](PRIVATE_OBJECT_JOURNEY.json)、[同次迁移恢复](MIGRATION_ROLLBACK.json)、[同次发布恢复](RELEASE_REHEARSAL.json)、[复验方法](REPRODUCE.md)。本轮首次联合运行即通过，无失败日志；原批次失败仍保留历史。
+[验证清单及源码摘要](VERIFICATION.json)、[联合日志](FOCUSED_RUN.txt)、[私有对象实际命令](PRIVATE_OBJECT_JOURNEY.json)、[同次迁移恢复](MIGRATION_ROLLBACK.json)、[同次发布恢复](RELEASE_REHEARSAL.json)、[复验方法](REPRODUCE.md)。本轮业务联合测试首次运行通过；随后交付摘要核对失败，失败证据及修正单列保留。
+
+交付记录更正：首次文档候选92b96e27的证据文件在Windows与Git中换行字节不同，登记摘要未匹配；提交脚本未因原生命令失败而停止，误将该候选上传。本次固定LF字节并保留二进制属性，重新计算登记摘要，入库前核对Git暂存区实际字节。该问题仅影响证据登记，业务源码及45项通过结果不变。失败原始信息见[交付失败记录](DELIVERY_FAILURE.json)。修正候选及远端结果另以回执为准。
