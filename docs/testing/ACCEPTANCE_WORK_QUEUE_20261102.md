@@ -34,7 +34,7 @@
 |ACC-DEL-05.01 商品分型|后端|正常办理、取消/退款/撤回|RC-02（局部）；SOURCE-BACKEND-05（局部）|PARTIAL|
 |ACC-DEL-05.02 供给上架|后端|正常办理、取消/退款/撤回|RC-02, RC-04（局部）|PARTIAL|
 |ACC-DEL-05.03 许可明示|后端|正常办理、取消/退款/撤回|RC-05（局部）|PARTIAL|
-|ACC-DEL-05.04 CMS内容|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-05-04（局部）|PARTIAL|
+|ACC-DEL-05.04 CMS内容|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-05-04（局部）；VIDEO-CATALOG-PUBLICATION-LIFECYCLE（局部）|PARTIAL|
 |ACC-DEL-06.01 现货独立路径|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-06（局部）|PASS|
 |ACC-DEL-06.02 发放幂等|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-06.03 下载与许可|后端|正常办理、取消/退款/撤回|RC-06（局部）；STOCK-DOWNLOAD-PARTIAL（局部）|PASS|
