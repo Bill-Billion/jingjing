@@ -1,3 +1,7 @@
+## 0.31.69-rc.1 — 买家榜身份及可追溯快照（2026-11-13）
+
+新增POST /engagement/buyer-rankings及GET同路径索引、/{record_id}历史查看。有效本人实名、机构独审公开档案及明确入榜选择作为资格，未核验者不入榜；既有GET /engagement/buyers优先读最新快照，未保存时明确LIVE_NOT_SAVED。响应新增可选snapshot_id/snapshot_sha256/as_of/calculation_version/traceability。BUYER_RANK_SNAPSHOT冻结规则结果，BUYER_RANK_ENTRY保留本人金额、排名、归一基数和证据来源，并入本人ENGAGEMENT_RECORDS副本；不披露他人私有来源。退出/迁城/失权隐藏公开投影，历史不改；无新迁移或前端。
+
 ## 0.31.68-rc.1 — 新合同冠军活动规则（2026-11-13）
 
 按CONTRACT_20261029榜单快照或既有严格模式校验活动规则；每票100晶钻、每日10票、官方/月榜/投票60/20/20。新建及独立批准均检查，失败不预留奖励；严格模式拒绝旧榜单的新活动与旧待审批准，旧成功回执和已发布活动不变。无新字段、路由、迁移或前端。

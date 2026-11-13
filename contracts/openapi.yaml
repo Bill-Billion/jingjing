@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.68-rc.1
+  version: 0.31.69-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -19384,7 +19384,7 @@ paths:
     get:
       operationId: engagementBuyerCityRank
       summary: 查看真实消费产生的同城买家榜
-      description: 用户确认的规则按版本执行；需要独立审核的操作不能由提出人自审。历史订单和旧规则快照保留。
+      description: 优先返回该城市最新已发布买家榜快照及当前可公开条目；未形成快照时保留兼容实时计算并明确LIVE_NOT_SAVED，snapshot_id为空。身份、退出和城市始终重核，历史分数不重算。
       tags:
       - engagement
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -35911,6 +35911,168 @@ paths:
           $ref: '#/components/responses/Conflict'
         '503':
           $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/buyer-rankings:
+    post:
+      operationId: engagementBuyerRankingSnapshot
+      summary: 按审核规则生成城市买家榜快照
+      description: 运营权限生成不可变榜单及逐主体来源条目；核当前有效实名或独审机构档案、明确入榜选择与消费事实，免费分不计消费成长。规则未有效或无买家榜配置拒绝；重复请求只生成一次。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                rule_id:
+                  type: string
+                  format: uuid
+                city:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+              required:
+              - rule_id
+              - city
+    get:
+      operationId: engagementBuyerRankingIndex
+      summary: 分页查找城市历史买家榜
+      description: 仅返回指定城市的已发布快照索引；游标须属于同一城市，不返回订单或实名材料。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: city
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/engagement/buyer-rankings/{record_id}:
+    get:
+      operationId: engagementBuyerRanking
+      summary: 查看指定买家榜历史快照
+      description: 分数、金额与规则保持生成时快照，公开投影重核当前入榜选择、城市与身份；退出或失权隐藏条目，不修改原历史或其他人的分数。
+      tags:
+      - engagement
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 返回已核验权限下的实际记录；模拟支付、页面验收及正式启用另行标明。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EngagementResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearerAuth:
@@ -39333,6 +39495,8 @@ components:
           - RISK_ORDER
           - RANK_SNAPSHOT
           - BUYER_PROFILE
+          - BUYER_RANK_SNAPSHOT
+          - BUYER_RANK_ENTRY
           - REWARD_STOCK
           - REWARD_GRANT
           - COMPETITION
@@ -39729,6 +39893,42 @@ components:
       - daily_cap
       - tie_mode
       - void_point_policy
+    BuyerRankingIndexData:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              city:
+                type: string
+                minLength: 1
+                maxLength: 100
+              at:
+                type: string
+                format: date-time
+              rule_id:
+                type: string
+                format: uuid
+            required:
+            - id
+            - city
+            - at
+            - rule_id
+        next_cursor:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+      required:
+      - items
+      - next_cursor
     EngagementResponse:
       type: object
       additionalProperties: false
@@ -39737,6 +39937,7 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           anyOf:
+          - $ref: '#/components/schemas/BuyerRankingIndexData'
           - $ref: '#/components/schemas/EngagementRecord'
           - type: object
             additionalProperties: false
@@ -39925,6 +40126,25 @@ components:
           - type: object
             additionalProperties: false
             properties:
+              snapshot_id:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
+              snapshot_sha256:
+                anyOf:
+                - type: string
+                  pattern: ^[0-9a-f]{64}$
+                - type: 'null'
+              as_of:
+                type: string
+                format: date-time
+              calculation_version:
+                type: string
+              traceability:
+                enum:
+                - FROZEN_SNAPSHOT
+                - LIVE_NOT_SAVED
               city:
                 type: string
                 minLength: 1
