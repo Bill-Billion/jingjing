@@ -4,10 +4,16 @@ const fs=require('node:fs/promises'),crypto=require('node:crypto'),path=require(
 const F=require('../src/operations/data-format'),B=require('../src/operations/backup'),L=require('../src/operations/legacy');
 async function config(file){const env=JSON.parse(await fs.readFile(file,'utf8'));if(env.NODE_ENV!=='test'||env.DB_CLIENT!=='mysql'||env.MYSQL_HOST!=='127.0.0.1'||String(env.MYSQL_PORT)!=='33316'||env.MYSQL_USER!=='jx_local'||env.MYSQL_DATABASE!=='jx_dev')throw F.fail('ISOLATED_CONTROL_REQUIRED');return env;}
 function target(v){if(!/^jx_test_\d+_[a-f0-9]{12}$/.test(v||''))throw F.fail('ISOLATED_TARGET_REQUIRED');return v;}
-function parse(argv){const [command,...rest]=argv,out={command};const allowed=['env-file','database','file','key-file','source-ref','source-kind','sha256','manifest','reviewer-ref','latest-register-confirmed'];for(let n=0;n<rest.length;n+=2){const k=rest[n]?.replace(/^--/,'');if(!rest[n]?.startsWith('--')||!allowed.includes(k)||Object.hasOwn(out,k)||!rest[n+1]||rest[n+1].startsWith('--'))throw F.fail('INVALID_ARGUMENTS');out[k]=rest[n+1];}return out;}
+function parse(argv){const [command,...rest]=argv,out={command};const allowed=['env-file','database','file','key-file','source-ref','source-kind','sha256','manifest','reviewer-ref','latest-register-confirmed','output','object-root','register-sha256'];for(let n=0;n<rest.length;n+=2){const k=rest[n]?.replace(/^--/,'');if(!rest[n]?.startsWith('--')||!allowed.includes(k)||Object.hasOwn(out,k)||!rest[n+1]||rest[n+1].startsWith('--'))throw F.fail('INVALID_ARGUMENTS');out[k]=rest[n+1];}return out;}
 async function key(file){const v=JSON.parse(await fs.readFile(file,'utf8'));const bytes=Buffer.from(v.key_base64||'','base64');if(bytes.length!==32||bytes.toString('base64')!==v.key_base64)throw F.fail('BACKUP_KEY_REQUIRED');return bytes;}
 async function main(argv=process.argv.slice(2)){
  const a=parse(argv);if(a.command==='key-create'){const bytes=crypto.randomBytes(32);await fs.writeFile(a.file,JSON.stringify({key_base64:bytes.toString('base64')}),{flag:'wx',mode:0o600});return {result:'CREATED',key_printed:false};}
+ if(['object-inventory','object-verify'].includes(a.command)){
+  const I=require('../src/operations/private-object-inventory');
+  const inventory=I.build(await B.readEncrypted(a.file,await key(a['key-file'])),{expected_sha256:a.sha256,privacy_register:a.manifest?JSON.parse(await fs.readFile(a.manifest,'utf8')):undefined,register_sha256:a['register-sha256']});
+  if(a.command==='object-verify')return await I.verifyLocal(inventory,a['object-root']);
+  await fs.writeFile(a.output,JSON.stringify(inventory),{flag:'wx',mode:0o600});return {result:'PRIVATE_INVENTORY_WRITTEN',...I.summary(inventory)};
+ }
  if(a.command==='legacy-inspect'){const result=L.inspect(a.file,{source_ref:a['source-ref'],source_kind:a['source-kind']});return {result:'INSPECTED_ONLY',source_sha256:result.manifest.source_sha256,tables:result.manifest.tables.map(t=>({name:t.name,rows:t.row_count})),business_conversion:'NOT_PERFORMED'};}
  if(!['backup','restore','legacy-retain','release-check','recovery-check','privacy-register','privacy-replay'].includes(a.command))throw F.fail('UNKNOWN_OPERATION');const env=await config(a['env-file']);const db=await require('../src/infrastructure/database').openDatabase({...env,MYSQL_DATABASE:target(a.database)});
  try{
