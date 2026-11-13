@@ -1,12 +1,12 @@
 # 151条验收：逐条工作队列
 
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
-后端负责人 chengcongcong222 主测及记录；前端负责人 Bill-Billion 修页面并提供同版产物。原18组和12路线不变。
+后端负责人 chengcongcong222 按双方CURRENT继续独立开发、后端验证和证据登记；Bill-Billion仅既有UI工作，不代认领新页面任务。当前不开发修补前端、不运行本机App/Web。原18组和12路线不变。
 
 登记共151条；状态：{'NOT_RUN': 37, 'PARTIAL': 95, 'PASS': 19}；其中104条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
-先办理现货、人工定制、试镜商单与机构，随后共创/权益/抽奖/余额/成长，再隐私/参演发行；遇到页面缺口归负责人，其余路线继续。
+接续顺序以双方CURRENT及本轮报告为准，逐项核原文、实际实现和剩余证据；页面与设备缺口单列待后续安排，不将其重新指派给前端，不阻断独立后端工作。
 新合同扩展另见合同收尾和财务交接；不得改掉原预期以凑通过。正式通过仍须同版、同记录、所需端和全部场景的证据及独立审阅。
 
 |标准/工作|所需端|必测场景|已有局部线索|当前登记|
@@ -21,7 +21,7 @@
 |ACC-DEL-01.04 企业代办|后端|正常办理、取消/退款/撤回|ENTERPRISE-SAME-ORDER（局部）|PARTIAL|
 |ACC-DEL-02.01 真实身份和年龄|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-02（局部）|PARTIAL|
 |ACC-DEL-02.02 新合同实行分类人工认证，模卡/生活照/全身照/简历等材料按规则审核，10元审核费与审核通过分开；L1实名免费。旧L2/L3概括不作为新收费菜单，补件不重复收费，历史收费事实保留。|后端|正常办理、取消/退款/撤回|CERTIFICATION-PAID-NOT-APPROVED（局部）|PARTIAL|
-|ACC-DEL-02.03 补件与到期|后端|正常办理、取消/退款/撤回|CERTIFICATION-SUPPLEMENT-EXPIRY（局部）|PARTIAL|
+|ACC-DEL-02.03 补件与到期|后端|正常办理、取消/退款/撤回|CERTIFICATION-SUPPLEMENT-EXPIRY（局部）；CERTIFICATION-ISOLATED-EXPIRY（局部）|PARTIAL|
 |ACC-DEL-02.04 代理及监护|后端|正常办理、取消/退款/撤回|SC-04（局部）|PARTIAL|
 |ACC-DEL-03.01 演员与造型分离|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-03（局部）|PARTIAL|
 |ACC-DEL-03.02 新合同基础形象/声音创建免费，受理、基础档案和长期可复用资产分别记录；真实长期资产ID及复用证据齐套才显示模型就绪。普通图生视频和档案插入不等于长期建模；历史已收费服务按原快照履约。|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
@@ -57,7 +57,7 @@
 |ACC-DEL-10.04 周期与历史|后端|正常办理、取消/退款/撤回|NOTICE-HISTORY（局部）；NOTICE-REVISIONS（局部）|PARTIAL|
 |ACC-DEL-11.01 单向提交|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-11（局部）|PASS|
 |ACC-DEL-11.02 三类投稿|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
-|ACC-DEL-11.03 客服接管|后端|正常办理、取消/退款/撤回|INTENT-SUPPORT-QUOTE（局部）|PARTIAL|
+|ACC-DEL-11.03 客服接管|后端|正常办理、取消/退款/撤回|INTENT-SUPPORT-QUOTE（局部）；SUPPORT-ASSIGNMENT-HANDOVER（局部）|PARTIAL|
 |ACC-DEL-11.04 关闭与通知|后端|正常办理、取消/退款/撤回|INTENT-CLOSE-NOTIFY（局部）|PARTIAL|
 |ACC-DEL-12.01 成立条件|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-12（局部）|PARTIAL|
 |ACC-DEL-12.02 消息能力|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
