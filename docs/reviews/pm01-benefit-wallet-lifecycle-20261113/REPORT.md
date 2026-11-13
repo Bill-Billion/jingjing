@@ -35,3 +35,5 @@ FIRST_COCREATION_RUN为16通过/3失败（含父测试）：JSON字段已经解�
 [复验方法](REPRODUCE.md)、[接续表](NEXT_BACKEND.md)、[最终后端](FINAL_BACKEND.json)、[最终响应](FINAL_CONTRACT.json)、[六条局部证据](partial-lifecycle-evidence.json)。
 
 最终远端观察见[回执](CURRENT_REMOTE.json)。该回执本地保存，随下一批集中同步；业务与验收主体已上传本候选。
+
+后续观察：f7d8d1f9三组远端最终全部成功，见[下一批最终回执](../pm01-enterprise-commission-prizes-20261113/PRIOR_REMOTE_FINAL.json)；以上早期观察为历史。

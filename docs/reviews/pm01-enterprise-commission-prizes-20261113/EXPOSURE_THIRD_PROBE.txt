@@ -1,0 +1,95 @@
+TAP version 13
+# Subtest: fixed redemption through actual HTTP and isolated MySQL transactions
+    # Subtest: independent stock approval, private evidence and unauthorized queue rejected
+    ok 1 - independent stock approval, private evidence and unauthorized queue rejected
+      ---
+      duration_ms: 104.066
+      type: 'test'
+      ...
+    # Subtest: repeated exchange spends once; changed key payload rejected; another user cannot read
+    ok 2 - repeated exchange spends once; changed key payload rejected; another user cannot read
+      ---
+      duration_ms: 67.7442
+      type: 'test'
+      ...
+    # Subtest: last inventory races: exactly one grant, one debit, no overselling
+    ok 3 - last inventory races: exactly one grant, one debit, no overselling
+      ---
+      duration_ms: 45.6598
+      type: 'test'
+      ...
+    # Subtest: insufficient balance and underage gate roll back grant and stock together
+    ok 4 - insufficient balance and underage gate roll back grant and stock together
+      ---
+      duration_ms: 37.8714
+      type: 'test'
+      ...
+    # Subtest: retired inventory prevents new exchange but preserves prior entitlement
+    ok 5 - retired inventory prevents new exchange but preserves prior entitlement
+      ---
+      duration_ms: 23.6497
+      type: 'test'
+      ...
+    # Subtest: service failure refund returns original points exactly once
+    ok 6 - service failure refund returns original points exactly once
+      ---
+      duration_ms: 41.9796
+      type: 'test'
+      ...
+    # Subtest: exposure binds real public artist, independently schedules and requires holder confirmation
+    ok 7 - exposure binds real public artist, independently schedules and requires holder confirmation
+      ---
+      duration_ms: 146.4026
+      type: 'test'
+      ...
+    # Subtest: fulfilled exposure records proof and cannot be redeemed twice
+    ok 8 - fulfilled exposure records proof and cannot be redeemed twice
+      ---
+      duration_ms: 40.1947
+      type: 'test'
+      ...
+    # Subtest: verified production credit gets correct price; unrelated existing stock video cannot authorize template
+    ok 9 - verified production credit gets correct price; unrelated existing stock video cannot authorize template
+      ---
+      duration_ms: 53.3252
+      type: 'test'
+      ...
+    # Subtest: interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+    ok 10 - interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+      ---
+      duration_ms: 229.6932
+      type: 'test'
+      ...
+    # Subtest: points pending reversal blocks new exchange; remedy clears original debt before any available balance
+    ok 11 - points pending reversal blocks new exchange; remedy clears original debt before any available balance
+      ---
+      duration_ms: 58.3563
+      type: 'test'
+      ...
+    # Subtest: returning expired original points does not mint a fresh year of validity
+    ok 12 - returning expired original points does not mint a fresh year of validity
+      ---
+      duration_ms: 45.7926
+      type: 'test'
+      ...
+    # Subtest: same actual winning exposure reaches reviewed delivery or one original fallback without redrawing
+    ok 13 - same actual winning exposure reaches reviewed delivery or one original fallback without redrawing
+      ---
+      duration_ms: 266.3775
+      type: 'test'
+      ...
+    1..13
+ok 1 - fixed redemption through actual HTTP and isolated MySQL transactions
+  ---
+  duration_ms: 7747.4402
+  type: 'test'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7947.0034
