@@ -33912,7 +33912,7 @@ paths:
 
         SUPPORT_TICKETS/SUPPORT_MESSAGES/FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS属于PROFILE；INVOICE_REQUESTS/INVOICE_HISTORY/INVOICE_DOCUMENTS属于TRANSACTIONS。仅本人个人主体，排除机构经办。消息游标为记录UUID.版本号，收藏浏览为十进制序号；游标记录已清理返回400，重新分页。浏览沿原留存配置清理且history_complete=false；失权公开资料只保留引用，标题城市为null。票据仅ISSUED/SUPERSEDED，脱敏副本不是票据原件；原件按原业务受控下载。所有分类不自动办结申请。
 
-        PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动仅十类本人记录白名单，机构/评委/设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
+        PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动按本人记录白名单提供，含本人买家榜快照条目/计算依据；机构/他人来源、评委和设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
   /api/v1/engagement/mcn/batches:
     get:
       operationId: findOrganizationBatchByRequest
@@ -34458,7 +34458,7 @@ paths:
 
         SUPPORT_TICKETS/SUPPORT_MESSAGES/FAVORITES/BROWSING_HISTORY/COLLECTION_SETTINGS属于PROFILE；INVOICE_REQUESTS/INVOICE_HISTORY/INVOICE_DOCUMENTS属于TRANSACTIONS。仅本人个人主体，排除机构经办。消息游标为记录UUID.版本号，收藏浏览为十进制序号；游标记录已清理返回400，重新分页。浏览沿原留存配置清理且history_complete=false；失权公开资料只保留引用，标题城市为null。票据仅ISSUED/SUPERSEDED，脱敏副本不是票据原件；原件按原业务受控下载。所有分类不自动办结申请。
 
-        PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动仅十类本人记录白名单，机构/评委/设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
+        PRIVACY_REQUESTS/RESPONSES/EVENTS/ACTIONS/EXECUTIONS、NOTIFICATION_DELIVERIES、GUARDIAN_LINKS、ENGAGEMENT_RECORDS属于PROFILE。本人隐私答复仅提供已审核历史，不含待审方案或内部执行载荷；执行状态不代表供应商已删除。通知仅个人/无主体发送记录，不代表收到，供应商回执不返回。监护仅参与关系摘要，不授予儿童资料权限；活动按本人记录白名单提供，含本人买家榜快照条目/计算依据；机构/他人来源、评委和设备标识排除。原审核历史答复文件也可沿原evidence下载接口重新核权获取。其他活动、通知阅读记录和监护详细材料继续按原业务权限处理，未宣称全部个人资料已提供。'
   /api/v1/privacy/operations/requests/{request_id}/transaction-data:
     get:
       operationId: getPrivacyTransactionCopyForOperations
@@ -73979,6 +73979,343 @@ components:
       required:
       - meta
       - data
+    PrivacyBuyerRankEntry:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          type: string
+        object_version:
+          type: integer
+          minimum: 1
+        created_at:
+          type: string
+          format: date-time
+        kind:
+          const: BUYER_RANK_ENTRY
+        parent_id:
+          type: string
+          format: uuid
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            snapshot_id:
+              type: string
+              format: uuid
+            snapshot_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            city:
+              type: string
+              minLength: 1
+              maxLength: 100
+            at:
+              type: string
+              format: date-time
+            calculation_version:
+              type: string
+            rule_id:
+              type: string
+              format: uuid
+            rule_sha256:
+              type: string
+              pattern: ^[0-9a-f]{64}$
+            rank:
+              type: integer
+              minimum: 1
+            section:
+              const: personal
+            metrics:
+              type: object
+              additionalProperties: false
+              properties:
+                party_id:
+                  type: string
+                  format: uuid
+                party_kind:
+                  enum:
+                  - PERSON
+                  - ORGANIZATION
+                consumption_growth:
+                  anyOf:
+                  - type: integer
+                    minimum: 0
+                  - type: 'null'
+                completed_orders:
+                  type: integer
+                  minimum: 0
+                verified_net_paid_minor:
+                  type: integer
+                  minimum: 0
+                scout_active:
+                  type: boolean
+                scout_level:
+                  type: integer
+                  minimum: 0
+                  maximum: 6
+                compliance_clear:
+                  type: boolean
+                facts_available:
+                  type: boolean
+                score:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+              required:
+              - party_id
+              - party_kind
+              - consumption_growth
+              - completed_orders
+              - verified_net_paid_minor
+              - scout_active
+              - scout_level
+              - compliance_clear
+              - facts_available
+            scoring:
+              type: object
+              additionalProperties: false
+              properties:
+                fields:
+                  type: array
+                  items:
+                    enum:
+                    - consumption_growth
+                    - completed_orders
+                    - verified_net_paid_minor
+                weights:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                maxima:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 1
+                compliance_weight:
+                  type: integer
+                  minimum: 0
+                scout_priority:
+                  type: boolean
+                free_points_counted:
+                  const: false
+              required:
+              - fields
+              - weights
+              - maxima
+              - compliance_weight
+              - scout_priority
+              - free_points_counted
+            evidence:
+              type: object
+              additionalProperties: false
+              properties:
+                party_id:
+                  type: string
+                  format: uuid
+                profile_id:
+                  type: string
+                  format: uuid
+                profile_sha256:
+                  type: string
+                  pattern: ^[0-9a-f]{64}$
+                identity:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    basis:
+                      const: VERIFIED_PERSON
+                    sources:
+                      type: array
+                      items:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          object_version:
+                            type: integer
+                            minimum: 1
+                          valid_until:
+                            type: string
+                            format: date-time
+                        required:
+                        - id
+                        - object_version
+                        - valid_until
+                  required:
+                  - basis
+                  - sources
+                orders:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      order_id:
+                        type: string
+                        format: uuid
+                      buyer_party_id:
+                        type: string
+                        format: uuid
+                      seller_party_id:
+                        type: string
+                        format: uuid
+                      category:
+                        enum:
+                        - STOCK
+                        - AUDITION
+                        - CUSTOMIZATION
+                        - COMMERCIAL
+                      at:
+                        type: string
+                        format: date-time
+                      net_minor:
+                        type: integer
+                        minimum: 0
+                      refunded:
+                        type: boolean
+                      journal_ids:
+                        type: array
+                        items:
+                          type: string
+                          format: uuid
+                      environment:
+                        const: PRODUCTION
+                      excluded:
+                        type: boolean
+                      order_sha256:
+                        type: string
+                        pattern: ^[0-9a-f]{64}$
+                    required:
+                    - order_id
+                    - buyer_party_id
+                    - seller_party_id
+                    - category
+                    - at
+                    - net_minor
+                    - refunded
+                    - journal_ids
+                    - environment
+                    - excluded
+                    - order_sha256
+                growth_sources:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      content_sha256:
+                        type: string
+                        pattern: ^[0-9a-f]{64}$
+                      order_id:
+                        type: string
+                        format: uuid
+                      points:
+                        type: integer
+                        minimum: 0
+                      growth_reversed:
+                        type: integer
+                        minimum: 0
+                      contribution:
+                        type: integer
+                        minimum: 0
+                    required:
+                    - id
+                    - object_version
+                    - content_sha256
+                    - order_id
+                    - points
+                    - growth_reversed
+                    - contribution
+                scout:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    active:
+                      type: boolean
+                    level:
+                      type: integer
+                      minimum: 0
+                    source_ids:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                    notice_rule_id:
+                      anyOf:
+                      - type: string
+                        format: uuid
+                      - type: 'null'
+                  required:
+                  - active
+                  - level
+                  - source_ids
+                  - notice_rule_id
+                risk_records:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      object_version:
+                        type: integer
+                        minimum: 1
+                      content_sha256:
+                        type: string
+                        pattern: ^[0-9a-f]{64}$
+                      order_id:
+                        type: string
+                        format: uuid
+                    required:
+                    - id
+                    - object_version
+                    - content_sha256
+                    - order_id
+              required:
+              - party_id
+              - profile_id
+              - profile_sha256
+              - identity
+              - orders
+              - growth_sources
+              - scout
+              - risk_records
+          required:
+          - snapshot_id
+          - snapshot_sha256
+          - city
+          - at
+          - calculation_version
+          - rule_id
+          - rule_sha256
+          - rank
+          - section
+          - metrics
+          - scoring
+          - evidence
+      required:
+      - id
+      - current_status
+      - object_version
+      - created_at
+      - kind
+      - parent_id
+      - data
     PrivacyAccountCopyPageResponse:
       type: object
       additionalProperties: false
@@ -76960,6 +77297,7 @@ components:
                 type: array
                 items:
                   oneOf:
+                  - $ref: '#/components/schemas/PrivacyBuyerRankEntry'
                   - type: object
                     additionalProperties: false
                     properties:

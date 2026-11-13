@@ -16,7 +16,7 @@ test('buyer ranking: current identity, frozen facts and own-account evidence',{s
  ok(await profile(buyer));ok(await profile(buyer2));
  const parties=require('../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal:S.resolvePrincipal}),org=await parties.createOrganization(outsider.ctx,{display_name:'synthetic buyer organization',operation_key:key()});ok(await profile(outsider,true,'rank-city',org.party_id));
  await t.test('expired and closed personal identity disappear immediately from current public ranking',async()=>{
-  assert.ok(has(await rank(),buyer.personal_party_id));await db.execute("UPDATE artist_people SET identity_valid_until='2020-01-01' WHERE id=?",[buyer.person.id]);try{assert.equal(has(await rank(),buyer.personal_party_id),false);}finally{await db.execute("UPDATE artist_people SET identity_valid_until='2099-01-01' WHERE id=?",[buyer.person.id]);}
+  const live=await rank();assert.equal(live.traceability,'LIVE_NOT_SAVED');assert.equal(live.snapshot_id,null);assert.ok(has(live,buyer.personal_party_id));await db.execute("UPDATE artist_people SET identity_valid_until='2020-01-01' WHERE id=?",[buyer.person.id]);try{assert.equal(has(await rank(),buyer.personal_party_id),false);}finally{await db.execute("UPDATE artist_people SET identity_valid_until='2099-01-01' WHERE id=?",[buyer.person.id]);}
   await db.execute("UPDATE artist_people SET current_status='CLOSED' WHERE id=?",[buyer.person.id]);try{assert.equal(has(await rank(),buyer.personal_party_id),false);}finally{await db.execute("UPDATE artist_people SET current_status='ACTIVE' WHERE id=?",[buyer.person.id]);}
  });
  await t.test('registration alone is not independently verified organization identity',async()=>{assert.equal(has(await rank(),org.party_id),false);});
@@ -32,6 +32,7 @@ test('buyer ranking: current identity, frozen facts and own-account evidence',{s
  const create=(operation=key(),city='rank-city',u=reviewer,r=rule)=>call('POST','/engagement/buyer-rankings',u,{body:{city,rule_id:r.id},operation});
  const frozen=r=>call('GET','/engagement/buyer-rankings/'+r.id);
  await t.test('only an operator and an effective configured rule can create a traceable snapshot',async()=>{
+  assert.equal((await call('POST','/engagement/buyer-rankings',reviewer,{party:buyer.personal_party_id,body:{city:'rank-city',rule_id:rule.id}})).status,400);assert.equal((await call('GET','/engagement/buyer-rankings?city=rank-city',buyer,{party:buyer.personal_party_id})).status,400);
   bad(await create(key(),'rank-city',buyer),'ENGAGEMENT_OPERATOR_FORBIDDEN');bad(await create(),'ENGAGEMENT_RULE_NOT_EFFECTIVE');
   rule=ok(await call('POST','/engagement/rules/'+rule.id+'/review',reviewer,{version:rule.object_version,body:{decision:'APPROVE',reason:'independent synthetic weights'}}));
   const raw=await E.createRule(outsider.ctx,{rule:require('./helpers/engagement-rule.cjs'),operation_key:key()}),noConfig=await E.reviewRule(reviewer.ctx,{record_id:raw.id,expected_version:raw.object_version,decision:'APPROVE',reason:'synthetic legacy no buyer weights',operation_key:key()});bad(await create(key(),'rank-city',reviewer,noConfig),'BUYER_RANK_RULE_NOT_CONFIGURED');
