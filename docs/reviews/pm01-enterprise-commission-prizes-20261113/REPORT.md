@@ -39,3 +39,5 @@ chengcongcong222先核本候选远端，再按原标准核光环申请/补件到
 [最终后端](FINAL_BACKEND.json)、[响应校验](FINAL_CONTRACT.json)、[四条局部证据](partial-enterprise-commission-prizes-evidence.json)、[复验方法](REPRODUCE.md)。
 
 最终远端观察见[回执](CURRENT_REMOTE.json)。该回执本地保存，随下一批集中同步；业务与验收主体已上传本候选。
+
+后续观察：1aee5dbe三组远端全部成功，见[下一批回执](../pm01-certification-discovery-intent-20261113/PRIOR_REMOTE_FINAL.json)。上述早期观察保留历史。
