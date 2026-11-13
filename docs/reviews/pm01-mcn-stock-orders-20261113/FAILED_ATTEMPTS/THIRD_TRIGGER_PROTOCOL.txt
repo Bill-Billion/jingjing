@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: MCN actual multi-artist stock sale, assignment, batch and same-order refund
+    # Subtest: both artists authorize an actual two-person listing which is independently reviewed and purchased
+    ok 1 - both artists authorize an actual two-person listing which is independently reviewed and purchased
+      ---
+      duration_ms: 249.0544
+      type: 'test'
+      ...
+    # Subtest: single-person and read-only employees cannot receive a multi-artist order
+    ok 2 - single-person and read-only employees cannot receive a multi-artist order
+      ---
+      duration_ms: 155.5491
+      type: 'test'
+      ...
+    # Subtest: batch dispatch returns per-item results and repeated successful dispatch never doubles money
+    ok 3 - batch dispatch returns per-item results and repeated successful dispatch never doubles money
+      ---
+      duration_ms: 276.0298
+      type: 'test'
+      ...
+    # Subtest: reassignment changes the current employee, while replaying an old key cannot reclaim the order
+    ok 4 - reassignment changes the current employee, while replaying an old key cannot reclaim the order
+      ---
+      duration_ms: 462.1813
+      type: 'test'
+      ...
+    # Subtest: failed assignment audit rolls back both the reassignment and command; original key can retry
+    not ok 5 - failed assignment audit rolls back both the reassignment and command; original key can retry
+      ---
+      duration_ms: 1.5123
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\mcn-stock-orders.integration.test.cjs:74:11'
+      failureType: 'testCodeFailure'
+      error: 'This command is not supported in the prepared statement protocol yet'
+      code: 'ER_UNSUPPORTED_PS'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:31:60
+        withConnection (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:19:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-stock-orders.integration.test.cjs:75:19)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-stock-orders.integration.test.cjs:74:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: another MCN cannot dispatch an order whose frozen agreement names this institution
+    ok 6 - another MCN cannot dispatch an order whose frozen agreement names this institution
+      ---
+      duration_ms: 24.3691
+      type: 'test'
+      ...
+    # Subtest: revoking one participant scope hides the whole order and refuses command replay
+    ok 7 - revoking one participant scope hides the whole order and refuses command replay
+      ---
+      duration_ms: 54.9517
+      type: 'test'
+      ...
+    # Subtest: same actual order partially refunds with retained licence and recalculated agency income
+    ok 8 - same actual order partially refunds with retained licence and recalculated agency income
+      ---
+      duration_ms: 106.6936
+      type: 'test'
+      ...
+    # Subtest: ending cooperation revokes staff reads and replays while retaining owner history and original refund terms
+    ok 9 - ending cooperation revokes staff reads and replays while retaining owner history and original refund terms
+      ---
+      duration_ms: 119.4006
+      type: 'test'
+      ...
+    1..9
+not ok 1 - MCN actual multi-artist stock sale, assignment, batch and same-order refund
+  ---
+  duration_ms: 8141.4913
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\mcn-stock-orders.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 8
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8323.4472

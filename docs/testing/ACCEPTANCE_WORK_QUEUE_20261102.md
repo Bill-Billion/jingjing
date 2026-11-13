@@ -114,7 +114,7 @@
 |ACC-DEL-25.01 管理不所有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-25（局部）|PARTIAL|
 |ACC-DEL-25.02 批量经营|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-25.03 解除与历史|后端|正常办理、取消/退款/撤回|SC-01（局部）|PARTIAL|
-|ACC-DEL-25.04 经营看板|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-25-04（局部）；MCN-CROSS-BUSINESS-HISTORY（局部）|PARTIAL|
+|ACC-DEL-25.04 经营看板|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-25-04（局部）；MCN-CROSS-BUSINESS-HISTORY（局部）；MCN-MULTI-STOCK-ACTUAL-ORDER（局部）|PARTIAL|
 |ACC-DEL-26.01 按职责待办|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-26（局部）|PARTIAL|
 |ACC-DEL-26.02 配置发布|后端|正常办理、取消/退款/撤回|SC-03（局部）；FP-03（局部）；CP01, CP06（局部）|PARTIAL|
 |ACC-DEL-26.03 真实进度|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-26-03（局部）|PARTIAL|
