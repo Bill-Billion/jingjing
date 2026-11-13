@@ -1,5 +1,5 @@
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),{randomUUID:key,randomBytes}=require('node:crypto'),mysql=require('mysql2/promise');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),{randomUUID:key,randomBytes,createHash}=require('node:crypto'),mysql=require('mysql2/promise');
 const {openDatabase}=require('../src/infrastructure/database'),{migrate}=require('../src/infrastructure/database/migrator'),{digest}=require('../src/modules/governance/content');
 test('operator video categories, holiday collections and placements use reviewed stock through real HTTP',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},async t=>{
  const env=JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));for(const [k,v] of Object.entries({NODE_ENV:'test',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
@@ -17,6 +17,7 @@ test('operator video categories, holiday collections and placements use reviewed
  const revise=(r,content,options={})=>call('POST','/product-catalog/records/'+r.id+'/revisions',{record:r,body:{content},...options});
  const withdraw=(r,options={})=>call('POST','/product-catalog/records/'+r.id+'/withdrawals',{record:r,body:{reason:'Synthetic withdrawal'},...options});
  const catalog=(kind,query='',options={})=>call('GET','/product-catalog/catalog?kind='+kind+query,{user:buyer,...options});
+ async function download(order){const route='/stock/purchases/'+order.id+'/content',res=await fetch(base+route,{headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.personal_party_id}});assert.equal(res.headers.get('cache-control'),'no-store');if(res.headers.get('content-type')?.includes('application/json')){const value=await res.json();fixtures.push({method:'GET',path:'/api/v1'+route,schema:'ErrorResponse',value});return {status:res.status,...value};}return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};}
  const baseContent={title:'Synthetic festival video',description:'Synthetic manually prepared stock only',sort_order:2};
  const period={valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z'};
  let category,collection,placement,listing,listing2,order;
@@ -60,7 +61,8 @@ test('operator video categories, holiday collections and placements use reviewed
   const item=ok(await catalog('COLLECTION')).items[0].items[0],response=await fetch(base+'/stock/checkout',{method:'POST',headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.personal_party_id,'Content-Type':'application/json','Idempotency-Key':key()},body:JSON.stringify({listing_id:item.id,offer_sha256:item.offer_sha256,channel:'ALIPAY'})}),json=await response.json();assert.equal(response.status,200,JSON.stringify(json));fixtures.push({method:'POST',path:'/api/v1/stock/checkout',schema:'TradeRecordResponse',value:json});order=json.data;await S.payment(order);
   const hash=digest(order.data.contract);placement=ok(await withdraw(placement));assert.deepEqual(ok(await catalog('PLACEMENT')).items,[]);
   assert.equal(digest((await S.trade.read(buyer.ctx,{record_id:order.id,party_id:buyer.personal_party_id})).data.contract),hash);assert.equal((await S.stock.content(buyer.ctx,{order_id:order.id,party_id:buyer.personal_party_id})).id,S.file.id);
-  records.push({case:'ORIGINAL_CHECKOUT_PRESERVED',order_id:order.id,contract_sha256:hash,paid_minor:100,withdrawn_placement_id:placement.id});
+  const delivered=await download(order);assert.equal(delivered.status,200);assert.equal(createHash('sha256').update(delivered.bytes).digest('hex'),S.file.content_sha256);assert.equal(delivered.bytes.length,S.file.byte_size);
+  records.push({case:'ORIGINAL_CHECKOUT_PRESERVED',order_id:order.id,contract_sha256:hash,paid_minor:100,withdrawn_placement_id:placement.id,download_status:delivered.status,download_sha256:createHash('sha256').update(delivered.bytes).digest('hex'),download_bytes:delivered.bytes.length});
  });
  await t.test('new immutable versions require review; concurrent drafts cannot silently replace an intervening publication',async()=>{
   const old=collection,content={...collection.data.content,title:'Revised synthetic collection'};
@@ -82,6 +84,7 @@ test('operator video categories, holiday collections and placements use reviewed
   let list=ok(await catalog('COLLECTION'));assert.deepEqual(list.items[0].items.map(x=>x.id),[listing2.id]);
   listing2=await S.stock.status(seller.ctx,{record_id:listing2.id,party_id:seller.personal_party_id,expected_version:listing2.object_version,action:'UNLIST',reason:'Synthetic stop sale',operation_key:key()});assert.deepEqual(ok(await catalog('COLLECTION')).items,[]);
   assert.equal((await S.stock.content(buyer.ctx,{order_id:order.id,party_id:buyer.personal_party_id})).id,S.file.id);
+  assert.equal((await download(order)).status,200);
  });
  await t.test('scheduled content stays hidden before start and cannot be reviewed after expiry',async()=>{
   const fresh=await S.listing(),content={...baseContent,category_id:category.entity_id,collection_kind:'TEMPLATE',theme_code:'future',listing_ids:[fresh.id],valid_from:'2098-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z'};
@@ -98,7 +101,7 @@ test('operator video categories, holiday collections and placements use reviewed
   assert.equal(ok(await catalog('PLACEMENT','&slot_code=rights-slot')).items.length,1);const contract=digest(order.data.contract);
   await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.consent.id,expected_version:S.consent.object_version,reason:'Synthetic consent revoked',operation_key:key()});
   assert.deepEqual(ok(await catalog('COLLECTION','&code=withdraw-rights')).items,[]);assert.deepEqual(ok(await catalog('PLACEMENT','&slot_code=rights-slot')).items,[]);
-  await assert.rejects(S.stock.content(buyer.ctx,{order_id:order.id,party_id:buyer.personal_party_id}),e=>[403,404,409].includes(e.status));assert.equal(digest((await S.trade.read(buyer.ctx,{record_id:order.id,party_id:buyer.personal_party_id})).data.contract),contract);
+  await assert.rejects(S.stock.content(buyer.ctx,{order_id:order.id,party_id:buyer.personal_party_id}),e=>[403,404,409].includes(e.status));const blocked=await download(order);assert.ok([403,404,409].includes(blocked.status));records.push({case:'CONSENT_WITHDRAWAL_BLOCKS_DOWNLOAD',order_id:order.id,collection_id:r.entity_id,download_status:blocked.status,error_code:blocked.error.code});assert.equal(digest((await S.trade.read(buyer.ctx,{record_id:order.id,party_id:buyer.personal_party_id})).data.contract),contract);
  });
  await t.test('concurrent replay creates one version, cursor cannot cross filters and changed request keys conflict',async()=>{
   const op=key(),results=await Promise.all([1,2,3].map(()=>create('CATEGORY','concurrent',{...baseContent,title:'Another category',sort_order:99},{op})));assert.ok(results.every(x=>x.status===200));assert.equal(new Set(results.map(x=>x.data.id)).size,1);
