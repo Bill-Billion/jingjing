@@ -58966,6 +58966,9 @@ components:
         rule_id:
           type: string
           format: uuid
+        notice_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
       required:
       - id
       - owner_party_id
@@ -59158,9 +59161,21 @@ components:
           format: uuid
         submission:
           $ref: '#/components/schemas/NoticeSubmission'
+        notice_version:
+          type: integer
+          minimum: 1
+        notice_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
       required:
       - rule_id
       - submission
+      dependentRequired:
+        notice_version:
+        - notice_sha256
+        notice_sha256:
+        - notice_version
+      description: 已修订通告必须同时携带实际读取的当前版本和摘要；未修订历史通告兼容省略。原键重试返回原记录。
     NoticeReviewRequest:
       type: object
       additionalProperties: false

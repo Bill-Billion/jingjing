@@ -13,7 +13,7 @@ function createNoticesRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/announcements','createNotice',['rule_id','notice'],'optional');
  post('/announcements/:record_id/revisions','revise',['notice','reason'],'optional',true);
  post('/submissions/:record_id/notice-confirmation','acknowledgeRevision',['notice_version','notice_sha256'],'required',true);
- post('/submissions','submit',['rule_id','submission']);
+ post('/submissions','submit',['rule_id','submission','notice_version','notice_sha256']);
  post('/records/:record_id/reviews','review',['decision','reason','checks'],'none',true);
  post('/records/:record_id/close','close',['reason'],'optional',true);
  post('/submissions/:record_id/decision','decision',['decision'],'required',true);

@@ -14,6 +14,7 @@ async function validate(tx,a,n,notice){
  if(notice.type!==n.data.notice.type||notice.project_id!==n.data.notice.project_id)throw error('NOTICE_REVISION_SCOPE_INVALID',409);
  if(notice.valid_until<=await A.now(tx))throw error('NOTICE_PERIOD_INVALID',409);
  if(notice.type!=='OFFICIAL')await A.owner(tx,a,n.owner_party_id);
+ else await C.publisher(tx,n);
  if(notice.project_id){const project=await A.one(tx,"SELECT * FROM project_records WHERE id=? AND kind='PROJECT' FOR SHARE",[notice.project_id]);if(!project||project.owner_party_id!==n.owner_party_id)throw error('NOTICE_PROJECT_MISMATCH',409);}
  await C.publisher(tx,{...n,created_by:notice.type==='OFFICIAL'?a.id:n.created_by,data:{...n.data,notice}});
 }
@@ -31,7 +32,6 @@ async function review(tx,a,r,i){
  if(digest(n.data.notice)!==r.data.base_snapshot.notice_sha256)throw error('STORED_CONTENT_MISMATCH',503);
  // Both author and reviewer must still have the current scope at publication.
  await validate(tx,{id:r.created_by},n,r.data.notice);
- if(r.data.notice.type==='OFFICIAL')await C.operator(tx,a,'NOTICE_OFFICIAL');
  const approved=await C.save(tx,a,r,'APPROVED',{...r.data,review},'INDEPENDENT_REVIEW');
  await C.save(tx,a,n,'PUBLISHED',{...n.data,notice:r.data.notice,revision_id:r.id,review},'NOTICE_REVISED');
  const rows=(await tx.execute("SELECT * FROM notice_records WHERE kind='SUBMISSION' AND parent_id=? ORDER BY id",[n.id]))[0];

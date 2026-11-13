@@ -31,8 +31,8 @@ test('reviewed notice revisions retain history and fence old offers in isolated 
   const revise=(n,notice={...n.data.notice,title:'Revised recruitment'},u=buyer,h=headers(n))=>call('POST','/notices/announcements/'+n.id+'/revisions',u,{notice,reason:'synthetic revised requirements'},u.personal_party_id,h);
   const confirm=(s,n,u=seller,h=headers(s),hash=digest(n.data.notice))=>call('POST','/notices/submissions/'+s.id+'/notice-confirmation',u,{notice_version:n.object_version,notice_sha256:hash},u.personal_party_id,h);
   const history=(n,u=seller)=>call('GET','/notices/announcements/'+n.id+'/history',u);
-  const submit=n=>call('POST','/notices/submissions',seller,{rule_id:S.rule.id,submission:{...S.submission,notice_id:n.id}},seller.personal_party_id,headers());
-  let n,old,sub,pending,other,revision,stale,linked,quote,trade,order,oldOrder;
+  const submit=n=>call('POST','/notices/submissions',seller,{rule_id:S.rule.id,submission:{...S.submission,notice_id:n.id},notice_version:n.object_version,notice_sha256:digest(n.data.notice)},seller.personal_party_id,headers());
+  let n,old,sub,pending,other,revision,stale,linked,quote,trade,order,oldOrder,retryBody,retryHeaders,retrySubmission;
   await t.test('new applications capture exact original notice; old order and outstanding quote share the same notice',async()=>{
    n=ok(await approve(ok(await create(S.rule))));old=structuredClone(n);
    sub=ok(await approve(ok(await submit(n))));assert.deepEqual(sub.data.notice_snapshot.notice,n.data.notice);
@@ -78,6 +78,14 @@ test('reviewed notice revisions retain history and fence old offers in isolated 
    bad(await approve(stale),'VERSION_CONFLICT');
    const hist=ok(await history(n));assert.equal(hist.items.length,1);assert.deepEqual(hist.items[0].base_snapshot.notice,old.data.notice);assert.equal(hist.items[0].created_by,undefined);
   });
+  await t.test('new applications reject unseen revisions while retries retain their original accepted version',async()=>{
+   const body={rule_id:S.rule.id,submission:{...S.submission,notice_id:n.id}};
+   bad(await call('POST','/notices/submissions',seller,body,seller.personal_party_id,headers()),'NOTICE_REVISION_ACK_REQUIRED');
+   bad(await call('POST','/notices/submissions',seller,{...body,notice_version:old.object_version,notice_sha256:digest(old.data.notice)},seller.personal_party_id,headers()),'VERSION_CONFLICT');
+   const current=ok(await call('GET','/notices/catalog/'+n.id,seller,undefined,null));assert.equal(current.notice_sha256,digest(n.data.notice));
+   retryBody={...body,notice_version:current.object_version,notice_sha256:current.notice_sha256};retryHeaders=headers();
+   retrySubmission=ok(await call('POST','/notices/submissions',seller,retryBody,seller.personal_party_id,retryHeaders));
+  });
   await t.test('applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them',async()=>{
    bad(await approve(pending),'NOTICE_REVISION_ACK_REQUIRED');
    bad(await confirm(sub,n,buyer),'NOTICE_NOT_FOUND');
@@ -103,6 +111,7 @@ test('reviewed notice revisions retain history and fence old offers in isolated 
    try{const r=await confirm(fresh,n);assert.ok([403,404,409].includes(r.status),JSON.stringify(r));}
    finally{await db.execute("UPDATE artist_people SET identity_valid_until='2099-01-01 00:00:00.000' WHERE id=?",[seller.person.id]);}
    assert.equal(ok(await history(n)).items.length,2);
+   assert.deepEqual(ok(await call('POST','/notices/submissions',seller,retryBody,seller.personal_party_id,retryHeaders)),retrySubmission);
   });
   await t.test('legacy missing snapshot is never fabricated; confirmation preserves that absence',async()=>{
    const legacy=ok(await submit(n)),data={...legacy.data};delete data.notice_snapshot;
@@ -125,7 +134,11 @@ test('reviewed notice revisions retain history and fence old offers in isolated 
    await db.execute("UPDATE governance_operator_grants SET enabled=0 WHERE account_id=? AND action_code='NOTICE_OFFICIAL'",[outsider.account_id]);
    try{bad(await approve(pendingOfficial),'NOTICE_OPERATOR_FORBIDDEN');}
    finally{await db.execute("UPDATE governance_operator_grants SET enabled=1 WHERE account_id=? AND action_code='NOTICE_OFFICIAL'",[outsider.account_id]);}
-   assert.equal(ok(await approve(pendingOfficial)).current_status,'APPROVED');
+   // Existing division of duties: NOTICE_REVIEW is enough for the independent
+   // reviewer; only the publisher needs NOTICE_OFFICIAL.
+   await db.execute("UPDATE governance_operator_grants SET enabled=0 WHERE account_id=? AND action_code='NOTICE_OFFICIAL'",[reviewer.account_id]);
+   try{assert.equal(ok(await approve(pendingOfficial)).current_status,'APPROVED');}
+   finally{await db.execute("UPDATE governance_operator_grants SET enabled=1 WHERE account_id=? AND action_code='NOTICE_OFFICIAL'",[reviewer.account_id]);}
    assert.equal(ok(await call('GET','/notices/catalog/'+original.id,buyer,undefined,null)).notice.title,body.notice.title);
   });
   const out=path.resolve(__dirname,'../../../..','.local/notices-revisions-http-fixtures.json');
