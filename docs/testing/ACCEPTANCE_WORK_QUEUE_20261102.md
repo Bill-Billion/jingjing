@@ -77,16 +77,16 @@
 |ACC-DEL-15.04 交付与返修|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-16.01 一人多角色去重|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-16（局部）|PARTIAL|
 |ACC-DEL-16.02 本人可新建房间；开工至少10位有效独立权利人，付款、授权与资料等条件仍须齐备，具体按已审规则；截止时锁定人数，满20人给发起人一份不可提现服务额度，具体服务/额度/有效期须审核规则。同人多形象不增人数，不改旧合同或自动退整包款。|后端|正常办理、取消/退款/撤回|COCREATION-START（局部）|PARTIAL|
-|ACC-DEL-16.03 本人可新建房间；开工至少10位有效独立权利人，付款、授权与资料等条件仍须齐备，具体按已审规则；截止时锁定人数，满20人给发起人一份不可提现服务额度，具体服务/额度/有效期须审核规则。同人多形象不增人数，不改旧合同或自动退整包款。|后端|正常办理、取消/退款/撤回|COCREATION-BENEFIT（局部）|PARTIAL|
-|ACC-DEL-16.04 失败和退出|后端|正常办理、取消/退款/撤回|COCREATION-EXIT（局部）|PARTIAL|
+|ACC-DEL-16.03 本人可新建房间；开工至少10位有效独立权利人，付款、授权与资料等条件仍须齐备，具体按已审规则；截止时锁定人数，满20人给发起人一份不可提现服务额度，具体服务/额度/有效期须审核规则。同人多形象不增人数，不改旧合同或自动退整包款。|后端|正常办理、取消/退款/撤回|COCREATION-BENEFIT（局部）；CO-ACTUAL-CREDIT（局部）|PARTIAL|
+|ACC-DEL-16.04 失败和退出|后端|正常办理、取消/退款/撤回|COCREATION-EXIT（局部）；CO-SOURCE-EXIT（局部）|PARTIAL|
 |ACC-DEL-17.01 四类余额分开|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-17（局部）|PARTIAL|
-|ACC-DEL-17.02 充值与消费|后端|正常办理、取消/退款/撤回|WALLET-CASH（局部）|PARTIAL|
-|ACC-DEL-17.03 会员年|后端|正常办理、取消/退款/撤回|WALLET-MEMBERSHIP（局部）|PARTIAL|
-|ACC-DEL-17.04 退款与限额|后端|正常办理、取消/退款/撤回|FP-02（局部）；CP02, CP03, CP08（局部）|PARTIAL|
+|ACC-DEL-17.02 充值与消费|后端|正常办理、取消/退款/撤回|WALLET-CASH（局部）；WALLET-ACTUAL-SPEND（局部）|PARTIAL|
+|ACC-DEL-17.03 会员年|后端|正常办理、取消/退款/撤回|WALLET-MEMBERSHIP（局部）；WALLET-PERIODS（局部）|PARTIAL|
+|ACC-DEL-17.04 退款与限额|后端|正常办理、取消/退款/撤回|FP-02（局部）；CP02, CP03, CP08（局部）；WALLET-ORIGINAL-REFUND（局部）|PARTIAL|
 |ACC-DEL-18.01 事件唯一|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-18（局部）；BENEFIT-API-02, BENEFIT-API-03（局部）|PARTIAL|
 |ACC-DEL-18.02 可用与成长|后端|正常办理、取消/退款/撤回|BENEFIT-API-04, BENEFIT-API-06, BENEFIT-API-07（局部）|PARTIAL|
 |ACC-DEL-18.03 期限及来源|后端|正常办理、取消/退款/撤回|BENEFIT-API-03, BENEFIT-API-08（局部）|PARTIAL|
-|ACC-DEL-18.04 现金按订单规则退款并撤回消费成长；不足晶钻记待冲回，新获得先抵扣，期间暂停投票/兑换/抽奖；余额不为负、不追收现金，同源撤回不重复。|后端|正常办理、取消/退款/撤回|BENEFIT-API-05, BENEFIT-API-06, BENEFIT-API-07, BENEFIT-API-08（局部）|PARTIAL|
+|ACC-DEL-18.04 现金按订单规则退款并撤回消费成长；不足晶钻记待冲回，新获得先抵扣，期间暂停投票/兑换/抽奖；余额不为负、不追收现金，同源撤回不重复。|后端|正常办理、取消/退款/撤回|BENEFIT-API-05, BENEFIT-API-06, BENEFIT-API-07, BENEFIT-API-08（局部）；WALLET-GROWTH-REVERSAL（局部）|PARTIAL|
 |ACC-DEL-19.01 三维分离|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-19（局部）|PARTIAL|
 |ACC-DEL-19.02 城市与六榜|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-19.03 买家榜|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
