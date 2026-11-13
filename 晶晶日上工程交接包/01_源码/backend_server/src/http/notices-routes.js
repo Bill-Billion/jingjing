@@ -11,12 +11,15 @@ function createNoticesRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/qualifications','applyQualification',['types','valid_from','valid_until','evidence_asset_ids','terms']);
  post('/facts','recordFact',['party_id','kind','amount','occurred_at','source_ref','evidence_asset_id'],'none');
  post('/announcements','createNotice',['rule_id','notice'],'optional');
+ post('/announcements/:record_id/revisions','revise',['notice','reason'],'optional',true);
+ post('/submissions/:record_id/notice-confirmation','acknowledgeRevision',['notice_version','notice_sha256'],'required',true);
  post('/submissions','submit',['rule_id','submission']);
  post('/records/:record_id/reviews','review',['decision','reason','checks'],'none',true);
  post('/records/:record_id/close','close',['reason'],'optional',true);
  post('/submissions/:record_id/decision','decision',['decision'],'required',true);
  post('/cases/:record_id/quote','linkQuote',['quote_id','quote_sha256','reason'],'none',true);
  const page=req=>{if(req.query.limit!==undefined&&!/^[1-9][0-9]{0,2}$/.test(req.query.limit))throw error('INVALID_LIMIT',400);return {after:req.query.cursor?id(req.query.cursor):'',limit:req.query.limit?Number(req.query.limit):20};};
+ router.get('/announcements/:record_id/history',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.revisionHistory(req,{...page(req),record_id:id(req.params.record_id),party_id:party(req)}));}));
  router.get('/rules',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);party(req,'none');reply(req,res,await repo.publicRules(req,page(req)));}));
  router.get('/cases/:record_id/quote-options',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);party(req,'none');reply(req,res,await repo.quoteOptions(req,{...page(req),record_id:id(req.params.record_id)}));}));
  router.get('/submission-options',wrap(async(req,res)=>{shape(req.query,['person_id','notice_id','cursor','limit']);reply(req,res,await repo.submissionOptions(req,{...page(req),person_id:id(req.query.person_id),notice_id:id(req.query.notice_id),party_id:party(req,'required')}));}));

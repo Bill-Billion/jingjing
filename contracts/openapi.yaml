@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.59-rc.1
+  version: 0.31.60-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -34796,6 +34796,182 @@ paths:
           $ref: '#/components/responses/Unavailable'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 
+  /api/v1/notices/announcements/{record_id}/revisions:
+    post:
+      operationId: reviseNoticeAnnouncement
+      summary: 提交通告修订，独审通过后替换公开版本
+      description: 保留原版本和申请快照；所有正文变化需原申请人明确确认；旧报价不得被确认动作自动套用新条件，旧订单合同不改。类型与项目归属不可在修订中切换。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeRevisionRequest'
+  /api/v1/notices/submissions/{record_id}/notice-confirmation:
+    post:
+      operationId: acknowledgeNoticeRevision
+      summary: 原申请人确认当前通告修订
+      description: 保留原版本和申请快照；所有正文变化需原申请人明确确认；旧报价不得被确认动作自动套用新条件，旧订单合同不改。类型与项目归属不可在修订中切换。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: record_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoticeConfirmationRequest'
+  /api/v1/notices/announcements/{record_id}/history:
+    get:
+      operationId: getNoticeRevisionHistory
+      summary: 按当前权限读取通告修订与原版本依据
+      description: 发布方和有权审核员可查修订草稿；原申请人仅可查已批准修订及原公开快照，不返回审核人员资料。历史无快照时不补造。
+      tags:
+      - notices
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - in: header
+        name: X-Acting-Party
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - in: path
+        name: record_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 按当前权限返回实际记录；外部服务、页面验收和正式启用另行确认。
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoticeHistoryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
 components:
   securitySchemes:
     bearerAuth:
@@ -58066,6 +58242,9 @@ components:
             minLength: 1
             maxLength: 2000
           - type: 'null'
+        revision_id:
+          type: string
+          format: uuid
       required:
       - rule_id
       - rule_sha256
@@ -58107,6 +58286,10 @@ components:
             minLength: 1
             maxLength: 2000
           - type: 'null'
+        notice_snapshot:
+          $ref: '#/components/schemas/NoticeContentSnapshot'
+        notice_acknowledgement:
+          $ref: '#/components/schemas/NoticeAcknowledgement'
       required:
       - submission
       - rule_id
@@ -58146,6 +58329,11 @@ components:
                 type: string
                 minLength: 1
                 maxLength: 2000
+              notice_revision_id:
+                anyOf:
+                - type: string
+                  format: uuid
+                - type: 'null'
             required:
             - id
             - content_sha256
@@ -58634,6 +58822,90 @@ components:
             pattern: ^[a-f0-9]{64}$
           data:
             $ref: '#/components/schemas/NoticeCaseData'
+          next_action:
+            enum:
+            - VIEW
+            - WAIT_REVIEW
+            - WAIT_RECIPIENT
+            - WAIT_SUPPORT
+            - CLOSED
+            - EXPIRED
+            - CONFIRM_QUOTE
+            - VIEW_ORDER
+          chat_enabled:
+            const: false
+          order_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          order_status:
+            anyOf:
+            - type: string
+              minLength: 1
+              maxLength: 40
+            - type: 'null'
+          expired:
+            type: boolean
+        required:
+        - id
+        - kind
+        - owner_party_id
+        - counterparty_id
+        - parent_id
+        - created_by
+        - current_status
+        - object_version
+        - content_sha256
+        - data
+      - type: object
+        additionalProperties: false
+        properties:
+          id:
+            type: string
+            format: uuid
+          kind:
+            const: NOTICE_REVISION
+          owner_party_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          counterparty_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          parent_id:
+            anyOf:
+            - type: string
+              format: uuid
+            - type: 'null'
+          created_by:
+            type: string
+            format: uuid
+          current_status:
+            enum:
+            - IN_REVIEW
+            - REJECTED
+            - EFFECTIVE
+            - APPROVED
+            - PUBLISHED
+            - SENT
+            - INTERESTED
+            - DECLINED
+            - WITHDRAWN
+            - WAITING_SUPPORT
+            - LINKED
+            - CLOSED
+          object_version:
+            type: integer
+            minimum: 1
+          content_sha256:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          data:
+            $ref: '#/components/schemas/NoticeRevisionData'
           next_action:
             enum:
             - VIEW
@@ -78892,6 +79164,185 @@ components:
           - participation_control
           - eligibility
           - limitations
+      required:
+      - meta
+      - data
+
+    NoticeContentSnapshot:
+      type: object
+      additionalProperties: false
+      properties:
+        notice_id:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 1
+        revision_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        notice_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+      required:
+      - notice_id
+      - object_version
+      - revision_id
+      - notice_sha256
+      - notice
+
+    NoticeAcknowledgement:
+      type: object
+      additionalProperties: false
+      properties:
+        notice_id:
+          type: string
+          format: uuid
+        object_version:
+          type: integer
+          minimum: 1
+        revision_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        notice_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+        account_id:
+          type: string
+          format: uuid
+      required:
+      - notice_id
+      - object_version
+      - revision_id
+      - notice_sha256
+      - notice
+      - account_id
+
+    NoticeRevisionData:
+      type: object
+      additionalProperties: false
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        rule_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+        base_snapshot:
+          $ref: '#/components/schemas/NoticeContentSnapshot'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        review:
+          anyOf:
+          - $ref: '#/components/schemas/NoticeReview'
+          - type: 'null'
+        closed_reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - rule_id
+      - rule_sha256
+      - notice
+      - base_snapshot
+      - reason
+      - review
+
+    NoticeRevisionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - notice
+      - reason
+
+    NoticeConfirmationRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        notice_version:
+          type: integer
+          minimum: 1
+        notice_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - notice_version
+      - notice_sha256
+
+    NoticeApprovedRevision:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        current_status:
+          const: APPROVED
+        base_snapshot:
+          $ref: '#/components/schemas/NoticeContentSnapshot'
+        notice:
+          $ref: '#/components/schemas/NoticeAnnouncement'
+        notice_sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      required:
+      - id
+      - current_status
+      - base_snapshot
+      - notice
+      - notice_sha256
+
+    NoticeHistoryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            notice_id:
+              type: string
+              format: uuid
+            current:
+              $ref: '#/components/schemas/NoticeContentSnapshot'
+            items:
+              type: array
+              maxItems: 100
+              items:
+                oneOf:
+                - $ref: '#/components/schemas/NoticeRecord'
+                - $ref: '#/components/schemas/NoticeApprovedRevision'
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+          required:
+          - notice_id
+          - current
+          - items
+          - next_cursor
       required:
       - meta
       - data
