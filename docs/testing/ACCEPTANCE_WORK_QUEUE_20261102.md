@@ -54,7 +54,7 @@
 |ACC-DEL-10.01 六类结构|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-10（局部）|PARTIAL|
 |ACC-DEL-10.02 权限矩阵|后端|正常办理、取消/退款/撤回|NOTICE-PERMISSIONS（局部）|PARTIAL|
 |ACC-DEL-10.03 发布/报名与成交、角色授权分别记录。；点击感兴趣不自动下单或授予角色。 新普通发布规则下，成年实名个人无星探资格可提交非官方通告并经独立审核公开；机构资质、官方权限和历史约定保留。|后端|正常办理、取消/退款/撤回|NOTICE-NOT-ORDER（局部）|PARTIAL|
-|ACC-DEL-10.04 周期与历史|后端|正常办理、取消/退款/撤回|NOTICE-HISTORY（局部）|PARTIAL|
+|ACC-DEL-10.04 周期与历史|后端|正常办理、取消/退款/撤回|NOTICE-HISTORY（局部）；NOTICE-REVISIONS（局部）|PARTIAL|
 |ACC-DEL-11.01 单向提交|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-11（局部）|PASS|
 |ACC-DEL-11.02 三类投稿|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-11.03 客服接管|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|

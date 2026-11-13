@@ -1,0 +1,197 @@
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    not ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 300.8289
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:60:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'BLOCKED'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'SUCCEEDED'
+      actual: 'BLOCKED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:70:39)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:60:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    not ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 100.0536
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:73:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        2000 !== 1000
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 1000
+      actual: 2000
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:76:67)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:73:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    not ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 128.4827
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:82:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'BLOCKED'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'SUCCEEDED'
+      actual: 'BLOCKED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:89:108)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:82:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    not ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 83.7562
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:92:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        4000 !== 1000
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 1000
+      actual: 4000
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:94:127)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:92:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    not ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 207.8233
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:103:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        4000 !== 0
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 0
+      actual: 4000
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:109:108)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:103:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+    not ok 6 - a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+      ---
+      duration_ms: 62.0795
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:112:11'
+      failureType: 'testCodeFailure'
+      error: 'CUSTODY_RECEIPT_MISMATCH'
+      code: 'CUSTODY_RECEIPT_MISMATCH'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\wallet\recharge-refunds.js:90:336
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async process (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\wallet\recharge-refund-handler.js:39:17)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:117:18)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:112:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    not ok 7 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 533.7783
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:124:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'SUBMITTING'
+        - 'SUCCEEDED'
+             ^
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'SUCCEEDED'
+      actual: 'SUBMITTING'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:136:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:124:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..7
+not ok 295 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 31736.643
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-recovery.integration.test.cjs:6:1'
+  failureType: 'testCodeFailure'
+  error: 'CUSTODY_RECEIPT_MISMATCH'
+  code: 'CUSTODY_RECEIPT_MISMATCH'
+  stack: |-
+    error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+    D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\wallet\custody.js:58:254
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+    async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-recovery.integration.test.cjs:143:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...

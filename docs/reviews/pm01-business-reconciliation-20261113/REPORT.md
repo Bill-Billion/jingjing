@@ -37,3 +37,5 @@
 [最终完整后端](FINAL_BACKEND.json)、[最终接口格式](FINAL_CONTRACT.json)、[选定用例](SELECTED_CHECKS.json)、[首次全量失败](FIRST_FULL_BACKEND.json)、[曝光失败日志](FIRST_FULL_FAILURE.txt)、[夹具修正复验](TIME_FIXTURE_RUN.txt)、[复验入口](REPRODUCE.md)、[共创与会员已实现范围](BENEFIT_MEMBERSHIP_SCOPE.md)。
 
 交付回执：[当前候选远端观察](CURRENT_REMOTE.json)。GitHub连接器更新PR说明被403拒绝；使用本机既有授权gh更新。首次附加中文因PowerShell管道编码变成问号，已按UTF-8更正后重新读取核对。未触发人工重跑前端、审阅或合入。
+
+第二十一轮接续时补记：9a005105的服务器43366106943、App/管理网页43366106950、工具43366106926最终均成功，见[后续只读回执](../pm01-notice-revisions-20261113/PRIOR_REMOTE_FINAL.json)。更早c17网页超时根因仍未确认；后续新修订代码另行验证，不能借这次成功。
