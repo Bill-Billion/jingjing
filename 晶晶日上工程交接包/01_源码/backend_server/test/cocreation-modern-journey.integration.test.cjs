@@ -15,14 +15,14 @@ test('private invitations reach twenty-person production under new contract with
   await control.query('CREATE DATABASE '+mysql.escapeId(database)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');created=true;
   db=await require('../src/infrastructure/database').openDatabase({...env,MYSQL_DATABASE:database,MYSQL_CONNECTION_LIMIT:'1'});await require('../src/infrastructure/database/migrator').migrate(db);
   const f=await require('./support/customization-delivery.cjs').seed(db),{buyer,producer,reviewer,outsider}=f.people;
-  for(const u of [producer,reviewer])await f.grant(u,'COCREATION_REVIEW');
+  for(const u of [producer,reviewer])for(const action of ['COCREATION_REVIEW','REDEMPTION_REVIEW'])await f.grant(u,action);
   server=require('../src/http/account-api').createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,CUSTOMIZATION_CONTRACT_POLICY:'CONTRACT_20261029',COPYRIGHT_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
   const base='http://127.0.0.1:'+server.address().port+'/api/v1';
   async function call(method,url,u,body,version,op=key(),party=u===reviewer?null:u.acting_party_id){
    const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+u.token,...party?{'X-Acting-Party':party}:{},...body===undefined?{}:{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':op},...version?{'If-Match':'"'+version+'"'}:{}},...body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)},signal:AbortSignal.timeout(20000)});
    const binary=!(res.headers.get('content-type')||'').includes('json'),value=binary?Buffer.from(await res.arrayBuffer()):await res.json();
    requests.push({method,path:new URL(base+url).pathname,actor:u.account_id,status:res.status,error:binary?null:value.error?.code||null});
-   if(!binary){const schema=!res.ok?'ErrorResponse':url.includes('/invite-links')?(url.endsWith('/claim')?'CocreationInviteClaimResponse':'CocreationInviteLinkResponse'):url.startsWith('/cocreation')?'CocreationResponse':url.startsWith('/trade')?'TradeRecordResponse':['/start','/case-resolution','/refund-sync'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':'ProductionRecordResponse';fixtures.push({method,path:new URL(base+url).pathname,schema,value});}
+   if(!binary){const schema=!res.ok?'ErrorResponse':url.includes('/invite-links')?(url.endsWith('/claim')?'CocreationInviteClaimResponse':'CocreationInviteLinkResponse'):url.startsWith('/cocreation')?'CocreationResponse':url.startsWith('/trade')?'TradeRecordResponse':url.startsWith('/redemption')?'RedemptionResponse':['/start','/case-resolution','/refund-sync'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':'ProductionRecordResponse';fixtures.push({method,path:new URL(base+url).pathname,schema,value});}
    if(!res.ok)throw Object.assign(new Error(value.error?.code),{code:value.error?.code,status:res.status});return binary?value:value.data;
   }
   const bad=(p,code)=>assert.rejects(p,e=>{assert.equal(e.code,code);return true;});
@@ -69,6 +69,7 @@ test('private invitations reach twenty-person production under new contract with
   async function file(stage){return call('POST','/production/projects/'+project.id+'/files?media_type='+encodeURIComponent(stage==='SCRIPT'?'text/plain':'video/mp4'),producer,Buffer.from('synthetic protocol bytes '+key()));}
   async function deliver(stage){const a=await file(stage),b=stage==='SCRIPT'?a:await file(stage);return reviewP(await cmd('versions',producer,{stage,file_id:a.id,preview_file_id:b.id,note:'Synthetic protocol only; media quality not tested'}));}
   async function accept(v){await call('GET','/production/versions/'+v.id+'/content?variant=preview',buyer);return call('POST','/production/versions/'+v.id+'/feedback',buyer,{decision:'ACCEPT',note:'Synthetic explicit confirmation',checklist:checklist(v.data.stage),change_kind:null},v.object_version);}
+  const credit=require('./support/cocreation-credit-journey.cjs').journey({db,f,call,bad,check,buyer,producer,reviewer,outsider,room,order,reviewProject:reviewP});await credit.prepare();
   await check('independently reviewed project keeps twenty separate authorizations; host cannot read other peoples private materials',async()=>{
    project=await reviewP(await call('POST','/production/projects',producer,{order_id:order.id,line_id:'film',script_version_id:f.work.id,license_project_id:null,assignee_account_id:producer.account_id,purpose:'PRIVATE',territory:'CN',consent_ids:[],evidence_asset_id:f.proof.id,fulfillment:{uses_identifiable_people:true,cast:[]}}));
    await cmd('start',producer);const first=await call('GET','/cocreation/rooms/'+room.id+'/materials?limit=10',producer),second=await call('GET','/cocreation/rooms/'+room.id+'/materials?limit=10&cursor='+first.next_cursor,producer);assert.equal(first.items.length+second.items.length,20);assert.equal(new Set([...first.items,...second.items].map(x=>x.id)).size,20);
@@ -84,10 +85,11 @@ test('private invitations reach twenty-person production under new contract with
    await bad(call('GET',url,people[1].user),'COCREATION_NOT_FOUND');await bad(call('GET',url,buyer),'COCREATION_NOT_FOUND');await bad(call('GET','/production/versions/'+final.id+'/content?variant=final',people[0].user),'PRODUCTION_NOT_FOUND');return {order_id:order.id,snippet_id:snippet.id,content_sha256:hash(original),final_payment_minor:3000};
   });
   await check('withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions',async()=>{
-   member=await call('POST','/cocreation/members/'+member.id+'/withdraw',people[0].user,{reason:'Synthetic personal withdrawal'},member.object_version);let r=await getRoom();assert.equal(r.current_status,'PAUSED');assert.equal(r.cutoff.eligible_count,20);await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');await bad(file('FINAL'),'CUSTOMIZATION_PAUSED');
+   member=await call('POST','/cocreation/members/'+member.id+'/withdraw',people[0].user,{reason:'Synthetic personal withdrawal'},member.object_version);let r=await getRoom();assert.equal(r.current_status,'PAUSED');assert.equal(r.cutoff.eligible_count,20);await credit.paused();await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');await bad(file('FINAL'),'CUSTOMIZATION_PAUSED');
    const c=await call('POST','/cocreation/rooms/'+room.id+'/cases',buyer,{kind:'RESUME',reason:'Make new film without withdrawn person',new_deadline:null},r.object_version);await call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Synthetic independent review of remaining nineteen'},c.object_version);
    r=await getRoom();assert.equal(r.current_status,'READY');assert.equal(r.cutoff.eligible_count,20);const p=await getProject();assert.deepEqual(p.data.current,{});assert.deepEqual(p.data.accepted,{});await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');const materials=await call('GET','/cocreation/rooms/'+room.id+'/materials?limit=30',producer);assert.equal(materials.items.length,19);assert(!materials.items.some(x=>x.id===member.id));const originalOrder=await call('GET','/trade/records/'+order.id,buyer);assert.equal(originalOrder.data.financial.received_minor,10000);assert.equal(originalOrder.data.financial.refunded_minor,0);assert.deepEqual(originalOrder.data.contract,order.data.contract);return {room_id:room.id,project_id:project.id,original_cutoff:20,current_production_members:19,received_minor:10000};
   });
+  await credit.consume();
   await check('same paid room cancels through production review; three actual refunds revoke benefit and cannot revive old files',async()=>{
    let r=await getRoom();const c=await call('POST','/cocreation/rooms/'+room.id+'/cases',buyer,{kind:'CANCEL',reason:'Synthetic whole-package cancellation after authorization withdrawal',new_deadline:null},r.object_version);
    await bad(call('POST','/cocreation/cases/'+c.id+'/review',reviewer,{decision:'APPROVE',reason:'Wrong review route'},c.object_version),'USE_CUSTOMIZATION_CASE_REVIEW');
@@ -103,14 +105,15 @@ test('private invitations reach twenty-person production under new contract with
    }
    r=await sync();assert.equal(r.current_status,'REFUNDED');
    const current=await call('GET','/trade/records/'+order.id,buyer);assert.deepEqual(current.data.financial,{received_minor:10000,refunded_minor:10000,net_minor:0});assert.deepEqual(current.data.contract,order.data.contract);
-   const benefits=await call('GET','/cocreation/benefits',buyer);assert.equal(benefits.items[0].current_status,'REVOKED');
+   const benefits=await call('GET','/cocreation/benefits',buyer);assert.equal(benefits.items.find(b=>b.parent_id===room.id).current_status,'USED');
    await bad(call('POST','/cocreation/rooms/'+room.id+'/cases',buyer,{kind:'RESUME',reason:'Must not revive refunded film',new_deadline:null},r.object_version),'COCREATION_CANCELLED');
    await bad(call('GET','/production/versions/'+final.id+'/content?variant=final',buyer),'PRODUCTION_ORDER_BLOCKED');
    await bad(call('GET','/cocreation/snippets/'+snippet.id+'/file',people[0].user),'COCREATION_PARTICIPATION_REQUIRED');
    assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[order.id]))[0].length,3);
-   return {actors:{host:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id,withdrawn_member:people[0].user.account_id},room_id:room.id,order_id:order.id,project_id:project.id,case_id:c.id,refund_ids:refundIds,financial:current.data.financial,benefit_status:'REVOKED'};
+   return {actors:{host:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id,withdrawn_member:people[0].user.account_id},room_id:room.id,order_id:order.id,project_id:project.id,case_id:c.id,refund_ids:refundIds,financial:current.data.financial,benefit_status:'USED',consumed_history_retained:true};
   });
 
+  await credit.cancelled();
   // Distinct room branches: extension and cancellation cannot share one terminal outcome.
   const smallRooms=[];
   async function smallRoom(count){
@@ -127,7 +130,7 @@ test('private invitations reach twenty-person production under new contract with
    const payment=await f.pay(x.order,'first');r=await call('GET','/cocreation/rooms/'+r.id,buyer);
    await db.execute('SET timestamp=?',[Math.floor(Date.parse(r.deadline)/1000)+1]);
    r=await call('POST','/cocreation/rooms/'+r.id+'/close',buyer,{},r.object_version);
-   assert.equal(r.current_status,'UNFORMED');assert.equal(r.cutoff.eligible_count,count);
+   assert.equal(r.current_status,count>=10?'READY':'UNFORMED');assert.equal(r.cutoff.eligible_count,count);
    const branch={room:r,order:x.order,payment,rows};smallRooms.push(branch);return branch;
   }
   await check('nine-person unformed room extends only after independent review; old personal agreement cannot silently carry forward',async()=>{
@@ -189,11 +192,12 @@ test('private invitations reach twenty-person production under new contract with
    assert.equal(after.current_status,'REFUND_REQUIRED');assert.equal(after.object_version,before.object_version);
    return {room_id:r.id,order_id:x.order.id,case_id:c.id,refund_id:refund.id,order_status:order.current_status,room_status:after.current_status};
   });
+  await credit.expire(smallRoom);
  }catch(e){failed=true;throw e;}
  finally{
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();if(created)await control.query('DROP DATABASE '+mysql.escapeId(database));await control.end();
   const root=path.resolve(__dirname,'../../../..'),out=path.join(root,'.local');await fs.mkdir(out,{recursive:true});
   await fs.writeFile(path.join(out,'cocreation-modern-journey-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
-  await fs.writeFile(path.join(out,'cocreation-modern-journey-result.json'),JSON.stringify({result:failed?'FAIL':'PASS',database,checks,requests,cleanup:{server_stopped:true,database_removed:created},limits:['API composition only; no new invitation UI or native App','Identity/materials preseeded; provider payment receipts simulated through repository, not real money','Media protocol bytes only; not playable video quality or markings verification','Only isolated connection clock advanced to cutoff, no business row status edits']},null,2));
+  await fs.writeFile(path.join(out,'cocreation-modern-journey-result.json'),JSON.stringify({result:failed?'FAIL':'PASS',database,checks,requests,cleanup:{server_stopped:true,database_removed:created},limits:['API composition only; no new invitation UI or native App','Identity/materials preseeded; provider payment receipts simulated through repository, not real money','Media protocol bytes only; not playable video quality or markings verification','Only isolated connection clock advanced to cutoff and benefit expiry, no business row status edits']},null,2));
  }
 });
