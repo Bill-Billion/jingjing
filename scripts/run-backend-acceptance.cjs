@@ -54,10 +54,11 @@ function main(){
  const start={run_id:runId,profile,base_commit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),started_at:new Date().toISOString(),node:process.version,environment:'isolated',test_files:files,sources};
  const write=(name,value)=>fs.writeFileSync(path.join(out,name),JSON.stringify(value,null,2)+'\n');
  write('source-manifest.json',start);console.log('Evidence: '+path.relative(root,out));
+ const testEnv=withWeb?{...process.env,JX_PM01_NOTICES_WEB:'1',JX_PM01_STOCK_WEB:'1'}:require(path.join(backend,'scripts/test-environment.cjs')).backendOnlyEnvironment(process.env);
  const fd=fs.openSync(path.join(out,'backend.tap'),'w');
  let result;try{
  result=spawnSync(process.execPath,['--test','--test-concurrency=4','--test-reporter=tap','--test-reporter=../../../scripts/backend-evidence-reporter.cjs','--test-reporter-destination=stdout','--test-reporter-destination='+path.join(out,'checks.jsonl'),...files],
- {cwd:backend,env:{...process.env,JX_PM01_NOTICES_WEB:withWeb?'1':'0',JX_PM01_STOCK_WEB:withWeb?'1':'0',NODE_OPTIONS:[process.env.NODE_OPTIONS,'--require ./scripts/test-network-guard.cjs'].filter(Boolean).join(' ')},stdio:['ignore',fd,fd],windowsHide:true});
+ {cwd:backend,env:{...testEnv,NODE_OPTIONS:[process.env.NODE_OPTIONS,'--require ./scripts/test-network-guard.cjs'].filter(Boolean).join(' ')},stdio:['ignore',fd,fd],windowsHide:true});
  }finally{fs.closeSync(fd);}
 
  const webRuns=[];
